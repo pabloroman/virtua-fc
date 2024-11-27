@@ -1,0 +1,536 @@
+  Jornada 1 (25/08/2024)
+
+   Cultural Leonesa - CD Lugo
+   SD Ponferradina - Real Sociedad B
+   SD Amorebieta - Gimnástica Segoviana CF
+   CA Osasuna Promesas - Zamora CF
+   FC Barcelona Atlètic - Real Unión Club
+   Gimnàstic de Tarragona - Ourense CF
+   SD Tarazona - CD Arenteiro
+   RC Celta Fortuna - Barakaldo CF
+   Bilbao Athletic - FC Andorra
+   Sestao River - Unionistas CF
+
+
+  Jornada 2 (01/09/2024)
+
+   CD Arenteiro - Cultural Leonesa
+   Barakaldo CF - Real Sociedad B
+   FC Andorra - FC Barcelona Atlètic
+   Gimnàstic de Tarragona - Sestao River
+   Real Unión Club - RC Celta Fortuna
+   Gimnástica Segoviana CF - SD Ponferradina
+   Unionistas CF - Bilbao Athletic
+   CD Lugo - SD Amorebieta
+   Ourense CF - CA Osasuna Promesas
+   Zamora CF - SD Tarazona
+
+
+  Jornada 3 (08/09/2024)
+
+   Cultural Leonesa - Real Sociedad B
+   SD Ponferradina - Unionistas CF
+   Bilbao Athletic - Zamora CF
+   Barakaldo CF - Gimnástica Segoviana CF
+   SD Amorebieta - Gimnàstic de Tarragona
+   CA Osasuna Promesas - Real Unión Club
+   FC Barcelona Atlètic - Ourense CF
+   RC Celta Fortuna - CD Arenteiro
+   Sestao River - CD Lugo
+   SD Tarazona - FC Andorra
+
+
+  Jornada 4 (15/09/2024)
+
+   Ourense CF - Gimnástica Segoviana CF
+   CD Arenteiro - Bilbao Athletic
+   Real Sociedad B - Sestao River
+   FC Andorra - SD Ponferradina
+   Gimnàstic de Tarragona - SD Tarazona
+   CA Osasuna Promesas - RC Celta Fortuna
+   Zamora CF - Cultural Leonesa
+   CD Lugo - Barakaldo CF
+   Real Unión Club - SD Amorebieta
+   Unionistas CF - FC Barcelona Atlètic
+
+
+  Jornada 5 (22/09/2024)
+
+   RC Celta Fortuna - Unionistas CF
+   Cultural Leonesa - CA Osasuna Promesas
+   Barakaldo CF - Gimnàstic de Tarragona
+   SD Amorebieta - Ourense CF
+   FC Barcelona Atlètic - Zamora CF
+   SD Ponferradina - CD Arenteiro
+   Real Sociedad B - CD Lugo
+   Gimnástica Segoviana CF - Bilbao Athletic
+   SD Tarazona - Real Unión Club
+   Sestao River - FC Andorra
+
+
+  Jornada 6 (29/09/2024)
+
+   CD Arenteiro - Gimnástica Segoviana CF
+   Bilbao Athletic - RC Celta Fortuna
+   Real Unión Club - Sestao River
+   CA Osasuna Promesas - SD Ponferradina
+   Gimnàstic de Tarragona - Real Sociedad B
+   Unionistas CF - Cultural Leonesa
+   Ourense CF - Barakaldo CF
+   Zamora CF - SD Amorebieta
+   CD Lugo - FC Andorra
+   SD Tarazona - FC Barcelona Atlètic
+
+
+  Jornada 7 (06/10/2024)
+
+   Ourense CF - Unionistas CF
+   CD Lugo - Gimnàstic de Tarragona
+   Cultural Leonesa - SD Tarazona
+   SD Amorebieta - Bilbao Athletic
+   FC Andorra - Real Unión Club
+   Gimnástica Segoviana CF - Zamora CF
+   Barakaldo CF - CD Arenteiro
+   SD Ponferradina - RC Celta Fortuna
+   Real Sociedad B - CA Osasuna Promesas
+   Sestao River - FC Barcelona Atlètic
+
+
+  Jornada 8 (13/10/2024)
+
+   CD Arenteiro - Gimnàstic de Tarragona
+   Cultural Leonesa - Ourense CF
+   Bilbao Athletic - SD Ponferradina
+   CA Osasuna Promesas - Gimnástica Segoviana CF
+   FC Barcelona Atlètic - Real Sociedad B
+   Unionistas CF - CD Lugo
+   Real Unión Club - Barakaldo CF
+   RC Celta Fortuna - SD Amorebieta
+   SD Tarazona - Sestao River
+   Zamora CF - FC Andorra
+
+
+  Jornada 9 (20/10/2024)
+
+   Barakaldo CF - Zamora CF
+   SD Amorebieta - Unionistas CF
+   Real Sociedad B - SD Tarazona
+   FC Andorra - Cultural Leonesa
+   Gimnàstic de Tarragona - CA Osasuna Promesas
+   Ourense CF - CD Arenteiro
+   CD Lugo - RC Celta Fortuna
+   Sestao River - Bilbao Athletic
+   Gimnástica Segoviana CF - Real Unión Club
+   SD Ponferradina - FC Barcelona Atlètic
+
+
+  Jornada 10 (27/10/2024)
+
+   CD Arenteiro - Unionistas CF
+   RC Celta Fortuna - Gimnástica Segoviana CF
+   Cultural Leonesa - SD Ponferradina
+   Bilbao Athletic - Ourense CF
+   FC Andorra - Real Sociedad B
+   CA Osasuna Promesas - CD Lugo
+   FC Barcelona Atlètic - Barakaldo CF
+   SD Tarazona - SD Amorebieta
+   Zamora CF - Sestao River
+   Real Unión Club - Gimnàstic de Tarragona
+
+
+  Jornada 11 (03/11/2024)
+
+   SD Ponferradina - Zamora CF
+   Barakaldo CF - SD Tarazona
+   SD Amorebieta - Cultural Leonesa
+   Real Sociedad B - CD Arenteiro
+   Gimnàstic de Tarragona - RC Celta Fortuna
+   CD Lugo - Bilbao Athletic
+   Unionistas CF - Real Unión Club
+   Sestao River - CA Osasuna Promesas
+   Ourense CF - FC Andorra
+   Gimnástica Segoviana CF - FC Barcelona Atlètic
+
+
+  Jornada 12 (10/11/2024)
+
+   RC Celta Fortuna - Ourense CF
+   Cultural Leonesa - Sestao River
+   Bilbao Athletic - Gimnàstic de Tarragona
+   CA Osasuna Promesas - Unionistas CF
+   FC Andorra - Barakaldo CF
+   FC Barcelona Atlètic - CD Lugo
+   Real Unión Club - SD Ponferradina
+   CD Arenteiro - SD Amorebieta
+   Zamora CF - Real Sociedad B
+   SD Tarazona - Gimnástica Segoviana CF
+
+
+  Jornada 13 (17/11/2024)
+
+   Ourense CF - SD Tarazona
+   RC Celta Fortuna - Cultural Leonesa
+   Bilbao Athletic - CA Osasuna Promesas
+   Barakaldo CF - SD Ponferradina
+   SD Amorebieta - FC Barcelona Atlètic
+   Real Sociedad B - Real Unión Club
+   Gimnástica Segoviana CF - Sestao River
+   Unionistas CF - Zamora CF
+   CD Lugo - CD Arenteiro
+   Gimnàstic de Tarragona - FC Andorra
+
+
+  Jornada 14 (24/11/2024)
+
+   CD Arenteiro - CA Osasuna Promesas
+   Real Sociedad B - Gimnástica Segoviana CF
+   FC Andorra - Unionistas CF
+   FC Barcelona Atlètic - Gimnàstic de Tarragona
+   Real Unión Club - Ourense CF
+   SD Tarazona - RC Celta Fortuna
+   Zamora CF - CD Lugo
+   Cultural Leonesa - Bilbao Athletic
+   Sestao River - Barakaldo CF
+   SD Ponferradina - SD Amorebieta
+
+
+  Jornada 15 (01/12/2024)
+
+   Ourense CF - SD Ponferradina
+   CD Arenteiro - FC Barcelona Atlètic
+   RC Celta Fortuna - Zamora CF
+   CD Lugo - Real Unión Club
+   Bilbao Athletic - Real Sociedad B
+   SD Amorebieta - Sestao River
+   CA Osasuna Promesas - SD Tarazona
+   Gimnàstic de Tarragona - Cultural Leonesa
+   Unionistas CF - Barakaldo CF
+   Gimnástica Segoviana CF - FC Andorra
+
+
+  Jornada 16 (08/12/2024)
+
+   Barakaldo CF - Cultural Leonesa
+   FC Andorra - CA Osasuna Promesas
+   FC Barcelona Atlètic - RC Celta Fortuna
+   Zamora CF - Ourense CF
+   Sestao River - CD Arenteiro
+   SD Tarazona - CD Lugo
+   Real Unión Club - Bilbao Athletic
+   Real Sociedad B - SD Amorebieta
+   SD Ponferradina - Gimnàstic de Tarragona
+   Gimnástica Segoviana CF - Unionistas CF
+
+
+  Jornada 17 (15/12/2024)
+
+   Ourense CF - Sestao River
+   CD Arenteiro - Real Unión Club
+   CD Lugo - SD Ponferradina
+   Cultural Leonesa - Gimnástica Segoviana CF
+   Bilbao Athletic - SD Tarazona
+   SD Amorebieta - Barakaldo CF
+   Gimnàstic de Tarragona - Zamora CF
+   Unionistas CF - Real Sociedad B
+   RC Celta Fortuna - FC Andorra
+   CA Osasuna Promesas - FC Barcelona Atlètic
+
+
+  Jornada 18 (22/12/2024)
+
+   SD Ponferradina - SD Tarazona
+   Barakaldo CF - CA Osasuna Promesas
+   Real Sociedad B - Ourense CF
+   Zamora CF - CD Arenteiro
+   Sestao River - RC Celta Fortuna
+   Gimnástica Segoviana CF - CD Lugo
+   Real Unión Club - Cultural Leonesa
+   FC Barcelona Atlètic - Bilbao Athletic
+   FC Andorra - SD Amorebieta
+   Unionistas CF - Gimnàstic de Tarragona
+
+
+  Jornada 19 (11/01/2025)
+
+   RC Celta Fortuna - Real Sociedad B
+   SD Ponferradina - Sestao River
+   Bilbao Athletic - Barakaldo CF
+   Real Unión Club - Zamora CF
+   Gimnàstic de Tarragona - Gimnástica Segoviana CF
+   Ourense CF - CD Lugo
+   CA Osasuna Promesas - SD Amorebieta
+   CD Arenteiro - FC Andorra
+   Cultural Leonesa - FC Barcelona Atlètic
+   SD Tarazona - Unionistas CF
+
+
+  Jornada 20 (19/01/2025)
+
+   Barakaldo CF - Ourense CF
+   SD Amorebieta - SD Tarazona
+   FC Andorra - Bilbao Athletic
+   FC Barcelona Atlètic - SD Ponferradina
+   Gimnástica Segoviana CF - CD Arenteiro
+   Unionistas CF - RC Celta Fortuna
+   CD Lugo - Cultural Leonesa
+   Sestao River - Real Unión Club
+   Zamora CF - CA Osasuna Promesas
+   Real Sociedad B - Gimnàstic de Tarragona
+
+
+  Jornada 21 (26/01/2025)
+
+   CD Arenteiro - Barakaldo CF
+   RC Celta Fortuna - CD Lugo
+   Cultural Leonesa - Unionistas CF
+   Bilbao Athletic - Sestao River
+   Real Unión Club - Gimnástica Segoviana CF
+   CA Osasuna Promesas - Real Sociedad B
+   SD Tarazona - Zamora CF
+   Gimnàstic de Tarragona - SD Amorebieta
+   SD Ponferradina - FC Andorra
+   Ourense CF - FC Barcelona Atlètic
+
+
+  Jornada 22 (02/02/2025)
+
+   RC Celta Fortuna - Gimnàstic de Tarragona
+   CD Lugo - CA Osasuna Promesas
+   Barakaldo CF - Real Unión Club
+   SD Amorebieta - CD Arenteiro
+   FC Andorra - Ourense CF
+   Gimnástica Segoviana CF - SD Tarazona
+   Sestao River - Cultural Leonesa
+   Unionistas CF - SD Ponferradina
+   Zamora CF - Bilbao Athletic
+   Real Sociedad B - FC Barcelona Atlètic
+
+
+  Jornada 23 (09/02/2025)
+
+   Sestao River - Zamora CF
+   Real Unión Club - Unionistas CF
+   FC Andorra - CD Lugo
+   FC Barcelona Atlètic - Gimnástica Segoviana CF
+   Bilbao Athletic - CD Arenteiro
+   Ourense CF - RC Celta Fortuna
+   SD Ponferradina - Barakaldo CF
+   Cultural Leonesa - SD Amorebieta
+   SD Tarazona - Real Sociedad B
+   CA Osasuna Promesas - Gimnàstic de Tarragona
+
+
+  Jornada 24 (16/02/2025)
+
+   CD Arenteiro - SD Tarazona
+   RC Celta Fortuna - Real Unión Club
+   CD Lugo - Sestao River
+   SD Amorebieta - SD Ponferradina
+   Unionistas CF - Ourense CF
+   Real Sociedad B - Cultural Leonesa
+   Gimnàstic de Tarragona - Bilbao Athletic
+   Gimnástica Segoviana CF - CA Osasuna Promesas
+   Barakaldo CF - FC Andorra
+   Zamora CF - FC Barcelona Atlètic
+
+
+  Jornada 25 (23/02/2025)
+
+   SD Ponferradina - Gimnástica Segoviana CF
+   Bilbao Athletic - CD Lugo
+   Barakaldo CF - Unionistas CF
+   FC Andorra - Zamora CF
+   FC Barcelona Atlètic - CD Arenteiro
+   Cultural Leonesa - RC Celta Fortuna
+   Sestao River - SD Amorebieta
+   Real Unión Club - Real Sociedad B
+   SD Tarazona - CA Osasuna Promesas
+   Ourense CF - Gimnàstic de Tarragona
+
+
+  Jornada 26 (02/03/2025)
+
+   CD Arenteiro - Sestao River
+   RC Celta Fortuna - SD Ponferradina
+   CD Lugo - SD Tarazona
+   SD Amorebieta - Real Unión Club
+   Gimnástica Segoviana CF - Ourense CF
+   CA Osasuna Promesas - Cultural Leonesa
+   Real Sociedad B - Bilbao Athletic
+   Zamora CF - Barakaldo CF
+   Unionistas CF - FC Andorra
+   Gimnàstic de Tarragona - FC Barcelona Atlètic
+
+
+  Jornada 27 (09/03/2025)
+
+   Cultural Leonesa - Zamora CF
+   Bilbao Athletic - Gimnástica Segoviana CF
+   Barakaldo CF - CD Lugo
+   FC Andorra - RC Celta Fortuna
+   FC Barcelona Atlètic - CA Osasuna Promesas
+   SD Ponferradina - Ourense CF
+   Real Unión Club - CD Arenteiro
+   Unionistas CF - SD Amorebieta
+   Sestao River - Real Sociedad B
+   SD Tarazona - Gimnàstic de Tarragona
+
+
+  Jornada 28 (16/03/2025)
+
+   Ourense CF - Real Unión Club
+   CD Arenteiro - SD Ponferradina
+   RC Celta Fortuna - Sestao River
+   CD Lugo - Unionistas CF
+   SD Amorebieta - FC Andorra
+   Real Sociedad B - Zamora CF
+   FC Barcelona Atlètic - SD Tarazona
+   Gimnástica Segoviana CF - Cultural Leonesa
+   CA Osasuna Promesas - Bilbao Athletic
+   Gimnàstic de Tarragona - Barakaldo CF
+
+
+  Jornada 29 (23/03/2025)
+
+   Ourense CF - Real Sociedad B
+   Cultural Leonesa - Real Unión Club
+   Bilbao Athletic - FC Barcelona Atlètic
+   Barakaldo CF - RC Celta Fortuna
+   SD Amorebieta - CA Osasuna Promesas
+   Sestao River - SD Tarazona
+   FC Andorra - CD Arenteiro
+   Unionistas CF - Gimnástica Segoviana CF
+   SD Ponferradina - CD Lugo
+   Zamora CF - Gimnàstic de Tarragona
+
+
+  Jornada 30 (30/03/2025)
+
+   CD Arenteiro - RC Celta Fortuna
+   CD Lugo - Ourense CF
+   CA Osasuna Promesas - Sestao River
+   FC Barcelona Atlètic - Cultural Leonesa
+   Gimnàstic de Tarragona - SD Ponferradina
+   SD Tarazona - Bilbao Athletic
+   Real Sociedad B - Barakaldo CF
+   Gimnástica Segoviana CF - SD Amorebieta
+   Real Unión Club - FC Andorra
+   Zamora CF - Unionistas CF
+
+
+  Jornada 31 (06/04/2025)
+
+   Ourense CF - Zamora CF
+   CD Lugo - Gimnástica Segoviana CF
+   SD Ponferradina - Real Unión Club
+   SD Amorebieta - Real Sociedad B
+   FC Andorra - SD Tarazona
+   Cultural Leonesa - CD Arenteiro
+   Barakaldo CF - Bilbao Athletic
+   Unionistas CF - CA Osasuna Promesas
+   RC Celta Fortuna - FC Barcelona Atlètic
+   Sestao River - Gimnàstic de Tarragona
+
+
+  Jornada 32 (13/04/2025)
+
+   CD Arenteiro - Ourense CF
+   FC Barcelona Atlètic - Sestao River
+   Gimnàstic de Tarragona - Unionistas CF
+   Gimnástica Segoviana CF - RC Celta Fortuna
+   Real Unión Club - CD Lugo
+   SD Tarazona - Cultural Leonesa
+   Zamora CF - SD Ponferradina
+   CA Osasuna Promesas - Barakaldo CF
+   Bilbao Athletic - SD Amorebieta
+   Real Sociedad B - FC Andorra
+
+
+  Jornada 33 (20/04/2025)
+
+   RC Celta Fortuna - SD Tarazona
+   CD Lugo - Real Sociedad B
+   Cultural Leonesa - Gimnàstic de Tarragona
+   Barakaldo CF - Sestao River
+   SD Amorebieta - Zamora CF
+   FC Andorra - Gimnástica Segoviana CF
+   Unionistas CF - CD Arenteiro
+   Ourense CF - Bilbao Athletic
+   SD Ponferradina - CA Osasuna Promesas
+   Real Unión Club - FC Barcelona Atlètic
+
+
+  Jornada 34 (27/04/2025)
+
+   CD Arenteiro - CD Lugo
+   Bilbao Athletic - Cultural Leonesa
+   Real Sociedad B - Unionistas CF
+   Gimnàstic de Tarragona - Real Unión Club
+   Sestao River - Ourense CF
+   Zamora CF - RC Celta Fortuna
+   SD Tarazona - SD Ponferradina
+   Gimnástica Segoviana CF - Barakaldo CF
+   FC Barcelona Atlètic - SD Amorebieta
+   CA Osasuna Promesas - FC Andorra
+
+
+  Jornada 35 (04/05/2025)
+
+   CD Arenteiro - Zamora CF
+   RC Celta Fortuna - CA Osasuna Promesas
+   Real Unión Club - SD Tarazona
+   FC Andorra - Gimnàstic de Tarragona
+   Unionistas CF - Sestao River
+   Ourense CF - Cultural Leonesa
+   SD Ponferradina - Bilbao Athletic
+   Barakaldo CF - SD Amorebieta
+   Gimnástica Segoviana CF - Real Sociedad B
+   CD Lugo - FC Barcelona Atlètic
+
+
+  Jornada 36 (11/05/2025)
+
+   Bilbao Athletic - Unionistas CF
+   SD Amorebieta - RC Celta Fortuna
+   SD Tarazona - Ourense CF
+   CA Osasuna Promesas - CD Arenteiro
+   Gimnàstic de Tarragona - CD Lugo
+   Real Sociedad B - SD Ponferradina
+   Cultural Leonesa - Barakaldo CF
+   Zamora CF - Real Unión Club
+   FC Barcelona Atlètic - FC Andorra
+   Sestao River - Gimnástica Segoviana CF
+
+
+  Jornada 37 (18/05/2025)
+
+   CD Arenteiro - Real Sociedad B
+   CD Lugo - Zamora CF
+   Barakaldo CF - FC Barcelona Atlètic
+   FC Andorra - Sestao River
+   Unionistas CF - SD Tarazona
+   SD Ponferradina - Cultural Leonesa
+   RC Celta Fortuna - Bilbao Athletic
+   Ourense CF - SD Amorebieta
+   Real Unión Club - CA Osasuna Promesas
+   Gimnástica Segoviana CF - Gimnàstic de Tarragona
+
+
+  Jornada 38 (25/05/2025)
+
+   Bilbao Athletic - Real Unión Club
+   SD Amorebieta - CD Lugo
+   CA Osasuna Promesas - Ourense CF
+   FC Barcelona Atlètic - Unionistas CF
+   Gimnàstic de Tarragona - CD Arenteiro
+   Real Sociedad B - RC Celta Fortuna
+   Sestao River - SD Ponferradina
+   SD Tarazona - Barakaldo CF
+   Cultural Leonesa - FC Andorra
+   Zamora CF - Gimnástica Segoviana CF
+
+
+
+
+   Real Federación Española de Fútbol - 13/13
+

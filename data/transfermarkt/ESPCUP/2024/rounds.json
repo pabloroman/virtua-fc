@@ -1,0 +1,9 @@
+[
+    {"round": 1, "type": "one_legged_knockout"},
+    {"round": 2, "type": "one_legged_knockout"},
+    {"round": 3, "type": "one_legged_knockout"},
+    {"round": 4, "type": "one_legged_knockout"},
+    {"round": 5, "type": "one_legged_knockout"},
+    {"round": 6, "type": "two_legged_knockout"},
+    {"round": 7, "type": "one_legged_knockout"}
+]

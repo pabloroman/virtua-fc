@@ -4,6 +4,7 @@ use App\Http\Actions\InitGame;
 use App\Http\Controllers\ProfileController;
 use App\Http\Views\Dashboard;
 use App\Http\Views\SelectTeam;
+use App\Http\Views\ShowGame;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -15,6 +16,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
     Route::get('/select-team', SelectTeam::class)->name('select-team');
     Route::post('/init-game', InitGame::class)->name('init-game');
+    Route::get('/game/{id}', ShowGame::class)->name('show-game');
 });
 
 Route::middleware('auth')->group(function () {

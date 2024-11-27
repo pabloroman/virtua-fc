@@ -1,0 +1,232 @@
+[
+    {
+        "matchday": 1,
+        "date": "2024-08-18",
+        "round": 1
+    },
+    {
+        "matchday": 2,
+        "date": "2024-08-25",
+        "round": 1
+    },
+    {
+        "matchday": 3,
+        "date": "2024-09-01",
+        "round": 1
+    },
+    {
+        "matchday": 4,
+        "date": "2024-09-08",
+        "round": 1
+    },
+    {
+        "matchday": 5,
+        "date": "2024-09-15",
+        "round": 1
+    },
+    {
+        "matchday": 6,
+        "date": "2024-09-22",
+        "round": 1
+    },
+    {
+        "matchday": 7,
+        "date": "2024-09-29",
+        "round": 1
+    },
+    {
+        "matchday": 8,
+        "date": "2024-10-06",
+        "round": 1
+    },
+    {
+        "matchday": 9,
+        "date": "2024-10-13",
+        "round": 1
+    },
+    {
+        "matchday": 10,
+        "date": "2024-10-20",
+        "round": 1
+    },
+    {
+        "matchday": 11,
+        "date": "2024-10-27",
+        "round": 1
+    },
+    {
+        "matchday": 12,
+        "date": "2024-11-03",
+        "round": 1
+    },
+    {
+        "matchday": 13,
+        "date": "2024-11-10",
+        "round": 1
+    },
+    {
+        "matchday": 14,
+        "date": "2024-11-17",
+        "round": 1
+    },
+    {
+        "matchday": 15,
+        "date": "2024-11-24",
+        "round": 1
+    },
+    {
+        "matchday": 16,
+        "date": "2024-12-01",
+        "round": 1
+    },
+    {
+        "matchday": 17,
+        "date": "2024-12-08",
+        "round": 1
+    },
+    {
+        "matchday": 18,
+        "date": "2024-12-15",
+        "round": 1
+    },
+    {
+        "matchday": 19,
+        "date": "2024-12-22",
+        "round": 1
+    },
+    {
+        "matchday": 20,
+        "date": "2024-12-29",
+        "round": 1
+    },
+    {
+        "matchday": 21,
+        "date": "2025-01-05",
+        "round": 1
+    },
+    {
+        "matchday": 22,
+        "date": "2025-01-12",
+        "round": 1
+    },
+    {
+        "matchday": 23,
+        "date": "2025-01-19",
+        "round": 1
+    },
+    {
+        "matchday": 24,
+        "date": "2025-01-26",
+        "round": 1
+    },
+    {
+        "matchday": 25,
+        "date": "2025-02-02",
+        "round": 1
+    },
+    {
+        "matchday": 26,
+        "date": "2025-02-09",
+        "round": 1
+    },
+    {
+        "matchday": 27,
+        "date": "2025-02-16",
+        "round": 1
+    },
+    {
+        "matchday": 28,
+        "date": "2025-02-23",
+        "round": 1
+    },
+    {
+        "matchday": 29,
+        "date": "2025-03-02",
+        "round": 1
+    },
+    {
+        "matchday": 30,
+        "date": "2025-03-09",
+        "round": 1
+    },
+    {
+        "matchday": 31,
+        "date": "2025-03-16",
+        "round": 1
+    },
+    {
+        "matchday": 32,
+        "date": "2025-03-23",
+        "round": 1
+    },
+    {
+        "matchday": 33,
+        "date": "2025-03-30",
+        "round": 1
+    },
+    {
+        "matchday": 34,
+        "date": "2025-04-06",
+        "round": 1
+    },
+    {
+        "matchday": 35,
+        "date": "2025-04-13",
+        "round": 1
+    },
+    {
+        "matchday": 36,
+        "date": "2025-04-20",
+        "round": 1
+    },
+    {
+        "matchday": 37,
+        "date": "2025-04-27",
+        "round": 1
+    },
+    {
+        "matchday": 38,
+        "date": "2025-05-04",
+        "round": 1
+    },
+    {
+        "matchday": 39,
+        "date": "2025-05-11",
+        "round": 1
+    },
+    {
+        "matchday": 40,
+        "date": "2025-05-18",
+        "round": 1
+    },
+    {
+        "matchday": 41,
+        "date": "2025-05-25",
+        "round": 1
+    },
+    {
+        "matchday": 42,
+        "date": "2025-06-01",
+        "round": 1
+    },
+    {
+        "matchday": "Playoff 1 - Ida",
+        "date": "2025-06-08",
+        "round": 2
+    },
+    {
+        "matchday": "Playoff 1 - Vuelta",
+        "date": "2025-06-11",
+        "round": 2
+    },
+    {
+        "matchday": "Playoff 2 - Ida",
+        "date": "2025-06-15",
+        "round": 3
+    },
+    {
+        "matchday": "Playoff 2 - Vuelta",
+        "date": "2025-06-22",
+        "round": 3
+    }
+]

@@ -1,0 +1,1752 @@
+{
+    "matchdays": [
+        {
+            "matchday": 1,
+            "date": "25/08/2024",
+            "fixtures": [
+                {
+                    "HomeTeam": "Cultural Leonesa",
+                    "AwayTeam": "CD Lugo"
+                },
+                {
+                    "HomeTeam": "SD Ponferradina",
+                    "AwayTeam": "Real Sociedad B"
+                },
+                {
+                    "HomeTeam": "SD Amorebieta",
+                    "AwayTeam": "Gimn\u00e1stica Segoviana CF"
+                },
+                {
+                    "HomeTeam": "CA Osasuna Promesas",
+                    "AwayTeam": "Zamora CF"
+                },
+                {
+                    "HomeTeam": "FC Barcelona Atl\u00e8tic",
+                    "AwayTeam": "Real Uni\u00f3n Club"
+                },
+                {
+                    "HomeTeam": "Gimn\u00e0stic de Tarragona",
+                    "AwayTeam": "Ourense CF"
+                },
+                {
+                    "HomeTeam": "SD Tarazona",
+                    "AwayTeam": "CD Arenteiro"
+                },
+                {
+                    "HomeTeam": "RC Celta Fortuna",
+                    "AwayTeam": "Barakaldo CF"
+                },
+                {
+                    "HomeTeam": "Bilbao Athletic",
+                    "AwayTeam": "FC Andorra"
+                },
+                {
+                    "HomeTeam": "Sestao River",
+                    "AwayTeam": "Unionistas CF"
+                }
+            ]
+        },
+        {
+            "matchday": 2,
+            "date": "01/09/2024",
+            "fixtures": [
+                {
+                    "HomeTeam": "CD Arenteiro",
+                    "AwayTeam": "Cultural Leonesa"
+                },
+                {
+                    "HomeTeam": "Barakaldo CF",
+                    "AwayTeam": "Real Sociedad B"
+                },
+                {
+                    "HomeTeam": "FC Andorra",
+                    "AwayTeam": "FC Barcelona Atl\u00e8tic"
+                },
+                {
+                    "HomeTeam": "Gimn\u00e0stic de Tarragona",
+                    "AwayTeam": "Sestao River"
+                },
+                {
+                    "HomeTeam": "Real Uni\u00f3n Club",
+                    "AwayTeam": "RC Celta Fortuna"
+                },
+                {
+                    "HomeTeam": "Gimn\u00e1stica Segoviana CF",
+                    "AwayTeam": "SD Ponferradina"
+                },
+                {
+                    "HomeTeam": "Unionistas CF",
+                    "AwayTeam": "Bilbao Athletic"
+                },
+                {
+                    "HomeTeam": "CD Lugo",
+                    "AwayTeam": "SD Amorebieta"
+                },
+                {
+                    "HomeTeam": "Ourense CF",
+                    "AwayTeam": "CA Osasuna Promesas"
+                },
+                {
+                    "HomeTeam": "Zamora CF",
+                    "AwayTeam": "SD Tarazona"
+                }
+            ]
+        },
+        {
+            "matchday": 3,
+            "date": "08/09/2024",
+            "fixtures": [
+                {
+                    "HomeTeam": "Cultural Leonesa",
+                    "AwayTeam": "Real Sociedad B"
+                },
+                {
+                    "HomeTeam": "SD Ponferradina",
+                    "AwayTeam": "Unionistas CF"
+                },
+                {
+                    "HomeTeam": "Bilbao Athletic",
+                    "AwayTeam": "Zamora CF"
+                },
+                {
+                    "HomeTeam": "Barakaldo CF",
+                    "AwayTeam": "Gimn\u00e1stica Segoviana CF"
+                },
+                {
+                    "HomeTeam": "SD Amorebieta",
+                    "AwayTeam": "Gimn\u00e0stic de Tarragona"
+                },
+                {
+                    "HomeTeam": "CA Osasuna Promesas",
+                    "AwayTeam": "Real Uni\u00f3n Club"
+                },
+                {
+                    "HomeTeam": "FC Barcelona Atl\u00e8tic",
+                    "AwayTeam": "Ourense CF"
+                },
+                {
+                    "HomeTeam": "RC Celta Fortuna",
+                    "AwayTeam": "CD Arenteiro"
+                },
+                {
+                    "HomeTeam": "Sestao River",
+                    "AwayTeam": "CD Lugo"
+                },
+                {
+                    "HomeTeam": "SD Tarazona",
+                    "AwayTeam": "FC Andorra"
+                }
+            ]
+        },
+        {
+            "matchday": 4,
+            "date": "15/09/2024",
+            "fixtures": [
+                {
+                    "HomeTeam": "Ourense CF",
+                    "AwayTeam": "Gimn\u00e1stica Segoviana CF"
+                },
+                {
+                    "HomeTeam": "CD Arenteiro",
+                    "AwayTeam": "Bilbao Athletic"
+                },
+                {
+                    "HomeTeam": "Real Sociedad B",
+                    "AwayTeam": "Sestao River"
+                },
+                {
+                    "HomeTeam": "FC Andorra",
+                    "AwayTeam": "SD Ponferradina"
+                },
+                {
+                    "HomeTeam": "Gimn\u00e0stic de Tarragona",
+                    "AwayTeam": "SD Tarazona"
+                },
+                {
+                    "HomeTeam": "CA Osasuna Promesas",
+                    "AwayTeam": "RC Celta Fortuna"
+                },
+                {
+                    "HomeTeam": "Zamora CF",
+                    "AwayTeam": "Cultural Leonesa"
+                },
+                {
+                    "HomeTeam": "CD Lugo",
+                    "AwayTeam": "Barakaldo CF"
+                },
+                {
+                    "HomeTeam": "Real Uni\u00f3n Club",
+                    "AwayTeam": "SD Amorebieta"
+                },
+                {
+                    "HomeTeam": "Unionistas CF",
+                    "AwayTeam": "FC Barcelona Atl\u00e8tic"
+                }
+            ]
+        },
+        {
+            "matchday": 5,
+            "date": "22/09/2024",
+            "fixtures": [
+                {
+                    "HomeTeam": "RC Celta Fortuna",
+                    "AwayTeam": "Unionistas CF"
+                },
+                {
+                    "HomeTeam": "Cultural Leonesa",
+                    "AwayTeam": "CA Osasuna Promesas"
+                },
+                {
+                    "HomeTeam": "Barakaldo CF",
+                    "AwayTeam": "Gimn\u00e0stic de Tarragona"
+                },
+                {
+                    "HomeTeam": "SD Amorebieta",
+                    "AwayTeam": "Ourense CF"
+                },
+                {
+                    "HomeTeam": "FC Barcelona Atl\u00e8tic",
+                    "AwayTeam": "Zamora CF"
+                },
+                {
+                    "HomeTeam": "SD Ponferradina",
+                    "AwayTeam": "CD Arenteiro"
+                },
+                {
+                    "HomeTeam": "Real Sociedad B",
+                    "AwayTeam": "CD Lugo"
+                },
+                {
+                    "HomeTeam": "Gimn\u00e1stica Segoviana CF",
+                    "AwayTeam": "Bilbao Athletic"
+                },
+                {
+                    "HomeTeam": "SD Tarazona",
+                    "AwayTeam": "Real Uni\u00f3n Club"
+                },
+                {
+                    "HomeTeam": "Sestao River",
+                    "AwayTeam": "FC Andorra"
+                }
+            ]
+        },
+        {
+            "matchday": 6,
+            "date": "29/09/2024",
+            "fixtures": [
+                {
+                    "HomeTeam": "CD Arenteiro",
+                    "AwayTeam": "Gimn\u00e1stica Segoviana CF"
+                },
+                {
+                    "HomeTeam": "Bilbao Athletic",
+                    "AwayTeam": "RC Celta Fortuna"
+                },
+                {
+                    "HomeTeam": "Real Uni\u00f3n Club",
+                    "AwayTeam": "Sestao River"
+                },
+                {
+                    "HomeTeam": "CA Osasuna Promesas",
+                    "AwayTeam": "SD Ponferradina"
+                },
+                {
+                    "HomeTeam": "Gimn\u00e0stic de Tarragona",
+                    "AwayTeam": "Real Sociedad B"
+                },
+                {
+                    "HomeTeam": "Unionistas CF",
+                    "AwayTeam": "Cultural Leonesa"
+                },
+                {
+                    "HomeTeam": "Ourense CF",
+                    "AwayTeam": "Barakaldo CF"
+                },
+                {
+                    "HomeTeam": "Zamora CF",
+                    "AwayTeam": "SD Amorebieta"
+                },
+                {
+                    "HomeTeam": "CD Lugo",
+                    "AwayTeam": "FC Andorra"
+                },
+                {
+                    "HomeTeam": "SD Tarazona",
+                    "AwayTeam": "FC Barcelona Atl\u00e8tic"
+                }
+            ]
+        },
+        {
+            "matchday": 7,
+            "date": "06/10/2024",
+            "fixtures": [
+                {
+                    "HomeTeam": "Ourense CF",
+                    "AwayTeam": "Unionistas CF"
+                },
+                {
+                    "HomeTeam": "CD Lugo",
+                    "AwayTeam": "Gimn\u00e0stic de Tarragona"
+                },
+                {
+                    "HomeTeam": "Cultural Leonesa",
+                    "AwayTeam": "SD Tarazona"
+                },
+                {
+                    "HomeTeam": "SD Amorebieta",
+                    "AwayTeam": "Bilbao Athletic"
+                },
+                {
+                    "HomeTeam": "FC Andorra",
+                    "AwayTeam": "Real Uni\u00f3n Club"
+                },
+                {
+                    "HomeTeam": "Gimn\u00e1stica Segoviana CF",
+                    "AwayTeam": "Zamora CF"
+                },
+                {
+                    "HomeTeam": "Barakaldo CF",
+                    "AwayTeam": "CD Arenteiro"
+                },
+                {
+                    "HomeTeam": "SD Ponferradina",
+                    "AwayTeam": "RC Celta Fortuna"
+                },
+                {
+                    "HomeTeam": "Real Sociedad B",
+                    "AwayTeam": "CA Osasuna Promesas"
+                },
+                {
+                    "HomeTeam": "Sestao River",
+                    "AwayTeam": "FC Barcelona Atl\u00e8tic"
+                }
+            ]
+        },
+        {
+            "matchday": 8,
+            "date": "13/10/2024",
+            "fixtures": [
+                {
+                    "HomeTeam": "CD Arenteiro",
+                    "AwayTeam": "Gimn\u00e0stic de Tarragona"
+                },
+                {
+                    "HomeTeam": "Cultural Leonesa",
+                    "AwayTeam": "Ourense CF"
+                },
+                {
+                    "HomeTeam": "Bilbao Athletic",
+                    "AwayTeam": "SD Ponferradina"
+                },
+                {
+                    "HomeTeam": "CA Osasuna Promesas",
+                    "AwayTeam": "Gimn\u00e1stica Segoviana CF"
+                },
+                {
+                    "HomeTeam": "FC Barcelona Atl\u00e8tic",
+                    "AwayTeam": "Real Sociedad B"
+                },
+                {
+                    "HomeTeam": "Unionistas CF",
+                    "AwayTeam": "CD Lugo"
+                },
+                {
+                    "HomeTeam": "Real Uni\u00f3n Club",
+                    "AwayTeam": "Barakaldo CF"
+                },
+                {
+                    "HomeTeam": "RC Celta Fortuna",
+                    "AwayTeam": "SD Amorebieta"
+                },
+                {
+                    "HomeTeam": "SD Tarazona",
+                    "AwayTeam": "Sestao River"
+                },
+                {
+                    "HomeTeam": "Zamora CF",
+                    "AwayTeam": "FC Andorra"
+                }
+            ]
+        },
+        {
+            "matchday": 9,
+            "date": "20/10/2024",
+            "fixtures": [
+                {
+                    "HomeTeam": "Barakaldo CF",
+                    "AwayTeam": "Zamora CF"
+                },
+                {
+                    "HomeTeam": "SD Amorebieta",
+                    "AwayTeam": "Unionistas CF"
+                },
+                {
+                    "HomeTeam": "Real Sociedad B",
+                    "AwayTeam": "SD Tarazona"
+                },
+                {
+                    "HomeTeam": "FC Andorra",
+                    "AwayTeam": "Cultural Leonesa"
+                },
+                {
+                    "HomeTeam": "Gimn\u00e0stic de Tarragona",
+                    "AwayTeam": "CA Osasuna Promesas"
+                },
+                {
+                    "HomeTeam": "Ourense CF",
+                    "AwayTeam": "CD Arenteiro"
+                },
+                {
+                    "HomeTeam": "CD Lugo",
+                    "AwayTeam": "RC Celta Fortuna"
+                },
+                {
+                    "HomeTeam": "Sestao River",
+                    "AwayTeam": "Bilbao Athletic"
+                },
+                {
+                    "HomeTeam": "Gimn\u00e1stica Segoviana CF",
+                    "AwayTeam": "Real Uni\u00f3n Club"
+                },
+                {
+                    "HomeTeam": "SD Ponferradina",
+                    "AwayTeam": "FC Barcelona Atl\u00e8tic"
+                }
+            ]
+        },
+        {
+            "matchday": 10,
+            "date": "27/10/2024",
+            "fixtures": [
+                {
+                    "HomeTeam": "CD Arenteiro",
+                    "AwayTeam": "Unionistas CF"
+                },
+                {
+                    "HomeTeam": "RC Celta Fortuna",
+                    "AwayTeam": "Gimn\u00e1stica Segoviana CF"
+                },
+                {
+                    "HomeTeam": "Cultural Leonesa",
+                    "AwayTeam": "SD Ponferradina"
+                },
+                {
+                    "HomeTeam": "Bilbao Athletic",
+                    "AwayTeam": "Ourense CF"
+                },
+                {
+                    "HomeTeam": "FC Andorra",
+                    "AwayTeam": "Real Sociedad B"
+                },
+                {
+                    "HomeTeam": "CA Osasuna Promesas",
+                    "AwayTeam": "CD Lugo"
+                },
+                {
+                    "HomeTeam": "FC Barcelona Atl\u00e8tic",
+                    "AwayTeam": "Barakaldo CF"
+                },
+                {
+                    "HomeTeam": "SD Tarazona",
+                    "AwayTeam": "SD Amorebieta"
+                },
+                {
+                    "HomeTeam": "Zamora CF",
+                    "AwayTeam": "Sestao River"
+                },
+                {
+                    "HomeTeam": "Real Uni\u00f3n Club",
+                    "AwayTeam": "Gimn\u00e0stic de Tarragona"
+                }
+            ]
+        },
+        {
+            "matchday": 11,
+            "date": "03/11/2024",
+            "fixtures": [
+                {
+                    "HomeTeam": "SD Ponferradina",
+                    "AwayTeam": "Zamora CF"
+                },
+                {
+                    "HomeTeam": "Barakaldo CF",
+                    "AwayTeam": "SD Tarazona"
+                },
+                {
+                    "HomeTeam": "SD Amorebieta",
+                    "AwayTeam": "Cultural Leonesa"
+                },
+                {
+                    "HomeTeam": "Real Sociedad B",
+                    "AwayTeam": "CD Arenteiro"
+                },
+                {
+                    "HomeTeam": "Gimn\u00e0stic de Tarragona",
+                    "AwayTeam": "RC Celta Fortuna"
+                },
+                {
+                    "HomeTeam": "CD Lugo",
+                    "AwayTeam": "Bilbao Athletic"
+                },
+                {
+                    "HomeTeam": "Unionistas CF",
+                    "AwayTeam": "Real Uni\u00f3n Club"
+                },
+                {
+                    "HomeTeam": "Sestao River",
+                    "AwayTeam": "CA Osasuna Promesas"
+                },
+                {
+                    "HomeTeam": "Ourense CF",
+                    "AwayTeam": "FC Andorra"
+                },
+                {
+                    "HomeTeam": "Gimn\u00e1stica Segoviana CF",
+                    "AwayTeam": "FC Barcelona Atl\u00e8tic"
+                }
+            ]
+        },
+        {
+            "matchday": 12,
+            "date": "10/11/2024",
+            "fixtures": [
+                {
+                    "HomeTeam": "RC Celta Fortuna",
+                    "AwayTeam": "Ourense CF"
+                },
+                {
+                    "HomeTeam": "Cultural Leonesa",
+                    "AwayTeam": "Sestao River"
+                },
+                {
+                    "HomeTeam": "Bilbao Athletic",
+                    "AwayTeam": "Gimn\u00e0stic de Tarragona"
+                },
+                {
+                    "HomeTeam": "CA Osasuna Promesas",
+                    "AwayTeam": "Unionistas CF"
+                },
+                {
+                    "HomeTeam": "FC Andorra",
+                    "AwayTeam": "Barakaldo CF"
+                },
+                {
+                    "HomeTeam": "FC Barcelona Atl\u00e8tic",
+                    "AwayTeam": "CD Lugo"
+                },
+                {
+                    "HomeTeam": "Real Uni\u00f3n Club",
+                    "AwayTeam": "SD Ponferradina"
+                },
+                {
+                    "HomeTeam": "CD Arenteiro",
+                    "AwayTeam": "SD Amorebieta"
+                },
+                {
+                    "HomeTeam": "Zamora CF",
+                    "AwayTeam": "Real Sociedad B"
+                },
+                {
+                    "HomeTeam": "SD Tarazona",
+                    "AwayTeam": "Gimn\u00e1stica Segoviana CF"
+                }
+            ]
+        },
+        {
+            "matchday": 13,
+            "date": "17/11/2024",
+            "fixtures": [
+                {
+                    "HomeTeam": "Ourense CF",
+                    "AwayTeam": "SD Tarazona"
+                },
+                {
+                    "HomeTeam": "RC Celta Fortuna",
+                    "AwayTeam": "Cultural Leonesa"
+                },
+                {
+                    "HomeTeam": "Bilbao Athletic",
+                    "AwayTeam": "CA Osasuna Promesas"
+                },
+                {
+                    "HomeTeam": "Barakaldo CF",
+                    "AwayTeam": "SD Ponferradina"
+                },
+                {
+                    "HomeTeam": "SD Amorebieta",
+                    "AwayTeam": "FC Barcelona Atl\u00e8tic"
+                },
+                {
+                    "HomeTeam": "Real Sociedad B",
+                    "AwayTeam": "Real Uni\u00f3n Club"
+                },
+                {
+                    "HomeTeam": "Gimn\u00e1stica Segoviana CF",
+                    "AwayTeam": "Sestao River"
+                },
+                {
+                    "HomeTeam": "Unionistas CF",
+                    "AwayTeam": "Zamora CF"
+                },
+                {
+                    "HomeTeam": "CD Lugo",
+                    "AwayTeam": "CD Arenteiro"
+                },
+                {
+                    "HomeTeam": "Gimn\u00e0stic de Tarragona",
+                    "AwayTeam": "FC Andorra"
+                }
+            ]
+        },
+        {
+            "matchday": 14,
+            "date": "24/11/2024",
+            "fixtures": [
+                {
+                    "HomeTeam": "CD Arenteiro",
+                    "AwayTeam": "CA Osasuna Promesas"
+                },
+                {
+                    "HomeTeam": "Real Sociedad B",
+                    "AwayTeam": "Gimn\u00e1stica Segoviana CF"
+                },
+                {
+                    "HomeTeam": "FC Andorra",
+                    "AwayTeam": "Unionistas CF"
+                },
+                {
+                    "HomeTeam": "FC Barcelona Atl\u00e8tic",
+                    "AwayTeam": "Gimn\u00e0stic de Tarragona"
+                },
+                {
+                    "HomeTeam": "Real Uni\u00f3n Club",
+                    "AwayTeam": "Ourense CF"
+                },
+                {
+                    "HomeTeam": "SD Tarazona",
+                    "AwayTeam": "RC Celta Fortuna"
+                },
+                {
+                    "HomeTeam": "Zamora CF",
+                    "AwayTeam": "CD Lugo"
+                },
+                {
+                    "HomeTeam": "Cultural Leonesa",
+                    "AwayTeam": "Bilbao Athletic"
+                },
+                {
+                    "HomeTeam": "Sestao River",
+                    "AwayTeam": "Barakaldo CF"
+                },
+                {
+                    "HomeTeam": "SD Ponferradina",
+                    "AwayTeam": "SD Amorebieta"
+                }
+            ]
+        },
+        {
+            "matchday": 15,
+            "date": "01/12/2024",
+            "fixtures": [
+                {
+                    "HomeTeam": "Ourense CF",
+                    "AwayTeam": "SD Ponferradina"
+                },
+                {
+                    "HomeTeam": "CD Arenteiro",
+                    "AwayTeam": "FC Barcelona Atl\u00e8tic"
+                },
+                {
+                    "HomeTeam": "RC Celta Fortuna",
+                    "AwayTeam": "Zamora CF"
+                },
+                {
+                    "HomeTeam": "CD Lugo",
+                    "AwayTeam": "Real Uni\u00f3n Club"
+                },
+                {
+                    "HomeTeam": "Bilbao Athletic",
+                    "AwayTeam": "Real Sociedad B"
+                },
+                {
+                    "HomeTeam": "SD Amorebieta",
+                    "AwayTeam": "Sestao River"
+                },
+                {
+                    "HomeTeam": "CA Osasuna Promesas",
+                    "AwayTeam": "SD Tarazona"
+                },
+                {
+                    "HomeTeam": "Gimn\u00e0stic de Tarragona",
+                    "AwayTeam": "Cultural Leonesa"
+                },
+                {
+                    "HomeTeam": "Unionistas CF",
+                    "AwayTeam": "Barakaldo CF"
+                },
+                {
+                    "HomeTeam": "Gimn\u00e1stica Segoviana CF",
+                    "AwayTeam": "FC Andorra"
+                }
+            ]
+        },
+        {
+            "matchday": 16,
+            "date": "08/12/2024",
+            "fixtures": [
+                {
+                    "HomeTeam": "Barakaldo CF",
+                    "AwayTeam": "Cultural Leonesa"
+                },
+                {
+                    "HomeTeam": "FC Andorra",
+                    "AwayTeam": "CA Osasuna Promesas"
+                },
+                {
+                    "HomeTeam": "FC Barcelona Atl\u00e8tic",
+                    "AwayTeam": "RC Celta Fortuna"
+                },
+                {
+                    "HomeTeam": "Zamora CF",
+                    "AwayTeam": "Ourense CF"
+                },
+                {
+                    "HomeTeam": "Sestao River",
+                    "AwayTeam": "CD Arenteiro"
+                },
+                {
+                    "HomeTeam": "SD Tarazona",
+                    "AwayTeam": "CD Lugo"
+                },
+                {
+                    "HomeTeam": "Real Uni\u00f3n Club",
+                    "AwayTeam": "Bilbao Athletic"
+                },
+                {
+                    "HomeTeam": "Real Sociedad B",
+                    "AwayTeam": "SD Amorebieta"
+                },
+                {
+                    "HomeTeam": "SD Ponferradina",
+                    "AwayTeam": "Gimn\u00e0stic de Tarragona"
+                },
+                {
+                    "HomeTeam": "Gimn\u00e1stica Segoviana CF",
+                    "AwayTeam": "Unionistas CF"
+                }
+            ]
+        },
+        {
+            "matchday": 17,
+            "date": "15/12/2024",
+            "fixtures": [
+                {
+                    "HomeTeam": "Ourense CF",
+                    "AwayTeam": "Sestao River"
+                },
+                {
+                    "HomeTeam": "CD Arenteiro",
+                    "AwayTeam": "Real Uni\u00f3n Club"
+                },
+                {
+                    "HomeTeam": "CD Lugo",
+                    "AwayTeam": "SD Ponferradina"
+                },
+                {
+                    "HomeTeam": "Cultural Leonesa",
+                    "AwayTeam": "Gimn\u00e1stica Segoviana CF"
+                },
+                {
+                    "HomeTeam": "Bilbao Athletic",
+                    "AwayTeam": "SD Tarazona"
+                },
+                {
+                    "HomeTeam": "SD Amorebieta",
+                    "AwayTeam": "Barakaldo CF"
+                },
+                {
+                    "HomeTeam": "Gimn\u00e0stic de Tarragona",
+                    "AwayTeam": "Zamora CF"
+                },
+                {
+                    "HomeTeam": "Unionistas CF",
+                    "AwayTeam": "Real Sociedad B"
+                },
+                {
+                    "HomeTeam": "RC Celta Fortuna",
+                    "AwayTeam": "FC Andorra"
+                },
+                {
+                    "HomeTeam": "CA Osasuna Promesas",
+                    "AwayTeam": "FC Barcelona Atl\u00e8tic"
+                }
+            ]
+        },
+        {
+            "matchday": 18,
+            "date": "22/12/2024",
+            "fixtures": [
+                {
+                    "HomeTeam": "SD Ponferradina",
+                    "AwayTeam": "SD Tarazona"
+                },
+                {
+                    "HomeTeam": "Barakaldo CF",
+                    "AwayTeam": "CA Osasuna Promesas"
+                },
+                {
+                    "HomeTeam": "Real Sociedad B",
+                    "AwayTeam": "Ourense CF"
+                },
+                {
+                    "HomeTeam": "Zamora CF",
+                    "AwayTeam": "CD Arenteiro"
+                },
+                {
+                    "HomeTeam": "Sestao River",
+                    "AwayTeam": "RC Celta Fortuna"
+                },
+                {
+                    "HomeTeam": "Gimn\u00e1stica Segoviana CF",
+                    "AwayTeam": "CD Lugo"
+                },
+                {
+                    "HomeTeam": "Real Uni\u00f3n Club",
+                    "AwayTeam": "Cultural Leonesa"
+                },
+                {
+                    "HomeTeam": "FC Barcelona Atl\u00e8tic",
+                    "AwayTeam": "Bilbao Athletic"
+                },
+                {
+                    "HomeTeam": "FC Andorra",
+                    "AwayTeam": "SD Amorebieta"
+                },
+                {
+                    "HomeTeam": "Unionistas CF",
+                    "AwayTeam": "Gimn\u00e0stic de Tarragona"
+                }
+            ]
+        },
+        {
+            "matchday": 19,
+            "date": "11/01/2025",
+            "fixtures": [
+                {
+                    "HomeTeam": "RC Celta Fortuna",
+                    "AwayTeam": "Real Sociedad B"
+                },
+                {
+                    "HomeTeam": "SD Ponferradina",
+                    "AwayTeam": "Sestao River"
+                },
+                {
+                    "HomeTeam": "Bilbao Athletic",
+                    "AwayTeam": "Barakaldo CF"
+                },
+                {
+                    "HomeTeam": "Real Uni\u00f3n Club",
+                    "AwayTeam": "Zamora CF"
+                },
+                {
+                    "HomeTeam": "Gimn\u00e0stic de Tarragona",
+                    "AwayTeam": "Gimn\u00e1stica Segoviana CF"
+                },
+                {
+                    "HomeTeam": "Ourense CF",
+                    "AwayTeam": "CD Lugo"
+                },
+                {
+                    "HomeTeam": "CA Osasuna Promesas",
+                    "AwayTeam": "SD Amorebieta"
+                },
+                {
+                    "HomeTeam": "CD Arenteiro",
+                    "AwayTeam": "FC Andorra"
+                },
+                {
+                    "HomeTeam": "Cultural Leonesa",
+                    "AwayTeam": "FC Barcelona Atl\u00e8tic"
+                },
+                {
+                    "HomeTeam": "SD Tarazona",
+                    "AwayTeam": "Unionistas CF"
+                }
+            ]
+        },
+        {
+            "matchday": 20,
+            "date": "19/01/2025",
+            "fixtures": [
+                {
+                    "HomeTeam": "Barakaldo CF",
+                    "AwayTeam": "Ourense CF"
+                },
+                {
+                    "HomeTeam": "SD Amorebieta",
+                    "AwayTeam": "SD Tarazona"
+                },
+                {
+                    "HomeTeam": "FC Andorra",
+                    "AwayTeam": "Bilbao Athletic"
+                },
+                {
+                    "HomeTeam": "FC Barcelona Atl\u00e8tic",
+                    "AwayTeam": "SD Ponferradina"
+                },
+                {
+                    "HomeTeam": "Gimn\u00e1stica Segoviana CF",
+                    "AwayTeam": "CD Arenteiro"
+                },
+                {
+                    "HomeTeam": "Unionistas CF",
+                    "AwayTeam": "RC Celta Fortuna"
+                },
+                {
+                    "HomeTeam": "CD Lugo",
+                    "AwayTeam": "Cultural Leonesa"
+                },
+                {
+                    "HomeTeam": "Sestao River",
+                    "AwayTeam": "Real Uni\u00f3n Club"
+                },
+                {
+                    "HomeTeam": "Zamora CF",
+                    "AwayTeam": "CA Osasuna Promesas"
+                },
+                {
+                    "HomeTeam": "Real Sociedad B",
+                    "AwayTeam": "Gimn\u00e0stic de Tarragona"
+                }
+            ]
+        },
+        {
+            "matchday": 21,
+            "date": "26/01/2025",
+            "fixtures": [
+                {
+                    "HomeTeam": "CD Arenteiro",
+                    "AwayTeam": "Barakaldo CF"
+                },
+                {
+                    "HomeTeam": "RC Celta Fortuna",
+                    "AwayTeam": "CD Lugo"
+                },
+                {
+                    "HomeTeam": "Cultural Leonesa",
+                    "AwayTeam": "Unionistas CF"
+                },
+                {
+                    "HomeTeam": "Bilbao Athletic",
+                    "AwayTeam": "Sestao River"
+                },
+                {
+                    "HomeTeam": "Real Uni\u00f3n Club",
+                    "AwayTeam": "Gimn\u00e1stica Segoviana CF"
+                },
+                {
+                    "HomeTeam": "CA Osasuna Promesas",
+                    "AwayTeam": "Real Sociedad B"
+                },
+                {
+                    "HomeTeam": "SD Tarazona",
+                    "AwayTeam": "Zamora CF"
+                },
+                {
+                    "HomeTeam": "Gimn\u00e0stic de Tarragona",
+                    "AwayTeam": "SD Amorebieta"
+                },
+                {
+                    "HomeTeam": "SD Ponferradina",
+                    "AwayTeam": "FC Andorra"
+                },
+                {
+                    "HomeTeam": "Ourense CF",
+                    "AwayTeam": "FC Barcelona Atl\u00e8tic"
+                }
+            ]
+        },
+        {
+            "matchday": 22,
+            "date": "02/02/2025",
+            "fixtures": [
+                {
+                    "HomeTeam": "RC Celta Fortuna",
+                    "AwayTeam": "Gimn\u00e0stic de Tarragona"
+                },
+                {
+                    "HomeTeam": "CD Lugo",
+                    "AwayTeam": "CA Osasuna Promesas"
+                },
+                {
+                    "HomeTeam": "Barakaldo CF",
+                    "AwayTeam": "Real Uni\u00f3n Club"
+                },
+                {
+                    "HomeTeam": "SD Amorebieta",
+                    "AwayTeam": "CD Arenteiro"
+                },
+                {
+                    "HomeTeam": "FC Andorra",
+                    "AwayTeam": "Ourense CF"
+                },
+                {
+                    "HomeTeam": "Gimn\u00e1stica Segoviana CF",
+                    "AwayTeam": "SD Tarazona"
+                },
+                {
+                    "HomeTeam": "Sestao River",
+                    "AwayTeam": "Cultural Leonesa"
+                },
+                {
+                    "HomeTeam": "Unionistas CF",
+                    "AwayTeam": "SD Ponferradina"
+                },
+                {
+                    "HomeTeam": "Zamora CF",
+                    "AwayTeam": "Bilbao Athletic"
+                },
+                {
+                    "HomeTeam": "Real Sociedad B",
+                    "AwayTeam": "FC Barcelona Atl\u00e8tic"
+                }
+            ]
+        },
+        {
+            "matchday": 23,
+            "date": "09/02/2025",
+            "fixtures": [
+                {
+                    "HomeTeam": "Sestao River",
+                    "AwayTeam": "Zamora CF"
+                },
+                {
+                    "HomeTeam": "Real Uni\u00f3n Club",
+                    "AwayTeam": "Unionistas CF"
+                },
+                {
+                    "HomeTeam": "FC Andorra",
+                    "AwayTeam": "CD Lugo"
+                },
+                {
+                    "HomeTeam": "FC Barcelona Atl\u00e8tic",
+                    "AwayTeam": "Gimn\u00e1stica Segoviana CF"
+                },
+                {
+                    "HomeTeam": "Bilbao Athletic",
+                    "AwayTeam": "CD Arenteiro"
+                },
+                {
+                    "HomeTeam": "Ourense CF",
+                    "AwayTeam": "RC Celta Fortuna"
+                },
+                {
+                    "HomeTeam": "SD Ponferradina",
+                    "AwayTeam": "Barakaldo CF"
+                },
+                {
+                    "HomeTeam": "Cultural Leonesa",
+                    "AwayTeam": "SD Amorebieta"
+                },
+                {
+                    "HomeTeam": "SD Tarazona",
+                    "AwayTeam": "Real Sociedad B"
+                },
+                {
+                    "HomeTeam": "CA Osasuna Promesas",
+                    "AwayTeam": "Gimn\u00e0stic de Tarragona"
+                }
+            ]
+        },
+        {
+            "matchday": 24,
+            "date": "16/02/2025",
+            "fixtures": [
+                {
+                    "HomeTeam": "CD Arenteiro",
+                    "AwayTeam": "SD Tarazona"
+                },
+                {
+                    "HomeTeam": "RC Celta Fortuna",
+                    "AwayTeam": "Real Uni\u00f3n Club"
+                },
+                {
+                    "HomeTeam": "CD Lugo",
+                    "AwayTeam": "Sestao River"
+                },
+                {
+                    "HomeTeam": "SD Amorebieta",
+                    "AwayTeam": "SD Ponferradina"
+                },
+                {
+                    "HomeTeam": "Unionistas CF",
+                    "AwayTeam": "Ourense CF"
+                },
+                {
+                    "HomeTeam": "Real Sociedad B",
+                    "AwayTeam": "Cultural Leonesa"
+                },
+                {
+                    "HomeTeam": "Gimn\u00e0stic de Tarragona",
+                    "AwayTeam": "Bilbao Athletic"
+                },
+                {
+                    "HomeTeam": "Gimn\u00e1stica Segoviana CF",
+                    "AwayTeam": "CA Osasuna Promesas"
+                },
+                {
+                    "HomeTeam": "Barakaldo CF",
+                    "AwayTeam": "FC Andorra"
+                },
+                {
+                    "HomeTeam": "Zamora CF",
+                    "AwayTeam": "FC Barcelona Atl\u00e8tic"
+                }
+            ]
+        },
+        {
+            "matchday": 25,
+            "date": "23/02/2025",
+            "fixtures": [
+                {
+                    "HomeTeam": "SD Ponferradina",
+                    "AwayTeam": "Gimn\u00e1stica Segoviana CF"
+                },
+                {
+                    "HomeTeam": "Bilbao Athletic",
+                    "AwayTeam": "CD Lugo"
+                },
+                {
+                    "HomeTeam": "Barakaldo CF",
+                    "AwayTeam": "Unionistas CF"
+                },
+                {
+                    "HomeTeam": "FC Andorra",
+                    "AwayTeam": "Zamora CF"
+                },
+                {
+                    "HomeTeam": "FC Barcelona Atl\u00e8tic",
+                    "AwayTeam": "CD Arenteiro"
+                },
+                {
+                    "HomeTeam": "Cultural Leonesa",
+                    "AwayTeam": "RC Celta Fortuna"
+                },
+                {
+                    "HomeTeam": "Sestao River",
+                    "AwayTeam": "SD Amorebieta"
+                },
+                {
+                    "HomeTeam": "Real Uni\u00f3n Club",
+                    "AwayTeam": "Real Sociedad B"
+                },
+                {
+                    "HomeTeam": "SD Tarazona",
+                    "AwayTeam": "CA Osasuna Promesas"
+                },
+                {
+                    "HomeTeam": "Ourense CF",
+                    "AwayTeam": "Gimn\u00e0stic de Tarragona"
+                }
+            ]
+        },
+        {
+            "matchday": 26,
+            "date": "02/03/2025",
+            "fixtures": [
+                {
+                    "HomeTeam": "CD Arenteiro",
+                    "AwayTeam": "Sestao River"
+                },
+                {
+                    "HomeTeam": "RC Celta Fortuna",
+                    "AwayTeam": "SD Ponferradina"
+                },
+                {
+                    "HomeTeam": "CD Lugo",
+                    "AwayTeam": "SD Tarazona"
+                },
+                {
+                    "HomeTeam": "SD Amorebieta",
+                    "AwayTeam": "Real Uni\u00f3n Club"
+                },
+                {
+                    "HomeTeam": "Gimn\u00e1stica Segoviana CF",
+                    "AwayTeam": "Ourense CF"
+                },
+                {
+                    "HomeTeam": "CA Osasuna Promesas",
+                    "AwayTeam": "Cultural Leonesa"
+                },
+                {
+                    "HomeTeam": "Real Sociedad B",
+                    "AwayTeam": "Bilbao Athletic"
+                },
+                {
+                    "HomeTeam": "Zamora CF",
+                    "AwayTeam": "Barakaldo CF"
+                },
+                {
+                    "HomeTeam": "Unionistas CF",
+                    "AwayTeam": "FC Andorra"
+                },
+                {
+                    "HomeTeam": "Gimn\u00e0stic de Tarragona",
+                    "AwayTeam": "FC Barcelona Atl\u00e8tic"
+                }
+            ]
+        },
+        {
+            "matchday": 27,
+            "date": "09/03/2025",
+            "fixtures": [
+                {
+                    "HomeTeam": "Cultural Leonesa",
+                    "AwayTeam": "Zamora CF"
+                },
+                {
+                    "HomeTeam": "Bilbao Athletic",
+                    "AwayTeam": "Gimn\u00e1stica Segoviana CF"
+                },
+                {
+                    "HomeTeam": "Barakaldo CF",
+                    "AwayTeam": "CD Lugo"
+                },
+                {
+                    "HomeTeam": "FC Andorra",
+                    "AwayTeam": "RC Celta Fortuna"
+                },
+                {
+                    "HomeTeam": "FC Barcelona Atl\u00e8tic",
+                    "AwayTeam": "CA Osasuna Promesas"
+                },
+                {
+                    "HomeTeam": "SD Ponferradina",
+                    "AwayTeam": "Ourense CF"
+                },
+                {
+                    "HomeTeam": "Real Uni\u00f3n Club",
+                    "AwayTeam": "CD Arenteiro"
+                },
+                {
+                    "HomeTeam": "Unionistas CF",
+                    "AwayTeam": "SD Amorebieta"
+                },
+                {
+                    "HomeTeam": "Sestao River",
+                    "AwayTeam": "Real Sociedad B"
+                },
+                {
+                    "HomeTeam": "SD Tarazona",
+                    "AwayTeam": "Gimn\u00e0stic de Tarragona"
+                }
+            ]
+        },
+        {
+            "matchday": 28,
+            "date": "16/03/2025",
+            "fixtures": [
+                {
+                    "HomeTeam": "Ourense CF",
+                    "AwayTeam": "Real Uni\u00f3n Club"
+                },
+                {
+                    "HomeTeam": "CD Arenteiro",
+                    "AwayTeam": "SD Ponferradina"
+                },
+                {
+                    "HomeTeam": "RC Celta Fortuna",
+                    "AwayTeam": "Sestao River"
+                },
+                {
+                    "HomeTeam": "CD Lugo",
+                    "AwayTeam": "Unionistas CF"
+                },
+                {
+                    "HomeTeam": "SD Amorebieta",
+                    "AwayTeam": "FC Andorra"
+                },
+                {
+                    "HomeTeam": "Real Sociedad B",
+                    "AwayTeam": "Zamora CF"
+                },
+                {
+                    "HomeTeam": "FC Barcelona Atl\u00e8tic",
+                    "AwayTeam": "SD Tarazona"
+                },
+                {
+                    "HomeTeam": "Gimn\u00e1stica Segoviana CF",
+                    "AwayTeam": "Cultural Leonesa"
+                },
+                {
+                    "HomeTeam": "CA Osasuna Promesas",
+                    "AwayTeam": "Bilbao Athletic"
+                },
+                {
+                    "HomeTeam": "Gimn\u00e0stic de Tarragona",
+                    "AwayTeam": "Barakaldo CF"
+                }
+            ]
+        },
+        {
+            "matchday": 29,
+            "date": "23/03/2025",
+            "fixtures": [
+                {
+                    "HomeTeam": "Ourense CF",
+                    "AwayTeam": "Real Sociedad B"
+                },
+                {
+                    "HomeTeam": "Cultural Leonesa",
+                    "AwayTeam": "Real Uni\u00f3n Club"
+                },
+                {
+                    "HomeTeam": "Bilbao Athletic",
+                    "AwayTeam": "FC Barcelona Atl\u00e8tic"
+                },
+                {
+                    "HomeTeam": "Barakaldo CF",
+                    "AwayTeam": "RC Celta Fortuna"
+                },
+                {
+                    "HomeTeam": "SD Amorebieta",
+                    "AwayTeam": "CA Osasuna Promesas"
+                },
+                {
+                    "HomeTeam": "Sestao River",
+                    "AwayTeam": "SD Tarazona"
+                },
+                {
+                    "HomeTeam": "FC Andorra",
+                    "AwayTeam": "CD Arenteiro"
+                },
+                {
+                    "HomeTeam": "Unionistas CF",
+                    "AwayTeam": "Gimn\u00e1stica Segoviana CF"
+                },
+                {
+                    "HomeTeam": "SD Ponferradina",
+                    "AwayTeam": "CD Lugo"
+                },
+                {
+                    "HomeTeam": "Zamora CF",
+                    "AwayTeam": "Gimn\u00e0stic de Tarragona"
+                }
+            ]
+        },
+        {
+            "matchday": 30,
+            "date": "30/03/2025",
+            "fixtures": [
+                {
+                    "HomeTeam": "CD Arenteiro",
+                    "AwayTeam": "RC Celta Fortuna"
+                },
+                {
+                    "HomeTeam": "CD Lugo",
+                    "AwayTeam": "Ourense CF"
+                },
+                {
+                    "HomeTeam": "CA Osasuna Promesas",
+                    "AwayTeam": "Sestao River"
+                },
+                {
+                    "HomeTeam": "FC Barcelona Atl\u00e8tic",
+                    "AwayTeam": "Cultural Leonesa"
+                },
+                {
+                    "HomeTeam": "Gimn\u00e0stic de Tarragona",
+                    "AwayTeam": "SD Ponferradina"
+                },
+                {
+                    "HomeTeam": "SD Tarazona",
+                    "AwayTeam": "Bilbao Athletic"
+                },
+                {
+                    "HomeTeam": "Real Sociedad B",
+                    "AwayTeam": "Barakaldo CF"
+                },
+                {
+                    "HomeTeam": "Gimn\u00e1stica Segoviana CF",
+                    "AwayTeam": "SD Amorebieta"
+                },
+                {
+                    "HomeTeam": "Real Uni\u00f3n Club",
+                    "AwayTeam": "FC Andorra"
+                },
+                {
+                    "HomeTeam": "Zamora CF",
+                    "AwayTeam": "Unionistas CF"
+                }
+            ]
+        },
+        {
+            "matchday": 31,
+            "date": "06/04/2025",
+            "fixtures": [
+                {
+                    "HomeTeam": "Ourense CF",
+                    "AwayTeam": "Zamora CF"
+                },
+                {
+                    "HomeTeam": "CD Lugo",
+                    "AwayTeam": "Gimn\u00e1stica Segoviana CF"
+                },
+                {
+                    "HomeTeam": "SD Ponferradina",
+                    "AwayTeam": "Real Uni\u00f3n Club"
+                },
+                {
+                    "HomeTeam": "SD Amorebieta",
+                    "AwayTeam": "Real Sociedad B"
+                },
+                {
+                    "HomeTeam": "FC Andorra",
+                    "AwayTeam": "SD Tarazona"
+                },
+                {
+                    "HomeTeam": "Cultural Leonesa",
+                    "AwayTeam": "CD Arenteiro"
+                },
+                {
+                    "HomeTeam": "Barakaldo CF",
+                    "AwayTeam": "Bilbao Athletic"
+                },
+                {
+                    "HomeTeam": "Unionistas CF",
+                    "AwayTeam": "CA Osasuna Promesas"
+                },
+                {
+                    "HomeTeam": "RC Celta Fortuna",
+                    "AwayTeam": "FC Barcelona Atl\u00e8tic"
+                },
+                {
+                    "HomeTeam": "Sestao River",
+                    "AwayTeam": "Gimn\u00e0stic de Tarragona"
+                }
+            ]
+        },
+        {
+            "matchday": 32,
+            "date": "13/04/2025",
+            "fixtures": [
+                {
+                    "HomeTeam": "CD Arenteiro",
+                    "AwayTeam": "Ourense CF"
+                },
+                {
+                    "HomeTeam": "FC Barcelona Atl\u00e8tic",
+                    "AwayTeam": "Sestao River"
+                },
+                {
+                    "HomeTeam": "Gimn\u00e0stic de Tarragona",
+                    "AwayTeam": "Unionistas CF"
+                },
+                {
+                    "HomeTeam": "Gimn\u00e1stica Segoviana CF",
+                    "AwayTeam": "RC Celta Fortuna"
+                },
+                {
+                    "HomeTeam": "Real Uni\u00f3n Club",
+                    "AwayTeam": "CD Lugo"
+                },
+                {
+                    "HomeTeam": "SD Tarazona",
+                    "AwayTeam": "Cultural Leonesa"
+                },
+                {
+                    "HomeTeam": "Zamora CF",
+                    "AwayTeam": "SD Ponferradina"
+                },
+                {
+                    "HomeTeam": "CA Osasuna Promesas",
+                    "AwayTeam": "Barakaldo CF"
+                },
+                {
+                    "HomeTeam": "Bilbao Athletic",
+                    "AwayTeam": "SD Amorebieta"
+                },
+                {
+                    "HomeTeam": "Real Sociedad B",
+                    "AwayTeam": "FC Andorra"
+                }
+            ]
+        },
+        {
+            "matchday": 33,
+            "date": "20/04/2025",
+            "fixtures": [
+                {
+                    "HomeTeam": "RC Celta Fortuna",
+                    "AwayTeam": "SD Tarazona"
+                },
+                {
+                    "HomeTeam": "CD Lugo",
+                    "AwayTeam": "Real Sociedad B"
+                },
+                {
+                    "HomeTeam": "Cultural Leonesa",
+                    "AwayTeam": "Gimn\u00e0stic de Tarragona"
+                },
+                {
+                    "HomeTeam": "Barakaldo CF",
+                    "AwayTeam": "Sestao River"
+                },
+                {
+                    "HomeTeam": "SD Amorebieta",
+                    "AwayTeam": "Zamora CF"
+                },
+                {
+                    "HomeTeam": "FC Andorra",
+                    "AwayTeam": "Gimn\u00e1stica Segoviana CF"
+                },
+                {
+                    "HomeTeam": "Unionistas CF",
+                    "AwayTeam": "CD Arenteiro"
+                },
+                {
+                    "HomeTeam": "Ourense CF",
+                    "AwayTeam": "Bilbao Athletic"
+                },
+                {
+                    "HomeTeam": "SD Ponferradina",
+                    "AwayTeam": "CA Osasuna Promesas"
+                },
+                {
+                    "HomeTeam": "Real Uni\u00f3n Club",
+                    "AwayTeam": "FC Barcelona Atl\u00e8tic"
+                }
+            ]
+        },
+        {
+            "matchday": 34,
+            "date": "27/04/2025",
+            "fixtures": [
+                {
+                    "HomeTeam": "CD Arenteiro",
+                    "AwayTeam": "CD Lugo"
+                },
+                {
+                    "HomeTeam": "Bilbao Athletic",
+                    "AwayTeam": "Cultural Leonesa"
+                },
+                {
+                    "HomeTeam": "Real Sociedad B",
+                    "AwayTeam": "Unionistas CF"
+                },
+                {
+                    "HomeTeam": "Gimn\u00e0stic de Tarragona",
+                    "AwayTeam": "Real Uni\u00f3n Club"
+                },
+                {
+                    "HomeTeam": "Sestao River",
+                    "AwayTeam": "Ourense CF"
+                },
+                {
+                    "HomeTeam": "Zamora CF",
+                    "AwayTeam": "RC Celta Fortuna"
+                },
+                {
+                    "HomeTeam": "SD Tarazona",
+                    "AwayTeam": "SD Ponferradina"
+                },
+                {
+                    "HomeTeam": "Gimn\u00e1stica Segoviana CF",
+                    "AwayTeam": "Barakaldo CF"
+                },
+                {
+                    "HomeTeam": "FC Barcelona Atl\u00e8tic",
+                    "AwayTeam": "SD Amorebieta"
+                },
+                {
+                    "HomeTeam": "CA Osasuna Promesas",
+                    "AwayTeam": "FC Andorra"
+                }
+            ]
+        },
+        {
+            "matchday": 35,
+            "date": "04/05/2025",
+            "fixtures": [
+                {
+                    "HomeTeam": "CD Arenteiro",
+                    "AwayTeam": "Zamora CF"
+                },
+                {
+                    "HomeTeam": "RC Celta Fortuna",
+                    "AwayTeam": "CA Osasuna Promesas"
+                },
+                {
+                    "HomeTeam": "Real Uni\u00f3n Club",
+                    "AwayTeam": "SD Tarazona"
+                },
+                {
+                    "HomeTeam": "FC Andorra",
+                    "AwayTeam": "Gimn\u00e0stic de Tarragona"
+                },
+                {
+                    "HomeTeam": "Unionistas CF",
+                    "AwayTeam": "Sestao River"
+                },
+                {
+                    "HomeTeam": "Ourense CF",
+                    "AwayTeam": "Cultural Leonesa"
+                },
+                {
+                    "HomeTeam": "SD Ponferradina",
+                    "AwayTeam": "Bilbao Athletic"
+                },
+                {
+                    "HomeTeam": "Barakaldo CF",
+                    "AwayTeam": "SD Amorebieta"
+                },
+                {
+                    "HomeTeam": "Gimn\u00e1stica Segoviana CF",
+                    "AwayTeam": "Real Sociedad B"
+                },
+                {
+                    "HomeTeam": "CD Lugo",
+                    "AwayTeam": "FC Barcelona Atl\u00e8tic"
+                }
+            ]
+        },
+        {
+            "matchday": 36,
+            "date": "11/05/2025",
+            "fixtures": [
+                {
+                    "HomeTeam": "Bilbao Athletic",
+                    "AwayTeam": "Unionistas CF"
+                },
+                {
+                    "HomeTeam": "SD Amorebieta",
+                    "AwayTeam": "RC Celta Fortuna"
+                },
+                {
+                    "HomeTeam": "SD Tarazona",
+                    "AwayTeam": "Ourense CF"
+                },
+                {
+                    "HomeTeam": "CA Osasuna Promesas",
+                    "AwayTeam": "CD Arenteiro"
+                },
+                {
+                    "HomeTeam": "Gimn\u00e0stic de Tarragona",
+                    "AwayTeam": "CD Lugo"
+                },
+                {
+                    "HomeTeam": "Real Sociedad B",
+                    "AwayTeam": "SD Ponferradina"
+                },
+                {
+                    "HomeTeam": "Cultural Leonesa",
+                    "AwayTeam": "Barakaldo CF"
+                },
+                {
+                    "HomeTeam": "Zamora CF",
+                    "AwayTeam": "Real Uni\u00f3n Club"
+                },
+                {
+                    "HomeTeam": "FC Barcelona Atl\u00e8tic",
+                    "AwayTeam": "FC Andorra"
+                },
+                {
+                    "HomeTeam": "Sestao River",
+                    "AwayTeam": "Gimn\u00e1stica Segoviana CF"
+                }
+            ]
+        },
+        {
+            "matchday": 37,
+            "date": "18/05/2025",
+            "fixtures": [
+                {
+                    "HomeTeam": "CD Arenteiro",
+                    "AwayTeam": "Real Sociedad B"
+                },
+                {
+                    "HomeTeam": "CD Lugo",
+                    "AwayTeam": "Zamora CF"
+                },
+                {
+                    "HomeTeam": "Barakaldo CF",
+                    "AwayTeam": "FC Barcelona Atl\u00e8tic"
+                },
+                {
+                    "HomeTeam": "FC Andorra",
+                    "AwayTeam": "Sestao River"
+                },
+                {
+                    "HomeTeam": "Unionistas CF",
+                    "AwayTeam": "SD Tarazona"
+                },
+                {
+                    "HomeTeam": "SD Ponferradina",
+                    "AwayTeam": "Cultural Leonesa"
+                },
+                {
+                    "HomeTeam": "RC Celta Fortuna",
+                    "AwayTeam": "Bilbao Athletic"
+                },
+                {
+                    "HomeTeam": "Ourense CF",
+                    "AwayTeam": "SD Amorebieta"
+                },
+                {
+                    "HomeTeam": "Real Uni\u00f3n Club",
+                    "AwayTeam": "CA Osasuna Promesas"
+                },
+                {
+                    "HomeTeam": "Gimn\u00e1stica Segoviana CF",
+                    "AwayTeam": "Gimn\u00e0stic de Tarragona"
+                }
+            ]
+        },
+        {
+            "matchday": 38,
+            "date": "25/05/2025",
+            "fixtures": [
+                {
+                    "HomeTeam": "Bilbao Athletic",
+                    "AwayTeam": "Real Uni\u00f3n Club"
+                },
+                {
+                    "HomeTeam": "SD Amorebieta",
+                    "AwayTeam": "CD Lugo"
+                },
+                {
+                    "HomeTeam": "CA Osasuna Promesas",
+                    "AwayTeam": "Ourense CF"
+                },
+                {
+                    "HomeTeam": "FC Barcelona Atl\u00e8tic",
+                    "AwayTeam": "Unionistas CF"
+                },
+                {
+                    "HomeTeam": "Gimn\u00e0stic de Tarragona",
+                    "AwayTeam": "CD Arenteiro"
+                },
+                {
+                    "HomeTeam": "Real Sociedad B",
+                    "AwayTeam": "RC Celta Fortuna"
+                },
+                {
+                    "HomeTeam": "Sestao River",
+                    "AwayTeam": "SD Ponferradina"
+                },
+                {
+                    "HomeTeam": "SD Tarazona",
+                    "AwayTeam": "Barakaldo CF"
+                },
+                {
+                    "HomeTeam": "Cultural Leonesa",
+                    "AwayTeam": "FC Andorra"
+                },
+                {
+                    "HomeTeam": "Zamora CF",
+                    "AwayTeam": "Gimn\u00e1stica Segoviana CF"
+                }
+            ]
+        }
+    ]
+}

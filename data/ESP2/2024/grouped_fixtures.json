@@ -1,0 +1,2575 @@
+{
+    "season": "2024\/2025",
+    "matchdays": [
+        {
+            "matchday": "1",
+            "fixtures": [
+                {
+                    "HomeTeam": "Burgos CF",
+                    "AwayTeam": "FC Cartagena",
+                    "DateUtc": "18.08.2024"
+                },
+                {
+                    "HomeTeam": "Cádiz CF",
+                    "AwayTeam": "Real Zaragoza",
+                    "DateUtc": "18.08.2024"
+                },
+                {
+                    "HomeTeam": "Deportivo de La Coruña",
+                    "AwayTeam": "Real Oviedo",
+                    "DateUtc": "18.08.2024"
+                },
+                {
+                    "HomeTeam": "Elche CF",
+                    "AwayTeam": "SD Huesca",
+                    "DateUtc": "18.08.2024"
+                },
+                {
+                    "HomeTeam": "CD Eldense",
+                    "AwayTeam": "CD Tenerife",
+                    "DateUtc": "18.08.2024"
+                },
+                {
+                    "HomeTeam": "Racing Ferrol",
+                    "AwayTeam": "M\u00e1laga CF",
+                    "DateUtc": "18.08.2024"
+                },
+                {
+                    "HomeTeam": "Granada CF",
+                    "AwayTeam": "Albacete Balompié",
+                    "DateUtc": "18.08.2024"
+                },
+                {
+                    "HomeTeam": "Racing Santander",
+                    "AwayTeam": "UD Almer\u00eda",
+                    "DateUtc": "18.08.2024"
+                },
+                {
+                    "HomeTeam": "SD Eibar",
+                    "AwayTeam": "CD Castell\u00f3n",
+                    "DateUtc": "18.08.2024"
+                },
+                {
+                    "HomeTeam": "CD Mirand\u00e9s",
+                    "AwayTeam": "C\u00f3rdoba CF",
+                    "DateUtc": "18.08.2024"
+                },
+                {
+                    "HomeTeam": "Sporting Gijón",
+                    "AwayTeam": "Levante UD",
+                    "DateUtc": "18.08.2024"
+                }
+            ]
+        },
+        {
+            "matchday": "2",
+            "fixtures": [
+                {
+                    "HomeTeam": "Albacete Balompié",
+                    "AwayTeam": "Elche CF",
+                    "DateUtc": "25.08.2024"
+                },
+                {
+                    "HomeTeam": "FC Cartagena",
+                    "AwayTeam": "Real Zaragoza",
+                    "DateUtc": "25.08.2024"
+                },
+                {
+                    "HomeTeam": "CD Castell\u00f3n",
+                    "AwayTeam": "Real Oviedo",
+                    "DateUtc": "25.08.2024"
+                },
+                {
+                    "HomeTeam": "Racing Ferrol",
+                    "AwayTeam": "Granada CF",
+                    "DateUtc": "25.08.2024"
+                },
+                {
+                    "HomeTeam": "M\u00e1laga CF",
+                    "AwayTeam": "CD Mirand\u00e9s",
+                    "DateUtc": "25.08.2024"
+                },
+                {
+                    "HomeTeam": "CD Tenerife",
+                    "AwayTeam": "UD Almer\u00eda",
+                    "DateUtc": "25.08.2024"
+                },
+                {
+                    "HomeTeam": "C\u00f3rdoba CF",
+                    "AwayTeam": "Burgos CF",
+                    "DateUtc": "25.08.2024"
+                },
+                {
+                    "HomeTeam": "Levante UD",
+                    "AwayTeam": "Cádiz CF",
+                    "DateUtc": "25.08.2024"
+                },
+                {
+                    "HomeTeam": "SD Huesca",
+                    "AwayTeam": "Deportivo de La Coruña",
+                    "DateUtc": "25.08.2024"
+                },
+                {
+                    "HomeTeam": "Racing Santander",
+                    "AwayTeam": "SD Eibar",
+                    "DateUtc": "25.08.2024"
+                },
+                {
+                    "HomeTeam": "Sporting Gijón",
+                    "AwayTeam": "CD Eldense",
+                    "DateUtc": "25.08.2024"
+                }
+            ]
+        },
+        {
+            "matchday": "3",
+            "fixtures": [
+                {
+                    "HomeTeam": "UD Almer\u00eda",
+                    "AwayTeam": "Sporting Gijón",
+                    "DateUtc": "01.09.2024"
+                },
+                {
+                    "HomeTeam": "Burgos CF",
+                    "AwayTeam": "CD Castell\u00f3n",
+                    "DateUtc": "01.09.2024"
+                },
+                {
+                    "HomeTeam": "Cádiz CF",
+                    "AwayTeam": "CD Tenerife",
+                    "DateUtc": "01.09.2024"
+                },
+                {
+                    "HomeTeam": "Deportivo de La Coruña",
+                    "AwayTeam": "Racing Ferrol",
+                    "DateUtc": "01.09.2024"
+                },
+                {
+                    "HomeTeam": "SD Eibar",
+                    "AwayTeam": "Levante UD",
+                    "DateUtc": "01.09.2024"
+                },
+                {
+                    "HomeTeam": "Granada CF",
+                    "AwayTeam": "SD Huesca",
+                    "DateUtc": "01.09.2024"
+                },
+                {
+                    "HomeTeam": "CD Mirand\u00e9s",
+                    "AwayTeam": "Real Zaragoza",
+                    "DateUtc": "01.09.2024"
+                },
+                {
+                    "HomeTeam": "Real Oviedo",
+                    "AwayTeam": "Racing Santander",
+                    "DateUtc": "01.09.2024"
+                },
+                {
+                    "HomeTeam": "M\u00e1laga CF",
+                    "AwayTeam": "Albacete Balompié",
+                    "DateUtc": "01.09.2024"
+                },
+                {
+                    "HomeTeam": "CD Eldense",
+                    "AwayTeam": "FC Cartagena",
+                    "DateUtc": "01.09.2024"
+                },
+                {
+                    "HomeTeam": "Elche CF",
+                    "AwayTeam": "C\u00f3rdoba CF",
+                    "DateUtc": "01.09.2024"
+                }
+            ]
+        },
+        {
+            "matchday": "4",
+            "fixtures": [
+                {
+                    "HomeTeam": "Albacete Balompié",
+                    "AwayTeam": "SD Eibar",
+                    "DateUtc": "08.09.2024"
+                },
+                {
+                    "HomeTeam": "FC Cartagena",
+                    "AwayTeam": "Levante UD",
+                    "DateUtc": "08.09.2024"
+                },
+                {
+                    "HomeTeam": "C\u00f3rdoba CF",
+                    "AwayTeam": "M\u00e1laga CF",
+                    "DateUtc": "08.09.2024"
+                },
+                {
+                    "HomeTeam": "Racing Ferrol",
+                    "AwayTeam": "CD Mirand\u00e9s",
+                    "DateUtc": "08.09.2024"
+                },
+                {
+                    "HomeTeam": "CD Eldense",
+                    "AwayTeam": "UD Almer\u00eda",
+                    "DateUtc": "08.09.2024"
+                },
+                {
+                    "HomeTeam": "SD Huesca",
+                    "AwayTeam": "Burgos CF",
+                    "DateUtc": "08.09.2024"
+                },
+                {
+                    "HomeTeam": "CD Castell\u00f3n",
+                    "AwayTeam": "Cádiz CF",
+                    "DateUtc": "08.09.2024"
+                },
+                {
+                    "HomeTeam": "Granada CF",
+                    "AwayTeam": "Deportivo de La Coruña",
+                    "DateUtc": "08.09.2024"
+                },
+                {
+                    "HomeTeam": "Real Zaragoza",
+                    "AwayTeam": "Elche CF",
+                    "DateUtc": "08.09.2024"
+                },
+                {
+                    "HomeTeam": "Sporting Gijón",
+                    "AwayTeam": "Real Oviedo",
+                    "DateUtc": "08.09.2024"
+                },
+                {
+                    "HomeTeam": "CD Tenerife",
+                    "AwayTeam": "Racing Santander",
+                    "DateUtc": "08.09.2024"
+                }
+            ]
+        },
+        {
+            "matchday": "5",
+            "fixtures": [
+                {
+                    "HomeTeam": "UD Almer\u00eda",
+                    "AwayTeam": "CD Castell\u00f3n",
+                    "DateUtc": "15.09.2024"
+                },
+                {
+                    "HomeTeam": "Burgos CF",
+                    "AwayTeam": "Real Zaragoza",
+                    "DateUtc": "15.09.2024"
+                },
+                {
+                    "HomeTeam": "Cádiz CF",
+                    "AwayTeam": "Racing Ferrol",
+                    "DateUtc": "15.09.2024"
+                },
+                {
+                    "HomeTeam": "C\u00f3rdoba CF",
+                    "AwayTeam": "Deportivo de La Coruña",
+                    "DateUtc": "15.09.2024"
+                },
+                {
+                    "HomeTeam": "SD Eibar",
+                    "AwayTeam": "CD Tenerife",
+                    "DateUtc": "15.09.2024"
+                },
+                {
+                    "HomeTeam": "Elche CF",
+                    "AwayTeam": "Granada CF",
+                    "DateUtc": "15.09.2024"
+                },
+                {
+                    "HomeTeam": "Racing Santander",
+                    "AwayTeam": "Sporting Gijón",
+                    "DateUtc": "15.09.2024"
+                },
+                {
+                    "HomeTeam": "CD Mirand\u00e9s",
+                    "AwayTeam": "Albacete Balompié",
+                    "DateUtc": "15.09.2024"
+                },
+                {
+                    "HomeTeam": "Real Oviedo",
+                    "AwayTeam": "FC Cartagena",
+                    "DateUtc": "15.09.2024"
+                },
+                {
+                    "HomeTeam": "Levante UD",
+                    "AwayTeam": "CD Eldense",
+                    "DateUtc": "15.09.2024"
+                },
+                {
+                    "HomeTeam": "M\u00e1laga CF",
+                    "AwayTeam": "SD Huesca",
+                    "DateUtc": "15.09.2024"
+                }
+            ]
+        },
+        {
+            "matchday": "6",
+            "fixtures": [
+                {
+                    "HomeTeam": "UD Almer\u00eda",
+                    "AwayTeam": "SD Eibar",
+                    "DateUtc": "22.09.2024"
+                },
+                {
+                    "HomeTeam": "CD Castell\u00f3n",
+                    "AwayTeam": "Racing Santander",
+                    "DateUtc": "22.09.2024"
+                },
+                {
+                    "HomeTeam": "Elche CF",
+                    "AwayTeam": "CD Mirand\u00e9s",
+                    "DateUtc": "22.09.2024"
+                },
+                {
+                    "HomeTeam": "CD Eldense",
+                    "AwayTeam": "Real Oviedo",
+                    "DateUtc": "22.09.2024"
+                },
+                {
+                    "HomeTeam": "Granada CF",
+                    "AwayTeam": "M\u00e1laga CF",
+                    "DateUtc": "22.09.2024"
+                },
+                {
+                    "HomeTeam": "Racing Ferrol",
+                    "AwayTeam": "Albacete Balompié",
+                    "DateUtc": "22.09.2024"
+                },
+                {
+                    "HomeTeam": "Deportivo de La Coruña",
+                    "AwayTeam": "Burgos CF",
+                    "DateUtc": "22.09.2024"
+                },
+                {
+                    "HomeTeam": "FC Cartagena",
+                    "AwayTeam": "Cádiz CF",
+                    "DateUtc": "22.09.2024"
+                },
+                {
+                    "HomeTeam": "SD Huesca",
+                    "AwayTeam": "C\u00f3rdoba CF",
+                    "DateUtc": "22.09.2024"
+                },
+                {
+                    "HomeTeam": "Real Zaragoza",
+                    "AwayTeam": "Levante UD",
+                    "DateUtc": "22.09.2024"
+                },
+                {
+                    "HomeTeam": "CD Tenerife",
+                    "AwayTeam": "Sporting Gijón",
+                    "DateUtc": "22.09.2024"
+                }
+            ]
+        },
+        {
+            "matchday": "7",
+            "fixtures": [
+                {
+                    "HomeTeam": "Albacete Balompié",
+                    "AwayTeam": "Deportivo de La Coruña",
+                    "DateUtc": "29.09.2024"
+                },
+                {
+                    "HomeTeam": "Burgos CF",
+                    "AwayTeam": "Granada CF",
+                    "DateUtc": "29.09.2024"
+                },
+                {
+                    "HomeTeam": "Cádiz CF",
+                    "AwayTeam": "CD Eldense",
+                    "DateUtc": "29.09.2024"
+                },
+                {
+                    "HomeTeam": "CD Castell\u00f3n",
+                    "AwayTeam": "CD Tenerife",
+                    "DateUtc": "29.09.2024"
+                },
+                {
+                    "HomeTeam": "C\u00f3rdoba CF",
+                    "AwayTeam": "Racing Ferrol",
+                    "DateUtc": "29.09.2024"
+                },
+                {
+                    "HomeTeam": "Sporting Gijón",
+                    "AwayTeam": "Real Zaragoza",
+                    "DateUtc": "29.09.2024"
+                },
+                {
+                    "HomeTeam": "Levante UD",
+                    "AwayTeam": "UD Almer\u00eda",
+                    "DateUtc": "29.09.2024"
+                },
+                {
+                    "HomeTeam": "Racing Santander",
+                    "AwayTeam": "FC Cartagena",
+                    "DateUtc": "29.09.2024"
+                },
+                {
+                    "HomeTeam": "Real Oviedo",
+                    "AwayTeam": "SD Eibar",
+                    "DateUtc": "29.09.2024"
+                },
+                {
+                    "HomeTeam": "M\u00e1laga CF",
+                    "AwayTeam": "Elche CF",
+                    "DateUtc": "29.09.2024"
+                },
+                {
+                    "HomeTeam": "CD Mirand\u00e9s",
+                    "AwayTeam": "SD Huesca",
+                    "DateUtc": "29.09.2024"
+                }
+            ]
+        },
+        {
+            "matchday": "8",
+            "fixtures": [
+                {
+                    "HomeTeam": "Albacete Balompié",
+                    "AwayTeam": "C\u00f3rdoba CF",
+                    "DateUtc": "06.10.2024"
+                },
+                {
+                    "HomeTeam": "UD Almer\u00eda",
+                    "AwayTeam": "Burgos CF",
+                    "DateUtc": "06.10.2024"
+                },
+                {
+                    "HomeTeam": "Deportivo de La Coruña",
+                    "AwayTeam": "M\u00e1laga CF",
+                    "DateUtc": "06.10.2024"
+                },
+                {
+                    "HomeTeam": "SD Eibar",
+                    "AwayTeam": "Sporting Gijón",
+                    "DateUtc": "06.10.2024"
+                },
+                {
+                    "HomeTeam": "Levante UD",
+                    "AwayTeam": "Real Oviedo",
+                    "DateUtc": "06.10.2024"
+                },
+                {
+                    "HomeTeam": "SD Huesca",
+                    "AwayTeam": "Cádiz CF",
+                    "DateUtc": "06.10.2024"
+                },
+                {
+                    "HomeTeam": "CD Tenerife",
+                    "AwayTeam": "FC Cartagena",
+                    "DateUtc": "06.10.2024"
+                },
+                {
+                    "HomeTeam": "CD Eldense",
+                    "AwayTeam": "CD Castell\u00f3n",
+                    "DateUtc": "06.10.2024"
+                },
+                {
+                    "HomeTeam": "Racing Ferrol",
+                    "AwayTeam": "Elche CF",
+                    "DateUtc": "06.10.2024"
+                },
+                {
+                    "HomeTeam": "CD Mirand\u00e9s",
+                    "AwayTeam": "Granada CF",
+                    "DateUtc": "06.10.2024"
+                },
+                {
+                    "HomeTeam": "Real Zaragoza",
+                    "AwayTeam": "Racing Santander",
+                    "DateUtc": "06.10.2024"
+                }
+            ]
+        },
+        {
+            "matchday": "9",
+            "fixtures": [
+                {
+                    "HomeTeam": "Burgos CF",
+                    "AwayTeam": "CD Mirand\u00e9s",
+                    "DateUtc": "13.10.2024"
+                },
+                {
+                    "HomeTeam": "Cádiz CF",
+                    "AwayTeam": "M\u00e1laga CF",
+                    "DateUtc": "13.10.2024"
+                },
+                {
+                    "HomeTeam": "FC Cartagena",
+                    "AwayTeam": "Racing Ferrol",
+                    "DateUtc": "13.10.2024"
+                },
+                {
+                    "HomeTeam": "SD Eibar",
+                    "AwayTeam": "CD Eldense",
+                    "DateUtc": "13.10.2024"
+                },
+                {
+                    "HomeTeam": "CD Tenerife",
+                    "AwayTeam": "Real Zaragoza",
+                    "DateUtc": "13.10.2024"
+                },
+                {
+                    "HomeTeam": "SD Huesca",
+                    "AwayTeam": "Albacete Balompié",
+                    "DateUtc": "13.10.2024"
+                },
+                {
+                    "HomeTeam": "Real Oviedo",
+                    "AwayTeam": "UD Almer\u00eda",
+                    "DateUtc": "13.10.2024"
+                },
+                {
+                    "HomeTeam": "Sporting Gijón",
+                    "AwayTeam": "CD Castell\u00f3n",
+                    "DateUtc": "13.10.2024"
+                },
+                {
+                    "HomeTeam": "Granada CF",
+                    "AwayTeam": "C\u00f3rdoba CF",
+                    "DateUtc": "13.10.2024"
+                },
+                {
+                    "HomeTeam": "Elche CF",
+                    "AwayTeam": "Deportivo de La Coruña",
+                    "DateUtc": "13.10.2024"
+                },
+                {
+                    "HomeTeam": "Racing Santander",
+                    "AwayTeam": "Levante UD",
+                    "DateUtc": "13.10.2024"
+                }
+            ]
+        },
+        {
+            "matchday": "10",
+            "fixtures": [
+                {
+                    "HomeTeam": "Albacete Balompié",
+                    "AwayTeam": "Burgos CF",
+                    "DateUtc": "20.10.2024"
+                },
+                {
+                    "HomeTeam": "Cádiz CF",
+                    "AwayTeam": "Racing Santander",
+                    "DateUtc": "20.10.2024"
+                },
+                {
+                    "HomeTeam": "CD Castell\u00f3n",
+                    "AwayTeam": "Levante UD",
+                    "DateUtc": "20.10.2024"
+                },
+                {
+                    "HomeTeam": "Deportivo de La Coruña",
+                    "AwayTeam": "CD Eldense",
+                    "DateUtc": "20.10.2024"
+                },
+                {
+                    "HomeTeam": "Elche CF",
+                    "AwayTeam": "Sporting Gijón",
+                    "DateUtc": "20.10.2024"
+                },
+                {
+                    "HomeTeam": "Racing Ferrol",
+                    "AwayTeam": "SD Huesca",
+                    "DateUtc": "20.10.2024"
+                },
+                {
+                    "HomeTeam": "Granada CF",
+                    "AwayTeam": "CD Tenerife",
+                    "DateUtc": "20.10.2024"
+                },
+                {
+                    "HomeTeam": "M\u00e1laga CF",
+                    "AwayTeam": "Real Oviedo",
+                    "DateUtc": "20.10.2024"
+                },
+                {
+                    "HomeTeam": "Real Zaragoza",
+                    "AwayTeam": "UD Almer\u00eda",
+                    "DateUtc": "20.10.2024"
+                },
+                {
+                    "HomeTeam": "C\u00f3rdoba CF",
+                    "AwayTeam": "FC Cartagena",
+                    "DateUtc": "20.10.2024"
+                },
+                {
+                    "HomeTeam": "CD Mirand\u00e9s",
+                    "AwayTeam": "SD Eibar",
+                    "DateUtc": "20.10.2024"
+                }
+            ]
+        },
+        {
+            "matchday": "11",
+            "fixtures": [
+                {
+                    "HomeTeam": "Burgos CF",
+                    "AwayTeam": "Racing Ferrol",
+                    "DateUtc": "23.10.2024"
+                },
+                {
+                    "HomeTeam": "FC Cartagena",
+                    "AwayTeam": "Elche CF",
+                    "DateUtc": "23.10.2024"
+                },
+                {
+                    "HomeTeam": "CD Castell\u00f3n",
+                    "AwayTeam": "Granada CF",
+                    "DateUtc": "23.10.2024"
+                },
+                {
+                    "HomeTeam": "CD Eldense",
+                    "AwayTeam": "Real Zaragoza",
+                    "DateUtc": "23.10.2024"
+                },
+                {
+                    "HomeTeam": "UD Almer\u00eda",
+                    "AwayTeam": "Albacete Balompié",
+                    "DateUtc": "23.10.2024"
+                },
+                {
+                    "HomeTeam": "SD Eibar",
+                    "AwayTeam": "Cádiz CF",
+                    "DateUtc": "23.10.2024"
+                },
+                {
+                    "HomeTeam": "Racing Santander",
+                    "AwayTeam": "C\u00f3rdoba CF",
+                    "DateUtc": "23.10.2024"
+                },
+                {
+                    "HomeTeam": "Levante UD",
+                    "AwayTeam": "Deportivo de La Coruña",
+                    "DateUtc": "23.10.2024"
+                },
+                {
+                    "HomeTeam": "Sporting Gijón",
+                    "AwayTeam": "SD Huesca",
+                    "DateUtc": "23.10.2024"
+                },
+                {
+                    "HomeTeam": "CD Tenerife",
+                    "AwayTeam": "M\u00e1laga CF",
+                    "DateUtc": "23.10.2024"
+                },
+                {
+                    "HomeTeam": "Real Oviedo",
+                    "AwayTeam": "CD Mirand\u00e9s",
+                    "DateUtc": "23.10.2024"
+                }
+            ]
+        },
+        {
+            "matchday": "12",
+            "fixtures": [
+                {
+                    "HomeTeam": "Albacete Balompié",
+                    "AwayTeam": "Sporting Gijón",
+                    "DateUtc": "27.10.2024"
+                },
+                {
+                    "HomeTeam": "Cádiz CF",
+                    "AwayTeam": "Real Oviedo",
+                    "DateUtc": "27.10.2024"
+                },
+                {
+                    "HomeTeam": "C\u00f3rdoba CF",
+                    "AwayTeam": "CD Eldense",
+                    "DateUtc": "27.10.2024"
+                },
+                {
+                    "HomeTeam": "Deportivo de La Coruña",
+                    "AwayTeam": "Racing Santander",
+                    "DateUtc": "27.10.2024"
+                },
+                {
+                    "HomeTeam": "Racing Ferrol",
+                    "AwayTeam": "CD Tenerife",
+                    "DateUtc": "27.10.2024"
+                },
+                {
+                    "HomeTeam": "Granada CF",
+                    "AwayTeam": "Levante UD",
+                    "DateUtc": "27.10.2024"
+                },
+                {
+                    "HomeTeam": "SD Huesca",
+                    "AwayTeam": "UD Almer\u00eda",
+                    "DateUtc": "27.10.2024"
+                },
+                {
+                    "HomeTeam": "Elche CF",
+                    "AwayTeam": "Burgos CF",
+                    "DateUtc": "27.10.2024"
+                },
+                {
+                    "HomeTeam": "CD Mirand\u00e9s",
+                    "AwayTeam": "FC Cartagena",
+                    "DateUtc": "27.10.2024"
+                },
+                {
+                    "HomeTeam": "Real Zaragoza",
+                    "AwayTeam": "CD Castell\u00f3n",
+                    "DateUtc": "27.10.2024"
+                },
+                {
+                    "HomeTeam": "M\u00e1laga CF",
+                    "AwayTeam": "SD Eibar",
+                    "DateUtc": "27.10.2024"
+                }
+            ]
+        },
+        {
+            "matchday": "13",
+            "fixtures": [
+                {
+                    "HomeTeam": "UD Almer\u00eda",
+                    "AwayTeam": "C\u00f3rdoba CF",
+                    "DateUtc": "03.11.2024"
+                },
+                {
+                    "HomeTeam": "FC Cartagena",
+                    "AwayTeam": "Deportivo de La Coruña",
+                    "DateUtc": "03.11.2024"
+                },
+                {
+                    "HomeTeam": "CD Castell\u00f3n",
+                    "AwayTeam": "Racing Ferrol",
+                    "DateUtc": "03.11.2024"
+                },
+                {
+                    "HomeTeam": "SD Eibar",
+                    "AwayTeam": "Elche CF",
+                    "DateUtc": "03.11.2024"
+                },
+                {
+                    "HomeTeam": "CD Eldense",
+                    "AwayTeam": "SD Huesca",
+                    "DateUtc": "03.11.2024"
+                },
+                {
+                    "HomeTeam": "Levante UD",
+                    "AwayTeam": "M\u00e1laga CF",
+                    "DateUtc": "03.11.2024"
+                },
+                {
+                    "HomeTeam": "Racing Santander",
+                    "AwayTeam": "Albacete Balompié",
+                    "DateUtc": "03.11.2024"
+                },
+                {
+                    "HomeTeam": "Real Oviedo",
+                    "AwayTeam": "Burgos CF",
+                    "DateUtc": "03.11.2024"
+                },
+                {
+                    "HomeTeam": "Sporting Gijón",
+                    "AwayTeam": "Cádiz CF",
+                    "DateUtc": "03.11.2024"
+                },
+                {
+                    "HomeTeam": "Real Zaragoza",
+                    "AwayTeam": "Granada CF",
+                    "DateUtc": "03.11.2024"
+                },
+                {
+                    "HomeTeam": "CD Tenerife",
+                    "AwayTeam": "CD Mirand\u00e9s",
+                    "DateUtc": "03.11.2024"
+                }
+            ]
+        },
+        {
+            "matchday": "14",
+            "fixtures": [
+                {
+                    "HomeTeam": "Albacete Balompié",
+                    "AwayTeam": "Real Oviedo",
+                    "DateUtc": "10.11.2024"
+                },
+                {
+                    "HomeTeam": "Burgos CF",
+                    "AwayTeam": "Sporting Gijón",
+                    "DateUtc": "10.11.2024"
+                },
+                {
+                    "HomeTeam": "Deportivo de La Coruña",
+                    "AwayTeam": "SD Eibar",
+                    "DateUtc": "10.11.2024"
+                },
+                {
+                    "HomeTeam": "Racing Ferrol",
+                    "AwayTeam": "Racing Santander",
+                    "DateUtc": "10.11.2024"
+                },
+                {
+                    "HomeTeam": "SD Huesca",
+                    "AwayTeam": "Real Zaragoza",
+                    "DateUtc": "10.11.2024"
+                },
+                {
+                    "HomeTeam": "Elche CF",
+                    "AwayTeam": "UD Almer\u00eda",
+                    "DateUtc": "10.11.2024"
+                },
+                {
+                    "HomeTeam": "CD Mirand\u00e9s",
+                    "AwayTeam": "Cádiz CF",
+                    "DateUtc": "10.11.2024"
+                },
+                {
+                    "HomeTeam": "M\u00e1laga CF",
+                    "AwayTeam": "FC Cartagena",
+                    "DateUtc": "10.11.2024"
+                },
+                {
+                    "HomeTeam": "C\u00f3rdoba CF",
+                    "AwayTeam": "CD Castell\u00f3n",
+                    "DateUtc": "10.11.2024"
+                },
+                {
+                    "HomeTeam": "Granada CF",
+                    "AwayTeam": "CD Eldense",
+                    "DateUtc": "10.11.2024"
+                },
+                {
+                    "HomeTeam": "CD Tenerife",
+                    "AwayTeam": "Levante UD",
+                    "DateUtc": "10.11.2024"
+                }
+            ]
+        },
+        {
+            "matchday": "15",
+            "fixtures": [
+                {
+                    "HomeTeam": "UD Almer\u00eda",
+                    "AwayTeam": "Deportivo de La Coruña",
+                    "DateUtc": "17.11.2024"
+                },
+                {
+                    "HomeTeam": "Cádiz CF",
+                    "AwayTeam": "C\u00f3rdoba CF",
+                    "DateUtc": "17.11.2024"
+                },
+                {
+                    "HomeTeam": "FC Cartagena",
+                    "AwayTeam": "SD Huesca",
+                    "DateUtc": "17.11.2024"
+                },
+                {
+                    "HomeTeam": "CD Castell\u00f3n",
+                    "AwayTeam": "CD Mirand\u00e9s",
+                    "DateUtc": "17.11.2024"
+                },
+                {
+                    "HomeTeam": "SD Eibar",
+                    "AwayTeam": "Racing Ferrol",
+                    "DateUtc": "17.11.2024"
+                },
+                {
+                    "HomeTeam": "Real Oviedo",
+                    "AwayTeam": "CD Tenerife",
+                    "DateUtc": "17.11.2024"
+                },
+                {
+                    "HomeTeam": "CD Eldense",
+                    "AwayTeam": "Albacete Balompié",
+                    "DateUtc": "17.11.2024"
+                },
+                {
+                    "HomeTeam": "Racing Santander",
+                    "AwayTeam": "Burgos CF",
+                    "DateUtc": "17.11.2024"
+                },
+                {
+                    "HomeTeam": "Levante UD",
+                    "AwayTeam": "Elche CF",
+                    "DateUtc": "17.11.2024"
+                },
+                {
+                    "HomeTeam": "Sporting Gijón",
+                    "AwayTeam": "Granada CF",
+                    "DateUtc": "17.11.2024"
+                },
+                {
+                    "HomeTeam": "Real Zaragoza",
+                    "AwayTeam": "M\u00e1laga CF",
+                    "DateUtc": "17.11.2024"
+                }
+            ]
+        },
+        {
+            "matchday": "16",
+            "fixtures": [
+                {
+                    "HomeTeam": "Albacete Balompié",
+                    "AwayTeam": "CD Tenerife",
+                    "DateUtc": "24.11.2024"
+                },
+                {
+                    "HomeTeam": "Burgos CF",
+                    "AwayTeam": "SD Eibar",
+                    "DateUtc": "24.11.2024"
+                },
+                {
+                    "HomeTeam": "C\u00f3rdoba CF",
+                    "AwayTeam": "Real Zaragoza",
+                    "DateUtc": "24.11.2024"
+                },
+                {
+                    "HomeTeam": "Deportivo de La Coruña",
+                    "AwayTeam": "Sporting Gijón",
+                    "DateUtc": "24.11.2024"
+                },
+                {
+                    "HomeTeam": "Elche CF",
+                    "AwayTeam": "Real Oviedo",
+                    "DateUtc": "24.11.2024"
+                },
+                {
+                    "HomeTeam": "Racing Ferrol",
+                    "AwayTeam": "Levante UD",
+                    "DateUtc": "24.11.2024"
+                },
+                {
+                    "HomeTeam": "M\u00e1laga CF",
+                    "AwayTeam": "Racing Santander",
+                    "DateUtc": "24.11.2024"
+                },
+                {
+                    "HomeTeam": "FC Cartagena",
+                    "AwayTeam": "UD Almer\u00eda",
+                    "DateUtc": "24.11.2024"
+                },
+                {
+                    "HomeTeam": "Granada CF",
+                    "AwayTeam": "Cádiz CF",
+                    "DateUtc": "24.11.2024"
+                },
+                {
+                    "HomeTeam": "SD Huesca",
+                    "AwayTeam": "CD Castell\u00f3n",
+                    "DateUtc": "24.11.2024"
+                },
+                {
+                    "HomeTeam": "CD Mirand\u00e9s",
+                    "AwayTeam": "CD Eldense",
+                    "DateUtc": "24.11.2024"
+                }
+            ]
+        },
+        {
+            "matchday": "17",
+            "fixtures": [
+                {
+                    "HomeTeam": "UD Almer\u00eda",
+                    "AwayTeam": "Granada CF",
+                    "DateUtc": "01.12.2024"
+                },
+                {
+                    "HomeTeam": "Cádiz CF",
+                    "AwayTeam": "Deportivo de La Coruña",
+                    "DateUtc": "01.12.2024"
+                },
+                {
+                    "HomeTeam": "CD Castell\u00f3n",
+                    "AwayTeam": "M\u00e1laga CF",
+                    "DateUtc": "01.12.2024"
+                },
+                {
+                    "HomeTeam": "CD Eldense",
+                    "AwayTeam": "Racing Ferrol",
+                    "DateUtc": "01.12.2024"
+                },
+                {
+                    "HomeTeam": "Real Zaragoza",
+                    "AwayTeam": "Albacete Balompié",
+                    "DateUtc": "01.12.2024"
+                },
+                {
+                    "HomeTeam": "Levante UD",
+                    "AwayTeam": "Burgos CF",
+                    "DateUtc": "01.12.2024"
+                },
+                {
+                    "HomeTeam": "SD Eibar",
+                    "AwayTeam": "FC Cartagena",
+                    "DateUtc": "01.12.2024"
+                },
+                {
+                    "HomeTeam": "Sporting Gijón",
+                    "AwayTeam": "C\u00f3rdoba CF",
+                    "DateUtc": "01.12.2024"
+                },
+                {
+                    "HomeTeam": "CD Tenerife",
+                    "AwayTeam": "Elche CF",
+                    "DateUtc": "01.12.2024"
+                },
+                {
+                    "HomeTeam": "Real Oviedo",
+                    "AwayTeam": "SD Huesca",
+                    "DateUtc": "01.12.2024"
+                },
+                {
+                    "HomeTeam": "Racing Santander",
+                    "AwayTeam": "CD Mirand\u00e9s",
+                    "DateUtc": "01.12.2024"
+                }
+            ]
+        },
+        {
+            "matchday": "18",
+            "fixtures": [
+                {
+                    "HomeTeam": "Albacete Balompié",
+                    "AwayTeam": "CD Castell\u00f3n",
+                    "DateUtc": "08.12.2024"
+                },
+                {
+                    "HomeTeam": "Burgos CF",
+                    "AwayTeam": "CD Eldense",
+                    "DateUtc": "08.12.2024"
+                },
+                {
+                    "HomeTeam": "FC Cartagena",
+                    "AwayTeam": "Sporting Gijón",
+                    "DateUtc": "08.12.2024"
+                },
+                {
+                    "HomeTeam": "C\u00f3rdoba CF",
+                    "AwayTeam": "CD Tenerife",
+                    "DateUtc": "08.12.2024"
+                },
+                {
+                    "HomeTeam": "Deportivo de La Coruña",
+                    "AwayTeam": "Real Zaragoza",
+                    "DateUtc": "08.12.2024"
+                },
+                {
+                    "HomeTeam": "Racing Ferrol",
+                    "AwayTeam": "Real Oviedo",
+                    "DateUtc": "08.12.2024"
+                },
+                {
+                    "HomeTeam": "Granada CF",
+                    "AwayTeam": "Racing Santander",
+                    "DateUtc": "08.12.2024"
+                },
+                {
+                    "HomeTeam": "M\u00e1laga CF",
+                    "AwayTeam": "UD Almer\u00eda",
+                    "DateUtc": "08.12.2024"
+                },
+                {
+                    "HomeTeam": "Elche CF",
+                    "AwayTeam": "Cádiz CF",
+                    "DateUtc": "08.12.2024"
+                },
+                {
+                    "HomeTeam": "SD Huesca",
+                    "AwayTeam": "SD Eibar",
+                    "DateUtc": "08.12.2024"
+                },
+                {
+                    "HomeTeam": "CD Mirand\u00e9s",
+                    "AwayTeam": "Levante UD",
+                    "DateUtc": "08.12.2024"
+                }
+            ]
+        },
+        {
+            "matchday": "19",
+            "fixtures": [
+                {
+                    "HomeTeam": "UD Almer\u00eda",
+                    "AwayTeam": "CD Mirand\u00e9s",
+                    "DateUtc": "15.12.2024"
+                },
+                {
+                    "HomeTeam": "Burgos CF",
+                    "AwayTeam": "M\u00e1laga CF",
+                    "DateUtc": "15.12.2024"
+                },
+                {
+                    "HomeTeam": "SD Eibar",
+                    "AwayTeam": "Real Zaragoza",
+                    "DateUtc": "15.12.2024"
+                },
+                {
+                    "HomeTeam": "Cádiz CF",
+                    "AwayTeam": "Albacete Balompié",
+                    "DateUtc": "15.12.2024"
+                },
+                {
+                    "HomeTeam": "CD Castell\u00f3n",
+                    "AwayTeam": "FC Cartagena",
+                    "DateUtc": "15.12.2024"
+                },
+                {
+                    "HomeTeam": "Levante UD",
+                    "AwayTeam": "C\u00f3rdoba CF",
+                    "DateUtc": "15.12.2024"
+                },
+                {
+                    "HomeTeam": "CD Tenerife",
+                    "AwayTeam": "Deportivo de La Coruña",
+                    "DateUtc": "15.12.2024"
+                },
+                {
+                    "HomeTeam": "CD Eldense",
+                    "AwayTeam": "Elche CF",
+                    "DateUtc": "15.12.2024"
+                },
+                {
+                    "HomeTeam": "Sporting Gijón",
+                    "AwayTeam": "Racing Ferrol",
+                    "DateUtc": "15.12.2024"
+                },
+                {
+                    "HomeTeam": "Real Oviedo",
+                    "AwayTeam": "Granada CF",
+                    "DateUtc": "15.12.2024"
+                },
+                {
+                    "HomeTeam": "Racing Santander",
+                    "AwayTeam": "SD Huesca",
+                    "DateUtc": "15.12.2024"
+                }
+            ]
+        },
+        {
+            "matchday": "20",
+            "fixtures": [
+                {
+                    "HomeTeam": "Albacete Balompié",
+                    "AwayTeam": "Levante UD",
+                    "DateUtc": "18.12.2024"
+                },
+                {
+                    "HomeTeam": "C\u00f3rdoba CF",
+                    "AwayTeam": "SD Eibar",
+                    "DateUtc": "18.12.2024"
+                },
+                {
+                    "HomeTeam": "Elche CF",
+                    "AwayTeam": "Racing Santander",
+                    "DateUtc": "18.12.2024"
+                },
+                {
+                    "HomeTeam": "SD Huesca",
+                    "AwayTeam": "CD Tenerife",
+                    "DateUtc": "18.12.2024"
+                },
+                {
+                    "HomeTeam": "CD Mirand\u00e9s",
+                    "AwayTeam": "Sporting Gijón",
+                    "DateUtc": "18.12.2024"
+                },
+                {
+                    "HomeTeam": "Racing Ferrol",
+                    "AwayTeam": "UD Almer\u00eda",
+                    "DateUtc": "18.12.2024"
+                },
+                {
+                    "HomeTeam": "Cádiz CF",
+                    "AwayTeam": "Burgos CF",
+                    "DateUtc": "18.12.2024"
+                },
+                {
+                    "HomeTeam": "Granada CF",
+                    "AwayTeam": "FC Cartagena",
+                    "DateUtc": "18.12.2024"
+                },
+                {
+                    "HomeTeam": "Deportivo de La Coruña",
+                    "AwayTeam": "CD Castell\u00f3n",
+                    "DateUtc": "18.12.2024"
+                },
+                {
+                    "HomeTeam": "M\u00e1laga CF",
+                    "AwayTeam": "CD Eldense",
+                    "DateUtc": "18.12.2024"
+                },
+                {
+                    "HomeTeam": "Real Zaragoza",
+                    "AwayTeam": "Real Oviedo",
+                    "DateUtc": "18.12.2024"
+                }
+            ]
+        },
+        {
+            "matchday": "21",
+            "fixtures": [
+                {
+                    "HomeTeam": "UD Almer\u00eda",
+                    "AwayTeam": "Cádiz CF",
+                    "DateUtc": "22.12.2024"
+                },
+                {
+                    "HomeTeam": "Burgos CF",
+                    "AwayTeam": "CD Tenerife",
+                    "DateUtc": "22.12.2024"
+                },
+                {
+                    "HomeTeam": "CD Castell\u00f3n",
+                    "AwayTeam": "Elche CF",
+                    "DateUtc": "22.12.2024"
+                },
+                {
+                    "HomeTeam": "Deportivo de La Coruña",
+                    "AwayTeam": "CD Mirand\u00e9s",
+                    "DateUtc": "22.12.2024"
+                },
+                {
+                    "HomeTeam": "SD Eibar",
+                    "AwayTeam": "Granada CF",
+                    "DateUtc": "22.12.2024"
+                },
+                {
+                    "HomeTeam": "FC Cartagena",
+                    "AwayTeam": "Albacete Balompié",
+                    "DateUtc": "22.12.2024"
+                },
+                {
+                    "HomeTeam": "Real Oviedo",
+                    "AwayTeam": "C\u00f3rdoba CF",
+                    "DateUtc": "22.12.2024"
+                },
+                {
+                    "HomeTeam": "Racing Santander",
+                    "AwayTeam": "CD Eldense",
+                    "DateUtc": "22.12.2024"
+                },
+                {
+                    "HomeTeam": "Real Zaragoza",
+                    "AwayTeam": "Racing Ferrol",
+                    "DateUtc": "22.12.2024"
+                },
+                {
+                    "HomeTeam": "Levante UD",
+                    "AwayTeam": "SD Huesca",
+                    "DateUtc": "22.12.2024"
+                },
+                {
+                    "HomeTeam": "Sporting Gijón",
+                    "AwayTeam": "M\u00e1laga CF",
+                    "DateUtc": "22.12.2024"
+                }
+            ]
+        },
+        {
+            "matchday": "22",
+            "fixtures": [
+                {
+                    "HomeTeam": "Albacete Balompié",
+                    "AwayTeam": "Racing Santander",
+                    "DateUtc": "12.01.2025"
+                },
+                {
+                    "HomeTeam": "Cádiz CF",
+                    "AwayTeam": "Levante UD",
+                    "DateUtc": "12.01.2025"
+                },
+                {
+                    "HomeTeam": "Elche CF",
+                    "AwayTeam": "Real Zaragoza",
+                    "DateUtc": "12.01.2025"
+                },
+                {
+                    "HomeTeam": "SD Huesca",
+                    "AwayTeam": "CD Mirand\u00e9s",
+                    "DateUtc": "12.01.2025"
+                },
+                {
+                    "HomeTeam": "Real Oviedo",
+                    "AwayTeam": "Sporting Gijón",
+                    "DateUtc": "12.01.2025"
+                },
+                {
+                    "HomeTeam": "C\u00f3rdoba CF",
+                    "AwayTeam": "UD Almer\u00eda",
+                    "DateUtc": "12.01.2025"
+                },
+                {
+                    "HomeTeam": "Granada CF",
+                    "AwayTeam": "Burgos CF",
+                    "DateUtc": "12.01.2025"
+                },
+                {
+                    "HomeTeam": "Racing Ferrol",
+                    "AwayTeam": "FC Cartagena",
+                    "DateUtc": "12.01.2025"
+                },
+                {
+                    "HomeTeam": "CD Tenerife",
+                    "AwayTeam": "CD Castell\u00f3n",
+                    "DateUtc": "12.01.2025"
+                },
+                {
+                    "HomeTeam": "M\u00e1laga CF",
+                    "AwayTeam": "Deportivo de La Coruña",
+                    "DateUtc": "12.01.2025"
+                },
+                {
+                    "HomeTeam": "CD Eldense",
+                    "AwayTeam": "SD Eibar",
+                    "DateUtc": "12.01.2025"
+                }
+            ]
+        },
+        {
+            "matchday": "23",
+            "fixtures": [
+                {
+                    "HomeTeam": "UD Almer\u00eda",
+                    "AwayTeam": "SD Huesca",
+                    "DateUtc": "19.01.2025"
+                },
+                {
+                    "HomeTeam": "Burgos CF",
+                    "AwayTeam": "Deportivo de La Coruña",
+                    "DateUtc": "19.01.2025"
+                },
+                {
+                    "HomeTeam": "FC Cartagena",
+                    "AwayTeam": "Real Oviedo",
+                    "DateUtc": "19.01.2025"
+                },
+                {
+                    "HomeTeam": "CD Castell\u00f3n",
+                    "AwayTeam": "C\u00f3rdoba CF",
+                    "DateUtc": "19.01.2025"
+                },
+                {
+                    "HomeTeam": "SD Eibar",
+                    "AwayTeam": "Albacete Balompié",
+                    "DateUtc": "19.01.2025"
+                },
+                {
+                    "HomeTeam": "CD Eldense",
+                    "AwayTeam": "Cádiz CF",
+                    "DateUtc": "19.01.2025"
+                },
+                {
+                    "HomeTeam": "Sporting Gijón",
+                    "AwayTeam": "Elche CF",
+                    "DateUtc": "19.01.2025"
+                },
+                {
+                    "HomeTeam": "Racing Santander",
+                    "AwayTeam": "Racing Ferrol",
+                    "DateUtc": "19.01.2025"
+                },
+                {
+                    "HomeTeam": "Levante UD",
+                    "AwayTeam": "Granada CF",
+                    "DateUtc": "19.01.2025"
+                },
+                {
+                    "HomeTeam": "CD Mirand\u00e9s",
+                    "AwayTeam": "M\u00e1laga CF",
+                    "DateUtc": "19.01.2025"
+                },
+                {
+                    "HomeTeam": "Real Zaragoza",
+                    "AwayTeam": "CD Tenerife",
+                    "DateUtc": "19.01.2025"
+                }
+            ]
+        },
+        {
+            "matchday": "24",
+            "fixtures": [
+                {
+                    "HomeTeam": "Albacete Balompié",
+                    "AwayTeam": "UD Almer\u00eda",
+                    "DateUtc": "26.01.2025"
+                },
+                {
+                    "HomeTeam": "Cádiz CF",
+                    "AwayTeam": "CD Mirand\u00e9s",
+                    "DateUtc": "26.01.2025"
+                },
+                {
+                    "HomeTeam": "C\u00f3rdoba CF",
+                    "AwayTeam": "Racing Santander",
+                    "DateUtc": "26.01.2025"
+                },
+                {
+                    "HomeTeam": "Deportivo de La Coruña",
+                    "AwayTeam": "Levante UD",
+                    "DateUtc": "26.01.2025"
+                },
+                {
+                    "HomeTeam": "Granada CF",
+                    "AwayTeam": "Sporting Gijón",
+                    "DateUtc": "26.01.2025"
+                },
+                {
+                    "HomeTeam": "M\u00e1laga CF",
+                    "AwayTeam": "Real Zaragoza",
+                    "DateUtc": "26.01.2025"
+                },
+                {
+                    "HomeTeam": "Racing Ferrol",
+                    "AwayTeam": "Burgos CF",
+                    "DateUtc": "26.01.2025"
+                },
+                {
+                    "HomeTeam": "SD Huesca",
+                    "AwayTeam": "FC Cartagena",
+                    "DateUtc": "26.01.2025"
+                },
+                {
+                    "HomeTeam": "Real Oviedo",
+                    "AwayTeam": "CD Castell\u00f3n",
+                    "DateUtc": "26.01.2025"
+                },
+                {
+                    "HomeTeam": "Elche CF",
+                    "AwayTeam": "SD Eibar",
+                    "DateUtc": "26.01.2025"
+                },
+                {
+                    "HomeTeam": "CD Tenerife",
+                    "AwayTeam": "CD Eldense",
+                    "DateUtc": "26.01.2025"
+                }
+            ]
+        },
+        {
+            "matchday": "25",
+            "fixtures": [
+                {
+                    "HomeTeam": "UD Almer\u00eda",
+                    "AwayTeam": "Real Oviedo",
+                    "DateUtc": "02.02.2025"
+                },
+                {
+                    "HomeTeam": "FC Cartagena",
+                    "AwayTeam": "C\u00f3rdoba CF",
+                    "DateUtc": "02.02.2025"
+                },
+                {
+                    "HomeTeam": "CD Castell\u00f3n",
+                    "AwayTeam": "SD Huesca",
+                    "DateUtc": "02.02.2025"
+                },
+                {
+                    "HomeTeam": "CD Eldense",
+                    "AwayTeam": "Granada CF",
+                    "DateUtc": "02.02.2025"
+                },
+                {
+                    "HomeTeam": "CD Tenerife",
+                    "AwayTeam": "Albacete Balompié",
+                    "DateUtc": "02.02.2025"
+                },
+                {
+                    "HomeTeam": "Sporting Gijón",
+                    "AwayTeam": "Burgos CF",
+                    "DateUtc": "02.02.2025"
+                },
+                {
+                    "HomeTeam": "Real Zaragoza",
+                    "AwayTeam": "Cádiz CF",
+                    "DateUtc": "02.02.2025"
+                },
+                {
+                    "HomeTeam": "SD Eibar",
+                    "AwayTeam": "Deportivo de La Coruña",
+                    "DateUtc": "02.02.2025"
+                },
+                {
+                    "HomeTeam": "CD Mirand\u00e9s",
+                    "AwayTeam": "Elche CF",
+                    "DateUtc": "02.02.2025"
+                },
+                {
+                    "HomeTeam": "Levante UD",
+                    "AwayTeam": "Racing Ferrol",
+                    "DateUtc": "02.02.2025"
+                },
+                {
+                    "HomeTeam": "Racing Santander",
+                    "AwayTeam": "M\u00e1laga CF",
+                    "DateUtc": "02.02.2025"
+                }
+            ]
+        },
+        {
+            "matchday": "26",
+            "fixtures": [
+                {
+                    "HomeTeam": "Albacete Balompié",
+                    "AwayTeam": "Real Zaragoza",
+                    "DateUtc": "09.02.2025"
+                },
+                {
+                    "HomeTeam": "Burgos CF",
+                    "AwayTeam": "Racing Santander",
+                    "DateUtc": "09.02.2025"
+                },
+                {
+                    "HomeTeam": "Cádiz CF",
+                    "AwayTeam": "FC Cartagena",
+                    "DateUtc": "09.02.2025"
+                },
+                {
+                    "HomeTeam": "C\u00f3rdoba CF",
+                    "AwayTeam": "SD Huesca",
+                    "DateUtc": "09.02.2025"
+                },
+                {
+                    "HomeTeam": "Elche CF",
+                    "AwayTeam": "CD Tenerife",
+                    "DateUtc": "09.02.2025"
+                },
+                {
+                    "HomeTeam": "Granada CF",
+                    "AwayTeam": "CD Mirand\u00e9s",
+                    "DateUtc": "09.02.2025"
+                },
+                {
+                    "HomeTeam": "Deportivo de La Coruña",
+                    "AwayTeam": "UD Almer\u00eda",
+                    "DateUtc": "09.02.2025"
+                },
+                {
+                    "HomeTeam": "Racing Ferrol",
+                    "AwayTeam": "CD Castell\u00f3n",
+                    "DateUtc": "09.02.2025"
+                },
+                {
+                    "HomeTeam": "Sporting Gijón",
+                    "AwayTeam": "SD Eibar",
+                    "DateUtc": "09.02.2025"
+                },
+                {
+                    "HomeTeam": "Real Oviedo",
+                    "AwayTeam": "CD Eldense",
+                    "DateUtc": "09.02.2025"
+                },
+                {
+                    "HomeTeam": "M\u00e1laga CF",
+                    "AwayTeam": "Levante UD",
+                    "DateUtc": "09.02.2025"
+                }
+            ]
+        },
+        {
+            "matchday": "27",
+            "fixtures": [
+                {
+                    "HomeTeam": "UD Almer\u00eda",
+                    "AwayTeam": "Elche CF",
+                    "DateUtc": "16.02.2025"
+                },
+                {
+                    "HomeTeam": "FC Cartagena",
+                    "AwayTeam": "M\u00e1laga CF",
+                    "DateUtc": "16.02.2025"
+                },
+                {
+                    "HomeTeam": "CD Castell\u00f3n",
+                    "AwayTeam": "SD Eibar",
+                    "DateUtc": "16.02.2025"
+                },
+                {
+                    "HomeTeam": "Levante UD",
+                    "AwayTeam": "Sporting Gijón",
+                    "DateUtc": "16.02.2025"
+                },
+                {
+                    "HomeTeam": "Real Oviedo",
+                    "AwayTeam": "Albacete Balompié",
+                    "DateUtc": "16.02.2025"
+                },
+                {
+                    "HomeTeam": "Real Zaragoza",
+                    "AwayTeam": "Burgos CF",
+                    "DateUtc": "16.02.2025"
+                },
+                {
+                    "HomeTeam": "Racing Santander",
+                    "AwayTeam": "Cádiz CF",
+                    "DateUtc": "16.02.2025"
+                },
+                {
+                    "HomeTeam": "CD Tenerife",
+                    "AwayTeam": "C\u00f3rdoba CF",
+                    "DateUtc": "16.02.2025"
+                },
+                {
+                    "HomeTeam": "CD Eldense",
+                    "AwayTeam": "Deportivo de La Coruña",
+                    "DateUtc": "16.02.2025"
+                },
+                {
+                    "HomeTeam": "CD Mirand\u00e9s",
+                    "AwayTeam": "Racing Ferrol",
+                    "DateUtc": "16.02.2025"
+                },
+                {
+                    "HomeTeam": "SD Huesca",
+                    "AwayTeam": "Granada CF",
+                    "DateUtc": "16.02.2025"
+                }
+            ]
+        },
+        {
+            "matchday": "28",
+            "fixtures": [
+                {
+                    "HomeTeam": "Albacete Balompié",
+                    "AwayTeam": "CD Eldense",
+                    "DateUtc": "23.02.2025"
+                },
+                {
+                    "HomeTeam": "Burgos CF",
+                    "AwayTeam": "Real Oviedo",
+                    "DateUtc": "23.02.2025"
+                },
+                {
+                    "HomeTeam": "Cádiz CF",
+                    "AwayTeam": "CD Castell\u00f3n",
+                    "DateUtc": "23.02.2025"
+                },
+                {
+                    "HomeTeam": "Deportivo de La Coruña",
+                    "AwayTeam": "SD Huesca",
+                    "DateUtc": "23.02.2025"
+                },
+                {
+                    "HomeTeam": "SD Eibar",
+                    "AwayTeam": "Racing Santander",
+                    "DateUtc": "23.02.2025"
+                },
+                {
+                    "HomeTeam": "Granada CF",
+                    "AwayTeam": "Real Zaragoza",
+                    "DateUtc": "23.02.2025"
+                },
+                {
+                    "HomeTeam": "Levante UD",
+                    "AwayTeam": "CD Mirand\u00e9s",
+                    "DateUtc": "23.02.2025"
+                },
+                {
+                    "HomeTeam": "M\u00e1laga CF",
+                    "AwayTeam": "CD Tenerife",
+                    "DateUtc": "23.02.2025"
+                },
+                {
+                    "HomeTeam": "Sporting Gijón",
+                    "AwayTeam": "UD Almer\u00eda",
+                    "DateUtc": "23.02.2025"
+                },
+                {
+                    "HomeTeam": "Elche CF",
+                    "AwayTeam": "FC Cartagena",
+                    "DateUtc": "23.02.2025"
+                },
+                {
+                    "HomeTeam": "Racing Ferrol",
+                    "AwayTeam": "C\u00f3rdoba CF",
+                    "DateUtc": "23.02.2025"
+                }
+            ]
+        },
+        {
+            "matchday": "29",
+            "fixtures": [
+                {
+                    "HomeTeam": "Albacete Balompié",
+                    "AwayTeam": "Cádiz CF",
+                    "DateUtc": "02.03.2025"
+                },
+                {
+                    "HomeTeam": "UD Almer\u00eda",
+                    "AwayTeam": "M\u00e1laga CF",
+                    "DateUtc": "02.03.2025"
+                },
+                {
+                    "HomeTeam": "FC Cartagena",
+                    "AwayTeam": "SD Eibar",
+                    "DateUtc": "02.03.2025"
+                },
+                {
+                    "HomeTeam": "C\u00f3rdoba CF",
+                    "AwayTeam": "Granada CF",
+                    "DateUtc": "02.03.2025"
+                },
+                {
+                    "HomeTeam": "CD Eldense",
+                    "AwayTeam": "Levante UD",
+                    "DateUtc": "02.03.2025"
+                },
+                {
+                    "HomeTeam": "CD Mirand\u00e9s",
+                    "AwayTeam": "CD Tenerife",
+                    "DateUtc": "02.03.2025"
+                },
+                {
+                    "HomeTeam": "CD Castell\u00f3n",
+                    "AwayTeam": "Burgos CF",
+                    "DateUtc": "02.03.2025"
+                },
+                {
+                    "HomeTeam": "Real Oviedo",
+                    "AwayTeam": "Deportivo de La Coruña",
+                    "DateUtc": "02.03.2025"
+                },
+                {
+                    "HomeTeam": "Racing Santander",
+                    "AwayTeam": "Elche CF",
+                    "DateUtc": "02.03.2025"
+                },
+                {
+                    "HomeTeam": "SD Huesca",
+                    "AwayTeam": "Racing Ferrol",
+                    "DateUtc": "02.03.2025"
+                },
+                {
+                    "HomeTeam": "Real Zaragoza",
+                    "AwayTeam": "Sporting Gijón",
+                    "DateUtc": "02.03.2025"
+                }
+            ]
+        },
+        {
+            "matchday": "30",
+            "fixtures": [
+                {
+                    "HomeTeam": "CD Mirand\u00e9s",
+                    "AwayTeam": "Real Oviedo",
+                    "DateUtc": "09.03.2025"
+                },
+                {
+                    "HomeTeam": "Burgos CF",
+                    "AwayTeam": "Albacete Balompié",
+                    "DateUtc": "09.03.2025"
+                },
+                {
+                    "HomeTeam": "SD Eibar",
+                    "AwayTeam": "UD Almer\u00eda",
+                    "DateUtc": "09.03.2025"
+                },
+                {
+                    "HomeTeam": "M\u00e1laga CF",
+                    "AwayTeam": "Cádiz CF",
+                    "DateUtc": "09.03.2025"
+                },
+                {
+                    "HomeTeam": "Levante UD",
+                    "AwayTeam": "FC Cartagena",
+                    "DateUtc": "09.03.2025"
+                },
+                {
+                    "HomeTeam": "Elche CF",
+                    "AwayTeam": "CD Castell\u00f3n",
+                    "DateUtc": "09.03.2025"
+                },
+                {
+                    "HomeTeam": "Deportivo de La Coruña",
+                    "AwayTeam": "C\u00f3rdoba CF",
+                    "DateUtc": "09.03.2025"
+                },
+                {
+                    "HomeTeam": "Real Zaragoza",
+                    "AwayTeam": "CD Eldense",
+                    "DateUtc": "09.03.2025"
+                },
+                {
+                    "HomeTeam": "Granada CF",
+                    "AwayTeam": "Racing Ferrol",
+                    "DateUtc": "09.03.2025"
+                },
+                {
+                    "HomeTeam": "CD Tenerife",
+                    "AwayTeam": "SD Huesca",
+                    "DateUtc": "09.03.2025"
+                },
+                {
+                    "HomeTeam": "Sporting Gijón",
+                    "AwayTeam": "Racing Santander",
+                    "DateUtc": "09.03.2025"
+                }
+            ]
+        },
+        {
+            "matchday": "31",
+            "fixtures": [
+                {
+                    "HomeTeam": "Albacete Balompié",
+                    "AwayTeam": "M\u00e1laga CF",
+                    "DateUtc": "16.03.2025"
+                },
+                {
+                    "HomeTeam": "UD Almer\u00eda",
+                    "AwayTeam": "Real Zaragoza",
+                    "DateUtc": "16.03.2025"
+                },
+                {
+                    "HomeTeam": "Cádiz CF",
+                    "AwayTeam": "Granada CF",
+                    "DateUtc": "16.03.2025"
+                },
+                {
+                    "HomeTeam": "CD Castell\u00f3n",
+                    "AwayTeam": "Deportivo de La Coruña",
+                    "DateUtc": "16.03.2025"
+                },
+                {
+                    "HomeTeam": "C\u00f3rdoba CF",
+                    "AwayTeam": "Sporting Gijón",
+                    "DateUtc": "16.03.2025"
+                },
+                {
+                    "HomeTeam": "CD Eldense",
+                    "AwayTeam": "CD Mirand\u00e9s",
+                    "DateUtc": "16.03.2025"
+                },
+                {
+                    "HomeTeam": "SD Huesca",
+                    "AwayTeam": "Levante UD",
+                    "DateUtc": "16.03.2025"
+                },
+                {
+                    "HomeTeam": "Racing Santander",
+                    "AwayTeam": "CD Tenerife",
+                    "DateUtc": "16.03.2025"
+                },
+                {
+                    "HomeTeam": "FC Cartagena",
+                    "AwayTeam": "Burgos CF",
+                    "DateUtc": "16.03.2025"
+                },
+                {
+                    "HomeTeam": "Racing Ferrol",
+                    "AwayTeam": "SD Eibar",
+                    "DateUtc": "16.03.2025"
+                },
+                {
+                    "HomeTeam": "Real Oviedo",
+                    "AwayTeam": "Elche CF",
+                    "DateUtc": "16.03.2025"
+                }
+            ]
+        },
+        {
+            "matchday": "32",
+            "fixtures": [
+                {
+                    "HomeTeam": "SD Eibar",
+                    "AwayTeam": "SD Huesca",
+                    "DateUtc": "23.03.2025"
+                },
+                {
+                    "HomeTeam": "Elche CF",
+                    "AwayTeam": "CD Eldense",
+                    "DateUtc": "23.03.2025"
+                },
+                {
+                    "HomeTeam": "Granada CF",
+                    "AwayTeam": "Real Oviedo",
+                    "DateUtc": "23.03.2025"
+                },
+                {
+                    "HomeTeam": "CD Mirand\u00e9s",
+                    "AwayTeam": "Racing Santander",
+                    "DateUtc": "23.03.2025"
+                },
+                {
+                    "HomeTeam": "Sporting Gijón",
+                    "AwayTeam": "Albacete Balompié",
+                    "DateUtc": "23.03.2025"
+                },
+                {
+                    "HomeTeam": "Burgos CF",
+                    "AwayTeam": "UD Almer\u00eda",
+                    "DateUtc": "23.03.2025"
+                },
+                {
+                    "HomeTeam": "CD Tenerife",
+                    "AwayTeam": "Cádiz CF",
+                    "DateUtc": "23.03.2025"
+                },
+                {
+                    "HomeTeam": "Deportivo de La Coruña",
+                    "AwayTeam": "FC Cartagena",
+                    "DateUtc": "23.03.2025"
+                },
+                {
+                    "HomeTeam": "Levante UD",
+                    "AwayTeam": "CD Castell\u00f3n",
+                    "DateUtc": "23.03.2025"
+                },
+                {
+                    "HomeTeam": "Real Zaragoza",
+                    "AwayTeam": "C\u00f3rdoba CF",
+                    "DateUtc": "23.03.2025"
+                },
+                {
+                    "HomeTeam": "M\u00e1laga CF",
+                    "AwayTeam": "Racing Ferrol",
+                    "DateUtc": "23.03.2025"
+                }
+            ]
+        },
+        {
+            "matchday": "33",
+            "fixtures": [
+                {
+                    "HomeTeam": "Albacete Balompié",
+                    "AwayTeam": "CD Mirand\u00e9s",
+                    "DateUtc": "30.03.2025"
+                },
+                {
+                    "HomeTeam": "UD Almer\u00eda",
+                    "AwayTeam": "Levante UD",
+                    "DateUtc": "30.03.2025"
+                },
+                {
+                    "HomeTeam": "Cádiz CF",
+                    "AwayTeam": "SD Eibar",
+                    "DateUtc": "30.03.2025"
+                },
+                {
+                    "HomeTeam": "FC Cartagena",
+                    "AwayTeam": "CD Castell\u00f3n",
+                    "DateUtc": "30.03.2025"
+                },
+                {
+                    "HomeTeam": "C\u00f3rdoba CF",
+                    "AwayTeam": "Elche CF",
+                    "DateUtc": "30.03.2025"
+                },
+                {
+                    "HomeTeam": "SD Huesca",
+                    "AwayTeam": "Sporting Gijón",
+                    "DateUtc": "30.03.2025"
+                },
+                {
+                    "HomeTeam": "Racing Santander",
+                    "AwayTeam": "Real Zaragoza",
+                    "DateUtc": "30.03.2025"
+                },
+                {
+                    "HomeTeam": "CD Eldense",
+                    "AwayTeam": "Burgos CF",
+                    "DateUtc": "30.03.2025"
+                },
+                {
+                    "HomeTeam": "Racing Ferrol",
+                    "AwayTeam": "Deportivo de La Coruña",
+                    "DateUtc": "30.03.2025"
+                },
+                {
+                    "HomeTeam": "CD Tenerife",
+                    "AwayTeam": "Granada CF",
+                    "DateUtc": "30.03.2025"
+                },
+                {
+                    "HomeTeam": "Real Oviedo",
+                    "AwayTeam": "M\u00e1laga CF",
+                    "DateUtc": "30.03.2025"
+                }
+            ]
+        },
+        {
+            "matchday": "34",
+            "fixtures": [
+                {
+                    "HomeTeam": "Burgos CF",
+                    "AwayTeam": "SD Huesca",
+                    "DateUtc": "06.04.2025"
+                },
+                {
+                    "HomeTeam": "FC Cartagena",
+                    "AwayTeam": "CD Eldense",
+                    "DateUtc": "06.04.2025"
+                },
+                {
+                    "HomeTeam": "SD Eibar",
+                    "AwayTeam": "Real Oviedo",
+                    "DateUtc": "06.04.2025"
+                },
+                {
+                    "HomeTeam": "Elche CF",
+                    "AwayTeam": "Racing Ferrol",
+                    "DateUtc": "06.04.2025"
+                },
+                {
+                    "HomeTeam": "Levante UD",
+                    "AwayTeam": "Racing Santander",
+                    "DateUtc": "06.04.2025"
+                },
+                {
+                    "HomeTeam": "Sporting Gijón",
+                    "AwayTeam": "CD Tenerife",
+                    "DateUtc": "06.04.2025"
+                },
+                {
+                    "HomeTeam": "CD Castell\u00f3n",
+                    "AwayTeam": "Albacete Balompié",
+                    "DateUtc": "06.04.2025"
+                },
+                {
+                    "HomeTeam": "Granada CF",
+                    "AwayTeam": "UD Almer\u00eda",
+                    "DateUtc": "06.04.2025"
+                },
+                {
+                    "HomeTeam": "Deportivo de La Coruña",
+                    "AwayTeam": "Cádiz CF",
+                    "DateUtc": "06.04.2025"
+                },
+                {
+                    "HomeTeam": "M\u00e1laga CF",
+                    "AwayTeam": "C\u00f3rdoba CF",
+                    "DateUtc": "06.04.2025"
+                },
+                {
+                    "HomeTeam": "Real Zaragoza",
+                    "AwayTeam": "CD Mirand\u00e9s",
+                    "DateUtc": "06.04.2025"
+                }
+            ]
+        },
+        {
+            "matchday": "35",
+            "fixtures": [
+                {
+                    "HomeTeam": "Albacete Balompié",
+                    "AwayTeam": "Granada CF",
+                    "DateUtc": "13.04.2025"
+                },
+                {
+                    "HomeTeam": "UD Almer\u00eda",
+                    "AwayTeam": "FC Cartagena",
+                    "DateUtc": "13.04.2025"
+                },
+                {
+                    "HomeTeam": "Cádiz CF",
+                    "AwayTeam": "Elche CF",
+                    "DateUtc": "13.04.2025"
+                },
+                {
+                    "HomeTeam": "C\u00f3rdoba CF",
+                    "AwayTeam": "Levante UD",
+                    "DateUtc": "13.04.2025"
+                },
+                {
+                    "HomeTeam": "CD Eldense",
+                    "AwayTeam": "Sporting Gijón",
+                    "DateUtc": "13.04.2025"
+                },
+                {
+                    "HomeTeam": "SD Huesca",
+                    "AwayTeam": "M\u00e1laga CF",
+                    "DateUtc": "13.04.2025"
+                },
+                {
+                    "HomeTeam": "CD Tenerife",
+                    "AwayTeam": "Burgos CF",
+                    "DateUtc": "13.04.2025"
+                },
+                {
+                    "HomeTeam": "Racing Santander",
+                    "AwayTeam": "CD Castell\u00f3n",
+                    "DateUtc": "13.04.2025"
+                },
+                {
+                    "HomeTeam": "CD Mirand\u00e9s",
+                    "AwayTeam": "Deportivo de La Coruña",
+                    "DateUtc": "13.04.2025"
+                },
+                {
+                    "HomeTeam": "Real Zaragoza",
+                    "AwayTeam": "SD Eibar",
+                    "DateUtc": "13.04.2025"
+                },
+                {
+                    "HomeTeam": "Real Oviedo",
+                    "AwayTeam": "Racing Ferrol",
+                    "DateUtc": "13.04.2025"
+                }
+            ]
+        },
+        {
+            "matchday": "36",
+            "fixtures": [
+                {
+                    "HomeTeam": "Burgos CF",
+                    "AwayTeam": "Cádiz CF",
+                    "DateUtc": "20.04.2025"
+                },
+                {
+                    "HomeTeam": "FC Cartagena",
+                    "AwayTeam": "Granada CF",
+                    "DateUtc": "20.04.2025"
+                },
+                {
+                    "HomeTeam": "C\u00f3rdoba CF",
+                    "AwayTeam": "Real Oviedo",
+                    "DateUtc": "20.04.2025"
+                },
+                {
+                    "HomeTeam": "Deportivo de La Coruña",
+                    "AwayTeam": "CD Tenerife",
+                    "DateUtc": "20.04.2025"
+                },
+                {
+                    "HomeTeam": "SD Eibar",
+                    "AwayTeam": "M\u00e1laga CF",
+                    "DateUtc": "20.04.2025"
+                },
+                {
+                    "HomeTeam": "SD Huesca",
+                    "AwayTeam": "Racing Santander",
+                    "DateUtc": "20.04.2025"
+                },
+                {
+                    "HomeTeam": "Levante UD",
+                    "AwayTeam": "Real Zaragoza",
+                    "DateUtc": "20.04.2025"
+                },
+                {
+                    "HomeTeam": "Elche CF",
+                    "AwayTeam": "Albacete Balompié",
+                    "DateUtc": "20.04.2025"
+                },
+                {
+                    "HomeTeam": "CD Castell\u00f3n",
+                    "AwayTeam": "UD Almer\u00eda",
+                    "DateUtc": "20.04.2025"
+                },
+                {
+                    "HomeTeam": "Racing Ferrol",
+                    "AwayTeam": "CD Eldense",
+                    "DateUtc": "20.04.2025"
+                },
+                {
+                    "HomeTeam": "Sporting Gijón",
+                    "AwayTeam": "CD Mirand\u00e9s",
+                    "DateUtc": "20.04.2025"
+                }
+            ]
+        },
+        {
+            "matchday": "37",
+            "fixtures": [
+                {
+                    "HomeTeam": "Albacete Balompié",
+                    "AwayTeam": "FC Cartagena",
+                    "DateUtc": "27.04.2025"
+                },
+                {
+                    "HomeTeam": "UD Almer\u00eda",
+                    "AwayTeam": "Racing Ferrol",
+                    "DateUtc": "27.04.2025"
+                },
+                {
+                    "HomeTeam": "Cádiz CF",
+                    "AwayTeam": "Sporting Gijón",
+                    "DateUtc": "27.04.2025"
+                },
+                {
+                    "HomeTeam": "CD Mirand\u00e9s",
+                    "AwayTeam": "Burgos CF",
+                    "DateUtc": "27.04.2025"
+                },
+                {
+                    "HomeTeam": "M\u00e1laga CF",
+                    "AwayTeam": "CD Castell\u00f3n",
+                    "DateUtc": "27.04.2025"
+                },
+                {
+                    "HomeTeam": "CD Eldense",
+                    "AwayTeam": "C\u00f3rdoba CF",
+                    "DateUtc": "27.04.2025"
+                },
+                {
+                    "HomeTeam": "Racing Santander",
+                    "AwayTeam": "Deportivo de La Coruña",
+                    "DateUtc": "27.04.2025"
+                },
+                {
+                    "HomeTeam": "CD Tenerife",
+                    "AwayTeam": "SD Eibar",
+                    "DateUtc": "27.04.2025"
+                },
+                {
+                    "HomeTeam": "Granada CF",
+                    "AwayTeam": "Elche CF",
+                    "DateUtc": "27.04.2025"
+                },
+                {
+                    "HomeTeam": "Real Zaragoza",
+                    "AwayTeam": "SD Huesca",
+                    "DateUtc": "27.04.2025"
+                },
+                {
+                    "HomeTeam": "Real Oviedo",
+                    "AwayTeam": "Levante UD",
+                    "DateUtc": "27.04.2025"
+                }
+            ]
+        },
+        {
+            "matchday": "38",
+            "fixtures": [
+                {
+                    "HomeTeam": "UD Almer\u00eda",
+                    "AwayTeam": "CD Eldense",
+                    "DateUtc": "04.05.2025"
+                },
+                {
+                    "HomeTeam": "Burgos CF",
+                    "AwayTeam": "Elche CF",
+                    "DateUtc": "04.05.2025"
+                },
+                {
+                    "HomeTeam": "FC Cartagena",
+                    "AwayTeam": "Racing Santander",
+                    "DateUtc": "04.05.2025"
+                },
+                {
+                    "HomeTeam": "CD Castell\u00f3n",
+                    "AwayTeam": "Sporting Gijón",
+                    "DateUtc": "04.05.2025"
+                },
+                {
+                    "HomeTeam": "SD Eibar",
+                    "AwayTeam": "CD Mirand\u00e9s",
+                    "DateUtc": "04.05.2025"
+                },
+                {
+                    "HomeTeam": "Racing Ferrol",
+                    "AwayTeam": "Real Zaragoza",
+                    "DateUtc": "04.05.2025"
+                },
+                {
+                    "HomeTeam": "SD Huesca",
+                    "AwayTeam": "Real Oviedo",
+                    "DateUtc": "04.05.2025"
+                },
+                {
+                    "HomeTeam": "Levante UD",
+                    "AwayTeam": "CD Tenerife",
+                    "DateUtc": "04.05.2025"
+                },
+                {
+                    "HomeTeam": "Deportivo de La Coruña",
+                    "AwayTeam": "Albacete Balompié",
+                    "DateUtc": "04.05.2025"
+                },
+                {
+                    "HomeTeam": "C\u00f3rdoba CF",
+                    "AwayTeam": "Cádiz CF",
+                    "DateUtc": "04.05.2025"
+                },
+                {
+                    "HomeTeam": "M\u00e1laga CF",
+                    "AwayTeam": "Granada CF",
+                    "DateUtc": "04.05.2025"
+                }
+            ]
+        },
+        {
+            "matchday": "39",
+            "fixtures": [
+                {
+                    "HomeTeam": "Albacete Balompié",
+                    "AwayTeam": "SD Huesca",
+                    "DateUtc": "11.05.2025"
+                },
+                {
+                    "HomeTeam": "Burgos CF",
+                    "AwayTeam": "C\u00f3rdoba CF",
+                    "DateUtc": "11.05.2025"
+                },
+                {
+                    "HomeTeam": "Elche CF",
+                    "AwayTeam": "Levante UD",
+                    "DateUtc": "11.05.2025"
+                },
+                {
+                    "HomeTeam": "CD Eldense",
+                    "AwayTeam": "M\u00e1laga CF",
+                    "DateUtc": "11.05.2025"
+                },
+                {
+                    "HomeTeam": "Cádiz CF",
+                    "AwayTeam": "UD Almer\u00eda",
+                    "DateUtc": "11.05.2025"
+                },
+                {
+                    "HomeTeam": "Real Zaragoza",
+                    "AwayTeam": "FC Cartagena",
+                    "DateUtc": "11.05.2025"
+                },
+                {
+                    "HomeTeam": "CD Mirand\u00e9s",
+                    "AwayTeam": "CD Castell\u00f3n",
+                    "DateUtc": "11.05.2025"
+                },
+                {
+                    "HomeTeam": "Sporting Gijón",
+                    "AwayTeam": "Deportivo de La Coruña",
+                    "DateUtc": "11.05.2025"
+                },
+                {
+                    "HomeTeam": "Granada CF",
+                    "AwayTeam": "SD Eibar",
+                    "DateUtc": "11.05.2025"
+                },
+                {
+                    "HomeTeam": "CD Tenerife",
+                    "AwayTeam": "Racing Ferrol",
+                    "DateUtc": "11.05.2025"
+                },
+                {
+                    "HomeTeam": "Racing Santander",
+                    "AwayTeam": "Real Oviedo",
+                    "DateUtc": "11.05.2025"
+                }
+            ]
+        },
+        {
+            "matchday": "40",
+            "fixtures": [
+                {
+                    "HomeTeam": "UD Almer\u00eda",
+                    "AwayTeam": "Racing Santander",
+                    "DateUtc": "18.05.2025"
+                },
+                {
+                    "HomeTeam": "FC Cartagena",
+                    "AwayTeam": "CD Tenerife",
+                    "DateUtc": "18.05.2025"
+                },
+                {
+                    "HomeTeam": "CD Castell\u00f3n",
+                    "AwayTeam": "CD Eldense",
+                    "DateUtc": "18.05.2025"
+                },
+                {
+                    "HomeTeam": "C\u00f3rdoba CF",
+                    "AwayTeam": "CD Mirand\u00e9s",
+                    "DateUtc": "18.05.2025"
+                },
+                {
+                    "HomeTeam": "Deportivo de La Coruña",
+                    "AwayTeam": "Granada CF",
+                    "DateUtc": "18.05.2025"
+                },
+                {
+                    "HomeTeam": "M\u00e1laga CF",
+                    "AwayTeam": "Sporting Gijón",
+                    "DateUtc": "18.05.2025"
+                },
+                {
+                    "HomeTeam": "Real Oviedo",
+                    "AwayTeam": "Real Zaragoza",
+                    "DateUtc": "18.05.2025"
+                },
+                {
+                    "HomeTeam": "Levante UD",
+                    "AwayTeam": "Albacete Balompié",
+                    "DateUtc": "18.05.2025"
+                },
+                {
+                    "HomeTeam": "SD Eibar",
+                    "AwayTeam": "Burgos CF",
+                    "DateUtc": "18.05.2025"
+                },
+                {
+                    "HomeTeam": "Racing Ferrol",
+                    "AwayTeam": "Cádiz CF",
+                    "DateUtc": "18.05.2025"
+                },
+                {
+                    "HomeTeam": "SD Huesca",
+                    "AwayTeam": "Elche CF",
+                    "DateUtc": "18.05.2025"
+                }
+            ]
+        },
+        {
+            "matchday": "41",
+            "fixtures": [
+                {
+                    "HomeTeam": "Albacete Balompié",
+                    "AwayTeam": "Racing Ferrol",
+                    "DateUtc": "25.05.2025"
+                },
+                {
+                    "HomeTeam": "Burgos CF",
+                    "AwayTeam": "Levante UD",
+                    "DateUtc": "25.05.2025"
+                },
+                {
+                    "HomeTeam": "Cádiz CF",
+                    "AwayTeam": "SD Huesca",
+                    "DateUtc": "25.05.2025"
+                },
+                {
+                    "HomeTeam": "Elche CF",
+                    "AwayTeam": "M\u00e1laga CF",
+                    "DateUtc": "25.05.2025"
+                },
+                {
+                    "HomeTeam": "CD Eldense",
+                    "AwayTeam": "Racing Santander",
+                    "DateUtc": "25.05.2025"
+                },
+                {
+                    "HomeTeam": "CD Mirand\u00e9s",
+                    "AwayTeam": "UD Almer\u00eda",
+                    "DateUtc": "25.05.2025"
+                },
+                {
+                    "HomeTeam": "Sporting Gijón",
+                    "AwayTeam": "FC Cartagena",
+                    "DateUtc": "25.05.2025"
+                },
+                {
+                    "HomeTeam": "Granada CF",
+                    "AwayTeam": "CD Castell\u00f3n",
+                    "DateUtc": "25.05.2025"
+                },
+                {
+                    "HomeTeam": "SD Eibar",
+                    "AwayTeam": "C\u00f3rdoba CF",
+                    "DateUtc": "25.05.2025"
+                },
+                {
+                    "HomeTeam": "Real Zaragoza",
+                    "AwayTeam": "Deportivo de La Coruña",
+                    "DateUtc": "25.05.2025"
+                },
+                {
+                    "HomeTeam": "CD Tenerife",
+                    "AwayTeam": "Real Oviedo",
+                    "DateUtc": "25.05.2025"
+                }
+            ]
+        },
+        {
+            "matchday": "42",
+            "fixtures": [
+                {
+                    "HomeTeam": "UD Almer\u00eda",
+                    "AwayTeam": "CD Tenerife",
+                    "DateUtc": "01.06.2025"
+                },
+                {
+                    "HomeTeam": "FC Cartagena",
+                    "AwayTeam": "CD Mirand\u00e9s",
+                    "DateUtc": "01.06.2025"
+                },
+                {
+                    "HomeTeam": "CD Castell\u00f3n",
+                    "AwayTeam": "Real Zaragoza",
+                    "DateUtc": "01.06.2025"
+                },
+                {
+                    "HomeTeam": "Deportivo de La Coruña",
+                    "AwayTeam": "Elche CF",
+                    "DateUtc": "01.06.2025"
+                },
+                {
+                    "HomeTeam": "Racing Ferrol",
+                    "AwayTeam": "Sporting Gijón",
+                    "DateUtc": "01.06.2025"
+                },
+                {
+                    "HomeTeam": "C\u00f3rdoba CF",
+                    "AwayTeam": "Albacete Balompié",
+                    "DateUtc": "01.06.2025"
+                },
+                {
+                    "HomeTeam": "M\u00e1laga CF",
+                    "AwayTeam": "Burgos CF",
+                    "DateUtc": "01.06.2025"
+                },
+                {
+                    "HomeTeam": "Real Oviedo",
+                    "AwayTeam": "Cádiz CF",
+                    "DateUtc": "01.06.2025"
+                },
+                {
+                    "HomeTeam": "Levante UD",
+                    "AwayTeam": "SD Eibar",
+                    "DateUtc": "01.06.2025"
+                },
+                {
+                    "HomeTeam": "SD Huesca",
+                    "AwayTeam": "CD Eldense",
+                    "DateUtc": "01.06.2025"
+                },
+                {
+                    "HomeTeam": "Racing Santander",
+                    "AwayTeam": "Granada CF",
+                    "DateUtc": "01.06.2025"
+                }
+            ]
+        },
+        {
+            "matchday": "Playoff 1 - Ida",
+            "fixtures": [
+                {
+                    "HomeTeam": null,
+                    "AwayTeam": null,
+                    "DateUtc": "08.06.2025"
+                },
+                {
+                    "HomeTeam": null,
+                    "AwayTeam": null,
+                    "DateUtc": "08.06.2025"
+                }
+            ]
+        },
+        {
+            "matchday": "Playoff 1 - Vuelta",
+            "fixtures": [
+                {
+                    "HomeTeam": null,
+                    "AwayTeam": null,
+                    "DateUtc": "11.06.2025"
+                },
+                {
+                    "HomeTeam": null,
+                    "AwayTeam": null,
+                    "DateUtc": "11.06.2025"
+                }
+            ]
+        },
+        {
+            "matchday": "Playoff 2 - Ida",
+            "fixtures": [
+                {
+                    "HomeTeam": null,
+                    "AwayTeam": null,
+                    "DateUtc": "15.06.2025"
+                }
+            ]
+        },
+        {
+            "matchday": "Playoff 2 - Vuelta",
+            "fixtures": [
+                {
+                    "HomeTeam": null,
+                    "AwayTeam": null,
+                    "DateUtc": "22.06.2025"
+                }
+            ]
+        }
+    ]
+}

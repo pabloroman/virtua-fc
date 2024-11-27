@@ -2,14 +2,7 @@
 
 namespace App\Http\Actions;
 
-use App\Jobs\CreateGame;
-use App\Jobs\InitBudgets;
-use App\Jobs\InitCompetitionTeams;
-use App\Jobs\InitFixtures;
-use App\Jobs\InitFreeAgents;
-use App\Jobs\InitSquads;
-use App\Jobs\InitStandings;
-use App\Services\GameManager;
+use App\Game;
 use Illuminate\Http\Request;
 
 class InitGame
@@ -18,12 +11,15 @@ class InitGame
     {
         $request->validate([
             'name' => ['required', 'string', 'max:25'],
-            'team_id' => ['required', 'exists:teams,id'],
+            'team_id' => ['required'],
         ]);
 
         $userId = $request->user()->id;
         $playerName = $request->get('name');
         $teamId = $request->get('team_id');
+
+        $command = new \App\CreateGame($userId, $playerName, $teamId);
+        $game = Game::create($command);
 
 //        $game = CreateGame::handle($userId, $playerName, $teamId);
 //
@@ -43,6 +39,6 @@ class InitGame
 //            $gameManager->generateNextLineup($game);
 //        }
 
-        return redirect()->route('game.lineup', $game);
+        return redirect()->route('show-game', $game->id->toString());
     }
 }

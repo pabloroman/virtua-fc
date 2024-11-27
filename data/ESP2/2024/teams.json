@@ -1,0 +1,96 @@
+{
+  "id": "ES2",
+  "name": "LaLiga2",
+  "seasonID": "2024",
+  "clubs": [
+      {
+          "id": "2687",
+          "name": "Cádiz CF"
+      },
+      {
+          "id": "3302",
+          "name": "UD Almería"
+      },
+      {
+          "id": "16795",
+          "name": "Granada CF"
+      },
+      {
+          "id": "1533",
+          "name": "SD Eibar"
+      },
+      {
+          "id": "2448",
+          "name": "Sporting Gijón"
+      },
+      {
+          "id": "2497",
+          "name": "Real Oviedo"
+      },
+      {
+          "id": "630",
+          "name": "Racing Santander"
+      },
+      {
+          "id": "3368",
+          "name": "Levante UD"
+      },
+      {
+          "id": "1536",
+          "name": "Burgos CF"
+      },
+      {
+          "id": "1176",
+          "name": "Racing Ferrol"
+      },
+      {
+          "id": "1531",
+          "name": "Elche CF"
+      },
+      {
+          "id": "648",
+          "name": "CD Tenerife"
+      },
+      {
+          "id": "1532",
+          "name": "Albacete Balompié"
+      },
+      {
+          "id": "7077",
+          "name": "FC Cartagena"
+      },
+      {
+          "id": "142",
+          "name": "Real Zaragoza"
+      },
+      {
+          "id": "12567",
+          "name": "CD Eldense"
+      },
+      {
+          "id": "5358",
+          "name": "SD Huesca"
+      },
+      {
+          "id": "13222",
+          "name": "CD Mirandés"
+      },
+      {
+          "id": "897",
+          "name": "Deportivo de La Coruña"
+      },
+      {
+          "id": "2502",
+          "name": "CD Castellón"
+      },
+      {
+          "id": "1084",
+          "name": "Málaga CF"
+      },
+      {
+          "id": "993",
+          "name": "Córdoba CF"
+      }
+  ],
+  "updatedAt": "2024-08-12T22:07:59.939072"
+}

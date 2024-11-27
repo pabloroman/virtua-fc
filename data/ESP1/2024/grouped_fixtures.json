@@ -1,0 +1,4375 @@
+{
+    "season": "2024\/2025",
+    "matchdays": [
+        {
+            "matchday": 1,
+            "fixtures": [
+                {
+                    "MatchNumber": 1,
+                    "RoundNumber": 1,
+                    "DateUtc": "2024-08-15 17:00:00Z",
+                    "Location": "Estadio San Mam\u00e9s",
+                    "HomeTeam": "Athletic Club",
+                    "AwayTeam": "Getafe CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 2,
+                    "RoundNumber": 1,
+                    "DateUtc": "2024-08-15 19:30:00Z",
+                    "Location": "Estadio Benito Villamar\u00edn",
+                    "HomeTeam": "Real Betis",
+                    "AwayTeam": "Girona FC",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 8,
+                    "RoundNumber": 1,
+                    "DateUtc": "2024-08-16 17:00:00Z",
+                    "Location": "Estadio ABANCA Bala\u00eddos",
+                    "HomeTeam": "RC Celta",
+                    "AwayTeam": "Deportivo Alav\u00e9s",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 4,
+                    "RoundNumber": 1,
+                    "DateUtc": "2024-08-16 19:30:00Z",
+                    "Location": "Estadio Gran Canaria",
+                    "HomeTeam": "UD Las Palmas",
+                    "AwayTeam": "Sevilla FC",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 9,
+                    "RoundNumber": 1,
+                    "DateUtc": "2024-08-17 17:00:00Z",
+                    "Location": "Estadio El Sadar",
+                    "HomeTeam": "CA Osasuna",
+                    "AwayTeam": "CD Legan\u00e9s",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 6,
+                    "RoundNumber": 1,
+                    "DateUtc": "2024-08-17 19:30:00Z",
+                    "Location": "Camp de Mestalla",
+                    "HomeTeam": "Valencia CF",
+                    "AwayTeam": "FC Barcelona",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 7,
+                    "RoundNumber": 1,
+                    "DateUtc": "2024-08-18 17:00:00Z",
+                    "Location": "Reale Arena",
+                    "HomeTeam": "Real Sociedad",
+                    "AwayTeam": "Rayo Vallecano",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 3,
+                    "RoundNumber": 1,
+                    "DateUtc": "2024-08-18 19:30:00Z",
+                    "Location": "Estadi Mallorca Son Moix",
+                    "HomeTeam": "RCD Mallorca",
+                    "AwayTeam": "Real Madrid",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 10,
+                    "RoundNumber": 1,
+                    "DateUtc": "2024-08-19 17:00:00Z",
+                    "Location": "Estadio Municipal Jos\u00e9 Zorrilla",
+                    "HomeTeam": "Real Valladolid CF",
+                    "AwayTeam": "RCD Espanyol Barcelona",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 5,
+                    "RoundNumber": 1,
+                    "DateUtc": "2024-08-19 19:30:00Z",
+                    "Location": "Estadio de la Cer\u00e1mica",
+                    "HomeTeam": "Villarreal CF",
+                    "AwayTeam": "Atl\u00e9tico de Madrid",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 2,
+            "fixtures": [
+                {
+                    "MatchNumber": 12,
+                    "RoundNumber": 2,
+                    "DateUtc": "2024-08-23 17:00:00Z",
+                    "Location": "Estadio ABANCA Bala\u00eddos",
+                    "HomeTeam": "RC Celta",
+                    "AwayTeam": "Valencia CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 15,
+                    "RoundNumber": 2,
+                    "DateUtc": "2024-08-23 19:30:00Z",
+                    "Location": "Ram\u00f3n S\u00e1nchez-Pizju\u00e1n",
+                    "HomeTeam": "Sevilla FC",
+                    "AwayTeam": "Villarreal CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 20,
+                    "RoundNumber": 2,
+                    "DateUtc": "2024-08-24 15:00:00Z",
+                    "Location": "Estadio El Sadar",
+                    "HomeTeam": "CA Osasuna",
+                    "AwayTeam": "RCD Mallorca",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 19,
+                    "RoundNumber": 2,
+                    "DateUtc": "2024-08-24 17:00:00Z",
+                    "Location": "Estadi Ol\u00edmpic Llu\u00eds Companys",
+                    "HomeTeam": "FC Barcelona",
+                    "AwayTeam": "Athletic Club",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 13,
+                    "RoundNumber": 2,
+                    "DateUtc": "2024-08-24 19:30:00Z",
+                    "Location": "Coliseum",
+                    "HomeTeam": "Getafe CF",
+                    "AwayTeam": "Rayo Vallecano",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 18,
+                    "RoundNumber": 2,
+                    "DateUtc": "2024-08-24 19:30:00Z",
+                    "Location": "RCDE Stadium",
+                    "HomeTeam": "RCD Espanyol Barcelona",
+                    "AwayTeam": "Real Sociedad",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 14,
+                    "RoundNumber": 2,
+                    "DateUtc": "2024-08-25 15:00:00Z",
+                    "Location": "Estadio Santiago Bernab\u00e9u",
+                    "HomeTeam": "Real Madrid",
+                    "AwayTeam": "Real Valladolid CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 17,
+                    "RoundNumber": 2,
+                    "DateUtc": "2024-08-25 17:00:00Z",
+                    "Location": "Estadio Municipal Butarque",
+                    "HomeTeam": "CD Legan\u00e9s",
+                    "AwayTeam": "UD Las Palmas",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 16,
+                    "RoundNumber": 2,
+                    "DateUtc": "2024-08-25 17:15:00Z",
+                    "Location": "Mendizorroza",
+                    "HomeTeam": "Deportivo Alav\u00e9s",
+                    "AwayTeam": "Real Betis",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 11,
+                    "RoundNumber": 2,
+                    "DateUtc": "2024-08-25 19:30:00Z",
+                    "Location": "Civitas Metropolitano",
+                    "HomeTeam": "Atl\u00e9tico de Madrid",
+                    "AwayTeam": "Girona FC",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 3,
+            "fixtures": [
+                {
+                    "MatchNumber": 27,
+                    "RoundNumber": 3,
+                    "DateUtc": "2024-08-26 19:30:00Z",
+                    "Location": "Estadio de la Cer\u00e1mica",
+                    "HomeTeam": "Villarreal CF",
+                    "AwayTeam": "RC Celta",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 24,
+                    "RoundNumber": 3,
+                    "DateUtc": "2024-08-27 17:00:00Z",
+                    "Location": "Estadi Mallorca Son Moix",
+                    "HomeTeam": "RCD Mallorca",
+                    "AwayTeam": "Sevilla FC",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 26,
+                    "RoundNumber": 3,
+                    "DateUtc": "2024-08-27 19:30:00Z",
+                    "Location": "Estadio de Vallecas",
+                    "HomeTeam": "Rayo Vallecano",
+                    "AwayTeam": "FC Barcelona",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 22,
+                    "RoundNumber": 3,
+                    "DateUtc": "2024-08-28 00:00:00Z",
+                    "Location": "Estadio Benito Villamar\u00edn",
+                    "HomeTeam": "Real Betis",
+                    "AwayTeam": "Getafe CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 21,
+                    "RoundNumber": 3,
+                    "DateUtc": "2024-08-28 17:00:00Z",
+                    "Location": "Estadio San Mam\u00e9s",
+                    "HomeTeam": "Athletic Club",
+                    "AwayTeam": "Valencia CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 29,
+                    "RoundNumber": 3,
+                    "DateUtc": "2024-08-28 17:00:00Z",
+                    "Location": "Estadio Municipal Jos\u00e9 Zorrilla",
+                    "HomeTeam": "Real Valladolid CF",
+                    "AwayTeam": "CD Legan\u00e9s",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 28,
+                    "RoundNumber": 3,
+                    "DateUtc": "2024-08-28 19:30:00Z",
+                    "Location": "Reale Arena",
+                    "HomeTeam": "Real Sociedad",
+                    "AwayTeam": "Deportivo Alav\u00e9s",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 30,
+                    "RoundNumber": 3,
+                    "DateUtc": "2024-08-28 19:30:00Z",
+                    "Location": "Civitas Metropolitano",
+                    "HomeTeam": "Atl\u00e9tico de Madrid",
+                    "AwayTeam": "RCD Espanyol Barcelona",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 23,
+                    "RoundNumber": 3,
+                    "DateUtc": "2024-08-29 17:00:00Z",
+                    "Location": "Estadio Municipal de Montilivi",
+                    "HomeTeam": "Girona FC",
+                    "AwayTeam": "CA Osasuna",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 25,
+                    "RoundNumber": 3,
+                    "DateUtc": "2024-08-29 19:30:00Z",
+                    "Location": "Estadio Gran Canaria",
+                    "HomeTeam": "UD Las Palmas",
+                    "AwayTeam": "Real Madrid",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 4,
+            "fixtures": [
+                {
+                    "MatchNumber": 32,
+                    "RoundNumber": 4,
+                    "DateUtc": "2024-08-31 15:00:00Z",
+                    "Location": "Estadi Ol\u00edmpic Llu\u00eds Companys",
+                    "HomeTeam": "FC Barcelona",
+                    "AwayTeam": "Real Valladolid CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 31,
+                    "RoundNumber": 4,
+                    "DateUtc": "2024-08-31 17:00:00Z",
+                    "Location": "Estadio San Mam\u00e9s",
+                    "HomeTeam": "Athletic Club",
+                    "AwayTeam": "Atl\u00e9tico de Madrid",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 37,
+                    "RoundNumber": 4,
+                    "DateUtc": "2024-08-31 17:15:00Z",
+                    "Location": "RCDE Stadium",
+                    "HomeTeam": "RCD Espanyol Barcelona",
+                    "AwayTeam": "Rayo Vallecano",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 34,
+                    "RoundNumber": 4,
+                    "DateUtc": "2024-08-31 19:30:00Z",
+                    "Location": "Camp de Mestalla",
+                    "HomeTeam": "Valencia CF",
+                    "AwayTeam": "Villarreal CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 36,
+                    "RoundNumber": 4,
+                    "DateUtc": "2024-08-31 19:30:00Z",
+                    "Location": "Estadio Municipal Butarque",
+                    "HomeTeam": "CD Legan\u00e9s",
+                    "AwayTeam": "RCD Mallorca",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 35,
+                    "RoundNumber": 4,
+                    "DateUtc": "2024-09-01 15:00:00Z",
+                    "Location": "Mendizorroza",
+                    "HomeTeam": "Deportivo Alav\u00e9s",
+                    "AwayTeam": "UD Las Palmas",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 39,
+                    "RoundNumber": 4,
+                    "DateUtc": "2024-09-01 15:00:00Z",
+                    "Location": "Estadio El Sadar",
+                    "HomeTeam": "CA Osasuna",
+                    "AwayTeam": "RC Celta",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 40,
+                    "RoundNumber": 4,
+                    "DateUtc": "2024-09-01 17:00:00Z",
+                    "Location": "Ram\u00f3n S\u00e1nchez-Pizju\u00e1n",
+                    "HomeTeam": "Sevilla FC",
+                    "AwayTeam": "Girona FC",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 33,
+                    "RoundNumber": 4,
+                    "DateUtc": "2024-09-01 17:15:00Z",
+                    "Location": "Coliseum",
+                    "HomeTeam": "Getafe CF",
+                    "AwayTeam": "Real Sociedad",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 38,
+                    "RoundNumber": 4,
+                    "DateUtc": "2024-09-01 19:30:00Z",
+                    "Location": "Estadio Santiago Bernab\u00e9u",
+                    "HomeTeam": "Real Madrid",
+                    "AwayTeam": "Real Betis",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 5,
+            "fixtures": [
+                {
+                    "MatchNumber": 41,
+                    "RoundNumber": 5,
+                    "DateUtc": "2024-09-15 00:00:00Z",
+                    "Location": "Civitas Metropolitano",
+                    "HomeTeam": "Atl\u00e9tico de Madrid",
+                    "AwayTeam": "Valencia CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 42,
+                    "RoundNumber": 5,
+                    "DateUtc": "2024-09-15 00:00:00Z",
+                    "Location": "Estadio Benito Villamar\u00edn",
+                    "HomeTeam": "Real Betis",
+                    "AwayTeam": "CD Legan\u00e9s",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 43,
+                    "RoundNumber": 5,
+                    "DateUtc": "2024-09-15 00:00:00Z",
+                    "Location": "Estadio ABANCA Bala\u00eddos",
+                    "HomeTeam": "RC Celta",
+                    "AwayTeam": "Real Valladolid CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 44,
+                    "RoundNumber": 5,
+                    "DateUtc": "2024-09-15 00:00:00Z",
+                    "Location": "Estadi Mallorca Son Moix",
+                    "HomeTeam": "RCD Mallorca",
+                    "AwayTeam": "Villarreal CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 45,
+                    "RoundNumber": 5,
+                    "DateUtc": "2024-09-15 00:00:00Z",
+                    "Location": "Estadio Gran Canaria",
+                    "HomeTeam": "UD Las Palmas",
+                    "AwayTeam": "Athletic Club",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 46,
+                    "RoundNumber": 5,
+                    "DateUtc": "2024-09-15 00:00:00Z",
+                    "Location": "Estadio Municipal de Montilivi",
+                    "HomeTeam": "Girona FC",
+                    "AwayTeam": "FC Barcelona",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 47,
+                    "RoundNumber": 5,
+                    "DateUtc": "2024-09-15 00:00:00Z",
+                    "Location": "Ram\u00f3n S\u00e1nchez-Pizju\u00e1n",
+                    "HomeTeam": "Sevilla FC",
+                    "AwayTeam": "Getafe CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 48,
+                    "RoundNumber": 5,
+                    "DateUtc": "2024-09-15 00:00:00Z",
+                    "Location": "Estadio de Vallecas",
+                    "HomeTeam": "Rayo Vallecano",
+                    "AwayTeam": "CA Osasuna",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 49,
+                    "RoundNumber": 5,
+                    "DateUtc": "2024-09-15 00:00:00Z",
+                    "Location": "Reale Arena",
+                    "HomeTeam": "Real Sociedad",
+                    "AwayTeam": "Real Madrid",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 50,
+                    "RoundNumber": 5,
+                    "DateUtc": "2024-09-15 00:00:00Z",
+                    "Location": "RCDE Stadium",
+                    "HomeTeam": "RCD Espanyol Barcelona",
+                    "AwayTeam": "Deportivo Alav\u00e9s",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 6,
+            "fixtures": [
+                {
+                    "MatchNumber": 51,
+                    "RoundNumber": 6,
+                    "DateUtc": "2024-09-22 00:00:00Z",
+                    "Location": "Estadio San Mam\u00e9s",
+                    "HomeTeam": "Athletic Club",
+                    "AwayTeam": "RC Celta",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 52,
+                    "RoundNumber": 6,
+                    "DateUtc": "2024-09-22 00:00:00Z",
+                    "Location": "Estadio Benito Villamar\u00edn",
+                    "HomeTeam": "Real Betis",
+                    "AwayTeam": "RCD Mallorca",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 53,
+                    "RoundNumber": 6,
+                    "DateUtc": "2024-09-22 00:00:00Z",
+                    "Location": "Coliseum",
+                    "HomeTeam": "Getafe CF",
+                    "AwayTeam": "CD Legan\u00e9s",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 54,
+                    "RoundNumber": 6,
+                    "DateUtc": "2024-09-22 00:00:00Z",
+                    "Location": "Mendizorroza",
+                    "HomeTeam": "Deportivo Alav\u00e9s",
+                    "AwayTeam": "Sevilla FC",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 55,
+                    "RoundNumber": 6,
+                    "DateUtc": "2024-09-22 00:00:00Z",
+                    "Location": "Estadio de Vallecas",
+                    "HomeTeam": "Rayo Vallecano",
+                    "AwayTeam": "Atl\u00e9tico de Madrid",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 56,
+                    "RoundNumber": 6,
+                    "DateUtc": "2024-09-22 00:00:00Z",
+                    "Location": "Estadio de la Cer\u00e1mica",
+                    "HomeTeam": "Villarreal CF",
+                    "AwayTeam": "FC Barcelona",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 57,
+                    "RoundNumber": 6,
+                    "DateUtc": "2024-09-22 00:00:00Z",
+                    "Location": "Camp de Mestalla",
+                    "HomeTeam": "Valencia CF",
+                    "AwayTeam": "Girona FC",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 58,
+                    "RoundNumber": 6,
+                    "DateUtc": "2024-09-22 00:00:00Z",
+                    "Location": "Estadio Municipal Jos\u00e9 Zorrilla",
+                    "HomeTeam": "Real Valladolid CF",
+                    "AwayTeam": "Real Sociedad",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 59,
+                    "RoundNumber": 6,
+                    "DateUtc": "2024-09-22 00:00:00Z",
+                    "Location": "Estadio El Sadar",
+                    "HomeTeam": "CA Osasuna",
+                    "AwayTeam": "UD Las Palmas",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 60,
+                    "RoundNumber": 6,
+                    "DateUtc": "2024-09-22 00:00:00Z",
+                    "Location": "Estadio Santiago Bernab\u00e9u",
+                    "HomeTeam": "Real Madrid",
+                    "AwayTeam": "RCD Espanyol Barcelona",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 7,
+            "fixtures": [
+                {
+                    "MatchNumber": 61,
+                    "RoundNumber": 7,
+                    "DateUtc": "2024-09-25 00:00:00Z",
+                    "Location": "Estadi Ol\u00edmpic Llu\u00eds Companys",
+                    "HomeTeam": "FC Barcelona",
+                    "AwayTeam": "Getafe CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 62,
+                    "RoundNumber": 7,
+                    "DateUtc": "2024-09-25 00:00:00Z",
+                    "Location": "Estadio Municipal de Montilivi",
+                    "HomeTeam": "Girona FC",
+                    "AwayTeam": "Rayo Vallecano",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 63,
+                    "RoundNumber": 7,
+                    "DateUtc": "2024-09-25 00:00:00Z",
+                    "Location": "Estadi Mallorca Son Moix",
+                    "HomeTeam": "RCD Mallorca",
+                    "AwayTeam": "Real Sociedad",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 64,
+                    "RoundNumber": 7,
+                    "DateUtc": "2024-09-25 00:00:00Z",
+                    "Location": "Ram\u00f3n S\u00e1nchez-Pizju\u00e1n",
+                    "HomeTeam": "Sevilla FC",
+                    "AwayTeam": "Real Valladolid CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 65,
+                    "RoundNumber": 7,
+                    "DateUtc": "2024-09-25 00:00:00Z",
+                    "Location": "RCDE Stadium",
+                    "HomeTeam": "RCD Espanyol Barcelona",
+                    "AwayTeam": "Villarreal CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 66,
+                    "RoundNumber": 7,
+                    "DateUtc": "2024-09-25 00:00:00Z",
+                    "Location": "Estadio Municipal Butarque",
+                    "HomeTeam": "CD Legan\u00e9s",
+                    "AwayTeam": "Athletic Club",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 67,
+                    "RoundNumber": 7,
+                    "DateUtc": "2024-09-25 00:00:00Z",
+                    "Location": "Estadio ABANCA Bala\u00eddos",
+                    "HomeTeam": "RC Celta",
+                    "AwayTeam": "Atl\u00e9tico de Madrid",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 68,
+                    "RoundNumber": 7,
+                    "DateUtc": "2024-09-25 00:00:00Z",
+                    "Location": "Estadio Gran Canaria",
+                    "HomeTeam": "UD Las Palmas",
+                    "AwayTeam": "Real Betis",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 69,
+                    "RoundNumber": 7,
+                    "DateUtc": "2024-09-25 00:00:00Z",
+                    "Location": "Camp de Mestalla",
+                    "HomeTeam": "Valencia CF",
+                    "AwayTeam": "CA Osasuna",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 70,
+                    "RoundNumber": 7,
+                    "DateUtc": "2024-09-25 00:00:00Z",
+                    "Location": "Estadio Santiago Bernab\u00e9u",
+                    "HomeTeam": "Real Madrid",
+                    "AwayTeam": "Deportivo Alav\u00e9s",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 8,
+            "fixtures": [
+                {
+                    "MatchNumber": 71,
+                    "RoundNumber": 8,
+                    "DateUtc": "2024-09-29 00:00:00Z",
+                    "Location": "Estadio San Mam\u00e9s",
+                    "HomeTeam": "Athletic Club",
+                    "AwayTeam": "Sevilla FC",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 72,
+                    "RoundNumber": 8,
+                    "DateUtc": "2024-09-29 00:00:00Z",
+                    "Location": "Civitas Metropolitano",
+                    "HomeTeam": "Atl\u00e9tico de Madrid",
+                    "AwayTeam": "Real Madrid",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 73,
+                    "RoundNumber": 8,
+                    "DateUtc": "2024-09-29 00:00:00Z",
+                    "Location": "Estadio ABANCA Bala\u00eddos",
+                    "HomeTeam": "RC Celta",
+                    "AwayTeam": "Girona FC",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 74,
+                    "RoundNumber": 8,
+                    "DateUtc": "2024-09-29 00:00:00Z",
+                    "Location": "Reale Arena",
+                    "HomeTeam": "Real Sociedad",
+                    "AwayTeam": "Valencia CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 75,
+                    "RoundNumber": 8,
+                    "DateUtc": "2024-09-29 00:00:00Z",
+                    "Location": "Estadio El Sadar",
+                    "HomeTeam": "CA Osasuna",
+                    "AwayTeam": "FC Barcelona",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 76,
+                    "RoundNumber": 8,
+                    "DateUtc": "2024-09-29 00:00:00Z",
+                    "Location": "Estadio Municipal Jos\u00e9 Zorrilla",
+                    "HomeTeam": "Real Valladolid CF",
+                    "AwayTeam": "RCD Mallorca",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 77,
+                    "RoundNumber": 8,
+                    "DateUtc": "2024-09-29 00:00:00Z",
+                    "Location": "Estadio de la Cer\u00e1mica",
+                    "HomeTeam": "Villarreal CF",
+                    "AwayTeam": "UD Las Palmas",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 78,
+                    "RoundNumber": 8,
+                    "DateUtc": "2024-09-29 00:00:00Z",
+                    "Location": "Coliseum",
+                    "HomeTeam": "Getafe CF",
+                    "AwayTeam": "Deportivo Alav\u00e9s",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 79,
+                    "RoundNumber": 8,
+                    "DateUtc": "2024-09-29 00:00:00Z",
+                    "Location": "Estadio de Vallecas",
+                    "HomeTeam": "Rayo Vallecano",
+                    "AwayTeam": "CD Legan\u00e9s",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 80,
+                    "RoundNumber": 8,
+                    "DateUtc": "2024-09-29 00:00:00Z",
+                    "Location": "Estadio Benito Villamar\u00edn",
+                    "HomeTeam": "Real Betis",
+                    "AwayTeam": "RCD Espanyol Barcelona",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 9,
+            "fixtures": [
+                {
+                    "MatchNumber": 81,
+                    "RoundNumber": 9,
+                    "DateUtc": "2024-10-06 00:00:00Z",
+                    "Location": "Coliseum",
+                    "HomeTeam": "Getafe CF",
+                    "AwayTeam": "CA Osasuna",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 82,
+                    "RoundNumber": 9,
+                    "DateUtc": "2024-10-06 00:00:00Z",
+                    "Location": "Estadio Santiago Bernab\u00e9u",
+                    "HomeTeam": "Real Madrid",
+                    "AwayTeam": "Villarreal CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 83,
+                    "RoundNumber": 9,
+                    "DateUtc": "2024-10-06 00:00:00Z",
+                    "Location": "Mendizorroza",
+                    "HomeTeam": "Deportivo Alav\u00e9s",
+                    "AwayTeam": "FC Barcelona",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 84,
+                    "RoundNumber": 9,
+                    "DateUtc": "2024-10-06 00:00:00Z",
+                    "Location": "Estadio Municipal Butarque",
+                    "HomeTeam": "CD Legan\u00e9s",
+                    "AwayTeam": "Valencia CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 85,
+                    "RoundNumber": 9,
+                    "DateUtc": "2024-10-06 00:00:00Z",
+                    "Location": "RCDE Stadium",
+                    "HomeTeam": "RCD Espanyol Barcelona",
+                    "AwayTeam": "RCD Mallorca",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 86,
+                    "RoundNumber": 9,
+                    "DateUtc": "2024-10-06 00:00:00Z",
+                    "Location": "Estadio Municipal de Montilivi",
+                    "HomeTeam": "Girona FC",
+                    "AwayTeam": "Athletic Club",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 87,
+                    "RoundNumber": 9,
+                    "DateUtc": "2024-10-06 00:00:00Z",
+                    "Location": "Reale Arena",
+                    "HomeTeam": "Real Sociedad",
+                    "AwayTeam": "Atl\u00e9tico de Madrid",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 88,
+                    "RoundNumber": 9,
+                    "DateUtc": "2024-10-06 00:00:00Z",
+                    "Location": "Ram\u00f3n S\u00e1nchez-Pizju\u00e1n",
+                    "HomeTeam": "Sevilla FC",
+                    "AwayTeam": "Real Betis",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 89,
+                    "RoundNumber": 9,
+                    "DateUtc": "2024-10-06 00:00:00Z",
+                    "Location": "Estadio Gran Canaria",
+                    "HomeTeam": "UD Las Palmas",
+                    "AwayTeam": "RC Celta",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 90,
+                    "RoundNumber": 9,
+                    "DateUtc": "2024-10-06 00:00:00Z",
+                    "Location": "Estadio Municipal Jos\u00e9 Zorrilla",
+                    "HomeTeam": "Real Valladolid CF",
+                    "AwayTeam": "Rayo Vallecano",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 10,
+            "fixtures": [
+                {
+                    "MatchNumber": 91,
+                    "RoundNumber": 10,
+                    "DateUtc": "2024-10-20 00:00:00Z",
+                    "Location": "Civitas Metropolitano",
+                    "HomeTeam": "Atl\u00e9tico de Madrid",
+                    "AwayTeam": "CD Legan\u00e9s",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 92,
+                    "RoundNumber": 10,
+                    "DateUtc": "2024-10-20 00:00:00Z",
+                    "Location": "Estadi Ol\u00edmpic Llu\u00eds Companys",
+                    "HomeTeam": "FC Barcelona",
+                    "AwayTeam": "Sevilla FC",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 93,
+                    "RoundNumber": 10,
+                    "DateUtc": "2024-10-20 00:00:00Z",
+                    "Location": "Estadio ABANCA Bala\u00eddos",
+                    "HomeTeam": "RC Celta",
+                    "AwayTeam": "Real Madrid",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 94,
+                    "RoundNumber": 10,
+                    "DateUtc": "2024-10-20 00:00:00Z",
+                    "Location": "Estadio Municipal de Montilivi",
+                    "HomeTeam": "Girona FC",
+                    "AwayTeam": "Real Sociedad",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 95,
+                    "RoundNumber": 10,
+                    "DateUtc": "2024-10-20 00:00:00Z",
+                    "Location": "Estadi Mallorca Son Moix",
+                    "HomeTeam": "RCD Mallorca",
+                    "AwayTeam": "Rayo Vallecano",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 96,
+                    "RoundNumber": 10,
+                    "DateUtc": "2024-10-20 00:00:00Z",
+                    "Location": "Mendizorroza",
+                    "HomeTeam": "Deportivo Alav\u00e9s",
+                    "AwayTeam": "Real Valladolid CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 97,
+                    "RoundNumber": 10,
+                    "DateUtc": "2024-10-20 00:00:00Z",
+                    "Location": "Estadio El Sadar",
+                    "HomeTeam": "CA Osasuna",
+                    "AwayTeam": "Real Betis",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 98,
+                    "RoundNumber": 10,
+                    "DateUtc": "2024-10-20 00:00:00Z",
+                    "Location": "Estadio de la Cer\u00e1mica",
+                    "HomeTeam": "Villarreal CF",
+                    "AwayTeam": "Getafe CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 99,
+                    "RoundNumber": 10,
+                    "DateUtc": "2024-10-20 00:00:00Z",
+                    "Location": "Camp de Mestalla",
+                    "HomeTeam": "Valencia CF",
+                    "AwayTeam": "UD Las Palmas",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 100,
+                    "RoundNumber": 10,
+                    "DateUtc": "2024-10-20 00:00:00Z",
+                    "Location": "Estadio San Mam\u00e9s",
+                    "HomeTeam": "Athletic Club",
+                    "AwayTeam": "RCD Espanyol Barcelona",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 11,
+            "fixtures": [
+                {
+                    "MatchNumber": 101,
+                    "RoundNumber": 11,
+                    "DateUtc": "2024-10-27 00:00:00Z",
+                    "Location": "Coliseum",
+                    "HomeTeam": "Getafe CF",
+                    "AwayTeam": "Valencia CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 102,
+                    "RoundNumber": 11,
+                    "DateUtc": "2024-10-27 00:00:00Z",
+                    "Location": "RCDE Stadium",
+                    "HomeTeam": "RCD Espanyol Barcelona",
+                    "AwayTeam": "Sevilla FC",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 103,
+                    "RoundNumber": 11,
+                    "DateUtc": "2024-10-27 00:00:00Z",
+                    "Location": "Estadi Mallorca Son Moix",
+                    "HomeTeam": "RCD Mallorca",
+                    "AwayTeam": "Athletic Club",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 104,
+                    "RoundNumber": 11,
+                    "DateUtc": "2024-10-27 00:00:00Z",
+                    "Location": "Estadio Benito Villamar\u00edn",
+                    "HomeTeam": "Real Betis",
+                    "AwayTeam": "Atl\u00e9tico de Madrid",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 105,
+                    "RoundNumber": 11,
+                    "DateUtc": "2024-10-27 00:00:00Z",
+                    "Location": "Estadio Santiago Bernab\u00e9u",
+                    "HomeTeam": "Real Madrid",
+                    "AwayTeam": "FC Barcelona",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 106,
+                    "RoundNumber": 11,
+                    "DateUtc": "2024-10-27 00:00:00Z",
+                    "Location": "Estadio Municipal Butarque",
+                    "HomeTeam": "CD Legan\u00e9s",
+                    "AwayTeam": "RC Celta",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 107,
+                    "RoundNumber": 11,
+                    "DateUtc": "2024-10-27 00:00:00Z",
+                    "Location": "Estadio Gran Canaria",
+                    "HomeTeam": "UD Las Palmas",
+                    "AwayTeam": "Girona FC",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 108,
+                    "RoundNumber": 11,
+                    "DateUtc": "2024-10-27 00:00:00Z",
+                    "Location": "Reale Arena",
+                    "HomeTeam": "Real Sociedad",
+                    "AwayTeam": "CA Osasuna",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 109,
+                    "RoundNumber": 11,
+                    "DateUtc": "2024-10-27 00:00:00Z",
+                    "Location": "Estadio Municipal Jos\u00e9 Zorrilla",
+                    "HomeTeam": "Real Valladolid CF",
+                    "AwayTeam": "Villarreal CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 110,
+                    "RoundNumber": 11,
+                    "DateUtc": "2024-10-27 00:00:00Z",
+                    "Location": "Estadio de Vallecas",
+                    "HomeTeam": "Rayo Vallecano",
+                    "AwayTeam": "Deportivo Alav\u00e9s",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 12,
+            "fixtures": [
+                {
+                    "MatchNumber": 111,
+                    "RoundNumber": 12,
+                    "DateUtc": "2024-11-03 00:00:00Z",
+                    "Location": "Estadio San Mam\u00e9s",
+                    "HomeTeam": "Athletic Club",
+                    "AwayTeam": "Real Betis",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 112,
+                    "RoundNumber": 12,
+                    "DateUtc": "2024-11-03 00:00:00Z",
+                    "Location": "Civitas Metropolitano",
+                    "HomeTeam": "Atl\u00e9tico de Madrid",
+                    "AwayTeam": "UD Las Palmas",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 113,
+                    "RoundNumber": 12,
+                    "DateUtc": "2024-11-03 00:00:00Z",
+                    "Location": "Estadio ABANCA Bala\u00eddos",
+                    "HomeTeam": "RC Celta",
+                    "AwayTeam": "Getafe CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 114,
+                    "RoundNumber": 12,
+                    "DateUtc": "2024-11-03 00:00:00Z",
+                    "Location": "Estadio Municipal de Montilivi",
+                    "HomeTeam": "Girona FC",
+                    "AwayTeam": "CD Legan\u00e9s",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 115,
+                    "RoundNumber": 12,
+                    "DateUtc": "2024-11-03 00:00:00Z",
+                    "Location": "Estadio El Sadar",
+                    "HomeTeam": "CA Osasuna",
+                    "AwayTeam": "Real Valladolid CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 116,
+                    "RoundNumber": 12,
+                    "DateUtc": "2024-11-03 00:00:00Z",
+                    "Location": "Mendizorroza",
+                    "HomeTeam": "Deportivo Alav\u00e9s",
+                    "AwayTeam": "RCD Mallorca",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 117,
+                    "RoundNumber": 12,
+                    "DateUtc": "2024-11-03 00:00:00Z",
+                    "Location": "Estadio de la Cer\u00e1mica",
+                    "HomeTeam": "Villarreal CF",
+                    "AwayTeam": "Rayo Vallecano",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 118,
+                    "RoundNumber": 12,
+                    "DateUtc": "2024-11-03 00:00:00Z",
+                    "Location": "Camp de Mestalla",
+                    "HomeTeam": "Valencia CF",
+                    "AwayTeam": "Real Madrid",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 119,
+                    "RoundNumber": 12,
+                    "DateUtc": "2024-11-03 00:00:00Z",
+                    "Location": "Ram\u00f3n S\u00e1nchez-Pizju\u00e1n",
+                    "HomeTeam": "Sevilla FC",
+                    "AwayTeam": "Real Sociedad",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 120,
+                    "RoundNumber": 12,
+                    "DateUtc": "2024-11-03 00:00:00Z",
+                    "Location": "Estadi Ol\u00edmpic Llu\u00eds Companys",
+                    "HomeTeam": "FC Barcelona",
+                    "AwayTeam": "RCD Espanyol Barcelona",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 13,
+            "fixtures": [
+                {
+                    "MatchNumber": 121,
+                    "RoundNumber": 13,
+                    "DateUtc": "2024-11-10 00:00:00Z",
+                    "Location": "Estadio Benito Villamar\u00edn",
+                    "HomeTeam": "Real Betis",
+                    "AwayTeam": "RC Celta",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 122,
+                    "RoundNumber": 13,
+                    "DateUtc": "2024-11-10 00:00:00Z",
+                    "Location": "Coliseum",
+                    "HomeTeam": "Getafe CF",
+                    "AwayTeam": "Girona FC",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 123,
+                    "RoundNumber": 13,
+                    "DateUtc": "2024-11-10 00:00:00Z",
+                    "Location": "Estadio Municipal Butarque",
+                    "HomeTeam": "CD Legan\u00e9s",
+                    "AwayTeam": "Sevilla FC",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 124,
+                    "RoundNumber": 13,
+                    "DateUtc": "2024-11-10 00:00:00Z",
+                    "Location": "RCDE Stadium",
+                    "HomeTeam": "RCD Espanyol Barcelona",
+                    "AwayTeam": "Valencia CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 125,
+                    "RoundNumber": 13,
+                    "DateUtc": "2024-11-10 00:00:00Z",
+                    "Location": "Estadio Municipal Jos\u00e9 Zorrilla",
+                    "HomeTeam": "Real Valladolid CF",
+                    "AwayTeam": "Athletic Club",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 126,
+                    "RoundNumber": 13,
+                    "DateUtc": "2024-11-10 00:00:00Z",
+                    "Location": "Estadi Mallorca Son Moix",
+                    "HomeTeam": "RCD Mallorca",
+                    "AwayTeam": "Atl\u00e9tico de Madrid",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 127,
+                    "RoundNumber": 13,
+                    "DateUtc": "2024-11-10 00:00:00Z",
+                    "Location": "Reale Arena",
+                    "HomeTeam": "Real Sociedad",
+                    "AwayTeam": "FC Barcelona",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 128,
+                    "RoundNumber": 13,
+                    "DateUtc": "2024-11-10 00:00:00Z",
+                    "Location": "Estadio Santiago Bernab\u00e9u",
+                    "HomeTeam": "Real Madrid",
+                    "AwayTeam": "CA Osasuna",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 129,
+                    "RoundNumber": 13,
+                    "DateUtc": "2024-11-10 00:00:00Z",
+                    "Location": "Estadio de Vallecas",
+                    "HomeTeam": "Rayo Vallecano",
+                    "AwayTeam": "UD Las Palmas",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 130,
+                    "RoundNumber": 13,
+                    "DateUtc": "2024-11-10 00:00:00Z",
+                    "Location": "Estadio de la Cer\u00e1mica",
+                    "HomeTeam": "Villarreal CF",
+                    "AwayTeam": "Deportivo Alav\u00e9s",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 14,
+            "fixtures": [
+                {
+                    "MatchNumber": 131,
+                    "RoundNumber": 14,
+                    "DateUtc": "2024-11-24 00:00:00Z",
+                    "Location": "Estadio San Mam\u00e9s",
+                    "HomeTeam": "Athletic Club",
+                    "AwayTeam": "Real Sociedad",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 132,
+                    "RoundNumber": 14,
+                    "DateUtc": "2024-11-24 00:00:00Z",
+                    "Location": "Coliseum",
+                    "HomeTeam": "Getafe CF",
+                    "AwayTeam": "Real Valladolid CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 133,
+                    "RoundNumber": 14,
+                    "DateUtc": "2024-11-24 00:00:00Z",
+                    "Location": "Estadio El Sadar",
+                    "HomeTeam": "CA Osasuna",
+                    "AwayTeam": "Villarreal CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 134,
+                    "RoundNumber": 14,
+                    "DateUtc": "2024-11-24 00:00:00Z",
+                    "Location": "Estadio Gran Canaria",
+                    "HomeTeam": "UD Las Palmas",
+                    "AwayTeam": "RCD Mallorca",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 135,
+                    "RoundNumber": 14,
+                    "DateUtc": "2024-11-24 00:00:00Z",
+                    "Location": "Estadio Municipal Butarque",
+                    "HomeTeam": "CD Legan\u00e9s",
+                    "AwayTeam": "Real Madrid",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 136,
+                    "RoundNumber": 14,
+                    "DateUtc": "2024-11-24 00:00:00Z",
+                    "Location": "Estadio ABANCA Bala\u00eddos",
+                    "HomeTeam": "RC Celta",
+                    "AwayTeam": "FC Barcelona",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 137,
+                    "RoundNumber": 14,
+                    "DateUtc": "2024-11-24 00:00:00Z",
+                    "Location": "Camp de Mestalla",
+                    "HomeTeam": "Valencia CF",
+                    "AwayTeam": "Real Betis",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 138,
+                    "RoundNumber": 14,
+                    "DateUtc": "2024-11-24 00:00:00Z",
+                    "Location": "Ram\u00f3n S\u00e1nchez-Pizju\u00e1n",
+                    "HomeTeam": "Sevilla FC",
+                    "AwayTeam": "Rayo Vallecano",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 139,
+                    "RoundNumber": 14,
+                    "DateUtc": "2024-11-24 00:00:00Z",
+                    "Location": "Civitas Metropolitano",
+                    "HomeTeam": "Atl\u00e9tico de Madrid",
+                    "AwayTeam": "Deportivo Alav\u00e9s",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 140,
+                    "RoundNumber": 14,
+                    "DateUtc": "2024-11-24 00:00:00Z",
+                    "Location": "Estadio Municipal de Montilivi",
+                    "HomeTeam": "Girona FC",
+                    "AwayTeam": "RCD Espanyol Barcelona",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 15,
+            "fixtures": [
+                {
+                    "MatchNumber": 141,
+                    "RoundNumber": 15,
+                    "DateUtc": "2024-12-01 00:00:00Z",
+                    "Location": "Estadi Ol\u00edmpic Llu\u00eds Companys",
+                    "HomeTeam": "FC Barcelona",
+                    "AwayTeam": "UD Las Palmas",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 142,
+                    "RoundNumber": 15,
+                    "DateUtc": "2024-12-01 00:00:00Z",
+                    "Location": "Estadi Mallorca Son Moix",
+                    "HomeTeam": "RCD Mallorca",
+                    "AwayTeam": "Valencia CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 143,
+                    "RoundNumber": 15,
+                    "DateUtc": "2024-12-01 00:00:00Z",
+                    "Location": "Mendizorroza",
+                    "HomeTeam": "Deportivo Alav\u00e9s",
+                    "AwayTeam": "CD Legan\u00e9s",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 144,
+                    "RoundNumber": 15,
+                    "DateUtc": "2024-12-01 00:00:00Z",
+                    "Location": "RCDE Stadium",
+                    "HomeTeam": "RCD Espanyol Barcelona",
+                    "AwayTeam": "RC Celta",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 145,
+                    "RoundNumber": 15,
+                    "DateUtc": "2024-12-01 00:00:00Z",
+                    "Location": "Estadio de Vallecas",
+                    "HomeTeam": "Rayo Vallecano",
+                    "AwayTeam": "Athletic Club",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 146,
+                    "RoundNumber": 15,
+                    "DateUtc": "2024-12-01 00:00:00Z",
+                    "Location": "Estadio Municipal Jos\u00e9 Zorrilla",
+                    "HomeTeam": "Real Valladolid CF",
+                    "AwayTeam": "Atl\u00e9tico de Madrid",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 147,
+                    "RoundNumber": 15,
+                    "DateUtc": "2024-12-01 00:00:00Z",
+                    "Location": "Reale Arena",
+                    "HomeTeam": "Real Sociedad",
+                    "AwayTeam": "Real Betis",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 148,
+                    "RoundNumber": 15,
+                    "DateUtc": "2024-12-01 00:00:00Z",
+                    "Location": "Estadio Santiago Bernab\u00e9u",
+                    "HomeTeam": "Real Madrid",
+                    "AwayTeam": "Getafe CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 149,
+                    "RoundNumber": 15,
+                    "DateUtc": "2024-12-01 00:00:00Z",
+                    "Location": "Estadio de la Cer\u00e1mica",
+                    "HomeTeam": "Villarreal CF",
+                    "AwayTeam": "Girona FC",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 150,
+                    "RoundNumber": 15,
+                    "DateUtc": "2024-12-01 00:00:00Z",
+                    "Location": "Ram\u00f3n S\u00e1nchez-Pizju\u00e1n",
+                    "HomeTeam": "Sevilla FC",
+                    "AwayTeam": "CA Osasuna",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 16,
+            "fixtures": [
+                {
+                    "MatchNumber": 151,
+                    "RoundNumber": 16,
+                    "DateUtc": "2024-12-08 00:00:00Z",
+                    "Location": "Estadio San Mam\u00e9s",
+                    "HomeTeam": "Athletic Club",
+                    "AwayTeam": "Villarreal CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 152,
+                    "RoundNumber": 16,
+                    "DateUtc": "2024-12-08 00:00:00Z",
+                    "Location": "Civitas Metropolitano",
+                    "HomeTeam": "Atl\u00e9tico de Madrid",
+                    "AwayTeam": "Sevilla FC",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 153,
+                    "RoundNumber": 16,
+                    "DateUtc": "2024-12-08 00:00:00Z",
+                    "Location": "Estadio ABANCA Bala\u00eddos",
+                    "HomeTeam": "RC Celta",
+                    "AwayTeam": "RCD Mallorca",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 154,
+                    "RoundNumber": 16,
+                    "DateUtc": "2024-12-08 00:00:00Z",
+                    "Location": "Estadio Municipal de Montilivi",
+                    "HomeTeam": "Girona FC",
+                    "AwayTeam": "Real Madrid",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 155,
+                    "RoundNumber": 16,
+                    "DateUtc": "2024-12-08 00:00:00Z",
+                    "Location": "Estadio Gran Canaria",
+                    "HomeTeam": "UD Las Palmas",
+                    "AwayTeam": "Real Valladolid CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 156,
+                    "RoundNumber": 16,
+                    "DateUtc": "2024-12-08 00:00:00Z",
+                    "Location": "Estadio Municipal Butarque",
+                    "HomeTeam": "CD Legan\u00e9s",
+                    "AwayTeam": "Real Sociedad",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 157,
+                    "RoundNumber": 16,
+                    "DateUtc": "2024-12-08 00:00:00Z",
+                    "Location": "Estadio Benito Villamar\u00edn",
+                    "HomeTeam": "Real Betis",
+                    "AwayTeam": "FC Barcelona",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 158,
+                    "RoundNumber": 16,
+                    "DateUtc": "2024-12-08 00:00:00Z",
+                    "Location": "Camp de Mestalla",
+                    "HomeTeam": "Valencia CF",
+                    "AwayTeam": "Rayo Vallecano",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 159,
+                    "RoundNumber": 16,
+                    "DateUtc": "2024-12-08 00:00:00Z",
+                    "Location": "Estadio El Sadar",
+                    "HomeTeam": "CA Osasuna",
+                    "AwayTeam": "Deportivo Alav\u00e9s",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 160,
+                    "RoundNumber": 16,
+                    "DateUtc": "2024-12-08 00:00:00Z",
+                    "Location": "Coliseum",
+                    "HomeTeam": "Getafe CF",
+                    "AwayTeam": "RCD Espanyol Barcelona",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 17,
+            "fixtures": [
+                {
+                    "MatchNumber": 161,
+                    "RoundNumber": 17,
+                    "DateUtc": "2024-12-15 00:00:00Z",
+                    "Location": "Civitas Metropolitano",
+                    "HomeTeam": "Atl\u00e9tico de Madrid",
+                    "AwayTeam": "Getafe CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 162,
+                    "RoundNumber": 17,
+                    "DateUtc": "2024-12-15 00:00:00Z",
+                    "Location": "Estadi Ol\u00edmpic Llu\u00eds Companys",
+                    "HomeTeam": "FC Barcelona",
+                    "AwayTeam": "CD Legan\u00e9s",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 163,
+                    "RoundNumber": 17,
+                    "DateUtc": "2024-12-15 00:00:00Z",
+                    "Location": "Estadio de Vallecas",
+                    "HomeTeam": "Rayo Vallecano",
+                    "AwayTeam": "Real Madrid",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 164,
+                    "RoundNumber": 17,
+                    "DateUtc": "2024-12-15 00:00:00Z",
+                    "Location": "Mendizorroza",
+                    "HomeTeam": "Deportivo Alav\u00e9s",
+                    "AwayTeam": "Athletic Club",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 165,
+                    "RoundNumber": 17,
+                    "DateUtc": "2024-12-15 00:00:00Z",
+                    "Location": "RCDE Stadium",
+                    "HomeTeam": "RCD Espanyol Barcelona",
+                    "AwayTeam": "CA Osasuna",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 166,
+                    "RoundNumber": 17,
+                    "DateUtc": "2024-12-15 00:00:00Z",
+                    "Location": "Estadio de la Cer\u00e1mica",
+                    "HomeTeam": "Villarreal CF",
+                    "AwayTeam": "Real Betis",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 167,
+                    "RoundNumber": 17,
+                    "DateUtc": "2024-12-15 00:00:00Z",
+                    "Location": "Ram\u00f3n S\u00e1nchez-Pizju\u00e1n",
+                    "HomeTeam": "Sevilla FC",
+                    "AwayTeam": "RC Celta",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 168,
+                    "RoundNumber": 17,
+                    "DateUtc": "2024-12-15 00:00:00Z",
+                    "Location": "Estadi Mallorca Son Moix",
+                    "HomeTeam": "RCD Mallorca",
+                    "AwayTeam": "Girona FC",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 169,
+                    "RoundNumber": 17,
+                    "DateUtc": "2024-12-15 00:00:00Z",
+                    "Location": "Estadio Municipal Jos\u00e9 Zorrilla",
+                    "HomeTeam": "Real Valladolid CF",
+                    "AwayTeam": "Valencia CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 170,
+                    "RoundNumber": 17,
+                    "DateUtc": "2024-12-15 00:00:00Z",
+                    "Location": "Reale Arena",
+                    "HomeTeam": "Real Sociedad",
+                    "AwayTeam": "UD Las Palmas",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 18,
+            "fixtures": [
+                {
+                    "MatchNumber": 171,
+                    "RoundNumber": 18,
+                    "DateUtc": "2024-12-22 00:00:00Z",
+                    "Location": "Estadio Benito Villamar\u00edn",
+                    "HomeTeam": "Real Betis",
+                    "AwayTeam": "Rayo Vallecano",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 172,
+                    "RoundNumber": 18,
+                    "DateUtc": "2024-12-22 00:00:00Z",
+                    "Location": "Estadio ABANCA Bala\u00eddos",
+                    "HomeTeam": "RC Celta",
+                    "AwayTeam": "Real Sociedad",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 173,
+                    "RoundNumber": 18,
+                    "DateUtc": "2024-12-22 00:00:00Z",
+                    "Location": "Coliseum",
+                    "HomeTeam": "Getafe CF",
+                    "AwayTeam": "RCD Mallorca",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 174,
+                    "RoundNumber": 18,
+                    "DateUtc": "2024-12-22 00:00:00Z",
+                    "Location": "Estadio Municipal de Montilivi",
+                    "HomeTeam": "Girona FC",
+                    "AwayTeam": "Real Valladolid CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 175,
+                    "RoundNumber": 18,
+                    "DateUtc": "2024-12-22 00:00:00Z",
+                    "Location": "Estadio Santiago Bernab\u00e9u",
+                    "HomeTeam": "Real Madrid",
+                    "AwayTeam": "Sevilla FC",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 176,
+                    "RoundNumber": 18,
+                    "DateUtc": "2024-12-22 00:00:00Z",
+                    "Location": "Estadio Municipal Butarque",
+                    "HomeTeam": "CD Legan\u00e9s",
+                    "AwayTeam": "Villarreal CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 177,
+                    "RoundNumber": 18,
+                    "DateUtc": "2024-12-22 00:00:00Z",
+                    "Location": "Estadio El Sadar",
+                    "HomeTeam": "CA Osasuna",
+                    "AwayTeam": "Athletic Club",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 178,
+                    "RoundNumber": 18,
+                    "DateUtc": "2024-12-22 00:00:00Z",
+                    "Location": "Estadi Ol\u00edmpic Llu\u00eds Companys",
+                    "HomeTeam": "FC Barcelona",
+                    "AwayTeam": "Atl\u00e9tico de Madrid",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 179,
+                    "RoundNumber": 18,
+                    "DateUtc": "2024-12-22 00:00:00Z",
+                    "Location": "Camp de Mestalla",
+                    "HomeTeam": "Valencia CF",
+                    "AwayTeam": "Deportivo Alav\u00e9s",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 180,
+                    "RoundNumber": 18,
+                    "DateUtc": "2024-12-22 00:00:00Z",
+                    "Location": "Estadio Gran Canaria",
+                    "HomeTeam": "UD Las Palmas",
+                    "AwayTeam": "RCD Espanyol Barcelona",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 19,
+            "fixtures": [
+                {
+                    "MatchNumber": 181,
+                    "RoundNumber": 19,
+                    "DateUtc": "2025-01-12 00:00:00Z",
+                    "Location": "Estadio San Mam\u00e9s",
+                    "HomeTeam": "Athletic Club",
+                    "AwayTeam": "Real Madrid",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 182,
+                    "RoundNumber": 19,
+                    "DateUtc": "2025-01-12 00:00:00Z",
+                    "Location": "Civitas Metropolitano",
+                    "HomeTeam": "Atl\u00e9tico de Madrid",
+                    "AwayTeam": "CA Osasuna",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 183,
+                    "RoundNumber": 19,
+                    "DateUtc": "2025-01-12 00:00:00Z",
+                    "Location": "Reale Arena",
+                    "HomeTeam": "Real Sociedad",
+                    "AwayTeam": "Villarreal CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 184,
+                    "RoundNumber": 19,
+                    "DateUtc": "2025-01-12 00:00:00Z",
+                    "Location": "Ram\u00f3n S\u00e1nchez-Pizju\u00e1n",
+                    "HomeTeam": "Sevilla FC",
+                    "AwayTeam": "Valencia CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 185,
+                    "RoundNumber": 19,
+                    "DateUtc": "2025-01-12 00:00:00Z",
+                    "Location": "Mendizorroza",
+                    "HomeTeam": "Deportivo Alav\u00e9s",
+                    "AwayTeam": "Girona FC",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 186,
+                    "RoundNumber": 19,
+                    "DateUtc": "2025-01-12 00:00:00Z",
+                    "Location": "RCDE Stadium",
+                    "HomeTeam": "RCD Espanyol Barcelona",
+                    "AwayTeam": "CD Legan\u00e9s",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 187,
+                    "RoundNumber": 19,
+                    "DateUtc": "2025-01-12 00:00:00Z",
+                    "Location": "Estadi Mallorca Son Moix",
+                    "HomeTeam": "RCD Mallorca",
+                    "AwayTeam": "FC Barcelona",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 188,
+                    "RoundNumber": 19,
+                    "DateUtc": "2025-01-12 00:00:00Z",
+                    "Location": "Estadio Municipal Jos\u00e9 Zorrilla",
+                    "HomeTeam": "Real Valladolid CF",
+                    "AwayTeam": "Real Betis",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 189,
+                    "RoundNumber": 19,
+                    "DateUtc": "2025-01-12 00:00:00Z",
+                    "Location": "Estadio de Vallecas",
+                    "HomeTeam": "Rayo Vallecano",
+                    "AwayTeam": "RC Celta",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 190,
+                    "RoundNumber": 19,
+                    "DateUtc": "2025-01-12 00:00:00Z",
+                    "Location": "Estadio Gran Canaria",
+                    "HomeTeam": "UD Las Palmas",
+                    "AwayTeam": "Getafe CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 20,
+            "fixtures": [
+                {
+                    "MatchNumber": 191,
+                    "RoundNumber": 20,
+                    "DateUtc": "2025-01-19 00:00:00Z",
+                    "Location": "Estadio Municipal de Montilivi",
+                    "HomeTeam": "Girona FC",
+                    "AwayTeam": "Sevilla FC",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 192,
+                    "RoundNumber": 20,
+                    "DateUtc": "2025-01-19 00:00:00Z",
+                    "Location": "Estadio El Sadar",
+                    "HomeTeam": "CA Osasuna",
+                    "AwayTeam": "Rayo Vallecano",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 193,
+                    "RoundNumber": 20,
+                    "DateUtc": "2025-01-19 00:00:00Z",
+                    "Location": "RCDE Stadium",
+                    "HomeTeam": "RCD Espanyol Barcelona",
+                    "AwayTeam": "Real Valladolid CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 194,
+                    "RoundNumber": 20,
+                    "DateUtc": "2025-01-19 00:00:00Z",
+                    "Location": "Estadio ABANCA Bala\u00eddos",
+                    "HomeTeam": "RC Celta",
+                    "AwayTeam": "Athletic Club",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 195,
+                    "RoundNumber": 20,
+                    "DateUtc": "2025-01-19 00:00:00Z",
+                    "Location": "Estadio Municipal Butarque",
+                    "HomeTeam": "CD Legan\u00e9s",
+                    "AwayTeam": "Atl\u00e9tico de Madrid",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 196,
+                    "RoundNumber": 20,
+                    "DateUtc": "2025-01-19 00:00:00Z",
+                    "Location": "Coliseum",
+                    "HomeTeam": "Getafe CF",
+                    "AwayTeam": "FC Barcelona",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 197,
+                    "RoundNumber": 20,
+                    "DateUtc": "2025-01-19 00:00:00Z",
+                    "Location": "Estadio de la Cer\u00e1mica",
+                    "HomeTeam": "Villarreal CF",
+                    "AwayTeam": "RCD Mallorca",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 198,
+                    "RoundNumber": 20,
+                    "DateUtc": "2025-01-19 00:00:00Z",
+                    "Location": "Camp de Mestalla",
+                    "HomeTeam": "Valencia CF",
+                    "AwayTeam": "Real Sociedad",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 199,
+                    "RoundNumber": 20,
+                    "DateUtc": "2025-01-19 00:00:00Z",
+                    "Location": "Estadio Santiago Bernab\u00e9u",
+                    "HomeTeam": "Real Madrid",
+                    "AwayTeam": "UD Las Palmas",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 200,
+                    "RoundNumber": 20,
+                    "DateUtc": "2025-01-19 00:00:00Z",
+                    "Location": "Estadio Benito Villamar\u00edn",
+                    "HomeTeam": "Real Betis",
+                    "AwayTeam": "Deportivo Alav\u00e9s",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 21,
+            "fixtures": [
+                {
+                    "MatchNumber": 201,
+                    "RoundNumber": 21,
+                    "DateUtc": "2025-01-26 00:00:00Z",
+                    "Location": "Estadio San Mam\u00e9s",
+                    "HomeTeam": "Athletic Club",
+                    "AwayTeam": "CD Legan\u00e9s",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 202,
+                    "RoundNumber": 21,
+                    "DateUtc": "2025-01-26 00:00:00Z",
+                    "Location": "Civitas Metropolitano",
+                    "HomeTeam": "Atl\u00e9tico de Madrid",
+                    "AwayTeam": "Villarreal CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 203,
+                    "RoundNumber": 21,
+                    "DateUtc": "2025-01-26 00:00:00Z",
+                    "Location": "Estadi Ol\u00edmpic Llu\u00eds Companys",
+                    "HomeTeam": "FC Barcelona",
+                    "AwayTeam": "Valencia CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 204,
+                    "RoundNumber": 21,
+                    "DateUtc": "2025-01-26 00:00:00Z",
+                    "Location": "Estadio Gran Canaria",
+                    "HomeTeam": "UD Las Palmas",
+                    "AwayTeam": "CA Osasuna",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 205,
+                    "RoundNumber": 21,
+                    "DateUtc": "2025-01-26 00:00:00Z",
+                    "Location": "Mendizorroza",
+                    "HomeTeam": "Deportivo Alav\u00e9s",
+                    "AwayTeam": "RC Celta",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 206,
+                    "RoundNumber": 21,
+                    "DateUtc": "2025-01-26 00:00:00Z",
+                    "Location": "Estadi Mallorca Son Moix",
+                    "HomeTeam": "RCD Mallorca",
+                    "AwayTeam": "Real Betis",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 207,
+                    "RoundNumber": 21,
+                    "DateUtc": "2025-01-26 00:00:00Z",
+                    "Location": "Reale Arena",
+                    "HomeTeam": "Real Sociedad",
+                    "AwayTeam": "Getafe CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 208,
+                    "RoundNumber": 21,
+                    "DateUtc": "2025-01-26 00:00:00Z",
+                    "Location": "Estadio de Vallecas",
+                    "HomeTeam": "Rayo Vallecano",
+                    "AwayTeam": "Girona FC",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 209,
+                    "RoundNumber": 21,
+                    "DateUtc": "2025-01-26 00:00:00Z",
+                    "Location": "Estadio Municipal Jos\u00e9 Zorrilla",
+                    "HomeTeam": "Real Valladolid CF",
+                    "AwayTeam": "Real Madrid",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 210,
+                    "RoundNumber": 21,
+                    "DateUtc": "2025-01-26 00:00:00Z",
+                    "Location": "Ram\u00f3n S\u00e1nchez-Pizju\u00e1n",
+                    "HomeTeam": "Sevilla FC",
+                    "AwayTeam": "RCD Espanyol Barcelona",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 22,
+            "fixtures": [
+                {
+                    "MatchNumber": 211,
+                    "RoundNumber": 22,
+                    "DateUtc": "2025-02-02 00:00:00Z",
+                    "Location": "Civitas Metropolitano",
+                    "HomeTeam": "Atl\u00e9tico de Madrid",
+                    "AwayTeam": "RCD Mallorca",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 212,
+                    "RoundNumber": 22,
+                    "DateUtc": "2025-02-02 00:00:00Z",
+                    "Location": "Coliseum",
+                    "HomeTeam": "Getafe CF",
+                    "AwayTeam": "Sevilla FC",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 213,
+                    "RoundNumber": 22,
+                    "DateUtc": "2025-02-02 00:00:00Z",
+                    "Location": "Estadio Municipal de Montilivi",
+                    "HomeTeam": "Girona FC",
+                    "AwayTeam": "UD Las Palmas",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 214,
+                    "RoundNumber": 22,
+                    "DateUtc": "2025-02-02 00:00:00Z",
+                    "Location": "Estadio El Sadar",
+                    "HomeTeam": "CA Osasuna",
+                    "AwayTeam": "Real Sociedad",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 215,
+                    "RoundNumber": 22,
+                    "DateUtc": "2025-02-02 00:00:00Z",
+                    "Location": "Estadio de la Cer\u00e1mica",
+                    "HomeTeam": "Villarreal CF",
+                    "AwayTeam": "Real Valladolid CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 216,
+                    "RoundNumber": 22,
+                    "DateUtc": "2025-02-02 00:00:00Z",
+                    "Location": "Estadio Municipal Butarque",
+                    "HomeTeam": "CD Legan\u00e9s",
+                    "AwayTeam": "Rayo Vallecano",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 217,
+                    "RoundNumber": 22,
+                    "DateUtc": "2025-02-02 00:00:00Z",
+                    "Location": "RCDE Stadium",
+                    "HomeTeam": "RCD Espanyol Barcelona",
+                    "AwayTeam": "Real Madrid",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 218,
+                    "RoundNumber": 22,
+                    "DateUtc": "2025-02-02 00:00:00Z",
+                    "Location": "Estadio Benito Villamar\u00edn",
+                    "HomeTeam": "Real Betis",
+                    "AwayTeam": "Athletic Club",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 219,
+                    "RoundNumber": 22,
+                    "DateUtc": "2025-02-02 00:00:00Z",
+                    "Location": "Camp de Mestalla",
+                    "HomeTeam": "Valencia CF",
+                    "AwayTeam": "RC Celta",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 220,
+                    "RoundNumber": 22,
+                    "DateUtc": "2025-02-02 00:00:00Z",
+                    "Location": "Estadi Ol\u00edmpic Llu\u00eds Companys",
+                    "HomeTeam": "FC Barcelona",
+                    "AwayTeam": "Deportivo Alav\u00e9s",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 23,
+            "fixtures": [
+                {
+                    "MatchNumber": 221,
+                    "RoundNumber": 23,
+                    "DateUtc": "2025-02-09 00:00:00Z",
+                    "Location": "Estadio San Mam\u00e9s",
+                    "HomeTeam": "Athletic Club",
+                    "AwayTeam": "Girona FC",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 222,
+                    "RoundNumber": 23,
+                    "DateUtc": "2025-02-09 00:00:00Z",
+                    "Location": "Estadi Mallorca Son Moix",
+                    "HomeTeam": "RCD Mallorca",
+                    "AwayTeam": "CA Osasuna",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 223,
+                    "RoundNumber": 23,
+                    "DateUtc": "2025-02-09 00:00:00Z",
+                    "Location": "Estadio de Vallecas",
+                    "HomeTeam": "Rayo Vallecano",
+                    "AwayTeam": "Real Valladolid CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 224,
+                    "RoundNumber": 23,
+                    "DateUtc": "2025-02-09 00:00:00Z",
+                    "Location": "Estadio Gran Canaria",
+                    "HomeTeam": "UD Las Palmas",
+                    "AwayTeam": "Villarreal CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 225,
+                    "RoundNumber": 23,
+                    "DateUtc": "2025-02-09 00:00:00Z",
+                    "Location": "Mendizorroza",
+                    "HomeTeam": "Deportivo Alav\u00e9s",
+                    "AwayTeam": "Getafe CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 226,
+                    "RoundNumber": 23,
+                    "DateUtc": "2025-02-09 00:00:00Z",
+                    "Location": "Estadio Santiago Bernab\u00e9u",
+                    "HomeTeam": "Real Madrid",
+                    "AwayTeam": "Atl\u00e9tico de Madrid",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 227,
+                    "RoundNumber": 23,
+                    "DateUtc": "2025-02-09 00:00:00Z",
+                    "Location": "Ram\u00f3n S\u00e1nchez-Pizju\u00e1n",
+                    "HomeTeam": "Sevilla FC",
+                    "AwayTeam": "FC Barcelona",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 228,
+                    "RoundNumber": 23,
+                    "DateUtc": "2025-02-09 00:00:00Z",
+                    "Location": "Estadio ABANCA Bala\u00eddos",
+                    "HomeTeam": "RC Celta",
+                    "AwayTeam": "Real Betis",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 229,
+                    "RoundNumber": 23,
+                    "DateUtc": "2025-02-09 00:00:00Z",
+                    "Location": "Camp de Mestalla",
+                    "HomeTeam": "Valencia CF",
+                    "AwayTeam": "CD Legan\u00e9s",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 230,
+                    "RoundNumber": 23,
+                    "DateUtc": "2025-02-09 00:00:00Z",
+                    "Location": "Reale Arena",
+                    "HomeTeam": "Real Sociedad",
+                    "AwayTeam": "RCD Espanyol Barcelona",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 24,
+            "fixtures": [
+                {
+                    "MatchNumber": 231,
+                    "RoundNumber": 24,
+                    "DateUtc": "2025-02-16 00:00:00Z",
+                    "Location": "Civitas Metropolitano",
+                    "HomeTeam": "Atl\u00e9tico de Madrid",
+                    "AwayTeam": "RC Celta",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 232,
+                    "RoundNumber": 24,
+                    "DateUtc": "2025-02-16 00:00:00Z",
+                    "Location": "Estadi Ol\u00edmpic Llu\u00eds Companys",
+                    "HomeTeam": "FC Barcelona",
+                    "AwayTeam": "Rayo Vallecano",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 233,
+                    "RoundNumber": 24,
+                    "DateUtc": "2025-02-16 00:00:00Z",
+                    "Location": "Estadio Benito Villamar\u00edn",
+                    "HomeTeam": "Real Betis",
+                    "AwayTeam": "Real Sociedad",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 234,
+                    "RoundNumber": 24,
+                    "DateUtc": "2025-02-16 00:00:00Z",
+                    "Location": "Estadio El Sadar",
+                    "HomeTeam": "CA Osasuna",
+                    "AwayTeam": "Real Madrid",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 235,
+                    "RoundNumber": 24,
+                    "DateUtc": "2025-02-16 00:00:00Z",
+                    "Location": "RCDE Stadium",
+                    "HomeTeam": "RCD Espanyol Barcelona",
+                    "AwayTeam": "Athletic Club",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 236,
+                    "RoundNumber": 24,
+                    "DateUtc": "2025-02-16 00:00:00Z",
+                    "Location": "Estadio Municipal de Montilivi",
+                    "HomeTeam": "Girona FC",
+                    "AwayTeam": "Getafe CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 237,
+                    "RoundNumber": 24,
+                    "DateUtc": "2025-02-16 00:00:00Z",
+                    "Location": "Estadio Municipal Jos\u00e9 Zorrilla",
+                    "HomeTeam": "Real Valladolid CF",
+                    "AwayTeam": "Sevilla FC",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 238,
+                    "RoundNumber": 24,
+                    "DateUtc": "2025-02-16 00:00:00Z",
+                    "Location": "Estadio de la Cer\u00e1mica",
+                    "HomeTeam": "Villarreal CF",
+                    "AwayTeam": "Valencia CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 239,
+                    "RoundNumber": 24,
+                    "DateUtc": "2025-02-16 00:00:00Z",
+                    "Location": "Estadi Mallorca Son Moix",
+                    "HomeTeam": "RCD Mallorca",
+                    "AwayTeam": "UD Las Palmas",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 240,
+                    "RoundNumber": 24,
+                    "DateUtc": "2025-02-16 00:00:00Z",
+                    "Location": "Estadio Municipal Butarque",
+                    "HomeTeam": "CD Legan\u00e9s",
+                    "AwayTeam": "Deportivo Alav\u00e9s",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 25,
+            "fixtures": [
+                {
+                    "MatchNumber": 241,
+                    "RoundNumber": 25,
+                    "DateUtc": "2025-02-23 00:00:00Z",
+                    "Location": "Estadio San Mam\u00e9s",
+                    "HomeTeam": "Athletic Club",
+                    "AwayTeam": "Real Valladolid CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 242,
+                    "RoundNumber": 25,
+                    "DateUtc": "2025-02-23 00:00:00Z",
+                    "Location": "Estadio ABANCA Bala\u00eddos",
+                    "HomeTeam": "RC Celta",
+                    "AwayTeam": "CA Osasuna",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 243,
+                    "RoundNumber": 25,
+                    "DateUtc": "2025-02-23 00:00:00Z",
+                    "Location": "Estadio de Vallecas",
+                    "HomeTeam": "Rayo Vallecano",
+                    "AwayTeam": "Villarreal CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 244,
+                    "RoundNumber": 25,
+                    "DateUtc": "2025-02-23 00:00:00Z",
+                    "Location": "Mendizorroza",
+                    "HomeTeam": "Deportivo Alav\u00e9s",
+                    "AwayTeam": "RCD Espanyol Barcelona",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 245,
+                    "RoundNumber": 25,
+                    "DateUtc": "2025-02-23 00:00:00Z",
+                    "Location": "Camp de Mestalla",
+                    "HomeTeam": "Valencia CF",
+                    "AwayTeam": "Atl\u00e9tico de Madrid",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 246,
+                    "RoundNumber": 25,
+                    "DateUtc": "2025-02-23 00:00:00Z",
+                    "Location": "Estadio Gran Canaria",
+                    "HomeTeam": "UD Las Palmas",
+                    "AwayTeam": "FC Barcelona",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 247,
+                    "RoundNumber": 25,
+                    "DateUtc": "2025-02-23 00:00:00Z",
+                    "Location": "Coliseum",
+                    "HomeTeam": "Getafe CF",
+                    "AwayTeam": "Real Betis",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 248,
+                    "RoundNumber": 25,
+                    "DateUtc": "2025-02-23 00:00:00Z",
+                    "Location": "Estadio Santiago Bernab\u00e9u",
+                    "HomeTeam": "Real Madrid",
+                    "AwayTeam": "Girona FC",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 249,
+                    "RoundNumber": 25,
+                    "DateUtc": "2025-02-23 00:00:00Z",
+                    "Location": "Ram\u00f3n S\u00e1nchez-Pizju\u00e1n",
+                    "HomeTeam": "Sevilla FC",
+                    "AwayTeam": "RCD Mallorca",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 250,
+                    "RoundNumber": 25,
+                    "DateUtc": "2025-02-23 00:00:00Z",
+                    "Location": "Reale Arena",
+                    "HomeTeam": "Real Sociedad",
+                    "AwayTeam": "CD Legan\u00e9s",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 26,
+            "fixtures": [
+                {
+                    "MatchNumber": 251,
+                    "RoundNumber": 26,
+                    "DateUtc": "2025-03-02 00:00:00Z",
+                    "Location": "Estadi Ol\u00edmpic Llu\u00eds Companys",
+                    "HomeTeam": "FC Barcelona",
+                    "AwayTeam": "Real Sociedad",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 252,
+                    "RoundNumber": 26,
+                    "DateUtc": "2025-03-02 00:00:00Z",
+                    "Location": "Estadio Benito Villamar\u00edn",
+                    "HomeTeam": "Real Betis",
+                    "AwayTeam": "Real Madrid",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 253,
+                    "RoundNumber": 26,
+                    "DateUtc": "2025-03-02 00:00:00Z",
+                    "Location": "Estadio El Sadar",
+                    "HomeTeam": "CA Osasuna",
+                    "AwayTeam": "Valencia CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 254,
+                    "RoundNumber": 26,
+                    "DateUtc": "2025-03-02 00:00:00Z",
+                    "Location": "Estadio de Vallecas",
+                    "HomeTeam": "Rayo Vallecano",
+                    "AwayTeam": "Sevilla FC",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 255,
+                    "RoundNumber": 26,
+                    "DateUtc": "2025-03-02 00:00:00Z",
+                    "Location": "Civitas Metropolitano",
+                    "HomeTeam": "Atl\u00e9tico de Madrid",
+                    "AwayTeam": "Athletic Club",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 256,
+                    "RoundNumber": 26,
+                    "DateUtc": "2025-03-02 00:00:00Z",
+                    "Location": "Estadio Municipal de Montilivi",
+                    "HomeTeam": "Girona FC",
+                    "AwayTeam": "RC Celta",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 257,
+                    "RoundNumber": 26,
+                    "DateUtc": "2025-03-02 00:00:00Z",
+                    "Location": "Estadio Municipal Butarque",
+                    "HomeTeam": "CD Legan\u00e9s",
+                    "AwayTeam": "Getafe CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 258,
+                    "RoundNumber": 26,
+                    "DateUtc": "2025-03-02 00:00:00Z",
+                    "Location": "Estadio Municipal Jos\u00e9 Zorrilla",
+                    "HomeTeam": "Real Valladolid CF",
+                    "AwayTeam": "UD Las Palmas",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 259,
+                    "RoundNumber": 26,
+                    "DateUtc": "2025-03-02 00:00:00Z",
+                    "Location": "Estadi Mallorca Son Moix",
+                    "HomeTeam": "RCD Mallorca",
+                    "AwayTeam": "Deportivo Alav\u00e9s",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 260,
+                    "RoundNumber": 26,
+                    "DateUtc": "2025-03-02 00:00:00Z",
+                    "Location": "Estadio de la Cer\u00e1mica",
+                    "HomeTeam": "Villarreal CF",
+                    "AwayTeam": "RCD Espanyol Barcelona",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 27,
+            "fixtures": [
+                {
+                    "MatchNumber": 261,
+                    "RoundNumber": 27,
+                    "DateUtc": "2025-03-09 00:00:00Z",
+                    "Location": "Estadio San Mam\u00e9s",
+                    "HomeTeam": "Athletic Club",
+                    "AwayTeam": "RCD Mallorca",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 262,
+                    "RoundNumber": 27,
+                    "DateUtc": "2025-03-09 00:00:00Z",
+                    "Location": "Estadi Ol\u00edmpic Llu\u00eds Companys",
+                    "HomeTeam": "FC Barcelona",
+                    "AwayTeam": "CA Osasuna",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 263,
+                    "RoundNumber": 27,
+                    "DateUtc": "2025-03-09 00:00:00Z",
+                    "Location": "Estadio Benito Villamar\u00edn",
+                    "HomeTeam": "Real Betis",
+                    "AwayTeam": "UD Las Palmas",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 264,
+                    "RoundNumber": 27,
+                    "DateUtc": "2025-03-09 00:00:00Z",
+                    "Location": "Estadio ABANCA Bala\u00eddos",
+                    "HomeTeam": "RC Celta",
+                    "AwayTeam": "CD Legan\u00e9s",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 265,
+                    "RoundNumber": 27,
+                    "DateUtc": "2025-03-09 00:00:00Z",
+                    "Location": "Reale Arena",
+                    "HomeTeam": "Real Sociedad",
+                    "AwayTeam": "Sevilla FC",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 266,
+                    "RoundNumber": 27,
+                    "DateUtc": "2025-03-09 00:00:00Z",
+                    "Location": "Camp de Mestalla",
+                    "HomeTeam": "Valencia CF",
+                    "AwayTeam": "Real Valladolid CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 267,
+                    "RoundNumber": 27,
+                    "DateUtc": "2025-03-09 00:00:00Z",
+                    "Location": "Mendizorroza",
+                    "HomeTeam": "Deportivo Alav\u00e9s",
+                    "AwayTeam": "Villarreal CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 268,
+                    "RoundNumber": 27,
+                    "DateUtc": "2025-03-09 00:00:00Z",
+                    "Location": "RCDE Stadium",
+                    "HomeTeam": "RCD Espanyol Barcelona",
+                    "AwayTeam": "Girona FC",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 269,
+                    "RoundNumber": 27,
+                    "DateUtc": "2025-03-09 00:00:00Z",
+                    "Location": "Coliseum",
+                    "HomeTeam": "Getafe CF",
+                    "AwayTeam": "Atl\u00e9tico de Madrid",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 270,
+                    "RoundNumber": 27,
+                    "DateUtc": "2025-03-09 00:00:00Z",
+                    "Location": "Estadio Santiago Bernab\u00e9u",
+                    "HomeTeam": "Real Madrid",
+                    "AwayTeam": "Rayo Vallecano",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 28,
+            "fixtures": [
+                {
+                    "MatchNumber": 271,
+                    "RoundNumber": 28,
+                    "DateUtc": "2025-03-16 00:00:00Z",
+                    "Location": "Civitas Metropolitano",
+                    "HomeTeam": "Atl\u00e9tico de Madrid",
+                    "AwayTeam": "FC Barcelona",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 272,
+                    "RoundNumber": 28,
+                    "DateUtc": "2025-03-16 00:00:00Z",
+                    "Location": "Estadio Municipal de Montilivi",
+                    "HomeTeam": "Girona FC",
+                    "AwayTeam": "Valencia CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 273,
+                    "RoundNumber": 28,
+                    "DateUtc": "2025-03-16 00:00:00Z",
+                    "Location": "Estadio de Vallecas",
+                    "HomeTeam": "Rayo Vallecano",
+                    "AwayTeam": "Real Sociedad",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 274,
+                    "RoundNumber": 28,
+                    "DateUtc": "2025-03-16 00:00:00Z",
+                    "Location": "Ram\u00f3n S\u00e1nchez-Pizju\u00e1n",
+                    "HomeTeam": "Sevilla FC",
+                    "AwayTeam": "Athletic Club",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 275,
+                    "RoundNumber": 28,
+                    "DateUtc": "2025-03-16 00:00:00Z",
+                    "Location": "Estadio Municipal Butarque",
+                    "HomeTeam": "CD Legan\u00e9s",
+                    "AwayTeam": "Real Betis",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 276,
+                    "RoundNumber": 28,
+                    "DateUtc": "2025-03-16 00:00:00Z",
+                    "Location": "Estadio Municipal Jos\u00e9 Zorrilla",
+                    "HomeTeam": "Real Valladolid CF",
+                    "AwayTeam": "RC Celta",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 277,
+                    "RoundNumber": 28,
+                    "DateUtc": "2025-03-16 00:00:00Z",
+                    "Location": "Estadio El Sadar",
+                    "HomeTeam": "CA Osasuna",
+                    "AwayTeam": "Getafe CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 278,
+                    "RoundNumber": 28,
+                    "DateUtc": "2025-03-16 00:00:00Z",
+                    "Location": "Estadio de la Cer\u00e1mica",
+                    "HomeTeam": "Villarreal CF",
+                    "AwayTeam": "Real Madrid",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 279,
+                    "RoundNumber": 28,
+                    "DateUtc": "2025-03-16 00:00:00Z",
+                    "Location": "Estadio Gran Canaria",
+                    "HomeTeam": "UD Las Palmas",
+                    "AwayTeam": "Deportivo Alav\u00e9s",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 280,
+                    "RoundNumber": 28,
+                    "DateUtc": "2025-03-16 00:00:00Z",
+                    "Location": "Estadi Mallorca Son Moix",
+                    "HomeTeam": "RCD Mallorca",
+                    "AwayTeam": "RCD Espanyol Barcelona",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 29,
+            "fixtures": [
+                {
+                    "MatchNumber": 281,
+                    "RoundNumber": 29,
+                    "DateUtc": "2025-03-30 00:00:00Z",
+                    "Location": "Estadio San Mam\u00e9s",
+                    "HomeTeam": "Athletic Club",
+                    "AwayTeam": "CA Osasuna",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 282,
+                    "RoundNumber": 29,
+                    "DateUtc": "2025-03-30 00:00:00Z",
+                    "Location": "Estadi Ol\u00edmpic Llu\u00eds Companys",
+                    "HomeTeam": "FC Barcelona",
+                    "AwayTeam": "Girona FC",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 283,
+                    "RoundNumber": 29,
+                    "DateUtc": "2025-03-30 00:00:00Z",
+                    "Location": "Estadio Benito Villamar\u00edn",
+                    "HomeTeam": "Real Betis",
+                    "AwayTeam": "Sevilla FC",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 284,
+                    "RoundNumber": 29,
+                    "DateUtc": "2025-03-30 00:00:00Z",
+                    "Location": "Estadio ABANCA Bala\u00eddos",
+                    "HomeTeam": "RC Celta",
+                    "AwayTeam": "UD Las Palmas",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 285,
+                    "RoundNumber": 29,
+                    "DateUtc": "2025-03-30 00:00:00Z",
+                    "Location": "Coliseum",
+                    "HomeTeam": "Getafe CF",
+                    "AwayTeam": "Villarreal CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 286,
+                    "RoundNumber": 29,
+                    "DateUtc": "2025-03-30 00:00:00Z",
+                    "Location": "Reale Arena",
+                    "HomeTeam": "Real Sociedad",
+                    "AwayTeam": "Real Valladolid CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 287,
+                    "RoundNumber": 29,
+                    "DateUtc": "2025-03-30 00:00:00Z",
+                    "Location": "Mendizorroza",
+                    "HomeTeam": "Deportivo Alav\u00e9s",
+                    "AwayTeam": "Rayo Vallecano",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 288,
+                    "RoundNumber": 29,
+                    "DateUtc": "2025-03-30 00:00:00Z",
+                    "Location": "RCDE Stadium",
+                    "HomeTeam": "RCD Espanyol Barcelona",
+                    "AwayTeam": "Atl\u00e9tico de Madrid",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 289,
+                    "RoundNumber": 29,
+                    "DateUtc": "2025-03-30 00:00:00Z",
+                    "Location": "Camp de Mestalla",
+                    "HomeTeam": "Valencia CF",
+                    "AwayTeam": "RCD Mallorca",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 290,
+                    "RoundNumber": 29,
+                    "DateUtc": "2025-03-30 00:00:00Z",
+                    "Location": "Estadio Santiago Bernab\u00e9u",
+                    "HomeTeam": "Real Madrid",
+                    "AwayTeam": "CD Legan\u00e9s",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 30,
+            "fixtures": [
+                {
+                    "MatchNumber": 291,
+                    "RoundNumber": 30,
+                    "DateUtc": "2025-04-06 00:00:00Z",
+                    "Location": "Estadi Ol\u00edmpic Llu\u00eds Companys",
+                    "HomeTeam": "FC Barcelona",
+                    "AwayTeam": "Real Betis",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 292,
+                    "RoundNumber": 30,
+                    "DateUtc": "2025-04-06 00:00:00Z",
+                    "Location": "Estadio Santiago Bernab\u00e9u",
+                    "HomeTeam": "Real Madrid",
+                    "AwayTeam": "Valencia CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 293,
+                    "RoundNumber": 30,
+                    "DateUtc": "2025-04-06 00:00:00Z",
+                    "Location": "Estadio Gran Canaria",
+                    "HomeTeam": "UD Las Palmas",
+                    "AwayTeam": "Real Sociedad",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 294,
+                    "RoundNumber": 30,
+                    "DateUtc": "2025-04-06 00:00:00Z",
+                    "Location": "Estadio Municipal Butarque",
+                    "HomeTeam": "CD Legan\u00e9s",
+                    "AwayTeam": "CA Osasuna",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 295,
+                    "RoundNumber": 30,
+                    "DateUtc": "2025-04-06 00:00:00Z",
+                    "Location": "Estadio de la Cer\u00e1mica",
+                    "HomeTeam": "Villarreal CF",
+                    "AwayTeam": "Athletic Club",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 296,
+                    "RoundNumber": 30,
+                    "DateUtc": "2025-04-06 00:00:00Z",
+                    "Location": "Ram\u00f3n S\u00e1nchez-Pizju\u00e1n",
+                    "HomeTeam": "Sevilla FC",
+                    "AwayTeam": "Atl\u00e9tico de Madrid",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 297,
+                    "RoundNumber": 30,
+                    "DateUtc": "2025-04-06 00:00:00Z",
+                    "Location": "Estadi Mallorca Son Moix",
+                    "HomeTeam": "RCD Mallorca",
+                    "AwayTeam": "RC Celta",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 298,
+                    "RoundNumber": 30,
+                    "DateUtc": "2025-04-06 00:00:00Z",
+                    "Location": "Estadio Municipal Jos\u00e9 Zorrilla",
+                    "HomeTeam": "Real Valladolid CF",
+                    "AwayTeam": "Getafe CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 299,
+                    "RoundNumber": 30,
+                    "DateUtc": "2025-04-06 00:00:00Z",
+                    "Location": "Estadio Municipal de Montilivi",
+                    "HomeTeam": "Girona FC",
+                    "AwayTeam": "Deportivo Alav\u00e9s",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 300,
+                    "RoundNumber": 30,
+                    "DateUtc": "2025-04-06 00:00:00Z",
+                    "Location": "Estadio de Vallecas",
+                    "HomeTeam": "Rayo Vallecano",
+                    "AwayTeam": "RCD Espanyol Barcelona",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 31,
+            "fixtures": [
+                {
+                    "MatchNumber": 301,
+                    "RoundNumber": 31,
+                    "DateUtc": "2025-04-13 00:00:00Z",
+                    "Location": "Estadio San Mam\u00e9s",
+                    "HomeTeam": "Athletic Club",
+                    "AwayTeam": "Rayo Vallecano",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 302,
+                    "RoundNumber": 31,
+                    "DateUtc": "2025-04-13 00:00:00Z",
+                    "Location": "Civitas Metropolitano",
+                    "HomeTeam": "Atl\u00e9tico de Madrid",
+                    "AwayTeam": "Real Valladolid CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 303,
+                    "RoundNumber": 31,
+                    "DateUtc": "2025-04-13 00:00:00Z",
+                    "Location": "Estadio Benito Villamar\u00edn",
+                    "HomeTeam": "Real Betis",
+                    "AwayTeam": "Villarreal CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 304,
+                    "RoundNumber": 31,
+                    "DateUtc": "2025-04-13 00:00:00Z",
+                    "Location": "Coliseum",
+                    "HomeTeam": "Getafe CF",
+                    "AwayTeam": "UD Las Palmas",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 305,
+                    "RoundNumber": 31,
+                    "DateUtc": "2025-04-13 00:00:00Z",
+                    "Location": "Mendizorroza",
+                    "HomeTeam": "Deportivo Alav\u00e9s",
+                    "AwayTeam": "Real Madrid",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 306,
+                    "RoundNumber": 31,
+                    "DateUtc": "2025-04-13 00:00:00Z",
+                    "Location": "Estadio Municipal Butarque",
+                    "HomeTeam": "CD Legan\u00e9s",
+                    "AwayTeam": "FC Barcelona",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 307,
+                    "RoundNumber": 31,
+                    "DateUtc": "2025-04-13 00:00:00Z",
+                    "Location": "Estadio El Sadar",
+                    "HomeTeam": "CA Osasuna",
+                    "AwayTeam": "Girona FC",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 308,
+                    "RoundNumber": 31,
+                    "DateUtc": "2025-04-13 00:00:00Z",
+                    "Location": "Reale Arena",
+                    "HomeTeam": "Real Sociedad",
+                    "AwayTeam": "RCD Mallorca",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 309,
+                    "RoundNumber": 31,
+                    "DateUtc": "2025-04-13 00:00:00Z",
+                    "Location": "Camp de Mestalla",
+                    "HomeTeam": "Valencia CF",
+                    "AwayTeam": "Sevilla FC",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 310,
+                    "RoundNumber": 31,
+                    "DateUtc": "2025-04-13 00:00:00Z",
+                    "Location": "Estadio ABANCA Bala\u00eddos",
+                    "HomeTeam": "RC Celta",
+                    "AwayTeam": "RCD Espanyol Barcelona",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 32,
+            "fixtures": [
+                {
+                    "MatchNumber": 311,
+                    "RoundNumber": 32,
+                    "DateUtc": "2025-04-20 00:00:00Z",
+                    "Location": "Estadi Ol\u00edmpic Llu\u00eds Companys",
+                    "HomeTeam": "FC Barcelona",
+                    "AwayTeam": "RC Celta",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 312,
+                    "RoundNumber": 32,
+                    "DateUtc": "2025-04-20 00:00:00Z",
+                    "Location": "Estadio de Vallecas",
+                    "HomeTeam": "Rayo Vallecano",
+                    "AwayTeam": "Valencia CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 313,
+                    "RoundNumber": 32,
+                    "DateUtc": "2025-04-20 00:00:00Z",
+                    "Location": "RCDE Stadium",
+                    "HomeTeam": "RCD Espanyol Barcelona",
+                    "AwayTeam": "Getafe CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 314,
+                    "RoundNumber": 32,
+                    "DateUtc": "2025-04-20 00:00:00Z",
+                    "Location": "Estadio Santiago Bernab\u00e9u",
+                    "HomeTeam": "Real Madrid",
+                    "AwayTeam": "Athletic Club",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 315,
+                    "RoundNumber": 32,
+                    "DateUtc": "2025-04-20 00:00:00Z",
+                    "Location": "Estadio Gran Canaria",
+                    "HomeTeam": "UD Las Palmas",
+                    "AwayTeam": "Atl\u00e9tico de Madrid",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 316,
+                    "RoundNumber": 32,
+                    "DateUtc": "2025-04-20 00:00:00Z",
+                    "Location": "Estadio Municipal de Montilivi",
+                    "HomeTeam": "Girona FC",
+                    "AwayTeam": "Real Betis",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 317,
+                    "RoundNumber": 32,
+                    "DateUtc": "2025-04-20 00:00:00Z",
+                    "Location": "Estadio Municipal Jos\u00e9 Zorrilla",
+                    "HomeTeam": "Real Valladolid CF",
+                    "AwayTeam": "CA Osasuna",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 318,
+                    "RoundNumber": 32,
+                    "DateUtc": "2025-04-20 00:00:00Z",
+                    "Location": "Estadio de la Cer\u00e1mica",
+                    "HomeTeam": "Villarreal CF",
+                    "AwayTeam": "Real Sociedad",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 319,
+                    "RoundNumber": 32,
+                    "DateUtc": "2025-04-20 00:00:00Z",
+                    "Location": "Ram\u00f3n S\u00e1nchez-Pizju\u00e1n",
+                    "HomeTeam": "Sevilla FC",
+                    "AwayTeam": "Deportivo Alav\u00e9s",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 320,
+                    "RoundNumber": 32,
+                    "DateUtc": "2025-04-20 00:00:00Z",
+                    "Location": "Estadi Mallorca Son Moix",
+                    "HomeTeam": "RCD Mallorca",
+                    "AwayTeam": "CD Legan\u00e9s",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 33,
+            "fixtures": [
+                {
+                    "MatchNumber": 321,
+                    "RoundNumber": 33,
+                    "DateUtc": "2025-04-23 00:00:00Z",
+                    "Location": "Estadio San Mam\u00e9s",
+                    "HomeTeam": "Athletic Club",
+                    "AwayTeam": "UD Las Palmas",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 322,
+                    "RoundNumber": 33,
+                    "DateUtc": "2025-04-23 00:00:00Z",
+                    "Location": "Civitas Metropolitano",
+                    "HomeTeam": "Atl\u00e9tico de Madrid",
+                    "AwayTeam": "Rayo Vallecano",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 323,
+                    "RoundNumber": 33,
+                    "DateUtc": "2025-04-23 00:00:00Z",
+                    "Location": "Estadi Ol\u00edmpic Llu\u00eds Companys",
+                    "HomeTeam": "FC Barcelona",
+                    "AwayTeam": "RCD Mallorca",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 324,
+                    "RoundNumber": 33,
+                    "DateUtc": "2025-04-23 00:00:00Z",
+                    "Location": "Estadio Benito Villamar\u00edn",
+                    "HomeTeam": "Real Betis",
+                    "AwayTeam": "Real Valladolid CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 325,
+                    "RoundNumber": 33,
+                    "DateUtc": "2025-04-23 00:00:00Z",
+                    "Location": "Estadio ABANCA Bala\u00eddos",
+                    "HomeTeam": "RC Celta",
+                    "AwayTeam": "Villarreal CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 326,
+                    "RoundNumber": 33,
+                    "DateUtc": "2025-04-23 00:00:00Z",
+                    "Location": "Coliseum",
+                    "HomeTeam": "Getafe CF",
+                    "AwayTeam": "Real Madrid",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 327,
+                    "RoundNumber": 33,
+                    "DateUtc": "2025-04-23 00:00:00Z",
+                    "Location": "Estadio El Sadar",
+                    "HomeTeam": "CA Osasuna",
+                    "AwayTeam": "Sevilla FC",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 328,
+                    "RoundNumber": 33,
+                    "DateUtc": "2025-04-23 00:00:00Z",
+                    "Location": "Mendizorroza",
+                    "HomeTeam": "Deportivo Alav\u00e9s",
+                    "AwayTeam": "Real Sociedad",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 329,
+                    "RoundNumber": 33,
+                    "DateUtc": "2025-04-23 00:00:00Z",
+                    "Location": "Estadio Municipal Butarque",
+                    "HomeTeam": "CD Legan\u00e9s",
+                    "AwayTeam": "Girona FC",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 330,
+                    "RoundNumber": 33,
+                    "DateUtc": "2025-04-23 00:00:00Z",
+                    "Location": "Camp de Mestalla",
+                    "HomeTeam": "Valencia CF",
+                    "AwayTeam": "RCD Espanyol Barcelona",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 34,
+            "fixtures": [
+                {
+                    "MatchNumber": 331,
+                    "RoundNumber": 34,
+                    "DateUtc": "2025-05-04 00:00:00Z",
+                    "Location": "Estadio Municipal de Montilivi",
+                    "HomeTeam": "Girona FC",
+                    "AwayTeam": "RCD Mallorca",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 332,
+                    "RoundNumber": 34,
+                    "DateUtc": "2025-05-04 00:00:00Z",
+                    "Location": "Estadio Gran Canaria",
+                    "HomeTeam": "UD Las Palmas",
+                    "AwayTeam": "Valencia CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 333,
+                    "RoundNumber": 34,
+                    "DateUtc": "2025-05-04 00:00:00Z",
+                    "Location": "Mendizorroza",
+                    "HomeTeam": "Deportivo Alav\u00e9s",
+                    "AwayTeam": "Atl\u00e9tico de Madrid",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 334,
+                    "RoundNumber": 34,
+                    "DateUtc": "2025-05-04 00:00:00Z",
+                    "Location": "RCDE Stadium",
+                    "HomeTeam": "RCD Espanyol Barcelona",
+                    "AwayTeam": "Real Betis",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 335,
+                    "RoundNumber": 34,
+                    "DateUtc": "2025-05-04 00:00:00Z",
+                    "Location": "Reale Arena",
+                    "HomeTeam": "Real Sociedad",
+                    "AwayTeam": "Athletic Club",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 336,
+                    "RoundNumber": 34,
+                    "DateUtc": "2025-05-04 00:00:00Z",
+                    "Location": "Estadio Municipal Jos\u00e9 Zorrilla",
+                    "HomeTeam": "Real Valladolid CF",
+                    "AwayTeam": "FC Barcelona",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 337,
+                    "RoundNumber": 34,
+                    "DateUtc": "2025-05-04 00:00:00Z",
+                    "Location": "Estadio Santiago Bernab\u00e9u",
+                    "HomeTeam": "Real Madrid",
+                    "AwayTeam": "RC Celta",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 338,
+                    "RoundNumber": 34,
+                    "DateUtc": "2025-05-04 00:00:00Z",
+                    "Location": "Estadio de Vallecas",
+                    "HomeTeam": "Rayo Vallecano",
+                    "AwayTeam": "Getafe CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 339,
+                    "RoundNumber": 34,
+                    "DateUtc": "2025-05-04 00:00:00Z",
+                    "Location": "Estadio de la Cer\u00e1mica",
+                    "HomeTeam": "Villarreal CF",
+                    "AwayTeam": "CA Osasuna",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 340,
+                    "RoundNumber": 34,
+                    "DateUtc": "2025-05-04 00:00:00Z",
+                    "Location": "Ram\u00f3n S\u00e1nchez-Pizju\u00e1n",
+                    "HomeTeam": "Sevilla FC",
+                    "AwayTeam": "CD Legan\u00e9s",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 35,
+            "fixtures": [
+                {
+                    "MatchNumber": 341,
+                    "RoundNumber": 35,
+                    "DateUtc": "2025-05-11 00:00:00Z",
+                    "Location": "Civitas Metropolitano",
+                    "HomeTeam": "Atl\u00e9tico de Madrid",
+                    "AwayTeam": "Real Sociedad",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 342,
+                    "RoundNumber": 35,
+                    "DateUtc": "2025-05-11 00:00:00Z",
+                    "Location": "Estadi Ol\u00edmpic Llu\u00eds Companys",
+                    "HomeTeam": "FC Barcelona",
+                    "AwayTeam": "Real Madrid",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 343,
+                    "RoundNumber": 35,
+                    "DateUtc": "2025-05-11 00:00:00Z",
+                    "Location": "Estadio Benito Villamar\u00edn",
+                    "HomeTeam": "Real Betis",
+                    "AwayTeam": "CA Osasuna",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 344,
+                    "RoundNumber": 35,
+                    "DateUtc": "2025-05-11 00:00:00Z",
+                    "Location": "Estadio ABANCA Bala\u00eddos",
+                    "HomeTeam": "RC Celta",
+                    "AwayTeam": "Sevilla FC",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 345,
+                    "RoundNumber": 35,
+                    "DateUtc": "2025-05-11 00:00:00Z",
+                    "Location": "Estadio Municipal de Montilivi",
+                    "HomeTeam": "Girona FC",
+                    "AwayTeam": "Villarreal CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 346,
+                    "RoundNumber": 35,
+                    "DateUtc": "2025-05-11 00:00:00Z",
+                    "Location": "Estadi Mallorca Son Moix",
+                    "HomeTeam": "RCD Mallorca",
+                    "AwayTeam": "Real Valladolid CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 347,
+                    "RoundNumber": 35,
+                    "DateUtc": "2025-05-11 00:00:00Z",
+                    "Location": "Estadio Gran Canaria",
+                    "HomeTeam": "UD Las Palmas",
+                    "AwayTeam": "Rayo Vallecano",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 348,
+                    "RoundNumber": 35,
+                    "DateUtc": "2025-05-11 00:00:00Z",
+                    "Location": "Camp de Mestalla",
+                    "HomeTeam": "Valencia CF",
+                    "AwayTeam": "Getafe CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 349,
+                    "RoundNumber": 35,
+                    "DateUtc": "2025-05-11 00:00:00Z",
+                    "Location": "Estadio San Mam\u00e9s",
+                    "HomeTeam": "Athletic Club",
+                    "AwayTeam": "Deportivo Alav\u00e9s",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 350,
+                    "RoundNumber": 35,
+                    "DateUtc": "2025-05-11 00:00:00Z",
+                    "Location": "Estadio Municipal Butarque",
+                    "HomeTeam": "CD Legan\u00e9s",
+                    "AwayTeam": "RCD Espanyol Barcelona",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 36,
+            "fixtures": [
+                {
+                    "MatchNumber": 351,
+                    "RoundNumber": 36,
+                    "DateUtc": "2025-05-14 00:00:00Z",
+                    "Location": "Mendizorroza",
+                    "HomeTeam": "Deportivo Alav\u00e9s",
+                    "AwayTeam": "Valencia CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 352,
+                    "RoundNumber": 36,
+                    "DateUtc": "2025-05-14 00:00:00Z",
+                    "Location": "RCDE Stadium",
+                    "HomeTeam": "RCD Espanyol Barcelona",
+                    "AwayTeam": "FC Barcelona",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 353,
+                    "RoundNumber": 36,
+                    "DateUtc": "2025-05-14 00:00:00Z",
+                    "Location": "Coliseum",
+                    "HomeTeam": "Getafe CF",
+                    "AwayTeam": "Athletic Club",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 354,
+                    "RoundNumber": 36,
+                    "DateUtc": "2025-05-14 00:00:00Z",
+                    "Location": "Estadio El Sadar",
+                    "HomeTeam": "CA Osasuna",
+                    "AwayTeam": "Atl\u00e9tico de Madrid",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 355,
+                    "RoundNumber": 36,
+                    "DateUtc": "2025-05-14 00:00:00Z",
+                    "Location": "Estadio de Vallecas",
+                    "HomeTeam": "Rayo Vallecano",
+                    "AwayTeam": "Real Betis",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 356,
+                    "RoundNumber": 36,
+                    "DateUtc": "2025-05-14 00:00:00Z",
+                    "Location": "Reale Arena",
+                    "HomeTeam": "Real Sociedad",
+                    "AwayTeam": "RC Celta",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 357,
+                    "RoundNumber": 36,
+                    "DateUtc": "2025-05-14 00:00:00Z",
+                    "Location": "Estadio Municipal Jos\u00e9 Zorrilla",
+                    "HomeTeam": "Real Valladolid CF",
+                    "AwayTeam": "Girona FC",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 358,
+                    "RoundNumber": 36,
+                    "DateUtc": "2025-05-14 00:00:00Z",
+                    "Location": "Estadio Santiago Bernab\u00e9u",
+                    "HomeTeam": "Real Madrid",
+                    "AwayTeam": "RCD Mallorca",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 359,
+                    "RoundNumber": 36,
+                    "DateUtc": "2025-05-14 00:00:00Z",
+                    "Location": "Ram\u00f3n S\u00e1nchez-Pizju\u00e1n",
+                    "HomeTeam": "Sevilla FC",
+                    "AwayTeam": "UD Las Palmas",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 360,
+                    "RoundNumber": 36,
+                    "DateUtc": "2025-05-14 00:00:00Z",
+                    "Location": "Estadio de la Cer\u00e1mica",
+                    "HomeTeam": "Villarreal CF",
+                    "AwayTeam": "CD Legan\u00e9s",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 37,
+            "fixtures": [
+                {
+                    "MatchNumber": 361,
+                    "RoundNumber": 37,
+                    "DateUtc": "2025-05-18 00:00:00Z",
+                    "Location": "Civitas Metropolitano",
+                    "HomeTeam": "Atl\u00e9tico de Madrid",
+                    "AwayTeam": "Real Betis",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 362,
+                    "RoundNumber": 37,
+                    "DateUtc": "2025-05-18 00:00:00Z",
+                    "Location": "Estadi Ol\u00edmpic Llu\u00eds Companys",
+                    "HomeTeam": "FC Barcelona",
+                    "AwayTeam": "Villarreal CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 363,
+                    "RoundNumber": 37,
+                    "DateUtc": "2025-05-18 00:00:00Z",
+                    "Location": "Estadio ABANCA Bala\u00eddos",
+                    "HomeTeam": "RC Celta",
+                    "AwayTeam": "Rayo Vallecano",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 364,
+                    "RoundNumber": 37,
+                    "DateUtc": "2025-05-18 00:00:00Z",
+                    "Location": "Camp de Mestalla",
+                    "HomeTeam": "Valencia CF",
+                    "AwayTeam": "Athletic Club",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 365,
+                    "RoundNumber": 37,
+                    "DateUtc": "2025-05-18 00:00:00Z",
+                    "Location": "Estadi Mallorca Son Moix",
+                    "HomeTeam": "RCD Mallorca",
+                    "AwayTeam": "Getafe CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 366,
+                    "RoundNumber": 37,
+                    "DateUtc": "2025-05-18 00:00:00Z",
+                    "Location": "Reale Arena",
+                    "HomeTeam": "Real Sociedad",
+                    "AwayTeam": "Girona FC",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 367,
+                    "RoundNumber": 37,
+                    "DateUtc": "2025-05-18 00:00:00Z",
+                    "Location": "Ram\u00f3n S\u00e1nchez-Pizju\u00e1n",
+                    "HomeTeam": "Sevilla FC",
+                    "AwayTeam": "Real Madrid",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 368,
+                    "RoundNumber": 37,
+                    "DateUtc": "2025-05-18 00:00:00Z",
+                    "Location": "Estadio Municipal Jos\u00e9 Zorrilla",
+                    "HomeTeam": "Real Valladolid CF",
+                    "AwayTeam": "Deportivo Alav\u00e9s",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 369,
+                    "RoundNumber": 37,
+                    "DateUtc": "2025-05-18 00:00:00Z",
+                    "Location": "Estadio Gran Canaria",
+                    "HomeTeam": "UD Las Palmas",
+                    "AwayTeam": "CD Legan\u00e9s",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 370,
+                    "RoundNumber": 37,
+                    "DateUtc": "2025-05-18 00:00:00Z",
+                    "Location": "Estadio El Sadar",
+                    "HomeTeam": "CA Osasuna",
+                    "AwayTeam": "RCD Espanyol Barcelona",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 38,
+            "fixtures": [
+                {
+                    "MatchNumber": 371,
+                    "RoundNumber": 38,
+                    "DateUtc": "2025-05-25 00:00:00Z",
+                    "Location": "Estadio San Mam\u00e9s",
+                    "HomeTeam": "Athletic Club",
+                    "AwayTeam": "FC Barcelona",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 372,
+                    "RoundNumber": 38,
+                    "DateUtc": "2025-05-25 00:00:00Z",
+                    "Location": "Estadio Benito Villamar\u00edn",
+                    "HomeTeam": "Real Betis",
+                    "AwayTeam": "Valencia CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 373,
+                    "RoundNumber": 38,
+                    "DateUtc": "2025-05-25 00:00:00Z",
+                    "Location": "Estadio Santiago Bernab\u00e9u",
+                    "HomeTeam": "Real Madrid",
+                    "AwayTeam": "Real Sociedad",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 374,
+                    "RoundNumber": 38,
+                    "DateUtc": "2025-05-25 00:00:00Z",
+                    "Location": "Mendizorroza",
+                    "HomeTeam": "Deportivo Alav\u00e9s",
+                    "AwayTeam": "CA Osasuna",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 375,
+                    "RoundNumber": 38,
+                    "DateUtc": "2025-05-25 00:00:00Z",
+                    "Location": "Estadio Municipal Butarque",
+                    "HomeTeam": "CD Legan\u00e9s",
+                    "AwayTeam": "Real Valladolid CF",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 376,
+                    "RoundNumber": 38,
+                    "DateUtc": "2025-05-25 00:00:00Z",
+                    "Location": "RCDE Stadium",
+                    "HomeTeam": "RCD Espanyol Barcelona",
+                    "AwayTeam": "UD Las Palmas",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 377,
+                    "RoundNumber": 38,
+                    "DateUtc": "2025-05-25 00:00:00Z",
+                    "Location": "Estadio Municipal de Montilivi",
+                    "HomeTeam": "Girona FC",
+                    "AwayTeam": "Atl\u00e9tico de Madrid",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 378,
+                    "RoundNumber": 38,
+                    "DateUtc": "2025-05-25 00:00:00Z",
+                    "Location": "Coliseum",
+                    "HomeTeam": "Getafe CF",
+                    "AwayTeam": "RC Celta",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 379,
+                    "RoundNumber": 38,
+                    "DateUtc": "2025-05-25 00:00:00Z",
+                    "Location": "Estadio de Vallecas",
+                    "HomeTeam": "Rayo Vallecano",
+                    "AwayTeam": "RCD Mallorca",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 380,
+                    "RoundNumber": 38,
+                    "DateUtc": "2025-05-25 00:00:00Z",
+                    "Location": "Estadio de la Cer\u00e1mica",
+                    "HomeTeam": "Villarreal CF",
+                    "AwayTeam": "Sevilla FC",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        }
+    ]
+}

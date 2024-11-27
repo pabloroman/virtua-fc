@@ -24,21 +24,22 @@
 
 
                         <div class="flex space-x-2">
+                        @php /** @var \App\Competitions\Competition $competition */ @endphp
                         @foreach($competitions as $competition)
-                            <a x-on:click="openTab = '{{ $competition->code }}'" :class="{ 'bg-red-600 text-white': openTab === '{{ $competition->code }}' }" class="flex items-center space-x-2 py-2 px-4 rounded-md focus:outline-none text-lg transition-all duration-300 cursor-pointer">
-                                <img class="w-5 h-4 rounded shadow" src="/flags/{{ $competition->flag }}.svg">
-                                <span>{{ $competition->name }}</span>
+                            <a x-on:click="openTab = '{{ $competition->getCode() }}'" :class="{ 'bg-red-600 text-white': openTab === '{{ $competition->getCode() }}' }" class="flex items-center space-x-2 py-2 px-4 rounded-md focus:outline-none text-lg transition-all duration-300 cursor-pointer">
+                                <img class="w-5 h-4 rounded shadow" src="/flags/{{ $competition->getCountryAlpha2() }}.svg">
+                                <span>{{ $competition->getName() }}</span>
                             </a>
                         @endforeach
                         </div>
 
                         <div class="space-y-6">
-                            @php /** @var App\Models\Competition $competition */ @endphp
+                            @php /** @var \App\Competitions\Competition $competition */ @endphp
                             @foreach($competitions as $competition)
-                                <div x-show="openTab === '{{ $competition->code }}'">
+                                <div x-show="openTab === '{{ $competition->getCode() }}'">
                                     <div class="grid lg:grid-cols-4 md:grid-cols-2 gap-2 mt-4">
                                         @php /** @var App\Models\Team $team */ @endphp
-                                        @foreach($competition->initialTeams as $team)
+                                        @foreach($competition->getInitialTeams() as $team)
                                             <label class="border text-slate-700 has-[:checked]:ring-sky-200 has-[:checked]:text-sky-900 has-[:checked]:bg-sky-100 grid grid-cols-[40px_1fr_auto] items-center gap-4 rounded-lg p-4 ring-1 ring-transparent hover:bg-sky-50">
                                                 <img src="{{ $team->image }}" class="w-10 h-10">
                                                 <span class="text-[20px]">{{ $team->name }}</span>

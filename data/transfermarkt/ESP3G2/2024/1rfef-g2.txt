@@ -1,0 +1,536 @@
+  Jornada 1 (25/08/2024)
+
+   Atlético de Madrid B - Atlético Sanluqueño
+   UD Ibiza - Villarreal CF B
+   CD Alcoyano - Algeciras CF
+   Betis Deportivo Balompié - CF Intercity
+   Marbella FC - Real Madrid Castilla
+   Yeclano Deportivo - AD Alcorcón
+   Sevilla Atlético - Real Murcia CF
+   Hércules CF - AD Ceuta FC
+   CF Fuenlabrada - Antequera CF
+   Mérida AD - Recreativo Huelva
+
+
+  Jornada 2 (01/09/2024)
+
+   Real Madrid Castilla - UD Ibiza
+   AD Alcorcón - Hércules CF
+   Real Murcia CF - Yeclano Deportivo
+   AD Ceuta FC - CF Fuenlabrada
+   Antequera CF - Marbella FC
+   Algeciras CF - Sevilla Atlético
+   CF Intercity - Atlético de Madrid B
+   Recreativo Huelva - CD Alcoyano
+   Villarreal CF B - Betis Deportivo Balompié
+   Atlético Sanluqueño - Mérida AD
+
+
+  Jornada 3 (08/09/2024)
+
+   CD Alcoyano - Real Murcia CF
+   Hércules CF - CF Intercity
+   Betis Deportivo Balompié - Recreativo Huelva
+   Sevilla Atlético - Atlético Sanluqueño
+   Villarreal CF B - Real Madrid Castilla
+   CF Fuenlabrada - AD Alcorcón
+   Yeclano Deportivo - UD Ibiza
+   Marbella FC - AD Ceuta FC
+   Atlético de Madrid B - Antequera CF
+   Mérida AD - Algeciras CF
+
+
+  Jornada 4 (15/09/2024)
+
+   AD Alcorcón - Atlético de Madrid B
+   AD Ceuta FC - Atlético Sanluqueño
+   Antequera CF - Villarreal CF B
+   Algeciras CF - Marbella FC
+   Recreativo Huelva - Sevilla Atlético
+   Yeclano Deportivo - CF Fuenlabrada
+   CF Intercity - CD Alcoyano
+   UD Ibiza - Hércules CF
+   Real Madrid Castilla - Betis Deportivo Balompié
+   Real Murcia CF - Mérida AD
+
+
+  Jornada 5 (22/09/2024)
+
+   Atlético de Madrid B - Yeclano Deportivo
+   Hércules CF - Real Murcia CF
+   Betis Deportivo Balompié - AD Ceuta FC
+   Atlético Sanluqueño - Real Madrid Castilla
+   Marbella FC - CF Fuenlabrada
+   CD Alcoyano - AD Alcorcón
+   Mérida AD - UD Ibiza
+   Sevilla Atlético - Antequera CF
+   CF Intercity - Algeciras CF
+   Villarreal CF B - Recreativo Huelva
+
+
+  Jornada 6 (29/09/2024)
+
+   Real Madrid Castilla - Hércules CF
+   AD Alcorcón - Sevilla Atlético
+   AD Ceuta FC - Recreativo Huelva
+   Marbella FC - Mérida AD
+   Antequera CF - CF Intercity
+   Algeciras CF - Villarreal CF B
+   CF Fuenlabrada - Atlético de Madrid B
+   UD Ibiza - CD Alcoyano
+   Yeclano Deportivo - Atlético Sanluqueño
+   Real Murcia CF - Betis Deportivo Balompié
+
+
+  Jornada 7 (06/10/2024)
+
+   Atlético de Madrid B - AD Ceuta FC
+   CD Alcoyano - Marbella FC
+   CF Intercity - Yeclano Deportivo
+   Mérida AD - Villarreal CF B
+   Sevilla Atlético - Real Madrid Castilla
+   Recreativo Huelva - CF Fuenlabrada
+   Real Murcia CF - AD Alcorcón
+   Atlético Sanluqueño - UD Ibiza
+   Hércules CF - Antequera CF
+   Betis Deportivo Balompié - Algeciras CF
+
+
+  Jornada 8 (13/10/2024)
+
+   Real Madrid Castilla - Yeclano Deportivo
+   AD Alcorcón - Betis Deportivo Balompié
+   AD Ceuta FC - CF Intercity
+   Marbella FC - Sevilla Atlético
+   Antequera CF - Mérida AD
+   Algeciras CF - Hércules CF
+   Recreativo Huelva - Real Murcia CF
+   UD Ibiza - Atlético de Madrid B
+   CF Fuenlabrada - CD Alcoyano
+   Villarreal CF B - Atlético Sanluqueño
+
+
+  Jornada 9 (20/10/2024)
+
+   Atlético de Madrid B - Recreativo Huelva
+   AD Alcorcón - Real Madrid Castilla
+   CD Alcoyano - Antequera CF
+   Algeciras CF - AD Ceuta FC
+   Sevilla Atlético - Villarreal CF B
+   Atlético Sanluqueño - CF Fuenlabrada
+   CF Intercity - UD Ibiza
+   Yeclano Deportivo - Hércules CF
+   Real Murcia CF - Marbella FC
+   Mérida AD - Betis Deportivo Balompié
+
+
+  Jornada 10 (27/10/2024)
+
+   CF Fuenlabrada - UD Ibiza
+   Antequera CF - Atlético Sanluqueño
+   Betis Deportivo Balompié - Yeclano Deportivo
+   Hércules CF - Atlético de Madrid B
+   Recreativo Huelva - AD Alcorcón
+   Mérida AD - CD Alcoyano
+   Marbella FC - CF Intercity
+   Villarreal CF B - Real Murcia CF
+   Sevilla Atlético - AD Ceuta FC
+   Real Madrid Castilla - Algeciras CF
+
+
+  Jornada 11 (03/11/2024)
+
+   Atlético de Madrid B - Real Madrid Castilla
+   AD Alcorcón - Mérida AD
+   CD Alcoyano - Villarreal CF B
+   CF Intercity - Sevilla Atlético
+   Hércules CF - Marbella FC
+   AD Ceuta FC - Real Murcia CF
+   Algeciras CF - CF Fuenlabrada
+   Yeclano Deportivo - Antequera CF
+   UD Ibiza - Betis Deportivo Balompié
+   Atlético Sanluqueño - Recreativo Huelva
+
+
+  Jornada 12 (10/11/2024)
+
+   Real Madrid Castilla - CF Intercity
+   CF Fuenlabrada - Hércules CF
+   Marbella FC - Atlético Sanluqueño
+   Antequera CF - UD Ibiza
+   Sevilla Atlético - Yeclano Deportivo
+   Real Murcia CF - Atlético de Madrid B
+   Villarreal CF B - AD Alcorcón
+   Betis Deportivo Balompié - CD Alcoyano
+   Mérida AD - AD Ceuta FC
+   Recreativo Huelva - Algeciras CF
+
+
+  Jornada 13 (17/11/2024)
+
+   Atlético de Madrid B - Mérida AD
+   UD Ibiza - Marbella FC
+   CD Alcoyano - Sevilla Atlético
+   Hércules CF - Villarreal CF B
+   Algeciras CF - Real Murcia CF
+   CF Intercity - CF Fuenlabrada
+   AD Ceuta FC - AD Alcorcón
+   Real Madrid Castilla - Antequera CF
+   Atlético Sanluqueño - Betis Deportivo Balompié
+   Yeclano Deportivo - Recreativo Huelva
+
+
+  Jornada 14 (24/11/2024)
+
+   AD Alcorcón - Algeciras CF
+   CD Alcoyano - AD Ceuta FC
+   Real Murcia CF - Atlético Sanluqueño
+   Marbella FC - Yeclano Deportivo
+   CF Fuenlabrada - Real Madrid Castilla
+   Villarreal CF B - Atlético de Madrid B
+   Sevilla Atlético - UD Ibiza
+   Mérida AD - CF Intercity
+   Recreativo Huelva - Hércules CF
+   Betis Deportivo Balompié - Antequera CF
+
+
+  Jornada 15 (01/12/2024)
+
+   Real Madrid Castilla - Mérida AD
+   Atlético de Madrid B - Marbella FC
+   UD Ibiza - Real Murcia CF
+   Hércules CF - Sevilla Atlético
+   AD Ceuta FC - Villarreal CF B
+   Antequera CF - Recreativo Huelva
+   CF Intercity - AD Alcorcón
+   Yeclano Deportivo - CD Alcoyano
+   Atlético Sanluqueño - Algeciras CF
+   CF Fuenlabrada - Betis Deportivo Balompié
+
+
+  Jornada 16 (08/12/2024)
+
+   AD Alcorcón - Antequera CF
+   CD Alcoyano - Atlético Sanluqueño
+   AD Ceuta FC - UD Ibiza
+   Algeciras CF - Yeclano Deportivo
+   Recreativo Huelva - CF Intercity
+   Real Murcia CF - Real Madrid Castilla
+   Betis Deportivo Balompié - Atlético de Madrid B
+   Sevilla Atlético - CF Fuenlabrada
+   Mérida AD - Hércules CF
+   Villarreal CF B - Marbella FC
+
+
+  Jornada 17 (15/12/2024)
+
+   Real Madrid Castilla - Recreativo Huelva
+   Atlético de Madrid B - Sevilla Atlético
+   CF Fuenlabrada - Real Murcia CF
+   CF Intercity - Villarreal CF B
+   Antequera CF - AD Ceuta FC
+   Atlético Sanluqueño - AD Alcorcón
+   Hércules CF - CD Alcoyano
+   UD Ibiza - Algeciras CF
+   Marbella FC - Betis Deportivo Balompié
+   Yeclano Deportivo - Mérida AD
+
+
+  Jornada 18 (22/12/2024)
+
+   AD Alcorcón - UD Ibiza
+   Villarreal CF B - Yeclano Deportivo
+   CD Alcoyano - Atlético de Madrid B
+   Algeciras CF - Antequera CF
+   Betis Deportivo Balompié - Sevilla Atlético
+   Recreativo Huelva - Marbella FC
+   AD Ceuta FC - Real Madrid Castilla
+   Mérida AD - CF Fuenlabrada
+   Real Murcia CF - CF Intercity
+   Atlético Sanluqueño - Hércules CF
+
+
+  Jornada 19 (11/01/2025)
+
+   CF Fuenlabrada - Villarreal CF B
+   CF Intercity - Atlético Sanluqueño
+   Antequera CF - Real Murcia CF
+   Marbella FC - AD Alcorcón
+   Real Madrid Castilla - CD Alcoyano
+   Yeclano Deportivo - AD Ceuta FC
+   Atlético de Madrid B - Algeciras CF
+   Hércules CF - Betis Deportivo Balompié
+   UD Ibiza - Recreativo Huelva
+   Sevilla Atlético - Mérida AD
+
+
+  Jornada 20 (19/01/2025)
+
+   AD Alcorcón - CF Fuenlabrada
+   CD Alcoyano - UD Ibiza
+   AD Ceuta FC - Sevilla Atlético
+   Algeciras CF - CF Intercity
+   Atlético Sanluqueño - Yeclano Deportivo
+   Betis Deportivo Balompié - Real Madrid Castilla
+   Recreativo Huelva - Atlético de Madrid B
+   Real Murcia CF - Hércules CF
+   Mérida AD - Marbella FC
+   Villarreal CF B - Antequera CF
+
+
+  Jornada 21 (26/01/2025)
+
+   Real Madrid Castilla - Villarreal CF B
+   CF Fuenlabrada - Atlético Sanluqueño
+   UD Ibiza - Mérida AD
+   Atlético de Madrid B - AD Alcorcón
+   Antequera CF - CD Alcoyano
+   Marbella FC - Hércules CF
+   Yeclano Deportivo - Real Murcia CF
+   Recreativo Huelva - AD Ceuta FC
+   Sevilla Atlético - Algeciras CF
+   CF Intercity - Betis Deportivo Balompié
+
+
+  Jornada 22 (02/02/2025)
+
+   AD Alcorcón - Recreativo Huelva
+   CF Intercity - Marbella FC
+   Hércules CF - Yeclano Deportivo
+   Antequera CF - CF Fuenlabrada
+   Algeciras CF - Real Madrid Castilla
+   Betis Deportivo Balompié - Mérida AD
+   AD Ceuta FC - Atlético de Madrid B
+   Villarreal CF B - UD Ibiza
+   Real Murcia CF - CD Alcoyano
+   Atlético Sanluqueño - Sevilla Atlético
+
+
+  Jornada 23 (09/02/2025)
+
+   Real Madrid Castilla - Atlético Sanluqueño
+   Atlético de Madrid B - Hércules CF
+   CF Fuenlabrada - Yeclano Deportivo
+   CD Alcoyano - Betis Deportivo Balompié
+   Marbella FC - Real Murcia CF
+   Recreativo Huelva - Villarreal CF B
+   Mérida AD - AD Alcorcón
+   Sevilla Atlético - CF Intercity
+   UD Ibiza - Antequera CF
+   AD Ceuta FC - Algeciras CF
+
+
+  Jornada 24 (16/02/2025)
+
+   AD Alcorcón - AD Ceuta FC
+   CF Intercity - Mérida AD
+   Real Murcia CF - Sevilla Atlético
+   Antequera CF - Real Madrid Castilla
+   Algeciras CF - Recreativo Huelva
+   Betis Deportivo Balompié - UD Ibiza
+   Atlético Sanluqueño - Atlético de Madrid B
+   Hércules CF - CF Fuenlabrada
+   Villarreal CF B - CD Alcoyano
+   Yeclano Deportivo - Marbella FC
+
+
+  Jornada 25 (23/02/2025)
+
+   Atlético de Madrid B - Villarreal CF B
+   CF Fuenlabrada - CF Intercity
+   UD Ibiza - Atlético Sanluqueño
+   CD Alcoyano - Yeclano Deportivo
+   Mérida AD - Real Murcia CF
+   Real Madrid Castilla - AD Alcorcón
+   Sevilla Atlético - Hércules CF
+   Recreativo Huelva - Antequera CF
+   Marbella FC - Algeciras CF
+   AD Ceuta FC - Betis Deportivo Balompié
+
+
+  Jornada 26 (02/03/2025)
+
+   AD Alcorcón - CD Alcoyano
+   Hércules CF - Recreativo Huelva
+   Antequera CF - Atlético de Madrid B
+   Algeciras CF - Mérida AD
+   Betis Deportivo Balompié - CF Fuenlabrada
+   CF Intercity - Real Madrid Castilla
+   Real Murcia CF - UD Ibiza
+   Villarreal CF B - AD Ceuta FC
+   Atlético Sanluqueño - Marbella FC
+   Yeclano Deportivo - Sevilla Atlético
+
+
+  Jornada 27 (09/03/2025)
+
+   Real Madrid Castilla - Sevilla Atlético
+   Atlético de Madrid B - Real Murcia CF
+   AD Alcorcón - CF Intercity
+   UD Ibiza - Yeclano Deportivo
+   CD Alcoyano - Hércules CF
+   Marbella FC - Villarreal CF B
+   Mérida AD - Atlético Sanluqueño
+   AD Ceuta FC - Antequera CF
+   CF Fuenlabrada - Algeciras CF
+   Recreativo Huelva - Betis Deportivo Balompié
+
+
+  Jornada 28 (16/03/2025)
+
+   Algeciras CF - UD Ibiza
+   Betis Deportivo Balompié - Marbella FC
+   Hércules CF - Real Madrid Castilla
+   Yeclano Deportivo - Atlético de Madrid B
+   Real Murcia CF - CF Fuenlabrada
+   Antequera CF - AD Alcorcón
+   Sevilla Atlético - CD Alcoyano
+   Atlético Sanluqueño - AD Ceuta FC
+   CF Intercity - Recreativo Huelva
+   Villarreal CF B - Mérida AD
+
+
+  Jornada 29 (23/03/2025)
+
+   Real Madrid Castilla - Real Murcia CF
+   Atlético de Madrid B - Betis Deportivo Balompié
+   CF Fuenlabrada - Sevilla Atlético
+   AD Alcorcón - Villarreal CF B
+   UD Ibiza - CF Intercity
+   AD Ceuta FC - Hércules CF
+   Recreativo Huelva - Atlético Sanluqueño
+   Mérida AD - Yeclano Deportivo
+   Marbella FC - CD Alcoyano
+   Antequera CF - Algeciras CF
+
+
+  Jornada 30 (30/03/2025)
+
+   CD Alcoyano - Mérida AD
+   Hércules CF - UD Ibiza
+   Algeciras CF - Atlético de Madrid B
+   Yeclano Deportivo - Real Madrid Castilla
+   Villarreal CF B - CF Fuenlabrada
+   Betis Deportivo Balompié - AD Alcorcón
+   CF Intercity - AD Ceuta FC
+   Sevilla Atlético - Marbella FC
+   Atlético Sanluqueño - Antequera CF
+   Real Murcia CF - Recreativo Huelva
+
+
+  Jornada 31 (06/04/2025)
+
+   Atlético de Madrid B - CF Intercity
+   CF Fuenlabrada - Marbella FC
+   AD Alcorcón - Atlético Sanluqueño
+   Antequera CF - Hércules CF
+   Betis Deportivo Balompié - Real Murcia CF
+   Recreativo Huelva - Yeclano Deportivo
+   Mérida AD - Sevilla Atlético
+   UD Ibiza - Real Madrid Castilla
+   AD Ceuta FC - CD Alcoyano
+   Villarreal CF B - Algeciras CF
+
+
+  Jornada 32 (13/04/2025)
+
+   CD Alcoyano - CF Fuenlabrada
+   Hércules CF - Mérida AD
+   Atlético Sanluqueño - Villarreal CF B
+   Real Madrid Castilla - Atlético de Madrid B
+   Algeciras CF - AD Alcorcón
+   Marbella FC - UD Ibiza
+   Real Murcia CF - AD Ceuta FC
+   CF Intercity - Antequera CF
+   Yeclano Deportivo - Betis Deportivo Balompié
+   Sevilla Atlético - Recreativo Huelva
+
+
+  Jornada 33 (20/04/2025)
+
+   CF Fuenlabrada - Mérida AD
+   AD Alcorcón - Real Murcia CF
+   UD Ibiza - Sevilla Atlético
+   AD Ceuta FC - Marbella FC
+   Antequera CF - Yeclano Deportivo
+   Algeciras CF - Atlético Sanluqueño
+   Betis Deportivo Balompié - Hércules CF
+   Recreativo Huelva - Real Madrid Castilla
+   Atlético de Madrid B - CD Alcoyano
+   Villarreal CF B - CF Intercity
+
+
+  Jornada 34 (27/04/2025)
+
+   Real Madrid Castilla - AD Ceuta FC
+   CD Alcoyano - Recreativo Huelva
+   Real Murcia CF - Villarreal CF B
+   Marbella FC - Atlético de Madrid B
+   UD Ibiza - CF Fuenlabrada
+   Hércules CF - AD Alcorcón
+   Atlético Sanluqueño - CF Intercity
+   Mérida AD - Antequera CF
+   Yeclano Deportivo - Algeciras CF
+   Sevilla Atlético - Betis Deportivo Balompié
+
+
+  Jornada 35 (04/05/2025)
+
+   Real Madrid Castilla - Marbella FC
+   Atlético de Madrid B - CF Fuenlabrada
+   AD Alcorcón - Yeclano Deportivo
+   CF Intercity - Real Murcia CF
+   AD Ceuta FC - Mérida AD
+   Antequera CF - Sevilla Atlético
+   Algeciras CF - Betis Deportivo Balompié
+   Recreativo Huelva - UD Ibiza
+   Atlético Sanluqueño - CD Alcoyano
+   Villarreal CF B - Hércules CF
+
+
+  Jornada 36 (11/05/2025)
+
+   CD Alcoyano - CF Intercity
+   Betis Deportivo Balompié - Atlético Sanluqueño
+   Mérida AD - Real Madrid Castilla
+   Sevilla Atlético - Atlético de Madrid B
+   UD Ibiza - AD Alcorcón
+   Yeclano Deportivo - Villarreal CF B
+   CF Fuenlabrada - AD Ceuta FC
+   Real Murcia CF - Antequera CF
+   Hércules CF - Algeciras CF
+   Marbella FC - Recreativo Huelva
+
+
+  Jornada 37 (18/05/2025)
+
+   Real Madrid Castilla - CF Fuenlabrada
+   Atlético de Madrid B - UD Ibiza
+   AD Alcorcón - Marbella FC
+   AD Ceuta FC - Yeclano Deportivo
+   Antequera CF - Betis Deportivo Balompié
+   Recreativo Huelva - Mérida AD
+   Algeciras CF - CD Alcoyano
+   CF Intercity - Hércules CF
+   Atlético Sanluqueño - Real Murcia CF
+   Villarreal CF B - Sevilla Atlético
+
+
+  Jornada 38 (25/05/2025)
+
+   CF Fuenlabrada - Recreativo Huelva
+   CD Alcoyano - Real Madrid Castilla
+   Hércules CF - Atlético Sanluqueño
+   Betis Deportivo Balompié - Villarreal CF B
+   Mérida AD - Atlético de Madrid B
+   Sevilla Atlético - AD Alcorcón
+   Yeclano Deportivo - CF Intercity
+   UD Ibiza - AD Ceuta FC
+   Marbella FC - Antequera CF
+   Real Murcia CF - Algeciras CF
+
+
+
+
+   Real Federación Española de Fútbol - 13/13
+

@@ -1,0 +1,385 @@
+{
+    "id": "E4",
+    "name": "Segunda Federación",
+    "seasonID": "2024",
+    "clubs": [
+        {
+            "id": "2296",
+            "name": "CD Numancia"
+        },
+        {
+            "id": "5650",
+            "name": "Pontevedra CF"
+        },
+        {
+            "id": "20844",
+            "name": "Real Avilés Industrial"
+        },
+        {
+            "id": "7078",
+            "name": "Real Valladolid Promesas",
+            "parentTeam": "Real Valladolid CF"
+        },
+        {
+            "id": "2855",
+            "name": "SD Compostela"
+        },
+        {
+            "id": "12588",
+            "name": "Gimnástica de Torrelavega"
+        },
+        {
+            "id": "11615",
+            "name": "CD Guijuelo"
+        },
+        {
+            "id": "10980",
+            "name": "Rayo Cantabria",
+            "parentTeam": "Racing Santander"
+        },
+        {
+            "id": "13227",
+            "name": "Coruxo FC"
+        },
+        {
+            "id": "11603",
+            "name": "RC Deportivo Fabril",
+            "parentTeam": "Deportivo de La Coruña"
+        },
+        {
+            "id": "11601",
+            "name": "Marino Luanco"
+        },
+        {
+            "id": "16646",
+            "name": "UP Langreo"
+        },
+        {
+            "id": "42039",
+            "name": "Salamanca CF UDS"
+        },
+        {
+            "id": "16055",
+            "name": "Bergantiños FC"
+        },
+        {
+            "id": "6212",
+            "name": "Real Ávila CF"
+        },
+        {
+            "id": "55881",
+            "name": "UD Llanera"
+        },
+        {
+            "id": "36285",
+            "name": "CD Laredo"
+        },
+        {
+            "id": "41444",
+            "name": "UM Escobedo"
+        },
+        {
+            "id": "24420",
+            "name": "UD Logroñés"
+        },
+        {
+            "id": "4030",
+            "name": "CD Calahorra"
+        },
+        {
+            "id": "8880",
+            "name": "Deportivo Alavés B",
+            "parentTeam": "Deportivo Alavés"
+        },
+        {
+            "id": "29271",
+            "name": "CD Tudelano"
+        },
+        {
+            "id": "13244",
+            "name": "Utebo FC"
+        },
+        {
+            "id": "11590",
+            "name": "Gernika Club"
+        },
+        {
+            "id": "19301",
+            "name": "CD Teruel"
+        },
+        {
+            "id": "8384",
+            "name": "RZ Deportivo Aragón",
+            "parentTeam": "Real Zaragoza"
+        },
+        {
+            "id": "16387",
+            "name": "UD Barbastro"
+        },
+        {
+            "id": "33303",
+            "name": "SD Logroñés"
+        },
+        {
+            "id": "16122",
+            "name": "Arenas Club"
+        },
+        {
+            "id": "18690",
+            "name": "CD Izarra"
+        },
+        {
+            "id": "44822",
+            "name": "Real Sociedad C",
+            "parentTeam": "Real Sociedad"
+        },
+        {
+            "id": "18693",
+            "name": "SD Ejea"
+        },
+        {
+            "id": "50186",
+            "name": "SD Eibar B",
+            "parentTeam": "SD Eibar"
+        },
+        {
+            "id": "41605",
+            "name": "CD Anguiano"
+        },
+        {
+            "id": "16687",
+            "name": "CD Alfaro"
+        },
+        {
+            "id": "77666",
+            "name": "CD Subiza"
+        },
+        {
+            "id": "33593",
+            "name": "Lleida CF"
+        },
+        {
+            "id": "6182",
+            "name": "Valencia Mestalla",
+            "parentTeam": "Valencia CF"
+        },
+        {
+            "id": "1881",
+            "name": "Terrassa FC"
+        },
+        {
+            "id": "18687",
+            "name": "CD Atlético Baleares"
+        },
+        {
+            "id": "11422",
+            "name": "CE Sabadell FC"
+        },
+        {
+            "id": "12697",
+            "name": "UE Sant Andreu"
+        },
+        {
+            "id": "10773",
+            "name": "RCD Espanyol B",
+            "parentTeam": "RCD Espanyol Barcelona"
+        },
+        {
+            "id": "111469",
+            "name": "CF Badalona Futur"
+        },
+        {
+            "id": "20528",
+            "name": "CE Europa"
+        },
+        {
+            "id": "67509",
+            "name": "Torrent CF"
+        },
+        {
+            "id": "18669",
+            "name": "Penya Deportiva Santa Eulalia"
+        },
+        {
+            "id": "16196",
+            "name": "UE Cornellà"
+        },
+        {
+            "id": "73876",
+            "name": "CE Andratx"
+        },
+        {
+            "id": "16775",
+            "name": "UD Alzira"
+        },
+        {
+            "id": "38456",
+            "name": "UE Olot"
+        },
+        {
+            "id": "8494",
+            "name": "RCD Mallorca B",
+            "parentTeam": "RCD Mallorca"
+        },
+        {
+            "id": "67751",
+            "name": "CD Ibiza Islas Pitiusas"
+        },
+        {
+            "id": "12317",
+            "name": "Elche Ilicitano",
+            "parentTeam": "Elche CF"
+        },
+        {
+            "id": "34148",
+            "name": "UCAM Murcia CF"
+        },
+        {
+            "id": "49957",
+            "name": "Águilas FC"
+        },
+        {
+            "id": "12605",
+            "name": "Real Balompédica Linense"
+        },
+        {
+            "id": "24445",
+            "name": "CD Estepona FS"
+        },
+        {
+            "id": "4054",
+            "name": "Orihuela CF"
+        },
+        {
+            "id": "12181",
+            "name": "San Fernando CD"
+        },
+        {
+            "id": "12351",
+            "name": "Linares Deportivo"
+        },
+        {
+            "id": "24452",
+            "name": "FC La Unión Atlético"
+        },
+        {
+            "id": "21550",
+            "name": "Recreativo Granada",
+            "parentTeam": "Granada CF"
+        },
+        {
+            "id": "7052",
+            "name": "CF Villanovense"
+        },
+        {
+            "id": "11669",
+            "name": "Cádiz CF Mirandilla",
+            "parentTeam": "Cádiz CF"
+        },
+        {
+            "id": "42457",
+            "name": "Club Atlético Antoniano"
+        },
+        {
+            "id": "44584",
+            "name": "Deportiva Minera"
+        },
+        {
+            "id": "43454",
+            "name": "Juventud Torremolinos CF"
+        },
+        {
+            "id": "11986",
+            "name": "UD Almería B",
+            "parentTeam": "UD Almería"
+        },
+        {
+            "id": "134",
+            "name": "Xerez CD"
+        },
+        {
+            "id": "18443",
+            "name": "CD Don Benito"
+        },
+        {
+            "id": "44564",
+            "name": "Xerez Deportivo FC"
+        },
+        {
+            "id": "11245",
+            "name": "UD San Sebastián de los Reyes"
+        },
+        {
+            "id": "16492",
+            "name": "UD Melilla"
+        },
+        {
+            "id": "47421",
+            "name": "CF Talavera de la Reina"
+        },
+        {
+            "id": "16576",
+            "name": "CD Guadalajara"
+        },
+        {
+            "id": "11602",
+            "name": "CP Cacereño"
+        },
+        {
+            "id": "13702",
+            "name": "CF Rayo Majadahonda"
+        },
+        {
+            "id": "68575",
+            "name": "CD Atlético Paso"
+        },
+        {
+            "id": "8510",
+            "name": "Getafe CF B",
+            "parentTeam": "Getafe CF"
+        },
+        {
+            "id": "20921",
+            "name": "CDA Navalcarnero"
+        },
+        {
+            "id": "21368",
+            "name": "AD Unión Adarve"
+        },
+        {
+            "id": "41396",
+            "name": "CD Illescas"
+        },
+        {
+            "id": "11617",
+            "name": "CD Tenerife B",
+            "parentTeam": "CD Tenerife"
+        },
+        {
+            "id": "50684",
+            "name": "CD Coria"
+        },
+        {
+            "id": "16602",
+            "name": "UB Conquense"
+        },
+        {
+            "id": "21122",
+            "name": "CD Móstoles URJC"
+        },
+        {
+            "id": "17741",
+            "name": "Colonia Moscardó"
+        },
+        {
+            "id": "20926",
+            "name": "CD Union Sur Yaiza"
+        },
+        {
+            "id": "92878",
+            "name": "Real Madrid C",
+            "parentTeam": "Real Madrid"
+        }
+    ],
+    "updatedAt": "2024-09-04T19:14:29.857817"
+}
