@@ -1,15 +1,21 @@
 <?php
 
+use App\Http\Actions\InitGame;
 use App\Http\Controllers\ProfileController;
+use App\Http\Views\Dashboard;
+use App\Http\Views\SelectTeam;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('login');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::middleware('auth')->group(function () {
+
+    Route::get('/dashboard', Dashboard::class)->name('dashboard');
+    Route::get('/select-team', SelectTeam::class)->name('select-team');
+    Route::post('/init-game', InitGame::class)->name('init-game');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
