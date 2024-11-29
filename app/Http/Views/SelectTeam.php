@@ -2,8 +2,8 @@
 
 namespace App\Http\Views;
 
-use App\Competitions\LaLiga1;
-use App\Competitions\LaLiga2;
+use App\Game\Competitions\LaLiga1;
+use App\Game\Competitions\LaLiga2;
 use Illuminate\Http\Request;
 
 final class SelectTeam

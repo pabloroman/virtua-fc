@@ -24,17 +24,17 @@
 
 
                         <div class="flex space-x-2">
-                        @php /** @var \App\Competitions\Competition $competition */ @endphp
-                        @foreach($competitions as $competition)
-                            <a x-on:click="openTab = '{{ $competition->getCode() }}'" :class="{ 'bg-red-600 text-white': openTab === '{{ $competition->getCode() }}' }" class="flex items-center space-x-2 py-2 px-4 rounded-md focus:outline-none text-lg transition-all duration-300 cursor-pointer">
-                                <img class="w-5 h-4 rounded shadow" src="/flags/{{ $competition->getCountryAlpha2() }}.svg">
-                                <span>{{ $competition->getName() }}</span>
-                            </a>
-                        @endforeach
+                            @php /** @var \App\Game\Competitions\Competition $competition */ @endphp
+                            @foreach($competitions as $competition)
+                                <a x-on:click="openTab = '{{ $competition->getCode() }}'" :class="{ 'bg-red-600 text-white': openTab === '{{ $competition->getCode() }}' }" class="flex items-center space-x-2 py-2 px-4 rounded-md focus:outline-none text-lg transition-all duration-300 cursor-pointer">
+                                    <img class="w-5 h-4 rounded shadow" src="/flags/{{ $competition->getCountryAlpha2() }}.svg">
+                                    <span>{{ $competition->getName() }}</span>
+                                </a>
+                            @endforeach
                         </div>
 
                         <div class="space-y-6">
-                            @php /** @var \App\Competitions\Competition $competition */ @endphp
+                            @php /** @var \App\Game\Competitions\Competition $competition */ @endphp
                             @foreach($competitions as $competition)
                                 <div x-show="openTab === '{{ $competition->getCode() }}'">
                                     <div class="grid lg:grid-cols-4 md:grid-cols-2 gap-2 mt-4">

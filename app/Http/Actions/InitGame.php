@@ -2,7 +2,8 @@
 
 namespace App\Http\Actions;
 
-use App\Game;
+use App\Game\CreateGame;
+use App\Game\Game;
 use Illuminate\Http\Request;
 
 class InitGame
@@ -18,7 +19,7 @@ class InitGame
         $playerName = $request->get('name');
         $teamId = $request->get('team_id');
 
-        $command = new \App\CreateGame($userId, $playerName, $teamId);
+        $command = new CreateGame($userId, $playerName, $teamId);
         $game = Game::create($command);
 
 //        $game = CreateGame::handle($userId, $playerName, $teamId);
@@ -39,6 +40,6 @@ class InitGame
 //            $gameManager->generateNextLineup($game);
 //        }
 
-        return redirect()->route('show-game', $game->id->toString());
+        return redirect()->route('show-game', $game->uuid());
     }
 }

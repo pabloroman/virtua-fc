@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Competitions;
+namespace App\Game\Competitions;
 
+use App\Services\Country;
 use Illuminate\Support\Facades\Storage;
 
-final class LaLiga2 implements Competition
+final class LaLiga1 implements Competition
 {
-    public const NAME = 'LaLiga 2';
-    public const CODE = 'ESP2';
+    public const NAME = 'LaLiga';
+    public const CODE = 'ESP1';
     public const COUNTRY_ALPHA_2 = 'ES';
 
     public function getName(): string

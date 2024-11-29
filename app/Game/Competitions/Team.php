@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Competitions;
+namespace App\Game\Competitions;
 
 final readonly class Team
 {
