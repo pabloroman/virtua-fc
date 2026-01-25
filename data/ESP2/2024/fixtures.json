@@ -1,0 +1,2579 @@
+{
+    "season": "2024\/2025",
+    "matchdays": [
+        {
+            "matchday": "1",
+            "fixtures": [
+                {
+                    "HomeTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "AwayTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "DateUtc": "2024-08-18 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "AwayTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "DateUtc": "2024-08-18 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "AwayTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "DateUtc": "2024-08-18 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "AwayTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "DateUtc": "2024-08-18 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "AwayTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "DateUtc": "2024-08-18 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "AwayTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "DateUtc": "2024-08-18 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "AwayTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "DateUtc": "2024-08-18 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "AwayTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "DateUtc": "2024-08-18 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "AwayTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "DateUtc": "2024-08-18 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "AwayTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "DateUtc": "2024-08-18 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "AwayTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "DateUtc": "2024-08-18 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "2",
+            "fixtures": [
+                {
+                    "HomeTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "AwayTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "DateUtc": "2024-08-25 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "AwayTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "DateUtc": "2024-08-25 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "AwayTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "DateUtc": "2024-08-25 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "AwayTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "DateUtc": "2024-08-25 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "AwayTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "DateUtc": "2024-08-25 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "AwayTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "DateUtc": "2024-08-25 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "AwayTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "DateUtc": "2024-08-25 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "AwayTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "DateUtc": "2024-08-25 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "AwayTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "DateUtc": "2024-08-25 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "AwayTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "DateUtc": "2024-08-25 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "AwayTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "DateUtc": "2024-08-25 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "3",
+            "fixtures": [
+                {
+                    "HomeTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "AwayTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "DateUtc": "2024-09-01 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "AwayTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "DateUtc": "2024-09-01 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "AwayTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "DateUtc": "2024-09-01 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "AwayTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "DateUtc": "2024-09-01 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "AwayTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "DateUtc": "2024-09-01 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "AwayTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "DateUtc": "2024-09-01 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "AwayTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "DateUtc": "2024-09-01 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "AwayTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "DateUtc": "2024-09-01 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "AwayTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "DateUtc": "2024-09-01 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "AwayTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "DateUtc": "2024-09-01 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "AwayTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "DateUtc": "2024-09-01 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "4",
+            "fixtures": [
+                {
+                    "HomeTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "AwayTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "DateUtc": "2024-09-08 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "AwayTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "DateUtc": "2024-09-08 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "AwayTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "DateUtc": "2024-09-08 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "AwayTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "DateUtc": "2024-09-08 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "AwayTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "DateUtc": "2024-09-08 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "AwayTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "DateUtc": "2024-09-08 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "AwayTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "DateUtc": "2024-09-08 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "AwayTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "DateUtc": "2024-09-08 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "AwayTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "DateUtc": "2024-09-08 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "AwayTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "DateUtc": "2024-09-08 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "AwayTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "DateUtc": "2024-09-08 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "5",
+            "fixtures": [
+                {
+                    "HomeTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "AwayTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "DateUtc": "2024-09-15 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "AwayTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "DateUtc": "2024-09-15 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "AwayTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "DateUtc": "2024-09-15 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "AwayTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "DateUtc": "2024-09-15 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "AwayTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "DateUtc": "2024-09-15 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "AwayTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "DateUtc": "2024-09-15 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "AwayTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "DateUtc": "2024-09-15 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "AwayTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "DateUtc": "2024-09-15 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "AwayTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "DateUtc": "2024-09-15 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "AwayTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "DateUtc": "2024-09-15 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "AwayTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "DateUtc": "2024-09-15 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "6",
+            "fixtures": [
+                {
+                    "HomeTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "AwayTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "DateUtc": "2024-09-22 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "AwayTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "DateUtc": "2024-09-22 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "AwayTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "DateUtc": "2024-09-22 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "AwayTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "DateUtc": "2024-09-22 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "AwayTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "DateUtc": "2024-09-22 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "AwayTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "DateUtc": "2024-09-22 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "AwayTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "DateUtc": "2024-09-22 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "AwayTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "DateUtc": "2024-09-22 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "AwayTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "DateUtc": "2024-09-22 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "AwayTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "DateUtc": "2024-09-22 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "AwayTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "DateUtc": "2024-09-22 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "7",
+            "fixtures": [
+                {
+                    "HomeTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "AwayTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "DateUtc": "2024-09-29 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "AwayTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "DateUtc": "2024-09-29 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "AwayTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "DateUtc": "2024-09-29 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "AwayTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "DateUtc": "2024-09-29 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "AwayTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "DateUtc": "2024-09-29 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "AwayTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "DateUtc": "2024-09-29 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "AwayTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "DateUtc": "2024-09-29 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "AwayTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "DateUtc": "2024-09-29 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "AwayTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "DateUtc": "2024-09-29 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "AwayTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "DateUtc": "2024-09-29 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "AwayTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "DateUtc": "2024-09-29 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "8",
+            "fixtures": [
+                {
+                    "HomeTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "AwayTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "DateUtc": "2024-10-06 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "AwayTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "DateUtc": "2024-10-06 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "AwayTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "DateUtc": "2024-10-06 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "AwayTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "DateUtc": "2024-10-06 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "AwayTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "DateUtc": "2024-10-06 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "AwayTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "DateUtc": "2024-10-06 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "AwayTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "DateUtc": "2024-10-06 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "AwayTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "DateUtc": "2024-10-06 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "AwayTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "DateUtc": "2024-10-06 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "AwayTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "DateUtc": "2024-10-06 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "AwayTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "DateUtc": "2024-10-06 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "9",
+            "fixtures": [
+                {
+                    "HomeTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "AwayTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "DateUtc": "2024-10-13 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "AwayTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "DateUtc": "2024-10-13 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "AwayTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "DateUtc": "2024-10-13 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "AwayTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "DateUtc": "2024-10-13 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "AwayTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "DateUtc": "2024-10-13 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "AwayTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "DateUtc": "2024-10-13 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "AwayTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "DateUtc": "2024-10-13 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "AwayTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "DateUtc": "2024-10-13 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "AwayTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "DateUtc": "2024-10-13 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "AwayTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "DateUtc": "2024-10-13 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "AwayTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "DateUtc": "2024-10-13 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "10",
+            "fixtures": [
+                {
+                    "HomeTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "AwayTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "DateUtc": "2024-10-20 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "AwayTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "DateUtc": "2024-10-20 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "AwayTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "DateUtc": "2024-10-20 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "AwayTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "DateUtc": "2024-10-20 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "AwayTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "DateUtc": "2024-10-20 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "AwayTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "DateUtc": "2024-10-20 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "AwayTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "DateUtc": "2024-10-20 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "AwayTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "DateUtc": "2024-10-20 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "AwayTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "DateUtc": "2024-10-20 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "AwayTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "DateUtc": "2024-10-20 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "AwayTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "DateUtc": "2024-10-20 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "11",
+            "fixtures": [
+                {
+                    "HomeTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "AwayTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "DateUtc": "2024-10-23 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "AwayTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "DateUtc": "2024-10-23 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "AwayTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "DateUtc": "2024-10-23 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "AwayTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "DateUtc": "2024-10-23 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "AwayTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "DateUtc": "2024-10-23 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "AwayTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "DateUtc": "2024-10-23 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "AwayTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "DateUtc": "2024-10-23 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "AwayTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "DateUtc": "2024-10-23 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "AwayTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "DateUtc": "2024-10-23 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "AwayTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "DateUtc": "2024-10-23 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "AwayTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "DateUtc": "2024-10-23 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "12",
+            "fixtures": [
+                {
+                    "HomeTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "AwayTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "DateUtc": "2024-10-27 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "AwayTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "DateUtc": "2024-10-27 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "AwayTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "DateUtc": "2024-10-27 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "AwayTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "DateUtc": "2024-10-27 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "AwayTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "DateUtc": "2024-10-27 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "AwayTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "DateUtc": "2024-10-27 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "AwayTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "DateUtc": "2024-10-27 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "AwayTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "DateUtc": "2024-10-27 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "AwayTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "DateUtc": "2024-10-27 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "AwayTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "DateUtc": "2024-10-27 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "AwayTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "DateUtc": "2024-10-27 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "13",
+            "fixtures": [
+                {
+                    "HomeTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "AwayTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "DateUtc": "2024-11-03 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "AwayTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "DateUtc": "2024-11-03 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "AwayTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "DateUtc": "2024-11-03 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "AwayTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "DateUtc": "2024-11-03 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "AwayTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "DateUtc": "2024-11-03 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "AwayTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "DateUtc": "2024-11-03 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "AwayTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "DateUtc": "2024-11-03 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "AwayTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "DateUtc": "2024-11-03 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "AwayTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "DateUtc": "2024-11-03 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "AwayTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "DateUtc": "2024-11-03 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "AwayTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "DateUtc": "2024-11-03 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "14",
+            "fixtures": [
+                {
+                    "HomeTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "AwayTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "DateUtc": "2024-11-10 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "AwayTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "DateUtc": "2024-11-10 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "AwayTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "DateUtc": "2024-11-10 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "AwayTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "DateUtc": "2024-11-10 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "AwayTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "DateUtc": "2024-11-10 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "AwayTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "DateUtc": "2024-11-10 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "AwayTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "DateUtc": "2024-11-10 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "AwayTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "DateUtc": "2024-11-10 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "AwayTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "DateUtc": "2024-11-10 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "AwayTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "DateUtc": "2024-11-10 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "AwayTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "DateUtc": "2024-11-10 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "15",
+            "fixtures": [
+                {
+                    "HomeTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "AwayTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "DateUtc": "2024-11-17 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "AwayTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "DateUtc": "2024-11-17 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "AwayTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "DateUtc": "2024-11-17 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "AwayTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "DateUtc": "2024-11-17 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "AwayTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "DateUtc": "2024-11-17 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "AwayTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "DateUtc": "2024-11-17 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "AwayTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "DateUtc": "2024-11-17 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "AwayTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "DateUtc": "2024-11-17 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "AwayTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "DateUtc": "2024-11-17 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "AwayTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "DateUtc": "2024-11-17 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "AwayTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "DateUtc": "2024-11-17 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "16",
+            "fixtures": [
+                {
+                    "HomeTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "AwayTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "DateUtc": "2024-11-24 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "AwayTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "DateUtc": "2024-11-24 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "AwayTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "DateUtc": "2024-11-24 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "AwayTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "DateUtc": "2024-11-24 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "AwayTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "DateUtc": "2024-11-24 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "AwayTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "DateUtc": "2024-11-24 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "AwayTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "DateUtc": "2024-11-24 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "AwayTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "DateUtc": "2024-11-24 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "AwayTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "DateUtc": "2024-11-24 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "AwayTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "DateUtc": "2024-11-24 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "AwayTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "DateUtc": "2024-11-24 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "17",
+            "fixtures": [
+                {
+                    "HomeTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "AwayTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "DateUtc": "2024-12-01 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "AwayTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "DateUtc": "2024-12-01 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "AwayTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "DateUtc": "2024-12-01 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "AwayTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "DateUtc": "2024-12-01 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "AwayTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "DateUtc": "2024-12-01 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "AwayTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "DateUtc": "2024-12-01 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "AwayTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "DateUtc": "2024-12-01 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "AwayTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "DateUtc": "2024-12-01 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "AwayTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "DateUtc": "2024-12-01 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "AwayTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "DateUtc": "2024-12-01 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "AwayTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "DateUtc": "2024-12-01 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "18",
+            "fixtures": [
+                {
+                    "HomeTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "AwayTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "DateUtc": "2024-12-08 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "AwayTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "DateUtc": "2024-12-08 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "AwayTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "DateUtc": "2024-12-08 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "AwayTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "DateUtc": "2024-12-08 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "AwayTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "DateUtc": "2024-12-08 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "AwayTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "DateUtc": "2024-12-08 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "AwayTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "DateUtc": "2024-12-08 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "AwayTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "DateUtc": "2024-12-08 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "AwayTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "DateUtc": "2024-12-08 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "AwayTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "DateUtc": "2024-12-08 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "AwayTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "DateUtc": "2024-12-08 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "19",
+            "fixtures": [
+                {
+                    "HomeTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "AwayTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "DateUtc": "2024-12-15 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "AwayTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "DateUtc": "2024-12-15 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "AwayTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "DateUtc": "2024-12-15 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "AwayTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "DateUtc": "2024-12-15 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "AwayTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "DateUtc": "2024-12-15 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "AwayTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "DateUtc": "2024-12-15 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "AwayTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "DateUtc": "2024-12-15 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "AwayTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "DateUtc": "2024-12-15 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "AwayTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "DateUtc": "2024-12-15 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "AwayTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "DateUtc": "2024-12-15 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "AwayTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "DateUtc": "2024-12-15 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "20",
+            "fixtures": [
+                {
+                    "HomeTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "AwayTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "DateUtc": "2024-12-18 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "AwayTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "DateUtc": "2024-12-18 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "AwayTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "DateUtc": "2024-12-18 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "AwayTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "DateUtc": "2024-12-18 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "AwayTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "DateUtc": "2024-12-18 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "AwayTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "DateUtc": "2024-12-18 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "AwayTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "DateUtc": "2024-12-18 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "AwayTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "DateUtc": "2024-12-18 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "AwayTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "DateUtc": "2024-12-18 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "AwayTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "DateUtc": "2024-12-18 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "AwayTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "DateUtc": "2024-12-18 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "21",
+            "fixtures": [
+                {
+                    "HomeTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "AwayTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "DateUtc": "2024-12-22 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "AwayTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "DateUtc": "2024-12-22 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "AwayTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "DateUtc": "2024-12-22 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "AwayTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "DateUtc": "2024-12-22 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "AwayTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "DateUtc": "2024-12-22 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "AwayTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "DateUtc": "2024-12-22 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "AwayTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "DateUtc": "2024-12-22 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "AwayTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "DateUtc": "2024-12-22 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "AwayTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "DateUtc": "2024-12-22 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "AwayTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "DateUtc": "2024-12-22 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "AwayTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "DateUtc": "2024-12-22 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "22",
+            "fixtures": [
+                {
+                    "HomeTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "AwayTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "DateUtc": "2025-01-12 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "AwayTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "DateUtc": "2025-01-12 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "AwayTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "DateUtc": "2025-01-12 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "AwayTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "DateUtc": "2025-01-12 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "AwayTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "DateUtc": "2025-01-12 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "AwayTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "DateUtc": "2025-01-12 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "AwayTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "DateUtc": "2025-01-12 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "AwayTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "DateUtc": "2025-01-12 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "AwayTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "DateUtc": "2025-01-12 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "AwayTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "DateUtc": "2025-01-12 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "AwayTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "DateUtc": "2025-01-12 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "23",
+            "fixtures": [
+                {
+                    "HomeTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "AwayTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "DateUtc": "2025-01-19 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "AwayTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "DateUtc": "2025-01-19 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "AwayTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "DateUtc": "2025-01-19 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "AwayTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "DateUtc": "2025-01-19 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "AwayTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "DateUtc": "2025-01-19 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "AwayTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "DateUtc": "2025-01-19 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "AwayTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "DateUtc": "2025-01-19 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "AwayTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "DateUtc": "2025-01-19 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "AwayTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "DateUtc": "2025-01-19 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "AwayTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "DateUtc": "2025-01-19 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "AwayTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "DateUtc": "2025-01-19 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "24",
+            "fixtures": [
+                {
+                    "HomeTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "AwayTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "DateUtc": "2025-01-26 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "AwayTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "DateUtc": "2025-01-26 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "AwayTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "DateUtc": "2025-01-26 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "AwayTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "DateUtc": "2025-01-26 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "AwayTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "DateUtc": "2025-01-26 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "AwayTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "DateUtc": "2025-01-26 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "AwayTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "DateUtc": "2025-01-26 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "AwayTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "DateUtc": "2025-01-26 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "AwayTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "DateUtc": "2025-01-26 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "AwayTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "DateUtc": "2025-01-26 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "AwayTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "DateUtc": "2025-01-26 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "25",
+            "fixtures": [
+                {
+                    "HomeTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "AwayTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "DateUtc": "2025-02-02 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "AwayTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "DateUtc": "2025-02-02 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "AwayTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "DateUtc": "2025-02-02 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "AwayTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "DateUtc": "2025-02-02 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "AwayTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "DateUtc": "2025-02-02 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "AwayTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "DateUtc": "2025-02-02 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "AwayTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "DateUtc": "2025-02-02 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "AwayTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "DateUtc": "2025-02-02 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "AwayTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "DateUtc": "2025-02-02 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "AwayTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "DateUtc": "2025-02-02 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "AwayTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "DateUtc": "2025-02-02 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "26",
+            "fixtures": [
+                {
+                    "HomeTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "AwayTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "DateUtc": "2025-02-09 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "AwayTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "DateUtc": "2025-02-09 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "AwayTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "DateUtc": "2025-02-09 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "AwayTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "DateUtc": "2025-02-09 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "AwayTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "DateUtc": "2025-02-09 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "AwayTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "DateUtc": "2025-02-09 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "AwayTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "DateUtc": "2025-02-09 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "AwayTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "DateUtc": "2025-02-09 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "AwayTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "DateUtc": "2025-02-09 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "AwayTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "DateUtc": "2025-02-09 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "AwayTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "DateUtc": "2025-02-09 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "27",
+            "fixtures": [
+                {
+                    "HomeTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "AwayTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "DateUtc": "2025-02-16 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "AwayTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "DateUtc": "2025-02-16 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "AwayTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "DateUtc": "2025-02-16 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "AwayTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "DateUtc": "2025-02-16 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "AwayTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "DateUtc": "2025-02-16 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "AwayTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "DateUtc": "2025-02-16 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "AwayTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "DateUtc": "2025-02-16 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "AwayTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "DateUtc": "2025-02-16 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "AwayTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "DateUtc": "2025-02-16 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "AwayTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "DateUtc": "2025-02-16 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "AwayTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "DateUtc": "2025-02-16 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "28",
+            "fixtures": [
+                {
+                    "HomeTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "AwayTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "DateUtc": "2025-02-23 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "AwayTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "DateUtc": "2025-02-23 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "AwayTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "DateUtc": "2025-02-23 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "AwayTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "DateUtc": "2025-02-23 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "AwayTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "DateUtc": "2025-02-23 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "AwayTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "DateUtc": "2025-02-23 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "AwayTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "DateUtc": "2025-02-23 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "AwayTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "DateUtc": "2025-02-23 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "AwayTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "DateUtc": "2025-02-23 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "AwayTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "DateUtc": "2025-02-23 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "AwayTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "DateUtc": "2025-02-23 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "29",
+            "fixtures": [
+                {
+                    "HomeTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "AwayTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "DateUtc": "2025-03-02 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "AwayTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "DateUtc": "2025-03-02 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "AwayTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "DateUtc": "2025-03-02 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "AwayTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "DateUtc": "2025-03-02 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "AwayTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "DateUtc": "2025-03-02 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "AwayTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "DateUtc": "2025-03-02 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "AwayTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "DateUtc": "2025-03-02 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "AwayTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "DateUtc": "2025-03-02 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "AwayTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "DateUtc": "2025-03-02 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "AwayTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "DateUtc": "2025-03-02 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "AwayTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "DateUtc": "2025-03-02 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "30",
+            "fixtures": [
+                {
+                    "HomeTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "AwayTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "DateUtc": "2025-03-09 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "AwayTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "DateUtc": "2025-03-09 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "AwayTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "DateUtc": "2025-03-09 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "AwayTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "DateUtc": "2025-03-09 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "AwayTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "DateUtc": "2025-03-09 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "AwayTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "DateUtc": "2025-03-09 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "AwayTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "DateUtc": "2025-03-09 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "AwayTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "DateUtc": "2025-03-09 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "AwayTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "DateUtc": "2025-03-09 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "AwayTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "DateUtc": "2025-03-09 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "AwayTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "DateUtc": "2025-03-09 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "31",
+            "fixtures": [
+                {
+                    "HomeTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "AwayTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "DateUtc": "2025-03-16 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "AwayTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "DateUtc": "2025-03-16 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "AwayTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "DateUtc": "2025-03-16 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "AwayTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "DateUtc": "2025-03-16 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "AwayTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "DateUtc": "2025-03-16 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "AwayTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "DateUtc": "2025-03-16 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "AwayTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "DateUtc": "2025-03-16 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "AwayTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "DateUtc": "2025-03-16 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "AwayTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "DateUtc": "2025-03-16 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "AwayTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "DateUtc": "2025-03-16 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "AwayTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "DateUtc": "2025-03-16 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "32",
+            "fixtures": [
+                {
+                    "HomeTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "AwayTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "DateUtc": "2025-03-23 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "AwayTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "DateUtc": "2025-03-23 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "AwayTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "DateUtc": "2025-03-23 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "AwayTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "DateUtc": "2025-03-23 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "AwayTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "DateUtc": "2025-03-23 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "AwayTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "DateUtc": "2025-03-23 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "AwayTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "DateUtc": "2025-03-23 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "AwayTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "DateUtc": "2025-03-23 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "AwayTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "DateUtc": "2025-03-23 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "AwayTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "DateUtc": "2025-03-23 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "AwayTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "DateUtc": "2025-03-23 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "33",
+            "fixtures": [
+                {
+                    "HomeTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "AwayTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "DateUtc": "2025-03-30 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "AwayTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "DateUtc": "2025-03-30 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "AwayTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "DateUtc": "2025-03-30 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "AwayTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "DateUtc": "2025-03-30 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "AwayTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "DateUtc": "2025-03-30 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "AwayTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "DateUtc": "2025-03-30 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "AwayTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "DateUtc": "2025-03-30 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "AwayTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "DateUtc": "2025-03-30 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "AwayTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "DateUtc": "2025-03-30 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "AwayTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "DateUtc": "2025-03-30 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "AwayTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "DateUtc": "2025-03-30 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "34",
+            "fixtures": [
+                {
+                    "HomeTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "AwayTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "DateUtc": "2025-04-06 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "AwayTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "DateUtc": "2025-04-06 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "AwayTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "DateUtc": "2025-04-06 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "AwayTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "DateUtc": "2025-04-06 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "AwayTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "DateUtc": "2025-04-06 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "AwayTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "DateUtc": "2025-04-06 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "AwayTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "DateUtc": "2025-04-06 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "AwayTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "DateUtc": "2025-04-06 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "AwayTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "DateUtc": "2025-04-06 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "AwayTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "DateUtc": "2025-04-06 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "AwayTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "DateUtc": "2025-04-06 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "35",
+            "fixtures": [
+                {
+                    "HomeTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "AwayTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "DateUtc": "2025-04-13 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "AwayTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "DateUtc": "2025-04-13 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "AwayTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "DateUtc": "2025-04-13 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "AwayTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "DateUtc": "2025-04-13 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "AwayTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "DateUtc": "2025-04-13 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "AwayTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "DateUtc": "2025-04-13 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "AwayTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "DateUtc": "2025-04-13 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "AwayTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "DateUtc": "2025-04-13 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "AwayTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "DateUtc": "2025-04-13 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "AwayTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "DateUtc": "2025-04-13 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "AwayTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "DateUtc": "2025-04-13 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "36",
+            "fixtures": [
+                {
+                    "HomeTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "AwayTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "DateUtc": "2025-04-20 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "AwayTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "DateUtc": "2025-04-20 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "AwayTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "DateUtc": "2025-04-20 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "AwayTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "DateUtc": "2025-04-20 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "AwayTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "DateUtc": "2025-04-20 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "AwayTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "DateUtc": "2025-04-20 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "AwayTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "DateUtc": "2025-04-20 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "AwayTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "DateUtc": "2025-04-20 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "AwayTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "DateUtc": "2025-04-20 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "AwayTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "DateUtc": "2025-04-20 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "AwayTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "DateUtc": "2025-04-20 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "37",
+            "fixtures": [
+                {
+                    "HomeTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "AwayTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "DateUtc": "2025-04-27 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "AwayTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "DateUtc": "2025-04-27 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "AwayTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "DateUtc": "2025-04-27 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "AwayTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "DateUtc": "2025-04-27 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "AwayTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "DateUtc": "2025-04-27 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "AwayTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "DateUtc": "2025-04-27 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "AwayTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "DateUtc": "2025-04-27 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "AwayTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "DateUtc": "2025-04-27 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "AwayTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "DateUtc": "2025-04-27 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "AwayTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "DateUtc": "2025-04-27 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "AwayTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "DateUtc": "2025-04-27 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "38",
+            "fixtures": [
+                {
+                    "HomeTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "AwayTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "DateUtc": "2025-05-04 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "AwayTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "DateUtc": "2025-05-04 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "AwayTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "DateUtc": "2025-05-04 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "AwayTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "DateUtc": "2025-05-04 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "AwayTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "DateUtc": "2025-05-04 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "AwayTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "DateUtc": "2025-05-04 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "AwayTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "DateUtc": "2025-05-04 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "AwayTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "DateUtc": "2025-05-04 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "AwayTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "DateUtc": "2025-05-04 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "AwayTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "DateUtc": "2025-05-04 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "AwayTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "DateUtc": "2025-05-04 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "39",
+            "fixtures": [
+                {
+                    "HomeTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "AwayTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "DateUtc": "2025-05-11 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "AwayTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "DateUtc": "2025-05-11 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "AwayTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "DateUtc": "2025-05-11 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "AwayTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "DateUtc": "2025-05-11 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "AwayTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "DateUtc": "2025-05-11 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "AwayTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "DateUtc": "2025-05-11 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "AwayTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "DateUtc": "2025-05-11 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "AwayTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "DateUtc": "2025-05-11 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "AwayTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "DateUtc": "2025-05-11 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "AwayTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "DateUtc": "2025-05-11 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "AwayTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "DateUtc": "2025-05-11 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "40",
+            "fixtures": [
+                {
+                    "HomeTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "AwayTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "DateUtc": "2025-05-18 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "AwayTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "DateUtc": "2025-05-18 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "AwayTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "DateUtc": "2025-05-18 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "AwayTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "DateUtc": "2025-05-18 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "AwayTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "DateUtc": "2025-05-18 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "AwayTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "DateUtc": "2025-05-18 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "AwayTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "DateUtc": "2025-05-18 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "AwayTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "DateUtc": "2025-05-18 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "AwayTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "DateUtc": "2025-05-18 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "AwayTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "DateUtc": "2025-05-18 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "AwayTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "DateUtc": "2025-05-18 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "41",
+            "fixtures": [
+                {
+                    "HomeTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "AwayTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "DateUtc": "2025-05-25 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "AwayTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "DateUtc": "2025-05-25 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "AwayTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "DateUtc": "2025-05-25 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "AwayTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "DateUtc": "2025-05-25 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "AwayTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "DateUtc": "2025-05-25 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "AwayTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "DateUtc": "2025-05-25 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "AwayTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "DateUtc": "2025-05-25 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "AwayTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "DateUtc": "2025-05-25 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "AwayTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "DateUtc": "2025-05-25 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "AwayTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "DateUtc": "2025-05-25 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "AwayTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "DateUtc": "2025-05-25 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchday": "42",
+            "fixtures": [
+                {
+                    "HomeTeam": "eb672ddf-e221-4347-af08-ded89f438619",
+                    "AwayTeam": "1ae30f36-cf11-45f4-99c6-72552517bfab",
+                    "DateUtc": "2025-06-01 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "3d893ba2-3860-4142-ac3f-c58271949869",
+                    "AwayTeam": "18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b",
+                    "DateUtc": "2025-06-01 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "b8ce618e-2ab0-45cb-b549-951a309af524",
+                    "AwayTeam": "1091793e-4a72-44db-a8a4-44601d8610ef",
+                    "DateUtc": "2025-06-01 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "9955c277-1119-4481-b7d2-0264949d1aaa",
+                    "AwayTeam": "24b2ece0-16db-4b83-bec5-e0659597a004",
+                    "DateUtc": "2025-06-01 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "425a2544-96e4-4e32-bf77-01bdd1f17e4d",
+                    "AwayTeam": "abf4ef3f-e1a3-4749-a197-b3c609e97c41",
+                    "DateUtc": "2025-06-01 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "953118dc-1659-483f-99d6-5a80b86e3a4c",
+                    "AwayTeam": "06cf1989-5626-4bef-9607-d0fb7b012940",
+                    "DateUtc": "2025-06-01 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "00ead9ad-5678-4c32-8c66-8a4abdaf9a8f",
+                    "AwayTeam": "cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b",
+                    "DateUtc": "2025-06-01 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "2c3e61a6-4493-4692-975b-97661f82fe5b",
+                    "AwayTeam": "b807c009-7025-4557-afa7-221330bf47f8",
+                    "DateUtc": "2025-06-01 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "66771779-9f9d-4f0a-b750-3a31c591a421",
+                    "AwayTeam": "c82afc78-e8e2-4dd1-a783-49fb35190b32",
+                    "DateUtc": "2025-06-01 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "75248726-10c4-49c4-bd5b-923cb820b4bb",
+                    "AwayTeam": "31c15fb7-67ef-412b-b75b-cb8cbfd3815c",
+                    "DateUtc": "2025-06-01 17:00:00Z"
+                },
+                {
+                    "HomeTeam": "dad9b187-a6d2-4042-89dd-662c9f357c00",
+                    "AwayTeam": "0d71555a-fbbf-49ab-bb97-64ca9f56147d",
+                    "DateUtc": "2025-06-01 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchdayNumber": "43",
+            "matchdayName": "Playoff 1 - Ida",
+            "fixtures": [
+                {
+                    "HomeTeam": null,
+                    "AwayTeam": null,
+                    "DateUtc": "2025-06-08 17:00:00Z"
+                },
+                {
+                    "HomeTeam": null,
+                    "AwayTeam": null,
+                    "DateUtc": "2025-06-08 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchdayNumber": "44",
+            "matchdayName": "Playoff 1 - Vuelta",
+            "fixtures": [
+                {
+                    "HomeTeam": null,
+                    "AwayTeam": null,
+                    "DateUtc": "2025-06-11 17:00:00Z"
+                },
+                {
+                    "HomeTeam": null,
+                    "AwayTeam": null,
+                    "DateUtc": "2025-06-11 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchdayNumber": "45",
+            "matchdayName": "Playoff 2 - Ida",
+            "fixtures": [
+                {
+                    "HomeTeam": null,
+                    "AwayTeam": null,
+                    "DateUtc": "2025-06-15 17:00:00Z"
+                }
+            ]
+        },
+        {
+            "matchdayNumber": "46",
+            "matchdayName": "Playoff 2 - Vuelta",
+            "fixtures": [
+                {
+                    "HomeTeam": null,
+                    "AwayTeam": null,
+                    "DateUtc": "2025-06-22 17:00:00Z"
+                }
+            ]
+        }
+    ]
+}

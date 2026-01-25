@@ -2,43 +2,26 @@
 
 namespace App\Http\Actions;
 
-use App\Game\CreateGame;
+use App\Game\Commands\CreateGame;
 use App\Game\Game;
 use Illuminate\Http\Request;
 
 class InitGame
 {
-    public function __invoke(Request $request, InitGame $initGame)
+    public function __invoke(Request $request)
     {
         $request->validate([
             'name' => ['required', 'string', 'max:25'],
-            'team_id' => ['required'],
+            'team_id' => ['required', 'uuid'],
         ]);
 
-        $userId = $request->user()->id;
-        $playerName = $request->get('name');
-        $teamId = $request->get('team_id');
+        $command = new CreateGame(
+            userId: (string) $request->user()->id,
+            playerName: $request->get('name'),
+            teamId: $request->get('team_id'),
+        );
 
-        $command = new CreateGame($userId, $playerName, $teamId);
         $game = Game::create($command);
-
-//        $game = CreateGame::handle($userId, $playerName, $teamId);
-//
-//        InitCompetitionTeams::handle($game);
-//        InitFreeAgents::handle($game);
-//        InitSquads::handle($game);
-//
-//        InitFixtures::handle($game);
-//        InitStandings::handle($game);
-//
-//        InitBudgets::handle($game);
-//
-//        $gameManager = new GameManager;
-//        $game = $gameManager->updateGame($game)->refresh();
-//
-//        if ($game->nextFixture) {
-//            $gameManager->generateNextLineup($game);
-//        }
 
         return redirect()->route('show-game', $game->uuid());
     }

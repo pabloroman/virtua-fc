@@ -1,0 +1,4374 @@
+{
+    "matchdays": [
+        {
+            "matchday": 1,
+            "fixtures": [
+                {
+                    "MatchNumber": 1,
+                    "RoundNumber": 1,
+                    "DateUtc": "2024-08-15 17:00:00Z",
+                    "Location": "Estadio San Mam\u00e9s",
+                    "HomeTeam": "012ad29a-09aa-47db-8851-287e6fcbf4f0",
+                    "AwayTeam": "daf0b0df-1a9f-46bf-af91-808a6368a335",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 2,
+                    "RoundNumber": 1,
+                    "DateUtc": "2024-08-15 19:30:00Z",
+                    "Location": "Estadio Benito Villamar\u00edn",
+                    "HomeTeam": "a5063e7c-7527-4fce-b412-95ca51822bac",
+                    "AwayTeam": "783d1b8b-5654-4258-bd53-aa6639926f60",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 8,
+                    "RoundNumber": 1,
+                    "DateUtc": "2024-08-16 17:00:00Z",
+                    "Location": "Estadio ABANCA Bala\u00eddos",
+                    "HomeTeam": "c3333c07-bf1a-47ff-9f20-6018f22d8ab1",
+                    "AwayTeam": "0c675c33-d0ce-4bda-bf1f-eca2a57a431b",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 4,
+                    "RoundNumber": 1,
+                    "DateUtc": "2024-08-16 19:30:00Z",
+                    "Location": "Estadio Gran Canaria",
+                    "HomeTeam": "fda26236-ffc0-4a0e-ac0f-671148a437e5",
+                    "AwayTeam": "07042b17-b67f-41e6-9e7b-d79d529c0b13",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 9,
+                    "RoundNumber": 1,
+                    "DateUtc": "2024-08-17 17:00:00Z",
+                    "Location": "Estadio El Sadar",
+                    "HomeTeam": "727a5e7a-a262-4b0c-99ef-25ed3cd923b8",
+                    "AwayTeam": "9713e798-86c5-4d01-b101-7e6d99655994",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 6,
+                    "RoundNumber": 1,
+                    "DateUtc": "2024-08-17 19:30:00Z",
+                    "Location": "Camp de Mestalla",
+                    "HomeTeam": "3b4ec69a-c055-4cd7-ac20-c87693787772",
+                    "AwayTeam": "07e93162-b769-4d66-849c-71fe61286880",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 7,
+                    "RoundNumber": 1,
+                    "DateUtc": "2024-08-18 17:00:00Z",
+                    "Location": "Reale Arena",
+                    "HomeTeam": "722dfc0c-8dba-43ca-a272-2737a0409e36",
+                    "AwayTeam": "266a7bac-d69e-4313-9534-fcf92ae22559",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 3,
+                    "RoundNumber": 1,
+                    "DateUtc": "2024-08-18 19:30:00Z",
+                    "Location": "Estadi Mallorca Son Moix",
+                    "HomeTeam": "19926a6d-23d0-4beb-9309-4e38aac9cd21",
+                    "AwayTeam": "29c0e5bc-364e-4226-82fa-0f1e90975800",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 10,
+                    "RoundNumber": 1,
+                    "DateUtc": "2024-08-19 17:00:00Z",
+                    "Location": "Estadio Municipal Jos\u00e9 Zorrilla",
+                    "HomeTeam": "3f3b852a-cf14-45ba-8e04-3ccb79a844dd",
+                    "AwayTeam": "f0a3b45b-6a9b-4fe3-882f-ca5b44f13b4b",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 5,
+                    "RoundNumber": 1,
+                    "DateUtc": "2024-08-19 19:30:00Z",
+                    "Location": "Estadio de la Cer\u00e1mica",
+                    "HomeTeam": "607a3148-acc4-497d-92c3-d4b91bbf7d8f",
+                    "AwayTeam": "7c53bc3e-704d-4647-9080-9558c194b9fa",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 2,
+            "fixtures": [
+                {
+                    "MatchNumber": 12,
+                    "RoundNumber": 2,
+                    "DateUtc": "2024-08-23 17:00:00Z",
+                    "Location": "Estadio ABANCA Bala\u00eddos",
+                    "HomeTeam": "c3333c07-bf1a-47ff-9f20-6018f22d8ab1",
+                    "AwayTeam": "3b4ec69a-c055-4cd7-ac20-c87693787772",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 15,
+                    "RoundNumber": 2,
+                    "DateUtc": "2024-08-23 19:30:00Z",
+                    "Location": "Ram\u00f3n S\u00e1nchez-Pizju\u00e1n",
+                    "HomeTeam": "07042b17-b67f-41e6-9e7b-d79d529c0b13",
+                    "AwayTeam": "607a3148-acc4-497d-92c3-d4b91bbf7d8f",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 20,
+                    "RoundNumber": 2,
+                    "DateUtc": "2024-08-24 15:00:00Z",
+                    "Location": "Estadio El Sadar",
+                    "HomeTeam": "727a5e7a-a262-4b0c-99ef-25ed3cd923b8",
+                    "AwayTeam": "19926a6d-23d0-4beb-9309-4e38aac9cd21",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 19,
+                    "RoundNumber": 2,
+                    "DateUtc": "2024-08-24 17:00:00Z",
+                    "Location": "Estadi Ol\u00edmpic Llu\u00eds Companys",
+                    "HomeTeam": "07e93162-b769-4d66-849c-71fe61286880",
+                    "AwayTeam": "012ad29a-09aa-47db-8851-287e6fcbf4f0",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 13,
+                    "RoundNumber": 2,
+                    "DateUtc": "2024-08-24 19:30:00Z",
+                    "Location": "Coliseum",
+                    "HomeTeam": "daf0b0df-1a9f-46bf-af91-808a6368a335",
+                    "AwayTeam": "266a7bac-d69e-4313-9534-fcf92ae22559",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 18,
+                    "RoundNumber": 2,
+                    "DateUtc": "2024-08-24 19:30:00Z",
+                    "Location": "RCDE Stadium",
+                    "HomeTeam": "f0a3b45b-6a9b-4fe3-882f-ca5b44f13b4b",
+                    "AwayTeam": "722dfc0c-8dba-43ca-a272-2737a0409e36",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 14,
+                    "RoundNumber": 2,
+                    "DateUtc": "2024-08-25 15:00:00Z",
+                    "Location": "Estadio Santiago Bernab\u00e9u",
+                    "HomeTeam": "29c0e5bc-364e-4226-82fa-0f1e90975800",
+                    "AwayTeam": "3f3b852a-cf14-45ba-8e04-3ccb79a844dd",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 17,
+                    "RoundNumber": 2,
+                    "DateUtc": "2024-08-25 17:00:00Z",
+                    "Location": "Estadio Municipal Butarque",
+                    "HomeTeam": "9713e798-86c5-4d01-b101-7e6d99655994",
+                    "AwayTeam": "fda26236-ffc0-4a0e-ac0f-671148a437e5",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 16,
+                    "RoundNumber": 2,
+                    "DateUtc": "2024-08-25 17:15:00Z",
+                    "Location": "Mendizorroza",
+                    "HomeTeam": "0c675c33-d0ce-4bda-bf1f-eca2a57a431b",
+                    "AwayTeam": "a5063e7c-7527-4fce-b412-95ca51822bac",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 11,
+                    "RoundNumber": 2,
+                    "DateUtc": "2024-08-25 19:30:00Z",
+                    "Location": "Civitas Metropolitano",
+                    "HomeTeam": "7c53bc3e-704d-4647-9080-9558c194b9fa",
+                    "AwayTeam": "783d1b8b-5654-4258-bd53-aa6639926f60",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 3,
+            "fixtures": [
+                {
+                    "MatchNumber": 27,
+                    "RoundNumber": 3,
+                    "DateUtc": "2024-08-26 19:30:00Z",
+                    "Location": "Estadio de la Cer\u00e1mica",
+                    "HomeTeam": "607a3148-acc4-497d-92c3-d4b91bbf7d8f",
+                    "AwayTeam": "c3333c07-bf1a-47ff-9f20-6018f22d8ab1",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 24,
+                    "RoundNumber": 3,
+                    "DateUtc": "2024-08-27 17:00:00Z",
+                    "Location": "Estadi Mallorca Son Moix",
+                    "HomeTeam": "19926a6d-23d0-4beb-9309-4e38aac9cd21",
+                    "AwayTeam": "07042b17-b67f-41e6-9e7b-d79d529c0b13",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 26,
+                    "RoundNumber": 3,
+                    "DateUtc": "2024-08-27 19:30:00Z",
+                    "Location": "Estadio de Vallecas",
+                    "HomeTeam": "266a7bac-d69e-4313-9534-fcf92ae22559",
+                    "AwayTeam": "07e93162-b769-4d66-849c-71fe61286880",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 22,
+                    "RoundNumber": 3,
+                    "DateUtc": "2024-08-28 00:00:00Z",
+                    "Location": "Estadio Benito Villamar\u00edn",
+                    "HomeTeam": "a5063e7c-7527-4fce-b412-95ca51822bac",
+                    "AwayTeam": "daf0b0df-1a9f-46bf-af91-808a6368a335",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 21,
+                    "RoundNumber": 3,
+                    "DateUtc": "2024-08-28 17:00:00Z",
+                    "Location": "Estadio San Mam\u00e9s",
+                    "HomeTeam": "012ad29a-09aa-47db-8851-287e6fcbf4f0",
+                    "AwayTeam": "3b4ec69a-c055-4cd7-ac20-c87693787772",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 29,
+                    "RoundNumber": 3,
+                    "DateUtc": "2024-08-28 17:00:00Z",
+                    "Location": "Estadio Municipal Jos\u00e9 Zorrilla",
+                    "HomeTeam": "3f3b852a-cf14-45ba-8e04-3ccb79a844dd",
+                    "AwayTeam": "9713e798-86c5-4d01-b101-7e6d99655994",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 28,
+                    "RoundNumber": 3,
+                    "DateUtc": "2024-08-28 19:30:00Z",
+                    "Location": "Reale Arena",
+                    "HomeTeam": "722dfc0c-8dba-43ca-a272-2737a0409e36",
+                    "AwayTeam": "0c675c33-d0ce-4bda-bf1f-eca2a57a431b",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 30,
+                    "RoundNumber": 3,
+                    "DateUtc": "2024-08-28 19:30:00Z",
+                    "Location": "Civitas Metropolitano",
+                    "HomeTeam": "7c53bc3e-704d-4647-9080-9558c194b9fa",
+                    "AwayTeam": "f0a3b45b-6a9b-4fe3-882f-ca5b44f13b4b",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 23,
+                    "RoundNumber": 3,
+                    "DateUtc": "2024-08-29 17:00:00Z",
+                    "Location": "Estadio Municipal de Montilivi",
+                    "HomeTeam": "783d1b8b-5654-4258-bd53-aa6639926f60",
+                    "AwayTeam": "727a5e7a-a262-4b0c-99ef-25ed3cd923b8",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 25,
+                    "RoundNumber": 3,
+                    "DateUtc": "2024-08-29 19:30:00Z",
+                    "Location": "Estadio Gran Canaria",
+                    "HomeTeam": "fda26236-ffc0-4a0e-ac0f-671148a437e5",
+                    "AwayTeam": "29c0e5bc-364e-4226-82fa-0f1e90975800",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 4,
+            "fixtures": [
+                {
+                    "MatchNumber": 32,
+                    "RoundNumber": 4,
+                    "DateUtc": "2024-08-31 15:00:00Z",
+                    "Location": "Estadi Ol\u00edmpic Llu\u00eds Companys",
+                    "HomeTeam": "07e93162-b769-4d66-849c-71fe61286880",
+                    "AwayTeam": "3f3b852a-cf14-45ba-8e04-3ccb79a844dd",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 31,
+                    "RoundNumber": 4,
+                    "DateUtc": "2024-08-31 17:00:00Z",
+                    "Location": "Estadio San Mam\u00e9s",
+                    "HomeTeam": "012ad29a-09aa-47db-8851-287e6fcbf4f0",
+                    "AwayTeam": "7c53bc3e-704d-4647-9080-9558c194b9fa",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 37,
+                    "RoundNumber": 4,
+                    "DateUtc": "2024-08-31 17:15:00Z",
+                    "Location": "RCDE Stadium",
+                    "HomeTeam": "f0a3b45b-6a9b-4fe3-882f-ca5b44f13b4b",
+                    "AwayTeam": "266a7bac-d69e-4313-9534-fcf92ae22559",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 34,
+                    "RoundNumber": 4,
+                    "DateUtc": "2024-08-31 19:30:00Z",
+                    "Location": "Camp de Mestalla",
+                    "HomeTeam": "3b4ec69a-c055-4cd7-ac20-c87693787772",
+                    "AwayTeam": "607a3148-acc4-497d-92c3-d4b91bbf7d8f",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 36,
+                    "RoundNumber": 4,
+                    "DateUtc": "2024-08-31 19:30:00Z",
+                    "Location": "Estadio Municipal Butarque",
+                    "HomeTeam": "9713e798-86c5-4d01-b101-7e6d99655994",
+                    "AwayTeam": "19926a6d-23d0-4beb-9309-4e38aac9cd21",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 35,
+                    "RoundNumber": 4,
+                    "DateUtc": "2024-09-01 15:00:00Z",
+                    "Location": "Mendizorroza",
+                    "HomeTeam": "0c675c33-d0ce-4bda-bf1f-eca2a57a431b",
+                    "AwayTeam": "fda26236-ffc0-4a0e-ac0f-671148a437e5",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 39,
+                    "RoundNumber": 4,
+                    "DateUtc": "2024-09-01 15:00:00Z",
+                    "Location": "Estadio El Sadar",
+                    "HomeTeam": "727a5e7a-a262-4b0c-99ef-25ed3cd923b8",
+                    "AwayTeam": "c3333c07-bf1a-47ff-9f20-6018f22d8ab1",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 40,
+                    "RoundNumber": 4,
+                    "DateUtc": "2024-09-01 17:00:00Z",
+                    "Location": "Ram\u00f3n S\u00e1nchez-Pizju\u00e1n",
+                    "HomeTeam": "07042b17-b67f-41e6-9e7b-d79d529c0b13",
+                    "AwayTeam": "783d1b8b-5654-4258-bd53-aa6639926f60",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 33,
+                    "RoundNumber": 4,
+                    "DateUtc": "2024-09-01 17:15:00Z",
+                    "Location": "Coliseum",
+                    "HomeTeam": "daf0b0df-1a9f-46bf-af91-808a6368a335",
+                    "AwayTeam": "722dfc0c-8dba-43ca-a272-2737a0409e36",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 38,
+                    "RoundNumber": 4,
+                    "DateUtc": "2024-09-01 19:30:00Z",
+                    "Location": "Estadio Santiago Bernab\u00e9u",
+                    "HomeTeam": "29c0e5bc-364e-4226-82fa-0f1e90975800",
+                    "AwayTeam": "a5063e7c-7527-4fce-b412-95ca51822bac",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 5,
+            "fixtures": [
+                {
+                    "MatchNumber": 41,
+                    "RoundNumber": 5,
+                    "DateUtc": "2024-09-15 00:00:00Z",
+                    "Location": "Civitas Metropolitano",
+                    "HomeTeam": "7c53bc3e-704d-4647-9080-9558c194b9fa",
+                    "AwayTeam": "3b4ec69a-c055-4cd7-ac20-c87693787772",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 42,
+                    "RoundNumber": 5,
+                    "DateUtc": "2024-09-15 00:00:00Z",
+                    "Location": "Estadio Benito Villamar\u00edn",
+                    "HomeTeam": "a5063e7c-7527-4fce-b412-95ca51822bac",
+                    "AwayTeam": "9713e798-86c5-4d01-b101-7e6d99655994",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 43,
+                    "RoundNumber": 5,
+                    "DateUtc": "2024-09-15 00:00:00Z",
+                    "Location": "Estadio ABANCA Bala\u00eddos",
+                    "HomeTeam": "c3333c07-bf1a-47ff-9f20-6018f22d8ab1",
+                    "AwayTeam": "3f3b852a-cf14-45ba-8e04-3ccb79a844dd",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 44,
+                    "RoundNumber": 5,
+                    "DateUtc": "2024-09-15 00:00:00Z",
+                    "Location": "Estadi Mallorca Son Moix",
+                    "HomeTeam": "19926a6d-23d0-4beb-9309-4e38aac9cd21",
+                    "AwayTeam": "607a3148-acc4-497d-92c3-d4b91bbf7d8f",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 45,
+                    "RoundNumber": 5,
+                    "DateUtc": "2024-09-15 00:00:00Z",
+                    "Location": "Estadio Gran Canaria",
+                    "HomeTeam": "fda26236-ffc0-4a0e-ac0f-671148a437e5",
+                    "AwayTeam": "012ad29a-09aa-47db-8851-287e6fcbf4f0",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 46,
+                    "RoundNumber": 5,
+                    "DateUtc": "2024-09-15 00:00:00Z",
+                    "Location": "Estadio Municipal de Montilivi",
+                    "HomeTeam": "783d1b8b-5654-4258-bd53-aa6639926f60",
+                    "AwayTeam": "07e93162-b769-4d66-849c-71fe61286880",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 47,
+                    "RoundNumber": 5,
+                    "DateUtc": "2024-09-15 00:00:00Z",
+                    "Location": "Ram\u00f3n S\u00e1nchez-Pizju\u00e1n",
+                    "HomeTeam": "07042b17-b67f-41e6-9e7b-d79d529c0b13",
+                    "AwayTeam": "daf0b0df-1a9f-46bf-af91-808a6368a335",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 48,
+                    "RoundNumber": 5,
+                    "DateUtc": "2024-09-15 00:00:00Z",
+                    "Location": "Estadio de Vallecas",
+                    "HomeTeam": "266a7bac-d69e-4313-9534-fcf92ae22559",
+                    "AwayTeam": "727a5e7a-a262-4b0c-99ef-25ed3cd923b8",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 49,
+                    "RoundNumber": 5,
+                    "DateUtc": "2024-09-15 00:00:00Z",
+                    "Location": "Reale Arena",
+                    "HomeTeam": "722dfc0c-8dba-43ca-a272-2737a0409e36",
+                    "AwayTeam": "29c0e5bc-364e-4226-82fa-0f1e90975800",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 50,
+                    "RoundNumber": 5,
+                    "DateUtc": "2024-09-15 00:00:00Z",
+                    "Location": "RCDE Stadium",
+                    "HomeTeam": "f0a3b45b-6a9b-4fe3-882f-ca5b44f13b4b",
+                    "AwayTeam": "0c675c33-d0ce-4bda-bf1f-eca2a57a431b",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 6,
+            "fixtures": [
+                {
+                    "MatchNumber": 51,
+                    "RoundNumber": 6,
+                    "DateUtc": "2024-09-22 00:00:00Z",
+                    "Location": "Estadio San Mam\u00e9s",
+                    "HomeTeam": "012ad29a-09aa-47db-8851-287e6fcbf4f0",
+                    "AwayTeam": "c3333c07-bf1a-47ff-9f20-6018f22d8ab1",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 52,
+                    "RoundNumber": 6,
+                    "DateUtc": "2024-09-22 00:00:00Z",
+                    "Location": "Estadio Benito Villamar\u00edn",
+                    "HomeTeam": "a5063e7c-7527-4fce-b412-95ca51822bac",
+                    "AwayTeam": "19926a6d-23d0-4beb-9309-4e38aac9cd21",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 53,
+                    "RoundNumber": 6,
+                    "DateUtc": "2024-09-22 00:00:00Z",
+                    "Location": "Coliseum",
+                    "HomeTeam": "daf0b0df-1a9f-46bf-af91-808a6368a335",
+                    "AwayTeam": "9713e798-86c5-4d01-b101-7e6d99655994",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 54,
+                    "RoundNumber": 6,
+                    "DateUtc": "2024-09-22 00:00:00Z",
+                    "Location": "Mendizorroza",
+                    "HomeTeam": "0c675c33-d0ce-4bda-bf1f-eca2a57a431b",
+                    "AwayTeam": "07042b17-b67f-41e6-9e7b-d79d529c0b13",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 55,
+                    "RoundNumber": 6,
+                    "DateUtc": "2024-09-22 00:00:00Z",
+                    "Location": "Estadio de Vallecas",
+                    "HomeTeam": "266a7bac-d69e-4313-9534-fcf92ae22559",
+                    "AwayTeam": "7c53bc3e-704d-4647-9080-9558c194b9fa",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 56,
+                    "RoundNumber": 6,
+                    "DateUtc": "2024-09-22 00:00:00Z",
+                    "Location": "Estadio de la Cer\u00e1mica",
+                    "HomeTeam": "607a3148-acc4-497d-92c3-d4b91bbf7d8f",
+                    "AwayTeam": "07e93162-b769-4d66-849c-71fe61286880",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 57,
+                    "RoundNumber": 6,
+                    "DateUtc": "2024-09-22 00:00:00Z",
+                    "Location": "Camp de Mestalla",
+                    "HomeTeam": "3b4ec69a-c055-4cd7-ac20-c87693787772",
+                    "AwayTeam": "783d1b8b-5654-4258-bd53-aa6639926f60",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 58,
+                    "RoundNumber": 6,
+                    "DateUtc": "2024-09-22 00:00:00Z",
+                    "Location": "Estadio Municipal Jos\u00e9 Zorrilla",
+                    "HomeTeam": "3f3b852a-cf14-45ba-8e04-3ccb79a844dd",
+                    "AwayTeam": "722dfc0c-8dba-43ca-a272-2737a0409e36",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 59,
+                    "RoundNumber": 6,
+                    "DateUtc": "2024-09-22 00:00:00Z",
+                    "Location": "Estadio El Sadar",
+                    "HomeTeam": "727a5e7a-a262-4b0c-99ef-25ed3cd923b8",
+                    "AwayTeam": "fda26236-ffc0-4a0e-ac0f-671148a437e5",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 60,
+                    "RoundNumber": 6,
+                    "DateUtc": "2024-09-22 00:00:00Z",
+                    "Location": "Estadio Santiago Bernab\u00e9u",
+                    "HomeTeam": "29c0e5bc-364e-4226-82fa-0f1e90975800",
+                    "AwayTeam": "f0a3b45b-6a9b-4fe3-882f-ca5b44f13b4b",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 7,
+            "fixtures": [
+                {
+                    "MatchNumber": 61,
+                    "RoundNumber": 7,
+                    "DateUtc": "2024-09-25 00:00:00Z",
+                    "Location": "Estadi Ol\u00edmpic Llu\u00eds Companys",
+                    "HomeTeam": "07e93162-b769-4d66-849c-71fe61286880",
+                    "AwayTeam": "daf0b0df-1a9f-46bf-af91-808a6368a335",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 62,
+                    "RoundNumber": 7,
+                    "DateUtc": "2024-09-25 00:00:00Z",
+                    "Location": "Estadio Municipal de Montilivi",
+                    "HomeTeam": "783d1b8b-5654-4258-bd53-aa6639926f60",
+                    "AwayTeam": "266a7bac-d69e-4313-9534-fcf92ae22559",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 63,
+                    "RoundNumber": 7,
+                    "DateUtc": "2024-09-25 00:00:00Z",
+                    "Location": "Estadi Mallorca Son Moix",
+                    "HomeTeam": "19926a6d-23d0-4beb-9309-4e38aac9cd21",
+                    "AwayTeam": "722dfc0c-8dba-43ca-a272-2737a0409e36",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 64,
+                    "RoundNumber": 7,
+                    "DateUtc": "2024-09-25 00:00:00Z",
+                    "Location": "Ram\u00f3n S\u00e1nchez-Pizju\u00e1n",
+                    "HomeTeam": "07042b17-b67f-41e6-9e7b-d79d529c0b13",
+                    "AwayTeam": "3f3b852a-cf14-45ba-8e04-3ccb79a844dd",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 65,
+                    "RoundNumber": 7,
+                    "DateUtc": "2024-09-25 00:00:00Z",
+                    "Location": "RCDE Stadium",
+                    "HomeTeam": "f0a3b45b-6a9b-4fe3-882f-ca5b44f13b4b",
+                    "AwayTeam": "607a3148-acc4-497d-92c3-d4b91bbf7d8f",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 66,
+                    "RoundNumber": 7,
+                    "DateUtc": "2024-09-25 00:00:00Z",
+                    "Location": "Estadio Municipal Butarque",
+                    "HomeTeam": "9713e798-86c5-4d01-b101-7e6d99655994",
+                    "AwayTeam": "012ad29a-09aa-47db-8851-287e6fcbf4f0",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 67,
+                    "RoundNumber": 7,
+                    "DateUtc": "2024-09-25 00:00:00Z",
+                    "Location": "Estadio ABANCA Bala\u00eddos",
+                    "HomeTeam": "c3333c07-bf1a-47ff-9f20-6018f22d8ab1",
+                    "AwayTeam": "7c53bc3e-704d-4647-9080-9558c194b9fa",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 68,
+                    "RoundNumber": 7,
+                    "DateUtc": "2024-09-25 00:00:00Z",
+                    "Location": "Estadio Gran Canaria",
+                    "HomeTeam": "fda26236-ffc0-4a0e-ac0f-671148a437e5",
+                    "AwayTeam": "a5063e7c-7527-4fce-b412-95ca51822bac",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 69,
+                    "RoundNumber": 7,
+                    "DateUtc": "2024-09-25 00:00:00Z",
+                    "Location": "Camp de Mestalla",
+                    "HomeTeam": "3b4ec69a-c055-4cd7-ac20-c87693787772",
+                    "AwayTeam": "727a5e7a-a262-4b0c-99ef-25ed3cd923b8",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 70,
+                    "RoundNumber": 7,
+                    "DateUtc": "2024-09-25 00:00:00Z",
+                    "Location": "Estadio Santiago Bernab\u00e9u",
+                    "HomeTeam": "29c0e5bc-364e-4226-82fa-0f1e90975800",
+                    "AwayTeam": "0c675c33-d0ce-4bda-bf1f-eca2a57a431b",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 8,
+            "fixtures": [
+                {
+                    "MatchNumber": 71,
+                    "RoundNumber": 8,
+                    "DateUtc": "2024-09-29 00:00:00Z",
+                    "Location": "Estadio San Mam\u00e9s",
+                    "HomeTeam": "012ad29a-09aa-47db-8851-287e6fcbf4f0",
+                    "AwayTeam": "07042b17-b67f-41e6-9e7b-d79d529c0b13",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 72,
+                    "RoundNumber": 8,
+                    "DateUtc": "2024-09-29 00:00:00Z",
+                    "Location": "Civitas Metropolitano",
+                    "HomeTeam": "7c53bc3e-704d-4647-9080-9558c194b9fa",
+                    "AwayTeam": "29c0e5bc-364e-4226-82fa-0f1e90975800",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 73,
+                    "RoundNumber": 8,
+                    "DateUtc": "2024-09-29 00:00:00Z",
+                    "Location": "Estadio ABANCA Bala\u00eddos",
+                    "HomeTeam": "c3333c07-bf1a-47ff-9f20-6018f22d8ab1",
+                    "AwayTeam": "783d1b8b-5654-4258-bd53-aa6639926f60",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 74,
+                    "RoundNumber": 8,
+                    "DateUtc": "2024-09-29 00:00:00Z",
+                    "Location": "Reale Arena",
+                    "HomeTeam": "722dfc0c-8dba-43ca-a272-2737a0409e36",
+                    "AwayTeam": "3b4ec69a-c055-4cd7-ac20-c87693787772",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 75,
+                    "RoundNumber": 8,
+                    "DateUtc": "2024-09-29 00:00:00Z",
+                    "Location": "Estadio El Sadar",
+                    "HomeTeam": "727a5e7a-a262-4b0c-99ef-25ed3cd923b8",
+                    "AwayTeam": "07e93162-b769-4d66-849c-71fe61286880",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 76,
+                    "RoundNumber": 8,
+                    "DateUtc": "2024-09-29 00:00:00Z",
+                    "Location": "Estadio Municipal Jos\u00e9 Zorrilla",
+                    "HomeTeam": "3f3b852a-cf14-45ba-8e04-3ccb79a844dd",
+                    "AwayTeam": "19926a6d-23d0-4beb-9309-4e38aac9cd21",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 77,
+                    "RoundNumber": 8,
+                    "DateUtc": "2024-09-29 00:00:00Z",
+                    "Location": "Estadio de la Cer\u00e1mica",
+                    "HomeTeam": "607a3148-acc4-497d-92c3-d4b91bbf7d8f",
+                    "AwayTeam": "fda26236-ffc0-4a0e-ac0f-671148a437e5",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 78,
+                    "RoundNumber": 8,
+                    "DateUtc": "2024-09-29 00:00:00Z",
+                    "Location": "Coliseum",
+                    "HomeTeam": "daf0b0df-1a9f-46bf-af91-808a6368a335",
+                    "AwayTeam": "0c675c33-d0ce-4bda-bf1f-eca2a57a431b",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 79,
+                    "RoundNumber": 8,
+                    "DateUtc": "2024-09-29 00:00:00Z",
+                    "Location": "Estadio de Vallecas",
+                    "HomeTeam": "266a7bac-d69e-4313-9534-fcf92ae22559",
+                    "AwayTeam": "9713e798-86c5-4d01-b101-7e6d99655994",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 80,
+                    "RoundNumber": 8,
+                    "DateUtc": "2024-09-29 00:00:00Z",
+                    "Location": "Estadio Benito Villamar\u00edn",
+                    "HomeTeam": "a5063e7c-7527-4fce-b412-95ca51822bac",
+                    "AwayTeam": "f0a3b45b-6a9b-4fe3-882f-ca5b44f13b4b",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 9,
+            "fixtures": [
+                {
+                    "MatchNumber": 81,
+                    "RoundNumber": 9,
+                    "DateUtc": "2024-10-06 00:00:00Z",
+                    "Location": "Coliseum",
+                    "HomeTeam": "daf0b0df-1a9f-46bf-af91-808a6368a335",
+                    "AwayTeam": "727a5e7a-a262-4b0c-99ef-25ed3cd923b8",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 82,
+                    "RoundNumber": 9,
+                    "DateUtc": "2024-10-06 00:00:00Z",
+                    "Location": "Estadio Santiago Bernab\u00e9u",
+                    "HomeTeam": "29c0e5bc-364e-4226-82fa-0f1e90975800",
+                    "AwayTeam": "607a3148-acc4-497d-92c3-d4b91bbf7d8f",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 83,
+                    "RoundNumber": 9,
+                    "DateUtc": "2024-10-06 00:00:00Z",
+                    "Location": "Mendizorroza",
+                    "HomeTeam": "0c675c33-d0ce-4bda-bf1f-eca2a57a431b",
+                    "AwayTeam": "07e93162-b769-4d66-849c-71fe61286880",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 84,
+                    "RoundNumber": 9,
+                    "DateUtc": "2024-10-06 00:00:00Z",
+                    "Location": "Estadio Municipal Butarque",
+                    "HomeTeam": "9713e798-86c5-4d01-b101-7e6d99655994",
+                    "AwayTeam": "3b4ec69a-c055-4cd7-ac20-c87693787772",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 85,
+                    "RoundNumber": 9,
+                    "DateUtc": "2024-10-06 00:00:00Z",
+                    "Location": "RCDE Stadium",
+                    "HomeTeam": "f0a3b45b-6a9b-4fe3-882f-ca5b44f13b4b",
+                    "AwayTeam": "19926a6d-23d0-4beb-9309-4e38aac9cd21",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 86,
+                    "RoundNumber": 9,
+                    "DateUtc": "2024-10-06 00:00:00Z",
+                    "Location": "Estadio Municipal de Montilivi",
+                    "HomeTeam": "783d1b8b-5654-4258-bd53-aa6639926f60",
+                    "AwayTeam": "012ad29a-09aa-47db-8851-287e6fcbf4f0",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 87,
+                    "RoundNumber": 9,
+                    "DateUtc": "2024-10-06 00:00:00Z",
+                    "Location": "Reale Arena",
+                    "HomeTeam": "722dfc0c-8dba-43ca-a272-2737a0409e36",
+                    "AwayTeam": "7c53bc3e-704d-4647-9080-9558c194b9fa",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 88,
+                    "RoundNumber": 9,
+                    "DateUtc": "2024-10-06 00:00:00Z",
+                    "Location": "Ram\u00f3n S\u00e1nchez-Pizju\u00e1n",
+                    "HomeTeam": "07042b17-b67f-41e6-9e7b-d79d529c0b13",
+                    "AwayTeam": "a5063e7c-7527-4fce-b412-95ca51822bac",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 89,
+                    "RoundNumber": 9,
+                    "DateUtc": "2024-10-06 00:00:00Z",
+                    "Location": "Estadio Gran Canaria",
+                    "HomeTeam": "fda26236-ffc0-4a0e-ac0f-671148a437e5",
+                    "AwayTeam": "c3333c07-bf1a-47ff-9f20-6018f22d8ab1",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 90,
+                    "RoundNumber": 9,
+                    "DateUtc": "2024-10-06 00:00:00Z",
+                    "Location": "Estadio Municipal Jos\u00e9 Zorrilla",
+                    "HomeTeam": "3f3b852a-cf14-45ba-8e04-3ccb79a844dd",
+                    "AwayTeam": "266a7bac-d69e-4313-9534-fcf92ae22559",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 10,
+            "fixtures": [
+                {
+                    "MatchNumber": 91,
+                    "RoundNumber": 10,
+                    "DateUtc": "2024-10-20 00:00:00Z",
+                    "Location": "Civitas Metropolitano",
+                    "HomeTeam": "7c53bc3e-704d-4647-9080-9558c194b9fa",
+                    "AwayTeam": "9713e798-86c5-4d01-b101-7e6d99655994",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 92,
+                    "RoundNumber": 10,
+                    "DateUtc": "2024-10-20 00:00:00Z",
+                    "Location": "Estadi Ol\u00edmpic Llu\u00eds Companys",
+                    "HomeTeam": "07e93162-b769-4d66-849c-71fe61286880",
+                    "AwayTeam": "07042b17-b67f-41e6-9e7b-d79d529c0b13",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 93,
+                    "RoundNumber": 10,
+                    "DateUtc": "2024-10-20 00:00:00Z",
+                    "Location": "Estadio ABANCA Bala\u00eddos",
+                    "HomeTeam": "c3333c07-bf1a-47ff-9f20-6018f22d8ab1",
+                    "AwayTeam": "29c0e5bc-364e-4226-82fa-0f1e90975800",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 94,
+                    "RoundNumber": 10,
+                    "DateUtc": "2024-10-20 00:00:00Z",
+                    "Location": "Estadio Municipal de Montilivi",
+                    "HomeTeam": "783d1b8b-5654-4258-bd53-aa6639926f60",
+                    "AwayTeam": "722dfc0c-8dba-43ca-a272-2737a0409e36",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 95,
+                    "RoundNumber": 10,
+                    "DateUtc": "2024-10-20 00:00:00Z",
+                    "Location": "Estadi Mallorca Son Moix",
+                    "HomeTeam": "19926a6d-23d0-4beb-9309-4e38aac9cd21",
+                    "AwayTeam": "266a7bac-d69e-4313-9534-fcf92ae22559",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 96,
+                    "RoundNumber": 10,
+                    "DateUtc": "2024-10-20 00:00:00Z",
+                    "Location": "Mendizorroza",
+                    "HomeTeam": "0c675c33-d0ce-4bda-bf1f-eca2a57a431b",
+                    "AwayTeam": "3f3b852a-cf14-45ba-8e04-3ccb79a844dd",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 97,
+                    "RoundNumber": 10,
+                    "DateUtc": "2024-10-20 00:00:00Z",
+                    "Location": "Estadio El Sadar",
+                    "HomeTeam": "727a5e7a-a262-4b0c-99ef-25ed3cd923b8",
+                    "AwayTeam": "a5063e7c-7527-4fce-b412-95ca51822bac",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 98,
+                    "RoundNumber": 10,
+                    "DateUtc": "2024-10-20 00:00:00Z",
+                    "Location": "Estadio de la Cer\u00e1mica",
+                    "HomeTeam": "607a3148-acc4-497d-92c3-d4b91bbf7d8f",
+                    "AwayTeam": "daf0b0df-1a9f-46bf-af91-808a6368a335",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 99,
+                    "RoundNumber": 10,
+                    "DateUtc": "2024-10-20 00:00:00Z",
+                    "Location": "Camp de Mestalla",
+                    "HomeTeam": "3b4ec69a-c055-4cd7-ac20-c87693787772",
+                    "AwayTeam": "fda26236-ffc0-4a0e-ac0f-671148a437e5",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 100,
+                    "RoundNumber": 10,
+                    "DateUtc": "2024-10-20 00:00:00Z",
+                    "Location": "Estadio San Mam\u00e9s",
+                    "HomeTeam": "012ad29a-09aa-47db-8851-287e6fcbf4f0",
+                    "AwayTeam": "f0a3b45b-6a9b-4fe3-882f-ca5b44f13b4b",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 11,
+            "fixtures": [
+                {
+                    "MatchNumber": 101,
+                    "RoundNumber": 11,
+                    "DateUtc": "2024-10-27 00:00:00Z",
+                    "Location": "Coliseum",
+                    "HomeTeam": "daf0b0df-1a9f-46bf-af91-808a6368a335",
+                    "AwayTeam": "3b4ec69a-c055-4cd7-ac20-c87693787772",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 102,
+                    "RoundNumber": 11,
+                    "DateUtc": "2024-10-27 00:00:00Z",
+                    "Location": "RCDE Stadium",
+                    "HomeTeam": "f0a3b45b-6a9b-4fe3-882f-ca5b44f13b4b",
+                    "AwayTeam": "07042b17-b67f-41e6-9e7b-d79d529c0b13",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 103,
+                    "RoundNumber": 11,
+                    "DateUtc": "2024-10-27 00:00:00Z",
+                    "Location": "Estadi Mallorca Son Moix",
+                    "HomeTeam": "19926a6d-23d0-4beb-9309-4e38aac9cd21",
+                    "AwayTeam": "012ad29a-09aa-47db-8851-287e6fcbf4f0",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 104,
+                    "RoundNumber": 11,
+                    "DateUtc": "2024-10-27 00:00:00Z",
+                    "Location": "Estadio Benito Villamar\u00edn",
+                    "HomeTeam": "a5063e7c-7527-4fce-b412-95ca51822bac",
+                    "AwayTeam": "7c53bc3e-704d-4647-9080-9558c194b9fa",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 105,
+                    "RoundNumber": 11,
+                    "DateUtc": "2024-10-27 00:00:00Z",
+                    "Location": "Estadio Santiago Bernab\u00e9u",
+                    "HomeTeam": "29c0e5bc-364e-4226-82fa-0f1e90975800",
+                    "AwayTeam": "07e93162-b769-4d66-849c-71fe61286880",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 106,
+                    "RoundNumber": 11,
+                    "DateUtc": "2024-10-27 00:00:00Z",
+                    "Location": "Estadio Municipal Butarque",
+                    "HomeTeam": "9713e798-86c5-4d01-b101-7e6d99655994",
+                    "AwayTeam": "c3333c07-bf1a-47ff-9f20-6018f22d8ab1",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 107,
+                    "RoundNumber": 11,
+                    "DateUtc": "2024-10-27 00:00:00Z",
+                    "Location": "Estadio Gran Canaria",
+                    "HomeTeam": "fda26236-ffc0-4a0e-ac0f-671148a437e5",
+                    "AwayTeam": "783d1b8b-5654-4258-bd53-aa6639926f60",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 108,
+                    "RoundNumber": 11,
+                    "DateUtc": "2024-10-27 00:00:00Z",
+                    "Location": "Reale Arena",
+                    "HomeTeam": "722dfc0c-8dba-43ca-a272-2737a0409e36",
+                    "AwayTeam": "727a5e7a-a262-4b0c-99ef-25ed3cd923b8",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 109,
+                    "RoundNumber": 11,
+                    "DateUtc": "2024-10-27 00:00:00Z",
+                    "Location": "Estadio Municipal Jos\u00e9 Zorrilla",
+                    "HomeTeam": "3f3b852a-cf14-45ba-8e04-3ccb79a844dd",
+                    "AwayTeam": "607a3148-acc4-497d-92c3-d4b91bbf7d8f",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 110,
+                    "RoundNumber": 11,
+                    "DateUtc": "2024-10-27 00:00:00Z",
+                    "Location": "Estadio de Vallecas",
+                    "HomeTeam": "266a7bac-d69e-4313-9534-fcf92ae22559",
+                    "AwayTeam": "0c675c33-d0ce-4bda-bf1f-eca2a57a431b",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 12,
+            "fixtures": [
+                {
+                    "MatchNumber": 111,
+                    "RoundNumber": 12,
+                    "DateUtc": "2024-11-03 00:00:00Z",
+                    "Location": "Estadio San Mam\u00e9s",
+                    "HomeTeam": "012ad29a-09aa-47db-8851-287e6fcbf4f0",
+                    "AwayTeam": "a5063e7c-7527-4fce-b412-95ca51822bac",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 112,
+                    "RoundNumber": 12,
+                    "DateUtc": "2024-11-03 00:00:00Z",
+                    "Location": "Civitas Metropolitano",
+                    "HomeTeam": "7c53bc3e-704d-4647-9080-9558c194b9fa",
+                    "AwayTeam": "fda26236-ffc0-4a0e-ac0f-671148a437e5",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 113,
+                    "RoundNumber": 12,
+                    "DateUtc": "2024-11-03 00:00:00Z",
+                    "Location": "Estadio ABANCA Bala\u00eddos",
+                    "HomeTeam": "c3333c07-bf1a-47ff-9f20-6018f22d8ab1",
+                    "AwayTeam": "daf0b0df-1a9f-46bf-af91-808a6368a335",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 114,
+                    "RoundNumber": 12,
+                    "DateUtc": "2024-11-03 00:00:00Z",
+                    "Location": "Estadio Municipal de Montilivi",
+                    "HomeTeam": "783d1b8b-5654-4258-bd53-aa6639926f60",
+                    "AwayTeam": "9713e798-86c5-4d01-b101-7e6d99655994",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 115,
+                    "RoundNumber": 12,
+                    "DateUtc": "2024-11-03 00:00:00Z",
+                    "Location": "Estadio El Sadar",
+                    "HomeTeam": "727a5e7a-a262-4b0c-99ef-25ed3cd923b8",
+                    "AwayTeam": "3f3b852a-cf14-45ba-8e04-3ccb79a844dd",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 116,
+                    "RoundNumber": 12,
+                    "DateUtc": "2024-11-03 00:00:00Z",
+                    "Location": "Mendizorroza",
+                    "HomeTeam": "0c675c33-d0ce-4bda-bf1f-eca2a57a431b",
+                    "AwayTeam": "19926a6d-23d0-4beb-9309-4e38aac9cd21",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 117,
+                    "RoundNumber": 12,
+                    "DateUtc": "2024-11-03 00:00:00Z",
+                    "Location": "Estadio de la Cer\u00e1mica",
+                    "HomeTeam": "607a3148-acc4-497d-92c3-d4b91bbf7d8f",
+                    "AwayTeam": "266a7bac-d69e-4313-9534-fcf92ae22559",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 118,
+                    "RoundNumber": 12,
+                    "DateUtc": "2024-11-03 00:00:00Z",
+                    "Location": "Camp de Mestalla",
+                    "HomeTeam": "3b4ec69a-c055-4cd7-ac20-c87693787772",
+                    "AwayTeam": "29c0e5bc-364e-4226-82fa-0f1e90975800",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 119,
+                    "RoundNumber": 12,
+                    "DateUtc": "2024-11-03 00:00:00Z",
+                    "Location": "Ram\u00f3n S\u00e1nchez-Pizju\u00e1n",
+                    "HomeTeam": "07042b17-b67f-41e6-9e7b-d79d529c0b13",
+                    "AwayTeam": "722dfc0c-8dba-43ca-a272-2737a0409e36",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 120,
+                    "RoundNumber": 12,
+                    "DateUtc": "2024-11-03 00:00:00Z",
+                    "Location": "Estadi Ol\u00edmpic Llu\u00eds Companys",
+                    "HomeTeam": "07e93162-b769-4d66-849c-71fe61286880",
+                    "AwayTeam": "f0a3b45b-6a9b-4fe3-882f-ca5b44f13b4b",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 13,
+            "fixtures": [
+                {
+                    "MatchNumber": 121,
+                    "RoundNumber": 13,
+                    "DateUtc": "2024-11-10 00:00:00Z",
+                    "Location": "Estadio Benito Villamar\u00edn",
+                    "HomeTeam": "a5063e7c-7527-4fce-b412-95ca51822bac",
+                    "AwayTeam": "c3333c07-bf1a-47ff-9f20-6018f22d8ab1",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 122,
+                    "RoundNumber": 13,
+                    "DateUtc": "2024-11-10 00:00:00Z",
+                    "Location": "Coliseum",
+                    "HomeTeam": "daf0b0df-1a9f-46bf-af91-808a6368a335",
+                    "AwayTeam": "783d1b8b-5654-4258-bd53-aa6639926f60",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 123,
+                    "RoundNumber": 13,
+                    "DateUtc": "2024-11-10 00:00:00Z",
+                    "Location": "Estadio Municipal Butarque",
+                    "HomeTeam": "9713e798-86c5-4d01-b101-7e6d99655994",
+                    "AwayTeam": "07042b17-b67f-41e6-9e7b-d79d529c0b13",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 124,
+                    "RoundNumber": 13,
+                    "DateUtc": "2024-11-10 00:00:00Z",
+                    "Location": "RCDE Stadium",
+                    "HomeTeam": "f0a3b45b-6a9b-4fe3-882f-ca5b44f13b4b",
+                    "AwayTeam": "3b4ec69a-c055-4cd7-ac20-c87693787772",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 125,
+                    "RoundNumber": 13,
+                    "DateUtc": "2024-11-10 00:00:00Z",
+                    "Location": "Estadio Municipal Jos\u00e9 Zorrilla",
+                    "HomeTeam": "3f3b852a-cf14-45ba-8e04-3ccb79a844dd",
+                    "AwayTeam": "012ad29a-09aa-47db-8851-287e6fcbf4f0",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 126,
+                    "RoundNumber": 13,
+                    "DateUtc": "2024-11-10 00:00:00Z",
+                    "Location": "Estadi Mallorca Son Moix",
+                    "HomeTeam": "19926a6d-23d0-4beb-9309-4e38aac9cd21",
+                    "AwayTeam": "7c53bc3e-704d-4647-9080-9558c194b9fa",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 127,
+                    "RoundNumber": 13,
+                    "DateUtc": "2024-11-10 00:00:00Z",
+                    "Location": "Reale Arena",
+                    "HomeTeam": "722dfc0c-8dba-43ca-a272-2737a0409e36",
+                    "AwayTeam": "07e93162-b769-4d66-849c-71fe61286880",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 128,
+                    "RoundNumber": 13,
+                    "DateUtc": "2024-11-10 00:00:00Z",
+                    "Location": "Estadio Santiago Bernab\u00e9u",
+                    "HomeTeam": "29c0e5bc-364e-4226-82fa-0f1e90975800",
+                    "AwayTeam": "727a5e7a-a262-4b0c-99ef-25ed3cd923b8",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 129,
+                    "RoundNumber": 13,
+                    "DateUtc": "2024-11-10 00:00:00Z",
+                    "Location": "Estadio de Vallecas",
+                    "HomeTeam": "266a7bac-d69e-4313-9534-fcf92ae22559",
+                    "AwayTeam": "fda26236-ffc0-4a0e-ac0f-671148a437e5",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 130,
+                    "RoundNumber": 13,
+                    "DateUtc": "2024-11-10 00:00:00Z",
+                    "Location": "Estadio de la Cer\u00e1mica",
+                    "HomeTeam": "607a3148-acc4-497d-92c3-d4b91bbf7d8f",
+                    "AwayTeam": "0c675c33-d0ce-4bda-bf1f-eca2a57a431b",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 14,
+            "fixtures": [
+                {
+                    "MatchNumber": 131,
+                    "RoundNumber": 14,
+                    "DateUtc": "2024-11-24 00:00:00Z",
+                    "Location": "Estadio San Mam\u00e9s",
+                    "HomeTeam": "012ad29a-09aa-47db-8851-287e6fcbf4f0",
+                    "AwayTeam": "722dfc0c-8dba-43ca-a272-2737a0409e36",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 132,
+                    "RoundNumber": 14,
+                    "DateUtc": "2024-11-24 00:00:00Z",
+                    "Location": "Coliseum",
+                    "HomeTeam": "daf0b0df-1a9f-46bf-af91-808a6368a335",
+                    "AwayTeam": "3f3b852a-cf14-45ba-8e04-3ccb79a844dd",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 133,
+                    "RoundNumber": 14,
+                    "DateUtc": "2024-11-24 00:00:00Z",
+                    "Location": "Estadio El Sadar",
+                    "HomeTeam": "727a5e7a-a262-4b0c-99ef-25ed3cd923b8",
+                    "AwayTeam": "607a3148-acc4-497d-92c3-d4b91bbf7d8f",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 134,
+                    "RoundNumber": 14,
+                    "DateUtc": "2024-11-24 00:00:00Z",
+                    "Location": "Estadio Gran Canaria",
+                    "HomeTeam": "fda26236-ffc0-4a0e-ac0f-671148a437e5",
+                    "AwayTeam": "19926a6d-23d0-4beb-9309-4e38aac9cd21",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 135,
+                    "RoundNumber": 14,
+                    "DateUtc": "2024-11-24 00:00:00Z",
+                    "Location": "Estadio Municipal Butarque",
+                    "HomeTeam": "9713e798-86c5-4d01-b101-7e6d99655994",
+                    "AwayTeam": "29c0e5bc-364e-4226-82fa-0f1e90975800",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 136,
+                    "RoundNumber": 14,
+                    "DateUtc": "2024-11-24 00:00:00Z",
+                    "Location": "Estadio ABANCA Bala\u00eddos",
+                    "HomeTeam": "c3333c07-bf1a-47ff-9f20-6018f22d8ab1",
+                    "AwayTeam": "07e93162-b769-4d66-849c-71fe61286880",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 137,
+                    "RoundNumber": 14,
+                    "DateUtc": "2024-11-24 00:00:00Z",
+                    "Location": "Camp de Mestalla",
+                    "HomeTeam": "3b4ec69a-c055-4cd7-ac20-c87693787772",
+                    "AwayTeam": "a5063e7c-7527-4fce-b412-95ca51822bac",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 138,
+                    "RoundNumber": 14,
+                    "DateUtc": "2024-11-24 00:00:00Z",
+                    "Location": "Ram\u00f3n S\u00e1nchez-Pizju\u00e1n",
+                    "HomeTeam": "07042b17-b67f-41e6-9e7b-d79d529c0b13",
+                    "AwayTeam": "266a7bac-d69e-4313-9534-fcf92ae22559",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 139,
+                    "RoundNumber": 14,
+                    "DateUtc": "2024-11-24 00:00:00Z",
+                    "Location": "Civitas Metropolitano",
+                    "HomeTeam": "7c53bc3e-704d-4647-9080-9558c194b9fa",
+                    "AwayTeam": "0c675c33-d0ce-4bda-bf1f-eca2a57a431b",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 140,
+                    "RoundNumber": 14,
+                    "DateUtc": "2024-11-24 00:00:00Z",
+                    "Location": "Estadio Municipal de Montilivi",
+                    "HomeTeam": "783d1b8b-5654-4258-bd53-aa6639926f60",
+                    "AwayTeam": "f0a3b45b-6a9b-4fe3-882f-ca5b44f13b4b",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 15,
+            "fixtures": [
+                {
+                    "MatchNumber": 141,
+                    "RoundNumber": 15,
+                    "DateUtc": "2024-12-01 00:00:00Z",
+                    "Location": "Estadi Ol\u00edmpic Llu\u00eds Companys",
+                    "HomeTeam": "07e93162-b769-4d66-849c-71fe61286880",
+                    "AwayTeam": "fda26236-ffc0-4a0e-ac0f-671148a437e5",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 142,
+                    "RoundNumber": 15,
+                    "DateUtc": "2024-12-01 00:00:00Z",
+                    "Location": "Estadi Mallorca Son Moix",
+                    "HomeTeam": "19926a6d-23d0-4beb-9309-4e38aac9cd21",
+                    "AwayTeam": "3b4ec69a-c055-4cd7-ac20-c87693787772",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 143,
+                    "RoundNumber": 15,
+                    "DateUtc": "2024-12-01 00:00:00Z",
+                    "Location": "Mendizorroza",
+                    "HomeTeam": "0c675c33-d0ce-4bda-bf1f-eca2a57a431b",
+                    "AwayTeam": "9713e798-86c5-4d01-b101-7e6d99655994",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 144,
+                    "RoundNumber": 15,
+                    "DateUtc": "2024-12-01 00:00:00Z",
+                    "Location": "RCDE Stadium",
+                    "HomeTeam": "f0a3b45b-6a9b-4fe3-882f-ca5b44f13b4b",
+                    "AwayTeam": "c3333c07-bf1a-47ff-9f20-6018f22d8ab1",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 145,
+                    "RoundNumber": 15,
+                    "DateUtc": "2024-12-01 00:00:00Z",
+                    "Location": "Estadio de Vallecas",
+                    "HomeTeam": "266a7bac-d69e-4313-9534-fcf92ae22559",
+                    "AwayTeam": "012ad29a-09aa-47db-8851-287e6fcbf4f0",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 146,
+                    "RoundNumber": 15,
+                    "DateUtc": "2024-12-01 00:00:00Z",
+                    "Location": "Estadio Municipal Jos\u00e9 Zorrilla",
+                    "HomeTeam": "3f3b852a-cf14-45ba-8e04-3ccb79a844dd",
+                    "AwayTeam": "7c53bc3e-704d-4647-9080-9558c194b9fa",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 147,
+                    "RoundNumber": 15,
+                    "DateUtc": "2024-12-01 00:00:00Z",
+                    "Location": "Reale Arena",
+                    "HomeTeam": "722dfc0c-8dba-43ca-a272-2737a0409e36",
+                    "AwayTeam": "a5063e7c-7527-4fce-b412-95ca51822bac",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 148,
+                    "RoundNumber": 15,
+                    "DateUtc": "2024-12-01 00:00:00Z",
+                    "Location": "Estadio Santiago Bernab\u00e9u",
+                    "HomeTeam": "29c0e5bc-364e-4226-82fa-0f1e90975800",
+                    "AwayTeam": "daf0b0df-1a9f-46bf-af91-808a6368a335",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 149,
+                    "RoundNumber": 15,
+                    "DateUtc": "2024-12-01 00:00:00Z",
+                    "Location": "Estadio de la Cer\u00e1mica",
+                    "HomeTeam": "607a3148-acc4-497d-92c3-d4b91bbf7d8f",
+                    "AwayTeam": "783d1b8b-5654-4258-bd53-aa6639926f60",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 150,
+                    "RoundNumber": 15,
+                    "DateUtc": "2024-12-01 00:00:00Z",
+                    "Location": "Ram\u00f3n S\u00e1nchez-Pizju\u00e1n",
+                    "HomeTeam": "07042b17-b67f-41e6-9e7b-d79d529c0b13",
+                    "AwayTeam": "727a5e7a-a262-4b0c-99ef-25ed3cd923b8",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 16,
+            "fixtures": [
+                {
+                    "MatchNumber": 151,
+                    "RoundNumber": 16,
+                    "DateUtc": "2024-12-08 00:00:00Z",
+                    "Location": "Estadio San Mam\u00e9s",
+                    "HomeTeam": "012ad29a-09aa-47db-8851-287e6fcbf4f0",
+                    "AwayTeam": "607a3148-acc4-497d-92c3-d4b91bbf7d8f",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 152,
+                    "RoundNumber": 16,
+                    "DateUtc": "2024-12-08 00:00:00Z",
+                    "Location": "Civitas Metropolitano",
+                    "HomeTeam": "7c53bc3e-704d-4647-9080-9558c194b9fa",
+                    "AwayTeam": "07042b17-b67f-41e6-9e7b-d79d529c0b13",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 153,
+                    "RoundNumber": 16,
+                    "DateUtc": "2024-12-08 00:00:00Z",
+                    "Location": "Estadio ABANCA Bala\u00eddos",
+                    "HomeTeam": "c3333c07-bf1a-47ff-9f20-6018f22d8ab1",
+                    "AwayTeam": "19926a6d-23d0-4beb-9309-4e38aac9cd21",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 154,
+                    "RoundNumber": 16,
+                    "DateUtc": "2024-12-08 00:00:00Z",
+                    "Location": "Estadio Municipal de Montilivi",
+                    "HomeTeam": "783d1b8b-5654-4258-bd53-aa6639926f60",
+                    "AwayTeam": "29c0e5bc-364e-4226-82fa-0f1e90975800",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 155,
+                    "RoundNumber": 16,
+                    "DateUtc": "2024-12-08 00:00:00Z",
+                    "Location": "Estadio Gran Canaria",
+                    "HomeTeam": "fda26236-ffc0-4a0e-ac0f-671148a437e5",
+                    "AwayTeam": "3f3b852a-cf14-45ba-8e04-3ccb79a844dd",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 156,
+                    "RoundNumber": 16,
+                    "DateUtc": "2024-12-08 00:00:00Z",
+                    "Location": "Estadio Municipal Butarque",
+                    "HomeTeam": "9713e798-86c5-4d01-b101-7e6d99655994",
+                    "AwayTeam": "722dfc0c-8dba-43ca-a272-2737a0409e36",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 157,
+                    "RoundNumber": 16,
+                    "DateUtc": "2024-12-08 00:00:00Z",
+                    "Location": "Estadio Benito Villamar\u00edn",
+                    "HomeTeam": "a5063e7c-7527-4fce-b412-95ca51822bac",
+                    "AwayTeam": "07e93162-b769-4d66-849c-71fe61286880",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 158,
+                    "RoundNumber": 16,
+                    "DateUtc": "2024-12-08 00:00:00Z",
+                    "Location": "Camp de Mestalla",
+                    "HomeTeam": "3b4ec69a-c055-4cd7-ac20-c87693787772",
+                    "AwayTeam": "266a7bac-d69e-4313-9534-fcf92ae22559",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 159,
+                    "RoundNumber": 16,
+                    "DateUtc": "2024-12-08 00:00:00Z",
+                    "Location": "Estadio El Sadar",
+                    "HomeTeam": "727a5e7a-a262-4b0c-99ef-25ed3cd923b8",
+                    "AwayTeam": "0c675c33-d0ce-4bda-bf1f-eca2a57a431b",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 160,
+                    "RoundNumber": 16,
+                    "DateUtc": "2024-12-08 00:00:00Z",
+                    "Location": "Coliseum",
+                    "HomeTeam": "daf0b0df-1a9f-46bf-af91-808a6368a335",
+                    "AwayTeam": "f0a3b45b-6a9b-4fe3-882f-ca5b44f13b4b",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 17,
+            "fixtures": [
+                {
+                    "MatchNumber": 161,
+                    "RoundNumber": 17,
+                    "DateUtc": "2024-12-15 00:00:00Z",
+                    "Location": "Civitas Metropolitano",
+                    "HomeTeam": "7c53bc3e-704d-4647-9080-9558c194b9fa",
+                    "AwayTeam": "daf0b0df-1a9f-46bf-af91-808a6368a335",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 162,
+                    "RoundNumber": 17,
+                    "DateUtc": "2024-12-15 00:00:00Z",
+                    "Location": "Estadi Ol\u00edmpic Llu\u00eds Companys",
+                    "HomeTeam": "07e93162-b769-4d66-849c-71fe61286880",
+                    "AwayTeam": "9713e798-86c5-4d01-b101-7e6d99655994",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 163,
+                    "RoundNumber": 17,
+                    "DateUtc": "2024-12-15 00:00:00Z",
+                    "Location": "Estadio de Vallecas",
+                    "HomeTeam": "266a7bac-d69e-4313-9534-fcf92ae22559",
+                    "AwayTeam": "29c0e5bc-364e-4226-82fa-0f1e90975800",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 164,
+                    "RoundNumber": 17,
+                    "DateUtc": "2024-12-15 00:00:00Z",
+                    "Location": "Mendizorroza",
+                    "HomeTeam": "0c675c33-d0ce-4bda-bf1f-eca2a57a431b",
+                    "AwayTeam": "012ad29a-09aa-47db-8851-287e6fcbf4f0",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 165,
+                    "RoundNumber": 17,
+                    "DateUtc": "2024-12-15 00:00:00Z",
+                    "Location": "RCDE Stadium",
+                    "HomeTeam": "f0a3b45b-6a9b-4fe3-882f-ca5b44f13b4b",
+                    "AwayTeam": "727a5e7a-a262-4b0c-99ef-25ed3cd923b8",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 166,
+                    "RoundNumber": 17,
+                    "DateUtc": "2024-12-15 00:00:00Z",
+                    "Location": "Estadio de la Cer\u00e1mica",
+                    "HomeTeam": "607a3148-acc4-497d-92c3-d4b91bbf7d8f",
+                    "AwayTeam": "a5063e7c-7527-4fce-b412-95ca51822bac",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 167,
+                    "RoundNumber": 17,
+                    "DateUtc": "2024-12-15 00:00:00Z",
+                    "Location": "Ram\u00f3n S\u00e1nchez-Pizju\u00e1n",
+                    "HomeTeam": "07042b17-b67f-41e6-9e7b-d79d529c0b13",
+                    "AwayTeam": "c3333c07-bf1a-47ff-9f20-6018f22d8ab1",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 168,
+                    "RoundNumber": 17,
+                    "DateUtc": "2024-12-15 00:00:00Z",
+                    "Location": "Estadi Mallorca Son Moix",
+                    "HomeTeam": "19926a6d-23d0-4beb-9309-4e38aac9cd21",
+                    "AwayTeam": "783d1b8b-5654-4258-bd53-aa6639926f60",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 169,
+                    "RoundNumber": 17,
+                    "DateUtc": "2024-12-15 00:00:00Z",
+                    "Location": "Estadio Municipal Jos\u00e9 Zorrilla",
+                    "HomeTeam": "3f3b852a-cf14-45ba-8e04-3ccb79a844dd",
+                    "AwayTeam": "3b4ec69a-c055-4cd7-ac20-c87693787772",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 170,
+                    "RoundNumber": 17,
+                    "DateUtc": "2024-12-15 00:00:00Z",
+                    "Location": "Reale Arena",
+                    "HomeTeam": "722dfc0c-8dba-43ca-a272-2737a0409e36",
+                    "AwayTeam": "fda26236-ffc0-4a0e-ac0f-671148a437e5",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 18,
+            "fixtures": [
+                {
+                    "MatchNumber": 171,
+                    "RoundNumber": 18,
+                    "DateUtc": "2024-12-22 00:00:00Z",
+                    "Location": "Estadio Benito Villamar\u00edn",
+                    "HomeTeam": "a5063e7c-7527-4fce-b412-95ca51822bac",
+                    "AwayTeam": "266a7bac-d69e-4313-9534-fcf92ae22559",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 172,
+                    "RoundNumber": 18,
+                    "DateUtc": "2024-12-22 00:00:00Z",
+                    "Location": "Estadio ABANCA Bala\u00eddos",
+                    "HomeTeam": "c3333c07-bf1a-47ff-9f20-6018f22d8ab1",
+                    "AwayTeam": "722dfc0c-8dba-43ca-a272-2737a0409e36",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 173,
+                    "RoundNumber": 18,
+                    "DateUtc": "2024-12-22 00:00:00Z",
+                    "Location": "Coliseum",
+                    "HomeTeam": "daf0b0df-1a9f-46bf-af91-808a6368a335",
+                    "AwayTeam": "19926a6d-23d0-4beb-9309-4e38aac9cd21",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 174,
+                    "RoundNumber": 18,
+                    "DateUtc": "2024-12-22 00:00:00Z",
+                    "Location": "Estadio Municipal de Montilivi",
+                    "HomeTeam": "783d1b8b-5654-4258-bd53-aa6639926f60",
+                    "AwayTeam": "3f3b852a-cf14-45ba-8e04-3ccb79a844dd",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 175,
+                    "RoundNumber": 18,
+                    "DateUtc": "2024-12-22 00:00:00Z",
+                    "Location": "Estadio Santiago Bernab\u00e9u",
+                    "HomeTeam": "29c0e5bc-364e-4226-82fa-0f1e90975800",
+                    "AwayTeam": "07042b17-b67f-41e6-9e7b-d79d529c0b13",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 176,
+                    "RoundNumber": 18,
+                    "DateUtc": "2024-12-22 00:00:00Z",
+                    "Location": "Estadio Municipal Butarque",
+                    "HomeTeam": "9713e798-86c5-4d01-b101-7e6d99655994",
+                    "AwayTeam": "607a3148-acc4-497d-92c3-d4b91bbf7d8f",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 177,
+                    "RoundNumber": 18,
+                    "DateUtc": "2024-12-22 00:00:00Z",
+                    "Location": "Estadio El Sadar",
+                    "HomeTeam": "727a5e7a-a262-4b0c-99ef-25ed3cd923b8",
+                    "AwayTeam": "012ad29a-09aa-47db-8851-287e6fcbf4f0",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 178,
+                    "RoundNumber": 18,
+                    "DateUtc": "2024-12-22 00:00:00Z",
+                    "Location": "Estadi Ol\u00edmpic Llu\u00eds Companys",
+                    "HomeTeam": "07e93162-b769-4d66-849c-71fe61286880",
+                    "AwayTeam": "7c53bc3e-704d-4647-9080-9558c194b9fa",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 179,
+                    "RoundNumber": 18,
+                    "DateUtc": "2024-12-22 00:00:00Z",
+                    "Location": "Camp de Mestalla",
+                    "HomeTeam": "3b4ec69a-c055-4cd7-ac20-c87693787772",
+                    "AwayTeam": "0c675c33-d0ce-4bda-bf1f-eca2a57a431b",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 180,
+                    "RoundNumber": 18,
+                    "DateUtc": "2024-12-22 00:00:00Z",
+                    "Location": "Estadio Gran Canaria",
+                    "HomeTeam": "fda26236-ffc0-4a0e-ac0f-671148a437e5",
+                    "AwayTeam": "f0a3b45b-6a9b-4fe3-882f-ca5b44f13b4b",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 19,
+            "fixtures": [
+                {
+                    "MatchNumber": 181,
+                    "RoundNumber": 19,
+                    "DateUtc": "2025-01-12 00:00:00Z",
+                    "Location": "Estadio San Mam\u00e9s",
+                    "HomeTeam": "012ad29a-09aa-47db-8851-287e6fcbf4f0",
+                    "AwayTeam": "29c0e5bc-364e-4226-82fa-0f1e90975800",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 182,
+                    "RoundNumber": 19,
+                    "DateUtc": "2025-01-12 00:00:00Z",
+                    "Location": "Civitas Metropolitano",
+                    "HomeTeam": "7c53bc3e-704d-4647-9080-9558c194b9fa",
+                    "AwayTeam": "727a5e7a-a262-4b0c-99ef-25ed3cd923b8",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 183,
+                    "RoundNumber": 19,
+                    "DateUtc": "2025-01-12 00:00:00Z",
+                    "Location": "Reale Arena",
+                    "HomeTeam": "722dfc0c-8dba-43ca-a272-2737a0409e36",
+                    "AwayTeam": "607a3148-acc4-497d-92c3-d4b91bbf7d8f",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 184,
+                    "RoundNumber": 19,
+                    "DateUtc": "2025-01-12 00:00:00Z",
+                    "Location": "Ram\u00f3n S\u00e1nchez-Pizju\u00e1n",
+                    "HomeTeam": "07042b17-b67f-41e6-9e7b-d79d529c0b13",
+                    "AwayTeam": "3b4ec69a-c055-4cd7-ac20-c87693787772",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 185,
+                    "RoundNumber": 19,
+                    "DateUtc": "2025-01-12 00:00:00Z",
+                    "Location": "Mendizorroza",
+                    "HomeTeam": "0c675c33-d0ce-4bda-bf1f-eca2a57a431b",
+                    "AwayTeam": "783d1b8b-5654-4258-bd53-aa6639926f60",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 186,
+                    "RoundNumber": 19,
+                    "DateUtc": "2025-01-12 00:00:00Z",
+                    "Location": "RCDE Stadium",
+                    "HomeTeam": "f0a3b45b-6a9b-4fe3-882f-ca5b44f13b4b",
+                    "AwayTeam": "9713e798-86c5-4d01-b101-7e6d99655994",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 187,
+                    "RoundNumber": 19,
+                    "DateUtc": "2025-01-12 00:00:00Z",
+                    "Location": "Estadi Mallorca Son Moix",
+                    "HomeTeam": "19926a6d-23d0-4beb-9309-4e38aac9cd21",
+                    "AwayTeam": "07e93162-b769-4d66-849c-71fe61286880",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 188,
+                    "RoundNumber": 19,
+                    "DateUtc": "2025-01-12 00:00:00Z",
+                    "Location": "Estadio Municipal Jos\u00e9 Zorrilla",
+                    "HomeTeam": "3f3b852a-cf14-45ba-8e04-3ccb79a844dd",
+                    "AwayTeam": "a5063e7c-7527-4fce-b412-95ca51822bac",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 189,
+                    "RoundNumber": 19,
+                    "DateUtc": "2025-01-12 00:00:00Z",
+                    "Location": "Estadio de Vallecas",
+                    "HomeTeam": "266a7bac-d69e-4313-9534-fcf92ae22559",
+                    "AwayTeam": "c3333c07-bf1a-47ff-9f20-6018f22d8ab1",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 190,
+                    "RoundNumber": 19,
+                    "DateUtc": "2025-01-12 00:00:00Z",
+                    "Location": "Estadio Gran Canaria",
+                    "HomeTeam": "fda26236-ffc0-4a0e-ac0f-671148a437e5",
+                    "AwayTeam": "daf0b0df-1a9f-46bf-af91-808a6368a335",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 20,
+            "fixtures": [
+                {
+                    "MatchNumber": 191,
+                    "RoundNumber": 20,
+                    "DateUtc": "2025-01-19 00:00:00Z",
+                    "Location": "Estadio Municipal de Montilivi",
+                    "HomeTeam": "783d1b8b-5654-4258-bd53-aa6639926f60",
+                    "AwayTeam": "07042b17-b67f-41e6-9e7b-d79d529c0b13",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 192,
+                    "RoundNumber": 20,
+                    "DateUtc": "2025-01-19 00:00:00Z",
+                    "Location": "Estadio El Sadar",
+                    "HomeTeam": "727a5e7a-a262-4b0c-99ef-25ed3cd923b8",
+                    "AwayTeam": "266a7bac-d69e-4313-9534-fcf92ae22559",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 193,
+                    "RoundNumber": 20,
+                    "DateUtc": "2025-01-19 00:00:00Z",
+                    "Location": "RCDE Stadium",
+                    "HomeTeam": "f0a3b45b-6a9b-4fe3-882f-ca5b44f13b4b",
+                    "AwayTeam": "3f3b852a-cf14-45ba-8e04-3ccb79a844dd",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 194,
+                    "RoundNumber": 20,
+                    "DateUtc": "2025-01-19 00:00:00Z",
+                    "Location": "Estadio ABANCA Bala\u00eddos",
+                    "HomeTeam": "c3333c07-bf1a-47ff-9f20-6018f22d8ab1",
+                    "AwayTeam": "012ad29a-09aa-47db-8851-287e6fcbf4f0",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 195,
+                    "RoundNumber": 20,
+                    "DateUtc": "2025-01-19 00:00:00Z",
+                    "Location": "Estadio Municipal Butarque",
+                    "HomeTeam": "9713e798-86c5-4d01-b101-7e6d99655994",
+                    "AwayTeam": "7c53bc3e-704d-4647-9080-9558c194b9fa",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 196,
+                    "RoundNumber": 20,
+                    "DateUtc": "2025-01-19 00:00:00Z",
+                    "Location": "Coliseum",
+                    "HomeTeam": "daf0b0df-1a9f-46bf-af91-808a6368a335",
+                    "AwayTeam": "07e93162-b769-4d66-849c-71fe61286880",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 197,
+                    "RoundNumber": 20,
+                    "DateUtc": "2025-01-19 00:00:00Z",
+                    "Location": "Estadio de la Cer\u00e1mica",
+                    "HomeTeam": "607a3148-acc4-497d-92c3-d4b91bbf7d8f",
+                    "AwayTeam": "19926a6d-23d0-4beb-9309-4e38aac9cd21",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 198,
+                    "RoundNumber": 20,
+                    "DateUtc": "2025-01-19 00:00:00Z",
+                    "Location": "Camp de Mestalla",
+                    "HomeTeam": "3b4ec69a-c055-4cd7-ac20-c87693787772",
+                    "AwayTeam": "722dfc0c-8dba-43ca-a272-2737a0409e36",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 199,
+                    "RoundNumber": 20,
+                    "DateUtc": "2025-01-19 00:00:00Z",
+                    "Location": "Estadio Santiago Bernab\u00e9u",
+                    "HomeTeam": "29c0e5bc-364e-4226-82fa-0f1e90975800",
+                    "AwayTeam": "fda26236-ffc0-4a0e-ac0f-671148a437e5",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 200,
+                    "RoundNumber": 20,
+                    "DateUtc": "2025-01-19 00:00:00Z",
+                    "Location": "Estadio Benito Villamar\u00edn",
+                    "HomeTeam": "a5063e7c-7527-4fce-b412-95ca51822bac",
+                    "AwayTeam": "0c675c33-d0ce-4bda-bf1f-eca2a57a431b",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 21,
+            "fixtures": [
+                {
+                    "MatchNumber": 201,
+                    "RoundNumber": 21,
+                    "DateUtc": "2025-01-26 00:00:00Z",
+                    "Location": "Estadio San Mam\u00e9s",
+                    "HomeTeam": "012ad29a-09aa-47db-8851-287e6fcbf4f0",
+                    "AwayTeam": "9713e798-86c5-4d01-b101-7e6d99655994",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 202,
+                    "RoundNumber": 21,
+                    "DateUtc": "2025-01-26 00:00:00Z",
+                    "Location": "Civitas Metropolitano",
+                    "HomeTeam": "7c53bc3e-704d-4647-9080-9558c194b9fa",
+                    "AwayTeam": "607a3148-acc4-497d-92c3-d4b91bbf7d8f",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 203,
+                    "RoundNumber": 21,
+                    "DateUtc": "2025-01-26 00:00:00Z",
+                    "Location": "Estadi Ol\u00edmpic Llu\u00eds Companys",
+                    "HomeTeam": "07e93162-b769-4d66-849c-71fe61286880",
+                    "AwayTeam": "3b4ec69a-c055-4cd7-ac20-c87693787772",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 204,
+                    "RoundNumber": 21,
+                    "DateUtc": "2025-01-26 00:00:00Z",
+                    "Location": "Estadio Gran Canaria",
+                    "HomeTeam": "fda26236-ffc0-4a0e-ac0f-671148a437e5",
+                    "AwayTeam": "727a5e7a-a262-4b0c-99ef-25ed3cd923b8",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 205,
+                    "RoundNumber": 21,
+                    "DateUtc": "2025-01-26 00:00:00Z",
+                    "Location": "Mendizorroza",
+                    "HomeTeam": "0c675c33-d0ce-4bda-bf1f-eca2a57a431b",
+                    "AwayTeam": "c3333c07-bf1a-47ff-9f20-6018f22d8ab1",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 206,
+                    "RoundNumber": 21,
+                    "DateUtc": "2025-01-26 00:00:00Z",
+                    "Location": "Estadi Mallorca Son Moix",
+                    "HomeTeam": "19926a6d-23d0-4beb-9309-4e38aac9cd21",
+                    "AwayTeam": "a5063e7c-7527-4fce-b412-95ca51822bac",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 207,
+                    "RoundNumber": 21,
+                    "DateUtc": "2025-01-26 00:00:00Z",
+                    "Location": "Reale Arena",
+                    "HomeTeam": "722dfc0c-8dba-43ca-a272-2737a0409e36",
+                    "AwayTeam": "daf0b0df-1a9f-46bf-af91-808a6368a335",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 208,
+                    "RoundNumber": 21,
+                    "DateUtc": "2025-01-26 00:00:00Z",
+                    "Location": "Estadio de Vallecas",
+                    "HomeTeam": "266a7bac-d69e-4313-9534-fcf92ae22559",
+                    "AwayTeam": "783d1b8b-5654-4258-bd53-aa6639926f60",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 209,
+                    "RoundNumber": 21,
+                    "DateUtc": "2025-01-26 00:00:00Z",
+                    "Location": "Estadio Municipal Jos\u00e9 Zorrilla",
+                    "HomeTeam": "3f3b852a-cf14-45ba-8e04-3ccb79a844dd",
+                    "AwayTeam": "29c0e5bc-364e-4226-82fa-0f1e90975800",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 210,
+                    "RoundNumber": 21,
+                    "DateUtc": "2025-01-26 00:00:00Z",
+                    "Location": "Ram\u00f3n S\u00e1nchez-Pizju\u00e1n",
+                    "HomeTeam": "07042b17-b67f-41e6-9e7b-d79d529c0b13",
+                    "AwayTeam": "f0a3b45b-6a9b-4fe3-882f-ca5b44f13b4b",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 22,
+            "fixtures": [
+                {
+                    "MatchNumber": 211,
+                    "RoundNumber": 22,
+                    "DateUtc": "2025-02-02 00:00:00Z",
+                    "Location": "Civitas Metropolitano",
+                    "HomeTeam": "7c53bc3e-704d-4647-9080-9558c194b9fa",
+                    "AwayTeam": "19926a6d-23d0-4beb-9309-4e38aac9cd21",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 212,
+                    "RoundNumber": 22,
+                    "DateUtc": "2025-02-02 00:00:00Z",
+                    "Location": "Coliseum",
+                    "HomeTeam": "daf0b0df-1a9f-46bf-af91-808a6368a335",
+                    "AwayTeam": "07042b17-b67f-41e6-9e7b-d79d529c0b13",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 213,
+                    "RoundNumber": 22,
+                    "DateUtc": "2025-02-02 00:00:00Z",
+                    "Location": "Estadio Municipal de Montilivi",
+                    "HomeTeam": "783d1b8b-5654-4258-bd53-aa6639926f60",
+                    "AwayTeam": "fda26236-ffc0-4a0e-ac0f-671148a437e5",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 214,
+                    "RoundNumber": 22,
+                    "DateUtc": "2025-02-02 00:00:00Z",
+                    "Location": "Estadio El Sadar",
+                    "HomeTeam": "727a5e7a-a262-4b0c-99ef-25ed3cd923b8",
+                    "AwayTeam": "722dfc0c-8dba-43ca-a272-2737a0409e36",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 215,
+                    "RoundNumber": 22,
+                    "DateUtc": "2025-02-02 00:00:00Z",
+                    "Location": "Estadio de la Cer\u00e1mica",
+                    "HomeTeam": "607a3148-acc4-497d-92c3-d4b91bbf7d8f",
+                    "AwayTeam": "3f3b852a-cf14-45ba-8e04-3ccb79a844dd",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 216,
+                    "RoundNumber": 22,
+                    "DateUtc": "2025-02-02 00:00:00Z",
+                    "Location": "Estadio Municipal Butarque",
+                    "HomeTeam": "9713e798-86c5-4d01-b101-7e6d99655994",
+                    "AwayTeam": "266a7bac-d69e-4313-9534-fcf92ae22559",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 217,
+                    "RoundNumber": 22,
+                    "DateUtc": "2025-02-02 00:00:00Z",
+                    "Location": "RCDE Stadium",
+                    "HomeTeam": "f0a3b45b-6a9b-4fe3-882f-ca5b44f13b4b",
+                    "AwayTeam": "29c0e5bc-364e-4226-82fa-0f1e90975800",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 218,
+                    "RoundNumber": 22,
+                    "DateUtc": "2025-02-02 00:00:00Z",
+                    "Location": "Estadio Benito Villamar\u00edn",
+                    "HomeTeam": "a5063e7c-7527-4fce-b412-95ca51822bac",
+                    "AwayTeam": "012ad29a-09aa-47db-8851-287e6fcbf4f0",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 219,
+                    "RoundNumber": 22,
+                    "DateUtc": "2025-02-02 00:00:00Z",
+                    "Location": "Camp de Mestalla",
+                    "HomeTeam": "3b4ec69a-c055-4cd7-ac20-c87693787772",
+                    "AwayTeam": "c3333c07-bf1a-47ff-9f20-6018f22d8ab1",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 220,
+                    "RoundNumber": 22,
+                    "DateUtc": "2025-02-02 00:00:00Z",
+                    "Location": "Estadi Ol\u00edmpic Llu\u00eds Companys",
+                    "HomeTeam": "07e93162-b769-4d66-849c-71fe61286880",
+                    "AwayTeam": "0c675c33-d0ce-4bda-bf1f-eca2a57a431b",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 23,
+            "fixtures": [
+                {
+                    "MatchNumber": 221,
+                    "RoundNumber": 23,
+                    "DateUtc": "2025-02-09 00:00:00Z",
+                    "Location": "Estadio San Mam\u00e9s",
+                    "HomeTeam": "012ad29a-09aa-47db-8851-287e6fcbf4f0",
+                    "AwayTeam": "783d1b8b-5654-4258-bd53-aa6639926f60",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 222,
+                    "RoundNumber": 23,
+                    "DateUtc": "2025-02-09 00:00:00Z",
+                    "Location": "Estadi Mallorca Son Moix",
+                    "HomeTeam": "19926a6d-23d0-4beb-9309-4e38aac9cd21",
+                    "AwayTeam": "727a5e7a-a262-4b0c-99ef-25ed3cd923b8",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 223,
+                    "RoundNumber": 23,
+                    "DateUtc": "2025-02-09 00:00:00Z",
+                    "Location": "Estadio de Vallecas",
+                    "HomeTeam": "266a7bac-d69e-4313-9534-fcf92ae22559",
+                    "AwayTeam": "3f3b852a-cf14-45ba-8e04-3ccb79a844dd",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 224,
+                    "RoundNumber": 23,
+                    "DateUtc": "2025-02-09 00:00:00Z",
+                    "Location": "Estadio Gran Canaria",
+                    "HomeTeam": "fda26236-ffc0-4a0e-ac0f-671148a437e5",
+                    "AwayTeam": "607a3148-acc4-497d-92c3-d4b91bbf7d8f",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 225,
+                    "RoundNumber": 23,
+                    "DateUtc": "2025-02-09 00:00:00Z",
+                    "Location": "Mendizorroza",
+                    "HomeTeam": "0c675c33-d0ce-4bda-bf1f-eca2a57a431b",
+                    "AwayTeam": "daf0b0df-1a9f-46bf-af91-808a6368a335",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 226,
+                    "RoundNumber": 23,
+                    "DateUtc": "2025-02-09 00:00:00Z",
+                    "Location": "Estadio Santiago Bernab\u00e9u",
+                    "HomeTeam": "29c0e5bc-364e-4226-82fa-0f1e90975800",
+                    "AwayTeam": "7c53bc3e-704d-4647-9080-9558c194b9fa",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 227,
+                    "RoundNumber": 23,
+                    "DateUtc": "2025-02-09 00:00:00Z",
+                    "Location": "Ram\u00f3n S\u00e1nchez-Pizju\u00e1n",
+                    "HomeTeam": "07042b17-b67f-41e6-9e7b-d79d529c0b13",
+                    "AwayTeam": "07e93162-b769-4d66-849c-71fe61286880",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 228,
+                    "RoundNumber": 23,
+                    "DateUtc": "2025-02-09 00:00:00Z",
+                    "Location": "Estadio ABANCA Bala\u00eddos",
+                    "HomeTeam": "c3333c07-bf1a-47ff-9f20-6018f22d8ab1",
+                    "AwayTeam": "a5063e7c-7527-4fce-b412-95ca51822bac",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 229,
+                    "RoundNumber": 23,
+                    "DateUtc": "2025-02-09 00:00:00Z",
+                    "Location": "Camp de Mestalla",
+                    "HomeTeam": "3b4ec69a-c055-4cd7-ac20-c87693787772",
+                    "AwayTeam": "9713e798-86c5-4d01-b101-7e6d99655994",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 230,
+                    "RoundNumber": 23,
+                    "DateUtc": "2025-02-09 00:00:00Z",
+                    "Location": "Reale Arena",
+                    "HomeTeam": "722dfc0c-8dba-43ca-a272-2737a0409e36",
+                    "AwayTeam": "f0a3b45b-6a9b-4fe3-882f-ca5b44f13b4b",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 24,
+            "fixtures": [
+                {
+                    "MatchNumber": 231,
+                    "RoundNumber": 24,
+                    "DateUtc": "2025-02-16 00:00:00Z",
+                    "Location": "Civitas Metropolitano",
+                    "HomeTeam": "7c53bc3e-704d-4647-9080-9558c194b9fa",
+                    "AwayTeam": "c3333c07-bf1a-47ff-9f20-6018f22d8ab1",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 232,
+                    "RoundNumber": 24,
+                    "DateUtc": "2025-02-16 00:00:00Z",
+                    "Location": "Estadi Ol\u00edmpic Llu\u00eds Companys",
+                    "HomeTeam": "07e93162-b769-4d66-849c-71fe61286880",
+                    "AwayTeam": "266a7bac-d69e-4313-9534-fcf92ae22559",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 233,
+                    "RoundNumber": 24,
+                    "DateUtc": "2025-02-16 00:00:00Z",
+                    "Location": "Estadio Benito Villamar\u00edn",
+                    "HomeTeam": "a5063e7c-7527-4fce-b412-95ca51822bac",
+                    "AwayTeam": "722dfc0c-8dba-43ca-a272-2737a0409e36",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 234,
+                    "RoundNumber": 24,
+                    "DateUtc": "2025-02-16 00:00:00Z",
+                    "Location": "Estadio El Sadar",
+                    "HomeTeam": "727a5e7a-a262-4b0c-99ef-25ed3cd923b8",
+                    "AwayTeam": "29c0e5bc-364e-4226-82fa-0f1e90975800",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 235,
+                    "RoundNumber": 24,
+                    "DateUtc": "2025-02-16 00:00:00Z",
+                    "Location": "RCDE Stadium",
+                    "HomeTeam": "f0a3b45b-6a9b-4fe3-882f-ca5b44f13b4b",
+                    "AwayTeam": "012ad29a-09aa-47db-8851-287e6fcbf4f0",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 236,
+                    "RoundNumber": 24,
+                    "DateUtc": "2025-02-16 00:00:00Z",
+                    "Location": "Estadio Municipal de Montilivi",
+                    "HomeTeam": "783d1b8b-5654-4258-bd53-aa6639926f60",
+                    "AwayTeam": "daf0b0df-1a9f-46bf-af91-808a6368a335",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 237,
+                    "RoundNumber": 24,
+                    "DateUtc": "2025-02-16 00:00:00Z",
+                    "Location": "Estadio Municipal Jos\u00e9 Zorrilla",
+                    "HomeTeam": "3f3b852a-cf14-45ba-8e04-3ccb79a844dd",
+                    "AwayTeam": "07042b17-b67f-41e6-9e7b-d79d529c0b13",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 238,
+                    "RoundNumber": 24,
+                    "DateUtc": "2025-02-16 00:00:00Z",
+                    "Location": "Estadio de la Cer\u00e1mica",
+                    "HomeTeam": "607a3148-acc4-497d-92c3-d4b91bbf7d8f",
+                    "AwayTeam": "3b4ec69a-c055-4cd7-ac20-c87693787772",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 239,
+                    "RoundNumber": 24,
+                    "DateUtc": "2025-02-16 00:00:00Z",
+                    "Location": "Estadi Mallorca Son Moix",
+                    "HomeTeam": "19926a6d-23d0-4beb-9309-4e38aac9cd21",
+                    "AwayTeam": "fda26236-ffc0-4a0e-ac0f-671148a437e5",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 240,
+                    "RoundNumber": 24,
+                    "DateUtc": "2025-02-16 00:00:00Z",
+                    "Location": "Estadio Municipal Butarque",
+                    "HomeTeam": "9713e798-86c5-4d01-b101-7e6d99655994",
+                    "AwayTeam": "0c675c33-d0ce-4bda-bf1f-eca2a57a431b",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 25,
+            "fixtures": [
+                {
+                    "MatchNumber": 241,
+                    "RoundNumber": 25,
+                    "DateUtc": "2025-02-23 00:00:00Z",
+                    "Location": "Estadio San Mam\u00e9s",
+                    "HomeTeam": "012ad29a-09aa-47db-8851-287e6fcbf4f0",
+                    "AwayTeam": "3f3b852a-cf14-45ba-8e04-3ccb79a844dd",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 242,
+                    "RoundNumber": 25,
+                    "DateUtc": "2025-02-23 00:00:00Z",
+                    "Location": "Estadio ABANCA Bala\u00eddos",
+                    "HomeTeam": "c3333c07-bf1a-47ff-9f20-6018f22d8ab1",
+                    "AwayTeam": "727a5e7a-a262-4b0c-99ef-25ed3cd923b8",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 243,
+                    "RoundNumber": 25,
+                    "DateUtc": "2025-02-23 00:00:00Z",
+                    "Location": "Estadio de Vallecas",
+                    "HomeTeam": "266a7bac-d69e-4313-9534-fcf92ae22559",
+                    "AwayTeam": "607a3148-acc4-497d-92c3-d4b91bbf7d8f",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 244,
+                    "RoundNumber": 25,
+                    "DateUtc": "2025-02-23 00:00:00Z",
+                    "Location": "Mendizorroza",
+                    "HomeTeam": "0c675c33-d0ce-4bda-bf1f-eca2a57a431b",
+                    "AwayTeam": "f0a3b45b-6a9b-4fe3-882f-ca5b44f13b4b",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 245,
+                    "RoundNumber": 25,
+                    "DateUtc": "2025-02-23 00:00:00Z",
+                    "Location": "Camp de Mestalla",
+                    "HomeTeam": "3b4ec69a-c055-4cd7-ac20-c87693787772",
+                    "AwayTeam": "7c53bc3e-704d-4647-9080-9558c194b9fa",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 246,
+                    "RoundNumber": 25,
+                    "DateUtc": "2025-02-23 00:00:00Z",
+                    "Location": "Estadio Gran Canaria",
+                    "HomeTeam": "fda26236-ffc0-4a0e-ac0f-671148a437e5",
+                    "AwayTeam": "07e93162-b769-4d66-849c-71fe61286880",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 247,
+                    "RoundNumber": 25,
+                    "DateUtc": "2025-02-23 00:00:00Z",
+                    "Location": "Coliseum",
+                    "HomeTeam": "daf0b0df-1a9f-46bf-af91-808a6368a335",
+                    "AwayTeam": "a5063e7c-7527-4fce-b412-95ca51822bac",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 248,
+                    "RoundNumber": 25,
+                    "DateUtc": "2025-02-23 00:00:00Z",
+                    "Location": "Estadio Santiago Bernab\u00e9u",
+                    "HomeTeam": "29c0e5bc-364e-4226-82fa-0f1e90975800",
+                    "AwayTeam": "783d1b8b-5654-4258-bd53-aa6639926f60",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 249,
+                    "RoundNumber": 25,
+                    "DateUtc": "2025-02-23 00:00:00Z",
+                    "Location": "Ram\u00f3n S\u00e1nchez-Pizju\u00e1n",
+                    "HomeTeam": "07042b17-b67f-41e6-9e7b-d79d529c0b13",
+                    "AwayTeam": "19926a6d-23d0-4beb-9309-4e38aac9cd21",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 250,
+                    "RoundNumber": 25,
+                    "DateUtc": "2025-02-23 00:00:00Z",
+                    "Location": "Reale Arena",
+                    "HomeTeam": "722dfc0c-8dba-43ca-a272-2737a0409e36",
+                    "AwayTeam": "9713e798-86c5-4d01-b101-7e6d99655994",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 26,
+            "fixtures": [
+                {
+                    "MatchNumber": 251,
+                    "RoundNumber": 26,
+                    "DateUtc": "2025-03-02 00:00:00Z",
+                    "Location": "Estadi Ol\u00edmpic Llu\u00eds Companys",
+                    "HomeTeam": "07e93162-b769-4d66-849c-71fe61286880",
+                    "AwayTeam": "722dfc0c-8dba-43ca-a272-2737a0409e36",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 252,
+                    "RoundNumber": 26,
+                    "DateUtc": "2025-03-02 00:00:00Z",
+                    "Location": "Estadio Benito Villamar\u00edn",
+                    "HomeTeam": "a5063e7c-7527-4fce-b412-95ca51822bac",
+                    "AwayTeam": "29c0e5bc-364e-4226-82fa-0f1e90975800",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 253,
+                    "RoundNumber": 26,
+                    "DateUtc": "2025-03-02 00:00:00Z",
+                    "Location": "Estadio El Sadar",
+                    "HomeTeam": "727a5e7a-a262-4b0c-99ef-25ed3cd923b8",
+                    "AwayTeam": "3b4ec69a-c055-4cd7-ac20-c87693787772",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 254,
+                    "RoundNumber": 26,
+                    "DateUtc": "2025-03-02 00:00:00Z",
+                    "Location": "Estadio de Vallecas",
+                    "HomeTeam": "266a7bac-d69e-4313-9534-fcf92ae22559",
+                    "AwayTeam": "07042b17-b67f-41e6-9e7b-d79d529c0b13",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 255,
+                    "RoundNumber": 26,
+                    "DateUtc": "2025-03-02 00:00:00Z",
+                    "Location": "Civitas Metropolitano",
+                    "HomeTeam": "7c53bc3e-704d-4647-9080-9558c194b9fa",
+                    "AwayTeam": "012ad29a-09aa-47db-8851-287e6fcbf4f0",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 256,
+                    "RoundNumber": 26,
+                    "DateUtc": "2025-03-02 00:00:00Z",
+                    "Location": "Estadio Municipal de Montilivi",
+                    "HomeTeam": "783d1b8b-5654-4258-bd53-aa6639926f60",
+                    "AwayTeam": "c3333c07-bf1a-47ff-9f20-6018f22d8ab1",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 257,
+                    "RoundNumber": 26,
+                    "DateUtc": "2025-03-02 00:00:00Z",
+                    "Location": "Estadio Municipal Butarque",
+                    "HomeTeam": "9713e798-86c5-4d01-b101-7e6d99655994",
+                    "AwayTeam": "daf0b0df-1a9f-46bf-af91-808a6368a335",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 258,
+                    "RoundNumber": 26,
+                    "DateUtc": "2025-03-02 00:00:00Z",
+                    "Location": "Estadio Municipal Jos\u00e9 Zorrilla",
+                    "HomeTeam": "3f3b852a-cf14-45ba-8e04-3ccb79a844dd",
+                    "AwayTeam": "fda26236-ffc0-4a0e-ac0f-671148a437e5",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 259,
+                    "RoundNumber": 26,
+                    "DateUtc": "2025-03-02 00:00:00Z",
+                    "Location": "Estadi Mallorca Son Moix",
+                    "HomeTeam": "19926a6d-23d0-4beb-9309-4e38aac9cd21",
+                    "AwayTeam": "0c675c33-d0ce-4bda-bf1f-eca2a57a431b",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 260,
+                    "RoundNumber": 26,
+                    "DateUtc": "2025-03-02 00:00:00Z",
+                    "Location": "Estadio de la Cer\u00e1mica",
+                    "HomeTeam": "607a3148-acc4-497d-92c3-d4b91bbf7d8f",
+                    "AwayTeam": "f0a3b45b-6a9b-4fe3-882f-ca5b44f13b4b",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 27,
+            "fixtures": [
+                {
+                    "MatchNumber": 261,
+                    "RoundNumber": 27,
+                    "DateUtc": "2025-03-09 00:00:00Z",
+                    "Location": "Estadio San Mam\u00e9s",
+                    "HomeTeam": "012ad29a-09aa-47db-8851-287e6fcbf4f0",
+                    "AwayTeam": "19926a6d-23d0-4beb-9309-4e38aac9cd21",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 262,
+                    "RoundNumber": 27,
+                    "DateUtc": "2025-03-09 00:00:00Z",
+                    "Location": "Estadi Ol\u00edmpic Llu\u00eds Companys",
+                    "HomeTeam": "07e93162-b769-4d66-849c-71fe61286880",
+                    "AwayTeam": "727a5e7a-a262-4b0c-99ef-25ed3cd923b8",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 263,
+                    "RoundNumber": 27,
+                    "DateUtc": "2025-03-09 00:00:00Z",
+                    "Location": "Estadio Benito Villamar\u00edn",
+                    "HomeTeam": "a5063e7c-7527-4fce-b412-95ca51822bac",
+                    "AwayTeam": "fda26236-ffc0-4a0e-ac0f-671148a437e5",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 264,
+                    "RoundNumber": 27,
+                    "DateUtc": "2025-03-09 00:00:00Z",
+                    "Location": "Estadio ABANCA Bala\u00eddos",
+                    "HomeTeam": "c3333c07-bf1a-47ff-9f20-6018f22d8ab1",
+                    "AwayTeam": "9713e798-86c5-4d01-b101-7e6d99655994",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 265,
+                    "RoundNumber": 27,
+                    "DateUtc": "2025-03-09 00:00:00Z",
+                    "Location": "Reale Arena",
+                    "HomeTeam": "722dfc0c-8dba-43ca-a272-2737a0409e36",
+                    "AwayTeam": "07042b17-b67f-41e6-9e7b-d79d529c0b13",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 266,
+                    "RoundNumber": 27,
+                    "DateUtc": "2025-03-09 00:00:00Z",
+                    "Location": "Camp de Mestalla",
+                    "HomeTeam": "3b4ec69a-c055-4cd7-ac20-c87693787772",
+                    "AwayTeam": "3f3b852a-cf14-45ba-8e04-3ccb79a844dd",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 267,
+                    "RoundNumber": 27,
+                    "DateUtc": "2025-03-09 00:00:00Z",
+                    "Location": "Mendizorroza",
+                    "HomeTeam": "0c675c33-d0ce-4bda-bf1f-eca2a57a431b",
+                    "AwayTeam": "607a3148-acc4-497d-92c3-d4b91bbf7d8f",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 268,
+                    "RoundNumber": 27,
+                    "DateUtc": "2025-03-09 00:00:00Z",
+                    "Location": "RCDE Stadium",
+                    "HomeTeam": "f0a3b45b-6a9b-4fe3-882f-ca5b44f13b4b",
+                    "AwayTeam": "783d1b8b-5654-4258-bd53-aa6639926f60",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 269,
+                    "RoundNumber": 27,
+                    "DateUtc": "2025-03-09 00:00:00Z",
+                    "Location": "Coliseum",
+                    "HomeTeam": "daf0b0df-1a9f-46bf-af91-808a6368a335",
+                    "AwayTeam": "7c53bc3e-704d-4647-9080-9558c194b9fa",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 270,
+                    "RoundNumber": 27,
+                    "DateUtc": "2025-03-09 00:00:00Z",
+                    "Location": "Estadio Santiago Bernab\u00e9u",
+                    "HomeTeam": "29c0e5bc-364e-4226-82fa-0f1e90975800",
+                    "AwayTeam": "266a7bac-d69e-4313-9534-fcf92ae22559",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 28,
+            "fixtures": [
+                {
+                    "MatchNumber": 271,
+                    "RoundNumber": 28,
+                    "DateUtc": "2025-03-16 00:00:00Z",
+                    "Location": "Civitas Metropolitano",
+                    "HomeTeam": "7c53bc3e-704d-4647-9080-9558c194b9fa",
+                    "AwayTeam": "07e93162-b769-4d66-849c-71fe61286880",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 272,
+                    "RoundNumber": 28,
+                    "DateUtc": "2025-03-16 00:00:00Z",
+                    "Location": "Estadio Municipal de Montilivi",
+                    "HomeTeam": "783d1b8b-5654-4258-bd53-aa6639926f60",
+                    "AwayTeam": "3b4ec69a-c055-4cd7-ac20-c87693787772",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 273,
+                    "RoundNumber": 28,
+                    "DateUtc": "2025-03-16 00:00:00Z",
+                    "Location": "Estadio de Vallecas",
+                    "HomeTeam": "266a7bac-d69e-4313-9534-fcf92ae22559",
+                    "AwayTeam": "722dfc0c-8dba-43ca-a272-2737a0409e36",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 274,
+                    "RoundNumber": 28,
+                    "DateUtc": "2025-03-16 00:00:00Z",
+                    "Location": "Ram\u00f3n S\u00e1nchez-Pizju\u00e1n",
+                    "HomeTeam": "07042b17-b67f-41e6-9e7b-d79d529c0b13",
+                    "AwayTeam": "012ad29a-09aa-47db-8851-287e6fcbf4f0",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 275,
+                    "RoundNumber": 28,
+                    "DateUtc": "2025-03-16 00:00:00Z",
+                    "Location": "Estadio Municipal Butarque",
+                    "HomeTeam": "9713e798-86c5-4d01-b101-7e6d99655994",
+                    "AwayTeam": "a5063e7c-7527-4fce-b412-95ca51822bac",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 276,
+                    "RoundNumber": 28,
+                    "DateUtc": "2025-03-16 00:00:00Z",
+                    "Location": "Estadio Municipal Jos\u00e9 Zorrilla",
+                    "HomeTeam": "3f3b852a-cf14-45ba-8e04-3ccb79a844dd",
+                    "AwayTeam": "c3333c07-bf1a-47ff-9f20-6018f22d8ab1",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 277,
+                    "RoundNumber": 28,
+                    "DateUtc": "2025-03-16 00:00:00Z",
+                    "Location": "Estadio El Sadar",
+                    "HomeTeam": "727a5e7a-a262-4b0c-99ef-25ed3cd923b8",
+                    "AwayTeam": "daf0b0df-1a9f-46bf-af91-808a6368a335",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 278,
+                    "RoundNumber": 28,
+                    "DateUtc": "2025-03-16 00:00:00Z",
+                    "Location": "Estadio de la Cer\u00e1mica",
+                    "HomeTeam": "607a3148-acc4-497d-92c3-d4b91bbf7d8f",
+                    "AwayTeam": "29c0e5bc-364e-4226-82fa-0f1e90975800",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 279,
+                    "RoundNumber": 28,
+                    "DateUtc": "2025-03-16 00:00:00Z",
+                    "Location": "Estadio Gran Canaria",
+                    "HomeTeam": "fda26236-ffc0-4a0e-ac0f-671148a437e5",
+                    "AwayTeam": "0c675c33-d0ce-4bda-bf1f-eca2a57a431b",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 280,
+                    "RoundNumber": 28,
+                    "DateUtc": "2025-03-16 00:00:00Z",
+                    "Location": "Estadi Mallorca Son Moix",
+                    "HomeTeam": "19926a6d-23d0-4beb-9309-4e38aac9cd21",
+                    "AwayTeam": "f0a3b45b-6a9b-4fe3-882f-ca5b44f13b4b",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 29,
+            "fixtures": [
+                {
+                    "MatchNumber": 281,
+                    "RoundNumber": 29,
+                    "DateUtc": "2025-03-30 00:00:00Z",
+                    "Location": "Estadio San Mam\u00e9s",
+                    "HomeTeam": "012ad29a-09aa-47db-8851-287e6fcbf4f0",
+                    "AwayTeam": "727a5e7a-a262-4b0c-99ef-25ed3cd923b8",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 282,
+                    "RoundNumber": 29,
+                    "DateUtc": "2025-03-30 00:00:00Z",
+                    "Location": "Estadi Ol\u00edmpic Llu\u00eds Companys",
+                    "HomeTeam": "07e93162-b769-4d66-849c-71fe61286880",
+                    "AwayTeam": "783d1b8b-5654-4258-bd53-aa6639926f60",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 283,
+                    "RoundNumber": 29,
+                    "DateUtc": "2025-03-30 00:00:00Z",
+                    "Location": "Estadio Benito Villamar\u00edn",
+                    "HomeTeam": "a5063e7c-7527-4fce-b412-95ca51822bac",
+                    "AwayTeam": "07042b17-b67f-41e6-9e7b-d79d529c0b13",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 284,
+                    "RoundNumber": 29,
+                    "DateUtc": "2025-03-30 00:00:00Z",
+                    "Location": "Estadio ABANCA Bala\u00eddos",
+                    "HomeTeam": "c3333c07-bf1a-47ff-9f20-6018f22d8ab1",
+                    "AwayTeam": "fda26236-ffc0-4a0e-ac0f-671148a437e5",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 285,
+                    "RoundNumber": 29,
+                    "DateUtc": "2025-03-30 00:00:00Z",
+                    "Location": "Coliseum",
+                    "HomeTeam": "daf0b0df-1a9f-46bf-af91-808a6368a335",
+                    "AwayTeam": "607a3148-acc4-497d-92c3-d4b91bbf7d8f",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 286,
+                    "RoundNumber": 29,
+                    "DateUtc": "2025-03-30 00:00:00Z",
+                    "Location": "Reale Arena",
+                    "HomeTeam": "722dfc0c-8dba-43ca-a272-2737a0409e36",
+                    "AwayTeam": "3f3b852a-cf14-45ba-8e04-3ccb79a844dd",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 287,
+                    "RoundNumber": 29,
+                    "DateUtc": "2025-03-30 00:00:00Z",
+                    "Location": "Mendizorroza",
+                    "HomeTeam": "0c675c33-d0ce-4bda-bf1f-eca2a57a431b",
+                    "AwayTeam": "266a7bac-d69e-4313-9534-fcf92ae22559",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 288,
+                    "RoundNumber": 29,
+                    "DateUtc": "2025-03-30 00:00:00Z",
+                    "Location": "RCDE Stadium",
+                    "HomeTeam": "f0a3b45b-6a9b-4fe3-882f-ca5b44f13b4b",
+                    "AwayTeam": "7c53bc3e-704d-4647-9080-9558c194b9fa",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 289,
+                    "RoundNumber": 29,
+                    "DateUtc": "2025-03-30 00:00:00Z",
+                    "Location": "Camp de Mestalla",
+                    "HomeTeam": "3b4ec69a-c055-4cd7-ac20-c87693787772",
+                    "AwayTeam": "19926a6d-23d0-4beb-9309-4e38aac9cd21",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 290,
+                    "RoundNumber": 29,
+                    "DateUtc": "2025-03-30 00:00:00Z",
+                    "Location": "Estadio Santiago Bernab\u00e9u",
+                    "HomeTeam": "29c0e5bc-364e-4226-82fa-0f1e90975800",
+                    "AwayTeam": "9713e798-86c5-4d01-b101-7e6d99655994",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 30,
+            "fixtures": [
+                {
+                    "MatchNumber": 291,
+                    "RoundNumber": 30,
+                    "DateUtc": "2025-04-06 00:00:00Z",
+                    "Location": "Estadi Ol\u00edmpic Llu\u00eds Companys",
+                    "HomeTeam": "07e93162-b769-4d66-849c-71fe61286880",
+                    "AwayTeam": "a5063e7c-7527-4fce-b412-95ca51822bac",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 292,
+                    "RoundNumber": 30,
+                    "DateUtc": "2025-04-06 00:00:00Z",
+                    "Location": "Estadio Santiago Bernab\u00e9u",
+                    "HomeTeam": "29c0e5bc-364e-4226-82fa-0f1e90975800",
+                    "AwayTeam": "3b4ec69a-c055-4cd7-ac20-c87693787772",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 293,
+                    "RoundNumber": 30,
+                    "DateUtc": "2025-04-06 00:00:00Z",
+                    "Location": "Estadio Gran Canaria",
+                    "HomeTeam": "fda26236-ffc0-4a0e-ac0f-671148a437e5",
+                    "AwayTeam": "722dfc0c-8dba-43ca-a272-2737a0409e36",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 294,
+                    "RoundNumber": 30,
+                    "DateUtc": "2025-04-06 00:00:00Z",
+                    "Location": "Estadio Municipal Butarque",
+                    "HomeTeam": "9713e798-86c5-4d01-b101-7e6d99655994",
+                    "AwayTeam": "727a5e7a-a262-4b0c-99ef-25ed3cd923b8",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 295,
+                    "RoundNumber": 30,
+                    "DateUtc": "2025-04-06 00:00:00Z",
+                    "Location": "Estadio de la Cer\u00e1mica",
+                    "HomeTeam": "607a3148-acc4-497d-92c3-d4b91bbf7d8f",
+                    "AwayTeam": "012ad29a-09aa-47db-8851-287e6fcbf4f0",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 296,
+                    "RoundNumber": 30,
+                    "DateUtc": "2025-04-06 00:00:00Z",
+                    "Location": "Ram\u00f3n S\u00e1nchez-Pizju\u00e1n",
+                    "HomeTeam": "07042b17-b67f-41e6-9e7b-d79d529c0b13",
+                    "AwayTeam": "7c53bc3e-704d-4647-9080-9558c194b9fa",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 297,
+                    "RoundNumber": 30,
+                    "DateUtc": "2025-04-06 00:00:00Z",
+                    "Location": "Estadi Mallorca Son Moix",
+                    "HomeTeam": "19926a6d-23d0-4beb-9309-4e38aac9cd21",
+                    "AwayTeam": "c3333c07-bf1a-47ff-9f20-6018f22d8ab1",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 298,
+                    "RoundNumber": 30,
+                    "DateUtc": "2025-04-06 00:00:00Z",
+                    "Location": "Estadio Municipal Jos\u00e9 Zorrilla",
+                    "HomeTeam": "3f3b852a-cf14-45ba-8e04-3ccb79a844dd",
+                    "AwayTeam": "daf0b0df-1a9f-46bf-af91-808a6368a335",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 299,
+                    "RoundNumber": 30,
+                    "DateUtc": "2025-04-06 00:00:00Z",
+                    "Location": "Estadio Municipal de Montilivi",
+                    "HomeTeam": "783d1b8b-5654-4258-bd53-aa6639926f60",
+                    "AwayTeam": "0c675c33-d0ce-4bda-bf1f-eca2a57a431b",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 300,
+                    "RoundNumber": 30,
+                    "DateUtc": "2025-04-06 00:00:00Z",
+                    "Location": "Estadio de Vallecas",
+                    "HomeTeam": "266a7bac-d69e-4313-9534-fcf92ae22559",
+                    "AwayTeam": "f0a3b45b-6a9b-4fe3-882f-ca5b44f13b4b",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 31,
+            "fixtures": [
+                {
+                    "MatchNumber": 301,
+                    "RoundNumber": 31,
+                    "DateUtc": "2025-04-13 00:00:00Z",
+                    "Location": "Estadio San Mam\u00e9s",
+                    "HomeTeam": "012ad29a-09aa-47db-8851-287e6fcbf4f0",
+                    "AwayTeam": "266a7bac-d69e-4313-9534-fcf92ae22559",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 302,
+                    "RoundNumber": 31,
+                    "DateUtc": "2025-04-13 00:00:00Z",
+                    "Location": "Civitas Metropolitano",
+                    "HomeTeam": "7c53bc3e-704d-4647-9080-9558c194b9fa",
+                    "AwayTeam": "3f3b852a-cf14-45ba-8e04-3ccb79a844dd",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 303,
+                    "RoundNumber": 31,
+                    "DateUtc": "2025-04-13 00:00:00Z",
+                    "Location": "Estadio Benito Villamar\u00edn",
+                    "HomeTeam": "a5063e7c-7527-4fce-b412-95ca51822bac",
+                    "AwayTeam": "607a3148-acc4-497d-92c3-d4b91bbf7d8f",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 304,
+                    "RoundNumber": 31,
+                    "DateUtc": "2025-04-13 00:00:00Z",
+                    "Location": "Coliseum",
+                    "HomeTeam": "daf0b0df-1a9f-46bf-af91-808a6368a335",
+                    "AwayTeam": "fda26236-ffc0-4a0e-ac0f-671148a437e5",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 305,
+                    "RoundNumber": 31,
+                    "DateUtc": "2025-04-13 00:00:00Z",
+                    "Location": "Mendizorroza",
+                    "HomeTeam": "0c675c33-d0ce-4bda-bf1f-eca2a57a431b",
+                    "AwayTeam": "29c0e5bc-364e-4226-82fa-0f1e90975800",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 306,
+                    "RoundNumber": 31,
+                    "DateUtc": "2025-04-13 00:00:00Z",
+                    "Location": "Estadio Municipal Butarque",
+                    "HomeTeam": "9713e798-86c5-4d01-b101-7e6d99655994",
+                    "AwayTeam": "07e93162-b769-4d66-849c-71fe61286880",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 307,
+                    "RoundNumber": 31,
+                    "DateUtc": "2025-04-13 00:00:00Z",
+                    "Location": "Estadio El Sadar",
+                    "HomeTeam": "727a5e7a-a262-4b0c-99ef-25ed3cd923b8",
+                    "AwayTeam": "783d1b8b-5654-4258-bd53-aa6639926f60",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 308,
+                    "RoundNumber": 31,
+                    "DateUtc": "2025-04-13 00:00:00Z",
+                    "Location": "Reale Arena",
+                    "HomeTeam": "722dfc0c-8dba-43ca-a272-2737a0409e36",
+                    "AwayTeam": "19926a6d-23d0-4beb-9309-4e38aac9cd21",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 309,
+                    "RoundNumber": 31,
+                    "DateUtc": "2025-04-13 00:00:00Z",
+                    "Location": "Camp de Mestalla",
+                    "HomeTeam": "3b4ec69a-c055-4cd7-ac20-c87693787772",
+                    "AwayTeam": "07042b17-b67f-41e6-9e7b-d79d529c0b13",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 310,
+                    "RoundNumber": 31,
+                    "DateUtc": "2025-04-13 00:00:00Z",
+                    "Location": "Estadio ABANCA Bala\u00eddos",
+                    "HomeTeam": "c3333c07-bf1a-47ff-9f20-6018f22d8ab1",
+                    "AwayTeam": "f0a3b45b-6a9b-4fe3-882f-ca5b44f13b4b",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 32,
+            "fixtures": [
+                {
+                    "MatchNumber": 311,
+                    "RoundNumber": 32,
+                    "DateUtc": "2025-04-20 00:00:00Z",
+                    "Location": "Estadi Ol\u00edmpic Llu\u00eds Companys",
+                    "HomeTeam": "07e93162-b769-4d66-849c-71fe61286880",
+                    "AwayTeam": "c3333c07-bf1a-47ff-9f20-6018f22d8ab1",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 312,
+                    "RoundNumber": 32,
+                    "DateUtc": "2025-04-20 00:00:00Z",
+                    "Location": "Estadio de Vallecas",
+                    "HomeTeam": "266a7bac-d69e-4313-9534-fcf92ae22559",
+                    "AwayTeam": "3b4ec69a-c055-4cd7-ac20-c87693787772",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 313,
+                    "RoundNumber": 32,
+                    "DateUtc": "2025-04-20 00:00:00Z",
+                    "Location": "RCDE Stadium",
+                    "HomeTeam": "f0a3b45b-6a9b-4fe3-882f-ca5b44f13b4b",
+                    "AwayTeam": "daf0b0df-1a9f-46bf-af91-808a6368a335",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 314,
+                    "RoundNumber": 32,
+                    "DateUtc": "2025-04-20 00:00:00Z",
+                    "Location": "Estadio Santiago Bernab\u00e9u",
+                    "HomeTeam": "29c0e5bc-364e-4226-82fa-0f1e90975800",
+                    "AwayTeam": "012ad29a-09aa-47db-8851-287e6fcbf4f0",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 315,
+                    "RoundNumber": 32,
+                    "DateUtc": "2025-04-20 00:00:00Z",
+                    "Location": "Estadio Gran Canaria",
+                    "HomeTeam": "fda26236-ffc0-4a0e-ac0f-671148a437e5",
+                    "AwayTeam": "7c53bc3e-704d-4647-9080-9558c194b9fa",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 316,
+                    "RoundNumber": 32,
+                    "DateUtc": "2025-04-20 00:00:00Z",
+                    "Location": "Estadio Municipal de Montilivi",
+                    "HomeTeam": "783d1b8b-5654-4258-bd53-aa6639926f60",
+                    "AwayTeam": "a5063e7c-7527-4fce-b412-95ca51822bac",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 317,
+                    "RoundNumber": 32,
+                    "DateUtc": "2025-04-20 00:00:00Z",
+                    "Location": "Estadio Municipal Jos\u00e9 Zorrilla",
+                    "HomeTeam": "3f3b852a-cf14-45ba-8e04-3ccb79a844dd",
+                    "AwayTeam": "727a5e7a-a262-4b0c-99ef-25ed3cd923b8",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 318,
+                    "RoundNumber": 32,
+                    "DateUtc": "2025-04-20 00:00:00Z",
+                    "Location": "Estadio de la Cer\u00e1mica",
+                    "HomeTeam": "607a3148-acc4-497d-92c3-d4b91bbf7d8f",
+                    "AwayTeam": "722dfc0c-8dba-43ca-a272-2737a0409e36",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 319,
+                    "RoundNumber": 32,
+                    "DateUtc": "2025-04-20 00:00:00Z",
+                    "Location": "Ram\u00f3n S\u00e1nchez-Pizju\u00e1n",
+                    "HomeTeam": "07042b17-b67f-41e6-9e7b-d79d529c0b13",
+                    "AwayTeam": "0c675c33-d0ce-4bda-bf1f-eca2a57a431b",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 320,
+                    "RoundNumber": 32,
+                    "DateUtc": "2025-04-20 00:00:00Z",
+                    "Location": "Estadi Mallorca Son Moix",
+                    "HomeTeam": "19926a6d-23d0-4beb-9309-4e38aac9cd21",
+                    "AwayTeam": "9713e798-86c5-4d01-b101-7e6d99655994",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 33,
+            "fixtures": [
+                {
+                    "MatchNumber": 321,
+                    "RoundNumber": 33,
+                    "DateUtc": "2025-04-23 00:00:00Z",
+                    "Location": "Estadio San Mam\u00e9s",
+                    "HomeTeam": "012ad29a-09aa-47db-8851-287e6fcbf4f0",
+                    "AwayTeam": "fda26236-ffc0-4a0e-ac0f-671148a437e5",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 322,
+                    "RoundNumber": 33,
+                    "DateUtc": "2025-04-23 00:00:00Z",
+                    "Location": "Civitas Metropolitano",
+                    "HomeTeam": "7c53bc3e-704d-4647-9080-9558c194b9fa",
+                    "AwayTeam": "266a7bac-d69e-4313-9534-fcf92ae22559",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 323,
+                    "RoundNumber": 33,
+                    "DateUtc": "2025-04-23 00:00:00Z",
+                    "Location": "Estadi Ol\u00edmpic Llu\u00eds Companys",
+                    "HomeTeam": "07e93162-b769-4d66-849c-71fe61286880",
+                    "AwayTeam": "19926a6d-23d0-4beb-9309-4e38aac9cd21",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 324,
+                    "RoundNumber": 33,
+                    "DateUtc": "2025-04-23 00:00:00Z",
+                    "Location": "Estadio Benito Villamar\u00edn",
+                    "HomeTeam": "a5063e7c-7527-4fce-b412-95ca51822bac",
+                    "AwayTeam": "3f3b852a-cf14-45ba-8e04-3ccb79a844dd",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 325,
+                    "RoundNumber": 33,
+                    "DateUtc": "2025-04-23 00:00:00Z",
+                    "Location": "Estadio ABANCA Bala\u00eddos",
+                    "HomeTeam": "c3333c07-bf1a-47ff-9f20-6018f22d8ab1",
+                    "AwayTeam": "607a3148-acc4-497d-92c3-d4b91bbf7d8f",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 326,
+                    "RoundNumber": 33,
+                    "DateUtc": "2025-04-23 00:00:00Z",
+                    "Location": "Coliseum",
+                    "HomeTeam": "daf0b0df-1a9f-46bf-af91-808a6368a335",
+                    "AwayTeam": "29c0e5bc-364e-4226-82fa-0f1e90975800",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 327,
+                    "RoundNumber": 33,
+                    "DateUtc": "2025-04-23 00:00:00Z",
+                    "Location": "Estadio El Sadar",
+                    "HomeTeam": "727a5e7a-a262-4b0c-99ef-25ed3cd923b8",
+                    "AwayTeam": "07042b17-b67f-41e6-9e7b-d79d529c0b13",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 328,
+                    "RoundNumber": 33,
+                    "DateUtc": "2025-04-23 00:00:00Z",
+                    "Location": "Mendizorroza",
+                    "HomeTeam": "0c675c33-d0ce-4bda-bf1f-eca2a57a431b",
+                    "AwayTeam": "722dfc0c-8dba-43ca-a272-2737a0409e36",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 329,
+                    "RoundNumber": 33,
+                    "DateUtc": "2025-04-23 00:00:00Z",
+                    "Location": "Estadio Municipal Butarque",
+                    "HomeTeam": "9713e798-86c5-4d01-b101-7e6d99655994",
+                    "AwayTeam": "783d1b8b-5654-4258-bd53-aa6639926f60",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 330,
+                    "RoundNumber": 33,
+                    "DateUtc": "2025-04-23 00:00:00Z",
+                    "Location": "Camp de Mestalla",
+                    "HomeTeam": "3b4ec69a-c055-4cd7-ac20-c87693787772",
+                    "AwayTeam": "f0a3b45b-6a9b-4fe3-882f-ca5b44f13b4b",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 34,
+            "fixtures": [
+                {
+                    "MatchNumber": 331,
+                    "RoundNumber": 34,
+                    "DateUtc": "2025-05-04 00:00:00Z",
+                    "Location": "Estadio Municipal de Montilivi",
+                    "HomeTeam": "783d1b8b-5654-4258-bd53-aa6639926f60",
+                    "AwayTeam": "19926a6d-23d0-4beb-9309-4e38aac9cd21",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 332,
+                    "RoundNumber": 34,
+                    "DateUtc": "2025-05-04 00:00:00Z",
+                    "Location": "Estadio Gran Canaria",
+                    "HomeTeam": "fda26236-ffc0-4a0e-ac0f-671148a437e5",
+                    "AwayTeam": "3b4ec69a-c055-4cd7-ac20-c87693787772",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 333,
+                    "RoundNumber": 34,
+                    "DateUtc": "2025-05-04 00:00:00Z",
+                    "Location": "Mendizorroza",
+                    "HomeTeam": "0c675c33-d0ce-4bda-bf1f-eca2a57a431b",
+                    "AwayTeam": "7c53bc3e-704d-4647-9080-9558c194b9fa",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 334,
+                    "RoundNumber": 34,
+                    "DateUtc": "2025-05-04 00:00:00Z",
+                    "Location": "RCDE Stadium",
+                    "HomeTeam": "f0a3b45b-6a9b-4fe3-882f-ca5b44f13b4b",
+                    "AwayTeam": "a5063e7c-7527-4fce-b412-95ca51822bac",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 335,
+                    "RoundNumber": 34,
+                    "DateUtc": "2025-05-04 00:00:00Z",
+                    "Location": "Reale Arena",
+                    "HomeTeam": "722dfc0c-8dba-43ca-a272-2737a0409e36",
+                    "AwayTeam": "012ad29a-09aa-47db-8851-287e6fcbf4f0",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 336,
+                    "RoundNumber": 34,
+                    "DateUtc": "2025-05-04 00:00:00Z",
+                    "Location": "Estadio Municipal Jos\u00e9 Zorrilla",
+                    "HomeTeam": "3f3b852a-cf14-45ba-8e04-3ccb79a844dd",
+                    "AwayTeam": "07e93162-b769-4d66-849c-71fe61286880",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 337,
+                    "RoundNumber": 34,
+                    "DateUtc": "2025-05-04 00:00:00Z",
+                    "Location": "Estadio Santiago Bernab\u00e9u",
+                    "HomeTeam": "29c0e5bc-364e-4226-82fa-0f1e90975800",
+                    "AwayTeam": "c3333c07-bf1a-47ff-9f20-6018f22d8ab1",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 338,
+                    "RoundNumber": 34,
+                    "DateUtc": "2025-05-04 00:00:00Z",
+                    "Location": "Estadio de Vallecas",
+                    "HomeTeam": "266a7bac-d69e-4313-9534-fcf92ae22559",
+                    "AwayTeam": "daf0b0df-1a9f-46bf-af91-808a6368a335",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 339,
+                    "RoundNumber": 34,
+                    "DateUtc": "2025-05-04 00:00:00Z",
+                    "Location": "Estadio de la Cer\u00e1mica",
+                    "HomeTeam": "607a3148-acc4-497d-92c3-d4b91bbf7d8f",
+                    "AwayTeam": "727a5e7a-a262-4b0c-99ef-25ed3cd923b8",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 340,
+                    "RoundNumber": 34,
+                    "DateUtc": "2025-05-04 00:00:00Z",
+                    "Location": "Ram\u00f3n S\u00e1nchez-Pizju\u00e1n",
+                    "HomeTeam": "07042b17-b67f-41e6-9e7b-d79d529c0b13",
+                    "AwayTeam": "9713e798-86c5-4d01-b101-7e6d99655994",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 35,
+            "fixtures": [
+                {
+                    "MatchNumber": 341,
+                    "RoundNumber": 35,
+                    "DateUtc": "2025-05-11 00:00:00Z",
+                    "Location": "Civitas Metropolitano",
+                    "HomeTeam": "7c53bc3e-704d-4647-9080-9558c194b9fa",
+                    "AwayTeam": "722dfc0c-8dba-43ca-a272-2737a0409e36",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 342,
+                    "RoundNumber": 35,
+                    "DateUtc": "2025-05-11 00:00:00Z",
+                    "Location": "Estadi Ol\u00edmpic Llu\u00eds Companys",
+                    "HomeTeam": "07e93162-b769-4d66-849c-71fe61286880",
+                    "AwayTeam": "29c0e5bc-364e-4226-82fa-0f1e90975800",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 343,
+                    "RoundNumber": 35,
+                    "DateUtc": "2025-05-11 00:00:00Z",
+                    "Location": "Estadio Benito Villamar\u00edn",
+                    "HomeTeam": "a5063e7c-7527-4fce-b412-95ca51822bac",
+                    "AwayTeam": "727a5e7a-a262-4b0c-99ef-25ed3cd923b8",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 344,
+                    "RoundNumber": 35,
+                    "DateUtc": "2025-05-11 00:00:00Z",
+                    "Location": "Estadio ABANCA Bala\u00eddos",
+                    "HomeTeam": "c3333c07-bf1a-47ff-9f20-6018f22d8ab1",
+                    "AwayTeam": "07042b17-b67f-41e6-9e7b-d79d529c0b13",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 345,
+                    "RoundNumber": 35,
+                    "DateUtc": "2025-05-11 00:00:00Z",
+                    "Location": "Estadio Municipal de Montilivi",
+                    "HomeTeam": "783d1b8b-5654-4258-bd53-aa6639926f60",
+                    "AwayTeam": "607a3148-acc4-497d-92c3-d4b91bbf7d8f",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 346,
+                    "RoundNumber": 35,
+                    "DateUtc": "2025-05-11 00:00:00Z",
+                    "Location": "Estadi Mallorca Son Moix",
+                    "HomeTeam": "19926a6d-23d0-4beb-9309-4e38aac9cd21",
+                    "AwayTeam": "3f3b852a-cf14-45ba-8e04-3ccb79a844dd",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 347,
+                    "RoundNumber": 35,
+                    "DateUtc": "2025-05-11 00:00:00Z",
+                    "Location": "Estadio Gran Canaria",
+                    "HomeTeam": "fda26236-ffc0-4a0e-ac0f-671148a437e5",
+                    "AwayTeam": "266a7bac-d69e-4313-9534-fcf92ae22559",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 348,
+                    "RoundNumber": 35,
+                    "DateUtc": "2025-05-11 00:00:00Z",
+                    "Location": "Camp de Mestalla",
+                    "HomeTeam": "3b4ec69a-c055-4cd7-ac20-c87693787772",
+                    "AwayTeam": "daf0b0df-1a9f-46bf-af91-808a6368a335",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 349,
+                    "RoundNumber": 35,
+                    "DateUtc": "2025-05-11 00:00:00Z",
+                    "Location": "Estadio San Mam\u00e9s",
+                    "HomeTeam": "012ad29a-09aa-47db-8851-287e6fcbf4f0",
+                    "AwayTeam": "0c675c33-d0ce-4bda-bf1f-eca2a57a431b",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 350,
+                    "RoundNumber": 35,
+                    "DateUtc": "2025-05-11 00:00:00Z",
+                    "Location": "Estadio Municipal Butarque",
+                    "HomeTeam": "9713e798-86c5-4d01-b101-7e6d99655994",
+                    "AwayTeam": "f0a3b45b-6a9b-4fe3-882f-ca5b44f13b4b",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 36,
+            "fixtures": [
+                {
+                    "MatchNumber": 351,
+                    "RoundNumber": 36,
+                    "DateUtc": "2025-05-14 00:00:00Z",
+                    "Location": "Mendizorroza",
+                    "HomeTeam": "0c675c33-d0ce-4bda-bf1f-eca2a57a431b",
+                    "AwayTeam": "3b4ec69a-c055-4cd7-ac20-c87693787772",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 352,
+                    "RoundNumber": 36,
+                    "DateUtc": "2025-05-14 00:00:00Z",
+                    "Location": "RCDE Stadium",
+                    "HomeTeam": "f0a3b45b-6a9b-4fe3-882f-ca5b44f13b4b",
+                    "AwayTeam": "07e93162-b769-4d66-849c-71fe61286880",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 353,
+                    "RoundNumber": 36,
+                    "DateUtc": "2025-05-14 00:00:00Z",
+                    "Location": "Coliseum",
+                    "HomeTeam": "daf0b0df-1a9f-46bf-af91-808a6368a335",
+                    "AwayTeam": "012ad29a-09aa-47db-8851-287e6fcbf4f0",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 354,
+                    "RoundNumber": 36,
+                    "DateUtc": "2025-05-14 00:00:00Z",
+                    "Location": "Estadio El Sadar",
+                    "HomeTeam": "727a5e7a-a262-4b0c-99ef-25ed3cd923b8",
+                    "AwayTeam": "7c53bc3e-704d-4647-9080-9558c194b9fa",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 355,
+                    "RoundNumber": 36,
+                    "DateUtc": "2025-05-14 00:00:00Z",
+                    "Location": "Estadio de Vallecas",
+                    "HomeTeam": "266a7bac-d69e-4313-9534-fcf92ae22559",
+                    "AwayTeam": "a5063e7c-7527-4fce-b412-95ca51822bac",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 356,
+                    "RoundNumber": 36,
+                    "DateUtc": "2025-05-14 00:00:00Z",
+                    "Location": "Reale Arena",
+                    "HomeTeam": "722dfc0c-8dba-43ca-a272-2737a0409e36",
+                    "AwayTeam": "c3333c07-bf1a-47ff-9f20-6018f22d8ab1",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 357,
+                    "RoundNumber": 36,
+                    "DateUtc": "2025-05-14 00:00:00Z",
+                    "Location": "Estadio Municipal Jos\u00e9 Zorrilla",
+                    "HomeTeam": "3f3b852a-cf14-45ba-8e04-3ccb79a844dd",
+                    "AwayTeam": "783d1b8b-5654-4258-bd53-aa6639926f60",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 358,
+                    "RoundNumber": 36,
+                    "DateUtc": "2025-05-14 00:00:00Z",
+                    "Location": "Estadio Santiago Bernab\u00e9u",
+                    "HomeTeam": "29c0e5bc-364e-4226-82fa-0f1e90975800",
+                    "AwayTeam": "19926a6d-23d0-4beb-9309-4e38aac9cd21",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 359,
+                    "RoundNumber": 36,
+                    "DateUtc": "2025-05-14 00:00:00Z",
+                    "Location": "Ram\u00f3n S\u00e1nchez-Pizju\u00e1n",
+                    "HomeTeam": "07042b17-b67f-41e6-9e7b-d79d529c0b13",
+                    "AwayTeam": "fda26236-ffc0-4a0e-ac0f-671148a437e5",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 360,
+                    "RoundNumber": 36,
+                    "DateUtc": "2025-05-14 00:00:00Z",
+                    "Location": "Estadio de la Cer\u00e1mica",
+                    "HomeTeam": "607a3148-acc4-497d-92c3-d4b91bbf7d8f",
+                    "AwayTeam": "9713e798-86c5-4d01-b101-7e6d99655994",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 37,
+            "fixtures": [
+                {
+                    "MatchNumber": 361,
+                    "RoundNumber": 37,
+                    "DateUtc": "2025-05-18 00:00:00Z",
+                    "Location": "Civitas Metropolitano",
+                    "HomeTeam": "7c53bc3e-704d-4647-9080-9558c194b9fa",
+                    "AwayTeam": "a5063e7c-7527-4fce-b412-95ca51822bac",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 362,
+                    "RoundNumber": 37,
+                    "DateUtc": "2025-05-18 00:00:00Z",
+                    "Location": "Estadi Ol\u00edmpic Llu\u00eds Companys",
+                    "HomeTeam": "07e93162-b769-4d66-849c-71fe61286880",
+                    "AwayTeam": "607a3148-acc4-497d-92c3-d4b91bbf7d8f",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 363,
+                    "RoundNumber": 37,
+                    "DateUtc": "2025-05-18 00:00:00Z",
+                    "Location": "Estadio ABANCA Bala\u00eddos",
+                    "HomeTeam": "c3333c07-bf1a-47ff-9f20-6018f22d8ab1",
+                    "AwayTeam": "266a7bac-d69e-4313-9534-fcf92ae22559",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 364,
+                    "RoundNumber": 37,
+                    "DateUtc": "2025-05-18 00:00:00Z",
+                    "Location": "Camp de Mestalla",
+                    "HomeTeam": "3b4ec69a-c055-4cd7-ac20-c87693787772",
+                    "AwayTeam": "012ad29a-09aa-47db-8851-287e6fcbf4f0",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 365,
+                    "RoundNumber": 37,
+                    "DateUtc": "2025-05-18 00:00:00Z",
+                    "Location": "Estadi Mallorca Son Moix",
+                    "HomeTeam": "19926a6d-23d0-4beb-9309-4e38aac9cd21",
+                    "AwayTeam": "daf0b0df-1a9f-46bf-af91-808a6368a335",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 366,
+                    "RoundNumber": 37,
+                    "DateUtc": "2025-05-18 00:00:00Z",
+                    "Location": "Reale Arena",
+                    "HomeTeam": "722dfc0c-8dba-43ca-a272-2737a0409e36",
+                    "AwayTeam": "783d1b8b-5654-4258-bd53-aa6639926f60",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 367,
+                    "RoundNumber": 37,
+                    "DateUtc": "2025-05-18 00:00:00Z",
+                    "Location": "Ram\u00f3n S\u00e1nchez-Pizju\u00e1n",
+                    "HomeTeam": "07042b17-b67f-41e6-9e7b-d79d529c0b13",
+                    "AwayTeam": "29c0e5bc-364e-4226-82fa-0f1e90975800",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 368,
+                    "RoundNumber": 37,
+                    "DateUtc": "2025-05-18 00:00:00Z",
+                    "Location": "Estadio Municipal Jos\u00e9 Zorrilla",
+                    "HomeTeam": "3f3b852a-cf14-45ba-8e04-3ccb79a844dd",
+                    "AwayTeam": "0c675c33-d0ce-4bda-bf1f-eca2a57a431b",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 369,
+                    "RoundNumber": 37,
+                    "DateUtc": "2025-05-18 00:00:00Z",
+                    "Location": "Estadio Gran Canaria",
+                    "HomeTeam": "fda26236-ffc0-4a0e-ac0f-671148a437e5",
+                    "AwayTeam": "9713e798-86c5-4d01-b101-7e6d99655994",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 370,
+                    "RoundNumber": 37,
+                    "DateUtc": "2025-05-18 00:00:00Z",
+                    "Location": "Estadio El Sadar",
+                    "HomeTeam": "727a5e7a-a262-4b0c-99ef-25ed3cd923b8",
+                    "AwayTeam": "f0a3b45b-6a9b-4fe3-882f-ca5b44f13b4b",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        },
+        {
+            "matchday": 38,
+            "fixtures": [
+                {
+                    "MatchNumber": 371,
+                    "RoundNumber": 38,
+                    "DateUtc": "2025-05-25 00:00:00Z",
+                    "Location": "Estadio San Mam\u00e9s",
+                    "HomeTeam": "012ad29a-09aa-47db-8851-287e6fcbf4f0",
+                    "AwayTeam": "07e93162-b769-4d66-849c-71fe61286880",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 372,
+                    "RoundNumber": 38,
+                    "DateUtc": "2025-05-25 00:00:00Z",
+                    "Location": "Estadio Benito Villamar\u00edn",
+                    "HomeTeam": "a5063e7c-7527-4fce-b412-95ca51822bac",
+                    "AwayTeam": "3b4ec69a-c055-4cd7-ac20-c87693787772",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 373,
+                    "RoundNumber": 38,
+                    "DateUtc": "2025-05-25 00:00:00Z",
+                    "Location": "Estadio Santiago Bernab\u00e9u",
+                    "HomeTeam": "29c0e5bc-364e-4226-82fa-0f1e90975800",
+                    "AwayTeam": "722dfc0c-8dba-43ca-a272-2737a0409e36",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 374,
+                    "RoundNumber": 38,
+                    "DateUtc": "2025-05-25 00:00:00Z",
+                    "Location": "Mendizorroza",
+                    "HomeTeam": "0c675c33-d0ce-4bda-bf1f-eca2a57a431b",
+                    "AwayTeam": "727a5e7a-a262-4b0c-99ef-25ed3cd923b8",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 375,
+                    "RoundNumber": 38,
+                    "DateUtc": "2025-05-25 00:00:00Z",
+                    "Location": "Estadio Municipal Butarque",
+                    "HomeTeam": "9713e798-86c5-4d01-b101-7e6d99655994",
+                    "AwayTeam": "3f3b852a-cf14-45ba-8e04-3ccb79a844dd",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 376,
+                    "RoundNumber": 38,
+                    "DateUtc": "2025-05-25 00:00:00Z",
+                    "Location": "RCDE Stadium",
+                    "HomeTeam": "f0a3b45b-6a9b-4fe3-882f-ca5b44f13b4b",
+                    "AwayTeam": "fda26236-ffc0-4a0e-ac0f-671148a437e5",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 377,
+                    "RoundNumber": 38,
+                    "DateUtc": "2025-05-25 00:00:00Z",
+                    "Location": "Estadio Municipal de Montilivi",
+                    "HomeTeam": "783d1b8b-5654-4258-bd53-aa6639926f60",
+                    "AwayTeam": "7c53bc3e-704d-4647-9080-9558c194b9fa",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 378,
+                    "RoundNumber": 38,
+                    "DateUtc": "2025-05-25 00:00:00Z",
+                    "Location": "Coliseum",
+                    "HomeTeam": "daf0b0df-1a9f-46bf-af91-808a6368a335",
+                    "AwayTeam": "c3333c07-bf1a-47ff-9f20-6018f22d8ab1",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 379,
+                    "RoundNumber": 38,
+                    "DateUtc": "2025-05-25 00:00:00Z",
+                    "Location": "Estadio de Vallecas",
+                    "HomeTeam": "266a7bac-d69e-4313-9534-fcf92ae22559",
+                    "AwayTeam": "19926a6d-23d0-4beb-9309-4e38aac9cd21",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                },
+                {
+                    "MatchNumber": 380,
+                    "RoundNumber": 38,
+                    "DateUtc": "2025-05-25 00:00:00Z",
+                    "Location": "Estadio de la Cer\u00e1mica",
+                    "HomeTeam": "607a3148-acc4-497d-92c3-d4b91bbf7d8f",
+                    "AwayTeam": "07042b17-b67f-41e6-9e7b-d79d529c0b13",
+                    "Group": null,
+                    "HomeTeamScore": null,
+                    "AwayTeamScore": null
+                }
+            ]
+        }
+    ]
+}

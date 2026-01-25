@@ -2,19 +2,17 @@
 
 namespace App\Http\Views;
 
-use App\Game\Competitions\LaLiga1;
-use App\Game\Competitions\LaLiga2;
+use App\Models\Competition;
 use Illuminate\Http\Request;
 
 final class SelectTeam
 {
     public function __invoke(Request $request)
     {
+        $competitions = Competition::with('teams')->get();
+
         return view('select-team', [
-            'competitions' => [
-                new LaLiga1(),
-                new LaLiga2(),
-            ],
+            'competitions' => $competitions,
         ]);
     }
 }

@@ -1,96 +1,26 @@
 {
-  "id": "ES2",
-  "name": "LaLiga2",
-  "seasonID": "2024",
-  "clubs": [
-      {
-          "id": "2687",
-          "name": "Cádiz CF"
-      },
-      {
-          "id": "3302",
-          "name": "UD Almería"
-      },
-      {
-          "id": "16795",
-          "name": "Granada CF"
-      },
-      {
-          "id": "1533",
-          "name": "SD Eibar"
-      },
-      {
-          "id": "2448",
-          "name": "Sporting Gijón"
-      },
-      {
-          "id": "2497",
-          "name": "Real Oviedo"
-      },
-      {
-          "id": "630",
-          "name": "Racing Santander"
-      },
-      {
-          "id": "3368",
-          "name": "Levante UD"
-      },
-      {
-          "id": "1536",
-          "name": "Burgos CF"
-      },
-      {
-          "id": "1176",
-          "name": "Racing Ferrol"
-      },
-      {
-          "id": "1531",
-          "name": "Elche CF"
-      },
-      {
-          "id": "648",
-          "name": "CD Tenerife"
-      },
-      {
-          "id": "1532",
-          "name": "Albacete Balompié"
-      },
-      {
-          "id": "7077",
-          "name": "FC Cartagena"
-      },
-      {
-          "id": "142",
-          "name": "Real Zaragoza"
-      },
-      {
-          "id": "12567",
-          "name": "CD Eldense"
-      },
-      {
-          "id": "5358",
-          "name": "SD Huesca"
-      },
-      {
-          "id": "13222",
-          "name": "CD Mirandés"
-      },
-      {
-          "id": "897",
-          "name": "Deportivo de La Coruña"
-      },
-      {
-          "id": "2502",
-          "name": "CD Castellón"
-      },
-      {
-          "id": "1084",
-          "name": "Málaga CF"
-      },
-      {
-          "id": "993",
-          "name": "Córdoba CF"
-      }
-  ],
-  "updatedAt": "2024-08-12T22:07:59.939072"
+    "clubs": [
+        {"id":"b807c009-7025-4557-afa7-221330bf47f8","transfermarktId":"2687","name":"Cádiz CF","officialName":"Cádiz Club de Fútbol S.A.D","image":"https://tmssl.akamaized.net/images/wappen/big/2687.png","addressLine1":"Plaza de Madrid","addressLine2":"11010 Cádiz","addressLine3":"Spain","tel":"+34 (956) 070165","fax":"+34 (956) 070170","website":"www.cadizcf.com","foundedOn":"Jun 1, 1973","members":"15.218","membersDate":"Jan 22, 2020","colors":["#ffff00","#000000"],"stadiumName":"Nuevo Mirandilla","stadiumSeats":"21094","currentTransferRecord":"+€4.00m","currentMarketValue":"€33.50m","league":{"id":"ES2","name":"LaLiga2","countryID":"1","countryName":"Spain","tier":"Second Tier"}},
+        {"id":"eb672ddf-e221-4347-af08-ded89f438619","transfermarktId":"3302","name":"UD Almería","officialName":"Unión Deportiva Almería S.A.D.","image":"https://tmssl.akamaized.net/images/wappen/big/3302.png","addressLine1":"Calle Belladona 5","addressLine2":"04007 Almería","addressLine3":"Spain","tel":"+34 (950) 254426","fax":"+34 (950) 245642","website":"www.udalmeriasad.com","foundedOn":"Jul 26, 1989","members":"9.000","membersDate":"Jan 22, 2020","colors":["#ff0000","#ffffff"],"stadiumName":"Power Horse Stadium","stadiumSeats":"18331","currentTransferRecord":"€-1.60m","currentMarketValue":"€73.10m","league":{"id":"ES2","name":"LaLiga2","countryID":"1","countryName":"Spain","tier":"Second Tier"}},
+        {"id":"0d71555a-fbbf-49ab-bb97-64ca9f56147d","transfermarktId":"16795","name":"Granada CF","officialName":"Granada Club de Fútbol S.A.D.","image":"https://tmssl.akamaized.net/images/wappen/big/16795.png","addressLine1":"C/Pintor Manuel Maldonado s/n","addressLine2":"18007 Granada","addressLine3":"Spain","tel":"+34 958 25 33 00","fax":"+34 958 25 33 04","website":"www.granadacf.es","foundedOn":"Apr 14, 1931","members":"13.790","membersDate":"Jan 22, 2020","colors":["#ff0000","#ffffff"],"stadiumName":"Nuevo Los Cármenes","stadiumSeats":"19336","currentTransferRecord":"+€19.70m","currentMarketValue":"€46.75m","league":{"id":"ES2","name":"LaLiga2","countryID":"1","countryName":"Spain","tier":"Second Tier"}},
+        {"id":"c82afc78-e8e2-4dd1-a783-49fb35190b32","transfermarktId":"1533","name":"SD Eibar","officialName":"Sociedad Deportiva Eibar S.A.D.","image":"https://tmssl.akamaized.net/images/wappen/big/1533.png","addressLine1":"Ipurua Kalea 2","addressLine2":"20600 Eibar (Gipuzkoa)","addressLine3":"Spain","tel":"+34 (943) 201831","fax":"+34 (943) 202606","website":"www.sdeibar.com","foundedOn":"Nov 30, 1940","members":"5.799","membersDate":"Jan 22, 2020","colors":["#e01212","#0707e0"],"stadiumName":"Ipurua","stadiumSeats":"8164","currentTransferRecord":"+€5.20m","currentMarketValue":"€18.35m","league":{"id":"ES2","name":"LaLiga2","countryID":"1","countryName":"Spain","tier":"Second Tier"}},
+        {"id":"abf4ef3f-e1a3-4749-a197-b3c609e97c41","transfermarktId":"2448","name":"Sporting Gijón","officialName":"Real Sporting de Gijón S.A.D.","image":"https://tmssl.akamaized.net/images/wappen/big/2448.png","addressLine1":"Escuela de Fútbol de Mareo","addressLine2":"33390 Leorio - Gijón (Asturias)","addressLine3":"Spain","tel":"+34 985 167677","fax":"+34 985 167632","website":"www.realsporting.com","foundedOn":"Jun 1, 1905","members":"22.700","membersDate":"Jan 22, 2020","colors":["#ff0000","#ffffff"],"stadiumName":"El Molinón - Enrique Castro Quini","stadiumSeats":"29029","currentTransferRecord":"+€4.53m","currentMarketValue":"€24.90m","league":{"id":"ES2","name":"LaLiga2","countryID":"1","countryName":"Spain","tier":"Second Tier"}},
+        {"id":"2c3e61a6-4493-4692-975b-97661f82fe5b","transfermarktId":"2497","name":"Real Oviedo","officialName":"Real Oviedo S.A.D.","image":"https://tmssl.akamaized.net/images/wappen/big/2497.png","addressLine1":"Calle Isidro Lángara, s/n","addressLine2":"33013 Oviedo","addressLine3":"Spain","tel":"+34 98 5215300","fax":"+34 98 5224058","website":"www.realoviedo.es","foundedOn":"Mar 26, 1926","members":"18.362","membersDate":"Jun 1, 2022","colors":["#0066FF","#FFFFFF"],"stadiumName":"Carlos Tartiere","stadiumSeats":"30500","currentTransferRecord":"+€300k","currentMarketValue":"€29.00m","league":{"id":"ES2","name":"LaLiga2","countryID":"1","countryName":"Spain","tier":"Second Tier"}},
+        {"id":"dad9b187-a6d2-4042-89dd-662c9f357c00","transfermarktId":"630","name":"Racing Santander","officialName":"Real Racing Club de Santander, S. A. D.","image":"https://tmssl.akamaized.net/images/wappen/big/630.png","addressLine1":"Calle Real Racing","addressLine2":"39005 Santander","addressLine3":"Spain","tel":"+34 (942) 282828","fax":"+34 (942) 280724","website":"www.realracingclub.es","foundedOn":"Jun 14, 1913","members":"12.002","membersDate":"Jan 22, 2020","colors":["#FFFFFF","#009900"],"stadiumName":"El Sardinero","stadiumSeats":"22222","currentTransferRecord":"€-400k","currentMarketValue":"€26.90m","league":{"id":"ES2","name":"LaLiga2","countryID":"1","countryName":"Spain","tier":"Second Tier"}},
+        {"id":"66771779-9f9d-4f0a-b750-3a31c591a421","transfermarktId":"3368","name":"Levante UD","officialName":"Levante Unión Deportiva S.A.D.","image":"https://tmssl.akamaized.net/images/wappen/big/3368.png","addressLine1":"San Vicente de Paul 44","addressLine2":"46019 Valencia","addressLine3":"Spain","tel":"+34 (902) 220304","fax":"+34 (963) 379531","website":"www.levanteud.com","foundedOn":"Nov 30, 1908","members":"22.589","membersDate":"Jan 22, 2020","colors":["#0000CC","#CC0000"],"stadiumName":"Ciutat de València","stadiumSeats":"26354","currentTransferRecord":"+€140k","currentMarketValue":"€22.80m","league":{"id":"ES2","name":"LaLiga2","countryID":"1","countryName":"Spain","tier":"Second Tier"}},
+        {"id":"cbbe2d4c-8d74-4218-9a12-3e1e94ca3f8b","transfermarktId":"1536","name":"Burgos CF","officialName":"Burgos Club de Fútbol S.A.D.","image":"https://tmssl.akamaized.net/images/wappen/big/1536.png","addressLine1":"Calle Dos de Mayo, s/n","addressLine2":"09006 Burgos","addressLine3":"Spain","tel":"+34 947 215216","website":"www.burgoscf.es","foundedOn":"Nov 30, 1982","members":"7.398","membersDate":"Jul 14, 2023","colors":["#FFFFFF","#000000"],"stadiumName":"El Plantío","stadiumSeats":"12194","currentTransferRecord":"+-0","currentMarketValue":"€16.30m","league":{"id":"ES2","name":"LaLiga2","countryID":"1","countryName":"Spain","tier":"Second Tier"}},
+        {"id":"425a2544-96e4-4e32-bf77-01bdd1f17e4d","transfermarktId":"1176","name":"Racing Ferrol","officialName":"Racing Club de Ferrol, S.A.D.","image":"https://tmssl.akamaized.net/images/wappen/big/1176.png","addressLine1":"A Malata s/n","addressLine2":"15405 Ferrol","addressLine3":"Spain","tel":"+34 (98) 1323300","fax":"+34 (98) 1323106","website":"www.racingclubferrol.net","foundedOn":"Oct 5, 1919","members":"8.613","membersDate":"Sep 21, 2023","colors":["#00CC00","#FFFFFF"],"stadiumName":"A Malata","stadiumSeats":"12043","currentTransferRecord":"+€1.80m","currentMarketValue":"€12.03m","league":{"id":"ES2","name":"LaLiga2","countryID":"1","countryName":"Spain","tier":"Second Tier"}},
+        {"id":"24b2ece0-16db-4b83-bec5-e0659597a004","transfermarktId":"1531","name":"Elche CF","officialName":"Elche Club de Fútbol S.A.D.","image":"https://tmssl.akamaized.net/images/wappen/big/1531.png","addressLine1":"Avenida Manuel Martínez Valero 3","addressLine2":"03208 Elche (Alicante)","addressLine3":"Spain","tel":"+34 (965) 459714","fax":"+34 (965) 456015","website":"www.elchecf.es","foundedOn":"Aug 28, 1922","members":"12.005","membersDate":"Jan 22, 2020","colors":["#FFFFFF","#00CC33"],"stadiumName":"Manuel Martínez Valero","stadiumSeats":"31388","currentTransferRecord":"€-3.40m","currentMarketValue":"€28.20m","league":{"id":"ES2","name":"LaLiga2","countryID":"1","countryName":"Spain","tier":"Second Tier"}},
+        {"id":"1ae30f36-cf11-45f4-99c6-72552517bfab","transfermarktId":"648","name":"CD Tenerife","officialName":"Club Deportivo Tenerife S.A.D.","image":"https://tmssl.akamaized.net/images/wappen/big/648.png","addressLine1":"Calle La Mutine s/n Puerta 18 B","addressLine2":"38005 Tenerife","addressLine3":"Spain","tel":"+34 (922) 298100","fax":"+34 (922) 298329","website":"www.clubdeportivotenerife.es","foundedOn":"Aug 8, 1922","members":"11.000","membersDate":"Jan 22, 2020","colors":["#0000FF","#FFFFFF"],"stadiumName":"Heliodoro Rodríguez López","stadiumSeats":"22824","currentTransferRecord":"€-200k","currentMarketValue":"€15.10m","league":{"id":"ES2","name":"LaLiga2","countryID":"1","countryName":"Spain","tier":"Second Tier"}},
+        {"id":"06cf1989-5626-4bef-9607-d0fb7b012940","transfermarktId":"1532","name":"Albacete Balompié","officialName":"Albacete Balompié S.A.D.","image":"https://tmssl.akamaized.net/images/wappen/big/1532.png","addressLine1":"Prol. Avda. España (C.D. Andrés Iniesta)","addressLine2":"02006 Albacete","addressLine3":"Spain","tel":"+34 (967) 521100","fax":"+34 (967) 522123","website":"www.albacetebalompie.com","foundedOn":"Aug 1, 1940","members":"12.059","membersDate":"Jan 22, 2020","colors":["#ffffff","#c40000"],"stadiumName":"Carlos Belmonte","stadiumSeats":"17524","currentTransferRecord":"+€1.50m","currentMarketValue":"€13.95m","league":{"id":"ES2","name":"LaLiga2","countryID":"1","countryName":"Spain","tier":"Second Tier"}},
+        {"id":"3d893ba2-3860-4142-ac3f-c58271949869","transfermarktId":"7077","name":"FC Cartagena","officialName":"Fútbol Club Cartagena","image":"https://tmssl.akamaized.net/images/wappen/big/7077.png","addressLine1":"Calle Doctor Luis Calandre, s/n","addressLine2":"30205 Cartagena","addressLine3":"Spain","tel":"+34 601 17 05 84","fax":"+34 (96) 8504398","website":"https://www.fccartagena.es/","foundedOn":"Jul 25, 1995","members":"8.200","membersDate":"Jan 1, 2011","colors":["#000000","#ffffff"],"stadiumName":"Cartagonova","stadiumSeats":"15105","currentTransferRecord":"+€550k","currentMarketValue":"€11.00m","league":{"id":"ES2","name":"LaLiga2","countryID":"1","countryName":"Spain","tier":"Second Tier"}},
+        {"id":"1091793e-4a72-44db-a8a4-44601d8610ef","transfermarktId":"142","name":"Real Zaragoza","officialName":"Real Zaragoza S.A.D.","image":"https://tmssl.akamaized.net/images/wappen/big/142.png","addressLine1":"Calle Eduardo Ibarra 6","addressLine2":"50009 Zaragoza","addressLine3":"Spain","tel":"+34 (976) 567777","fax":"+34 (976) 568863","website":"www.realzaragoza.com","foundedOn":"Mar 18, 1932","members":"27.500","membersDate":"Jan 22, 2020","colors":["#ffffff","#0000ff"],"stadiumName":"La Romareda","stadiumSeats":"33608","currentTransferRecord":"€-400k","currentMarketValue":"€30.85m","league":{"id":"ES2","name":"LaLiga2","countryID":"1","countryName":"Spain","tier":"Second Tier"}},
+        {"id":"31c15fb7-67ef-412b-b75b-cb8cbfd3815c","transfermarktId":"12567","name":"CD Eldense","officialName":"Club Deportivo Eldense","image":"https://tmssl.akamaized.net/images/wappen/big/12567.png","addressLine1":"Calle Lieja, 15A,","addressLine2":"03600 Elda","addressLine3":"Spain","website":"https://cdeldense.es/","foundedOn":"Apr 25, 2016","stadiumName":"Nuevo Pepico Amat","stadiumSeats":"4086","currentTransferRecord":"+-0","currentMarketValue":"€10.90m","league":{"id":"ES2","name":"LaLiga2","countryID":"1","countryName":"Spain","tier":"Second Tier"}},
+        {"id":"75248726-10c4-49c4-bd5b-923cb820b4bb","transfermarktId":"5358","name":"SD Huesca","officialName":"Sociedad Deportiva Huesca","image":"https://tmssl.akamaized.net/images/wappen/big/5358.png","addressLine1":"Camino Cocorón","addressLine2":"22004 Huesca","addressLine3":"Spain","tel":"+34 (974) 212679","fax":"+34 (974) 211306","website":"www.sdhuesca.es","foundedOn":"Mar 29, 1960","members":"6.200","membersDate":"Jan 22, 2020","stadiumName":"El Alcoraz","stadiumSeats":"9128","currentTransferRecord":"+-0","currentMarketValue":"€11.70m","league":{"id":"ES2","name":"LaLiga2","countryID":"1","countryName":"Spain","tier":"Second Tier"}},
+        {"id":"18a54b11-0dd0-4cbb-ba82-c9b5973cfd5b","transfermarktId":"13222","name":"CD Mirandés","officialName":"Club Deportivo Mirandés","image":"https://tmssl.akamaized.net/images/wappen/big/13222.png","addressLine1":"C./ La Estación, 21 bajo","addressLine2":"09200 Miranda de Ebro","addressLine3":"Spain","tel":"+34 (947) 312029","fax":"+34 (947) 312029","website":"www.cdmirandes.com","foundedOn":"May 3, 1927","members":"3.523","membersDate":"Aug 1, 2010","colors":["#ff0000","#000000"],"stadiumName":"Anduva","stadiumSeats":"5759","currentTransferRecord":"+€450k","currentMarketValue":"€7.35m","league":{"id":"ES2","name":"LaLiga2","countryID":"1","countryName":"Spain","tier":"Second Tier"}},
+        {"id":"9955c277-1119-4481-b7d2-0264949d1aaa","transfermarktId":"897","name":"Deportivo de La Coruña","officialName":"Real Club Deportivo de La Coruña S.A.D.","image":"https://tmssl.akamaized.net/images/wappen/big/897.png","addressLine1":"Plaza de Pontevedra 19-1°","addressLine2":"15003 La Coruña","addressLine3":"Spain","tel":"+34 (981) 259500","fax":"+34 (981) 265919","website":"https://www.rcdeportivo.es/","foundedOn":"May 11, 1906","members":"22.125","membersDate":"Jan 22, 2020","stadiumName":"Abanca Riazor","stadiumSeats":"32912","currentTransferRecord":"€-1.50m","currentMarketValue":"€21.70m","league":{"id":"ES2","name":"LaLiga2","countryID":"1","countryName":"Spain","tier":"Second Tier"}},
+        {"id":"b8ce618e-2ab0-45cb-b549-951a309af524","transfermarktId":"2502","name":"CD Castellón","officialName":"C.D. Castellón S.A.D","image":"https://tmssl.akamaized.net/images/wappen/big/2502.png","addressLine1":"Calle Huesca","addressLine2":"12004 Castellón de la Plana","addressLine3":"Spain","tel":"0034 - 964 - 245600","fax":"0034 - 964 - 246400","website":"www.cdcastellon.com","foundedOn":"Jul 22, 1922","members":"13.845","membersDate":"Jan 22, 2020","colors":["#000000","#ffffff"],"stadiumName":"Castalia","stadiumSeats":"15500","currentTransferRecord":"€-250k","currentMarketValue":"€10.90m","league":{"id":"ES2","name":"LaLiga2","countryID":"1","countryName":"Spain","tier":"Second Tier"}},
+        {"id":"00ead9ad-5678-4c32-8c66-8a4abdaf9a8f","transfermarktId":"1084","name":"Málaga CF","officialName":"Málaga Club de Fútbol S.A.D.","image":"https://tmssl.akamaized.net/images/wappen/big/1084.png","addressLine1":"Martirícos","addressLine2":"29011 Málaga","addressLine3":"Spain","tel":"+34 (952) 104488","fax":"+34 (952) 613737","website":"www.malagacf.com","foundedOn":"Nov 30, 1947","members":"18.000","membersDate":"Jan 22, 2020","colors":["#3399FF","#FFFFFF"],"stadiumName":"La Rosaleda","stadiumSeats":"30044","currentTransferRecord":"+€1.80m","currentMarketValue":"€10.35m","league":{"id":"ES2","name":"LaLiga2","countryID":"1","countryName":"Spain","tier":"Second Tier"}},
+        {"id":"953118dc-1659-483f-99d6-5a80b86e3a4c","transfermarktId":"993","name":"Córdoba CF","officialName":"Córdoba Club de Fútbol S.A.D.","image":"https://tmssl.akamaized.net/images/wappen/big/993.png","addressLine1":"Avenida del Arcángel","addressLine2":"14010 Córdoba","addressLine3":"Spain","tel":"+34 (957) 751934","fax":"+34 (957) 751935","website":"www.cordobacf.com","foundedOn":"Nov 30, 1953","members":"10.460","membersDate":"Jan 22, 2020","colors":["#009933","#FFFFFF"],"stadiumName":"Nuevo Arcángel","stadiumSeats":"21822","currentTransferRecord":"+-0","currentMarketValue":"€7.60m","league":{"id":"ES2","name":"LaLiga2","countryID":"1","countryName":"Spain","tier":"Second Tier"}}
+    ]
 }

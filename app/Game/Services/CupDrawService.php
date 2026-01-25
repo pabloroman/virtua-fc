@@ -1,0 +1,191 @@
+<?php
+
+namespace App\Game\Services;
+
+use App\Models\CompetitionTeam;
+use App\Models\CupRoundTemplate;
+use App\Models\CupTie;
+use App\Models\GameMatch;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
+
+class CupDrawService
+{
+    /**
+     * Conduct a draw for a specific cup round.
+     *
+     * @return Collection<CupTie>
+     */
+    public function conductDraw(string $gameId, string $competitionId, int $roundNumber): Collection
+    {
+        $roundTemplate = CupRoundTemplate::where('competition_id', $competitionId)
+            ->where('round_number', $roundNumber)
+            ->firstOrFail();
+
+        $season = $roundTemplate->season;
+
+        // Get all teams eligible for this round
+        $teams = $this->getTeamsForRound($gameId, $competitionId, $season, $roundNumber);
+
+        // Shuffle teams for random pairing
+        $shuffledTeams = $teams->shuffle();
+
+        // Create ties (pairings)
+        $ties = collect();
+        $teamCount = $shuffledTeams->count();
+
+        for ($i = 0; $i < $teamCount; $i += 2) {
+            if ($i + 1 >= $teamCount) {
+                // Odd number of teams - one gets a bye (shouldn't happen in real cup)
+                break;
+            }
+
+            $homeTeamId = $shuffledTeams[$i];
+            $awayTeamId = $shuffledTeams[$i + 1];
+
+            // Create the cup tie
+            $tie = CupTie::create([
+                'id' => Str::uuid()->toString(),
+                'game_id' => $gameId,
+                'competition_id' => $competitionId,
+                'round_number' => $roundNumber,
+                'home_team_id' => $homeTeamId,
+                'away_team_id' => $awayTeamId,
+            ]);
+
+            // Create first leg match
+            $firstLegMatch = GameMatch::create([
+                'id' => Str::uuid()->toString(),
+                'game_id' => $gameId,
+                'competition_id' => $competitionId,
+                'round_number' => $roundNumber,
+                'round_name' => $roundTemplate->round_name,
+                'home_team_id' => $homeTeamId,
+                'away_team_id' => $awayTeamId,
+                'scheduled_date' => $roundTemplate->first_leg_date,
+                'cup_tie_id' => $tie->id,
+            ]);
+
+            $tie->update(['first_leg_match_id' => $firstLegMatch->id]);
+
+            // Create second leg match if two-legged
+            if ($roundTemplate->isTwoLegged()) {
+                $secondLegMatch = GameMatch::create([
+                    'id' => Str::uuid()->toString(),
+                    'game_id' => $gameId,
+                    'competition_id' => $competitionId,
+                    'round_number' => $roundNumber,
+                    'round_name' => $roundTemplate->round_name . ' (Vuelta)',
+                    'home_team_id' => $awayTeamId, // Teams swap for second leg
+                    'away_team_id' => $homeTeamId,
+                    'scheduled_date' => $roundTemplate->second_leg_date,
+                    'cup_tie_id' => $tie->id,
+                ]);
+
+                $tie->update(['second_leg_match_id' => $secondLegMatch->id]);
+            }
+
+            $ties->push($tie->fresh());
+        }
+
+        return $ties;
+    }
+
+    /**
+     * Get all team IDs eligible for a specific round.
+     *
+     * @return Collection<string>
+     */
+    private function getTeamsForRound(string $gameId, string $competitionId, string $season, int $roundNumber): Collection
+    {
+        $teams = collect();
+
+        // Teams entering at this specific round
+        $enteringTeams = CompetitionTeam::where('competition_id', $competitionId)
+            ->where('season', $season)
+            ->where('entry_round', $roundNumber)
+            ->pluck('team_id');
+
+        $teams = $teams->merge($enteringTeams);
+
+        // Winners from previous round
+        if ($roundNumber > 1) {
+            $previousWinners = CupTie::where('game_id', $gameId)
+                ->where('competition_id', $competitionId)
+                ->where('round_number', $roundNumber - 1)
+                ->where('completed', true)
+                ->whereNotNull('winner_id')
+                ->pluck('winner_id');
+
+            $teams = $teams->merge($previousWinners);
+        }
+
+        return $teams->unique()->values();
+    }
+
+    /**
+     * Check if a draw is needed for a specific round.
+     */
+    public function needsDrawForRound(string $gameId, string $competitionId, int $roundNumber): bool
+    {
+        // Check if ties already exist for this round
+        $existingTies = CupTie::where('game_id', $gameId)
+            ->where('competition_id', $competitionId)
+            ->where('round_number', $roundNumber)
+            ->count();
+
+        if ($existingTies > 0) {
+            return false;
+        }
+
+        // Check if we have enough teams for this round
+        $roundTemplate = CupRoundTemplate::where('competition_id', $competitionId)
+            ->where('round_number', $roundNumber)
+            ->first();
+
+        if (!$roundTemplate) {
+            return false;
+        }
+
+        // For round 1, we just need teams entering at round 1
+        if ($roundNumber === 1) {
+            $teamsEntering = CompetitionTeam::where('competition_id', $competitionId)
+                ->where('season', $roundTemplate->season)
+                ->where('entry_round', 1)
+                ->count();
+
+            return $teamsEntering > 0;
+        }
+
+        // For later rounds, we need winners from previous round to be determined
+        $previousRoundTies = CupTie::where('game_id', $gameId)
+            ->where('competition_id', $competitionId)
+            ->where('round_number', $roundNumber - 1)
+            ->get();
+
+        if ($previousRoundTies->isEmpty()) {
+            return false;
+        }
+
+        // All previous round ties must be completed
+        return $previousRoundTies->every(fn ($tie) => $tie->completed);
+    }
+
+    /**
+     * Get the next round that needs a draw.
+     */
+    public function getNextRoundNeedingDraw(string $gameId, string $competitionId): ?int
+    {
+        $rounds = CupRoundTemplate::where('competition_id', $competitionId)
+            ->orderBy('round_number')
+            ->get();
+
+        foreach ($rounds as $round) {
+            if ($this->needsDrawForRound($gameId, $competitionId, $round->round_number)) {
+                return $round->round_number;
+            }
+        }
+
+        return null;
+    }
+}

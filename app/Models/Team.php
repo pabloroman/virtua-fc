@@ -3,11 +3,34 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class Team extends Model
 {
-    protected $primaryKey = 'uuid';
-    public $incrementing = false;
+    use HasUuids;
 
-    public $guarded = [];
+    protected $guarded = [];
+
+    protected $casts = [
+        'colors' => 'array',
+        'stadium_seats' => 'integer',
+        'founded_on' => 'date',
+    ];
+
+    public function competitions(): BelongsToMany
+    {
+        return $this->belongsToMany(Competition::class, 'competition_teams')
+            ->withPivot('season');
+    }
+
+    public function players(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(GamePlayer::class);
+    }
+
+    public function getGoalDifferenceAttribute(): int
+    {
+        return 0; // Placeholder for team-level stats
+    }
 }

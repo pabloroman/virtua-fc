@@ -2,18 +2,18 @@
 
 namespace App\Http\Views;
 
-use App\Game\GameHeaderRepository;
+use App\Models\Game;
 use Illuminate\Http\Request;
 
 class Dashboard
 {
-    public function __construct(private GameHeaderRepository $gameHeaderRepository)
+    public function __construct()
     {
     }
 
     public function __invoke(Request $request)
     {
-        $games = $this->gameHeaderRepository->getAllByUser($request->user()->id);
+        $games = Game::query()->where('user_id', $request->user()->id)->get();
 
         if (! $games->count()) {
             return redirect()->route('select-team');
