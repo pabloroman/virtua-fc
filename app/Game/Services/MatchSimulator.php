@@ -95,47 +95,45 @@ class MatchSimulator
         $homeExpectedGoals = 1.4 + ($homeStrength / $totalStrength);
         $awayExpectedGoals = 0.9 + ($awayStrength / $totalStrength) * 0.8;
 
-        // Generate raw goal counts
-        $homeGoalsRaw = $this->poissonRandom($homeExpectedGoals);
-        $awayGoalsRaw = $this->poissonRandom($awayExpectedGoals);
+        // Generate scores using Poisson distribution
+        // These represent "balls in the opponent's net"
+        $homeScore = $this->poissonRandom($homeExpectedGoals);
+        $awayScore = $this->poissonRandom($awayExpectedGoals);
 
-        // Generate goal events (including potential own goals)
-        $homeGoalEvents = $this->generateGoalEvents(
-            $homeGoalsRaw,
-            $homeTeam->id,
-            $awayTeam->id,
-            $homePlayers,
-            $awayPlayers
-        );
+        // Generate detailed events only if we have player data
+        // Events track WHO scored, but don't affect the final score
+        if ($homePlayers->isNotEmpty() && $awayPlayers->isNotEmpty()) {
+            $homeGoalEvents = $this->generateGoalEvents(
+                $homeScore,
+                $homeTeam->id,
+                $awayTeam->id,
+                $homePlayers,
+                $awayPlayers
+            );
 
-        $awayGoalEvents = $this->generateGoalEvents(
-            $awayGoalsRaw,
-            $awayTeam->id,
-            $homeTeam->id,
-            $awayPlayers,
-            $homePlayers
-        );
+            $awayGoalEvents = $this->generateGoalEvents(
+                $awayScore,
+                $awayTeam->id,
+                $homeTeam->id,
+                $awayPlayers,
+                $homePlayers
+            );
 
-        $events = $events->merge($homeGoalEvents)->merge($awayGoalEvents);
+            $events = $events->merge($homeGoalEvents)->merge($awayGoalEvents);
 
-        // Calculate final scores (accounting for own goals)
-        $homeScore = $homeGoalEvents->where('type', 'goal')->count()
-                   + $awayGoalEvents->where('type', 'own_goal')->count();
-        $awayScore = $awayGoalEvents->where('type', 'goal')->count()
-                   + $homeGoalEvents->where('type', 'own_goal')->count();
+            // Generate card events
+            $homeCardEvents = $this->generateCardEvents($homeTeam->id, $homePlayers);
+            $awayCardEvents = $this->generateCardEvents($awayTeam->id, $awayPlayers);
+            $events = $events->merge($homeCardEvents)->merge($awayCardEvents);
 
-        // Generate card events
-        $homeCardEvents = $this->generateCardEvents($homeTeam->id, $homePlayers);
-        $awayCardEvents = $this->generateCardEvents($awayTeam->id, $awayPlayers);
-        $events = $events->merge($homeCardEvents)->merge($awayCardEvents);
+            // Generate injury events (rare)
+            $homeInjuryEvents = $this->generateInjuryEvents($homeTeam->id, $homePlayers);
+            $awayInjuryEvents = $this->generateInjuryEvents($awayTeam->id, $awayPlayers);
+            $events = $events->merge($homeInjuryEvents)->merge($awayInjuryEvents);
 
-        // Generate injury events (rare)
-        $homeInjuryEvents = $this->generateInjuryEvents($homeTeam->id, $homePlayers);
-        $awayInjuryEvents = $this->generateInjuryEvents($awayTeam->id, $awayPlayers);
-        $events = $events->merge($homeInjuryEvents)->merge($awayInjuryEvents);
-
-        // Sort events by minute
-        $events = $events->sortBy('minute')->values();
+            // Sort events by minute
+            $events = $events->sortBy('minute')->values();
+        }
 
         return new MatchResult($homeScore, $awayScore, $events);
     }
@@ -394,29 +392,31 @@ class MatchSimulator
         $homeExpectedGoals = 0.3 + ($homeStrength / $totalStrength) * 0.3;
         $awayExpectedGoals = 0.2 + ($awayStrength / $totalStrength) * 0.25;
 
-        $homeGoalsRaw = $this->poissonRandom($homeExpectedGoals);
-        $awayGoalsRaw = $this->poissonRandom($awayExpectedGoals);
+        $homeScore = $this->poissonRandom($homeExpectedGoals);
+        $awayScore = $this->poissonRandom($awayExpectedGoals);
 
-        // Generate goal events (ET is 91'-120')
-        for ($i = 0; $i < $homeGoalsRaw; $i++) {
-            $minute = rand(91, 120);
-            $scorer = $this->pickPlayerByPosition($homePlayers, self::SCORING_WEIGHTS);
-            if ($scorer) {
-                $events->push(MatchEventData::goal($homeTeam->id, $scorer->id, $minute));
+        // Generate goal events only if we have player data (ET is 91'-120')
+        if ($homePlayers->isNotEmpty() && $awayPlayers->isNotEmpty()) {
+            for ($i = 0; $i < $homeScore; $i++) {
+                $minute = rand(91, 120);
+                $scorer = $this->pickPlayerByPosition($homePlayers, self::SCORING_WEIGHTS);
+                if ($scorer) {
+                    $events->push(MatchEventData::goal($homeTeam->id, $scorer->id, $minute));
+                }
             }
+
+            for ($i = 0; $i < $awayScore; $i++) {
+                $minute = rand(91, 120);
+                $scorer = $this->pickPlayerByPosition($awayPlayers, self::SCORING_WEIGHTS);
+                if ($scorer) {
+                    $events->push(MatchEventData::goal($awayTeam->id, $scorer->id, $minute));
+                }
+            }
+
+            $events = $events->sortBy('minute')->values();
         }
 
-        for ($i = 0; $i < $awayGoalsRaw; $i++) {
-            $minute = rand(91, 120);
-            $scorer = $this->pickPlayerByPosition($awayPlayers, self::SCORING_WEIGHTS);
-            if ($scorer) {
-                $events->push(MatchEventData::goal($awayTeam->id, $scorer->id, $minute));
-            }
-        }
-
-        $events = $events->sortBy('minute')->values();
-
-        return new MatchResult($homeGoalsRaw, $awayGoalsRaw, $events);
+        return new MatchResult($homeScore, $awayScore, $events);
     }
 
     /**

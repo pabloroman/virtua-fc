@@ -1,66 +1,159 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# VirtuaFC
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A football manager simulation game built with Laravel and Event Sourcing.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Manage a football team in the Spanish league system (La Liga, Segunda Division)
+- Compete in the Copa del Rey knockout cup competition
+- Match simulation with player events (goals, assists, cards)
+- League standings and cup brackets
+- Player squads with technical and physical attributes
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Prerequisites
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP 8.2 or higher
+- Composer
+- Node.js and npm
+- SQLite (default) or MySQL/PostgreSQL
 
-## Learning Laravel
+## Installation
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+1. **Clone the repository**
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+   ```bash
+   git clone <repository-url>
+   cd VirtuaFC
+   ```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+2. **Install PHP dependencies**
 
-## Laravel Sponsors
+   ```bash
+   composer install
+   ```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+3. **Install JavaScript dependencies**
 
-### Premium Partners
+   ```bash
+   npm install
+   ```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+4. **Configure environment**
 
-## Contributing
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+5. **Create the database**
 
-## Code of Conduct
+   For SQLite (default):
+   ```bash
+   touch database/database.sqlite
+   ```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+6. **Run migrations**
 
-## Security Vulnerabilities
+   ```bash
+   php artisan migrate
+   ```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+7. **Seed reference data**
+
+   This populates teams, players, competitions, and fixtures:
+   ```bash
+   php artisan app:seed-reference-data
+   ```
+
+   To reset and re-seed all data:
+   ```bash
+   php artisan app:seed-reference-data --fresh
+   ```
+
+## Default User
+
+After seeding, you can log in with:
+
+- **Email:** test@test.com
+- **Password:** password
+
+## Running the Application
+
+### Development Server
+
+Run all services concurrently (web server, queue worker, Vite, logs):
+
+```bash
+composer dev
+```
+
+Or run services individually:
+
+```bash
+# Web server
+php artisan serve
+
+# Queue worker (required for event sourcing)
+php artisan queue:listen
+
+# Vite for frontend assets
+npm run dev
+```
+
+### Production Build
+
+```bash
+npm run build
+```
+
+## Running Tests
+
+```bash
+php artisan test
+```
+
+Or with PHPUnit directly:
+
+```bash
+./vendor/bin/phpunit
+```
+
+## Architecture
+
+### Event Sourcing
+
+The game uses [Spatie Laravel Event Sourcing](https://spatie.be/docs/laravel-event-sourcing) for match results and game state. Key components:
+
+- **Aggregates:** `App\Game\Game` - handles game commands and emits events
+- **Events:** `App\Game\Events\*` - recorded when matches are played, cup ties resolved, etc.
+- **Projectors:** `App\Game\GameProjector` - builds read models from events
+
+### Competition Handlers
+
+Different competition types (leagues, cups) use a pluggable handler system:
+
+- `App\Game\Contracts\CompetitionHandler` - interface for competition behavior
+- `App\Game\Handlers\LeagueHandler` - groups matches by round, updates standings
+- `App\Game\Handlers\KnockoutCupHandler` - groups by date, conducts draws, resolves ties
+- `App\Game\Services\CompetitionHandlerResolver` - resolves handlers by competition type
+
+This architecture allows easy addition of new competition types (European cups, playoffs) without modifying core game logic.
+
+## Data Structure
+
+Reference data is stored in JSON files under `data/`:
+
+```
+data/
+├── ESP1/2024/           # La Liga
+│   ├── competition.json
+│   ├── teams.json
+│   ├── fixtures.json
+│   └── players/
+├── ESP2/2024/           # Segunda Division
+└── transfermarkt/ESPCUP/2024/  # Copa del Rey
+```
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is private.

@@ -8,6 +8,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Symfony\Component\Console\Command\Command as CommandAlias;
 
 class SeedReferenceData extends Command
 {
@@ -35,7 +36,7 @@ class SeedReferenceData extends Command
 
         $this->displaySummary();
 
-        return Command::SUCCESS;
+        return CommandAlias::SUCCESS;
     }
 
     private function createDefaultUser(): void
@@ -130,6 +131,7 @@ class SeedReferenceData extends Command
                 'country' => 'ES',
                 'tier' => $tier,
                 'type' => 'cup',
+                'handler_type' => 'knockout_cup',
                 'season' => $season,
             ]
         );
@@ -145,6 +147,12 @@ class SeedReferenceData extends Command
 
     private function seedCompetitionRecord(string $code, array $data, int $tier, string $type = 'league'): void
     {
+        // Determine handler_type based on competition type
+        $handlerType = match ($type) {
+            'cup' => 'knockout_cup',
+            default => 'league',
+        };
+
         DB::table('competitions')->updateOrInsert(
             ['id' => $code],
             [
@@ -152,6 +160,7 @@ class SeedReferenceData extends Command
                 'country' => 'ES',
                 'tier' => $tier,
                 'type' => $type,
+                'handler_type' => $handlerType,
                 'season' => $data['seasonID'],
             ]
         );
@@ -398,8 +407,18 @@ class SeedReferenceData extends Command
                     'transfermarkt_id' => (int) $cupTeamId,
                     'name' => $club['name'],
                     'country' => 'ES',
+                    'image' => "https://tmssl.akamaized.net/images/wappen/big/{$cupTeamId}.png",
                     'updated_at' => now(),
                 ]);
+            } else {
+                // Update existing team's image if not set
+                DB::table('teams')
+                    ->where('id', $teamId)
+                    ->whereNull('image')
+                    ->update([
+                        'image' => "https://tmssl.akamaized.net/images/wappen/big/{$cupTeamId}.png",
+                        'updated_at' => now(),
+                    ]);
             }
 
             // Link team to cup competition with entry round
