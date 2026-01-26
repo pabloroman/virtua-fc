@@ -43,7 +43,7 @@
                                     </span>
                                     <img src="{{ $playerMatch->homeTeam->image }}" class="w-12 h-12">
                                 </div>
-                                <div class="text-4xl font-bold font-mono px-6">
+                                <div class="text-4xl font-semibold px-6">
                                     {{ $playerMatch->home_score }} - {{ $playerMatch->away_score }}
                                 </div>
                                 <div class="flex items-center gap-3 flex-1">
@@ -112,7 +112,7 @@
                                     </span>
                                     <img src="{{ $match->homeTeam->image }}" class="w-6 h-6">
                                 </div>
-                                <div class="px-6 font-mono font-bold text-lg">
+                                <div class="px-6 font-semibold text-lg">
                                     {{ $match->home_score }} - {{ $match->away_score }}
                                 </div>
                                 <div class="flex items-center gap-2 flex-1">
