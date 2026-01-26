@@ -11,7 +11,7 @@
                 {{-- Standings Card --}}
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
-                        <h3 class="text-lg font-semibold mb-4">Standings</h3>
+                        <h3 class="font-semibold text-xl text-slate-900 mb-4">Standings</h3>
                         <table class="w-full text-sm">
                             <thead class="text-left text-gray-500">
                                 <tr>
@@ -74,7 +74,7 @@
                 {{-- Recent Results Card --}}
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">
-                        <h3 class="text-lg font-semibold mb-4">Recent Results</h3>
+                        <h3 class="font-semibold text-xl text-slate-900 mb-4">Recent Results</h3>
                         @if($recentResults->isEmpty())
                             <p class="text-gray-500">No matches played yet. Click "Continue" to start the season!</p>
                         @else
@@ -85,7 +85,7 @@
                                         <img src="{{ $match->homeTeam->image }}" class="w-6 h-6">
                                         <span class="@if($match->home_team_id === $game->team_id) font-semibold @endif">{{ $match->homeTeam->name }}</span>
                                     </div>
-                                    <div class="px-4 font-mono font-bold">
+                                    <div class="px-4 font-bold">
                                         {{ $match->home_score }} - {{ $match->away_score }}
                                     </div>
                                     <div class="flex items-center gap-2 flex-1 justify-end">

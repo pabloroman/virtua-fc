@@ -8,9 +8,9 @@
     <div>
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
+                <div class="p-12">
                     <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-lg font-semibold">{{ $competition->name }}</h3>
+                        <h3 class="font-semibold text-xl text-slate-900">{{ $competition->name }}</h3>
                         <div class="flex items-center gap-4">
                             @if($game->cup_eliminated)
                                 <span class="px-3 py-1 text-sm bg-red-100 text-red-700 rounded-full">Eliminated</span>
@@ -48,7 +48,7 @@
                                     </div>
                                     <div class="px-6 text-center">
                                         @if($playerTie->firstLegMatch?->played)
-                                            <div class="text-2xl font-bold font-mono">
+                                            <div class="text-2xl font-bold">
                                                 {{ $playerTie->getScoreDisplay() }}
                                             </div>
                                         @else
@@ -81,7 +81,7 @@
                                         </span>
                                         <img src="{{ $playerTie->homeTeam->image }}" class="w-10 h-10">
                                     </div>
-                                    <div class="px-4 text-lg font-bold font-mono">
+                                    <div class="px-4 text-lg font-bold">
                                         {{ $playerTie->getScoreDisplay() }}
                                     </div>
                                     <div class="flex items-center gap-3 flex-1">
@@ -142,7 +142,7 @@
                                                                 {{ $tie->homeTeam->name }}
                                                             </span>
                                                             @if($tie->firstLegMatch?->played)
-                                                                <span class="text-sm font-mono {{ $homeWon ? 'font-bold' : '' }}">
+                                                                <span class="text-sm {{ $homeWon ? 'font-bold' : '' }}">
                                                                     {{ $tie->firstLegMatch->home_score }}
                                                                 </span>
                                                             @endif
@@ -154,7 +154,7 @@
                                                                 {{ $tie->awayTeam->name }}
                                                             </span>
                                                             @if($tie->firstLegMatch?->played)
-                                                                <span class="text-sm font-mono {{ $awayWon ? 'font-bold' : '' }}">
+                                                                <span class="text-sm {{ $awayWon ? 'font-bold' : '' }}">
                                                                     {{ $tie->firstLegMatch->away_score }}
                                                                 </span>
                                                             @endif

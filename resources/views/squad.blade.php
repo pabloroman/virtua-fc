@@ -6,10 +6,10 @@
     </x-slot>
 
     <div>
-        <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <h3 class="text-lg font-semibold mb-6">{{ $game->team->name }} Squad</h3>
+                <div class="p-12">
+                    <h3 class="font-semibold text-xl text-slate-900 mb-6">{{ $game->team->name }} Squad</h3>
 
                     <table class="w-full text-sm">
                         <thead class="text-left text-gray-500 border-b">

@@ -6,10 +6,10 @@
     </x-slot>
 
     <div>
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <h3 class="text-lg font-semibold mb-6">{{ $game->team->name }} - Season Calendar</h3>
+                <div class="p-12">
+                    <h3 class="font-semibold text-xl text-slate-900 mb-6">{{ $game->team->name }} - Season Calendar</h3>
 
                     @foreach($calendar as $month => $matches)
                         <div class="mb-8">
@@ -32,7 +32,7 @@
                                             <img src="{{ $opponent->image }}" class="w-6 h-6">
                                             <span class="font-medium">{{ $opponent->name }}</span>
                                         </div>
-                                        <div class="w-20 text-center font-mono">
+                                        <div class="w-20 text-center">
                                             @if($match->played)
                                                 @php
                                                     $yourScore = $isHome ? $match->home_score : $match->away_score;
