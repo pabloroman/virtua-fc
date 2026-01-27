@@ -37,11 +37,28 @@ class ShowLineup
             ->groupBy(fn ($p) => $p->position_group);
 
         // Get current lineup if any
-        $currentLineup = $this->lineupService->getLineup($match, $game->team_id) ?? [];
+        $currentLineup = $this->lineupService->getLineup($match, $game->team_id);
 
         // Get formation
         $defaultFormation = $game->default_formation ?? '4-4-2';
-        $currentFormation = $this->lineupService->getFormation($match, $game->team_id) ?? $defaultFormation;
+        $currentFormation = $this->lineupService->getFormation($match, $game->team_id);
+
+        // If no lineup set, try to prefill from previous match
+        if (empty($currentLineup)) {
+            $previous = $this->lineupService->getPreviousLineup(
+                $gameId,
+                $game->team_id,
+                $matchId,
+                $matchDate,
+                $matchday
+            );
+            $currentLineup = $previous['lineup'];
+            // Use previous formation if available, otherwise default
+            $currentFormation = $currentFormation ?? $previous['formation'] ?? $defaultFormation;
+        }
+
+        $currentLineup = $currentLineup ?? [];
+        $currentFormation = $currentFormation ?? $defaultFormation;
         $formationEnum = Formation::tryFrom($currentFormation) ?? Formation::F_4_4_2;
 
         // Get auto-selected lineup for quick select (using current formation)

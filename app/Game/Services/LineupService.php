@@ -232,4 +232,54 @@ class LineupService
             ->whereIn('id', $playerIds)
             ->get();
     }
+
+    /**
+     * Get the previous match's lineup for a team (filtering out unavailable players).
+     *
+     * @return array{lineup: array, formation: string|null}
+     */
+    public function getPreviousLineup(
+        string $gameId,
+        string $teamId,
+        string $currentMatchId,
+        Carbon $matchDate,
+        int $matchday
+    ): array {
+        // Find the most recent played match for this team
+        $previousMatch = GameMatch::where('game_id', $gameId)
+            ->where('played', true)
+            ->where('id', '!=', $currentMatchId)
+            ->where(function ($query) use ($teamId) {
+                $query->where('home_team_id', $teamId)
+                    ->orWhere('away_team_id', $teamId);
+            })
+            ->orderByDesc('played_at')
+            ->first();
+
+        if (!$previousMatch) {
+            return ['lineup' => [], 'formation' => null];
+        }
+
+        // Get the lineup and formation from that match
+        $previousLineup = $this->getLineup($previousMatch, $teamId) ?? [];
+        $previousFormation = $this->getFormation($previousMatch, $teamId);
+
+        if (empty($previousLineup)) {
+            return ['lineup' => [], 'formation' => $previousFormation];
+        }
+
+        // Filter out players who are no longer available
+        $availablePlayers = $this->getAvailablePlayers($gameId, $teamId, $matchDate, $matchday);
+        $availableIds = $availablePlayers->pluck('id')->toArray();
+
+        $filteredLineup = array_values(array_filter(
+            $previousLineup,
+            fn ($playerId) => in_array($playerId, $availableIds)
+        ));
+
+        return [
+            'lineup' => $filteredLineup,
+            'formation' => $previousFormation,
+        ];
+    }
 }
