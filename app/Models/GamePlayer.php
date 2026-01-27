@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Support\CountryCodeMapper;
+use App\Support\PositionMapper;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -177,5 +179,35 @@ class GamePlayer extends Model
     public function getPhysicalAbilityAttribute(): int
     {
         return $this->player->physical_ability;
+    }
+
+    /**
+     * Get 2-letter position abbreviation (GK, DF, MF, FW).
+     */
+    public function getPositionAbbreviationAttribute(): string
+    {
+        return PositionMapper::toAbbreviation($this->position);
+    }
+
+    /**
+     * Get position display data including abbreviation and CSS colors.
+     *
+     * @return array{abbreviation: string, bg: string, text: string}
+     */
+    public function getPositionDisplayAttribute(): array
+    {
+        return PositionMapper::getPositionDisplay($this->position);
+    }
+
+    /**
+     * Get nationality flags data with country names and ISO codes.
+     *
+     * @return array<array{name: string, code: string}>
+     */
+    public function getNationalityFlagsAttribute(): array
+    {
+        $nationalities = $this->nationality ?? [];
+
+        return CountryCodeMapper::toCodes($nationalities);
     }
 }
