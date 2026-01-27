@@ -7,6 +7,7 @@ use App\Game\DTO\MatchEventData;
 use App\Game\Game as GameAggregate;
 use App\Game\Handlers\KnockoutCupHandler;
 use App\Game\Services\CompetitionHandlerResolver;
+use App\Game\Services\LineupService;
 use App\Game\Services\MatchSimulator;
 use App\Models\Competition;
 use App\Models\Game;
@@ -19,6 +20,7 @@ class AdvanceMatchday
         private readonly MatchSimulator $matchSimulator,
         private readonly CompetitionHandlerResolver $handlerResolver,
         private readonly KnockoutCupHandler $cupHandler,
+        private readonly LineupService $lineupService,
     ) {}
 
     public function __invoke(string $gameId)
@@ -67,11 +69,20 @@ class AdvanceMatchday
                 ->with('message', 'No matches to play.');
         }
 
+        // Check if user's team needs a lineup
+        $userMatch = $matches->first(fn ($m) => $m->involvesTeam($game->team_id));
+        if ($userMatch && $this->lineupService->needsLineup($userMatch, $game->team_id)) {
+            return redirect()->route('game.lineup', [$gameId, $userMatch->id]);
+        }
+
         // For matchdays spanning multiple days, use the latest date
         $currentDate = $matches->max('scheduled_date')->toDateString();
 
         // Load all game players for this game, grouped by team
-        $allPlayers = GamePlayer::where('game_id', $gameId)->get()->groupBy('team_id');
+        $allPlayers = GamePlayer::with('player')->where('game_id', $gameId)->get()->groupBy('team_id');
+
+        // Ensure all matches have lineups set (auto-select for AI teams)
+        $this->ensureLineupsSet($matches, $game, $allPlayers);
 
         // Simulate all matches
         $matchResults = [];
@@ -100,12 +111,25 @@ class AdvanceMatchday
     }
 
     /**
-     * Simulate a single match.
+     * Simulate a single match using lineup players.
      */
     private function simulateMatch(GameMatch $match, $allPlayers): array
     {
-        $homePlayers = $allPlayers->get($match->home_team_id, collect());
-        $awayPlayers = $allPlayers->get($match->away_team_id, collect());
+        // Get lineup players only (filter from all players)
+        $homeLineupIds = $match->home_lineup ?? [];
+        $awayLineupIds = $match->away_lineup ?? [];
+
+        $allHomePlayers = $allPlayers->get($match->home_team_id, collect());
+        $allAwayPlayers = $allPlayers->get($match->away_team_id, collect());
+
+        // Filter to only lineup players if lineups are set
+        $homePlayers = !empty($homeLineupIds)
+            ? $allHomePlayers->filter(fn ($p) => in_array($p->id, $homeLineupIds))
+            : $allHomePlayers;
+
+        $awayPlayers = !empty($awayLineupIds)
+            ? $allAwayPlayers->filter(fn ($p) => in_array($p->id, $awayLineupIds))
+            : $allAwayPlayers;
 
         $result = $this->matchSimulator->simulate(
             $match->homeTeam,
@@ -126,5 +150,38 @@ class AdvanceMatchday
             'competitionId' => $match->competition_id,
             'events' => $eventsArray,
         ];
+    }
+
+    /**
+     * Ensure all matches have lineups set (auto-select for AI teams).
+     */
+    private function ensureLineupsSet($matches, Game $game, $allPlayers): void
+    {
+        foreach ($matches as $match) {
+            $matchday = $match->round_number ?? $game->current_matchday + 1;
+            $matchDate = $match->scheduled_date;
+
+            // Auto-select home lineup if not set
+            if (empty($match->home_lineup)) {
+                $lineup = $this->lineupService->autoSelectLineup(
+                    $game->id,
+                    $match->home_team_id,
+                    $matchDate,
+                    $matchday
+                );
+                $this->lineupService->saveLineup($match, $match->home_team_id, $lineup);
+            }
+
+            // Auto-select away lineup if not set
+            if (empty($match->away_lineup)) {
+                $lineup = $this->lineupService->autoSelectLineup(
+                    $game->id,
+                    $match->away_team_id,
+                    $matchDate,
+                    $matchday
+                );
+                $this->lineupService->saveLineup($match, $match->away_team_id, $lineup);
+            }
+        }
     }
 }

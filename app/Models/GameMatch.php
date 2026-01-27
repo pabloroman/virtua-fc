@@ -21,6 +21,8 @@ class GameMatch extends Model
         'scheduled_date' => 'datetime',
         'home_score' => 'integer',
         'away_score' => 'integer',
+        'home_lineup' => 'array',
+        'away_lineup' => 'array',
         'played' => 'boolean',
         'played_at' => 'datetime',
         'is_extra_time' => 'boolean',

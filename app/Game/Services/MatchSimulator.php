@@ -76,8 +76,8 @@ class MatchSimulator
      *
      * @param Team $homeTeam
      * @param Team $awayTeam
-     * @param Collection<GamePlayer> $homePlayers Players for home team
-     * @param Collection<GamePlayer> $awayPlayers Players for away team
+     * @param Collection<GamePlayer> $homePlayers Players for home team (lineup)
+     * @param Collection<GamePlayer> $awayPlayers Players for away team (lineup)
      */
     public function simulate(
         Team $homeTeam,
@@ -87,9 +87,9 @@ class MatchSimulator
     ): MatchResult {
         $events = collect();
 
-        // Calculate expected goals based on team strength
-        $homeStrength = $this->getTeamStrength($homeTeam);
-        $awayStrength = $this->getTeamStrength($awayTeam);
+        // Calculate expected goals based on lineup strength
+        $homeStrength = $this->calculateTeamStrength($homePlayers);
+        $awayStrength = $this->calculateTeamStrength($awayPlayers);
         $totalStrength = $homeStrength + $awayStrength;
 
         $homeExpectedGoals = 1.4 + ($homeStrength / $totalStrength);
@@ -298,7 +298,7 @@ class MatchSimulator
     }
 
     /**
-     * Pick a player based on position weights.
+     * Pick a player based on position weights and player quality.
      */
     private function pickPlayerByPosition(Collection $players, array $weights): ?GamePlayer
     {
@@ -306,10 +306,14 @@ class MatchSimulator
             return null;
         }
 
-        // Build weighted array
+        // Build weighted array with quality multiplier
         $weighted = [];
         foreach ($players as $player) {
-            $weight = $weights[$player->position] ?? 5;
+            $positionWeight = $weights[$player->position] ?? 5;
+            // Quality multiplier: players above 70 get bonus, below get penalty
+            $qualityMultiplier = $player->overall_score / 70;
+            $weight = (int) max(1, round($positionWeight * $qualityMultiplier));
+
             for ($i = 0; $i < $weight; $i++) {
                 $weighted[] = $player;
             }
@@ -338,12 +342,31 @@ class MatchSimulator
     }
 
     /**
-     * Get team strength based on stadium capacity.
+     * Calculate team strength based on lineup player attributes.
+     *
+     * @param Collection<GamePlayer> $lineup
      */
-    private function getTeamStrength(Team $team): float
+    private function calculateTeamStrength(Collection $lineup): float
     {
-        $seats = max(5000, $team->stadium_seats ?? 10000);
-        return $seats / 80000;
+        if ($lineup->count() < 11) {
+            // Fallback for incomplete lineup - assume average team
+            return 0.5;
+        }
+
+        // Weighted average of player attributes
+        // Technical (40%) + Physical (25%) + Fitness (20%) + Morale (15%)
+        $avgTechnical = $lineup->avg('technical_ability');
+        $avgPhysical = $lineup->avg('physical_ability');
+        $avgFitness = $lineup->avg('fitness');
+        $avgMorale = $lineup->avg('morale');
+
+        $strength = ($avgTechnical * 0.40) +
+                    ($avgPhysical * 0.25) +
+                    ($avgFitness * 0.20) +
+                    ($avgMorale * 0.15);
+
+        // Normalize to 0-1 range (attributes are 0-100)
+        return $strength / 100;
     }
 
     /**
@@ -384,8 +407,8 @@ class MatchSimulator
         $events = collect();
 
         // Lower expected goals for 30 min extra time (roughly 1/3 of normal match)
-        $homeStrength = $this->getTeamStrength($homeTeam);
-        $awayStrength = $this->getTeamStrength($awayTeam);
+        $homeStrength = $this->calculateTeamStrength($homePlayers);
+        $awayStrength = $this->calculateTeamStrength($awayPlayers);
         $totalStrength = $homeStrength + $awayStrength;
 
         // Much lower expected goals - extra time is usually cagey

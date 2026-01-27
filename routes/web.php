@@ -3,6 +3,8 @@
 use App\Http\Actions\AdvanceMatchday;
 use App\Http\Actions\ConductCupDraw;
 use App\Http\Actions\InitGame;
+use App\Http\Actions\SaveLineup;
+use App\Http\Views\ShowLineup;
 use App\Http\Controllers\ProfileController;
 use App\Http\Views\Dashboard;
 use App\Http\Views\SelectTeam;
@@ -31,9 +33,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/game/{gameId}/standings', ShowStandings::class)->name('game.standings');
     Route::get('/game/{gameId}/cup', ShowCupBracket::class)->name('game.cup');
     Route::get('/game/{gameId}/results/{matchday}', ShowMatchResults::class)->name('game.results');
+    Route::get('/game/{gameId}/lineup/{matchId}', ShowLineup::class)->name('game.lineup');
 
     // Game Actions
     Route::post('/game/{gameId}/advance', AdvanceMatchday::class)->name('game.advance');
+    Route::post('/game/{gameId}/lineup/{matchId}', SaveLineup::class)->name('game.lineup.save');
     Route::post('/game/{gameId}/cup/draw/{round}', ConductCupDraw::class)->name('game.cup.draw');
 });
 

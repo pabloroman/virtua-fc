@@ -35,6 +35,9 @@
 <nav class="flex text-white/40 space-x-4 mt-4 items-center text-xl">
     <div><a class="hover:text-slate-300 @if(Route::currentRouteName() == 'show-game') text-white @endif" href="{{ route('show-game', $game->id) }}">Dashboard</a></div>
     <div><a class="hover:text-slate-300 @if(Route::currentRouteName() == 'game.squad') text-white @endif" href="{{ route('game.squad', $game->id) }}">Squad</a></div>
+    @if($nextMatch)
+    <div><a class="hover:text-slate-300 @if(Route::currentRouteName() == 'game.lineup') text-white @endif" href="{{ route('game.lineup', [$game->id, $nextMatch->id]) }}">Starting XI</a></div>
+    @endif
     <div><a class="hover:text-slate-300 @if(Route::currentRouteName() == 'game.calendar') text-white @endif" href="{{ route('game.calendar', $game->id) }}">Calendar</a></div>
     <div><a class="hover:text-slate-300 @if(Route::currentRouteName() == 'game.standings') text-white @endif" href="{{ route('game.standings', $game->id) }}">Standings</a></div>
     <div><a class="hover:text-slate-300 @if(Route::currentRouteName() == 'game.cup') text-white @endif" href="{{ route('game.cup', $game->id) }}">Copa del Rey</a></div>

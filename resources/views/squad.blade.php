@@ -12,20 +12,20 @@
                     <h3 class="font-semibold text-xl text-slate-900 mb-6">{{ $game->team->name }} Squad</h3>
 
                     <table class="w-full text-sm">
-                        <thead class="text-left text-slate-500 border-b">
+                        <thead class="text-left text-slate-900 border-b">
                             <tr>
-                                <th class="py-2 w-10"></th>
-                                <th class="py-2">Name</th>
-                                <th class="py-2 w-10"></th>
-                                <th class="py-2 text-right">Value</th>
-                                <th class="py-2 text-center">Contract</th>
-                                <th class="py-2 text-center">Age</th>
-                                <th class="py-2 w-4"></th>
-                                <th class="py-2 text-center w-12">TEC</th>
-                                <th class="py-2 text-center w-12">PHY</th>
-                                <th class="py-2 text-center w-12">FIT</th>
-                                <th class="py-2 text-center w-12">MOR</th>
-                                <th class="py-2 text-center w-12">OVR</th>
+                                <th class="font-semibold py-2 w-10"></th>
+                                <th class="font-semibold py-2">Name</th>
+                                <th class="font-semibold py-2 w-10"></th>
+                                <th class="font-semibold py-2 text-right">Value</th>
+                                <th class="font-semibold py-2 text-center">Contract</th>
+                                <th class="font-semibold py-2 text-center">Age</th>
+                                <th class="font-semibold py-2 w-4"></th>
+                                <th class="font-semibold py-2 text-center w-12">TEC</th>
+                                <th class="font-semibold py-2 text-center w-12">PHY</th>
+                                <th class="font-semibold py-2 text-center w-12">FIT</th>
+                                <th class="font-semibold py-2 text-center w-12">MOR</th>
+                                <th class="font-semibold py-2 text-center w-12">OVR</th>
                             </tr>
                         </thead>
                         <tbody>
