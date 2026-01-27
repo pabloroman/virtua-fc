@@ -17,6 +17,7 @@ class Game extends Model
     protected $casts = [
         'current_date' => 'date',
         'current_matchday' => 'integer',
+        'default_formation' => 'string',
         'cup_round' => 'integer',
         'cup_eliminated' => 'boolean',
     ];

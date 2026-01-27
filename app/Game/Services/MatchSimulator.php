@@ -4,6 +4,7 @@ namespace App\Game\Services;
 
 use App\Game\DTO\MatchEventData;
 use App\Game\DTO\MatchResult;
+use App\Game\Enums\Formation;
 use App\Models\GamePlayer;
 use App\Models\Team;
 use Illuminate\Support\Collection;
@@ -78,13 +79,20 @@ class MatchSimulator
      * @param Team $awayTeam
      * @param Collection<GamePlayer> $homePlayers Players for home team (lineup)
      * @param Collection<GamePlayer> $awayPlayers Players for away team (lineup)
+     * @param Formation|null $homeFormation Formation for home team
+     * @param Formation|null $awayFormation Formation for away team
      */
     public function simulate(
         Team $homeTeam,
         Team $awayTeam,
         Collection $homePlayers,
         Collection $awayPlayers,
+        ?Formation $homeFormation = null,
+        ?Formation $awayFormation = null,
     ): MatchResult {
+        $homeFormation = $homeFormation ?? Formation::F_4_4_2;
+        $awayFormation = $awayFormation ?? Formation::F_4_4_2;
+
         $events = collect();
 
         // Calculate expected goals based on lineup strength
@@ -92,8 +100,14 @@ class MatchSimulator
         $awayStrength = $this->calculateTeamStrength($awayPlayers);
         $totalStrength = $homeStrength + $awayStrength;
 
-        $homeExpectedGoals = 1.4 + ($homeStrength / $totalStrength);
-        $awayExpectedGoals = 0.9 + ($awayStrength / $totalStrength) * 0.8;
+        // Apply formation modifiers to expected goals
+        $homeExpectedGoals = (1.4 + ($homeStrength / $totalStrength))
+            * $homeFormation->attackModifier()
+            * $awayFormation->defenseModifier();
+
+        $awayExpectedGoals = (0.9 + ($awayStrength / $totalStrength) * 0.8)
+            * $awayFormation->attackModifier()
+            * $homeFormation->defenseModifier();
 
         // Generate scores using Poisson distribution
         // These represent "balls in the opponent's net"

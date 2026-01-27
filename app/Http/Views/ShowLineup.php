@@ -2,6 +2,7 @@
 
 namespace App\Http\Views;
 
+use App\Game\Enums\Formation;
 use App\Game\Services\LineupService;
 use App\Models\Game;
 use App\Models\GameMatch;
@@ -38,8 +39,13 @@ class ShowLineup
         // Get current lineup if any
         $currentLineup = $this->lineupService->getLineup($match, $game->team_id) ?? [];
 
-        // Get auto-selected lineup for quick select
-        $autoLineup = $this->lineupService->autoSelectLineup($gameId, $game->team_id, $matchDate, $matchday);
+        // Get formation
+        $defaultFormation = $game->default_formation ?? '4-4-2';
+        $currentFormation = $this->lineupService->getFormation($match, $game->team_id) ?? $defaultFormation;
+        $formationEnum = Formation::tryFrom($currentFormation) ?? Formation::F_4_4_2;
+
+        // Get auto-selected lineup for quick select (using current formation)
+        $autoLineup = $this->lineupService->autoSelectLineup($gameId, $game->team_id, $matchDate, $matchday, $formationEnum);
 
         return view('lineup', [
             'game' => $game,
@@ -54,6 +60,9 @@ class ShowLineup
             'forwards' => $players->get('Forward', collect()),
             'currentLineup' => $currentLineup,
             'autoLineup' => $autoLineup,
+            'formations' => Formation::cases(),
+            'currentFormation' => $currentFormation,
+            'defaultFormation' => $defaultFormation,
         ]);
     }
 

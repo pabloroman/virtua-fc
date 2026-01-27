@@ -2,6 +2,7 @@
 
 namespace App\Http\Actions;
 
+use App\Game\Enums\Formation;
 use App\Game\Services\LineupService;
 use App\Models\Game;
 use App\Models\GameMatch;
@@ -21,6 +22,10 @@ class SaveLineup
         // Get selected player IDs from request
         $playerIds = $request->input('players', []);
 
+        // Get formation from request
+        $formationValue = $request->input('formation', '4-4-2');
+        $formation = Formation::tryFrom($formationValue) ?? Formation::F_4_4_2;
+
         // Ensure we have an array of strings
         $playerIds = array_values(array_filter((array) $playerIds));
 
@@ -28,24 +33,26 @@ class SaveLineup
         $matchday = $match->round_number ?? $game->current_matchday + 1;
         $matchDate = $match->scheduled_date;
 
-        // Validate the lineup
+        // Validate the lineup against the formation
         $errors = $this->lineupService->validateLineup(
             $playerIds,
             $gameId,
             $game->team_id,
             $matchDate,
-            $matchday
+            $matchday,
+            $formation
         );
 
         if (!empty($errors)) {
             return redirect()
                 ->route('game.lineup', [$gameId, $matchId])
                 ->withErrors($errors)
-                ->withInput(['players' => $playerIds]);
+                ->withInput(['players' => $playerIds, 'formation' => $formation->value]);
         }
 
-        // Save the lineup
+        // Save the lineup and formation
         $this->lineupService->saveLineup($match, $game->team_id, $playerIds);
+        $this->lineupService->saveFormation($match, $game->team_id, $formation->value);
 
         // Redirect to game page - user clicks Continue to advance
         return redirect()->route('show-game', $gameId)

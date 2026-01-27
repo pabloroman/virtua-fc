@@ -10,6 +10,7 @@
 
     <div x-data="{
         selectedPlayers: @js($currentLineup ?? []),
+        selectedFormation: @js($currentFormation),
         autoLineup: @js($autoLineup ?? []),
         get selectedCount() { return this.selectedPlayers.length },
         isSelected(id) { return this.selectedPlayers.includes(id) },
@@ -22,7 +23,17 @@
             }
         },
         quickSelect() { this.selectedPlayers = [...this.autoLineup] },
-        clearSelection() { this.selectedPlayers = [] }
+        clearSelection() { this.selectedPlayers = [] },
+        async updateAutoLineup() {
+            // When formation changes, fetch new auto-lineup from server
+            try {
+                const response = await fetch(`{{ route('game.lineup.auto', [$game->id, $match->id]) }}?formation=${this.selectedFormation}`);
+                const data = await response.json();
+                this.autoLineup = data.autoLineup;
+            } catch (e) {
+                console.error('Failed to fetch auto lineup', e);
+            }
+        }
     }">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -51,12 +62,28 @@
                             <input type="hidden" name="players[]" :value="playerId">
                         </template>
 
+                        {{-- Hidden input for formation --}}
+                        <input type="hidden" name="formation" :value="selectedFormation">
+
                         {{-- Selection Count & Actions --}}
                         <div class="flex items-center justify-between mb-6 p-4 bg-slate-50 rounded-lg">
-                            <div class="flex items-center gap-4">
+                            <div class="flex items-center gap-6">
                                 <div class="text-lg">
                                     <span class="font-bold" :class="selectedCount === 11 ? 'text-sky-600' : 'text-slate-900'" x-text="selectedCount"></span>
                                     <span class="text-slate-500">/ 11 selected</span>
+                                </div>
+                                {{-- Formation Selector --}}
+                                <div class="flex items-center gap-2">
+                                    <label class="text-sm text-slate-600">Formation:</label>
+                                    <select
+                                        x-model="selectedFormation"
+                                        @change="updateAutoLineup()"
+                                        class="text-sm border-slate-300 rounded-md focus:border-sky-500 focus:ring-sky-500"
+                                    >
+                                        @foreach($formations as $formation)
+                                            <option value="{{ $formation->value }}">{{ $formation->label() }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </div>
                             <div class="flex items-center gap-3">
@@ -68,7 +95,7 @@
                                 </button>
                                 <button
                                     type="submit"
-                                    class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-wide hover:bg-red-700 focus:bg-red-700 active:bg-red-900 transition ease-in-out duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-white uppercase tracking-wide hover:bg-red-700 focus:bg-red-700 active:bg-red-900 transition ease-in-out duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
                                     :disabled="selectedCount !== 11"
                                 >
                                     Confirm

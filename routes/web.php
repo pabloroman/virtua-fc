@@ -2,6 +2,7 @@
 
 use App\Http\Actions\AdvanceMatchday;
 use App\Http\Actions\ConductCupDraw;
+use App\Http\Actions\GetAutoLineup;
 use App\Http\Actions\InitGame;
 use App\Http\Actions\SaveLineup;
 use App\Http\Views\ShowLineup;
@@ -38,6 +39,7 @@ Route::middleware('auth')->group(function () {
     // Game Actions
     Route::post('/game/{gameId}/advance', AdvanceMatchday::class)->name('game.advance');
     Route::post('/game/{gameId}/lineup/{matchId}', SaveLineup::class)->name('game.lineup.save');
+    Route::get('/game/{gameId}/lineup/{matchId}/auto', GetAutoLineup::class)->name('game.lineup.auto');
     Route::post('/game/{gameId}/cup/draw/{round}', ConductCupDraw::class)->name('game.cup.draw');
 });
 

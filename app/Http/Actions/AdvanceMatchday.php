@@ -4,6 +4,7 @@ namespace App\Http\Actions;
 
 use App\Game\Commands\AdvanceMatchday as AdvanceMatchdayCommand;
 use App\Game\DTO\MatchEventData;
+use App\Game\Enums\Formation;
 use App\Game\Game as GameAggregate;
 use App\Game\Handlers\KnockoutCupHandler;
 use App\Game\Services\CompetitionHandlerResolver;
@@ -131,11 +132,17 @@ class AdvanceMatchday
             ? $allAwayPlayers->filter(fn ($p) => in_array($p->id, $awayLineupIds))
             : $allAwayPlayers;
 
+        // Get formations (default to 4-4-2 if not set)
+        $homeFormation = Formation::tryFrom($match->home_formation) ?? Formation::F_4_4_2;
+        $awayFormation = Formation::tryFrom($match->away_formation) ?? Formation::F_4_4_2;
+
         $result = $this->matchSimulator->simulate(
             $match->homeTeam,
             $match->awayTeam,
             $homePlayers,
             $awayPlayers,
+            $homeFormation,
+            $awayFormation,
         );
 
         // Convert events to array format for storage

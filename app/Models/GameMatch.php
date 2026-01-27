@@ -23,6 +23,8 @@ class GameMatch extends Model
         'away_score' => 'integer',
         'home_lineup' => 'array',
         'away_lineup' => 'array',
+        'home_formation' => 'string',
+        'away_formation' => 'string',
         'played' => 'boolean',
         'played_at' => 'datetime',
         'is_extra_time' => 'boolean',

@@ -2,6 +2,7 @@
 
 namespace App\Game\Services;
 
+use App\Game\Enums\Formation;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use Carbon\Carbon;
@@ -9,16 +10,6 @@ use Illuminate\Support\Collection;
 
 class LineupService
 {
-    /**
-     * Position requirements for a balanced XI.
-     * 1 GK + 4 DEF + 4 MID + 2 FWD
-     */
-    private const FORMATION = [
-        'Goalkeeper' => 1,
-        'Defender' => 4,
-        'Midfielder' => 4,
-        'Forward' => 2,
-    ];
 
     /**
      * Get available players (not injured/suspended) for a team.
@@ -44,15 +35,18 @@ class LineupService
     }
 
     /**
-     * Validate lineup: 11 players, all available, correct team.
+     * Validate lineup: 11 players, all available, correct positions for formation.
      */
     public function validateLineup(
         array $playerIds,
         string $gameId,
         string $teamId,
         Carbon $matchDate,
-        int $matchday
+        int $matchday,
+        ?Formation $formation = null
     ): array {
+        $formation = $formation ?? Formation::F_4_4_2;
+        $requirements = $formation->requirements();
         $errors = [];
 
         if (count($playerIds) !== 11) {
@@ -75,23 +69,33 @@ class LineupService
             }
         }
 
-        // Check for at least 1 goalkeeper
+        // Validate position requirements for the formation
         $selectedPlayers = $availablePlayers->filter(fn ($p) => in_array($p->id, $playerIds));
-        $goalkeepers = $selectedPlayers->filter(fn ($p) => $p->position === 'Goalkeeper');
+        $positionCounts = $selectedPlayers->groupBy('position_group')->map->count();
 
-        if ($goalkeepers->isEmpty()) {
-            $errors[] = 'You must include at least one goalkeeper.';
+        foreach ($requirements as $positionGroup => $requiredCount) {
+            $actualCount = $positionCounts->get($positionGroup, 0);
+            if ($actualCount !== $requiredCount) {
+                $errors[] = "Formation {$formation->value} requires {$requiredCount} {$positionGroup}(s), but you selected {$actualCount}.";
+            }
         }
 
         return $errors;
     }
 
     /**
-     * Auto-select best XI by overall_score, respecting positions.
-     * Algorithm: 1 GK + 4 DEF + 4 MID + 2 FWD (sorted by overall desc)
+     * Auto-select best XI by overall_score, respecting formation requirements.
      */
-    public function autoSelectLineup(string $gameId, string $teamId, Carbon $matchDate, int $matchday): array
-    {
+    public function autoSelectLineup(
+        string $gameId,
+        string $teamId,
+        Carbon $matchDate,
+        int $matchday,
+        ?Formation $formation = null
+    ): array {
+        $formation = $formation ?? Formation::F_4_4_2;
+        $requirements = $formation->requirements();
+
         $available = $this->getAvailablePlayers($gameId, $teamId, $matchDate, $matchday);
 
         $lineup = [];
@@ -100,7 +104,7 @@ class LineupService
         $grouped = $available->groupBy(fn ($p) => $p->position_group);
 
         // Select players for each position group
-        foreach (self::FORMATION as $positionGroup => $count) {
+        foreach ($requirements as $positionGroup => $count) {
             $positionPlayers = ($grouped->get($positionGroup) ?? collect())
                 ->sortByDesc('overall_score')
                 ->take($count);
@@ -139,6 +143,36 @@ class LineupService
         }
 
         $match->save();
+    }
+
+    /**
+     * Save formation to match record.
+     */
+    public function saveFormation(GameMatch $match, string $teamId, string $formation): void
+    {
+        if ($match->home_team_id === $teamId) {
+            $match->home_formation = $formation;
+        } elseif ($match->away_team_id === $teamId) {
+            $match->away_formation = $formation;
+        }
+
+        $match->save();
+    }
+
+    /**
+     * Get the formation for a team from a match.
+     */
+    public function getFormation(GameMatch $match, string $teamId): ?string
+    {
+        if ($match->home_team_id === $teamId) {
+            return $match->home_formation;
+        }
+
+        if ($match->away_team_id === $teamId) {
+            return $match->away_formation;
+        }
+
+        return null;
     }
 
     /**
