@@ -200,14 +200,27 @@ class GamePlayer extends Model
     }
 
     /**
-     * Get nationality flags data with country names and ISO codes.
+     * Get primary nationality flag data (first nationality only).
      *
-     * @return array<array{name: string, code: string}>
+     * @return array{name: string, code: string}|null
      */
-    public function getNationalityFlagsAttribute(): array
+    public function getNationalityFlagAttribute(): ?array
     {
         $nationalities = $this->nationality ?? [];
 
-        return CountryCodeMapper::toCodes($nationalities);
+        if (empty($nationalities)) {
+            return null;
+        }
+
+        $code = CountryCodeMapper::toCode($nationalities[0]);
+
+        if ($code === null) {
+            return null;
+        }
+
+        return [
+            'name' => $nationalities[0],
+            'code' => $code,
+        ];
     }
 }

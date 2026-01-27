@@ -66,11 +66,9 @@
                                             </td>
                                             {{-- Nationality --}}
                                             <td class="py-2">
-                                                <div class="flex gap-1">
-                                                    @foreach($gamePlayer->nationality_flags as $flag)
-                                                        <img src="/flags/{{ $flag['code'] }}.svg" class="w-5 h-4 rounded shadow-sm" title="{{ $flag['name'] }}">
-                                                    @endforeach
-                                                </div>
+                                                @if($gamePlayer->nationality_flag)
+                                                    <img src="/flags/{{ $gamePlayer->nationality_flag['code'] }}.svg" class="w-5 h-4 rounded shadow-sm" title="{{ $gamePlayer->nationality_flag['name'] }}">
+                                                @endif
                                             </td>
                                             {{-- Market Value --}}
                                             <td class="py-2 text-right text-slate-600">{{ $gamePlayer->market_value }}</td>
