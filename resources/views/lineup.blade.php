@@ -1,7 +1,6 @@
 @php
     /** @var App\Models\Game $game */
     /** @var App\Models\GameMatch $match */
-    use App\Support\PositionCompatibility;
 @endphp
 
 <x-app-layout>
@@ -15,8 +14,7 @@
         autoLineup: @js($autoLineup ?? []),
         playersData: @js($playersData),
         formationSlots: @js($formationSlots),
-        draggedPlayer: null,
-        dragOverSlot: null,
+        slotCompatibility: @js($slotCompatibility),
 
         get selectedCount() { return this.selectedPlayers.length },
         get currentSlots() { return this.formationSlots[this.selectedFormation] || [] },
@@ -33,29 +31,68 @@
         },
 
         get slotAssignments() {
-            // Map selected players to slots based on their position
-            const slots = this.currentSlots.map(slot => ({ ...slot, player: null }));
+            // Map selected players to slots based on slot compatibility scores
+            const slots = this.currentSlots.map(slot => ({ ...slot, player: null, compatibility: 0 }));
             const assigned = new Set();
 
-            // Group players by their position group
-            const playersByGroup = { Goalkeeper: [], Defender: [], Midfielder: [], Forward: [] };
-            this.selectedPlayers.forEach(id => {
-                const player = this.playersData[id];
-                if (player) {
-                    playersByGroup[player.positionGroup].push(player);
-                }
+            // Get all selected players
+            const selectedPlayerData = this.selectedPlayers
+                .map(id => this.playersData[id])
+                .filter(p => p);
+
+            // Sort slots by specificity (GK first, then slots with fewer compatible positions)
+            const sortedSlots = [...slots].sort((a, b) => {
+                if (a.label === 'GK') return -1;
+                if (b.label === 'GK') return 1;
+                const aCompat = Object.keys(this.slotCompatibility[a.label] || {}).length;
+                const bCompat = Object.keys(this.slotCompatibility[b.label] || {}).length;
+                return aCompat - bCompat;
             });
 
-            // Assign players to matching slots
-            slots.forEach(slot => {
-                const available = playersByGroup[slot.role].filter(p => !assigned.has(p.id));
-                if (available.length > 0) {
-                    slot.player = available[0];
-                    assigned.add(available[0].id);
+            // Assign best player to each slot
+            sortedSlots.forEach(slot => {
+                let bestPlayer = null;
+                let bestScore = -1;
+
+                selectedPlayerData.forEach(player => {
+                    if (assigned.has(player.id)) return;
+
+                    const compatibility = this.getSlotCompatibility(player.position, slot.label);
+                    if (compatibility === 0) return;
+
+                    // Weighted score: 70% player rating, 30% compatibility
+                    const weightedScore = (player.overallScore * 0.7) + (compatibility * 0.3);
+
+                    if (weightedScore > bestScore) {
+                        bestScore = weightedScore;
+                        bestPlayer = { ...player, compatibility };
+                    }
+                });
+
+                // Find the original slot and assign
+                const originalSlot = slots.find(s => s.id === slot.id);
+                if (originalSlot && bestPlayer) {
+                    originalSlot.player = bestPlayer;
+                    originalSlot.compatibility = bestPlayer.compatibility;
+                    assigned.add(bestPlayer.id);
                 }
             });
 
             return slots;
+        },
+
+        getSlotCompatibility(position, slotCode) {
+            return this.slotCompatibility[slotCode]?.[position] ?? 0;
+        },
+
+        getCompatibilityDisplay(position, slotCode) {
+            const score = this.getSlotCompatibility(position, slotCode);
+            if (score >= 100) return { label: 'Natural', class: 'text-green-600', ring: 'ring-green-500', score };
+            if (score >= 80) return { label: 'Very Good', class: 'text-emerald-600', ring: 'ring-emerald-500', score };
+            if (score >= 60) return { label: 'Good', class: 'text-lime-600', ring: 'ring-lime-500', score };
+            if (score >= 40) return { label: 'Okay', class: 'text-yellow-600', ring: 'ring-yellow-500', score };
+            if (score >= 20) return { label: 'Poor', class: 'text-orange-500', ring: 'ring-orange-500', score };
+            return { label: 'Unsuitable', class: 'text-red-600', ring: 'ring-red-500', score };
         },
 
         isSelected(id) { return this.selectedPlayers.includes(id) },
@@ -82,30 +119,6 @@
             }
         },
 
-        getCompatibility(playerPosition, targetRole) {
-            const scores = {
-                'Goalkeeper': { 'Goalkeeper': 100 },
-                'Centre-Back': { 'Goalkeeper': 0, 'Defender': 100, 'Midfielder': 25, 'Forward': 0 },
-                'Left-Back': { 'Goalkeeper': 0, 'Defender': 100, 'Midfielder': 50, 'Forward': 25 },
-                'Right-Back': { 'Goalkeeper': 0, 'Defender': 100, 'Midfielder': 50, 'Forward': 25 },
-                'Defensive Midfield': { 'Goalkeeper': 0, 'Defender': 75, 'Midfielder': 100, 'Forward': 25 },
-                'Central Midfield': { 'Goalkeeper': 0, 'Defender': 50, 'Midfielder': 100, 'Forward': 50 },
-                'Attacking Midfield': { 'Goalkeeper': 0, 'Defender': 25, 'Midfielder': 100, 'Forward': 75 },
-                'Left Midfield': { 'Goalkeeper': 0, 'Defender': 50, 'Midfielder': 100, 'Forward': 75 },
-                'Right Midfield': { 'Goalkeeper': 0, 'Defender': 50, 'Midfielder': 100, 'Forward': 75 },
-                'Left Winger': { 'Goalkeeper': 0, 'Defender': 25, 'Midfielder': 75, 'Forward': 100 },
-                'Right Winger': { 'Goalkeeper': 0, 'Defender': 25, 'Midfielder': 75, 'Forward': 100 },
-                'Centre-Forward': { 'Goalkeeper': 0, 'Defender': 0, 'Midfielder': 25, 'Forward': 100 },
-                'Second Striker': { 'Goalkeeper': 0, 'Defender': 0, 'Midfielder': 50, 'Forward': 100 },
-            };
-            const score = scores[playerPosition]?.[targetRole] ?? 50;
-            if (score >= 100) return { label: 'Natural', class: 'text-green-600', ring: 'ring-green-500' };
-            if (score >= 75) return { label: 'Good', class: 'text-lime-600', ring: 'ring-lime-500' };
-            if (score >= 50) return { label: 'Okay', class: 'text-yellow-600', ring: 'ring-yellow-500' };
-            if (score >= 25) return { label: 'Poor', class: 'text-orange-500', ring: 'ring-orange-500' };
-            return { label: 'Unsuitable', class: 'text-red-600', ring: 'ring-red-500' };
-        },
-
         getPositionColor(role) {
             return {
                 'Goalkeeper': 'bg-amber-500',
@@ -117,6 +130,32 @@
 
         removeFromSlot(playerId) {
             this.selectedPlayers = this.selectedPlayers.filter(p => p !== playerId);
+        },
+
+        // Get best matching slot label for a player's position
+        getNaturalSlot(position) {
+            const mapping = {
+                'Goalkeeper': 'GK',
+                'Centre-Back': 'CB',
+                'Left-Back': 'LB',
+                'Right-Back': 'RB',
+                'Defensive Midfield': 'DM',
+                'Central Midfield': 'CM',
+                'Attacking Midfield': 'AM',
+                'Left Midfield': 'LM',
+                'Right Midfield': 'RM',
+                'Left Winger': 'LW',
+                'Right Winger': 'RW',
+                'Centre-Forward': 'ST',
+                'Second Striker': 'ST',
+            };
+            return mapping[position] || 'CM';
+        },
+
+        // Find which slot a player is assigned to
+        getPlayerSlot(playerId) {
+            const assignment = this.slotAssignments.find(s => s.player?.id === playerId);
+            return assignment?.label || null;
         }
     }">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -254,17 +293,10 @@
                                             >
                                                 <div
                                                     class="w-10 h-10 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-lg cursor-pointer ring-2"
-                                                    :class="[getPositionColor(slot.role), getCompatibility(slot.player?.position, slot.role).ring]"
+                                                    :class="[getPositionColor(slot.role), getCompatibilityDisplay(slot.player?.position, slot.label).ring]"
                                                     @click="removeFromSlot(slot.player?.id)"
                                                 >
-                                                    <span x-text="slot.player?.overallScore"></span>
-                                                </div>
-                                                {{-- Player name tooltip --}}
-                                                <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 px-2 py-1 bg-slate-900 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
                                                     <span x-text="slot.player?.name"></span>
-                                                    <template x-if="getCompatibility(slot.player?.position, slot.role).label !== 'Natural'">
-                                                        <span class="ml-1" :class="getCompatibility(slot.player?.position, slot.role).class" x-text="'(' + getCompatibility(slot.player?.position, slot.role).label + ')'"></span>
-                                                    </template>
                                                 </div>
                                             </div>
                                         </div>
@@ -366,20 +398,20 @@
                                                                     {{ $player->name }}
                                                                 </div>
                                                                 @if($player->nationality_flag)
-                                                                    <img src="/flags/{{ $player->nationality_flag['code'] }}.svg" class="w-4 h-3 rounded shadow-sm" title="{{ $player->nationality_flag['name'] }}">
+                                                                    <img src="/flags/{{ $player->nationality_flag['code'] }}.svg" class="w-4 h-3 rounded-sm shadow-sm" title="{{ $player->nationality_flag['name'] }}">
                                                                 @endif
                                                             </div>
                                                             @if($unavailabilityReason)
                                                                 <div class="text-xs text-red-500">{{ $unavailabilityReason }}</div>
                                                             @endif
                                                         </td>
-                                                        {{-- Compatibility indicator (only when selected) --}}
-                                                        <td class="py-2 text-center">
-                                                            <template x-if="isSelected('{{ $player->id }}')">
+                                                        {{-- Compatibility indicator (only when selected, shows assigned slot) --}}
+                                                        <td class="py-2 text-right">
+                                                            <template x-if="isSelected('{{ $player->id }}') && getPlayerSlot('{{ $player->id }}')">
                                                                 <span
-                                                                    class="text-xs font-medium px-1.5 py-0.5 rounded"
-                                                                    :class="getCompatibility('{{ $player->position }}', '{{ $group['role'] }}').class"
-                                                                    x-text="getCompatibility('{{ $player->position }}', '{{ $group['role'] }}').label !== 'Natural' ? getCompatibility('{{ $player->position }}', '{{ $group['role'] }}').label : ''"
+                                                                    class="text-xs font-medium px-1.5 py-0.5 rounded whitespace-nowrap"
+                                                                    :class="getCompatibilityDisplay('{{ $player->position }}', getPlayerSlot('{{ $player->id }}')).class"
+                                                                    x-text="getPlayerSlot('{{ $player->id }}') + (getCompatibilityDisplay('{{ $player->position }}', getPlayerSlot('{{ $player->id }}')).label !== 'Natural' ? ' (' + getCompatibilityDisplay('{{ $player->position }}', getPlayerSlot('{{ $player->id }}')).label + ')' : '')"
                                                                 ></span>
                                                             </template>
                                                         </td>

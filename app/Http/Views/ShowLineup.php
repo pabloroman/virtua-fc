@@ -6,6 +6,7 @@ use App\Game\Enums\Formation;
 use App\Game\Services\LineupService;
 use App\Models\Game;
 use App\Models\GameMatch;
+use App\Support\PositionSlotMapper;
 
 class ShowLineup
 {
@@ -91,6 +92,9 @@ class ShowLineup
             $formationSlots[$formation->value] = $formation->pitchSlots();
         }
 
+        // Pass slot compatibility matrix to JavaScript
+        $slotCompatibility = PositionSlotMapper::SLOT_COMPATIBILITY;
+
         return view('lineup', [
             'game' => $game,
             'match' => $match,
@@ -109,6 +113,7 @@ class ShowLineup
             'defaultFormation' => $defaultFormation,
             'playersData' => $playersData,
             'formationSlots' => $formationSlots,
+            'slotCompatibility' => $slotCompatibility,
         ]);
     }
 

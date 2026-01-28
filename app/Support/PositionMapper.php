@@ -6,24 +6,42 @@ class PositionMapper
 {
     private static array $positionToAbbreviation = [
         'Goalkeeper' => 'GK',
-        'Centre-Back' => 'DF',
-        'Left-Back' => 'DF',
-        'Right-Back' => 'DF',
-        'Defensive Midfield' => 'MF',
-        'Central Midfield' => 'MF',
-        'Attacking Midfield' => 'MF',
-        'Left Midfield' => 'MF',
-        'Right Midfield' => 'MF',
-        'Left Winger' => 'FW',
-        'Right Winger' => 'FW',
-        'Centre-Forward' => 'FW',
-        'Second Striker' => 'FW',
+        'Centre-Back' => 'CB',
+        'Left-Back' => 'LB',
+        'Right-Back' => 'RB',
+        'Defensive Midfield' => 'DM',
+        'Central Midfield' => 'CM',
+        'Attacking Midfield' => 'AM',
+        'Left Midfield' => 'LM',
+        'Right Midfield' => 'RM',
+        'Left Winger' => 'LW',
+        'Right Winger' => 'RW',
+        'Centre-Forward' => 'CF',
+        'Second Striker' => 'SS',
     ];
 
     private static array $abbreviationColors = [
         'GK' => ['bg' => 'bg-amber-100', 'text' => 'text-amber-700'],
+
+        // Defenders
+        'CB' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-700'],
+        'LB' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-700'],
+        'RB' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-700'],
         'DF' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-700'],
+
+        // Midfielders
+        'DM' => ['bg' => 'bg-green-100', 'text' => 'text-green-700'],
+        'CM' => ['bg' => 'bg-green-100', 'text' => 'text-green-700'],
+        'AM' => ['bg' => 'bg-green-100', 'text' => 'text-green-700'],
+        'LM' => ['bg' => 'bg-green-100', 'text' => 'text-green-700'],
+        'RM' => ['bg' => 'bg-green-100', 'text' => 'text-green-700'],
         'MF' => ['bg' => 'bg-green-100', 'text' => 'text-green-700'],
+
+        // Forwards
+        'LW' => ['bg' => 'bg-red-100', 'text' => 'text-red-700'],
+        'RW' => ['bg' => 'bg-red-100', 'text' => 'text-red-700'],
+        'CF' => ['bg' => 'bg-red-100', 'text' => 'text-red-700'],
+        'SS' => ['bg' => 'bg-red-100', 'text' => 'text-red-700'],
         'FW' => ['bg' => 'bg-red-100', 'text' => 'text-red-700'],
     ];
 
