@@ -57,4 +57,95 @@ enum Formation: string
     {
         return $this->value;
     }
+
+    /**
+     * Get pitch slot positions for visual formation display.
+     * Returns array of slots with: id, role (position group), x (0-100), y (0-100), label
+     * Y: 0 = goal line, 100 = opponent goal
+     *
+     * @return array<array{id: int, role: string, x: int, y: int, label: string}>
+     */
+    public function pitchSlots(): array
+    {
+        return match ($this) {
+            self::F_4_4_2 => [
+                ['id' => 0, 'role' => 'Goalkeeper', 'x' => 50, 'y' => 10, 'label' => 'GK'],
+                ['id' => 1, 'role' => 'Defender', 'x' => 15, 'y' => 28, 'label' => 'LB'],
+                ['id' => 2, 'role' => 'Defender', 'x' => 38, 'y' => 28, 'label' => 'CB'],
+                ['id' => 3, 'role' => 'Defender', 'x' => 62, 'y' => 28, 'label' => 'CB'],
+                ['id' => 4, 'role' => 'Defender', 'x' => 85, 'y' => 28, 'label' => 'RB'],
+                ['id' => 5, 'role' => 'Midfielder', 'x' => 15, 'y' => 55, 'label' => 'LM'],
+                ['id' => 6, 'role' => 'Midfielder', 'x' => 38, 'y' => 55, 'label' => 'CM'],
+                ['id' => 7, 'role' => 'Midfielder', 'x' => 62, 'y' => 55, 'label' => 'CM'],
+                ['id' => 8, 'role' => 'Midfielder', 'x' => 85, 'y' => 55, 'label' => 'RM'],
+                ['id' => 9, 'role' => 'Forward', 'x' => 35, 'y' => 80, 'label' => 'ST'],
+                ['id' => 10, 'role' => 'Forward', 'x' => 65, 'y' => 80, 'label' => 'ST'],
+            ],
+            self::F_4_3_3 => [
+                ['id' => 0, 'role' => 'Goalkeeper', 'x' => 50, 'y' => 10, 'label' => 'GK'],
+                ['id' => 1, 'role' => 'Defender', 'x' => 15, 'y' => 28, 'label' => 'LB'],
+                ['id' => 2, 'role' => 'Defender', 'x' => 38, 'y' => 28, 'label' => 'CB'],
+                ['id' => 3, 'role' => 'Defender', 'x' => 62, 'y' => 28, 'label' => 'CB'],
+                ['id' => 4, 'role' => 'Defender', 'x' => 85, 'y' => 28, 'label' => 'RB'],
+                ['id' => 5, 'role' => 'Midfielder', 'x' => 25, 'y' => 55, 'label' => 'CM'],
+                ['id' => 6, 'role' => 'Midfielder', 'x' => 50, 'y' => 55, 'label' => 'CM'],
+                ['id' => 7, 'role' => 'Midfielder', 'x' => 75, 'y' => 55, 'label' => 'CM'],
+                ['id' => 8, 'role' => 'Forward', 'x' => 15, 'y' => 78, 'label' => 'LW'],
+                ['id' => 9, 'role' => 'Forward', 'x' => 50, 'y' => 82, 'label' => 'ST'],
+                ['id' => 10, 'role' => 'Forward', 'x' => 85, 'y' => 78, 'label' => 'RW'],
+            ],
+            self::F_4_2_3_1 => [
+                ['id' => 0, 'role' => 'Goalkeeper', 'x' => 50, 'y' => 10, 'label' => 'GK'],
+                ['id' => 1, 'role' => 'Defender', 'x' => 15, 'y' => 25, 'label' => 'LB'],
+                ['id' => 2, 'role' => 'Defender', 'x' => 38, 'y' => 25, 'label' => 'CB'],
+                ['id' => 3, 'role' => 'Defender', 'x' => 62, 'y' => 25, 'label' => 'CB'],
+                ['id' => 4, 'role' => 'Defender', 'x' => 85, 'y' => 25, 'label' => 'RB'],
+                ['id' => 5, 'role' => 'Midfielder', 'x' => 35, 'y' => 45, 'label' => 'DM'],
+                ['id' => 6, 'role' => 'Midfielder', 'x' => 65, 'y' => 45, 'label' => 'DM'],
+                ['id' => 7, 'role' => 'Midfielder', 'x' => 15, 'y' => 62, 'label' => 'LM'],
+                ['id' => 8, 'role' => 'Midfielder', 'x' => 50, 'y' => 62, 'label' => 'AM'],
+                ['id' => 9, 'role' => 'Midfielder', 'x' => 85, 'y' => 62, 'label' => 'RM'],
+                ['id' => 10, 'role' => 'Forward', 'x' => 50, 'y' => 82, 'label' => 'ST'],
+            ],
+            self::F_3_5_2 => [
+                ['id' => 0, 'role' => 'Goalkeeper', 'x' => 50, 'y' => 10, 'label' => 'GK'],
+                ['id' => 1, 'role' => 'Defender', 'x' => 25, 'y' => 25, 'label' => 'CB'],
+                ['id' => 2, 'role' => 'Defender', 'x' => 50, 'y' => 25, 'label' => 'CB'],
+                ['id' => 3, 'role' => 'Defender', 'x' => 75, 'y' => 25, 'label' => 'CB'],
+                ['id' => 4, 'role' => 'Midfielder', 'x' => 10, 'y' => 50, 'label' => 'LWB'],
+                ['id' => 5, 'role' => 'Midfielder', 'x' => 35, 'y' => 45, 'label' => 'CM'],
+                ['id' => 6, 'role' => 'Midfielder', 'x' => 50, 'y' => 55, 'label' => 'AM'],
+                ['id' => 7, 'role' => 'Midfielder', 'x' => 65, 'y' => 45, 'label' => 'CM'],
+                ['id' => 8, 'role' => 'Midfielder', 'x' => 90, 'y' => 50, 'label' => 'RWB'],
+                ['id' => 9, 'role' => 'Forward', 'x' => 35, 'y' => 78, 'label' => 'ST'],
+                ['id' => 10, 'role' => 'Forward', 'x' => 65, 'y' => 78, 'label' => 'ST'],
+            ],
+            self::F_5_3_2 => [
+                ['id' => 0, 'role' => 'Goalkeeper', 'x' => 50, 'y' => 10, 'label' => 'GK'],
+                ['id' => 1, 'role' => 'Defender', 'x' => 10, 'y' => 35, 'label' => 'LWB'],
+                ['id' => 2, 'role' => 'Defender', 'x' => 30, 'y' => 25, 'label' => 'CB'],
+                ['id' => 3, 'role' => 'Defender', 'x' => 50, 'y' => 25, 'label' => 'CB'],
+                ['id' => 4, 'role' => 'Defender', 'x' => 70, 'y' => 25, 'label' => 'CB'],
+                ['id' => 5, 'role' => 'Defender', 'x' => 90, 'y' => 35, 'label' => 'RWB'],
+                ['id' => 6, 'role' => 'Midfielder', 'x' => 30, 'y' => 50, 'label' => 'CM'],
+                ['id' => 7, 'role' => 'Midfielder', 'x' => 50, 'y' => 50, 'label' => 'CM'],
+                ['id' => 8, 'role' => 'Midfielder', 'x' => 70, 'y' => 50, 'label' => 'CM'],
+                ['id' => 9, 'role' => 'Forward', 'x' => 35, 'y' => 78, 'label' => 'ST'],
+                ['id' => 10, 'role' => 'Forward', 'x' => 65, 'y' => 78, 'label' => 'ST'],
+            ],
+            self::F_5_4_1 => [
+                ['id' => 0, 'role' => 'Goalkeeper', 'x' => 50, 'y' => 10, 'label' => 'GK'],
+                ['id' => 1, 'role' => 'Defender', 'x' => 10, 'y' => 25, 'label' => 'LWB'],
+                ['id' => 2, 'role' => 'Defender', 'x' => 30, 'y' => 25, 'label' => 'CB'],
+                ['id' => 3, 'role' => 'Defender', 'x' => 50, 'y' => 25, 'label' => 'CB'],
+                ['id' => 4, 'role' => 'Defender', 'x' => 70, 'y' => 25, 'label' => 'CB'],
+                ['id' => 5, 'role' => 'Defender', 'x' => 90, 'y' => 25, 'label' => 'RWB'],
+                ['id' => 6, 'role' => 'Midfielder', 'x' => 15, 'y' => 55, 'label' => 'LM'],
+                ['id' => 7, 'role' => 'Midfielder', 'x' => 38, 'y' => 55, 'label' => 'CM'],
+                ['id' => 8, 'role' => 'Midfielder', 'x' => 62, 'y' => 55, 'label' => 'CM'],
+                ['id' => 9, 'role' => 'Midfielder', 'x' => 85, 'y' => 55, 'label' => 'RM'],
+                ['id' => 10, 'role' => 'Forward', 'x' => 50, 'y' => 80, 'label' => 'ST'],
+            ],
+        };
+    }
 }

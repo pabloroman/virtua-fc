@@ -57,12 +57,39 @@ class ShowLineup
             $currentFormation = $currentFormation ?? $previous['formation'] ?? $defaultFormation;
         }
 
-        $currentLineup = $currentLineup ?? [];
         $currentFormation = $currentFormation ?? $defaultFormation;
         $formationEnum = Formation::tryFrom($currentFormation) ?? Formation::F_4_4_2;
 
         // Get auto-selected lineup for quick select (using current formation)
         $autoLineup = $this->lineupService->autoSelectLineup($gameId, $game->team_id, $matchDate, $matchday, $formationEnum);
+
+        // If still no lineup (first match ever), use auto lineup
+        if (empty($currentLineup)) {
+            $currentLineup = $autoLineup;
+        }
+
+        $currentLineup = $currentLineup ?? [];
+
+        // Prepare player data for JavaScript (flat array with all needed info)
+        $playersData = $allPlayers->map(fn ($p) => [
+            'id' => $p->id,
+            'name' => $p->name,
+            'position' => $p->position,
+            'positionGroup' => $p->position_group,
+            'positionAbbr' => $p->position_abbreviation,
+            'overallScore' => $p->overall_score,
+            'technicalAbility' => $p->technical_ability,
+            'physicalAbility' => $p->physical_ability,
+            'fitness' => $p->fitness,
+            'morale' => $p->morale,
+            'isAvailable' => $p->isAvailable($matchDate, $matchday),
+        ])->keyBy('id')->toArray();
+
+        // Prepare pitch slots for each formation
+        $formationSlots = [];
+        foreach (Formation::cases() as $formation) {
+            $formationSlots[$formation->value] = $formation->pitchSlots();
+        }
 
         return view('lineup', [
             'game' => $game,
@@ -80,6 +107,8 @@ class ShowLineup
             'formations' => Formation::cases(),
             'currentFormation' => $currentFormation,
             'defaultFormation' => $defaultFormation,
+            'playersData' => $playersData,
+            'formationSlots' => $formationSlots,
         ]);
     }
 
