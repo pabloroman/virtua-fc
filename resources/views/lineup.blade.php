@@ -156,6 +156,27 @@
         getPlayerSlot(playerId) {
             const assignment = this.slotAssignments.find(s => s.player?.id === playerId);
             return assignment?.label || null;
+        },
+q
+        getInitials(name) {
+            if (!name) return '??';
+            const parts = name.trim().split(/\s+/);
+            if (parts.length === 1) {
+                // Single name: take first 2 characters
+                return parts[0].substring(0, 2).toUpperCase();
+            }
+            // Multiple names: first letter of first name + first letter of last name
+            return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+        },
+
+        // Get gradient colors for position
+        getPositionGradient(role) {
+            return {
+                'Goalkeeper': 'from-amber-400 to-amber-600',
+                'Defender': 'from-blue-400 to-blue-600',
+                'Midfielder': 'from-emerald-400 to-emerald-600',
+                'Forward': 'from-rose-400 to-rose-600',
+            }[role] || 'from-slate-400 to-slate-600';
         }
     }">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -275,28 +296,60 @@
                                     {{-- Player Slots --}}
                                     <template x-for="slot in slotAssignments" :key="slot.id">
                                         <div
-                                            class="absolute transform -translate-x-1/2 -translate-y-1/2 transition-all duration-200"
+                                            class="absolute transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300"
                                             :style="`left: ${slot.x}%; top: ${100 - slot.y}%`"
                                         >
                                             {{-- Empty Slot --}}
                                             <div
                                                 x-show="!slot.player"
-                                                class="w-10 h-10 rounded-full border-2 border-dashed border-white/50 flex items-center justify-center"
+                                                class="w-11 h-11 rounded-full border-2 border-dashed border-white/40 flex items-center justify-center backdrop-blur-sm bg-white/5"
                                             >
-                                                <span class="text-xs text-white/70 font-medium" x-text="slot.label"></span>
+                                                <span class="text-[10px] text-white/60 font-semibold tracking-wide" x-text="slot.label"></span>
                                             </div>
 
-                                            {{-- Filled Slot --}}
+                                            {{-- Filled Slot - Modern card style --}}
                                             <div
                                                 x-show="slot.player"
-                                                class="group relative"
+                                                class="group relative cursor-pointer"
+                                                @click="removeFromSlot(slot.player?.id)"
                                             >
+                                                {{-- Main player badge --}}
                                                 <div
-                                                    class="w-10 h-10 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-lg cursor-pointer ring-2"
-                                                    :class="[getPositionColor(slot.role), getCompatibilityDisplay(slot.player?.position, slot.label).ring]"
-                                                    @click="removeFromSlot(slot.player?.id)"
+                                                    class="relative w-11 h-11 rounded-xl bg-gradient-to-br shadow-lg transform transition-all duration-200 hover:scale-110 hover:shadow-xl"
+                                                    :class="getPositionGradient(slot.role)"
                                                 >
-                                                    <span x-text="slot.player?.name"></span>
+                                                    {{-- Initials --}}
+                                                    <div class="absolute inset-0 flex items-center justify-center">
+                                                        <span class="text-white font-bold text-sm tracking-tight drop-shadow-sm" x-text="getInitials(slot.player?.name)"></span>
+                                                    </div>
+                                                    {{-- Compatibility indicator dot --}}
+                                                    <div
+                                                        class="absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-emerald-600"
+                                                        :class="{
+                                                            'bg-green-400': getCompatibilityDisplay(slot.player?.position, slot.label).score >= 100,
+                                                            'bg-lime-400': getCompatibilityDisplay(slot.player?.position, slot.label).score >= 60 && getCompatibilityDisplay(slot.player?.position, slot.label).score < 100,
+                                                            'bg-yellow-400': getCompatibilityDisplay(slot.player?.position, slot.label).score >= 40 && getCompatibilityDisplay(slot.player?.position, slot.label).score < 60,
+                                                            'bg-orange-400': getCompatibilityDisplay(slot.player?.position, slot.label).score >= 20 && getCompatibilityDisplay(slot.player?.position, slot.label).score < 40,
+                                                            'bg-red-400': getCompatibilityDisplay(slot.player?.position, slot.label).score < 20,
+                                                        }"
+                                                        x-show="getCompatibilityDisplay(slot.player?.position, slot.label).score < 100"
+                                                    ></div>
+                                                    {{-- Overall rating badge --}}
+                                                    <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 px-1.5 py-0.5 bg-slate-900/80 rounded text-[9px] font-bold text-white shadow-sm">
+                                                        <span x-text="slot.player?.overallScore"></span>
+                                                    </div>
+                                                </div>
+
+                                                {{-- Hover tooltip --}}
+                                                <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-slate-900/95 backdrop-blur-sm text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-20 shadow-xl">
+                                                    <div class="font-semibold" x-text="slot.player?.name"></div>
+                                                    <div class="flex items-center gap-2 mt-1 text-slate-300">
+                                                        <span x-text="slot.label"></span>
+                                                        <span class="text-slate-500">·</span>
+                                                        <span :class="getCompatibilityDisplay(slot.player?.position, slot.label).class" x-text="getCompatibilityDisplay(slot.player?.position, slot.label).label"></span>
+                                                    </div>
+                                                    {{-- Arrow --}}
+                                                    <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900/95"></div>
                                                 </div>
                                             </div>
                                         </div>
