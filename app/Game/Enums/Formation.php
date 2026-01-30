@@ -7,6 +7,7 @@ enum Formation: string
     case F_4_4_2 = '4-4-2';
     case F_4_3_3 = '4-3-3';
     case F_4_2_3_1 = '4-2-3-1';
+    case F_3_4_3 = '3-4-3';
     case F_3_5_2 = '3-5-2';
     case F_5_3_2 = '5-3-2';
     case F_5_4_1 = '5-4-1';
@@ -16,6 +17,7 @@ enum Formation: string
         return match ($this) {
             self::F_4_4_2 => ['Goalkeeper' => 1, 'Defender' => 4, 'Midfielder' => 4, 'Forward' => 2],
             self::F_4_3_3 => ['Goalkeeper' => 1, 'Defender' => 4, 'Midfielder' => 3, 'Forward' => 3],
+            self::F_3_4_3 => ['Goalkeeper' => 1, 'Defender' => 3, 'Midfielder' => 4, 'Forward' => 3],
             self::F_4_2_3_1 => ['Goalkeeper' => 1, 'Defender' => 4, 'Midfielder' => 5, 'Forward' => 1],
             self::F_3_5_2 => ['Goalkeeper' => 1, 'Defender' => 3, 'Midfielder' => 5, 'Forward' => 2],
             self::F_5_3_2 => ['Goalkeeper' => 1, 'Defender' => 5, 'Midfielder' => 3, 'Forward' => 2],
@@ -30,6 +32,7 @@ enum Formation: string
     {
         return match ($this) {
             self::F_4_3_3 => 1.10,   // +10% attack
+            self::F_3_4_3 => 1.10,   // +10% attack
             self::F_3_5_2 => 1.05,   // +5% attack
             self::F_4_4_2 => 1.00,   // neutral
             self::F_4_2_3_1 => 1.00, // neutral
@@ -50,6 +53,7 @@ enum Formation: string
             self::F_4_4_2 => 1.00,   // neutral
             self::F_3_5_2 => 1.05,   // +5% conceded
             self::F_4_3_3 => 1.10,   // +10% conceded
+            self::F_3_4_3 => 1.10,   // +10% conceded
         };
     }
 
@@ -106,6 +110,19 @@ enum Formation: string
                 ['id' => 8, 'role' => 'Midfielder', 'x' => 50, 'y' => 62, 'label' => 'AM'],
                 ['id' => 9, 'role' => 'Midfielder', 'x' => 85, 'y' => 62, 'label' => 'RM'],
                 ['id' => 10, 'role' => 'Forward', 'x' => 50, 'y' => 82, 'label' => 'ST'],
+            ],
+            self::F_3_4_3 => [
+                ['id' => 0, 'role' => 'Goalkeeper', 'x' => 50, 'y' => 10, 'label' => 'GK'],
+                ['id' => 1, 'role' => 'Defender', 'x' => 25, 'y' => 25, 'label' => 'CB'],
+                ['id' => 2, 'role' => 'Defender', 'x' => 50, 'y' => 25, 'label' => 'CB'],
+                ['id' => 3, 'role' => 'Defender', 'x' => 75, 'y' => 25, 'label' => 'CB'],
+                ['id' => 4, 'role' => 'Midfielder', 'x' => 35, 'y' => 42, 'label' => 'DM'],
+                ['id' => 5, 'role' => 'Midfielder', 'x' => 65, 'y' => 42, 'label' => 'DM'],
+                ['id' => 6, 'role' => 'Midfielder', 'x' => 30, 'y' => 60, 'label' => 'CM'],
+                ['id' => 7, 'role' => 'Midfielder', 'x' => 70, 'y' => 60, 'label' => 'CM'],
+                ['id' => 8, 'role' => 'Forward', 'x' => 15, 'y' => 78, 'label' => 'LW'],
+                ['id' => 9, 'role' => 'Forward', 'x' => 50, 'y' => 82, 'label' => 'ST'],
+                ['id' => 10, 'role' => 'Forward', 'x' => 85, 'y' => 78, 'label' => 'RW'],
             ],
             self::F_3_5_2 => [
                 ['id' => 0, 'role' => 'Goalkeeper', 'x' => 50, 'y' => 10, 'label' => 'GK'],
