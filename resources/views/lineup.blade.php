@@ -40,10 +40,13 @@
                 .map(id => this.playersData[id])
                 .filter(p => p);
 
-            // Sort slots by specificity (GK first, then slots with fewer compatible positions)
+            const rolePriority = { 'Goalkeeper': 0, 'Forward': 1, 'Defender': 2, 'Midfielder': 3 };
             const sortedSlots = [...slots].sort((a, b) => {
-                if (a.label === 'GK') return -1;
-                if (b.label === 'GK') return 1;
+                const aPriority = rolePriority[a.role] ?? 99;
+                const bPriority = rolePriority[b.role] ?? 99;
+                if (aPriority !== bPriority) return aPriority - bPriority;
+
+                // Within same role, sort by specificity (fewer compatible positions first)
                 const aCompat = Object.keys(this.slotCompatibility[a.label] || {}).length;
                 const bCompat = Object.keys(this.slotCompatibility[b.label] || {}).length;
                 return aCompat - bCompat;
@@ -157,7 +160,7 @@
             const assignment = this.slotAssignments.find(s => s.player?.id === playerId);
             return assignment?.label || null;
         },
-q
+
         getInitials(name) {
             if (!name) return '??';
             const parts = name.trim().split(/\s+/);
