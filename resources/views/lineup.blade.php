@@ -222,6 +222,13 @@
                                     </select>
                                 </div>
 
+                                {{-- Save as Default --}}
+                                <label class="flex items-center gap-2 text-sm text-slate-600 cursor-pointer">
+                                    <input type="checkbox" name="save_default_formation" value="1" class="rounded border-slate-300 text-sky-600 focus:ring-sky-500"
+                                        @if($currentFormation === $defaultFormation) checked @endif>
+                                    <span>Set as default</span>
+                                </label>
+
                                 {{-- Selection Count --}}
                                 <div class="flex items-center gap-2 px-3 py-1.5 rounded-md" :class="selectedCount === 11 ? 'bg-green-100' : 'bg-slate-200'">
                                     <span class="font-bold" :class="selectedCount === 11 ? 'text-green-700' : 'text-slate-700'" x-text="selectedCount"></span>

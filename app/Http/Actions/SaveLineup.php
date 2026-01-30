@@ -54,6 +54,11 @@ class SaveLineup
         $this->lineupService->saveLineup($match, $game->team_id, $playerIds);
         $this->lineupService->saveFormation($match, $game->team_id, $formation->value);
 
+        // Save as default formation if requested
+        if ($request->boolean('save_default_formation')) {
+            $game->update(['default_formation' => $formation->value]);
+        }
+
         // Redirect to game page - user clicks Continue to advance
         return redirect()->route('show-game', $gameId)
             ->with('message', 'Lineup confirmed! Click Continue to play the match.');
