@@ -5,11 +5,15 @@ namespace App\Game;
 use App\Game\Commands\AdvanceMatchday;
 use App\Game\Commands\ConductCupDraw;
 use App\Game\Commands\CreateGame;
+use App\Game\Commands\ProcessSeasonDevelopment;
+use App\Game\Commands\StartNewSeason;
 use App\Game\Events\CupDrawConducted;
 use App\Game\Events\CupTieCompleted;
 use App\Game\Events\GameCreated;
 use App\Game\Events\MatchdayAdvanced;
 use App\Game\Events\MatchResultRecorded;
+use App\Game\Events\NewSeasonStarted;
+use App\Game\Events\SeasonDevelopmentProcessed;
 use Carbon\Carbon;
 use Ramsey\Uuid\Uuid;
 use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
@@ -94,6 +98,32 @@ final class Game extends AggregateRoot
         return $this;
     }
 
+    public function processSeasonDevelopment(ProcessSeasonDevelopment $command): self
+    {
+        $this->recordThat(new SeasonDevelopmentProcessed(
+            $command->season,
+            $command->teamId,
+            $command->playerChanges,
+        ));
+
+        $this->persist();
+
+        return $this;
+    }
+
+    public function startNewSeason(StartNewSeason $command): self
+    {
+        $this->recordThat(new NewSeasonStarted(
+            $command->oldSeason,
+            $command->newSeason,
+            $command->playerChanges,
+        ));
+
+        $this->persist();
+
+        return $this;
+    }
+
     // Event applicators for state reconstruction
 
     protected function applyGameCreated(GameCreated $event): void
@@ -124,6 +154,20 @@ final class Game extends AggregateRoot
         if ($event->loserId === $this->teamId) {
             $this->cupEliminated = true;
         }
+    }
+
+    protected function applySeasonDevelopmentProcessed(SeasonDevelopmentProcessed $event): void
+    {
+        // Development processing doesn't change aggregate state directly
+        // The projector handles updating player records
+    }
+
+    protected function applyNewSeasonStarted(NewSeasonStarted $event): void
+    {
+        // Reset aggregate state for new season
+        $this->currentMatchday = 0;
+        $this->cupRound = 0;
+        $this->cupEliminated = false;
     }
 
     // Getters for aggregate state

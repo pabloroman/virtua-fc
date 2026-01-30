@@ -14,7 +14,11 @@ use App\Http\Views\ShowGame;
 use App\Http\Views\ShowCupBracket;
 use App\Http\Views\ShowMatchResults;
 use App\Http\Views\ShowSquad;
+use App\Http\Views\ShowSeasonEnd;
+use App\Http\Views\ShowSquadDevelopment;
 use App\Http\Views\ShowStandings;
+use App\Http\Actions\ProcessSeasonDevelopment;
+use App\Http\Actions\StartNewSeason;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -30,6 +34,7 @@ Route::middleware('auth')->group(function () {
     // Game Views
     Route::get('/game/{gameId}', ShowGame::class)->name('show-game');
     Route::get('/game/{gameId}/squad', ShowSquad::class)->name('game.squad');
+    Route::get('/game/{gameId}/squad/development', ShowSquadDevelopment::class)->name('game.squad.development');
     Route::get('/game/{gameId}/calendar', ShowCalendar::class)->name('game.calendar');
     Route::get('/game/{gameId}/standings', ShowStandings::class)->name('game.standings');
     Route::get('/game/{gameId}/cup', ShowCupBracket::class)->name('game.cup');
@@ -41,6 +46,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/game/{gameId}/lineup/{matchId}', SaveLineup::class)->name('game.lineup.save');
     Route::get('/game/{gameId}/lineup/{matchId}/auto', GetAutoLineup::class)->name('game.lineup.auto');
     Route::post('/game/{gameId}/cup/draw/{round}', ConductCupDraw::class)->name('game.cup.draw');
+    Route::post('/game/{gameId}/development/process', ProcessSeasonDevelopment::class)->name('game.development.process');
+
+    // Season End
+    Route::get('/game/{gameId}/season-end', ShowSeasonEnd::class)->name('game.season-end');
+    Route::post('/game/{gameId}/start-new-season', StartNewSeason::class)->name('game.start-new-season');
 });
 
 Route::middleware('auth')->group(function () {

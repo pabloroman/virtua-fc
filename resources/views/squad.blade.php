@@ -9,7 +9,15 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-12">
-                    <h3 class="font-semibold text-xl text-slate-900 mb-6">{{ $game->team->name }} Squad</h3>
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="font-semibold text-xl text-slate-900">{{ $game->team->name }} Squad</h3>
+                        <a href="{{ route('game.squad.development', $game->id) }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                            </svg>
+                            Development
+                        </a>
+                    </div>
 
                     <table class="w-full text-sm">
                         <thead class="text-left text-slate-900 border-b">

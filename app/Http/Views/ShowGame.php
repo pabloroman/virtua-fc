@@ -3,6 +3,7 @@
 namespace App\Http\Views;
 
 use App\Models\Game;
+use App\Models\GameMatch;
 use App\Models\GameStanding;
 
 class ShowGame
@@ -14,40 +15,88 @@ class ShowGame
         // Get next match for player's team
         $nextMatch = $game->next_match;
         if ($nextMatch) {
-            $nextMatch->load(['homeTeam', 'awayTeam']);
+            $nextMatch->load(['homeTeam', 'awayTeam', 'competition']);
         }
 
-        // Get standings (top 6 + player's position if not in top 6)
-        $standings = GameStanding::with('team')
-            ->where('game_id', $gameId)
-            ->where('competition_id', $game->competition_id)
-            ->orderBy('position')
-            ->limit(6)
-            ->get();
-
-        // Check if player's team is in top 6
+        // Get player's standing
         $playerStanding = GameStanding::with('team')
             ->where('game_id', $gameId)
             ->where('competition_id', $game->competition_id)
             ->where('team_id', $game->team_id)
             ->first();
 
-        $showPlayerSeparately = $playerStanding && $playerStanding->position > 6;
+        // Get leader's points for comparison
+        $leaderStanding = GameStanding::where('game_id', $gameId)
+            ->where('competition_id', $game->competition_id)
+            ->orderBy('position')
+            ->first();
 
-        // Get recent results (last 3 played matches)
-        $recentResults = $game->matches()
-            ->with(['homeTeam', 'awayTeam'])
-            ->where('played', true)
-            ->orderByDesc('played_at')
-            ->limit(3)
+        // Get recent form for player's team (last 5 played matches)
+        $playerForm = $this->getTeamForm($gameId, $game->team_id, 5);
+
+        // Get opponent's recent form if there's a next match
+        $opponentForm = [];
+        if ($nextMatch) {
+            $opponentId = $nextMatch->home_team_id === $game->team_id
+                ? $nextMatch->away_team_id
+                : $nextMatch->home_team_id;
+            $opponentForm = $this->getTeamForm($gameId, $opponentId, 5);
+        }
+
+        // Get upcoming fixtures (next 5 matches for player's team)
+        $upcomingFixtures = GameMatch::with(['homeTeam', 'awayTeam', 'competition'])
+            ->where('game_id', $gameId)
+            ->where('played', false)
+            ->where(function ($query) use ($game) {
+                $query->where('home_team_id', $game->team_id)
+                    ->orWhere('away_team_id', $game->team_id);
+            })
+            ->orderBy('scheduled_date')
+            ->limit(5)
             ->get();
 
         return view('game', [
             'game' => $game,
             'nextMatch' => $nextMatch,
-            'standings' => $standings,
-            'playerStanding' => $showPlayerSeparately ? $playerStanding : null,
-            'recentResults' => $recentResults,
+            'playerStanding' => $playerStanding,
+            'leaderStanding' => $leaderStanding,
+            'playerForm' => $playerForm,
+            'opponentForm' => $opponentForm,
+            'upcomingFixtures' => $upcomingFixtures,
         ]);
+    }
+
+    /**
+     * Get recent form for a team (W/D/L results).
+     */
+    private function getTeamForm(string $gameId, string $teamId, int $limit): array
+    {
+        $matches = GameMatch::where('game_id', $gameId)
+            ->where('played', true)
+            ->where(function ($query) use ($teamId) {
+                $query->where('home_team_id', $teamId)
+                    ->orWhere('away_team_id', $teamId);
+            })
+            ->orderByDesc('played_at')
+            ->limit($limit)
+            ->get();
+
+        $form = [];
+        foreach ($matches as $match) {
+            $isHome = $match->home_team_id === $teamId;
+            $teamScore = $isHome ? $match->home_score : $match->away_score;
+            $opponentScore = $isHome ? $match->away_score : $match->home_score;
+
+            if ($teamScore > $opponentScore) {
+                $form[] = 'W';
+            } elseif ($teamScore < $opponentScore) {
+                $form[] = 'L';
+            } else {
+                $form[] = 'D';
+            }
+        }
+
+        // Reverse so oldest is first (left to right chronological)
+        return array_reverse($form);
     }
 }

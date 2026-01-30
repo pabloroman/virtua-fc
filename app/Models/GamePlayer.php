@@ -32,6 +32,13 @@ class GamePlayer extends Model
         'assists' => 'integer',
         'yellow_cards' => 'integer',
         'red_cards' => 'integer',
+        // Development fields
+        'game_technical_ability' => 'integer',
+        'game_physical_ability' => 'integer',
+        'potential' => 'integer',
+        'potential_low' => 'integer',
+        'potential_high' => 'integer',
+        'season_appearances' => 'integer',
     ];
 
     public function game(): BelongsTo
@@ -153,32 +160,74 @@ class GamePlayer extends Model
 
     /**
      * Calculate overall score from 4 attributes.
-     * Technical + Physical (from Player) + Fitness + Morale (from GamePlayer)
+     * Technical + Physical (game-specific) + Fitness + Morale
      */
     public function getOverallScoreAttribute(): int
     {
         return (int) round(
-            ($this->player->technical_ability +
-             $this->player->physical_ability +
+            ($this->current_technical_ability +
+             $this->current_physical_ability +
              $this->fitness +
              $this->morale) / 4
         );
     }
 
     /**
-     * Get technical ability from the reference Player model.
+     * Get current technical ability (game-specific or fallback to Player reference).
      */
-    public function getTechnicalAbilityAttribute(): int
+    public function getCurrentTechnicalAbilityAttribute(): int
     {
-        return $this->player->technical_ability;
+        return $this->game_technical_ability ?? $this->player->technical_ability;
     }
 
     /**
-     * Get physical ability from the reference Player model.
+     * Get current physical ability (game-specific or fallback to Player reference).
+     */
+    public function getCurrentPhysicalAbilityAttribute(): int
+    {
+        return $this->game_physical_ability ?? $this->player->physical_ability;
+    }
+
+    /**
+     * Get technical ability - uses game-specific value if set.
+     */
+    public function getTechnicalAbilityAttribute(): int
+    {
+        return $this->current_technical_ability;
+    }
+
+    /**
+     * Get physical ability - uses game-specific value if set.
      */
     public function getPhysicalAbilityAttribute(): int
     {
-        return $this->player->physical_ability;
+        return $this->current_physical_ability;
+    }
+
+    /**
+     * Get potential display range for UI.
+     */
+    public function getPotentialRangeAttribute(): string
+    {
+        if ($this->potential_low && $this->potential_high) {
+            return "{$this->potential_low}-{$this->potential_high}";
+        }
+        return '?';
+    }
+
+    /**
+     * Get development status based on age (growing/peak/declining).
+     */
+    public function getDevelopmentStatusAttribute(): string
+    {
+        $age = $this->age;
+        if ($age <= 23) {
+            return 'growing';
+        }
+        if ($age <= 28) {
+            return 'peak';
+        }
+        return 'declining';
     }
 
     /**

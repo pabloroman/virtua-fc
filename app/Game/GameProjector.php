@@ -7,7 +7,10 @@ use App\Game\Events\CupTieCompleted;
 use App\Game\Events\GameCreated;
 use App\Game\Events\MatchdayAdvanced;
 use App\Game\Events\MatchResultRecorded;
+use App\Game\Events\NewSeasonStarted;
+use App\Game\Events\SeasonDevelopmentProcessed;
 use App\Game\Services\EligibilityService;
+use App\Game\Services\PlayerDevelopmentService;
 use App\Game\Services\StandingsCalculator;
 use App\Models\CompetitionTeam;
 use App\Models\CupTie;
@@ -27,6 +30,7 @@ class GameProjector extends Projector
     public function __construct(
         private readonly StandingsCalculator $standingsCalculator,
         private readonly EligibilityService $eligibilityService,
+        private readonly PlayerDevelopmentService $developmentService,
     ) {}
 
     public function onGameCreated(GameCreated $event): void
@@ -91,8 +95,8 @@ class GameProjector extends Projector
         // Store match events and update player stats
         $this->processMatchEvents($gameId, $event->matchId, $event->events, $event->matchday, $match->scheduled_date);
 
-        // Update appearances for all players on both teams
-        $this->updateAppearances($gameId, $event->homeTeamId, $event->awayTeamId);
+        // Update appearances for players in the lineup
+        $this->updateAppearances($match);
 
         // Only update standings for league competitions (not cups)
         $competition = \App\Models\Competition::find($event->competitionId);
@@ -129,6 +133,35 @@ class GameProjector extends Projector
 
         // The tie is already updated by CupTieResolver, this event
         // is mainly for audit trail and potential future reactors
+    }
+
+    public function onSeasonDevelopmentProcessed(SeasonDevelopmentProcessed $event): void
+    {
+        // Apply development changes to each player
+        foreach ($event->playerChanges as $change) {
+            $player = GamePlayer::find($change['playerId']);
+            if (!$player) {
+                continue;
+            }
+
+            $this->developmentService->applyDevelopment(
+                $player,
+                $change['techAfter'],
+                $change['physAfter']
+            );
+        }
+    }
+
+    public function onNewSeasonStarted(NewSeasonStarted $event): void
+    {
+        // The SeasonEndPipeline processors have already updated the game state.
+        // This event handler exists for:
+        // 1. Audit trail - the event records the season transition
+        // 2. Event replay - if events are replayed, this would need to restore state
+        //
+        // Note: For event replay to work fully, we would need to store more data
+        // in the event and replay all processor actions here. For now, the pipeline
+        // handles all mutations before the event is recorded.
     }
 
     /**
@@ -198,15 +231,26 @@ class GameProjector extends Projector
     }
 
     /**
-     * Update appearances for all players on both teams.
-     * In a real system, this would only be for players in the starting lineup/subs used.
-     * For simplicity, we increment appearances for all squad players.
+     * Update appearances for players in the match lineup.
+     * Increments both regular appearances and season_appearances (for development tracking).
      */
-    private function updateAppearances(string $gameId, string $homeTeamId, string $awayTeamId): void
+    private function updateAppearances(GameMatch $match): void
     {
-        // For now, we just mark appearances for players who participated in events
-        // In a more complete system, we'd track the actual lineup
-        // This is a placeholder - appearances will be incremented when we add lineup selection
+        // Get lineup player IDs from both teams
+        $homeLineupIds = $match->home_lineup ?? [];
+        $awayLineupIds = $match->away_lineup ?? [];
+        $allLineupIds = array_merge($homeLineupIds, $awayLineupIds);
+
+        if (empty($allLineupIds)) {
+            return;
+        }
+
+        // Increment both appearances and season_appearances for lineup players
+        GamePlayer::whereIn('id', $allLineupIds)
+            ->increment('appearances');
+
+        GamePlayer::whereIn('id', $allLineupIds)
+            ->increment('season_appearances');
     }
 
     /**
@@ -320,7 +364,16 @@ class GameProjector extends Projector
             // Parse market value to cents
             $marketValueCents = $this->parseMarketValue($playerData['marketValue'] ?? null);
 
-            // Create game player with career data snapshot
+            // Calculate current ability and generate potential
+            $currentAbility = (int) round(
+                ($player->technical_ability + $player->physical_ability) / 2
+            );
+            $potentialData = $this->developmentService->generatePotential(
+                $player->age,
+                $currentAbility
+            );
+
+            // Create game player with career data snapshot and development fields
             GamePlayer::create([
                 'id' => Str::uuid()->toString(),
                 'game_id' => $gameId,
@@ -334,6 +387,13 @@ class GameProjector extends Projector
                 'joined_on' => $joinedOn,
                 'fitness' => rand(90, 100),
                 'morale' => rand(65, 80),
+                // Development fields
+                'game_technical_ability' => $player->technical_ability,
+                'game_physical_ability' => $player->physical_ability,
+                'potential' => $potentialData['potential'],
+                'potential_low' => $potentialData['low'],
+                'potential_high' => $potentialData['high'],
+                'season_appearances' => 0,
             ]);
         }
     }

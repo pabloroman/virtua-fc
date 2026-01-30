@@ -27,7 +27,13 @@
             <x-primary-button-spin>Continue</x-primary-button-spin>
         </form>
         @else
-        <div class="text-white">Season Complete!</div>
+        <div class="flex items-center space-x-4">
+            <div class="text-white">Season Complete!</div>
+            <a href="{{ route('game.season-end', $game->id) }}"
+               class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-amber-500 to-yellow-400 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:from-amber-600 hover:to-yellow-500 transition-all">
+                View Season Summary
+            </a>
+        </div>
         @endif
     </div>
 </div>

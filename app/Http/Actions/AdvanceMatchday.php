@@ -70,12 +70,6 @@ class AdvanceMatchday
                 ->with('message', 'No matches to play.');
         }
 
-        // Check if user's team needs a lineup
-        $userMatch = $matches->first(fn ($m) => $m->involvesTeam($game->team_id));
-        if ($userMatch && $this->lineupService->needsLineup($userMatch, $game->team_id)) {
-            return redirect()->route('game.lineup', [$gameId, $userMatch->id]);
-        }
-
         // For matchdays spanning multiple days, use the latest date
         $currentDate = $matches->max('scheduled_date')->toDateString();
 
