@@ -20,8 +20,6 @@
                             $playerIsHome = $playerMatch->home_team_id === $game->team_id;
                             $playerScore = $playerIsHome ? $playerMatch->home_score : $playerMatch->away_score;
                             $oppScore = $playerIsHome ? $playerMatch->away_score : $playerMatch->home_score;
-                            $result = $playerScore > $oppScore ? 'Victory!' : ($playerScore < $oppScore ? 'Defeat' : 'Draw');
-                            $resultClass = $playerScore > $oppScore ? 'text-green-600' : ($playerScore < $oppScore ? 'text-red-600' : 'text-gray-600');
 
                             // Get events for player's match
                             $homeGoals = $playerMatch->events->filter(fn($e) =>
@@ -52,9 +50,6 @@
                                     </span>
                                 </div>
                             </div>
-                            <div class="text-center mt-3 text-lg font-semibold {{ $resultClass }}">
-                                {{ $result }}
-                            </div>
 
                             {{-- Goal scorers --}}
                             @if($homeGoals->isNotEmpty() || $awayGoals->isNotEmpty())
@@ -83,18 +78,38 @@
                             @endif
 
                             {{-- Cards --}}
+                            @php
+                                $homeCards = $cards->filter(fn($e) => $e->team_id === $playerMatch->home_team_id)->sortBy('minute');
+                                $awayCards = $cards->filter(fn($e) => $e->team_id === $playerMatch->away_team_id)->sortBy('minute');
+                            @endphp
                             @if($cards->isNotEmpty())
-                                <div class="mt-3 pt-3 border-t border-sky-200 text-xs text-gray-500">
-                                    @foreach($cards->sortBy('minute') as $event)
-                                        <span class="inline-flex items-center gap-1 mr-3">
-                                            @if($event->event_type === 'yellow_card')
-                                                <span class="w-2 h-3 bg-yellow-400 rounded-sm"></span>
-                                            @else
-                                                <span class="w-2 h-3 bg-red-500 rounded-sm"></span>
-                                            @endif
-                                            {{ $event->gamePlayer->player->name }} {{ $event->minute }}'
-                                        </span>
-                                    @endforeach
+                                <div class="mt-3 pt-3 border-t border-sky-200">
+                                    <div class="flex gap-8 text-xs text-gray-500">
+                                        <div class="flex-1 text-right">
+                                            @foreach($homeCards as $event)
+                                                <div class="inline-flex items-center gap-1 justify-end">
+                                                    {{ $event->gamePlayer->player->name }} {{ $event->minute }}'
+                                                    @if($event->event_type === 'yellow_card')
+                                                        <span class="w-2 h-3 bg-yellow-400 rounded-sm"></span>
+                                                    @else
+                                                        <span class="w-2 h-3 bg-red-500 rounded-sm"></span>
+                                                    @endif
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                        <div class="flex-1">
+                                            @foreach($awayCards as $event)
+                                                <div class="inline-flex items-center gap-1">
+                                                    @if($event->event_type === 'yellow_card')
+                                                        <span class="w-2 h-3 bg-yellow-400 rounded-sm"></span>
+                                                    @else
+                                                        <span class="w-2 h-3 bg-red-500 rounded-sm"></span>
+                                                    @endif
+                                                    {{ $event->gamePlayer->player->name }} {{ $event->minute }}'
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
                                 </div>
                             @endif
                         </div>
