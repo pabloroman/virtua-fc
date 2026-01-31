@@ -121,6 +121,92 @@
             </div>
             @endif
 
+            {{-- Squad Alerts --}}
+            @php
+                $hasAlerts = !empty($squadAlerts['injured']) || !empty($squadAlerts['suspended']) || !empty($squadAlerts['lowFitness']) || !empty($squadAlerts['yellowCardRisk']);
+            @endphp
+            @if($hasAlerts)
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6">
+                    <h3 class="font-semibold text-lg text-slate-900 mb-4">Squad Alerts</h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        {{-- Injured --}}
+                        @if(!empty($squadAlerts['injured']))
+                        <div class="space-y-2">
+                            <div class="flex items-center gap-2 text-red-600">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                </svg>
+                                <span class="font-semibold text-sm">Injured ({{ count($squadAlerts['injured']) }})</span>
+                            </div>
+                            @foreach($squadAlerts['injured'] as $alert)
+                            <div class="flex items-center justify-between text-sm pl-7">
+                                <span class="text-slate-700">{{ $alert['player']->name }}</span>
+                                <span class="text-slate-500 text-xs">{{ $alert['daysRemaining'] }}d</span>
+                            </div>
+                            @endforeach
+                        </div>
+                        @endif
+
+                        {{-- Suspended --}}
+                        @if(!empty($squadAlerts['suspended']))
+                        <div class="space-y-2">
+                            <div class="flex items-center gap-2 text-orange-600">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+                                </svg>
+                                <span class="font-semibold text-sm">Suspended ({{ count($squadAlerts['suspended']) }})</span>
+                            </div>
+                            @foreach($squadAlerts['suspended'] as $alert)
+                            <div class="flex items-center justify-between text-sm pl-7">
+                                <span class="text-slate-700">{{ $alert['player']->name }}</span>
+                                <span class="text-slate-500 text-xs">{{ $alert['matchesRemaining'] }} match{{ $alert['matchesRemaining'] > 1 ? 'es' : '' }}</span>
+                            </div>
+                            @endforeach
+                        </div>
+                        @endif
+
+                        {{-- Low Fitness --}}
+                        @if(!empty($squadAlerts['lowFitness']))
+                        <div class="space-y-2">
+                            <div class="flex items-center gap-2 text-amber-600">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                </svg>
+                                <span class="font-semibold text-sm">Low Fitness ({{ count($squadAlerts['lowFitness']) }})</span>
+                            </div>
+                            @foreach($squadAlerts['lowFitness'] as $alert)
+                            <div class="flex items-center justify-between text-sm pl-7">
+                                <span class="text-slate-700">{{ $alert['player']->name }}</span>
+                                <span class="text-amber-600 text-xs font-medium">{{ $alert['fitness'] }}%</span>
+                            </div>
+                            @endforeach
+                        </div>
+                        @endif
+
+                        {{-- Yellow Card Risk --}}
+                        @if(!empty($squadAlerts['yellowCardRisk']))
+                        <div class="space-y-2">
+                            <div class="flex items-center gap-2 text-yellow-600">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <rect x="6" y="3" width="12" height="18" rx="2" />
+                                </svg>
+                                <span class="font-semibold text-sm">Card Risk ({{ count($squadAlerts['yellowCardRisk']) }})</span>
+                            </div>
+                            @foreach($squadAlerts['yellowCardRisk'] as $alert)
+                            <div class="flex items-center justify-between text-sm pl-7">
+                                <span class="text-slate-700">{{ $alert['player']->name }}</span>
+                                <span class="text-yellow-600 text-xs font-medium">{{ $alert['yellowCards'] }} yellows</span>
+                            </div>
+                            @endforeach
+                        </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            @endif
+
             {{-- Two Column Layout --}}
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 

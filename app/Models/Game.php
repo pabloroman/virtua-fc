@@ -18,6 +18,7 @@ class Game extends Model
         'current_date' => 'date',
         'current_matchday' => 'integer',
         'default_formation' => 'string',
+        'default_lineup' => 'array',
         'cup_round' => 'integer',
         'cup_eliminated' => 'boolean',
     ];

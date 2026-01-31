@@ -4,10 +4,14 @@ namespace App\Http\Views;
 
 use App\Models\Game;
 use App\Models\GameMatch;
+use App\Models\GamePlayer;
 use App\Models\GameStanding;
 
 class ShowGame
 {
+    private const LOW_FITNESS_THRESHOLD = 70;
+    private const YELLOW_CARD_WARNING_THRESHOLD = 4; // 5 yellows = suspension
+
     public function __invoke(string $gameId)
     {
         $game = Game::with('team')->findOrFail($gameId);
@@ -55,6 +59,9 @@ class ShowGame
             ->limit(5)
             ->get();
 
+        // Get squad alerts
+        $squadAlerts = $this->getSquadAlerts($game, $nextMatch);
+
         return view('game', [
             'game' => $game,
             'nextMatch' => $nextMatch,
@@ -63,6 +70,7 @@ class ShowGame
             'playerForm' => $playerForm,
             'opponentForm' => $opponentForm,
             'upcomingFixtures' => $upcomingFixtures,
+            'squadAlerts' => $squadAlerts,
         ]);
     }
 
@@ -98,5 +106,73 @@ class ShowGame
 
         // Reverse so oldest is first (left to right chronological)
         return array_reverse($form);
+    }
+
+    /**
+     * Get squad alerts for the player's team.
+     */
+    private function getSquadAlerts(Game $game, ?GameMatch $nextMatch): array
+    {
+        $currentDate = $game->current_date;
+        $nextMatchday = $nextMatch?->round_number ?? $game->current_matchday + 1;
+
+        $players = GamePlayer::with('player')
+            ->where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->get();
+
+        $alerts = [
+            'injured' => [],
+            'suspended' => [],
+            'lowFitness' => [],
+            'yellowCardRisk' => [],
+        ];
+
+        foreach ($players as $player) {
+            // Injured players
+            if ($player->injury_until && $player->injury_until->gt($currentDate)) {
+                $daysRemaining = $currentDate->diffInDays($player->injury_until);
+                $alerts['injured'][] = [
+                    'player' => $player,
+                    'reason' => $player->injury_type ?? 'Injury',
+                    'returnDate' => $player->injury_until,
+                    'daysRemaining' => $daysRemaining,
+                ];
+            }
+
+            // Suspended players
+            if ($player->suspended_until_matchday && $player->suspended_until_matchday > $nextMatchday) {
+                $matchesRemaining = $player->suspended_until_matchday - $nextMatchday;
+                $alerts['suspended'][] = [
+                    'player' => $player,
+                    'matchesRemaining' => $matchesRemaining,
+                ];
+            }
+
+            // Low fitness (only for available players)
+            if ($player->fitness < self::LOW_FITNESS_THRESHOLD &&
+                !$player->isInjured($currentDate) &&
+                !$player->isSuspended($nextMatchday)) {
+                $alerts['lowFitness'][] = [
+                    'player' => $player,
+                    'fitness' => $player->fitness,
+                ];
+            }
+
+            // Yellow card risk (4 yellows = 1 away from suspension)
+            if ($player->yellow_cards >= self::YELLOW_CARD_WARNING_THRESHOLD) {
+                $alerts['yellowCardRisk'][] = [
+                    'player' => $player,
+                    'yellowCards' => $player->yellow_cards,
+                ];
+            }
+        }
+
+        // Sort by severity/urgency
+        usort($alerts['injured'], fn($a, $b) => $a['daysRemaining'] <=> $b['daysRemaining']);
+        usort($alerts['lowFitness'], fn($a, $b) => $a['fitness'] <=> $b['fitness']);
+        usort($alerts['yellowCardRisk'], fn($a, $b) => $b['yellowCards'] <=> $a['yellowCards']);
+
+        return $alerts;
     }
 }
