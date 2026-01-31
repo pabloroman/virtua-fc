@@ -19,14 +19,14 @@
                         <tr class="text-slate-900">
                             <th class="font-semibold text-left w-8 p-2"></th>
                             <th class="font-semibold text-left p-2"></th>
-                            <th class="font-semibold w-10 p-2">P</th>
-                            <th class="font-semibold w-10 p-2">W</th>
-                            <th class="font-semibold w-10 p-2">D</th>
-                            <th class="font-semibold w-10 p-2">L</th>
-                            <th class="font-semibold w-10 p-2">GF</th>
-                            <th class="font-semibold w-10 p-2">GA</th>
-                            <th class="font-semibold w-10 p-2">GD</th>
-                            <th class="font-semibold w-10 p-2">Pts</th>
+                            <th class="font-semibold w-8 p-2">P</th>
+                            <th class="font-semibold w-8 p-2">W</th>
+                            <th class="font-semibold w-8 p-2">D</th>
+                            <th class="font-semibold w-8 p-2">L</th>
+                            <th class="font-semibold w-8 p-2">GF</th>
+                            <th class="font-semibold w-8 p-2">GA</th>
+                            <th class="font-semibold w-8 p-2">GD</th>
+                            <th class="font-semibold w-8 p-2">Pts</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -61,13 +61,13 @@
                                         <span>{{ $standing->team->name }}</span>
                                     </div>
                                 </td>
-                                <td class="align-middle whitespace-nowrap p-2">{{ $standing->played }}</td>
-                                <td class="align-middle whitespace-nowrap p-2">{{ $standing->won }}</td>
-                                <td class="align-middle whitespace-nowrap p-2">{{ $standing->drawn }}</td>
-                                <td class="align-middle whitespace-nowrap p-2">{{ $standing->lost }}</td>
-                                <td class="align-middle whitespace-nowrap p-2">{{ $standing->goals_for }}</td>
-                                <td class="align-middle whitespace-nowrap p-2">{{ $standing->goals_against }}</td>
-                                <td class="align-middle whitespace-nowrap p-2">{{ $standing->goal_difference }}</td>
+                                <td class="align-middle whitespace-nowrap p-2 text-slate-400">{{ $standing->played }}</td>
+                                <td class="align-middle whitespace-nowrap p-2 text-slate-400">{{ $standing->won }}</td>
+                                <td class="align-middle whitespace-nowrap p-2 text-slate-400">{{ $standing->drawn }}</td>
+                                <td class="align-middle whitespace-nowrap p-2 text-slate-400">{{ $standing->lost }}</td>
+                                <td class="align-middle whitespace-nowrap p-2 text-slate-400">{{ $standing->goals_for }}</td>
+                                <td class="align-middle whitespace-nowrap p-2 text-slate-400">{{ $standing->goals_against }}</td>
+                                <td class="align-middle whitespace-nowrap p-2 mtext-slate-400">{{ $standing->goal_difference }}</td>
                                 <td class="align-middle whitespace-nowrap p-2 font-semibold">{{ $standing->points }}</td>
                             </tr>
                         @endforeach

@@ -35,10 +35,9 @@
                             $cards = $playerMatch->events->filter(fn($e) => in_array($e->event_type, ['yellow_card', 'red_card']));
                         @endphp
                         <div class="mb-8 p-6 rounded-xl bg-gradient-to-r from-sky-50 to-sky-100 border border-sky-200">
-                            <div class="text-center text-sm text-sky-600 mb-3">Your Match</div>
                             <div class="flex items-center justify-center gap-6">
                                 <div class="flex items-center gap-3 flex-1 justify-end">
-                                    <span class="text-xl font-semibold @if($playerMatch->home_team_id === $game->team_id) text-sky-700 @endif">
+                                    <span class="text-xl font-semibold">
                                         {{ $playerMatch->homeTeam->name }}
                                     </span>
                                     <img src="{{ $playerMatch->homeTeam->image }}" class="w-12 h-12">
@@ -48,7 +47,7 @@
                                 </div>
                                 <div class="flex items-center gap-3 flex-1">
                                     <img src="{{ $playerMatch->awayTeam->image }}" class="w-12 h-12">
-                                    <span class="text-xl font-semibold @if($playerMatch->away_team_id === $game->team_id) text-sky-700 @endif">
+                                    <span class="text-xl font-semibold">
                                         {{ $playerMatch->awayTeam->name }}
                                     </span>
                                 </div>
