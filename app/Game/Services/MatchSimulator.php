@@ -11,6 +11,15 @@ use Illuminate\Support\Collection;
 
 class MatchSimulator
 {
+    /**
+     * Match performance cache - stores per-player performance modifiers for the current match.
+     * Each player gets a random "form on the day" that affects their contribution.
+     * Range: 0.7 to 1.3 (30% variance from their base ability)
+     *
+     * @var array<string, float>
+     */
+    private array $matchPerformance = [];
+
     // Position weights for goal scoring (higher = more likely to score)
     private const SCORING_WEIGHTS = [
         'Centre-Forward' => 30,
@@ -90,6 +99,9 @@ class MatchSimulator
         ?Formation $homeFormation = null,
         ?Formation $awayFormation = null,
     ): MatchResult {
+        // Reset per-match performance modifiers for fresh randomness
+        $this->resetMatchPerformance();
+
         $homeFormation = $homeFormation ?? Formation::F_4_4_2;
         $awayFormation = $awayFormation ?? Formation::F_4_4_2;
 
@@ -313,6 +325,7 @@ class MatchSimulator
 
     /**
      * Pick a player based on position weights and player quality.
+     * Uses effective score (base ability × match performance) for weighting.
      */
     private function pickPlayerByPosition(Collection $players, array $weights): ?GamePlayer
     {
@@ -324,8 +337,13 @@ class MatchSimulator
         $weighted = [];
         foreach ($players as $player) {
             $positionWeight = $weights[$player->position] ?? 5;
+
+            // Use effective score which includes match-day performance
+            $effectiveScore = $this->getEffectiveScore($player);
+
             // Quality multiplier: players above 70 get bonus, below get penalty
-            $qualityMultiplier = $player->overall_score / 70;
+            // Now includes the hidden performance modifier for randomness
+            $qualityMultiplier = $effectiveScore / 70;
             $weight = (int) max(1, round($positionWeight * $qualityMultiplier));
 
             for ($i = 0; $i < $weight; $i++) {
@@ -357,6 +375,7 @@ class MatchSimulator
 
     /**
      * Calculate team strength based on lineup player attributes.
+     * Incorporates match-day performance modifiers for realistic variance.
      *
      * @param Collection<GamePlayer> $lineup
      */
@@ -367,20 +386,31 @@ class MatchSimulator
             return 0.5;
         }
 
-        // Weighted average of player attributes
-        // Technical (40%) + Physical (25%) + Fitness (20%) + Morale (15%)
-        $avgTechnical = $lineup->avg('technical_ability');
-        $avgPhysical = $lineup->avg('physical_ability');
-        $avgFitness = $lineup->avg('fitness');
-        $avgMorale = $lineup->avg('morale');
+        // Calculate effective attributes with match performance modifier
+        $totalStrength = 0;
+        foreach ($lineup as $player) {
+            $performance = $this->getMatchPerformance($player);
 
-        $strength = ($avgTechnical * 0.40) +
-                    ($avgPhysical * 0.25) +
-                    ($avgFitness * 0.20) +
-                    ($avgMorale * 0.15);
+            // Apply performance modifier to each attribute
+            // Technical ability is most affected by "form on the day"
+            $effectiveTechnical = $player->technical_ability * $performance;
+            // Physical attributes are more consistent
+            $effectivePhysical = $player->physical_ability * (0.5 + $performance * 0.5);
+            // Fitness and morale are not modified - they influence performance
+            $fitness = $player->fitness;
+            $morale = $player->morale;
 
-        // Normalize to 0-1 range (attributes are 0-100)
-        return $strength / 100;
+            // Weighted contribution
+            $playerStrength = ($effectiveTechnical * 0.40) +
+                              ($effectivePhysical * 0.25) +
+                              ($fitness * 0.20) +
+                              ($morale * 0.15);
+
+            $totalStrength += $playerStrength;
+        }
+
+        // Average across all players, normalized to 0-1 range
+        return ($totalStrength / $lineup->count()) / 100;
     }
 
     /**
@@ -406,6 +436,111 @@ class MatchSimulator
     private function percentChance(float $percent): bool
     {
         return (mt_rand() / mt_getrandmax() * 100) < $percent;
+    }
+
+    /**
+     * Get or generate match performance modifier for a player.
+     *
+     * This creates a "hidden" form rating that introduces per-match randomness.
+     * A player with high morale and fitness has a better chance of a good performance.
+     *
+     * Performance distribution (bell curve centered around 1.0):
+     * - 0.70-0.85: Poor day (rare for high morale/fitness players)
+     * - 0.85-0.95: Below average
+     * - 0.95-1.05: Average
+     * - 1.05-1.15: Above average
+     * - 1.15-1.30: Outstanding day (rare)
+     *
+     * @return float Performance modifier (0.7 to 1.3)
+     */
+    private function getMatchPerformance(GamePlayer $player): float
+    {
+        // Return cached performance if already calculated this match
+        if (isset($this->matchPerformance[$player->id])) {
+            return $this->matchPerformance[$player->id];
+        }
+
+        // Base randomness using normal distribution (bell curve)
+        // Box-Muller transform for normal distribution
+        $u1 = max(0.0001, mt_rand() / mt_getrandmax());
+        $u2 = mt_rand() / mt_getrandmax();
+        $z = sqrt(-2 * log($u1)) * cos(2 * M_PI * $u2);
+
+        // Standard deviation of 0.12 means:
+        // ~68% of performances fall within ±0.12 of baseline
+        // ~95% fall within ±0.24
+        $stdDev = 0.12;
+        $basePerformance = 1.0 + ($z * $stdDev);
+
+        // Morale influences performance more than fitness
+        // High morale (80+) slightly increases chance of good performance
+        // Low morale (<50) increases chance of poor performance
+        $moraleModifier = ($player->morale - 65) / 200; // Range: -0.075 to +0.175
+
+        // Fitness affects consistency - low fitness increases variance
+        $fitnessModifier = 0;
+        if ($player->fitness < 70) {
+            // Low fitness = more likely to have a poor game
+            $fitnessModifier = ($player->fitness - 70) / 300; // Negative modifier
+        }
+
+        $performance = $basePerformance + $moraleModifier + $fitnessModifier;
+
+        // Clamp to reasonable range
+        $performance = max(0.70, min(1.30, $performance));
+
+        // Cache for this match
+        $this->matchPerformance[$player->id] = $performance;
+
+        return $performance;
+    }
+
+    /**
+     * Reset match performance cache (call before each new match simulation).
+     */
+    private function resetMatchPerformance(): void
+    {
+        $this->matchPerformance = [];
+    }
+
+    /**
+     * Get the effective overall score for a player in this match.
+     * Combines base ability with match-day performance.
+     */
+    private function getEffectiveScore(GamePlayer $player): float
+    {
+        $performance = $this->getMatchPerformance($player);
+
+        return $player->overall_score * $performance;
+    }
+
+    /**
+     * Get all match performance modifiers after simulation.
+     * Useful for post-match player ratings display.
+     *
+     * @return array<string, float> Map of player ID to performance modifier (0.7-1.3)
+     */
+    public function getMatchPerformances(): array
+    {
+        return $this->matchPerformance;
+    }
+
+    /**
+     * Convert match performance to a display rating (1-10 scale).
+     * This can be used for post-match player ratings.
+     *
+     * @param float $performance The raw performance modifier (0.7-1.3)
+     * @return float Rating on 1-10 scale
+     */
+    public static function performanceToRating(float $performance): float
+    {
+        // Map 0.7-1.3 to 4.0-9.5 scale (typical football rating range)
+        // 0.7 -> 4.0 (very poor)
+        // 1.0 -> 6.5 (average)
+        // 1.3 -> 9.0 (outstanding)
+        $rating = 4.0 + (($performance - 0.7) / 0.6) * 5.0;
+
+        return round(max(1.0, min(10.0, $rating)), 1);
     }
 
     /**
