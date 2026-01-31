@@ -10,6 +10,7 @@ use App\Game\Events\MatchResultRecorded;
 use App\Game\Events\NewSeasonStarted;
 use App\Game\Events\SeasonDevelopmentProcessed;
 use App\Game\Services\EligibilityService;
+use App\Game\Services\PlayerConditionService;
 use App\Game\Services\PlayerDevelopmentService;
 use App\Game\Services\StandingsCalculator;
 use App\Models\CompetitionTeam;
@@ -31,6 +32,7 @@ class GameProjector extends Projector
         private readonly StandingsCalculator $standingsCalculator,
         private readonly EligibilityService $eligibilityService,
         private readonly PlayerDevelopmentService $developmentService,
+        private readonly PlayerConditionService $conditionService,
     ) {}
 
     public function onGameCreated(GameCreated $event): void
@@ -97,6 +99,9 @@ class GameProjector extends Projector
 
         // Update appearances for players in the lineup
         $this->updateAppearances($match);
+
+        // Update fitness and morale for players
+        $this->updatePlayerCondition($match, $event->events);
 
         // Only update standings for league competitions (not cups)
         $competition = \App\Models\Competition::find($event->competitionId);
@@ -251,6 +256,36 @@ class GameProjector extends Projector
 
         GamePlayer::whereIn('id', $allLineupIds)
             ->increment('season_appearances');
+    }
+
+    /**
+     * Update fitness and morale for players after a match.
+     */
+    private function updatePlayerCondition(GameMatch $match, array $events): void
+    {
+        // Get previous match dates for each team to calculate recovery
+        $homePreviousDate = $this->conditionService->getPreviousMatchDate(
+            $match->game_id,
+            $match->home_team_id,
+            $match->id
+        );
+
+        $awayPreviousDate = $this->conditionService->getPreviousMatchDate(
+            $match->game_id,
+            $match->away_team_id,
+            $match->id
+        );
+
+        // Use the more recent of the two for a combined update
+        // (The service handles per-player calculations internally)
+        $previousDate = null;
+        if ($homePreviousDate && $awayPreviousDate) {
+            $previousDate = $homePreviousDate->gt($awayPreviousDate) ? $homePreviousDate : $awayPreviousDate;
+        } else {
+            $previousDate = $homePreviousDate ?? $awayPreviousDate;
+        }
+
+        $this->conditionService->updateAfterMatch($match, $events, $previousDate);
     }
 
     /**

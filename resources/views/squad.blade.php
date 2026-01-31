@@ -101,12 +101,16 @@
                                                 {{ $gamePlayer->physical_ability }}
                                             </td>
                                             {{-- Fitness --}}
-                                            <td class="py-2 text-center @if($gamePlayer->fitness < 70) text-yellow-600 @elseif($gamePlayer->fitness < 50) text-red-500 @endif">
-                                                {{ $gamePlayer->fitness }}
+                                            <td class="py-2 text-center">
+                                                <span class="@if($gamePlayer->fitness >= 90) text-green-600 @elseif($gamePlayer->fitness >= 80) text-lime-600 @elseif($gamePlayer->fitness < 50) text-red-500 font-medium @elseif($gamePlayer->fitness < 70) text-yellow-600 @endif">
+                                                    {{ $gamePlayer->fitness }}
+                                                </span>
                                             </td>
                                             {{-- Morale --}}
-                                            <td class="py-2 text-center @if($gamePlayer->morale < 60) text-red-500 @elseif($gamePlayer->morale < 70) text-yellow-600 @endif">
-                                                {{ $gamePlayer->morale }}
+                                            <td class="py-2 text-center">
+                                                <span class="@if($gamePlayer->morale >= 85) text-green-600 @elseif($gamePlayer->morale >= 75) text-lime-600 @elseif($gamePlayer->morale < 50) text-red-500 font-medium @elseif($gamePlayer->morale < 65) text-yellow-600 @endif">
+                                                    {{ $gamePlayer->morale }}
+                                                </span>
                                             </td>
                                             {{-- Overall --}}
                                             <td class="py-2 text-center">
@@ -122,10 +126,17 @@
                     </table>
 
                     {{-- Squad summary --}}
+                    @php
+                        $allPlayers = $goalkeepers->concat($defenders)->concat($midfielders)->concat($forwards);
+                        $avgFitness = $allPlayers->avg('fitness');
+                        $avgMorale = $allPlayers->avg('morale');
+                        $lowFitnessCount = $allPlayers->filter(fn($p) => $p->fitness < 70)->count();
+                        $lowMoraleCount = $allPlayers->filter(fn($p) => $p->morale < 65)->count();
+                    @endphp
                     <div class="mt-8 pt-6 border-t">
-                        <div class="flex gap-8 text-sm text-slate-600">
+                        <div class="flex flex-wrap gap-8 text-sm text-slate-600">
                             <div>
-                                <span class="font-semibold text-slate-900">{{ $goalkeepers->count() + $defenders->count() + $midfielders->count() + $forwards->count() }}</span>
+                                <span class="font-semibold text-slate-900">{{ $allPlayers->count() }}</span>
                                 <span class="text-slate-400 ml-1">players</span>
                             </div>
                             <div class="flex items-center gap-1">
@@ -143,6 +154,20 @@
                             <div class="flex items-center gap-1">
                                 <span class="inline-flex items-center justify-center w-5 h-5 rounded text-xs font-bold bg-red-100 text-red-700">FW</span>
                                 <span class="font-medium">{{ $forwards->count() }}</span>
+                            </div>
+                            <div class="border-l pl-8 flex items-center gap-1">
+                                <span class="text-slate-400">Avg Fitness:</span>
+                                <span class="font-semibold @if($avgFitness >= 85) text-green-600 @elseif($avgFitness < 70) text-yellow-600 @else text-slate-900 @endif">{{ round($avgFitness) }}</span>
+                                @if($lowFitnessCount > 0)
+                                    <span class="text-xs text-yellow-600">({{ $lowFitnessCount }} low)</span>
+                                @endif
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <span class="text-slate-400">Avg Morale:</span>
+                                <span class="font-semibold @if($avgMorale >= 80) text-green-600 @elseif($avgMorale < 65) text-yellow-600 @else text-slate-900 @endif">{{ round($avgMorale) }}</span>
+                                @if($lowMoraleCount > 0)
+                                    <span class="text-xs text-yellow-600">({{ $lowMoraleCount }} low)</span>
+                                @endif
                             </div>
                         </div>
                     </div>
