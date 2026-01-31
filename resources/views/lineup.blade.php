@@ -222,23 +222,17 @@
                                     </select>
                                 </div>
 
-                                {{-- Save as Default --}}
-                                <label class="flex items-center gap-2 text-sm text-slate-600 cursor-pointer">
-                                    <input type="checkbox" name="save_default_formation" value="1" class="rounded border-slate-300 text-sky-600 focus:ring-sky-500"
-                                        @if($currentFormation === $defaultFormation) checked @endif>
-                                    <span>Set as default</span>
-                                </label>
 
                                 {{-- Selection Count --}}
                                 <div class="flex items-center gap-2 px-3 py-1.5 rounded-md" :class="selectedCount === 11 ? 'bg-green-100' : 'bg-slate-200'">
-                                    <span class="font-bold" :class="selectedCount === 11 ? 'text-green-700' : 'text-slate-700'" x-text="selectedCount"></span>
+                                    <span class="font-semibold" :class="selectedCount === 11 ? 'text-green-700' : 'text-slate-700'" x-text="selectedCount"></span>
                                     <span class="text-slate-500">/ 11</span>
                                 </div>
 
                                 {{-- Team Average --}}
                                 <div class="flex items-center gap-2 px-3 py-1.5 bg-slate-200 rounded-md">
                                     <span class="text-sm text-slate-600">Team Rating:</span>
-                                    <span class="font-bold text-slate-900" x-text="teamAverage || '-'"></span>
+                                    <span class="font-semibold text-slate-900" x-text="teamAverage || '-'"></span>
                                 </div>
                             </div>
 
@@ -330,7 +324,7 @@
                                                 >
                                                     {{-- Initials --}}
                                                     <div class="absolute inset-0 flex items-center justify-center">
-                                                        <span class="text-white font-bold text-sm tracking-tight drop-shadow-sm" x-text="getInitials(slot.player?.name)"></span>
+                                                        <span class="text-white font-semibold text-sm tracking-tight drop-shadow-sm" x-text="getInitials(slot.player?.name)"></span>
                                                     </div>
                                                     {{-- Compatibility indicator dot --}}
                                                     <div
@@ -345,7 +339,7 @@
                                                         x-show="getCompatibilityDisplay(slot.player?.position, slot.label).score < 100"
                                                     ></div>
                                                     {{-- Overall rating badge --}}
-                                                    <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 px-1.5 py-0.5 bg-slate-900/80 rounded text-[9px] font-bold text-white shadow-sm">
+                                                    <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 px-1.5 py-0.5 bg-slate-900/80 rounded text-[9px] font-semibold text-white shadow-sm">
                                                         <span x-text="slot.player?.overallScore"></span>
                                                     </div>
                                                 </div>
@@ -450,7 +444,7 @@
                                                         </td>
                                                         {{-- Position --}}
                                                         <td class="py-2 text-center">
-                                                            <span class="inline-flex items-center justify-center w-8 h-8 rounded text-xs font-bold {{ $positionDisplay['bg'] }} {{ $positionDisplay['text'] }}">
+                                                            <span class="inline-flex items-center justify-center w-8 h-8 rounded text-xs font-semibold {{ $positionDisplay['bg'] }} {{ $positionDisplay['text'] }}">
                                                                 {{ $positionDisplay['abbreviation'] }}
                                                             </span>
                                                         </td>
@@ -480,7 +474,7 @@
                                                         </td>
                                                         {{-- Overall --}}
                                                         <td class="py-2 text-center">
-                                                            <span class="font-bold @if($player->overall_score >= 80) text-green-600 @elseif($player->overall_score >= 70) text-lime-600 @elseif($player->overall_score >= 60) text-yellow-600 @else text-slate-500 @endif">
+                                                            <span class="font-semibold @if($player->overall_score >= 80) text-green-600 @elseif($player->overall_score >= 70) text-lime-600 @elseif($player->overall_score >= 60) text-yellow-600 @else text-slate-500 @endif">
                                                                 {{ $player->overall_score }}
                                                             </span>
                                                         </td>

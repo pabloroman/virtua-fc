@@ -155,14 +155,15 @@ class AdvanceMatchday
 
     /**
      * Ensure all matches have lineups set (auto-select for AI teams).
-     * Uses the player's default formation for their team.
+     * Uses the player's preferred lineup and formation for their team.
      */
     private function ensureLineupsSet($matches, Game $game, $allPlayers): void
     {
-        // Get player's preferred formation
+        // Get player's preferences
         $playerFormation = $game->default_formation
             ? Formation::tryFrom($game->default_formation)
             : null;
+        $playerPreferredLineup = $game->default_lineup;
 
         foreach ($matches as $match) {
             $matchday = $match->round_number ?? $game->current_matchday + 1;
@@ -170,44 +171,64 @@ class AdvanceMatchday
 
             // Auto-select home lineup if not set
             if (empty($match->home_lineup)) {
-                // Use player's formation for their team, default for others
-                $formation = ($match->home_team_id === $game->team_id)
-                    ? $playerFormation
-                    : null;
+                $isPlayerTeam = $match->home_team_id === $game->team_id;
 
-                $lineup = $this->lineupService->autoSelectLineup(
-                    $game->id,
-                    $match->home_team_id,
-                    $matchDate,
-                    $matchday,
-                    $formation
-                );
+                if ($isPlayerTeam) {
+                    // Use preferred lineup with fallback for player's team
+                    $lineup = $this->lineupService->selectLineupWithPreferences(
+                        $game->id,
+                        $match->home_team_id,
+                        $matchDate,
+                        $matchday,
+                        $playerFormation,
+                        $playerPreferredLineup
+                    );
+                } else {
+                    // Standard auto-select for AI teams
+                    $lineup = $this->lineupService->autoSelectLineup(
+                        $game->id,
+                        $match->home_team_id,
+                        $matchDate,
+                        $matchday
+                    );
+                }
+
                 $this->lineupService->saveLineup($match, $match->home_team_id, $lineup);
 
                 // Save formation if it's the player's team
-                if ($match->home_team_id === $game->team_id && $playerFormation) {
+                if ($isPlayerTeam && $playerFormation) {
                     $this->lineupService->saveFormation($match, $match->home_team_id, $playerFormation->value);
                 }
             }
 
             // Auto-select away lineup if not set
             if (empty($match->away_lineup)) {
-                // Use player's formation for their team, default for others
-                $formation = ($match->away_team_id === $game->team_id)
-                    ? $playerFormation
-                    : null;
+                $isPlayerTeam = $match->away_team_id === $game->team_id;
 
-                $lineup = $this->lineupService->autoSelectLineup(
-                    $game->id,
-                    $match->away_team_id,
-                    $matchDate,
-                    $matchday,
-                    $formation
-                );
+                if ($isPlayerTeam) {
+                    // Use preferred lineup with fallback for player's team
+                    $lineup = $this->lineupService->selectLineupWithPreferences(
+                        $game->id,
+                        $match->away_team_id,
+                        $matchDate,
+                        $matchday,
+                        $playerFormation,
+                        $playerPreferredLineup
+                    );
+                } else {
+                    // Standard auto-select for AI teams
+                    $lineup = $this->lineupService->autoSelectLineup(
+                        $game->id,
+                        $match->away_team_id,
+                        $matchDate,
+                        $matchday
+                    );
+                }
+
                 $this->lineupService->saveLineup($match, $match->away_team_id, $lineup);
 
                 // Save formation if it's the player's team
-                if ($match->away_team_id === $game->team_id && $playerFormation) {
+                if ($isPlayerTeam && $playerFormation) {
                     $this->lineupService->saveFormation($match, $match->away_team_id, $playerFormation->value);
                 }
             }

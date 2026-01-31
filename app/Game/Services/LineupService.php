@@ -132,6 +132,91 @@ class LineupService
     }
 
     /**
+     * Select lineup using preferred players where available, filling gaps with best alternatives.
+     *
+     * @param array|null $preferredLineup The user's preferred starting 11
+     */
+    public function selectLineupWithPreferences(
+        string $gameId,
+        string $teamId,
+        Carbon $matchDate,
+        int $matchday,
+        ?Formation $formation = null,
+        ?array $preferredLineup = null
+    ): array {
+        // If no preferred lineup, fall back to auto-select
+        if (empty($preferredLineup)) {
+            return $this->autoSelectLineup($gameId, $teamId, $matchDate, $matchday, $formation);
+        }
+
+        $formation = $formation ?? Formation::F_4_4_2;
+        $requirements = $formation->requirements();
+
+        $available = $this->getAvailablePlayers($gameId, $teamId, $matchDate, $matchday);
+        $availableIds = $available->pluck('id')->toArray();
+
+        // Separate preferred players into available and unavailable
+        $availablePreferred = [];
+        $unavailablePositionGroups = [];
+
+        foreach ($preferredLineup as $playerId) {
+            if (in_array($playerId, $availableIds)) {
+                $availablePreferred[] = $playerId;
+            } else {
+                // Find the player to determine their position group for replacement
+                $player = GamePlayer::find($playerId);
+                if ($player) {
+                    $unavailablePositionGroups[] = $player->position_group;
+                }
+            }
+        }
+
+        // If all preferred players are available, use them
+        if (count($availablePreferred) === 11) {
+            return $availablePreferred;
+        }
+
+        // Start with available preferred players
+        $lineup = $availablePreferred;
+
+        // Group remaining available players by position
+        $remainingAvailable = $available->filter(fn ($p) => !in_array($p->id, $lineup));
+        $grouped = $remainingAvailable->groupBy(fn ($p) => $p->position_group);
+
+        // Fill gaps with best available from each missing position group
+        foreach ($unavailablePositionGroups as $positionGroup) {
+            if (count($lineup) >= 11) {
+                break;
+            }
+
+            $candidates = ($grouped->get($positionGroup) ?? collect())
+                ->filter(fn ($p) => !in_array($p->id, $lineup))
+                ->sortByDesc('overall_score');
+
+            $replacement = $candidates->first();
+            if ($replacement) {
+                $lineup[] = $replacement->id;
+            }
+        }
+
+        // If still not 11, fill with best available from any position
+        if (count($lineup) < 11) {
+            $remaining = $available
+                ->filter(fn ($p) => !in_array($p->id, $lineup))
+                ->sortByDesc('overall_score');
+
+            foreach ($remaining as $player) {
+                if (count($lineup) >= 11) {
+                    break;
+                }
+                $lineup[] = $player->id;
+            }
+        }
+
+        return $lineup;
+    }
+
+    /**
      * Save lineup to match record.
      */
     public function saveLineup(GameMatch $match, string $teamId, array $playerIds): void
