@@ -6,6 +6,7 @@ use App\Game\Contracts\SeasonEndProcessor;
 use App\Game\DTO\SeasonTransitionData;
 use App\Game\Processors\FixtureGenerationProcessor;
 use App\Game\Processors\PlayerDevelopmentProcessor;
+use App\Game\Processors\PromotionRelegationProcessor;
 use App\Game\Processors\SeasonArchiveProcessor;
 use App\Game\Processors\StandingsResetProcessor;
 use App\Game\Processors\StatsResetProcessor;
@@ -25,6 +26,7 @@ class SeasonEndPipeline
         PlayerDevelopmentProcessor $playerDevelopment,
         StatsResetProcessor $statsReset,
         SupercopaQualificationProcessor $supercopaQualification,
+        PromotionRelegationProcessor $promotionRelegation,
         FixtureGenerationProcessor $fixtureGeneration,
         StandingsResetProcessor $standingsReset,
     ) {
@@ -33,6 +35,7 @@ class SeasonEndPipeline
             $playerDevelopment,
             $statsReset,
             $supercopaQualification,
+            $promotionRelegation,
             $fixtureGeneration,
             $standingsReset,
         ];

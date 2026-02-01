@@ -18,7 +18,7 @@ use App\Models\GameStanding;
  * - If there's overlap (e.g., La Liga winner also in Copa final),
  *   the next highest La Liga team qualifies
  *
- * Priority: 35 (runs after standings are finalized but before reset)
+ * Priority: 25 (runs after stats reset but before fixture generation)
  */
 class SupercopaQualificationProcessor implements SeasonEndProcessor
 {
@@ -29,7 +29,7 @@ class SupercopaQualificationProcessor implements SeasonEndProcessor
 
     public function priority(): int
     {
-        return 35;
+        return 25;
     }
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData
