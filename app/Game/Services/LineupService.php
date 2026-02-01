@@ -85,6 +85,7 @@ class LineupService
 
     /**
      * Auto-select best XI by overall_score, respecting formation requirements.
+     * Returns array of player IDs.
      */
     public function autoSelectLineup(
         string $gameId,
@@ -93,15 +94,28 @@ class LineupService
         int $matchday,
         ?Formation $formation = null
     ): array {
+        return $this->selectBestXI(
+            $this->getAvailablePlayers($gameId, $teamId, $matchDate, $matchday),
+            $formation
+        )->pluck('id')->toArray();
+    }
+
+    /**
+     * Select the best XI from a collection of players, respecting formation requirements.
+     * Returns Collection of GamePlayer objects.
+     *
+     * This is the core selection algorithm used by both autoSelectLineup (for match lineups)
+     * and for calculating opponent team ratings.
+     */
+    public function selectBestXI(Collection $availablePlayers, ?Formation $formation = null): Collection
+    {
         $formation = $formation ?? Formation::F_4_4_2;
         $requirements = $formation->requirements();
 
-        $available = $this->getAvailablePlayers($gameId, $teamId, $matchDate, $matchday);
-
-        $lineup = [];
+        $selected = collect();
 
         // Group players by position category
-        $grouped = $available->groupBy(fn ($p) => $p->position_group);
+        $grouped = $availablePlayers->groupBy(fn ($p) => $p->position_group);
 
         // Select players for each position group
         foreach ($requirements as $positionGroup => $count) {
@@ -109,26 +123,59 @@ class LineupService
                 ->sortByDesc('overall_score')
                 ->take($count);
 
-            foreach ($positionPlayers as $player) {
-                $lineup[] = $player->id;
-            }
+            $selected = $selected->merge($positionPlayers);
         }
 
         // If we don't have enough for standard formation, fill with best available
-        if (count($lineup) < 11) {
-            $remaining = $available
-                ->filter(fn ($p) => !in_array($p->id, $lineup))
+        if ($selected->count() < 11) {
+            $selectedIds = $selected->pluck('id')->toArray();
+            $remaining = $availablePlayers
+                ->filter(fn ($p) => !in_array($p->id, $selectedIds))
                 ->sortByDesc('overall_score');
 
             foreach ($remaining as $player) {
-                if (count($lineup) >= 11) {
+                if ($selected->count() >= 11) {
                     break;
                 }
-                $lineup[] = $player->id;
+                $selected->push($player);
             }
         }
 
-        return $lineup;
+        return $selected;
+    }
+
+    /**
+     * Calculate the average overall score for a collection of players.
+     */
+    public function calculateTeamAverage(Collection $players): int
+    {
+        if ($players->isEmpty()) {
+            return 0;
+        }
+
+        return (int) round($players->avg('overall_score'));
+    }
+
+    /**
+     * Get the best XI and their average rating for a team.
+     * Convenience method combining selectBestXI and calculateTeamAverage.
+     *
+     * @return array{players: Collection, average: int}
+     */
+    public function getBestXIWithAverage(
+        string $gameId,
+        string $teamId,
+        Carbon $matchDate,
+        int $matchday,
+        ?Formation $formation = null
+    ): array {
+        $available = $this->getAvailablePlayers($gameId, $teamId, $matchDate, $matchday);
+        $bestXI = $this->selectBestXI($available, $formation);
+
+        return [
+            'players' => $bestXI,
+            'average' => $this->calculateTeamAverage($bestXI),
+        ];
     }
 
     /**

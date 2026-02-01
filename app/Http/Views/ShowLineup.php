@@ -142,16 +142,13 @@ class ShowLineup
             ->where('team_id', $opponentTeamId)
             ->get();
 
-        // Calculate their best XI average (auto-select their best available)
-        $availablePlayers = $opponentPlayers->filter(
-            fn($p) => $p->isAvailable($matchDate, $matchday)
+        // Calculate their best XI average using LineupService (respects formation requirements)
+        $bestXIData = $this->lineupService->getBestXIWithAverage(
+            $gameId,
+            $opponentTeamId,
+            $matchDate,
+            $matchday
         );
-
-        // Get best 11 by overall score
-        $bestXI = $availablePlayers->sortByDesc('overall_score')->take(11);
-        $teamAverage = $bestXI->count() > 0
-            ? (int) round($bestXI->avg('overall_score'))
-            : 0;
 
         // Get their top scorer
         $topScorer = $opponentPlayers
@@ -188,7 +185,7 @@ class ShowLineup
         $suspendedCount = $opponentPlayers->filter(fn($p) => $p->isSuspended($matchday))->count();
 
         return [
-            'teamAverage' => $teamAverage,
+            'teamAverage' => $bestXIData['average'],
             'topScorer' => $topScorer ? [
                 'name' => $topScorer->name,
                 'goals' => $topScorer->goals,
