@@ -32,6 +32,8 @@ class StatsResetProcessor implements SeasonEndProcessor
                 'assists' => 0,
                 'yellow_cards' => 0,
                 'red_cards' => 0,
+                'goals_conceded' => 0,
+                'clean_sheets' => 0,
                 'season_appearances' => 0,
                 'suspended_until_matchday' => null,
                 'injury_until' => null,

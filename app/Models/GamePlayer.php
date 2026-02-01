@@ -32,6 +32,8 @@ class GamePlayer extends Model
         'assists' => 'integer',
         'yellow_cards' => 'integer',
         'red_cards' => 'integer',
+        'goals_conceded' => 'integer',
+        'clean_sheets' => 'integer',
         // Development fields
         'game_technical_ability' => 'integer',
         'game_physical_ability' => 'integer',

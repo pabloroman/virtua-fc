@@ -103,6 +103,9 @@ class GameProjector extends Projector
         // Update fitness and morale for players
         $this->updatePlayerCondition($match, $event->events);
 
+        // Update goalkeeper stats (goals conceded, clean sheets)
+        $this->updateGoalkeeperStats($match, $event->homeScore, $event->awayScore);
+
         // Only update standings for league competitions (not cups)
         $competition = \App\Models\Competition::find($event->competitionId);
         if ($competition?->isLeague()) {
@@ -286,6 +289,46 @@ class GameProjector extends Projector
         }
 
         $this->conditionService->updateAfterMatch($match, $events, $previousDate);
+    }
+
+    /**
+     * Update goalkeeper stats after a match (goals conceded and clean sheets).
+     */
+    private function updateGoalkeeperStats(GameMatch $match, int $homeScore, int $awayScore): void
+    {
+        // Find home goalkeeper in lineup
+        $homeLineupIds = $match->home_lineup ?? [];
+        if (!empty($homeLineupIds)) {
+            $homeGoalkeeper = GamePlayer::whereIn('id', $homeLineupIds)
+                ->where('position', 'Goalkeeper')
+                ->first();
+
+            if ($homeGoalkeeper) {
+                // Home goalkeeper conceded away team's goals
+                $homeGoalkeeper->increment('goals_conceded', $awayScore);
+
+                if ($awayScore === 0) {
+                    $homeGoalkeeper->increment('clean_sheets');
+                }
+            }
+        }
+
+        // Find away goalkeeper in lineup
+        $awayLineupIds = $match->away_lineup ?? [];
+        if (!empty($awayLineupIds)) {
+            $awayGoalkeeper = GamePlayer::whereIn('id', $awayLineupIds)
+                ->where('position', 'Goalkeeper')
+                ->first();
+
+            if ($awayGoalkeeper) {
+                // Away goalkeeper conceded home team's goals
+                $awayGoalkeeper->increment('goals_conceded', $homeScore);
+
+                if ($homeScore === 0) {
+                    $awayGoalkeeper->increment('clean_sheets');
+                }
+            }
+        }
     }
 
     /**
