@@ -6,6 +6,7 @@ use App\Game\Enums\Formation;
 use App\Game\Services\LineupService;
 use App\Models\Game;
 use App\Models\GameMatch;
+use App\Models\GamePlayer;
 use App\Support\PositionSlotMapper;
 
 class ShowLineup
@@ -95,6 +96,9 @@ class ShowLineup
         // Pass slot compatibility matrix to JavaScript
         $slotCompatibility = PositionSlotMapper::SLOT_COMPATIBILITY;
 
+        // Get opponent scouting data
+        $opponentData = $this->getOpponentData($gameId, $opponent->id, $matchDate, $matchday);
+
         return view('lineup', [
             'game' => $game,
             'match' => $match,
@@ -114,7 +118,76 @@ class ShowLineup
             'playersData' => $playersData,
             'formationSlots' => $formationSlots,
             'slotCompatibility' => $slotCompatibility,
+            'opponentData' => $opponentData,
         ]);
+    }
+
+    /**
+     * Get opponent scouting data.
+     */
+    private function getOpponentData(string $gameId, string $opponentTeamId, $matchDate, int $matchday): array
+    {
+        // Get opponent's players
+        $opponentPlayers = GamePlayer::with('player')
+            ->where('game_id', $gameId)
+            ->where('team_id', $opponentTeamId)
+            ->get();
+
+        // Calculate their best XI average (auto-select their best available)
+        $availablePlayers = $opponentPlayers->filter(
+            fn($p) => $p->isAvailable($matchDate, $matchday)
+        );
+
+        // Get best 11 by overall score
+        $bestXI = $availablePlayers->sortByDesc('overall_score')->take(11);
+        $teamAverage = $bestXI->count() > 0
+            ? (int) round($bestXI->avg('overall_score'))
+            : 0;
+
+        // Get their top scorer
+        $topScorer = $opponentPlayers
+            ->where('goals', '>', 0)
+            ->sortByDesc('goals')
+            ->first();
+
+        // Get recent form (last 5 matches)
+        $recentMatches = GameMatch::where('game_id', $gameId)
+            ->where('played', true)
+            ->where(function ($query) use ($opponentTeamId) {
+                $query->where('home_team_id', $opponentTeamId)
+                    ->orWhere('away_team_id', $opponentTeamId);
+            })
+            ->orderByDesc('played_at')
+            ->limit(5)
+            ->get();
+
+        $form = $recentMatches->map(function ($match) use ($opponentTeamId) {
+            $isHome = $match->home_team_id === $opponentTeamId;
+            $goalsFor = $isHome ? $match->home_score : $match->away_score;
+            $goalsAgainst = $isHome ? $match->away_score : $match->home_score;
+
+            if ($goalsFor > $goalsAgainst) {
+                return 'W';
+            } elseif ($goalsFor < $goalsAgainst) {
+                return 'L';
+            }
+            return 'D';
+        })->reverse()->values()->toArray();
+
+        // Count unavailable players
+        $injuredCount = $opponentPlayers->filter(fn($p) => $p->isInjured($matchDate))->count();
+        $suspendedCount = $opponentPlayers->filter(fn($p) => $p->isSuspended($matchday))->count();
+
+        return [
+            'teamAverage' => $teamAverage,
+            'topScorer' => $topScorer ? [
+                'name' => $topScorer->name,
+                'goals' => $topScorer->goals,
+            ] : null,
+            'form' => $form,
+            'injuredCount' => $injuredCount,
+            'suspendedCount' => $suspendedCount,
+        ];
     }
 
     /**

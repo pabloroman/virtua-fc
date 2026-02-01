@@ -229,10 +229,29 @@
                                     <span class="text-slate-500">/ 11</span>
                                 </div>
 
-                                {{-- Team Average --}}
-                                <div class="flex items-center gap-2 px-3 py-1.5 bg-slate-200 rounded-md">
-                                    <span class="text-sm text-slate-600">Team Rating:</span>
-                                    <span class="font-semibold text-slate-900" x-text="teamAverage || '-'"></span>
+                                {{-- Team Average with Opponent Comparison --}}
+                                <div class="flex items-center gap-3 px-3 py-1.5 bg-slate-200 rounded-md">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="text-sm text-slate-600">You:</span>
+                                        <span class="font-semibold text-slate-900" x-text="teamAverage || '-'"></span>
+                                    </div>
+                                    <span class="text-slate-400">vs</span>
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="text-sm text-slate-600">Opp:</span>
+                                        <span class="font-semibold {{ $opponentData['teamAverage'] > 0 ? 'text-slate-900' : 'text-slate-400' }}">{{ $opponentData['teamAverage'] ?: '-' }}</span>
+                                    </div>
+                                    {{-- Advantage indicator --}}
+                                    <template x-if="teamAverage && {{ $opponentData['teamAverage'] }}">
+                                        <span
+                                            class="text-xs font-medium px-1.5 py-0.5 rounded"
+                                            :class="{
+                                                'bg-green-100 text-green-700': teamAverage > {{ $opponentData['teamAverage'] }},
+                                                'bg-red-100 text-red-700': teamAverage < {{ $opponentData['teamAverage'] }},
+                                                'bg-slate-100 text-slate-600': teamAverage === {{ $opponentData['teamAverage'] }}
+                                            }"
+                                            x-text="teamAverage > {{ $opponentData['teamAverage'] }} ? '+' + (teamAverage - {{ $opponentData['teamAverage'] }}) : (teamAverage < {{ $opponentData['teamAverage'] }} ? (teamAverage - {{ $opponentData['teamAverage'] }}) : '=')"
+                                        ></span>
+                                    </template>
                                 </div>
                             </div>
 
@@ -256,28 +275,6 @@
                         {{-- Main Content: Pitch + Player List --}}
                         <div class="grid grid-cols-1 grid-cols-3 gap-6">
                             {{-- Pitch Visualization --}}
-
-{{--                            <div class="relative w-[600px] h-[400px] bg-emerald-600 border-4 border-white mx-auto my-10 rounded-sm shadow-lg">--}}
-
-{{--                                <!-- Midline -->--}}
-{{--                                <div class="absolute top-0 bottom-0 left-1/2 w-0.5 bg-white transform -translate-x-1/2"></div>--}}
-
-{{--                                <!-- Center Circle -->--}}
-{{--                                <div class="absolute top-1/2 left-1/2 w-24 h-24 border-2 border-white rounded-full transform -translate-x-1/2 -translate-y-1/2"></div>--}}
-
-{{--                                <!-- Penalty Area (Left) -->--}}
-{{--                                <div class="absolute top-1/4 bottom-1/4 left-0 w-16 border-2 border-white border-l-0"></div>--}}
-
-{{--                                <!-- Penalty Area (Right) -->--}}
-{{--                                <div class="absolute top-1/4 bottom-1/4 right-0 w-16 border-2 border-white border-r-0"></div>--}}
-
-{{--                                <!-- Goal Area (Left) -->--}}
-{{--                                <div class="absolute top-[35%] bottom-[35%] left-0 w-6 border-2 border-white border-l-0"></div>--}}
-
-{{--                                <!-- Goal Area (Right) -->--}}
-{{--                                <div class="absolute top-[35%] bottom-[35%] right-0 w-6 border-2 border-white border-r-0"></div>--}}
-
-{{--                            </div>--}}
 
                             <div class="col-span-1">
                                 <div class="bg-emerald-600 rounded-lg p-4 relative" style="aspect-ratio: 3/4;">
@@ -360,21 +357,71 @@
                                     </template>
                                 </div>
 
-                                {{-- Position Slots Summary --}}
-                                <div class="mt-4 grid grid-cols-4 gap-2 text-center text-xs">
-                                    <template x-for="[role, count] in Object.entries({
-                                        'Goalkeeper': currentSlots.filter(s => s.role === 'Goalkeeper').length,
-                                        'Defender': currentSlots.filter(s => s.role === 'Defender').length,
-                                        'Midfielder': currentSlots.filter(s => s.role === 'Midfielder').length,
-                                        'Forward': currentSlots.filter(s => s.role === 'Forward').length,
-                                    })" :key="role">
-                                        <div class="p-2 rounded" :class="getPositionColor(role).replace('bg-', 'bg-') + '/20'">
-                                            <div class="font-semibold" :class="getPositionColor(role).replace('bg-', 'text-').replace('-500', '-700')" x-text="role.substring(0, 3).toUpperCase()"></div>
-                                            <div class="text-slate-600">
-                                                <span x-text="slotAssignments.filter(s => s.role === role && s.player).length"></span>/<span x-text="count"></span>
+                                {{-- Opponent Scout Card --}}
+                                <div class="mt-4 bg-slate-50 rounded-lg p-4 border border-slate-200">
+                                    <div class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Opponent</div>
+
+                                    {{-- Team Info --}}
+                                    <div class="flex items-center gap-3 mb-3">
+                                        <img src="{{ $opponent->image }}" class="w-10 h-10" alt="{{ $opponent->name }}">
+                                        <div>
+                                            <div class="font-semibold text-slate-900">{{ $opponent->name }}</div>
+                                            <div class="text-sm text-slate-600">
+                                                Team Rating: <span class="font-semibold">{{ $opponentData['teamAverage'] ?: '-' }}</span>
                                             </div>
                                         </div>
-                                    </template>
+                                    </div>
+
+                                    {{-- Form --}}
+                                    @if(count($opponentData['form']) > 0)
+                                        <div class="flex items-center gap-2 mb-3">
+                                            <span class="text-xs text-slate-500">Form:</span>
+                                            <div class="flex gap-1">
+                                                @foreach($opponentData['form'] as $result)
+                                                    <span class="w-5 h-5 rounded-full text-xs font-semibold flex items-center justify-center
+                                                        @if($result === 'W') bg-green-500 text-white
+                                                        @elseif($result === 'D') bg-slate-400 text-white
+                                                        @else bg-red-500 text-white @endif">
+                                                        {{ $result }}
+                                                    </span>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    {{-- Key Info Row --}}
+                                    <div class="flex flex-wrap gap-x-4 gap-y-2 text-xs">
+                                        {{-- Top Scorer --}}
+                                        @if($opponentData['topScorer'])
+                                            <div class="flex items-center gap-1">
+                                                <span class="text-slate-500">Top scorer:</span>
+                                                <span class="font-medium text-slate-700">{{ $opponentData['topScorer']['name'] }}</span>
+                                                <span class="text-slate-500">({{ $opponentData['topScorer']['goals'] }})</span>
+                                            </div>
+                                        @endif
+
+                                        {{-- Unavailable --}}
+                                        @if($opponentData['injuredCount'] > 0 || $opponentData['suspendedCount'] > 0)
+                                            <div class="flex items-center gap-2">
+                                                @if($opponentData['injuredCount'] > 0)
+                                                    <span class="flex items-center gap-1 text-amber-600">
+                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                                        </svg>
+                                                        {{ $opponentData['injuredCount'] }} injured
+                                                    </span>
+                                                @endif
+                                                @if($opponentData['suspendedCount'] > 0)
+                                                    <span class="flex items-center gap-1 text-red-600">
+                                                        <span class="w-2.5 h-3 bg-red-500 rounded-sm"></span>
+                                                        {{ $opponentData['suspendedCount'] }} suspended
+                                                    </span>
+                                                @endif
+                                            </div>
+                                        @elseif($opponentData['injuredCount'] === 0 && $opponentData['suspendedCount'] === 0)
+                                            <span class="text-green-600">Full squad available</span>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
 
@@ -387,11 +434,11 @@
                                             <th class="font-semibold py-2 w-10"></th>
                                             <th class="font-semibold py-2">Name</th>
                                             <th class="font-semibold py-2 w-10"></th>
-                                            <th class="font-semibold py-2 text-center w-12">OVR</th>
-                                            <th class="font-semibold py-2 text-center w-12">TEC</th>
-                                            <th class="font-semibold py-2 text-center w-12">PHY</th>
-                                            <th class="font-semibold py-2 text-center w-12">FIT</th>
-                                            <th class="font-semibold py-2 text-center w-12">MOR</th>
+                                            <th class="font-semibold py-2 text-center w-8">OVR</th>
+                                            <th class="font-semibold py-2 text-center w-8">TEC</th>
+                                            <th class="font-semibold py-2 text-center w-8">PHY</th>
+                                            <th class="font-semibold py-2 text-center w-8">FIT</th>
+                                            <th class="font-semibold py-2 text-center w-8">MOR</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -479,19 +526,19 @@
                                                             </span>
                                                         </td>
                                                         {{-- Technical --}}
-                                                        <td class="py-2 text-center @if($player->technical_ability >= 80) text-green-600 @elseif($player->technical_ability >= 70) text-lime-600 @elseif($player->technical_ability < 60) text-slate-400 @endif">
+                                                        <td class="py-2 text-center text-slate-400">
                                                             {{ $player->technical_ability }}
                                                         </td>
                                                         {{-- Physical --}}
-                                                        <td class="py-2 text-center @if($player->physical_ability >= 80) text-green-600 @elseif($player->physical_ability >= 70) text-lime-600 @elseif($player->physical_ability < 60) text-slate-400 @endif">
+                                                        <td class="py-2 text-center text-slate-400">
                                                             {{ $player->physical_ability }}
                                                         </td>
                                                         {{-- Fitness --}}
-                                                        <td class="py-2 text-center @if($player->fitness < 70) text-yellow-600 @elseif($player->fitness < 50) text-red-500 @endif">
+                                                        <td class="py-2 text-center @if($player->fitness < 70) text-yellow-500 @elseif($player->fitness < 50) text-red-500 @else text-slate-400 @endif">
                                                             {{ $player->fitness }}
                                                         </td>
                                                         {{-- Morale --}}
-                                                        <td class="py-2 text-center @if($player->morale < 60) text-red-500 @elseif($player->morale < 70) text-yellow-600 @endif">
+                                                        <td class="py-2 text-center @if($player->morale < 60) text-red-500 @elseif($player->morale < 70) text-yellow-500 @else text-slate-400 @endif">
                                                             {{ $player->morale }}
                                                         </td>
                                                     </tr>
