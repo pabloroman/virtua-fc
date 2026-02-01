@@ -4,11 +4,29 @@ A football manager simulation game built with Laravel and Event Sourcing.
 
 ## Features
 
+### Competitions
 - Manage a football team in the Spanish league system (La Liga, Segunda Division)
 - Compete in the Copa del Rey knockout cup competition
-- Match simulation with player events (goals, assists, cards)
 - League standings and cup brackets
+
+### Match Simulation
+- Realistic match engine with Poisson-based goal distribution
+- Player events: goals, assists, yellow/red cards, injuries
+- Formation tactics (4-4-2, 4-3-3, 3-5-2, etc.) affecting attack/defense balance
+- Team mentality (Defensive/Balanced/Attacking) for tactical adjustments
+- Configurable simulation parameters via `config/match_simulation.php`
+
+### Squad Management
 - Player squads with technical and physical attributes
+- Fitness system: players lose fitness when playing, recover during rest
+- Morale system: affected by match results and individual performance
+- Lineup selection with position compatibility indicators
+
+### Season Progression
+- Player development: young players improve, older players decline
+- End of season summary with awards (top scorer, most assists, best goalkeeper)
+- Season archiving for historical records
+- New season initialization with stat resets and fixture generation
 
 ## Prerequisites
 
@@ -22,8 +40,8 @@ A football manager simulation game built with Laravel and Event Sourcing.
 1. **Clone the repository**
 
    ```bash
-   git clone <repository-url>
-   cd VirtuaFC
+   git clone git@github.com:pabloroman/virtua-fc.git
+   cd virtua-fc
    ```
 
 2. **Install PHP dependencies**
@@ -138,6 +156,31 @@ Different competition types (leagues, cups) use a pluggable handler system:
 - `App\Game\Services\CompetitionHandlerResolver` - resolves handlers by competition type
 
 This architecture allows easy addition of new competition types (European cups, playoffs) without modifying core game logic.
+
+### Match Simulation
+
+The match simulator (`App\Game\Services\MatchSimulator`) uses configurable parameters:
+
+- Base expected goals with home advantage
+- Team strength calculation from lineup players
+- Formation modifiers (attack/defense balance)
+- Mentality modifiers (risk vs. safety)
+- Player performance variance (form on the day)
+
+Parameters can be tuned in `config/match_simulation.php` without code changes.
+
+### Season End Pipeline
+
+End of season processing uses a pluggable processor system:
+
+- `App\Game\Contracts\SeasonEndProcessor` - interface for season transition tasks
+- `App\Game\Processors\SeasonArchiveProcessor` - archives season data
+- `App\Game\Processors\PlayerDevelopmentProcessor` - applies player growth/decline
+- `App\Game\Processors\StatsResetProcessor` - resets season statistics
+- `App\Game\Processors\FixtureGenerationProcessor` - creates next season fixtures
+- `App\Game\Services\SeasonEndPipeline` - orchestrates processors in priority order
+
+New processors can be added without modifying existing code.
 
 ## Data Structure
 
