@@ -19,6 +19,7 @@ class SeedReferenceData extends Command
     private array $competitionsToSeed = [
         ['code' => 'ESP1', 'path' => 'data/ESP1/2024', 'tier' => 1, 'type' => 'league'],
         ['code' => 'ESP2', 'path' => 'data/ESP2/2024', 'tier' => 2, 'type' => 'league'],
+        ['code' => 'ESPSUP', 'path' => 'data/transfermarkt/ESPSUP/2024', 'tier' => 0, 'type' => 'cup'],
         ['code' => 'ESPCUP', 'path' => 'data/transfermarkt/ESPCUP/2024', 'tier' => 0, 'type' => 'cup'],
     ];
 
@@ -365,36 +366,25 @@ class SeedReferenceData extends Command
             ->pluck('id', 'transfermarkt_id')
             ->toArray();
 
-        // Get ESP1 and ESP2 team transfermarkt IDs
-        $esp1TransfermarktIds = DB::table('teams')
-            ->join('competition_teams', 'teams.id', '=', 'competition_teams.team_id')
-            ->where('competition_teams.competition_id', 'ESP1')
+        // Supercopa de España teams enter the Copa del Rey at Round 3
+        // (they play the Supercopa first, so they join later)
+        // Get Supercopa team transfermarkt IDs from the database
+        $supercopaTeamIds = DB::table('competition_teams')
+            ->join('teams', 'competition_teams.team_id', '=', 'teams.id')
+            ->where('competition_teams.competition_id', 'ESPSUP')
             ->where('competition_teams.season', $season)
             ->whereNotNull('teams.transfermarkt_id')
             ->pluck('teams.transfermarkt_id')
-            ->toArray();
-
-        $esp2TransfermarktIds = DB::table('teams')
-            ->join('competition_teams', 'teams.id', '=', 'competition_teams.team_id')
-            ->where('competition_teams.competition_id', 'ESP2')
-            ->where('competition_teams.season', $season)
-            ->whereNotNull('teams.transfermarkt_id')
-            ->pluck('teams.transfermarkt_id')
+            ->map(fn ($id) => (string) $id)
             ->toArray();
 
         foreach ($clubs as $club) {
             $cupTeamId = $club['id']; // This is the transfermarkt ID
 
             // Determine entry round:
-            // - La Liga (ESP1) teams enter at round 3 (Dieciseisavos)
-            // - Segunda (ESP2) teams enter at round 2
-            // - Lower league teams enter at round 1
-            $entryRound = 1; // Default: lower leagues
-            if (in_array($cupTeamId, $esp1TransfermarktIds)) {
-                $entryRound = 3;
-            } elseif (in_array($cupTeamId, $esp2TransfermarktIds)) {
-                $entryRound = 2;
-            }
+            // - Supercopa teams enter at round 3 (they play the Supercopa first)
+            // - All other teams enter at round 1
+            $entryRound = in_array($cupTeamId, $supercopaTeamIds) ? 3 : 1;
 
             // Find existing team by transfermarkt_id, or create new one
             $teamId = $teamsByTransfermarktId[$cupTeamId] ?? null;

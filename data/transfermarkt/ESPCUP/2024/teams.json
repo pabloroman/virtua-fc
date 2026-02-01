@@ -348,10 +348,6 @@
             "name": "CD Tudelano"
         },
         {
-            "id": "13244",
-            "name": "Utebo FC"
-        },
-        {
             "id": "11590",
             "name": "Gernika Club"
         },
@@ -400,10 +396,6 @@
             "name": "UE Sant Andreu"
         },
         {
-            "id": "111469",
-            "name": "CF Badalona Futur"
-        },
-        {
             "id": "20528",
             "name": "CE Europa"
         },
@@ -414,10 +406,6 @@
         {
             "id": "16196",
             "name": "UE Cornellà"
-        },
-        {
-            "id": "73876",
-            "name": "CE Andratx"
         },
         {
             "id": "16775",
@@ -478,42 +466,6 @@
         {
             "id": "47421",
             "name": "CF Talavera de la Reina"
-        },
-        {
-            "id": "16576",
-            "name": "CD Guadalajara"
-        },
-        {
-            "id": "11602",
-            "name": "CP Cacereño"
-        },
-        {
-            "id": "13702",
-            "name": "CF Rayo Majadahonda"
-        },
-        {
-            "id": "68575",
-            "name": "CD Atlético Paso"
-        },
-        {
-            "id": "20921",
-            "name": "CDA Navalcarnero"
-        },
-        {
-            "id": "21368",
-            "name": "AD Unión Adarve"
-        },
-        {
-            "id": "41396",
-            "name": "CD Illescas"
-        },
-        {
-            "id": "50684",
-            "name": "CD Coria"
-        },
-        {
-            "id": "16602",
-            "name": "UB Conquense"
         }
     ],
     "updatedAt": "2024-07-28T13:28:37.973408"

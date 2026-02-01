@@ -9,6 +9,7 @@ use App\Game\Processors\PlayerDevelopmentProcessor;
 use App\Game\Processors\SeasonArchiveProcessor;
 use App\Game\Processors\StandingsResetProcessor;
 use App\Game\Processors\StatsResetProcessor;
+use App\Game\Processors\SupercopaQualificationProcessor;
 use App\Models\Game;
 
 /**
@@ -23,6 +24,7 @@ class SeasonEndPipeline
         SeasonArchiveProcessor $seasonArchive,
         PlayerDevelopmentProcessor $playerDevelopment,
         StatsResetProcessor $statsReset,
+        SupercopaQualificationProcessor $supercopaQualification,
         FixtureGenerationProcessor $fixtureGeneration,
         StandingsResetProcessor $standingsReset,
     ) {
@@ -30,6 +32,7 @@ class SeasonEndPipeline
             $seasonArchive,
             $playerDevelopment,
             $statsReset,
+            $supercopaQualification,
             $fixtureGeneration,
             $standingsReset,
         ];
