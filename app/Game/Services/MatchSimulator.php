@@ -181,9 +181,10 @@ class MatchSimulator
 
             $events = $events->merge($homeGoalEvents)->merge($awayGoalEvents);
 
-            // Generate card events
-            $homeCardEvents = $this->generateCardEvents($homeTeam->id, $homePlayers);
-            $awayCardEvents = $this->generateCardEvents($awayTeam->id, $awayPlayers);
+            // Generate card events - losing teams get more cards (frustration)
+            $goalDifference = $homeScore - $awayScore;
+            $homeCardEvents = $this->generateCardEvents($homeTeam->id, $homePlayers, -$goalDifference);
+            $awayCardEvents = $this->generateCardEvents($awayTeam->id, $awayPlayers, $goalDifference);
             $events = $events->merge($homeCardEvents)->merge($awayCardEvents);
 
             // Generate injury events (rare)
@@ -267,15 +268,32 @@ class MatchSimulator
     /**
      * Generate card events for a team.
      *
+     * @param string $teamId
+     * @param Collection $players
+     * @param int $goalDifference Negative = losing (more cards), positive = winning (fewer cards)
      * @return Collection<MatchEventData>
      */
-    private function generateCardEvents(string $teamId, Collection $players): Collection
+    private function generateCardEvents(string $teamId, Collection $players, int $goalDifference = 0): Collection
     {
         $events = collect();
 
-        // Average yellow cards per team per match (Poisson, configurable)
-        $yellowCardsPerTeam = config('match_simulation.yellow_cards_per_team', 1.7);
+        // Base yellow cards per team per match (Poisson, configurable)
+        $baseYellowCards = config('match_simulation.yellow_cards_per_team', 1.7);
+
+        // Adjust based on scoreline - losing teams get frustrated and commit more fouls
+        // Each goal down adds ~0.3 expected yellows, each goal up reduces by ~0.15
+        $yellowModifier = 0;
+        if ($goalDifference < 0) {
+            // Losing: more cards (frustration, desperate tackles)
+            $yellowModifier = abs($goalDifference) * 0.3;
+        } elseif ($goalDifference > 0) {
+            // Winning: fewer cards (in control, calm)
+            $yellowModifier = -$goalDifference * 0.15;
+        }
+
+        $yellowCardsPerTeam = max(0.5, $baseYellowCards + $yellowModifier);
         $yellowCount = $this->poissonRandom($yellowCardsPerTeam);
+
         $usedMinutes = [];
         // Track players with yellow cards and the minute they received it
         $playersWithYellow = collect(); // ['player_id' => minute]
@@ -305,8 +323,11 @@ class MatchSimulator
             }
         }
 
-        // Chance of direct red card per team (configurable)
-        $directRedChance = config('match_simulation.direct_red_chance', 1.5);
+        // Chance of direct red card - higher for losing teams (desperate last-man challenges)
+        $baseRedChance = config('match_simulation.direct_red_chance', 1.5);
+        $redChanceModifier = $goalDifference < 0 ? abs($goalDifference) * 1.0 : 0;
+        $directRedChance = $baseRedChance + $redChanceModifier;
+
         if ($this->percentChance($directRedChance)) {
             $player = $this->pickPlayerByPosition($players, self::CARD_WEIGHTS);
             if ($player && !$playersWithYellow->has($player->id)) {
