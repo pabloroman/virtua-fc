@@ -53,13 +53,17 @@
                 return aCompat - bCompat;
             });
 
-            // Assign best player to each slot
+            // First pass: assign players with matching position group and compatibility > 0
             sortedSlots.forEach(slot => {
                 let bestPlayer = null;
                 let bestScore = -1;
 
                 selectedPlayerData.forEach(player => {
                     if (assigned.has(player.id)) return;
+
+                    // Only consider players whose position group matches the slot's role
+                    // (Defenders in defense, Midfielders in midfield, etc.)
+                    if (player.positionGroup !== slot.role) return;
 
                     const compatibility = this.getSlotCompatibility(player.position, slot.label);
                     if (compatibility === 0) return;
@@ -79,6 +83,19 @@
                     originalSlot.player = bestPlayer;
                     originalSlot.compatibility = bestPlayer.compatibility;
                     assigned.add(bestPlayer.id);
+                }
+            });
+
+            // Second pass: fill any remaining empty slots with unassigned players (even with 0 compatibility)
+            const emptySlots = slots.filter(s => !s.player);
+            const unassignedPlayers = selectedPlayerData.filter(p => !assigned.has(p.id));
+
+            emptySlots.forEach((slot, index) => {
+                if (unassignedPlayers[index]) {
+                    const player = unassignedPlayers[index];
+                    const compatibility = this.getSlotCompatibility(player.position, slot.label);
+                    slot.player = { ...player, compatibility };
+                    slot.compatibility = compatibility;
                 }
             });
 
@@ -150,8 +167,8 @@
                 'Right Midfield': 'RM',
                 'Left Winger': 'LW',
                 'Right Winger': 'RW',
-                'Centre-Forward': 'ST',
-                'Second Striker': 'ST',
+                'Centre-Forward': 'CF',
+                'Second Striker': 'CF',
             };
             return mapping[position] || 'CM';
         },
@@ -232,7 +249,7 @@
                                         class="text-sm font-semibold border-slate-300 rounded-md focus:border-sky-500 focus:ring-sky-500"
                                     >
                                         @foreach($mentalities as $mentality)
-                                            <option value="{{ $mentality->value }}">{{ $mentality->icon() }} {{ $mentality->label() }}</option>
+                                            <option value="{{ $mentality->value }}">{{ $mentality->label() }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -433,8 +450,6 @@
                                                     </span>
                                                 @endif
                                             </div>
-                                        @elseif($opponentData['injuredCount'] === 0 && $opponentData['suspendedCount'] === 0)
-                                            <span class="text-green-600">Full squad available</span>
                                         @endif
                                     </div>
                                 </div>

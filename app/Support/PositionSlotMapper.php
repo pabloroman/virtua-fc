@@ -21,7 +21,7 @@ class PositionSlotMapper
         'RM',   // Right Midfield
         'LW',   // Left Winger
         'RW',   // Right Winger
-        'ST',   // Striker
+        'CF',   // Centre-Forward
     ];
 
     /**
@@ -58,8 +58,8 @@ class PositionSlotMapper
         'Right Midfield' => 'RM',
         'Left Winger' => 'LW',
         'Right Winger' => 'RW',
-        'Centre-Forward' => 'ST',
-        'Second Striker' => 'ST',
+        'Centre-Forward' => 'CF',
+        'Second Striker' => 'CF',
     ];
 
     /**
@@ -154,7 +154,7 @@ class PositionSlotMapper
             'Attacking Midfield' => 40,
             'Right-Back' => 20,
         ],
-        'ST' => [
+        'CF' => [
             'Centre-Forward' => 100,
             'Second Striker' => 100,     // Both are natural strikers
             'Left Winger' => 50,         // Wingers can lead the line
@@ -278,7 +278,7 @@ class PositionSlotMapper
             'RM' => 'Right Midfield',
             'LW' => 'Left Winger',
             'RW' => 'Right Winger',
-            'ST' => 'Striker',
+            'CF' => 'Centre-Forward',
             default => $slotCode,
         };
     }
@@ -292,7 +292,7 @@ class PositionSlotMapper
             'GK' => 'Goalkeeper',
             'CB', 'LB', 'RB', 'LWB', 'RWB' => 'Defender',
             'DM', 'CM', 'AM', 'LM', 'RM' => 'Midfielder',
-            'LW', 'RW', 'ST' => 'Forward',
+            'LW', 'RW', 'CF' => 'Forward',
             default => 'Midfielder',
         };
     }

@@ -82,8 +82,8 @@ enum Formation: string
                 ['id' => 6, 'role' => 'Midfielder', 'x' => 38, 'y' => 55, 'label' => 'CM'],
                 ['id' => 7, 'role' => 'Midfielder', 'x' => 62, 'y' => 55, 'label' => 'CM'],
                 ['id' => 8, 'role' => 'Midfielder', 'x' => 85, 'y' => 55, 'label' => 'RM'],
-                ['id' => 9, 'role' => 'Forward', 'x' => 35, 'y' => 80, 'label' => 'ST'],
-                ['id' => 10, 'role' => 'Forward', 'x' => 65, 'y' => 80, 'label' => 'ST'],
+                ['id' => 9, 'role' => 'Forward', 'x' => 35, 'y' => 80, 'label' => 'CF'],
+                ['id' => 10, 'role' => 'Forward', 'x' => 65, 'y' => 80, 'label' => 'CF'],
             ],
             self::F_4_3_3 => [
                 ['id' => 0, 'role' => 'Goalkeeper', 'x' => 50, 'y' => 10, 'label' => 'GK'],
@@ -95,7 +95,7 @@ enum Formation: string
                 ['id' => 6, 'role' => 'Midfielder', 'x' => 50, 'y' => 55, 'label' => 'CM'],
                 ['id' => 7, 'role' => 'Midfielder', 'x' => 75, 'y' => 55, 'label' => 'CM'],
                 ['id' => 8, 'role' => 'Forward', 'x' => 15, 'y' => 78, 'label' => 'LW'],
-                ['id' => 9, 'role' => 'Forward', 'x' => 50, 'y' => 82, 'label' => 'ST'],
+                ['id' => 9, 'role' => 'Forward', 'x' => 50, 'y' => 82, 'label' => 'CF'],
                 ['id' => 10, 'role' => 'Forward', 'x' => 85, 'y' => 78, 'label' => 'RW'],
             ],
             self::F_4_2_3_1 => [
@@ -109,7 +109,7 @@ enum Formation: string
                 ['id' => 7, 'role' => 'Midfielder', 'x' => 15, 'y' => 62, 'label' => 'LM'],
                 ['id' => 8, 'role' => 'Midfielder', 'x' => 50, 'y' => 62, 'label' => 'AM'],
                 ['id' => 9, 'role' => 'Midfielder', 'x' => 85, 'y' => 62, 'label' => 'RM'],
-                ['id' => 10, 'role' => 'Forward', 'x' => 50, 'y' => 82, 'label' => 'ST'],
+                ['id' => 10, 'role' => 'Forward', 'x' => 50, 'y' => 82, 'label' => 'CF'],
             ],
             self::F_3_4_3 => [
                 ['id' => 0, 'role' => 'Goalkeeper', 'x' => 50, 'y' => 10, 'label' => 'GK'],
@@ -121,7 +121,7 @@ enum Formation: string
                 ['id' => 6, 'role' => 'Midfielder', 'x' => 30, 'y' => 60, 'label' => 'CM'],
                 ['id' => 7, 'role' => 'Midfielder', 'x' => 70, 'y' => 60, 'label' => 'CM'],
                 ['id' => 8, 'role' => 'Forward', 'x' => 15, 'y' => 78, 'label' => 'LW'],
-                ['id' => 9, 'role' => 'Forward', 'x' => 50, 'y' => 82, 'label' => 'ST'],
+                ['id' => 9, 'role' => 'Forward', 'x' => 50, 'y' => 82, 'label' => 'CF'],
                 ['id' => 10, 'role' => 'Forward', 'x' => 85, 'y' => 78, 'label' => 'RW'],
             ],
             self::F_3_5_2 => [
@@ -134,8 +134,8 @@ enum Formation: string
                 ['id' => 6, 'role' => 'Midfielder', 'x' => 50, 'y' => 55, 'label' => 'AM'],
                 ['id' => 7, 'role' => 'Midfielder', 'x' => 65, 'y' => 45, 'label' => 'CM'],
                 ['id' => 8, 'role' => 'Midfielder', 'x' => 90, 'y' => 50, 'label' => 'RWB'],
-                ['id' => 9, 'role' => 'Forward', 'x' => 35, 'y' => 78, 'label' => 'ST'],
-                ['id' => 10, 'role' => 'Forward', 'x' => 65, 'y' => 78, 'label' => 'ST'],
+                ['id' => 9, 'role' => 'Forward', 'x' => 35, 'y' => 78, 'label' => 'CF'],
+                ['id' => 10, 'role' => 'Forward', 'x' => 65, 'y' => 78, 'label' => 'CF'],
             ],
             self::F_5_3_2 => [
                 ['id' => 0, 'role' => 'Goalkeeper', 'x' => 50, 'y' => 10, 'label' => 'GK'],
@@ -147,8 +147,8 @@ enum Formation: string
                 ['id' => 6, 'role' => 'Midfielder', 'x' => 30, 'y' => 50, 'label' => 'CM'],
                 ['id' => 7, 'role' => 'Midfielder', 'x' => 50, 'y' => 50, 'label' => 'CM'],
                 ['id' => 8, 'role' => 'Midfielder', 'x' => 70, 'y' => 50, 'label' => 'CM'],
-                ['id' => 9, 'role' => 'Forward', 'x' => 35, 'y' => 78, 'label' => 'ST'],
-                ['id' => 10, 'role' => 'Forward', 'x' => 65, 'y' => 78, 'label' => 'ST'],
+                ['id' => 9, 'role' => 'Forward', 'x' => 35, 'y' => 78, 'label' => 'CF'],
+                ['id' => 10, 'role' => 'Forward', 'x' => 65, 'y' => 78, 'label' => 'CF'],
             ],
             self::F_5_4_1 => [
                 ['id' => 0, 'role' => 'Goalkeeper', 'x' => 50, 'y' => 10, 'label' => 'GK'],
@@ -161,7 +161,7 @@ enum Formation: string
                 ['id' => 7, 'role' => 'Midfielder', 'x' => 38, 'y' => 55, 'label' => 'CM'],
                 ['id' => 8, 'role' => 'Midfielder', 'x' => 62, 'y' => 55, 'label' => 'CM'],
                 ['id' => 9, 'role' => 'Midfielder', 'x' => 85, 'y' => 55, 'label' => 'RM'],
-                ['id' => 10, 'role' => 'Forward', 'x' => 50, 'y' => 80, 'label' => 'ST'],
+                ['id' => 10, 'role' => 'Forward', 'x' => 50, 'y' => 80, 'label' => 'CF'],
             ],
         };
     }
