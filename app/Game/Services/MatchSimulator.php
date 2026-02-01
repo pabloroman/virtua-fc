@@ -277,7 +277,8 @@ class MatchSimulator
         $yellowCardsPerTeam = config('match_simulation.yellow_cards_per_team', 1.7);
         $yellowCount = $this->poissonRandom($yellowCardsPerTeam);
         $usedMinutes = [];
-        $playersWithYellow = collect();
+        // Track players with yellow cards and the minute they received it
+        $playersWithYellow = collect(); // ['player_id' => minute]
 
         for ($i = 0; $i < $yellowCount; $i++) {
             $player = $this->pickPlayerByPosition($players, self::CARD_WEIGHTS);
@@ -285,18 +286,22 @@ class MatchSimulator
                 continue;
             }
 
-            $minute = $this->generateUniqueMinute($usedMinutes);
-            $usedMinutes[] = $minute;
-
             // Check if this player already has a yellow in this match
-            if ($playersWithYellow->contains($player->id)) {
-                // Second yellow = red card
+            if ($playersWithYellow->has($player->id)) {
+                // Second yellow = red card - must come AFTER the first yellow
+                $firstYellowMinute = (int) $playersWithYellow->get($player->id);
+                $minute = $this->generateUniqueMinuteAfter($usedMinutes, $firstYellowMinute);
+                $usedMinutes[] = $minute;
+
                 $events->push(MatchEventData::redCard($teamId, $player->id, $minute, true));
                 // Player "sent off" - remove from pool for further cards
                 $players = $players->reject(fn ($p) => $p->id === $player->id);
             } else {
+                $minute = $this->generateUniqueMinute($usedMinutes);
+                $usedMinutes[] = $minute;
+
                 $events->push(MatchEventData::yellowCard($teamId, $player->id, $minute));
-                $playersWithYellow->push($player->id);
+                $playersWithYellow->put($player->id, $minute);
             }
         }
 
@@ -304,7 +309,7 @@ class MatchSimulator
         $directRedChance = config('match_simulation.direct_red_chance', 1.5);
         if ($this->percentChance($directRedChance)) {
             $player = $this->pickPlayerByPosition($players, self::CARD_WEIGHTS);
-            if ($player && !$playersWithYellow->contains($player->id)) {
+            if ($player && !$playersWithYellow->has($player->id)) {
                 $minute = $this->generateUniqueMinute($usedMinutes);
                 $events->push(MatchEventData::redCard($teamId, $player->id, $minute, false));
             }
@@ -406,6 +411,26 @@ class MatchSimulator
         do {
             // Most events happen between 1-90, with some stoppage time
             $minute = rand(1, 93);
+            $attempts++;
+        } while (in_array($minute, $usedMinutes) && $attempts < 20);
+
+        return $minute;
+    }
+
+    /**
+     * Generate a unique minute for an event that must occur after a specific minute.
+     * Used for second yellow cards that must come after the first yellow.
+     */
+    private function generateUniqueMinuteAfter(array $usedMinutes, int $afterMinute): int
+    {
+        $attempts = 0;
+        $maxMinute = 93;
+
+        // Ensure we have room for the event after the first card
+        $minMinute = min($afterMinute + 1, $maxMinute);
+
+        do {
+            $minute = rand($minMinute, $maxMinute);
             $attempts++;
         } while (in_array($minute, $usedMinutes) && $attempts < 20);
 
