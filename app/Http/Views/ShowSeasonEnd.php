@@ -66,6 +66,22 @@ class ShowSeasonEnd
             ->limit(3)
             ->get();
 
+        // Best goalkeeper (minimum 19 appearances - 50% of 38 match season)
+        $minGoalkeeperAppearances = 19;
+        $bestGoalkeeper = GamePlayer::with(['player', 'team'])
+            ->where('game_id', $gameId)
+            ->whereIn('team_id', $competitionTeamIds)
+            ->where('position', 'Goalkeeper')
+            ->where('appearances', '>=', $minGoalkeeperAppearances)
+            ->get()
+            ->sortBy(function ($gk) {
+                // Sort by goals conceded per game (lower is better)
+                return $gk->appearances > 0
+                    ? $gk->goals_conceded / $gk->appearances
+                    : 999;
+            })
+            ->first();
+
         // Player team stats
         $playerTeamStats = [
             'won' => $playerStanding->won ?? 0,
@@ -108,6 +124,7 @@ class ShowSeasonEnd
             'champion' => $champion,
             'topScorers' => $topScorers,
             'topAssisters' => $topAssisters,
+            'bestGoalkeeper' => $bestGoalkeeper,
             'playerTeamStats' => $playerTeamStats,
             'developmentPreview' => $squadPlayers,
         ]);

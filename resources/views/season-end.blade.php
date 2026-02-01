@@ -62,7 +62,7 @@
                             <span>&#9733;</span> Season Awards <span>&#9733;</span>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-3 gap-4">
                             {{-- Top Scorer --}}
                             <div class="bg-slate-50 rounded-lg p-4 text-center">
                                 <div class="text-xs text-slate-500 uppercase tracking-wide mb-2">Top Scorer</div>
@@ -92,6 +92,24 @@
                                     <div class="text-xs text-slate-500">assists</div>
                                 @else
                                     <div class="text-slate-400">No assists recorded</div>
+                                @endif
+                            </div>
+
+                            {{-- Best Goalkeeper --}}
+                            <div class="bg-slate-50 rounded-lg p-4 text-center">
+                                <div class="text-xs text-slate-500 uppercase tracking-wide mb-2">Best Goalkeeper</div>
+                                @if($bestGoalkeeper)
+                                    <div class="flex items-center justify-center gap-2 mb-1">
+                                        <img src="{{ $bestGoalkeeper->team->image }}" class="w-5 h-5">
+                                        <span class="font-semibold text-slate-900">{{ $bestGoalkeeper->player->name }}</span>
+                                    </div>
+                                    <div class="text-2xl font-bold text-slate-900">{{ $bestGoalkeeper->clean_sheets }}</div>
+                                    <div class="text-xs text-slate-500">clean sheets</div>
+                                    <div class="text-xs text-slate-400 mt-1">
+                                        {{ number_format($bestGoalkeeper->goals_conceded / max(1, $bestGoalkeeper->appearances), 2) }} goals/game
+                                    </div>
+                                @else
+                                    <div class="text-slate-400">Not enough data</div>
                                 @endif
                             </div>
                         </div>

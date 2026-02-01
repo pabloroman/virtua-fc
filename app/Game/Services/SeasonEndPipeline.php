@@ -6,6 +6,7 @@ use App\Game\Contracts\SeasonEndProcessor;
 use App\Game\DTO\SeasonTransitionData;
 use App\Game\Processors\FixtureGenerationProcessor;
 use App\Game\Processors\PlayerDevelopmentProcessor;
+use App\Game\Processors\SeasonArchiveProcessor;
 use App\Game\Processors\StandingsResetProcessor;
 use App\Game\Processors\StatsResetProcessor;
 use App\Models\Game;
@@ -19,12 +20,14 @@ class SeasonEndPipeline
     private array $processors = [];
 
     public function __construct(
+        SeasonArchiveProcessor $seasonArchive,
         PlayerDevelopmentProcessor $playerDevelopment,
         StatsResetProcessor $statsReset,
         FixtureGenerationProcessor $fixtureGeneration,
         StandingsResetProcessor $standingsReset,
     ) {
         $this->processors = [
+            $seasonArchive,
             $playerDevelopment,
             $statsReset,
             $fixtureGeneration,
