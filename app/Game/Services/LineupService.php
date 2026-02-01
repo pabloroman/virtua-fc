@@ -261,6 +261,36 @@ class LineupService
     }
 
     /**
+     * Save mentality to match record.
+     */
+    public function saveMentality(GameMatch $match, string $teamId, string $mentality): void
+    {
+        if ($match->home_team_id === $teamId) {
+            $match->home_mentality = $mentality;
+        } elseif ($match->away_team_id === $teamId) {
+            $match->away_mentality = $mentality;
+        }
+
+        $match->save();
+    }
+
+    /**
+     * Get the mentality for a team from a match.
+     */
+    public function getMentality(GameMatch $match, string $teamId): ?string
+    {
+        if ($match->home_team_id === $teamId) {
+            return $match->home_mentality;
+        }
+
+        if ($match->away_team_id === $teamId) {
+            return $match->away_mentality;
+        }
+
+        return null;
+    }
+
+    /**
      * Check if a match needs lineup selection for a given team.
      */
     public function needsLineup(GameMatch $match, string $teamId): bool

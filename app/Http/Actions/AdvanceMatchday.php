@@ -5,6 +5,7 @@ namespace App\Http\Actions;
 use App\Game\Commands\AdvanceMatchday as AdvanceMatchdayCommand;
 use App\Game\DTO\MatchEventData;
 use App\Game\Enums\Formation;
+use App\Game\Enums\Mentality;
 use App\Game\Game as GameAggregate;
 use App\Game\Handlers\KnockoutCupHandler;
 use App\Game\Services\CompetitionHandlerResolver;
@@ -130,6 +131,10 @@ class AdvanceMatchday
         $homeFormation = Formation::tryFrom($match->home_formation) ?? Formation::F_4_4_2;
         $awayFormation = Formation::tryFrom($match->away_formation) ?? Formation::F_4_4_2;
 
+        // Get mentalities (default to balanced if not set)
+        $homeMentality = Mentality::tryFrom($match->home_mentality ?? '') ?? Mentality::BALANCED;
+        $awayMentality = Mentality::tryFrom($match->away_mentality ?? '') ?? Mentality::BALANCED;
+
         $result = $this->matchSimulator->simulate(
             $match->homeTeam,
             $match->awayTeam,
@@ -137,6 +142,8 @@ class AdvanceMatchday
             $awayPlayers,
             $homeFormation,
             $awayFormation,
+            $homeMentality,
+            $awayMentality,
         );
 
         // Convert events to array format for storage
@@ -155,7 +162,7 @@ class AdvanceMatchday
 
     /**
      * Ensure all matches have lineups set (auto-select for AI teams).
-     * Uses the player's preferred lineup and formation for their team.
+     * Uses the player's preferred lineup, formation, and mentality for their team.
      */
     private function ensureLineupsSet($matches, Game $game, $allPlayers): void
     {
@@ -164,6 +171,7 @@ class AdvanceMatchday
             ? Formation::tryFrom($game->default_formation)
             : null;
         $playerPreferredLineup = $game->default_lineup;
+        $playerMentality = $game->default_mentality ?? 'balanced';
 
         foreach ($matches as $match) {
             $matchday = $match->round_number ?? $game->current_matchday + 1;
@@ -195,9 +203,12 @@ class AdvanceMatchday
 
                 $this->lineupService->saveLineup($match, $match->home_team_id, $lineup);
 
-                // Save formation if it's the player's team
-                if ($isPlayerTeam && $playerFormation) {
-                    $this->lineupService->saveFormation($match, $match->home_team_id, $playerFormation->value);
+                // Save formation and mentality if it's the player's team
+                if ($isPlayerTeam) {
+                    if ($playerFormation) {
+                        $this->lineupService->saveFormation($match, $match->home_team_id, $playerFormation->value);
+                    }
+                    $this->lineupService->saveMentality($match, $match->home_team_id, $playerMentality);
                 }
             }
 
@@ -227,9 +238,12 @@ class AdvanceMatchday
 
                 $this->lineupService->saveLineup($match, $match->away_team_id, $lineup);
 
-                // Save formation if it's the player's team
-                if ($isPlayerTeam && $playerFormation) {
-                    $this->lineupService->saveFormation($match, $match->away_team_id, $playerFormation->value);
+                // Save formation and mentality if it's the player's team
+                if ($isPlayerTeam) {
+                    if ($playerFormation) {
+                        $this->lineupService->saveFormation($match, $match->away_team_id, $playerFormation->value);
+                    }
+                    $this->lineupService->saveMentality($match, $match->away_team_id, $playerMentality);
                 }
             }
         }

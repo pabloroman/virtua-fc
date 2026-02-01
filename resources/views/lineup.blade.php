@@ -11,6 +11,7 @@
     <div x-data="{
         selectedPlayers: @js($currentLineup ?? []),
         selectedFormation: @js($currentFormation),
+        selectedMentality: @js($currentMentality),
         autoLineup: @js($autoLineup ?? []),
         playersData: @js($playersData),
         formationSlots: @js($formationSlots),
@@ -204,6 +205,7 @@
                             <input type="hidden" name="players[]" :value="playerId">
                         </template>
                         <input type="hidden" name="formation" :value="selectedFormation">
+                        <input type="hidden" name="mentality" :value="selectedMentality">
 
                         {{-- Top Bar: Formation, Stats, Actions --}}
                         <div class="flex items-center justify-between mb-6 p-4 bg-slate-50 rounded-lg sticky top-0 z-10">
@@ -218,6 +220,19 @@
                                     >
                                         @foreach($formations as $formation)
                                             <option value="{{ $formation->value }}">{{ $formation->label() }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                {{-- Mentality Selector --}}
+                                <div class="flex items-center gap-2">
+                                    <label class="text-sm font-medium text-slate-700">Mentality:</label>
+                                    <select
+                                        x-model="selectedMentality"
+                                        class="text-sm font-semibold border-slate-300 rounded-md focus:border-sky-500 focus:ring-sky-500"
+                                    >
+                                        @foreach($mentalities as $mentality)
+                                            <option value="{{ $mentality->value }}">{{ $mentality->icon() }} {{ $mentality->label() }}</option>
                                         @endforeach
                                     </select>
                                 </div>

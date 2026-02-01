@@ -3,6 +3,7 @@
 namespace App\Http\Actions;
 
 use App\Game\Enums\Formation;
+use App\Game\Enums\Mentality;
 use App\Game\Services\LineupService;
 use App\Models\Game;
 use App\Models\GameMatch;
@@ -26,6 +27,10 @@ class SaveLineup
         $formationValue = $request->input('formation', '4-4-2');
         $formation = Formation::tryFrom($formationValue) ?? Formation::F_4_4_2;
 
+        // Get mentality from request
+        $mentalityValue = $request->input('mentality', 'balanced');
+        $mentality = Mentality::tryFrom($mentalityValue) ?? Mentality::BALANCED;
+
         // Ensure we have an array of strings
         $playerIds = array_values(array_filter((array) $playerIds));
 
@@ -47,17 +52,19 @@ class SaveLineup
             return redirect()
                 ->route('game.lineup', [$gameId, $matchId])
                 ->withErrors($errors)
-                ->withInput(['players' => $playerIds, 'formation' => $formation->value]);
+                ->withInput(['players' => $playerIds, 'formation' => $formation->value, 'mentality' => $mentality->value]);
         }
 
-        // Save the lineup and formation for this match
+        // Save the lineup, formation, and mentality for this match
         $this->lineupService->saveLineup($match, $game->team_id, $playerIds);
         $this->lineupService->saveFormation($match, $game->team_id, $formation->value);
+        $this->lineupService->saveMentality($match, $game->team_id, $mentality->value);
 
-        // Always save lineup and formation as defaults for future matches
+        // Always save lineup, formation, and mentality as defaults for future matches
         $game->update([
             'default_lineup' => $playerIds,
             'default_formation' => $formation->value,
+            'default_mentality' => $mentality->value,
         ]);
 
         // Redirect to game page - user clicks Continue to advance

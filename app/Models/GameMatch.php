@@ -25,6 +25,8 @@ class GameMatch extends Model
         'away_lineup' => 'array',
         'home_formation' => 'string',
         'away_formation' => 'string',
+        'home_mentality' => 'string',
+        'away_mentality' => 'string',
         'played' => 'boolean',
         'played_at' => 'datetime',
         'is_extra_time' => 'boolean',

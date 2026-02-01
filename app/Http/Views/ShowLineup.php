@@ -3,6 +3,7 @@
 namespace App\Http\Views;
 
 use App\Game\Enums\Formation;
+use App\Game\Enums\Mentality;
 use App\Game\Services\LineupService;
 use App\Models\Game;
 use App\Models\GameMatch;
@@ -62,6 +63,11 @@ class ShowLineup
         $currentFormation = $currentFormation ?? $defaultFormation;
         $formationEnum = Formation::tryFrom($currentFormation) ?? Formation::F_4_4_2;
 
+        // Get mentality
+        $defaultMentality = $game->default_mentality ?? 'balanced';
+        $currentMentality = $this->lineupService->getMentality($match, $game->team_id);
+        $currentMentality = $currentMentality ?? $defaultMentality;
+
         // Get auto-selected lineup for quick select (using current formation)
         $autoLineup = $this->lineupService->autoSelectLineup($gameId, $game->team_id, $matchDate, $matchday, $formationEnum);
 
@@ -115,6 +121,9 @@ class ShowLineup
             'formations' => Formation::cases(),
             'currentFormation' => $currentFormation,
             'defaultFormation' => $defaultFormation,
+            'mentalities' => Mentality::cases(),
+            'currentMentality' => $currentMentality,
+            'defaultMentality' => $defaultMentality,
             'playersData' => $playersData,
             'formationSlots' => $formationSlots,
             'slotCompatibility' => $slotCompatibility,

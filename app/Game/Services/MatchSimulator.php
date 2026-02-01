@@ -5,6 +5,7 @@ namespace App\Game\Services;
 use App\Game\DTO\MatchEventData;
 use App\Game\DTO\MatchResult;
 use App\Game\Enums\Formation;
+use App\Game\Enums\Mentality;
 use App\Models\GamePlayer;
 use App\Models\Team;
 use Illuminate\Support\Collection;
@@ -90,6 +91,8 @@ class MatchSimulator
      * @param Collection<GamePlayer> $awayPlayers Players for away team (lineup)
      * @param Formation|null $homeFormation Formation for home team
      * @param Formation|null $awayFormation Formation for away team
+     * @param Mentality|null $homeMentality Mentality for home team
+     * @param Mentality|null $awayMentality Mentality for away team
      */
     public function simulate(
         Team $homeTeam,
@@ -98,12 +101,16 @@ class MatchSimulator
         Collection $awayPlayers,
         ?Formation $homeFormation = null,
         ?Formation $awayFormation = null,
+        ?Mentality $homeMentality = null,
+        ?Mentality $awayMentality = null,
     ): MatchResult {
         // Reset per-match performance modifiers for fresh randomness
         $this->resetMatchPerformance();
 
         $homeFormation = $homeFormation ?? Formation::F_4_4_2;
         $awayFormation = $awayFormation ?? Formation::F_4_4_2;
+        $homeMentality = $homeMentality ?? Mentality::BALANCED;
+        $awayMentality = $awayMentality ?? Mentality::BALANCED;
 
         $events = collect();
 
@@ -125,14 +132,21 @@ class MatchSimulator
         $homeAdvantageGoals = config('match_simulation.home_advantage_goals', 0.0);
         $awayDisadvantage = config('match_simulation.away_disadvantage_multiplier', 0.8);
 
-        // Apply formation modifiers to expected goals
+        // Apply formation and mentality modifiers to expected goals
+        // Mentality affects:
+        // - ownGoalsModifier: how many goals YOU score
+        // - opponentGoalsModifier: how many goals OPPONENT scores against you
         $homeExpectedGoals = ($baseHomeGoals + $homeAdvantageGoals + ($homeStrength / $totalStrength) * $strengthMultiplier)
             * $homeFormation->attackModifier()
-            * $awayFormation->defenseModifier();
+            * $awayFormation->defenseModifier()
+            * $homeMentality->ownGoalsModifier()        // Home team's offensive mentality
+            * $awayMentality->opponentGoalsModifier();  // Away team's defensive vulnerability
 
         $awayExpectedGoals = ($baseAwayGoals + ($awayStrength / $totalStrength) * $strengthMultiplier * $awayDisadvantage)
             * $awayFormation->attackModifier()
-            * $homeFormation->defenseModifier();
+            * $homeFormation->defenseModifier()
+            * $awayMentality->ownGoalsModifier()        // Away team's offensive mentality
+            * $homeMentality->opponentGoalsModifier();  // Home team's defensive vulnerability
 
         // Generate scores using Poisson distribution
         // These represent "balls in the opponent's net"
