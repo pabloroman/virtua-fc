@@ -2,66 +2,14 @@
 
 namespace App\Support;
 
+/**
+ * Maps player positions to pitch slots and provides compatibility scoring.
+ *
+ * This is the single source of truth for position/slot compatibility in the game.
+ * Used by: ShowLineup (passed to JavaScript for pitch visualization), FormationRecommender
+ */
 class PositionSlotMapper
 {
-    /**
-     * All available pitch slot codes used in Formation::pitchSlots().
-     */
-    public const SLOTS = [
-        'GK',   // Goalkeeper
-        'LB',   // Left Back
-        'CB',   // Centre Back
-        'RB',   // Right Back
-        'LWB',  // Left Wing Back
-        'RWB',  // Right Wing Back
-        'DM',   // Defensive Midfield
-        'CM',   // Central Midfield
-        'AM',   // Attacking Midfield
-        'LM',   // Left Midfield
-        'RM',   // Right Midfield
-        'LW',   // Left Winger
-        'RW',   // Right Winger
-        'CF',   // Centre-Forward
-    ];
-
-    /**
-     * All player positions in the database.
-     */
-    public const POSITIONS = [
-        'Goalkeeper',
-        'Centre-Back',
-        'Left-Back',
-        'Right-Back',
-        'Defensive Midfield',
-        'Central Midfield',
-        'Attacking Midfield',
-        'Left Midfield',
-        'Right Midfield',
-        'Left Winger',
-        'Right Winger',
-        'Centre-Forward',
-        'Second Striker',
-    ];
-
-    /**
-     * Map player position to their natural slot code.
-     */
-    public const POSITION_TO_NATURAL_SLOT = [
-        'Goalkeeper' => 'GK',
-        'Centre-Back' => 'CB',
-        'Left-Back' => 'LB',
-        'Right-Back' => 'RB',
-        'Defensive Midfield' => 'DM',
-        'Central Midfield' => 'CM',
-        'Attacking Midfield' => 'AM',
-        'Left Midfield' => 'LM',
-        'Right Midfield' => 'RM',
-        'Left Winger' => 'LW',
-        'Right Winger' => 'RW',
-        'Centre-Forward' => 'CF',
-        'Second Striker' => 'CF',
-    ];
-
     /**
      * Compatibility matrix: [slot_code => [position => score]]
      * Score: 100 = natural, 80 = very good, 60 = good, 40 = acceptable, 20 = poor, 0 = unsuitable
@@ -69,20 +17,19 @@ class PositionSlotMapper
     public const SLOT_COMPATIBILITY = [
         'GK' => [
             'Goalkeeper' => 100,
-            // No other position can play GK
         ],
         'CB' => [
             'Centre-Back' => 100,
-            'Defensive Midfield' => 60,  // DMs can drop back
-            'Left-Back' => 40,           // Fullbacks can play centrally in emergency
+            'Defensive Midfield' => 60,
+            'Left-Back' => 40,
             'Right-Back' => 40,
         ],
         'LB' => [
             'Left-Back' => 100,
-            'Left Midfield' => 60,       // LMs can drop back
-            'Left Winger' => 40,         // Wingers can cover
-            'Centre-Back' => 40,         // CBs can slide over
-            'Right-Back' => 30,          // Wrong side but same role
+            'Left Midfield' => 60,
+            'Left Winger' => 40,
+            'Centre-Back' => 40,
+            'Right-Back' => 30,
         ],
         'RB' => [
             'Right-Back' => 100,
@@ -92,10 +39,10 @@ class PositionSlotMapper
             'Left-Back' => 30,
         ],
         'LWB' => [
-            'Left-Back' => 100,          // Natural wing-back candidates
-            'Left Midfield' => 80,       // LMs are very suited
-            'Left Winger' => 60,         // Wingers can adapt
-            'Right-Back' => 20,          // Wrong side
+            'Left-Back' => 100,
+            'Left Midfield' => 80,
+            'Left Winger' => 60,
+            'Right-Back' => 20,
         ],
         'RWB' => [
             'Right-Back' => 100,
@@ -105,30 +52,30 @@ class PositionSlotMapper
         ],
         'DM' => [
             'Defensive Midfield' => 100,
-            'Central Midfield' => 70,    // CMs can sit deeper
-            'Centre-Back' => 50,         // CBs can step up
-            'Attacking Midfield' => 30,  // AMs lack defensive instinct
+            'Central Midfield' => 70,
+            'Centre-Back' => 50,
+            'Attacking Midfield' => 30,
         ],
         'CM' => [
             'Central Midfield' => 100,
-            'Defensive Midfield' => 80,  // DMs can play box-to-box
-            'Attacking Midfield' => 80,  // AMs can drop deeper
-            'Left Midfield' => 50,       // Wide mids can play centrally
+            'Defensive Midfield' => 80,
+            'Attacking Midfield' => 80,
+            'Left Midfield' => 50,
             'Right Midfield' => 50,
         ],
         'AM' => [
             'Attacking Midfield' => 100,
-            'Central Midfield' => 70,    // CMs can push forward
-            'Second Striker' => 70,      // SS can drop deeper
-            'Left Winger' => 50,         // Wingers can play centrally
+            'Central Midfield' => 70,
+            'Second Striker' => 70,
+            'Left Winger' => 50,
             'Right Winger' => 50,
-            'Centre-Forward' => 40,      // Strikers lack playmaking
+            'Centre-Forward' => 40,
         ],
         'LM' => [
             'Left Midfield' => 100,
-            'Left Winger' => 80,         // Wingers are very similar
-            'Left-Back' => 50,           // LBs can push forward
-            'Central Midfield' => 40,    // CMs can play wide
+            'Left Winger' => 80,
+            'Left-Back' => 50,
+            'Central Midfield' => 40,
             'Attacking Midfield' => 40,
         ],
         'RM' => [
@@ -141,10 +88,10 @@ class PositionSlotMapper
         'LW' => [
             'Left Winger' => 100,
             'Left Midfield' => 80,
-            'Second Striker' => 50,      // SS can drift wide
-            'Centre-Forward' => 40,      // Strikers can play wide
+            'Second Striker' => 50,
+            'Centre-Forward' => 40,
             'Attacking Midfield' => 40,
-            'Left-Back' => 20,           // Emergency only
+            'Left-Back' => 20,
         ],
         'RW' => [
             'Right Winger' => 100,
@@ -156,20 +103,12 @@ class PositionSlotMapper
         ],
         'CF' => [
             'Centre-Forward' => 100,
-            'Second Striker' => 100,     // Both are natural strikers
-            'Left Winger' => 50,         // Wingers can lead the line
+            'Second Striker' => 100,
+            'Left Winger' => 50,
             'Right Winger' => 50,
-            'Attacking Midfield' => 40,  // False 9 potential
+            'Attacking Midfield' => 40,
         ],
     ];
-
-    /**
-     * Get the natural slot code for a player position.
-     */
-    public static function getNaturalSlot(string $position): string
-    {
-        return self::POSITION_TO_NATURAL_SLOT[$position] ?? 'CM';
-    }
 
     /**
      * Get compatibility score for a player position in a specific slot.
@@ -177,41 +116,6 @@ class PositionSlotMapper
     public static function getCompatibilityScore(string $position, string $slotCode): int
     {
         return self::SLOT_COMPATIBILITY[$slotCode][$position] ?? 0;
-    }
-
-    /**
-     * Get compatibility display data for a player in a slot.
-     *
-     * @return array{score: int, label: string, color: string, bgColor: string}
-     */
-    public static function getCompatibilityDisplay(string $position, string $slotCode): array
-    {
-        $score = self::getCompatibilityScore($position, $slotCode);
-
-        return match (true) {
-            $score >= 100 => ['score' => $score, 'label' => 'Natural', 'color' => 'text-green-600', 'bgColor' => 'bg-green-100'],
-            $score >= 80 => ['score' => $score, 'label' => 'Very Good', 'color' => 'text-emerald-600', 'bgColor' => 'bg-emerald-100'],
-            $score >= 60 => ['score' => $score, 'label' => 'Good', 'color' => 'text-lime-600', 'bgColor' => 'bg-lime-100'],
-            $score >= 40 => ['score' => $score, 'label' => 'Okay', 'color' => 'text-yellow-600', 'bgColor' => 'bg-yellow-100'],
-            $score >= 20 => ['score' => $score, 'label' => 'Poor', 'color' => 'text-orange-500', 'bgColor' => 'bg-orange-100'],
-            default => ['score' => $score, 'label' => 'Unsuitable', 'color' => 'text-red-600', 'bgColor' => 'bg-red-100'],
-        };
-    }
-
-    /**
-     * Check if a position can play in a slot at all.
-     */
-    public static function canPlayInSlot(string $position, string $slotCode): bool
-    {
-        return self::getCompatibilityScore($position, $slotCode) > 0;
-    }
-
-    /**
-     * Check if a position is natural for a slot.
-     */
-    public static function isNaturalPosition(string $position, string $slotCode): bool
-    {
-        return self::getCompatibilityScore($position, $slotCode) >= 100;
     }
 
     /**
@@ -227,23 +131,6 @@ class PositionSlotMapper
     }
 
     /**
-     * Get all slots a position can play in, sorted by compatibility.
-     *
-     * @return array<string, int> [slot => score]
-     */
-    public static function getCompatibleSlots(string $position): array
-    {
-        $slots = [];
-        foreach (self::SLOT_COMPATIBILITY as $slotCode => $positions) {
-            if (isset($positions[$position])) {
-                $slots[$slotCode] = $positions[$position];
-            }
-        }
-        arsort($slots);
-        return $slots;
-    }
-
-    /**
      * Calculate effective rating for a player in a specific slot.
      * Applies compatibility penalty to overall score.
      */
@@ -253,7 +140,7 @@ class PositionSlotMapper
 
         // Natural position = full rating
         // 0 compatibility = 50% penalty (half the rating)
-        $penalty = (100 - $compatibility) / 200; // Max 50% penalty
+        $penalty = (100 - $compatibility) / 200;
         $effective = $overallScore * (1 - $penalty);
 
         return (int) round($effective);
@@ -284,7 +171,8 @@ class PositionSlotMapper
     }
 
     /**
-     * Get the position group for a slot code (for validation).
+     * Get the position group for a slot code.
+     * Used to ensure players stay in their position group's area of the pitch.
      */
     public static function getSlotPositionGroup(string $slotCode): string
     {

@@ -153,26 +153,6 @@
             this.selectedPlayers = this.selectedPlayers.filter(p => p !== playerId);
         },
 
-        // Get best matching slot label for a player's position
-        getNaturalSlot(position) {
-            const mapping = {
-                'Goalkeeper': 'GK',
-                'Centre-Back': 'CB',
-                'Left-Back': 'LB',
-                'Right-Back': 'RB',
-                'Defensive Midfield': 'DM',
-                'Central Midfield': 'CM',
-                'Attacking Midfield': 'AM',
-                'Left Midfield': 'LM',
-                'Right Midfield': 'RM',
-                'Left Winger': 'LW',
-                'Right Winger': 'RW',
-                'Centre-Forward': 'CF',
-                'Second Striker': 'CF',
-            };
-            return mapping[position] || 'CM';
-        },
-
         // Find which slot a player is assigned to
         getPlayerSlot(playerId) {
             const assignment = this.slotAssignments.find(s => s.player?.id === playerId);

@@ -48,7 +48,7 @@
                                     </div>
                                     <div class="px-6 text-center">
                                         @if($playerTie->firstLegMatch?->played)
-                                            <div class="text-2xl font-bold">
+                                            <div class="text-2xl font-semibold">
                                                 {{ $playerTie->getScoreDisplay() }}
                                             </div>
                                         @else
@@ -81,7 +81,7 @@
                                         </span>
                                         <img src="{{ $playerTie->homeTeam->image }}" class="w-10 h-10">
                                     </div>
-                                    <div class="px-4 text-lg font-bold">
+                                    <div class="px-4 text-lg font-semibold">
                                         {{ $playerTie->getScoreDisplay() }}
                                     </div>
                                     <div class="flex items-center gap-3 flex-1">
@@ -138,11 +138,11 @@
                                                         {{-- Home Team --}}
                                                         <div class="flex items-center gap-2 p-2 {{ $homeWon ? 'bg-green-50' : '' }} {{ $awayWon ? 'opacity-50' : '' }}">
                                                             <img src="{{ $tie->homeTeam->image }}" class="w-5 h-5">
-                                                            <span class="flex-1 text-sm truncate {{ $tie->home_team_id === $game->team_id ? 'font-semibold text-sky-700' : '' }}">
+                                                            <span class="flex-1 text-sm truncate @if($homeWon) font-semibold @endif {{ $tie->home_team_id === $game->team_id ? 'font-semibold text-sky-700' : '' }}">
                                                                 {{ $tie->homeTeam->name }}
                                                             </span>
                                                             @if($tie->firstLegMatch?->played)
-                                                                <span class="text-sm {{ $homeWon ? 'font-bold' : '' }}">
+                                                                <span class="text-sm {{ $homeWon ? 'font-semibold' : '' }}">
                                                                     {{ $tie->firstLegMatch->home_score }}
                                                                 </span>
                                                             @endif
@@ -150,11 +150,11 @@
                                                         {{-- Away Team --}}
                                                         <div class="flex items-center gap-2 p-2 border-t {{ $awayWon ? 'bg-green-50' : '' }} {{ $homeWon ? 'opacity-50' : '' }}">
                                                             <img src="{{ $tie->awayTeam->image }}" class="w-5 h-5">
-                                                            <span class="flex-1 text-sm truncate {{ $tie->away_team_id === $game->team_id ? 'font-semibold text-sky-700' : '' }}">
+                                                            <span class="flex-1 text-sm truncate @if($awayWon) font-semibold @endif {{ $tie->away_team_id === $game->team_id ? 'font-semibold text-sky-700' : '' }}">
                                                                 {{ $tie->awayTeam->name }}
                                                             </span>
                                                             @if($tie->firstLegMatch?->played)
-                                                                <span class="text-sm {{ $awayWon ? 'font-bold' : '' }}">
+                                                                <span class="text-sm {{ $awayWon ? 'font-semibold' : '' }}">
                                                                     {{ $tie->firstLegMatch->away_score }}
                                                                 </span>
                                                             @endif
