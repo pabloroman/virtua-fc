@@ -110,14 +110,27 @@ class MatchSimulator
         // Calculate expected goals based on lineup strength
         $homeStrength = $this->calculateTeamStrength($homePlayers);
         $awayStrength = $this->calculateTeamStrength($awayPlayers);
+
+        // Apply strength exponent to amplify differences between strong and weak teams
+        $strengthExponent = config('match_simulation.strength_exponent', 1.0);
+        $homeStrength = pow($homeStrength, $strengthExponent);
+        $awayStrength = pow($awayStrength, $strengthExponent);
+
         $totalStrength = $homeStrength + $awayStrength;
 
+        // Get config values
+        $baseHomeGoals = config('match_simulation.base_home_goals', 1.4);
+        $baseAwayGoals = config('match_simulation.base_away_goals', 0.9);
+        $strengthMultiplier = config('match_simulation.strength_multiplier', 1.0);
+        $homeAdvantageGoals = config('match_simulation.home_advantage_goals', 0.0);
+        $awayDisadvantage = config('match_simulation.away_disadvantage_multiplier', 0.8);
+
         // Apply formation modifiers to expected goals
-        $homeExpectedGoals = (1.4 + ($homeStrength / $totalStrength))
+        $homeExpectedGoals = ($baseHomeGoals + $homeAdvantageGoals + ($homeStrength / $totalStrength) * $strengthMultiplier)
             * $homeFormation->attackModifier()
             * $awayFormation->defenseModifier();
 
-        $awayExpectedGoals = (0.9 + ($awayStrength / $totalStrength) * 0.8)
+        $awayExpectedGoals = ($baseAwayGoals + ($awayStrength / $totalStrength) * $strengthMultiplier * $awayDisadvantage)
             * $awayFormation->attackModifier()
             * $homeFormation->defenseModifier();
 
@@ -125,6 +138,13 @@ class MatchSimulator
         // These represent "balls in the opponent's net"
         $homeScore = $this->poissonRandom($homeExpectedGoals);
         $awayScore = $this->poissonRandom($awayExpectedGoals);
+
+        // Apply max goals cap if configured
+        $maxGoalsCap = config('match_simulation.max_goals_cap', 0);
+        if ($maxGoalsCap > 0) {
+            $homeScore = min($homeScore, $maxGoalsCap);
+            $awayScore = min($awayScore, $maxGoalsCap);
+        }
 
         // Generate detailed events only if we have player data
         // Events track WHO scored, but don't affect the final score
@@ -183,8 +203,9 @@ class MatchSimulator
             $minute = $this->generateUniqueMinute($usedMinutes);
             $usedMinutes[] = $minute;
 
-            // ~2% chance of own goal
-            if ($this->percentChance(2) && $concedingTeamPlayers->isNotEmpty()) {
+            // Chance of own goal (configurable)
+            $ownGoalChance = config('match_simulation.own_goal_chance', 2.0);
+            if ($this->percentChance($ownGoalChance) && $concedingTeamPlayers->isNotEmpty()) {
                 // Own goal by a defender from the conceding team
                 $ownGoalScorer = $this->pickPlayerByPosition($concedingTeamPlayers, [
                     'Centre-Back' => 40,
@@ -212,8 +233,9 @@ class MatchSimulator
 
             $events->push(MatchEventData::goal($scoringTeamId, $scorer->id, $minute));
 
-            // 60% chance of assist
-            if ($this->percentChance(60)) {
+            // Chance of assist (configurable)
+            $assistChance = config('match_simulation.assist_chance', 60.0);
+            if ($this->percentChance($assistChance)) {
                 $assister = $this->pickPlayerByPosition(
                     $scoringTeamPlayers->reject(fn ($p) => $p->id === $scorer->id),
                     self::ASSIST_WEIGHTS
@@ -237,8 +259,9 @@ class MatchSimulator
     {
         $events = collect();
 
-        // Average ~1.7 yellow cards per team per match (Poisson)
-        $yellowCount = $this->poissonRandom(1.7);
+        // Average yellow cards per team per match (Poisson, configurable)
+        $yellowCardsPerTeam = config('match_simulation.yellow_cards_per_team', 1.7);
+        $yellowCount = $this->poissonRandom($yellowCardsPerTeam);
         $usedMinutes = [];
         $playersWithYellow = collect();
 
@@ -263,8 +286,9 @@ class MatchSimulator
             }
         }
 
-        // ~3% chance of direct red card per match (split between teams)
-        if ($this->percentChance(1.5)) {
+        // Chance of direct red card per team (configurable)
+        $directRedChance = config('match_simulation.direct_red_chance', 1.5);
+        if ($this->percentChance($directRedChance)) {
             $player = $this->pickPlayerByPosition($players, self::CARD_WEIGHTS);
             if ($player && !$playersWithYellow->contains($player->id)) {
                 $minute = $this->generateUniqueMinute($usedMinutes);
@@ -284,8 +308,9 @@ class MatchSimulator
     {
         $events = collect();
 
-        // ~5% chance of injury per team per match
-        if (!$this->percentChance(5)) {
+        // Chance of injury per team per match (configurable)
+        $injuryChance = config('match_simulation.injury_chance', 5.0);
+        if (!$this->percentChance($injuryChance)) {
             return $events;
         }
 
@@ -466,10 +491,10 @@ class MatchSimulator
         $u2 = mt_rand() / mt_getrandmax();
         $z = sqrt(-2 * log($u1)) * cos(2 * M_PI * $u2);
 
-        // Standard deviation of 0.12 means:
-        // ~68% of performances fall within ±0.12 of baseline
-        // ~95% fall within ±0.24
-        $stdDev = 0.12;
+        // Standard deviation controls randomness (configurable)
+        // ~68% of performances fall within ±stdDev of baseline
+        // ~95% fall within ±2*stdDev
+        $stdDev = config('match_simulation.performance_std_dev', 0.12);
         $basePerformance = 1.0 + ($z * $stdDev);
 
         // Morale influences performance more than fitness
@@ -486,8 +511,10 @@ class MatchSimulator
 
         $performance = $basePerformance + $moraleModifier + $fitnessModifier;
 
-        // Clamp to reasonable range
-        $performance = max(0.70, min(1.30, $performance));
+        // Clamp to configurable range
+        $minPerf = config('match_simulation.performance_min', 0.70);
+        $maxPerf = config('match_simulation.performance_max', 1.30);
+        $performance = max($minPerf, min($maxPerf, $performance));
 
         // Cache for this match
         $this->matchPerformance[$player->id] = $performance;
