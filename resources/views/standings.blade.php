@@ -44,7 +44,7 @@
                                     elseif ($standing->position >= 19) $zoneClass = 'border-l-4 border-l-red-500'; // Relegation
                                 }
                             @endphp
-                            <tr class="border-b px-2 text-lg {{ $zoneClass }}">
+                            <tr class="border-b px-2 text-lg {{ $zoneClass }} @if($isPlayer) bg-amber-50 @endif">
                                 <td class="align-middle whitespace-nowrap text-left px-2 text-slate-900 font-semibold">
                                     <div class="flex items-center gap-1">
                                         <span>{{ $standing->position }}</span>
@@ -56,7 +56,7 @@
                                     </div>
                                 </td>
                                 <td class="align-middle whitespace-nowrap py-1.5 px-2">
-                                    <div class="flex items-center space-x-2">
+                                    <div class="flex items-center space-x-2 @if($isPlayer) font-semibold @endif">
                                         <img src="{{ $standing->team->image }}" class="w-6 h-6">
                                         <span>{{ $standing->team->name }}</span>
                                     </div>
@@ -67,7 +67,7 @@
                                 <td class="align-middle whitespace-nowrap p-2 text-slate-400">{{ $standing->lost }}</td>
                                 <td class="align-middle whitespace-nowrap p-2 text-slate-400">{{ $standing->goals_for }}</td>
                                 <td class="align-middle whitespace-nowrap p-2 text-slate-400">{{ $standing->goals_against }}</td>
-                                <td class="align-middle whitespace-nowrap p-2 mtext-slate-400">{{ $standing->goal_difference }}</td>
+                                <td class="align-middle whitespace-nowrap p-2 text-slate-400">{{ $standing->goal_difference }}</td>
                                 <td class="align-middle whitespace-nowrap p-2 font-semibold">{{ $standing->points }}</td>
                             </tr>
                         @endforeach
