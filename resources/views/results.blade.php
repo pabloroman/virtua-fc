@@ -2,7 +2,7 @@
 
 <x-app-layout>
     <x-slot name="header">
-        <x-game-header :game="$game" :next-match="$game->next_match"></x-game-header>
+        <x-game-header :game="$game" :next-match="$game->next_match" :continue-to-home="true"></x-game-header>
     </x-slot>
 
     <div>

@@ -1,4 +1,4 @@
-@props(['game', 'nextMatch' => null])
+@props(['game', 'nextMatch' => null, 'continueToHome' => false])
 
 <div class="flex justify-between text-gray-400">
     <div class="flex items-center space-x-4">
@@ -22,10 +22,14 @@
                 <img class="w-4 h-4" src="{{ $nextMatch->awayTeam->image }}">
             </div>
         </div>
-        <form method="post" action="{{ route('game.advance', $game->id) }}" x-data="{ loading: false }" @submit="loading = true">
-            @csrf
-            <x-primary-button-spin>Continue</x-primary-button-spin>
-        </form>
+        @if($continueToHome)
+            <x-primary-button-link :href="route('show-game', $game->id)">Continue</x-primary-button-link>
+        @else
+            <form method="post" action="{{ route('game.advance', $game->id) }}" x-data="{ loading: false }" @submit="loading = true">
+                @csrf
+                <x-primary-button-spin>Continue</x-primary-button-spin>
+            </form>
+        @endif
         @else
         <div class="flex items-center space-x-4">
             <div class="text-white">Season Complete!</div>
