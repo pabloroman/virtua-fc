@@ -160,7 +160,7 @@ class ShowGame
             }
 
             // Yellow card risk (4 yellows = 1 away from suspension)
-            if ($player->yellow_cards >= self::YELLOW_CARD_WARNING_THRESHOLD) {
+            if ($player->yellow_cards == self::YELLOW_CARD_WARNING_THRESHOLD) {
                 $alerts['yellowCardRisk'][] = [
                     'player' => $player,
                     'yellowCards' => $player->yellow_cards,
