@@ -17,10 +17,10 @@ class SeedReferenceData extends Command
     protected $description = 'Seed teams, competitions, fixtures, and players from JSON data files';
 
     private array $competitionsToSeed = [
-        ['code' => 'ESP1', 'path' => 'data/ESP1/2024', 'tier' => 1, 'type' => 'league'],
-        ['code' => 'ESP2', 'path' => 'data/ESP2/2024', 'tier' => 2, 'type' => 'league'],
-        ['code' => 'ESPSUP', 'path' => 'data/transfermarkt/ESPSUP/2024', 'tier' => 0, 'type' => 'cup'],
-        ['code' => 'ESPCUP', 'path' => 'data/transfermarkt/ESPCUP/2024', 'tier' => 0, 'type' => 'cup'],
+        ['code' => 'ESP1', 'path' => 'data/ESP1/2024', 'tier' => 1, 'handler' => 'league'],
+        ['code' => 'ESP2', 'path' => 'data/ESP2/2024', 'tier' => 2, 'handler' => 'league_with_playoff'],
+        ['code' => 'ESPSUP', 'path' => 'data/transfermarkt/ESPSUP/2024', 'tier' => 0, 'handler' => 'knockout_cup'],
+        ['code' => 'ESPCUP', 'path' => 'data/transfermarkt/ESPCUP/2024', 'tier' => 0, 'handler' => 'knockout_cup'],
     ];
 
     public function handle(): int
@@ -83,18 +83,21 @@ class SeedReferenceData extends Command
         $basePath = base_path($config['path']);
         $code = $config['code'];
         $tier = $config['tier'];
-        $type = $config['type'] ?? 'league';
+        $handler = $config['handler'] ?? 'league';
+
+        // Derive competition type from handler
+        $isCup = in_array($handler, ['knockout_cup', 'group_stage_cup']);
 
         $this->info("Seeding {$code}...");
 
-        if ($type === 'cup') {
-            $this->seedCupCompetition($basePath, $code, $tier);
+        if ($isCup) {
+            $this->seedCupCompetition($basePath, $code, $tier, $handler);
         } else {
-            $this->seedLeagueCompetition($basePath, $code, $tier);
+            $this->seedLeagueCompetition($basePath, $code, $tier, $handler);
         }
     }
 
-    private function seedLeagueCompetition(string $basePath, string $code, int $tier): void
+    private function seedLeagueCompetition(string $basePath, string $code, int $tier, string $handler): void
     {
         // Load competition metadata
         $competitionData = $this->loadJson("{$basePath}/competition.json");
@@ -102,7 +105,7 @@ class SeedReferenceData extends Command
         $fixturesData = $this->loadJson("{$basePath}/fixtures.json");
 
         // Seed competition
-        $this->seedCompetitionRecord($code, $competitionData, $tier, 'league');
+        $this->seedCompetitionRecord($code, $competitionData, $tier, 'league', $handler);
 
         // Seed teams
         $this->seedTeams($teamsData['clubs'], $code, $competitionData['seasonID']);
@@ -114,7 +117,7 @@ class SeedReferenceData extends Command
         $this->seedFixtures($fixturesData['matchdays'], $code, $competitionData['seasonID']);
     }
 
-    private function seedCupCompetition(string $basePath, string $code, int $tier): void
+    private function seedCupCompetition(string $basePath, string $code, int $tier, string $handler): void
     {
         // Load cup data
         $teamsData = $this->loadJson("{$basePath}/teams.json");
@@ -122,22 +125,9 @@ class SeedReferenceData extends Command
         $matchdaysData = $this->loadJson("{$basePath}/matchdays.json");
 
         $season = $teamsData['seasonID'] ?? '2024';
-        $name = $teamsData['name'] ?? 'Copa del Rey';
 
         // Seed competition record
-        DB::table('competitions')->updateOrInsert(
-            ['id' => $code],
-            [
-                'name' => $name,
-                'country' => 'ES',
-                'tier' => $tier,
-                'type' => 'cup',
-                'handler_type' => 'knockout_cup',
-                'season' => $season,
-            ]
-        );
-
-        $this->line("  Competition: {$name}");
+        $this->seedCompetitionRecord($code, $teamsData, $tier, 'cup', $handler);
 
         // Seed cup round templates
         $this->seedCupRoundTemplates($code, $season, $roundsData, $matchdaysData);
@@ -146,14 +136,8 @@ class SeedReferenceData extends Command
         $this->seedCupTeams($teamsData['clubs'], $code, $season);
     }
 
-    private function seedCompetitionRecord(string $code, array $data, int $tier, string $type = 'league'): void
+    private function seedCompetitionRecord(string $code, array $data, int $tier, string $type, string $handler): void
     {
-        // Determine handler_type based on competition type
-        $handlerType = match ($type) {
-            'cup' => 'knockout_cup',
-            default => 'league',
-        };
-
         DB::table('competitions')->updateOrInsert(
             ['id' => $code],
             [
@@ -161,7 +145,7 @@ class SeedReferenceData extends Command
                 'country' => 'ES',
                 'tier' => $tier,
                 'type' => $type,
-                'handler_type' => $handlerType,
+                'handler_type' => $handler,
                 'season' => $data['seasonID'],
             ]
         );

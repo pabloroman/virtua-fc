@@ -4,28 +4,24 @@ namespace App\Game\Processors;
 
 use App\Game\Contracts\SeasonEndProcessor;
 use App\Game\DTO\SeasonTransitionData;
+use App\Game\Promotions\PromotionRelegationFactory;
 use App\Models\CompetitionTeam;
 use App\Models\Game;
 use App\Models\GameStanding;
 
 /**
- * Handles promotion and relegation between La Liga and La Liga 2.
+ * Handles promotion and relegation between divisions.
  *
- * Rules:
- * - Bottom 3 of La Liga (ESP1) are relegated to La Liga 2 (ESP2)
- * - Top 3 of La Liga 2 (ESP2) are promoted to La Liga (ESP1)
- *
- * Note: Real Spanish football has playoffs for 3rd-6th in La Liga 2,
- * but we simplify to direct promotion for top 3.
+ * Uses PromotionRelegationFactory to get the rules for each country/league system.
+ * Rules define which positions are relegated/promoted and whether playoffs are involved.
  *
  * Priority: 26 (runs after Supercopa qualification, before fixture generation)
  */
 class PromotionRelegationProcessor implements SeasonEndProcessor
 {
-    private const PRIMERA_DIVISION = 'ESP1';
-    private const SEGUNDA_DIVISION = 'ESP2';
-    private const RELEGATED_POSITIONS = [18, 19, 20]; // Bottom 3
-    private const PROMOTED_POSITIONS = [1, 2, 3];     // Top 3
+    public function __construct(
+        private PromotionRelegationFactory $ruleFactory,
+    ) {}
 
     public function priority(): int
     {
@@ -34,136 +30,101 @@ class PromotionRelegationProcessor implements SeasonEndProcessor
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData
     {
-        // Get teams to be relegated from La Liga
-        $relegatedTeams = $this->getTeamsByPosition(
-            $game->id,
-            self::PRIMERA_DIVISION,
-            self::RELEGATED_POSITIONS
-        );
+        $allPromoted = [];
+        $allRelegated = [];
 
-        // Get teams to be promoted from La Liga 2
-        $promotedTeams = $this->getTeamsByPosition(
-            $game->id,
-            self::SEGUNDA_DIVISION,
-            self::PROMOTED_POSITIONS
-        );
+        // Process all configured promotion/relegation rules
+        foreach ($this->ruleFactory->all() as $rule) {
+            $promoted = $rule->getPromotedTeams($game);
+            $relegated = $rule->getRelegatedTeams($game);
 
-        // Update competition_teams for the new season
-        $this->updateCompetitionTeams($relegatedTeams, $promotedTeams, $data->newSeason);
+            // Skip if no teams to move (e.g., playoffs not complete)
+            if (empty($promoted) && empty($relegated)) {
+                continue;
+            }
 
-        // Update standings for new season
-        $this->updateStandings($game->id, $relegatedTeams, $promotedTeams);
+            $this->swapTeams(
+                promoted: $promoted,
+                relegated: $relegated,
+                topDivision: $rule->getTopDivision(),
+                bottomDivision: $rule->getBottomDivision(),
+                gameId: $game->id,
+                newSeason: $data->newSeason,
+            );
 
-        // Store in metadata for display
-        $data->setMetadata('relegatedTeams', $relegatedTeams);
-        $data->setMetadata('promotedTeams', $promotedTeams);
+            $allPromoted = array_merge($allPromoted, $promoted);
+            $allRelegated = array_merge($allRelegated, $relegated);
+        }
+
+        // Store in metadata for display on season end screen
+        $data->setMetadata('promotedTeams', $allPromoted);
+        $data->setMetadata('relegatedTeams', $allRelegated);
 
         return $data;
     }
 
     /**
-     * Get team IDs at specific positions in a competition.
-     *
-     * @return array<array{teamId: string, position: int, teamName: string}>
+     * Swap teams between divisions.
      */
-    private function getTeamsByPosition(string $gameId, string $competitionId, array $positions): array
-    {
-        return GameStanding::where('game_id', $gameId)
-            ->where('competition_id', $competitionId)
-            ->whereIn('position', $positions)
-            ->with('team')
-            ->get()
-            ->map(fn ($standing) => [
-                'teamId' => $standing->team_id,
-                'position' => $standing->position,
-                'teamName' => $standing->team->name ?? 'Unknown',
-            ])
-            ->toArray();
-    }
+    private function swapTeams(
+        array $promoted,
+        array $relegated,
+        string $topDivision,
+        string $bottomDivision,
+        string $gameId,
+        string $newSeason,
+    ): void {
+        $promotedIds = array_column($promoted, 'teamId');
+        $relegatedIds = array_column($relegated, 'teamId');
 
-    /**
-     * Update competition_teams for the new season.
-     * Relegated teams move to Segunda, promoted teams move to Primera.
-     */
-    private function updateCompetitionTeams(array $relegatedTeams, array $promotedTeams, string $newSeason): void
-    {
-        $relegatedIds = array_column($relegatedTeams, 'teamId');
-        $promotedIds = array_column($promotedTeams, 'teamId');
-
-        // Move relegated teams: ESP1 -> ESP2
+        // Move relegated teams: top → bottom
         foreach ($relegatedIds as $teamId) {
-            // Remove from Primera
-            CompetitionTeam::where('competition_id', self::PRIMERA_DIVISION)
-                ->where('team_id', $teamId)
-                ->where('season', $newSeason)
-                ->delete();
-
-            // Add to Segunda
-            CompetitionTeam::updateOrCreate(
-                [
-                    'competition_id' => self::SEGUNDA_DIVISION,
-                    'team_id' => $teamId,
-                    'season' => $newSeason,
-                ],
-                ['entry_round' => 1]
-            );
+            $this->moveTeam($teamId, $topDivision, $bottomDivision, $gameId, $newSeason);
         }
 
-        // Move promoted teams: ESP2 -> ESP1
+        // Move promoted teams: bottom → top
         foreach ($promotedIds as $teamId) {
-            // Remove from Segunda
-            CompetitionTeam::where('competition_id', self::SEGUNDA_DIVISION)
-                ->where('team_id', $teamId)
-                ->where('season', $newSeason)
-                ->delete();
-
-            // Add to Primera
-            CompetitionTeam::updateOrCreate(
-                [
-                    'competition_id' => self::PRIMERA_DIVISION,
-                    'team_id' => $teamId,
-                    'season' => $newSeason,
-                ],
-                ['entry_round' => 1]
-            );
-        }
-    }
-
-    /**
-     * Update standings: remove old entries and create new ones in correct divisions.
-     */
-    private function updateStandings(string $gameId, array $relegatedTeams, array $promotedTeams): void
-    {
-        $relegatedIds = array_column($relegatedTeams, 'teamId');
-        $promotedIds = array_column($promotedTeams, 'teamId');
-
-        // Move relegated teams' standings to Segunda
-        foreach ($relegatedIds as $teamId) {
-            // Update competition_id from ESP1 to ESP2
-            GameStanding::where('game_id', $gameId)
-                ->where('competition_id', self::PRIMERA_DIVISION)
-                ->where('team_id', $teamId)
-                ->update([
-                    'competition_id' => self::SEGUNDA_DIVISION,
-                    'position' => 22, // Will be re-sorted
-                ]);
-        }
-
-        // Move promoted teams' standings to Primera
-        foreach ($promotedIds as $teamId) {
-            // Update competition_id from ESP2 to ESP1
-            GameStanding::where('game_id', $gameId)
-                ->where('competition_id', self::SEGUNDA_DIVISION)
-                ->where('team_id', $teamId)
-                ->update([
-                    'competition_id' => self::PRIMERA_DIVISION,
-                    'position' => 20, // Will be re-sorted
-                ]);
+            $this->moveTeam($teamId, $bottomDivision, $topDivision, $gameId, $newSeason);
         }
 
         // Re-sort positions in both divisions
-        $this->resortPositions($gameId, self::PRIMERA_DIVISION);
-        $this->resortPositions($gameId, self::SEGUNDA_DIVISION);
+        $this->resortPositions($gameId, $topDivision);
+        $this->resortPositions($gameId, $bottomDivision);
+    }
+
+    /**
+     * Move a team from one division to another.
+     */
+    private function moveTeam(
+        string $teamId,
+        string $fromDivision,
+        string $toDivision,
+        string $gameId,
+        string $newSeason,
+    ): void {
+        // Update competition_teams
+        CompetitionTeam::where('competition_id', $fromDivision)
+            ->where('team_id', $teamId)
+            ->where('season', $newSeason)
+            ->delete();
+
+        CompetitionTeam::updateOrCreate(
+            [
+                'competition_id' => $toDivision,
+                'team_id' => $teamId,
+                'season' => $newSeason,
+            ],
+            ['entry_round' => 1]
+        );
+
+        // Update game_standings
+        GameStanding::where('game_id', $gameId)
+            ->where('competition_id', $fromDivision)
+            ->where('team_id', $teamId)
+            ->update([
+                'competition_id' => $toDivision,
+                'position' => 99, // Will be re-sorted
+            ]);
     }
 
     /**
@@ -178,8 +139,7 @@ class PromotionRelegationProcessor implements SeasonEndProcessor
 
         $position = 1;
         foreach ($standings as $standing) {
-            $standing->update(['position' => $position]);
-            $position++;
+            $standing->update(['position' => $position++]);
         }
     }
 }
