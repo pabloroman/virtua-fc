@@ -65,6 +65,7 @@ class AdvanceMatchday
 
         // Get the batch of matches to play
         $matches = $handler->getMatchBatch($gameId, $nextMatch);
+        $matches->load('competition');
 
         if ($matches->isEmpty()) {
             return redirect()->route('show-game', $gameId)
@@ -87,7 +88,13 @@ class AdvanceMatchday
         }
 
         // Determine matchday number
-        $matchday = $matches->first()->round_number ?? $game->current_matchday;
+        // For league matches, use the round_number (matchday)
+        // For cup matches, keep the existing league matchday to avoid corrupting it
+        $matchCompetition = $matches->first()?->competition;
+        $isLeagueMatch = $matchCompetition?->type === 'league';
+        $matchday = $isLeagueMatch
+            ? ($matches->first()->round_number ?? $game->current_matchday)
+            : $game->current_matchday;
 
         // Create command and advance the game
         $command = new AdvanceMatchdayCommand(

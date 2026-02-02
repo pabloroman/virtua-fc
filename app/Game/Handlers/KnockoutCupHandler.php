@@ -56,7 +56,7 @@ class KnockoutCupHandler implements CompetitionHandler
     }
 
     /**
-     * Redirect to the cup bracket page, or league results if not participating.
+     * Redirect to the cup bracket page, or game dashboard if not participating.
      */
     public function getRedirectRoute(Game $game, Collection $matches, int $matchday): string
     {
@@ -73,12 +73,9 @@ class KnockoutCupHandler implements CompetitionHandler
             return route('game.cup', $game->id);
         }
 
-        // Otherwise redirect to league results
-        return route('game.results', [
-            'gameId' => $game->id,
-            'competition' => $game->competition_id,
-            'matchday' => $game->current_matchday,
-        ]);
+        // If player didn't participate in these cup matches, go to dashboard
+        // so they can see their actual next match
+        return route('show-game', $game->id);
     }
 
     /**
