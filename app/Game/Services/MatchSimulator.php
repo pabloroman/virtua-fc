@@ -148,6 +148,12 @@ class MatchSimulator
             * $awayMentality->ownGoalsModifier()        // Away team's offensive mentality
             * $homeMentality->opponentGoalsModifier();  // Home team's defensive vulnerability
 
+        // Apply striker quality bonus - elite forwards boost their team's expected goals
+        $homeStrikerBonus = $this->calculateStrikerBonus($homePlayers);
+        $awayStrikerBonus = $this->calculateStrikerBonus($awayPlayers);
+        $homeExpectedGoals += $homeStrikerBonus;
+        $awayExpectedGoals += $awayStrikerBonus;
+
         // Generate scores using Poisson distribution
         // These represent "balls in the opponent's net"
         $homeScore = $this->poissonRandom($homeExpectedGoals);
@@ -496,6 +502,40 @@ class MatchSimulator
 
         // Average across all players, normalized to 0-1 range
         return ($totalStrength / $lineup->count()) / 100;
+    }
+
+    /**
+     * Calculate striker quality bonus for expected goals.
+     *
+     * Elite forwards (90+) provide a significant boost to their team's
+     * expected goals, reflecting their ability to create chances from nothing.
+     *
+     * @param Collection<GamePlayer> $lineup
+     * @return float Bonus expected goals (0.0 to ~0.5)
+     */
+    private function calculateStrikerBonus(Collection $lineup): float
+    {
+        $forwardPositions = ['Centre-Forward', 'Second Striker', 'Left Winger', 'Right Winger'];
+
+        // Get the best forward in the lineup (using effective score for match-day variance)
+        $bestForwardScore = 0;
+        foreach ($lineup as $player) {
+            if (in_array($player->position, $forwardPositions)) {
+                $effectiveScore = $this->getEffectiveScore($player);
+                $bestForwardScore = max($bestForwardScore, $effectiveScore);
+            }
+        }
+
+        // No bonus if no forwards or if best forward is below 80
+        if ($bestForwardScore < 80) {
+            return 0.0;
+        }
+
+        // Bonus scales from 0 at 80 to ~0.5 at 100
+        // Formula: (rating - 80) / 40 gives 0.0 to 0.5 range
+        // A 94-rated Mbappé gets +0.35 expected goals
+        // A 85-rated striker gets +0.125 expected goals
+        return ($bestForwardScore - 80) / 40;
     }
 
     /**

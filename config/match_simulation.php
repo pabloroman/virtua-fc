@@ -15,14 +15,14 @@ return [
     |--------------------------------------------------------------------------
     |
     | These are the starting expected goals before strength is applied.
-    | Higher values = more goals in matches.
+    | Lower values mean team strength matters more.
     |
     | Real-world La Liga average: ~2.5 goals per match
     | Home teams score ~1.5 goals on average, away teams ~1.0
     |
     */
-    'base_home_goals' => 1.4,
-    'base_away_goals' => 0.9,
+    'base_home_goals' => 0.5,
+    'base_away_goals' => 0.3,
 
     /*
     |--------------------------------------------------------------------------
@@ -41,14 +41,14 @@ return [
     |   - 1.5 = strong teams get bonus, weak teams get penalty
     |   - 2.0 = very strong amplification (top teams dominate)
     |
-    | Example with 85 vs 78 rated teams:
-    |   - exponent 1.0: ratio stays ~52% vs 48%
-    |   - exponent 1.5: ratio becomes ~55% vs 45%
-    |   - exponent 2.0: ratio becomes ~58% vs 42%
+    | Example with 85 vs 65 rated teams:
+    |   - exponent 1.0: ratio stays ~57% vs 43%
+    |   - exponent 1.5: ratio becomes ~61% vs 39%
+    |   - exponent 1.8: ratio becomes ~65% vs 35%
     |
     */
-    'strength_multiplier' => 1.2,
-    'strength_exponent' => 1.3,
+    'strength_multiplier' => 3.0,
+    'strength_exponent' => 2.0,
 
     /*
     |--------------------------------------------------------------------------
@@ -82,16 +82,17 @@ return [
     |
     | performance_std_dev: Standard deviation of the bell curve (0.05-0.20)
     |   - 0.05 = very consistent, best team almost always wins
+    |   - 0.08 = low variance, fewer upsets
     |   - 0.12 = moderate variance (default)
     |   - 0.20 = high variance, more upsets
     |
     | performance_min/max: Absolute bounds for performance modifier
-    |   - Default 0.70-1.30 means players can perform 30% below or above their rating
+    |   - Default 0.80-1.20 means players can perform 20% below or above their rating
     |
     */
-    'performance_std_dev' => 0.10,
-    'performance_min' => 0.70,
-    'performance_max' => 1.30,
+    'performance_std_dev' => 0.06,
+    'performance_min' => 0.85,
+    'performance_max' => 1.15,
 
     /*
     |--------------------------------------------------------------------------
@@ -102,10 +103,10 @@ return [
     |
     | max_goals_cap: Maximum goals a team can score (prevents 10-0 results)
     |   - 0 = no cap
-    |   - 7 = realistic cap
+    |   - 7 = realistic cap (historical max in La Liga is 9-0)
     |
     */
-    'max_goals_cap' => 0,
+    'max_goals_cap' => 7,
 
     /*
     |--------------------------------------------------------------------------

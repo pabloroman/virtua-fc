@@ -506,12 +506,68 @@ class SeedReferenceData extends Command
     /**
      * Calculate technical and physical abilities from market value, position, and age.
      *
+     * Key insight: Market value reflects different things at different ages:
+     * - Young players (under 23): Value includes "potential premium" - they're not at peak skill yet
+     * - Prime players (23-30): Value closely reflects current ability
+     * - Veterans (31+): Value is depressed by age, but skill declines slower than value
+     *
+     * A €15M 36-year-old is exceptional (most are worth €1-3M at that age).
+     * A €120M 17-year-old has potential, but isn't at peak ability yet.
+     *
      * @return array{0: int, 1: int} [technical_ability, physical_ability]
      */
     private function calculateAbilities(int $marketValueCents, string $position, ?int $age): array
     {
-        // Base ability from market value tier (0-100 scale)
-        $baseAbility = match (true) {
+        $age = $age ?? 25; // Default to prime age if unknown
+
+        // Step 1: Get raw ability from market value tier
+        $rawAbility = $this->marketValueToRawAbility($marketValueCents);
+
+        // Step 2: Apply age-based adjustments
+        $baseAbility = $this->adjustAbilityForAge($rawAbility, $marketValueCents, $age);
+
+        // Step 3: Position-based split (technical vs physical emphasis)
+        // Higher ratio = more technical, lower = more physical
+        $technicalRatio = match ($position) {
+            'Goalkeeper' => 0.55,           // Distribution, handling matter
+            'Centre-Back' => 0.35,          // More physical
+            'Left-Back', 'Right-Back' => 0.45,
+            'Defensive Midfield' => 0.45,
+            'Central Midfield' => 0.55,
+            'Left Midfield', 'Right Midfield' => 0.55,
+            'Attacking Midfield' => 0.70,   // Very technical
+            'Left Winger', 'Right Winger' => 0.65,
+            'Second Striker' => 0.70,
+            'Centre-Forward' => 0.65,       // Elite strikers are technical (finishing, movement)
+            default => 0.50,
+        };
+
+        // Apply variance: one attribute slightly higher, one slightly lower
+        $variance = rand(2, 5);
+        $technical = (int) round($baseAbility + ($technicalRatio - 0.5) * $variance * 2);
+        $physical = (int) round($baseAbility + (0.5 - $technicalRatio) * $variance * 2);
+
+        // Physical decline for veterans (in addition to age-adjusted ability)
+        // This reflects that physical attributes decline faster than technical
+        if ($age > 33) {
+            $physical = (int) round($physical * 0.92);
+        } elseif ($age > 30) {
+            $physical = (int) round($physical * 0.96);
+        }
+
+        // Clamp to 30-99
+        $technical = max(30, min(99, $technical));
+        $physical = max(30, min(99, $physical));
+
+        return [$technical, $physical];
+    }
+
+    /**
+     * Convert market value to a raw ability estimate.
+     */
+    private function marketValueToRawAbility(int $marketValueCents): int
+    {
+        return match (true) {
             $marketValueCents >= 10_000_000_000 => rand(88, 95), // €100M+
             $marketValueCents >= 5_000_000_000 => rand(83, 90),  // €50-100M
             $marketValueCents >= 2_000_000_000 => rand(78, 85),  // €20-50M
@@ -522,48 +578,65 @@ class SeedReferenceData extends Command
             $marketValueCents > 0 => rand(50, 60),               // Under €1M
             default => rand(45, 55),                              // Unknown value
         };
+    }
 
-        // Position-based split (technical vs physical emphasis)
-        // Higher ratio = more technical, lower = more physical
-        $technicalRatio = match ($position) {
-            'Goalkeeper' => 0.50,
-            'Centre-Back' => 0.40,
-            'Left-Back', 'Right-Back' => 0.45,
-            'Defensive Midfield' => 0.50,
-            'Central Midfield' => 0.55,
-            'Left Midfield', 'Right Midfield' => 0.55,
-            'Attacking Midfield' => 0.65,
-            'Left Winger', 'Right Winger' => 0.60,
-            'Second Striker' => 0.60,
-            'Centre-Forward' => 0.55,
-            default => 0.50,
-        };
+    /**
+     * Adjust raw ability based on age.
+     *
+     * Young players: Cap ability (their value includes potential, not current skill)
+     * Veterans: Boost ability (their low market value is due to age, not skill loss)
+     */
+    private function adjustAbilityForAge(int $rawAbility, int $marketValueCents, int $age): int
+    {
+        // YOUNG PLAYERS (under 23): Cap ability based on age
+        // A €120M 17-year-old is valued for potential, not peak skill
+        if ($age < 23) {
+            // Base cap increases with age: 17yo = 75, 22yo = 85
+            $ageCap = 73 + ($age - 17) * 2;
 
-        // Apply variance: one attribute slightly higher, one slightly lower
-        $variance = rand(2, 5);
-        $technical = (int) round($baseAbility + ($technicalRatio - 0.5) * $variance * 2);
-        $physical = (int) round($baseAbility + (0.5 - $technicalRatio) * $variance * 2);
-
-        // Age adjustment for physical ability (peaks at 27, declines after 30)
-        if ($age !== null) {
-            if ($age < 23) {
-                // Young players: slightly lower physical (still developing)
-                $physical = (int) round($physical * 0.95);
-            } elseif ($age > 33) {
-                // Veterans: significant physical decline
-                $physical = (int) round($physical * 0.85);
-            } elseif ($age > 30) {
-                // Early decline
-                $physical = (int) round($physical * 0.92);
+            // Exceptional market value raises the cap (they're playing at top level)
+            if ($marketValueCents >= 10_000_000_000) { // €100M+
+                $ageCap += 8;  // Can reach 91 at 22
+            } elseif ($marketValueCents >= 5_000_000_000) { // €50M+
+                $ageCap += 5;  // Can reach 88 at 22
+            } elseif ($marketValueCents >= 2_000_000_000) { // €20M+
+                $ageCap += 3;  // Can reach 86 at 22
             }
-            // 23-30: peak physical years, no adjustment
+
+            return min($rawAbility, $ageCap);
         }
 
-        // Clamp to 0-100
-        $technical = max(30, min(99, $technical));
-        $physical = max(30, min(99, $physical));
+        // PRIME YEARS (23-30): Use raw ability directly
+        if ($age <= 30) {
+            return $rawAbility;
+        }
 
-        return [$technical, $physical];
+        // VETERANS (31+): Boost ability based on how exceptional their value is for age
+        // The fact that they still command significant value means they're still good
+
+        // Typical market value for a player of this age
+        $typicalValueForAge = match (true) {
+            $age <= 32 => 500_000_000,   // €5M
+            $age <= 34 => 300_000_000,   // €3M
+            $age <= 36 => 150_000_000,   // €1.5M
+            default => 80_000_000,        // €800K
+        };
+
+        // How much above typical is this player?
+        $valueRatio = $marketValueCents / max(1, $typicalValueForAge);
+
+        // Boost ability for exceptional veterans
+        // A 36yo worth €15M when typical is €1.5M has ratio of 10 = elite
+        $abilityBoost = match (true) {
+            $valueRatio >= 10 => 12,  // 10x+ typical = still world class
+            $valueRatio >= 5 => 8,    // 5-10x typical = very good veteran
+            $valueRatio >= 3 => 5,    // 3-5x typical = above average
+            $valueRatio >= 2 => 3,    // 2-3x typical = solid
+            $valueRatio >= 1 => 1,    // At typical = average for age
+            default => 0,             // Below typical
+        };
+
+        return min(95, $rawAbility + $abilityBoost);
     }
 
     private function loadJson(string $path): array
