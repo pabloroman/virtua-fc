@@ -397,6 +397,8 @@ class MatchSimulator
     /**
      * Pick a player based on position weights and player quality.
      * Uses effective score (base ability × match performance) for weighting.
+     *
+     * Players with position weight of 0 are excluded entirely (e.g., goalkeepers can't score).
      */
     private function pickPlayerByPosition(Collection $players, array $weights): ?GamePlayer
     {
@@ -408,6 +410,11 @@ class MatchSimulator
         $weighted = [];
         foreach ($players as $player) {
             $positionWeight = $weights[$player->position] ?? 5;
+
+            // Skip players with zero position weight (e.g., goalkeepers for scoring)
+            if ($positionWeight === 0) {
+                continue;
+            }
 
             // Use effective score which includes match-day performance
             $effectiveScore = $this->getEffectiveScore($player);
