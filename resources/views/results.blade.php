@@ -10,7 +10,12 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-12">
                     <div class="flex justify-between items-center mb-6">
-                        <h3 class="font-semibold text-xl text-slate-900">Matchday {{ $matchday }} Results</h3>
+                        <div>
+                            <h3 class="font-semibold text-xl text-slate-900">Matchday {{ $matchday }} Results</h3>
+                            @if($competition)
+                                <p class="text-sm text-gray-500">{{ $competition->name }}</p>
+                            @endif
+                        </div>
                         <a href="{{ route('show-game', $game->id) }}" class="text-sky-600 hover:text-sky-800">Back to Dashboard</a>
                     </div>
 

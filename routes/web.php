@@ -38,7 +38,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/game/{gameId}/calendar', ShowCalendar::class)->name('game.calendar');
     Route::get('/game/{gameId}/standings', ShowStandings::class)->name('game.standings');
     Route::get('/game/{gameId}/cup', ShowCupBracket::class)->name('game.cup');
-    Route::get('/game/{gameId}/results/{matchday}', ShowMatchResults::class)->name('game.results');
+    Route::get('/game/{gameId}/results/{competition}/{matchday}', ShowMatchResults::class)->name('game.results');
     Route::get('/game/{gameId}/lineup/{matchId}', ShowLineup::class)->name('game.lineup');
 
     // Game Actions

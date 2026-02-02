@@ -25,8 +25,11 @@
                                         <div class="w-24 text-sm text-gray-500">
                                             {{ $match->scheduled_date->format('D d M') }}
                                         </div>
-                                        <div class="w-16 text-center text-xs uppercase tracking-wide text-gray-400">
-                                            {{ $isHome ? 'HOME' : 'AWAY' }}
+                                        <div class="w-20 text-center">
+                                            <span class="text-xs uppercase tracking-wide text-gray-400">{{ $isHome ? 'HOME' : 'AWAY' }}</span>
+                                        </div>
+                                        <div class="w-24 text-xs text-gray-500 truncate" title="{{ $match->competition->name ?? '' }}">
+                                            {{ $match->competition->name ?? 'League' }}
                                         </div>
                                         <div class="flex-1 flex items-center gap-2">
                                             <img src="{{ $opponent->image }}" class="w-6 h-6">

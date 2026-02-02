@@ -76,6 +76,7 @@ class KnockoutCupHandler implements CompetitionHandler
         // Otherwise redirect to league results
         return route('game.results', [
             'gameId' => $game->id,
+            'competition' => $game->competition_id,
             'matchday' => $game->current_matchday,
         ]);
     }

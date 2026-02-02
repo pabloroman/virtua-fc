@@ -12,7 +12,7 @@ class ShowCalendar
         $game = Game::with('team')->findOrFail($gameId);
 
         // Get all matches for player's team
-        $matches = GameMatch::with(['homeTeam', 'awayTeam'])
+        $matches = GameMatch::with(['homeTeam', 'awayTeam', 'competition'])
             ->where('game_id', $gameId)
             ->where(function ($query) use ($game) {
                 $query->where('home_team_id', $game->team_id)
