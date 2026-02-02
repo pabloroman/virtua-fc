@@ -27,6 +27,7 @@
                             <th class="font-semibold w-8 p-2">GA</th>
                             <th class="font-semibold w-8 p-2">GD</th>
                             <th class="font-semibold w-8 p-2">Pts</th>
+                            <th class="font-semibold w-8 p-2 text-center">Last 5</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -69,6 +70,19 @@
                                 <td class="align-middle whitespace-nowrap p-2 text-slate-400">{{ $standing->goals_against }}</td>
                                 <td class="align-middle whitespace-nowrap p-2 text-slate-400">{{ $standing->goal_difference }}</td>
                                 <td class="align-middle whitespace-nowrap p-2 font-semibold">{{ $standing->points }}</td>
+                                <td class="align-middle whitespace-nowrap p-2">
+                                    <div class="flex justify-center">
+                                        @foreach($teamForms[$standing->team_id] ?? [] as $result)
+                                            @if($result === 'W')
+                                                <svg class="w-5 h-5 rounded-full bg-white fill-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M320 576C178.6 576 64 461.4 64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576zM438 209.7C427.3 201.9 412.3 204.3 404.5 215L285.1 379.2L233 327.1C223.6 317.7 208.4 317.7 199.1 327.1C189.8 336.5 189.7 351.7 199.1 361L271.1 433C276.1 438 282.9 440.5 289.9 440C296.9 439.5 303.3 435.9 307.4 430.2L443.3 243.2C451.1 232.5 448.7 217.5 438 209.7z"/></svg>
+                                            @elseif($result === 'D')
+                                                <svg class="w-5 h-5 rounded-full bg-white fill-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M320 576C461.4 576 576 461.4 576 320C576 178.6 461.4 64 320 64C178.6 64 64 178.6 64 320C64 461.4 178.6 576 320 576zM232 296L408 296C421.3 296 432 306.7 432 320C432 333.3 421.3 344 408 344L232 344C218.7 344 208 333.3 208 320C208 306.7 218.7 296 232 296z"/></svg>
+                                            @else
+                                                <svg class="w-5 h-5 rounded-full bg-white fill-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M320 576C461.4 576 576 461.4 576 320C576 178.6 461.4 64 320 64C178.6 64 64 178.6 64 320C64 461.4 178.6 576 320 576zM231 231C240.4 221.6 255.6 221.6 264.9 231L319.9 286L374.9 231C384.3 221.6 399.5 221.6 408.8 231C418.1 240.4 418.2 255.6 408.8 264.9L353.8 319.9L408.8 374.9C418.2 384.3 418.2 399.5 408.8 408.8C399.4 418.1 384.2 418.2 374.9 408.8L319.9 353.8L264.9 408.8C255.5 418.2 240.3 418.2 231 408.8C221.7 399.4 221.6 384.2 231 374.9L286 319.9L231 264.9C221.6 255.5 221.6 240.3 231 231z"/></svg>
+                                            @endif
+                                        @endforeach
+                                    </div>
+                                </td>
                             </tr>
                         @endforeach
                         </tbody>
