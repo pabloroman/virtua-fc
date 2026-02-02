@@ -160,7 +160,7 @@
                                                             @endif
                                                         </div>
                                                         {{-- Resolution info --}}
-                                                        @if($tie->completed && $tie->resolution)
+                                                        @if($tie->completed && $tie->resolution && $tie->resolution['type'] !== 'normal')
                                                             <div class="text-xs text-center text-gray-400 py-1 border-t bg-gray-50">
                                                                 @if($tie->resolution['type'] === 'penalties')
                                                                     Pens: {{ $tie->resolution['penalties'] }}

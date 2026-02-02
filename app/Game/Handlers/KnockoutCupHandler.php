@@ -56,22 +56,28 @@ class KnockoutCupHandler implements CompetitionHandler
     }
 
     /**
-     * Redirect to the cup bracket page, or league results if eliminated.
+     * Redirect to the cup bracket page, or league results if not participating.
      */
     public function getRedirectRoute(Game $game, Collection $matches, int $matchday): string
     {
-        // If the player's team has been eliminated, redirect to league results instead
-        // Refresh the game to get the latest cup_eliminated status
         $game->refresh();
 
-        if ($game->cup_eliminated) {
-            return route('game.results', [
-                'gameId' => $game->id,
-                'matchday' => $game->current_matchday,
-            ]);
+        // Check if player's team participated in these matches
+        $playerTeamPlayed = $matches->contains(function ($match) use ($game) {
+            return $match->home_team_id === $game->team_id
+                || $match->away_team_id === $game->team_id;
+        });
+
+        // Only show cup page if player's team was involved and not eliminated
+        if ($playerTeamPlayed && !$game->cup_eliminated) {
+            return route('game.cup', $game->id);
         }
 
-        return route('game.cup', $game->id);
+        // Otherwise redirect to league results
+        return route('game.results', [
+            'gameId' => $game->id,
+            'matchday' => $game->current_matchday,
+        ]);
     }
 
     /**
