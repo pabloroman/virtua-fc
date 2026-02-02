@@ -11,14 +11,14 @@ class PlayerConditionService
 {
     // Fitness loss by position group (midfielders run the most)
     private const FITNESS_LOSS = [
-        'Goalkeeper' => [5, 8],
-        'Defender' => [12, 18],
-        'Midfielder' => [15, 22],
-        'Forward' => [12, 18],
+        'Goalkeeper' => [3, 6],
+        'Defender' => [8, 14],
+        'Midfielder' => [10, 16],
+        'Forward' => [8, 14],
     ];
 
-    // Base recovery per day of rest (only for players who played)
-    private const FITNESS_RECOVERY_PER_DAY = 4;
+    // Base recovery per day of rest
+    private const FITNESS_RECOVERY_PER_DAY = 6;
 
     // Fitness loss for players who don't play (lose match sharpness)
     private const FITNESS_DECAY_NOT_PLAYING = [2, 4];
@@ -148,23 +148,18 @@ class PlayerConditionService
         if ($playedMatch) {
             // Players who played: lose fitness from exertion, but recover from rest days
 
-            // Recovery from rest days since last match (only for active players)
+            // Recovery from rest days since last match
             if ($daysSinceLastMatch > 0) {
-                // Diminishing returns: first few days recover more
-                $recoveryDays = min($daysSinceLastMatch, 7);
-                $recovery = (int) (self::FITNESS_RECOVERY_PER_DAY * $recoveryDays * 0.7);
+                // Cap recovery at 5 days (beyond that, diminishing returns)
+                $recoveryDays = min($daysSinceLastMatch, 5);
+                $recovery = self::FITNESS_RECOVERY_PER_DAY * $recoveryDays;
                 $change += $recovery;
             }
 
             // Fatigue from playing
             $positionGroup = $player->position_group;
-            $lossRange = self::FITNESS_LOSS[$positionGroup] ?? [12, 18];
+            $lossRange = self::FITNESS_LOSS[$positionGroup] ?? [8, 14];
             $loss = rand($lossRange[0], $lossRange[1]);
-
-            // Low fitness players lose more (they're pushing themselves harder)
-            if ($player->fitness < 70) {
-                $loss += 5;
-            }
 
             $change -= $loss;
         } else {
