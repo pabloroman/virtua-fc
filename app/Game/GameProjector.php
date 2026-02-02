@@ -9,6 +9,7 @@ use App\Game\Events\MatchdayAdvanced;
 use App\Game\Events\MatchResultRecorded;
 use App\Game\Events\NewSeasonStarted;
 use App\Game\Events\SeasonDevelopmentProcessed;
+use App\Game\Services\ContractService;
 use App\Game\Services\EligibilityService;
 use App\Game\Services\PlayerConditionService;
 use App\Game\Services\PlayerDevelopmentService;
@@ -33,6 +34,7 @@ class GameProjector extends Projector
         private readonly EligibilityService $eligibilityService,
         private readonly PlayerDevelopmentService $developmentService,
         private readonly PlayerConditionService $conditionService,
+        private readonly ContractService $contractService,
     ) {}
 
     public function onGameCreated(GameCreated $event): void
@@ -384,6 +386,9 @@ class GameProjector extends Projector
             return;
         }
 
+        // Get minimum wage for this competition
+        $minimumWage = $this->contractService->getMinimumWageForCompetition($competitionId);
+
         // Get all teams in this competition
         $teams = Team::whereHas('competitions', function ($query) use ($competitionId, $season) {
             $query->where('competition_id', $competitionId)
@@ -391,14 +396,14 @@ class GameProjector extends Projector
         })->get();
 
         foreach ($teams as $team) {
-            $this->initializeTeamPlayers($gameId, $team, $playersPath);
+            $this->initializeTeamPlayers($gameId, $team, $playersPath, $minimumWage);
         }
     }
 
     /**
      * Initialize game players for a specific team from JSON data.
      */
-    private function initializeTeamPlayers(string $gameId, Team $team, string $playersPath): void
+    private function initializeTeamPlayers(string $gameId, Team $team, string $playersPath, int $minimumWage): void
     {
         if (!$team->transfermarkt_id) {
             return;
@@ -442,6 +447,10 @@ class GameProjector extends Projector
             // Parse market value to cents
             $marketValueCents = $this->parseMarketValue($playerData['marketValue'] ?? null);
 
+            // Calculate annual wage based on market value, minimum, and age
+            // Age affects wage: young players have rookie contracts, veterans have legacy contracts
+            $annualWage = $this->contractService->calculateAnnualWage($marketValueCents, $minimumWage, $player->age);
+
             // Calculate current ability and generate potential
             $currentAbility = (int) round(
                 ($player->technical_ability + $player->physical_ability) / 2
@@ -461,6 +470,7 @@ class GameProjector extends Projector
                 'market_value' => $playerData['marketValue'] ?? null,
                 'market_value_cents' => $marketValueCents,
                 'contract_until' => $contractUntil,
+                'annual_wage' => $annualWage,
                 'signed_from' => $playerData['signedFrom'] ?? null,
                 'joined_on' => $joinedOn,
                 'fitness' => rand(90, 100),

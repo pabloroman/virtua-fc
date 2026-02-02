@@ -18,7 +18,21 @@ class Competition extends Model
 
     protected $casts = [
         'tier' => 'integer',
+        'minimum_annual_wage' => 'integer',
     ];
+
+    /**
+     * Get the minimum annual wage for this competition.
+     * Returns null for cups (they don't have their own minimum).
+     */
+    public function getMinimumAnnualWageEurosAttribute(): ?int
+    {
+        if ($this->minimum_annual_wage === null) {
+            return null;
+        }
+
+        return (int) ($this->minimum_annual_wage / 100);
+    }
 
     public function teams(): BelongsToMany
     {

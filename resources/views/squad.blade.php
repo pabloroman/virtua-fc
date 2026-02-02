@@ -26,6 +26,7 @@
                                 <th class="font-semibold py-2">Name</th>
                                 <th class="font-semibold py-2 w-10"></th>
                                 <th class="font-semibold py-2 text-right">Value</th>
+                                <th class="font-semibold py-2 text-right">Wage</th>
                                 <th class="font-semibold py-2 text-center">Contract</th>
                                 <th class="font-semibold py-2 text-center">Age</th>
                                 <th class="font-semibold py-2 w-4"></th>
@@ -45,7 +46,7 @@
                             ] as $group)
                                 @if($group['players']->isNotEmpty())
                                     <tr class="bg-slate-100">
-                                        <td colspan="12" class="py-2 px-2 text-xs font-semibold text-slate-600 uppercase tracking-wide">
+                                        <td colspan="13" class="py-2 px-2 text-xs font-semibold text-slate-600 uppercase tracking-wide">
                                             {{ $group['name'] }}
                                         </td>
                                     </tr>
@@ -80,6 +81,8 @@
                                             </td>
                                             {{-- Market Value --}}
                                             <td class="py-2 text-right text-slate-600">{{ $gamePlayer->market_value }}</td>
+                                            {{-- Annual Wage --}}
+                                            <td class="py-2 text-right text-slate-600">{{ $gamePlayer->formatted_wage }}/yr</td>
                                             {{-- Contract --}}
                                             <td class="py-2 text-center text-slate-600">
                                                 @if($gamePlayer->contract_until)
@@ -132,12 +135,18 @@
                         $avgMorale = $allPlayers->avg('morale');
                         $lowFitnessCount = $allPlayers->filter(fn($p) => $p->fitness < 70)->count();
                         $lowMoraleCount = $allPlayers->filter(fn($p) => $p->morale < 65)->count();
+                        $totalWageBill = $allPlayers->sum('annual_wage');
+                        $formattedWageBill = \App\Game\Services\ContractService::formatWage($totalWageBill);
                     @endphp
                     <div class="mt-8 pt-6 border-t">
                         <div class="flex flex-wrap gap-8 text-sm text-slate-600">
                             <div>
                                 <span class="font-semibold text-slate-900">{{ $allPlayers->count() }}</span>
                                 <span class="text-slate-400 ml-1">players</span>
+                            </div>
+                            <div>
+                                <span class="text-slate-400">Wage Bill:</span>
+                                <span class="font-semibold text-slate-900">{{ $formattedWageBill }}/yr</span>
                             </div>
                             <div class="flex items-center gap-1">
                                 <span class="inline-flex items-center justify-center w-5 h-5 rounded text-xs font-bold bg-amber-100 text-amber-700">GK</span>

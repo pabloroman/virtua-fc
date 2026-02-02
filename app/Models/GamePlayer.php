@@ -21,6 +21,7 @@ class GamePlayer extends Model
     protected $casts = [
         'market_value_cents' => 'integer',
         'contract_until' => 'date',
+        'annual_wage' => 'integer',
         'joined_on' => 'date',
         'fitness' => 'integer',
         'morale' => 'integer',
@@ -215,6 +216,30 @@ class GamePlayer extends Model
             return "{$this->potential_low}-{$this->potential_high}";
         }
         return '?';
+    }
+
+    /**
+     * Get formatted annual wage for display (e.g., "€2.5M", "€450K").
+     */
+    public function getFormattedWageAttribute(): string
+    {
+        return \App\Game\Services\ContractService::formatWage($this->annual_wage);
+    }
+
+    /**
+     * Get annual wage in euros (not cents).
+     */
+    public function getAnnualWageEurosAttribute(): int
+    {
+        return (int) ($this->annual_wage / 100);
+    }
+
+    /**
+     * Get contract expiry year for display.
+     */
+    public function getContractExpiryYearAttribute(): ?int
+    {
+        return $this->contract_until?->year;
     }
 
     /**

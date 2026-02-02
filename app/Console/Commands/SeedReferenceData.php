@@ -17,10 +17,34 @@ class SeedReferenceData extends Command
     protected $description = 'Seed teams, competitions, fixtures, and players from JSON data files';
 
     private array $competitionsToSeed = [
-        ['code' => 'ESP1', 'path' => 'data/ESP1/2024', 'tier' => 1, 'handler' => 'league'],
-        ['code' => 'ESP2', 'path' => 'data/ESP2/2024', 'tier' => 2, 'handler' => 'league_with_playoff'],
-        ['code' => 'ESPSUP', 'path' => 'data/transfermarkt/ESPSUP/2024', 'tier' => 0, 'handler' => 'knockout_cup'],
-        ['code' => 'ESPCUP', 'path' => 'data/transfermarkt/ESPCUP/2024', 'tier' => 0, 'handler' => 'knockout_cup'],
+        [
+            'code' => 'ESP1',
+            'path' => 'data/ESP1/2024',
+            'tier' => 1,
+            'handler' => 'league',
+            'minimum_annual_wage' => 20_000_000, // €200,000 in cents (La Liga minimum)
+        ],
+        [
+            'code' => 'ESP2',
+            'path' => 'data/ESP2/2024',
+            'tier' => 2,
+            'handler' => 'league_with_playoff',
+            'minimum_annual_wage' => 10_000_000, // €100,000 in cents (La Liga 2 minimum)
+        ],
+        [
+            'code' => 'ESPSUP',
+            'path' => 'data/transfermarkt/ESPSUP/2024',
+            'tier' => 0,
+            'handler' => 'knockout_cup',
+            'minimum_annual_wage' => null, // Cups don't have minimums; use team's league minimum
+        ],
+        [
+            'code' => 'ESPCUP',
+            'path' => 'data/transfermarkt/ESPCUP/2024',
+            'tier' => 0,
+            'handler' => 'knockout_cup',
+            'minimum_annual_wage' => null, // Cups don't have minimums; use team's league minimum
+        ],
     ];
 
     public function handle(): int
@@ -84,6 +108,7 @@ class SeedReferenceData extends Command
         $code = $config['code'];
         $tier = $config['tier'];
         $handler = $config['handler'] ?? 'league';
+        $minimumAnnualWage = $config['minimum_annual_wage'] ?? null;
 
         // Derive competition type from handler
         $isCup = in_array($handler, ['knockout_cup', 'group_stage_cup']);
@@ -91,13 +116,13 @@ class SeedReferenceData extends Command
         $this->info("Seeding {$code}...");
 
         if ($isCup) {
-            $this->seedCupCompetition($basePath, $code, $tier, $handler);
+            $this->seedCupCompetition($basePath, $code, $tier, $handler, $minimumAnnualWage);
         } else {
-            $this->seedLeagueCompetition($basePath, $code, $tier, $handler);
+            $this->seedLeagueCompetition($basePath, $code, $tier, $handler, $minimumAnnualWage);
         }
     }
 
-    private function seedLeagueCompetition(string $basePath, string $code, int $tier, string $handler): void
+    private function seedLeagueCompetition(string $basePath, string $code, int $tier, string $handler, ?int $minimumAnnualWage): void
     {
         // Load competition metadata
         $competitionData = $this->loadJson("{$basePath}/competition.json");
@@ -105,7 +130,7 @@ class SeedReferenceData extends Command
         $fixturesData = $this->loadJson("{$basePath}/fixtures.json");
 
         // Seed competition
-        $this->seedCompetitionRecord($code, $competitionData, $tier, 'league', $handler);
+        $this->seedCompetitionRecord($code, $competitionData, $tier, 'league', $handler, $minimumAnnualWage);
 
         // Seed teams
         $this->seedTeams($teamsData['clubs'], $code, $competitionData['seasonID']);
@@ -117,7 +142,7 @@ class SeedReferenceData extends Command
         $this->seedFixtures($fixturesData['matchdays'], $code, $competitionData['seasonID']);
     }
 
-    private function seedCupCompetition(string $basePath, string $code, int $tier, string $handler): void
+    private function seedCupCompetition(string $basePath, string $code, int $tier, string $handler, ?int $minimumAnnualWage): void
     {
         // Load cup data
         $teamsData = $this->loadJson("{$basePath}/teams.json");
@@ -127,7 +152,7 @@ class SeedReferenceData extends Command
         $season = $teamsData['seasonID'] ?? '2024';
 
         // Seed competition record
-        $this->seedCompetitionRecord($code, $teamsData, $tier, 'cup', $handler);
+        $this->seedCompetitionRecord($code, $teamsData, $tier, 'cup', $handler, $minimumAnnualWage);
 
         // Seed cup round templates
         $this->seedCupRoundTemplates($code, $season, $roundsData, $matchdaysData);
@@ -136,7 +161,7 @@ class SeedReferenceData extends Command
         $this->seedCupTeams($teamsData['clubs'], $code, $season);
     }
 
-    private function seedCompetitionRecord(string $code, array $data, int $tier, string $type, string $handler): void
+    private function seedCompetitionRecord(string $code, array $data, int $tier, string $type, string $handler, ?int $minimumAnnualWage): void
     {
         DB::table('competitions')->updateOrInsert(
             ['id' => $code],
@@ -147,10 +172,14 @@ class SeedReferenceData extends Command
                 'type' => $type,
                 'handler_type' => $handler,
                 'season' => $data['seasonID'],
+                'minimum_annual_wage' => $minimumAnnualWage,
             ]
         );
 
-        $this->line("  Competition: {$data['name']}");
+        $wageDisplay = $minimumAnnualWage
+            ? '€' . number_format($minimumAnnualWage / 100, 0, ',', '.') . '/year min'
+            : 'no minimum (cup)';
+        $this->line("  Competition: {$data['name']} ({$wageDisplay})");
     }
 
     private function seedTeams(array $clubs, string $competitionId, string $season): void
