@@ -21,7 +21,8 @@ VirtuaFC aims to simulate football management with these guiding principles:
 | [Player Development](player-development.md) | How players grow and decline over seasons |
 | [Market Value Dynamics](market-value-dynamics.md) | How market value evolves with player performance |
 | [Match Simulation](match-simulation.md) | How match results are determined |
-| [Club Economy System](club-economy-system.md) | Contracts, wages, transfers, youth academy (implementation roadmap) |
+| [Club Economy System](club-economy-system.md) | Contracts, wages, finances overview (implementation roadmap) |
+| [Transfer Market](transfer-market.md) | Selling players, contract renewals, pre-contract offers, free transfers |
 
 ## The Unified Loop
 

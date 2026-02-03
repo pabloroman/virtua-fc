@@ -1,102 +1,121 @@
 # Transfer Market System
 
-## Phase 3a: Selling Players
+## Overview
 
-### Overview
+The transfer market system allows managers to buy and sell players. It consists of two main components:
 
-Allow users to sell players from their squad, either by listing them for sale or receiving unsolicited offers for their stars.
+1. **Transfers** - Buying and selling players for a transfer fee
+2. **Contracts** - Managing player contracts, renewals, and free transfers
 
 ---
 
-## User Stories
+## Phase 3a: Selling Players (Implemented)
 
-1. **As a manager**, I want to list a player for transfer so that I can receive offers and generate funds.
-2. **As a manager**, I want to see all current offers for my players so that I can decide which to accept.
-3. **As a manager**, I want to accept an offer so that the player leaves and I receive the transfer fee.
-4. **As a manager**, I want to reject an offer so that I can wait for better offers.
-5. **As a manager**, I want to remove a player from the transfer list if I change my mind.
-6. **As a manager**, I want to receive unsolicited offers for my best players from AI clubs.
+### Features
+
+- **List players for transfer** - Put players on the market to receive offers
+- **Receive offers** - AI clubs make offers based on player value and age
+- **Unsolicited offers** - Top players receive poaching attempts from other clubs
+- **Accept/Reject offers** - Decide which offers to accept
+- **Transfer windows** - Sales complete at Summer (matchday 0) or Winter (matchday 19) windows
+
+### Transfer Flow
+
+```
+1. User lists player → status = 'listed'
+2. Each matchday: 40% chance of new offer (max 3 pending)
+3. User accepts offer → status = 'agreed', waiting for window
+4. Transfer window arrives → player.team_id changes, user receives fee
+5. Player leaves squad, finances updated
+```
+
+### Pricing Logic
+
+**Listed Players** (buyer has leverage):
+```
+Offer = Market Value × (0.85 to 0.95) × Age Adjustment
+```
+
+**Unsolicited Offers** (seller has leverage):
+```
+Offer = Market Value × (1.00 to 1.20) × Age Adjustment
+```
+
+**Age Adjustment**:
+- Under 23: +10% (young talent premium)
+- 23-29: no adjustment
+- 30+: -5% per year over 29 (minimum 50%)
+
+---
+
+## Phase 3b: Contract Management (Implemented)
+
+### Features
+
+- **Expiring contracts** - Players with contracts ending at season's end
+- **Contract renewals** - Offer players a new contract to keep them
+- **Pre-contract offers** - AI clubs can poach players with expiring contracts
+- **Free transfers** - Players leave for free at end of contract if not renewed
+
+### Contract Renewal Flow
+
+```
+1. Player's contract expires at end of season (June 30)
+2. User can offer renewal from the Contracts page
+3. Player demands: max(current wage × 1.15, market wage)
+4. Contract length based on age: 3yr (<30), 2yr (30-32), 1yr (33+)
+5. If accepted: contract_until extended, pending_annual_wage stored
+6. At season end: ContractRenewalProcessor applies new wage
+```
+
+### Pre-Contract Flow
+
+```
+1. From matchday 19+, AI clubs can approach expiring players
+2. 10% chance per matchday per eligible player
+3. Pre-contract offers have NO transfer fee (free transfer)
+4. If user accepts: player finishes season, then moves to new club
+5. At season end: PreContractTransferProcessor transfers player
+```
+
+### Key Difference from Transfers
+
+| Aspect | Transfer | Pre-Contract |
+|--------|----------|--------------|
+| Fee | Based on market value | Free (€0) |
+| Timing | Complete at transfer window | Complete at end of season |
+| Eligibility | Any listed player | Only expiring contracts |
+| User receives | Transfer fee | Nothing |
 
 ---
 
 ## Database Schema
 
-### Migration: Add transfer_status to game_players
+### game_players table additions
 
 ```php
-$table->string('transfer_status')->nullable(); // null, 'listed', 'sold'
+$table->string('transfer_status')->nullable();      // null, 'listed'
 $table->timestamp('transfer_listed_at')->nullable();
+$table->unsignedBigInteger('pending_annual_wage')->nullable(); // For renewals
 ```
 
-### Migration: Create transfer_offers table
+### transfer_offers table
 
 ```php
 Schema::create('transfer_offers', function (Blueprint $table) {
     $table->uuid('id')->primary();
     $table->uuid('game_id');
-    $table->uuid('game_player_id'); // The player being sold
-    $table->uuid('offering_team_id'); // The AI club making the offer
+    $table->uuid('game_player_id');
+    $table->uuid('offering_team_id');
 
-    $table->string('offer_type'); // 'listed' or 'unsolicited'
-    $table->bigInteger('transfer_fee'); // In cents
-    $table->string('status'); // 'pending', 'accepted', 'rejected', 'expired', 'completed'
+    $table->string('offer_type');     // 'listed', 'unsolicited', 'pre_contract'
+    $table->bigInteger('transfer_fee'); // In cents (0 for pre-contract)
+    $table->string('status');         // 'pending', 'agreed', 'rejected', 'expired', 'completed'
 
     $table->date('expires_at');
     $table->timestamps();
-
-    $table->foreign('game_id')->references('id')->on('games')->cascadeOnDelete();
-    $table->foreign('game_player_id')->references('id')->on('game_players')->cascadeOnDelete();
-    $table->foreign('offering_team_id')->references('id')->on('teams');
 });
 ```
-
----
-
-## Pricing Logic
-
-### Listed Players (User wants to sell)
-```
-Base Price = Market Value
-Modifier = 0.85 to 0.95 (random) — buyer has leverage
-Age Adjustment:
-  - Under 23: +10% (young talent premium)
-  - 23-29: no adjustment
-  - 30+: -5% per year over 29
-
-Final = Base × Modifier × Age Adjustment
-```
-
-### Unsolicited Offers (AI wants to poach)
-```
-Base Price = Market Value
-Modifier = 1.00 to 1.20 (random) — they're trying to tempt you
-Age Adjustment: same as above
-
-Final = Base × Modifier × Age Adjustment
-```
-
-### Example Calculations
-
-| Player | Age | Market Value | Type | Modifier | Age Adj | Offer |
-|--------|-----|--------------|------|----------|---------|-------|
-| Vinicius | 24 | €180M | Unsolicited | 1.10 | 1.00 | €198M |
-| Modric | 39 | €6M | Listed | 0.90 | 0.50 | €2.7M |
-| Endrick | 18 | €60M | Listed | 0.92 | 1.10 | €60.7M |
-
----
-
-## Offer Generation
-
-### When Player is Listed
-- Generate **1-3 offers** immediately
-- Offers come from random AI teams in the same league (or top teams from other leagues for stars)
-- Offers expire in **7 game days**
-
-### Unsolicited Offers (Star Players)
-- Triggered on **each matchday advance**
-- **5% chance** per star player (top 5 by market value in your squad)
-- Only if player is NOT already listed
-- Offers expire in **5 game days** (more urgent)
 
 ---
 
@@ -104,206 +123,186 @@ Final = Base × Modifier × Age Adjustment
 
 ### TransferService
 
+Handles all transfer-related operations:
+
 ```php
 class TransferService
 {
-    // List a player for transfer
+    // Listing
     public function listPlayer(GamePlayer $player): void;
-
-    // Remove from transfer list
     public function unlistPlayer(GamePlayer $player): void;
 
-    // Generate offers for a listed player
-    public function generateOffersForListedPlayer(GamePlayer $player): Collection;
-
-    // Generate unsolicited offers for star players (called on matchday advance)
+    // Offer Generation (called on matchday advance)
+    public function generateOffersForListedPlayers(Game $game): Collection;
     public function generateUnsolicitedOffers(Game $game): Collection;
+    public function generatePreContractOffers(Game $game): Collection;
 
-    // Accept an offer
+    // Offer Management
     public function acceptOffer(TransferOffer $offer): void;
-
-    // Reject an offer
     public function rejectOffer(TransferOffer $offer): void;
+    public function expireOffers(Game $game): int;
 
-    // Expire old offers (called periodically)
-    public function expireOffers(Game $game): void;
+    // Transfer Completion (at windows)
+    public function isTransferWindow(Game $game): bool;
+    public function completeAgreedTransfers(Game $game): Collection;
+    public function completePreContractTransfers(Game $game): Collection;
 
-    // Calculate offer price
+    // Pricing
     public function calculateOfferPrice(GamePlayer $player, string $offerType): int;
-
-    // Get eligible AI teams to make offers
     public function getEligibleBuyers(GamePlayer $player): Collection;
 }
 ```
 
----
+### ContractService
 
-## UI Components
-
-### 1. Squad Page - Add "List for Transfer" Action
-
-On each player row, add a dropdown or button:
-- If not listed: "List for Transfer" button
-- If listed: "Remove from List" button + "Listed" badge
-
-### 2. Transfers Page (New)
-
-**URL**: `/game/{gameId}/transfers`
-
-**Sections**:
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│  TRANSFERS                                                  │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  INCOMING OFFERS (3)                                        │
-│  ───────────────────                                        │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │ Vinicius Jr.        Real Sociedad offers €42M       │   │
-│  │ LW · 24 · €45M      Expires: 3 days                 │   │
-│  │                     [Accept] [Reject]               │   │
-│  └─────────────────────────────────────────────────────┘   │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │ Rodrygo             Atlético Madrid offers €88M     │   │
-│  │ RW · 23 · €90M      ⭐ UNSOLICITED                  │   │
-│  │                     Expires: 2 days                 │   │
-│  │                     [Accept] [Reject]               │   │
-│  └─────────────────────────────────────────────────────┘   │
-│                                                             │
-│  LISTED PLAYERS (2)                                         │
-│  ──────────────────                                         │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │ Dani Ceballos       No offers yet                   │   │
-│  │ CM · 28 · €12M      Listed 2 days ago               │   │
-│  │                     [Remove from List]              │   │
-│  └─────────────────────────────────────────────────────┘   │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
-```
-
-### 3. Navigation
-
-Add "Transfers" to the game header navigation (after Finances).
-
----
-
-## Event Sourcing
-
-### Commands
+Handles contract-related operations:
 
 ```php
-// List player for transfer
-class ListPlayerForTransfer {
-    public string $gamePlayerId;
-}
+class ContractService
+{
+    // Wage Calculation
+    public function calculateAnnualWage(int $marketValueCents, int $minimumWageCents, ?int $age): int;
 
-// Accept transfer offer
-class AcceptTransferOffer {
-    public string $offerId;
-}
+    // Contract Renewal
+    public function calculateRenewalDemand(GamePlayer $player): array;
+    public function processRenewal(GamePlayer $player, int $newWage, int $contractYears): bool;
+    public function applyPendingWages(Game $game): Collection;
 
-// Reject transfer offer
-class RejectTransferOffer {
-    public string $offerId;
+    // Queries
+    public function getPlayersEligibleForRenewal(Game $game): Collection;
+    public function getPlayersWithPendingRenewals(Game $game): Collection;
+    public function getContractsByExpiryYear(Game $game): Collection;
+    public function getExpiringContracts(Game $game, int $year): Collection;
 }
 ```
 
-### Events
+---
+
+## End of Season Processing
+
+Two processors handle contract-related changes at season end:
+
+### PreContractTransferProcessor (Priority 5)
+
+- Runs before player development
+- Transfers players who agreed to pre-contracts to their new clubs
+- No fee involved (free transfer)
+- Updates player's team_id and gives them a new contract (2-4 years)
+
+### ContractRenewalProcessor (Priority 6)
+
+- Runs after pre-contract transfers
+- Applies pending wage increases from renewals
+- Clears pending_annual_wage field after applying
+
+---
+
+## UI Pages
+
+### Transfers Page (`/game/{gameId}/transfers`)
+
+Shows:
+- Unsolicited offers (amber) - clubs poaching your players
+- Offers for listed players (blue) - responses to your listings
+- Agreed transfers (green) - waiting for transfer window
+- Listed players - your players on the market
+- Expiring contracts notice - link to Contracts page
+- Recent sales - completed transfers
+
+### Contracts Page (`/game/{gameId}/squad/contracts`)
+
+Shows:
+- Pre-contract offers received (purple) - clubs approaching expiring players
+- Players leaving on free transfer (purple) - agreed pre-contracts
+- Renewals agreed (teal) - pending wage increases
+- Expiring contracts (red) - players needing renewal with wage demands
+- Contract overview - visual grid by expiry year
+
+### Squad Page Integration
+
+- "Contracts" button with red badge showing count of expiring contracts
+- Links to dedicated Contracts page
+- Players show status badges: "Leaving (Free)", "Renewed", "Sale Agreed", "Listed"
+- Expiring contract years highlighted in red
+
+---
+
+## Routes
 
 ```php
-// Player listed
-class PlayerListedForTransfer {
-    public string $gamePlayerId;
-}
+// Transfers
+Route::get('/game/{gameId}/transfers', ShowTransfers::class);
+Route::post('/game/{gameId}/transfers/list/{playerId}', ListPlayerForTransfer::class);
+Route::post('/game/{gameId}/transfers/unlist/{playerId}', UnlistPlayerFromTransfer::class);
+Route::post('/game/{gameId}/transfers/accept/{offerId}', AcceptTransferOffer::class);
+Route::post('/game/{gameId}/transfers/reject/{offerId}', RejectTransferOffer::class);
+Route::post('/game/{gameId}/transfers/renew/{playerId}', OfferRenewal::class);
 
-// Offer received
-class TransferOfferReceived {
-    public string $offerId;
-    public string $gamePlayerId;
-    public string $offeringTeamId;
-    public int $transferFee;
-    public string $offerType;
-}
-
-// Offer accepted - player sold
-class TransferOfferAccepted {
-    public string $offerId;
-    public string $gamePlayerId;
-    public string $buyingTeamId;
-    public int $transferFee;
-}
-
-// Offer rejected
-class TransferOfferRejected {
-    public string $offerId;
-}
+// Contracts
+Route::get('/game/{gameId}/squad/contracts', ShowContracts::class);
 ```
 
 ---
 
-## Implementation Checklist
+## Implementation Status
 
-### Database
-- [ ] Migration: add `transfer_status` and `transfer_listed_at` to `game_players`
-- [ ] Migration: create `transfer_offers` table
-- [ ] Model: `TransferOffer` with relationships
+### Completed
 
-### Services
-- [ ] `TransferService` with all methods
-- [ ] Pricing logic for listed vs unsolicited
-- [ ] AI team selection logic
+- [x] Migration: add `transfer_status` and `transfer_listed_at` to `game_players`
+- [x] Migration: add `pending_annual_wage` to `game_players`
+- [x] Migration: create `transfer_offers` table
+- [x] Model: `TransferOffer` with relationships and helper methods
+- [x] Model: `GamePlayer` transfer and contract helper methods
+- [x] `TransferService` with all transfer methods
+- [x] `ContractService` with renewal methods
+- [x] Pricing logic for listed, unsolicited, and pre-contract offers
+- [x] AI team selection logic
+- [x] Generate offers on matchday advance (listed, unsolicited, pre-contract)
+- [x] Expire old offers on matchday advance
+- [x] Transfer windows (Summer/Winter)
+- [x] `PreContractTransferProcessor` for end of season
+- [x] `ContractRenewalProcessor` for end of season
+- [x] Squad page with list/unlist buttons and status badges
+- [x] Transfers page with all offer types
+- [x] Contracts page with renewals and pre-contracts
+- [x] Accept/Reject offer actions
+- [x] Offer renewal action
+- [x] Financial integration (transfer fees added to balance)
 
-### Game Flow Integration
-- [ ] Generate unsolicited offers on matchday advance
-- [ ] Expire old offers on matchday advance
+### Not Implemented (Future)
 
-### UI
-- [ ] Update Squad page with list/unlist buttons
-- [ ] Create Transfers page
-- [ ] Add Transfers to navigation
-- [ ] Accept/Reject offer actions
-
-### Event Sourcing
-- [ ] Commands for list, accept, reject
-- [ ] Events for all transfer actions
-- [ ] Projector handlers
-
-### Financial Integration
-- [ ] On sale: add fee to `transfer_budget`
-- [ ] On sale: recalculate wage bill
-- [ ] Track in `game_finances.transfer_expense` (as negative = income)
+- [ ] Event sourcing for transfer actions
+- [ ] Buying players (Phase 3b)
+- [ ] Transfer negotiations (counter-offers)
+- [ ] Agent fees
+- [ ] Loan system
+- [ ] Release clauses
+- [ ] Sell-on clauses
 
 ---
 
-## Files to Create
+## Constants
 
-| File | Purpose |
-|------|---------|
-| `database/migrations/xxxx_add_transfer_status_to_game_players.php` | Add transfer fields |
-| `database/migrations/xxxx_create_transfer_offers_table.php` | Offers table |
-| `app/Models/TransferOffer.php` | Eloquent model |
-| `app/Game/Services/TransferService.php` | Core transfer logic |
-| `app/Game/Commands/ListPlayerForTransfer.php` | Command |
-| `app/Game/Commands/AcceptTransferOffer.php` | Command |
-| `app/Game/Events/PlayerListedForTransfer.php` | Event |
-| `app/Game/Events/TransferOfferReceived.php` | Event |
-| `app/Game/Events/TransferOfferAccepted.php` | Event |
-| `app/Http/Views/ShowTransfers.php` | Transfers page controller |
-| `app/Http/Actions/ListPlayerForTransfer.php` | Action |
-| `app/Http/Actions/AcceptTransferOffer.php` | Action |
-| `app/Http/Actions/RejectTransferOffer.php` | Action |
-| `resources/views/transfers.blade.php` | Transfers page view |
+```php
+// TransferService
+const LISTED_PRICE_MIN = 0.85;
+const LISTED_PRICE_MAX = 0.95;
+const UNSOLICITED_PRICE_MIN = 1.00;
+const UNSOLICITED_PRICE_MAX = 1.20;
+const AGE_PREMIUM_UNDER_23 = 1.10;
+const AGE_PENALTY_PER_YEAR_OVER_29 = 0.05;
+const LISTED_OFFER_EXPIRY_DAYS = 7;
+const UNSOLICITED_OFFER_EXPIRY_DAYS = 5;
+const PRE_CONTRACT_OFFER_EXPIRY_DAYS = 14;
+const UNSOLICITED_OFFER_CHANCE = 0.05;  // 5%
+const PRE_CONTRACT_OFFER_CHANCE = 0.10; // 10%
+const STAR_PLAYER_COUNT = 5;
+const WINTER_WINDOW_MATCHDAY = 19;
 
-## Files to Modify
-
-| File | Changes |
-|------|---------|
-| `app/Models/GamePlayer.php` | Add transfer_status accessors |
-| `app/Game/GameProjector.php` | Handle transfer events |
-| `resources/views/squad.blade.php` | Add list/unlist buttons |
-| `resources/views/components/game-header.blade.php` | Add Transfers nav link |
-| `routes/web.php` | Add transfer routes |
+// ContractService
+const RENEWAL_PREMIUM = 1.15;  // 15% raise
+const DEFAULT_RENEWAL_YEARS = 3;
+```
 
 ---
 
@@ -311,28 +310,18 @@ class TransferOfferRejected {
 
 ### Notification System Enhancement
 
-Currently, transfer notifications are displayed in the "Transfer News" section on the game dashboard alongside squad alerts (injuries, suspensions, etc.). This is a temporary solution.
+Currently, transfer notifications appear in context on the Transfers and Contracts pages. Future improvements:
 
-**Future improvements to consider:**
+1. **Unified Notification System** - Dedicated `Notification` model with read/unread status
+2. **Notification Center** - Central page for all game events
+3. **In-Game News Feed** - Timeline of transfers, renewals, league news
+4. **Email-style Inbox** - Messages from board, scouts, agents
 
-1. **Unified Notification System**
-   - Create a dedicated `Notification` model to store all game events
-   - Types: transfer_offer_received, transfer_offer_expiring, transfer_completed, injury, suspension, contract_expiring, etc.
-   - Mark notifications as read/unread
-   - Show notification badge in header with unread count
+### Contract Negotiations
 
-2. **Notification Center**
-   - Dedicated page to view all notifications
-   - Filter by type (transfers, injuries, contracts, etc.)
-   - Mark all as read functionality
-   - Notification history
+Currently, renewals are accepted automatically at the player's demanded terms. Future improvements:
 
-3. **In-Game News Feed**
-   - Timeline-style display of all game events
-   - Include AI team transfers, league news, etc.
-   - More immersive experience
-
-4. **Email-style Inbox**
-   - Messages from board, scouts, agents
-   - Transfer negotiations as message threads
-   - Contract renewal requests
+1. **Negotiation rounds** - Back-and-forth on wage demands
+2. **Player happiness** - Affects likelihood of accepting
+3. **Rival interest** - Other clubs can offer better terms
+4. **Contract bonuses** - Signing bonuses, performance bonuses
