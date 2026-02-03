@@ -26,15 +26,27 @@ This system encompasses:
 
 ---
 
-### Phase 2: Basic Financial Model
+### Phase 2: Basic Financial Model ✓
 
-**Goal**: Money matters. Performance = revenue.
+**Goal**: Money matters. Club size and performance = revenue.
 
 **Adds**:
-- `balance`, `transfer_budget`, `wage_budget` to Game
-- Revenue streams (league position bonus, cup progression bonus)
-- Season P&L summary screen
-- Budget calculation for next season
+- `game_finances` table (1:1 with games) with balance, budgets, revenue/expense tracking
+- TV revenue based on squad value (club size proxy)
+- Performance bonus based on league position
+- Cup prize money for progression
+- Season P&L calculated at season end
+- Budget calculation for next season (carries over balance)
+- Finances display on dashboard and season-end screen
+
+**Revenue Model**:
+- **TV Rights**: Based on squad market value (bigger clubs = more TV money)
+  - €800M+ squad → €140M TV revenue
+  - €600M+ squad → €110M TV revenue
+  - €400M+ squad → €90M TV revenue
+  - And so on down to €15M for small clubs
+- **Performance Bonus**: Linear from 1st (€15M) to 20th (€0)
+- **Cup Prizes**: Cumulative per round (R64: €100K → Winner: €10M total)
 
 **Why second**: Creates the constraint that makes decisions meaningful.
 
@@ -128,17 +140,30 @@ This system encompasses:
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `balance` | int (cents) | Current club balance |
-| `transfer_budget` | int (cents) | Available for transfers |
-| `wage_budget` | int (cents) | Annual wage budget |
-| `academy_reputation` | int (1-100) | Quality of youth prospects |
+| `academy_reputation` | int (1-100) | Quality of youth prospects (future) |
 
 ### New Tables
 
-**GameFinancialEvent** - Tracks all financial transactions
+**game_finances** - 1:1 with games, tracks club finances
+| Field | Type | Description |
+|-------|------|-------------|
+| `game_id` | uuid | FK to games |
+| `balance` | int (cents) | Current club balance (can be negative) |
+| `wage_budget` | int (cents) | Annual wage budget |
+| `transfer_budget` | int (cents) | Available for transfers |
+| `tv_revenue` | int (cents) | Season TV revenue |
+| `performance_bonus` | int (cents) | League position bonus |
+| `cup_bonus` | int (cents) | Cup progression prize money |
+| `total_revenue` | int (cents) | Sum of all revenue |
+| `wage_expense` | int (cents) | Total wages paid |
+| `transfer_expense` | int (cents) | Transfer fees spent |
+| `total_expense` | int (cents) | Sum of all expenses |
+| `season_profit_loss` | int (cents) | Net result for season |
+
+**GameFinancialEvent** (future) - Tracks all financial transactions
 - `game_id`, `season`, `type`, `amount`, `description`, `created_at`
 
-**YouthProspect** - Academy players not yet promoted
+**YouthProspect** (future) - Academy players not yet promoted
 - `game_id`, `player_id`, `potential`, `generated_season`, `promoted_at`
 
 ---
@@ -169,28 +194,38 @@ This system encompasses:
 
 ## Revenue Streams (Reference)
 
-### League Position Bonus (La Liga Example)
-| Position | Bonus |
-|----------|-------|
-| 1st | €50M |
-| 2nd | €40M |
-| 3rd | €35M |
-| 4th | €30M |
-| 5th-6th | €20M |
-| 7th-10th | €15M |
-| 11th-14th | €10M |
-| 15th-17th | €7M |
-| 18th-20th | €5M |
+### TV Revenue (Based on Squad Market Value)
 
-### Cup Progression Bonus
-| Round | Bonus |
-|-------|-------|
-| Winner | €10M |
-| Final | €5M |
-| Semi-final | €3M |
-| Quarter-final | €2M |
-| Round of 16 | €1M |
-| Earlier | €0.5M |
+Club size is proxied by squad market value - bigger clubs have larger fanbases and command higher TV fees.
+
+| Squad Value | La Liga TV | La Liga 2 TV |
+|-------------|------------|--------------|
+| €800M+      | €140M      | -            |
+| €600M+      | €110M      | -            |
+| €400M+      | €90M       | -            |
+| €200M+      | €60M       | €15M         |
+| €100M+      | €40M       | €10M         |
+| €50M+       | €25M       | €7M          |
+| <€50M       | €15M       | €5M          |
+
+### Performance Bonus (League Position)
+
+Linear interpolation from 1st to 20th place:
+- 1st place: €15M
+- 10th place: ~€7.5M
+- 20th place: €0
+
+### Cup Prize Money (Cumulative)
+
+| Round | Prize (per round) | Cumulative |
+|-------|-------------------|------------|
+| Round of 64 | €100K | €100K |
+| Round of 32 | €250K | €350K |
+| Round of 16 | €500K | €850K |
+| Quarter-finals | €1M | €1.85M |
+| Semi-finals | €2M | €3.85M |
+| Final | €5M | €8.85M |
+| Winner | +€10M | €18.85M |
 
 ### Wage Guidelines (% of Market Value per Year)
 
@@ -255,10 +290,23 @@ Players with identical market values should have different wages (±10% variance
   - [x] Migration: `annual_wage` added to `game_players`
   - [x] Migration: `minimum_annual_wage` added to `competitions`
   - [x] ContractService with wage calculation, variance, minimums
+  - [x] Age-based wage modifiers (young = rookie deals, veterans = legacy contracts)
   - [x] GameProjector generates wages for new games
   - [x] Squad UI shows wages and total wage bill
   - [x] Backfill command for existing games
-- [ ] Phase 2: Basic Financial Model
+- [x] Phase 2: Basic Financial Model
+  - [x] Migration: `game_finances` table
+  - [x] GameFinances model with formatted accessors
+  - [x] FinancialService with revenue/expense calculations
+  - [x] TV revenue based on squad market value (club size proxy)
+  - [x] Performance bonus based on league position
+  - [x] Cup prize money cumulative per round
+  - [x] FinancialProcessor for season-end P&L calculation
+  - [x] FinancialResetProcessor for new season budget preparation
+  - [x] GameProjector initializes finances for new games
+  - [x] Dashboard shows finances card (balance, budgets)
+  - [x] Season-end screen shows full P&L breakdown
+  - [x] Backfill command for existing games
 - [ ] Phase 3: Contract Renewals
 - [ ] Phase 4: Selling Players
 - [ ] Phase 5: Youth Academy

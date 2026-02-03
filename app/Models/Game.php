@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Game extends Model
 {
@@ -52,6 +53,11 @@ class Game extends Model
     public function cupTies(): HasMany
     {
         return $this->hasMany(CupTie::class);
+    }
+
+    public function finances(): HasOne
+    {
+        return $this->hasOne(GameFinances::class);
     }
 
     /**

@@ -56,6 +56,81 @@
                         </div>
                     </div>
 
+                    {{-- Club Finances Section --}}
+                    @if($finances)
+                    <div class="border-t pt-6">
+                        <div class="text-center text-slate-500 font-semibold text-sm uppercase tracking-wide mb-4">Club Finances</div>
+
+                        <div class="grid grid-cols-2 gap-6">
+                            {{-- Revenue --}}
+                            <div class="bg-green-50 rounded-lg p-4">
+                                <div class="text-xs text-green-600 uppercase tracking-wide font-semibold mb-3">Revenue</div>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-slate-600">TV Rights</span>
+                                        <span class="font-medium text-slate-900">{{ $finances->formatted_tv_revenue }}</span>
+                                    </div>
+                                    @if($finances->performance_bonus > 0)
+                                    <div class="flex justify-between">
+                                        <span class="text-slate-600">Performance Bonus</span>
+                                        <span class="font-medium text-slate-900">{{ \App\Game\Services\ContractService::formatWage($finances->performance_bonus) }}</span>
+                                    </div>
+                                    @endif
+                                    @if($finances->cup_bonus > 0)
+                                    <div class="flex justify-between">
+                                        <span class="text-slate-600">Cup Prize Money</span>
+                                        <span class="font-medium text-slate-900">{{ \App\Game\Services\ContractService::formatWage($finances->cup_bonus) }}</span>
+                                    </div>
+                                    @endif
+                                    <div class="flex justify-between pt-2 border-t border-green-200">
+                                        <span class="font-semibold text-green-700">Total Revenue</span>
+                                        <span class="font-bold text-green-700">{{ $finances->formatted_total_revenue }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Expenses --}}
+                            <div class="bg-red-50 rounded-lg p-4">
+                                <div class="text-xs text-red-600 uppercase tracking-wide font-semibold mb-3">Expenses</div>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-slate-600">Wages</span>
+                                        <span class="font-medium text-slate-900">{{ $finances->formatted_wage_expense }}</span>
+                                    </div>
+                                    @if($finances->transfer_expense > 0)
+                                    <div class="flex justify-between">
+                                        <span class="text-slate-600">Transfers</span>
+                                        <span class="font-medium text-slate-900">{{ \App\Game\Services\ContractService::formatWage($finances->transfer_expense) }}</span>
+                                    </div>
+                                    @endif
+                                    <div class="flex justify-between pt-2 border-t border-red-200">
+                                        <span class="font-semibold text-red-700">Total Expenses</span>
+                                        <span class="font-bold text-red-700">{{ $finances->formatted_total_expense }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Season Result --}}
+                        <div class="mt-4 p-4 rounded-lg {{ $finances->season_profit_loss >= 0 ? 'bg-green-100' : 'bg-red-100' }}">
+                            <div class="flex justify-between items-center">
+                                <span class="font-semibold {{ $finances->season_profit_loss >= 0 ? 'text-green-800' : 'text-red-800' }}">
+                                    Season {{ $finances->season_profit_loss >= 0 ? 'Profit' : 'Loss' }}
+                                </span>
+                                <span class="text-xl font-bold {{ $finances->season_profit_loss >= 0 ? 'text-green-700' : 'text-red-700' }}">
+                                    {{ $finances->formatted_season_profit_loss }}
+                                </span>
+                            </div>
+                            <div class="flex justify-between items-center mt-2 pt-2 border-t {{ $finances->season_profit_loss >= 0 ? 'border-green-200' : 'border-red-200' }}">
+                                <span class="text-sm text-slate-600">Club Balance</span>
+                                <span class="font-semibold {{ $finances->balance >= 0 ? 'text-slate-900' : 'text-red-600' }}">
+                                    {{ $finances->formatted_balance }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
                     {{-- Season Awards Section --}}
                     <div class="border-t pt-6">
                         <div class="text-center text-slate-500 font-semibold text-sm uppercase tracking-wide mb-6">

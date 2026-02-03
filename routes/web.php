@@ -10,6 +10,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Views\Dashboard;
 use App\Http\Views\SelectTeam;
 use App\Http\Views\ShowCalendar;
+use App\Http\Views\ShowFinances;
 use App\Http\Views\ShowGame;
 use App\Http\Views\ShowCupBracket;
 use App\Http\Views\ShowMatchResults;
@@ -35,6 +36,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/game/{gameId}', ShowGame::class)->name('show-game');
     Route::get('/game/{gameId}/squad', ShowSquad::class)->name('game.squad');
     Route::get('/game/{gameId}/squad/development', ShowSquadDevelopment::class)->name('game.squad.development');
+    Route::get('/game/{gameId}/finances', ShowFinances::class)->name('game.finances');
     Route::get('/game/{gameId}/calendar', ShowCalendar::class)->name('game.calendar');
     Route::get('/game/{gameId}/standings', ShowStandings::class)->name('game.standings');
     Route::get('/game/{gameId}/cup', ShowCupBracket::class)->name('game.cup');

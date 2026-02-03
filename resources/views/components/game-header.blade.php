@@ -48,6 +48,7 @@
     @if($nextMatch)
     <div><a class="hover:text-slate-300 @if(Route::currentRouteName() == 'game.lineup') text-white @endif" href="{{ route('game.lineup', [$game->id, $nextMatch->id]) }}">Starting XI</a></div>
     @endif
+    <div><a class="hover:text-slate-300 @if(Route::currentRouteName() == 'game.finances') text-white @endif" href="{{ route('game.finances', $game->id) }}">Finances</a></div>
     <div><a class="hover:text-slate-300 @if(Route::currentRouteName() == 'game.calendar') text-white @endif" href="{{ route('game.calendar', $game->id) }}">Calendar</a></div>
     <div><a class="hover:text-slate-300 @if(Route::currentRouteName() == 'game.standings') text-white @endif" href="{{ route('game.standings', $game->id) }}">Standings</a></div>
     <div><a class="hover:text-slate-300 @if(Route::currentRouteName() == 'game.cup') text-white @endif" href="{{ route('game.cup', $game->id) }}">Copa del Rey</a></div>

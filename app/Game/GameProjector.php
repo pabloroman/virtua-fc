@@ -11,6 +11,7 @@ use App\Game\Events\NewSeasonStarted;
 use App\Game\Events\SeasonDevelopmentProcessed;
 use App\Game\Services\ContractService;
 use App\Game\Services\EligibilityService;
+use App\Game\Services\FinancialService;
 use App\Game\Services\PlayerConditionService;
 use App\Game\Services\PlayerDevelopmentService;
 use App\Game\Services\StandingsCalculator;
@@ -35,6 +36,7 @@ class GameProjector extends Projector
         private readonly PlayerDevelopmentService $developmentService,
         private readonly PlayerConditionService $conditionService,
         private readonly ContractService $contractService,
+        private readonly FinancialService $financialService,
     ) {}
 
     public function onGameCreated(GameCreated $event): void
@@ -72,6 +74,10 @@ class GameProjector extends Projector
 
         // Initialize game players for all teams in the competition
         $this->initializeGamePlayers($gameId, $competitionId, $season);
+
+        // Initialize club finances based on squad value
+        $game = Game::find($gameId);
+        $this->financialService->initializeFinances($game);
     }
 
     public function onMatchdayAdvanced(MatchdayAdvanced $event): void

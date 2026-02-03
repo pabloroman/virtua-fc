@@ -14,7 +14,7 @@ class ShowGame
 
     public function __invoke(string $gameId)
     {
-        $game = Game::with('team')->findOrFail($gameId);
+        $game = Game::with(['team', 'finances'])->findOrFail($gameId);
 
         // Get next match for player's team
         $nextMatch = $game->next_match;
@@ -71,6 +71,7 @@ class ShowGame
             'opponentForm' => $opponentForm,
             'upcomingFixtures' => $upcomingFixtures,
             'squadAlerts' => $squadAlerts,
+            'finances' => $game->finances,
         ]);
     }
 
