@@ -52,72 +52,77 @@ This system encompasses:
 
 ---
 
-### Phase 3: Contract Renewals
+### Phase 3: Transfer Market (Buy & Sell)
 
-**Goal**: First real decision point - who do you keep?
+**Goal**: Active squad building - the core fun of football management.
 
-**Adds**:
-- Pre-season "Contract Renewals" screen
-- Wage negotiation with expiring players
-- Players leave if not renewed (become free agents)
-- Age and ability affect wage demands
+**Selling Players**:
+- Transfer list a player (mark as available)
+- AI clubs make offers based on market value (±20% variance)
+- Accept or reject offers
+- Player leaves → transfer fee added to budget
+- Wage bill reduced
 
-**Why third**: First squad planning mechanic with emotional weight.
+**Buying Players**:
+- Scout pool of available players (other La Liga teams, free agents)
+- View scouted info: name, age, position, market value, wage demands, potential range
+- Make transfer bid (from transfer budget)
+- Negotiate wages (affects wage budget)
+- Player joins → fee deducted, wages added
+
+**Transfer Window**:
+- Available during pre-season and between matches
+- Or simplified: anytime (less realistic but more accessible)
+
+**UI**:
+- New "Transfers" page in navigation
+- Two sections: "Scout Players" and "Sell Players"
+- Incoming/outgoing offer notifications
+
+**Why third**: This is the most engaging gameplay loop. Financial constraints from Phase 2 make decisions meaningful.
 
 ---
 
-### Phase 4: Selling Players
+### Phase 4: Youth Academy
 
-**Goal**: Generate funds by offloading players.
-
-**Adds**:
-- Transfer list functionality
-- AI teams make offers based on market value
-- Accept/reject/counter negotiations
-- Sale proceeds go to transfer budget
-
-**Why fourth**: Natural complement to renewals. Need money? Sell someone.
-
----
-
-### Phase 5: Youth Academy
-
-**Goal**: Homegrown talent pipeline.
+**Goal**: Homegrown talent pipeline - free players with high potential.
 
 **Adds**:
 - Generate 2-4 youth prospects each season (age 16-17)
 - Variable potential (some gems, some busts)
-- Academy screen to view and promote prospects
-- Low initial wages, development tied to playing time
+- Academy screen to view prospects
+- Promote to first team (low initial wages)
+- Development tied to playing time
 
-**Why fifth**: Free talent source, reduces reliance on expensive transfers.
+**Why fourth**: Free talent source, reduces reliance on expensive transfers. Rewards patience.
 
 ---
 
-### Phase 6: Buying Players (Scouting & Transfers)
+### Phase 5: Contract Renewals
 
-**Goal**: Complete the transfer market loop.
+**Goal**: Manage expiring contracts - keep your best players.
 
 **Adds**:
-- Scout pool of available players
-- Scouted info (ability, potential range, asking price)
-- Bidding and contract negotiation
-- Transfer fees from budget
+- Pre-season "Contract Renewals" screen
+- Players with expiring contracts demand new terms
+- Wage negotiation (age and ability affect demands)
+- Accept, negotiate, or let walk
+- Players leave if not renewed (become free agents)
 
-**Why sixth**: Most complex piece. Financial constraints make it meaningful.
+**Why fifth**: Natural maintenance task. By now the user has bought/sold players and understands wages. Renewals add long-term squad planning.
 
 ---
 
-### Phase 7: Advanced Financials & Multi-Year Planning
+### Phase 6: Advanced Financials & Multi-Year Planning
 
 **Goal**: Long-term strategy and realism.
 
 **Adds**:
-- TV rights revenue (league position based)
 - Sponsorship deals (multi-year contracts)
 - Stadium revenue
 - Financial projections (3-year forecast)
 - Debt system and Financial Fair Play
+- Board expectations and objectives
 
 **Why last**: Polish and depth. Core game works without this.
 
@@ -131,8 +136,8 @@ This system encompasses:
 |-------|------|-------------|
 | `annual_wage` | int (cents) | Annual wage in cents (Spanish clubs think annually) |
 | `contract_until` | date | **Already exists** - Contract expiry date from import |
-| `is_transfer_listed` | bool | Player available for sale |
-| `is_from_academy` | bool | Homegrown player flag |
+| `transfer_status` | enum | null, 'listed', 'sold' - Transfer availability |
+| `is_from_academy` | bool | Homegrown player flag (future) |
 
 **Note**: `contract_until` is already populated from Transfermarkt import data.
 
@@ -144,7 +149,7 @@ This system encompasses:
 
 ### New Tables
 
-**game_finances** - 1:1 with games, tracks club finances
+**game_finances** ✓ - 1:1 with games, tracks club finances
 | Field | Type | Description |
 |-------|------|-------------|
 | `game_id` | uuid | FK to games |
@@ -160,10 +165,36 @@ This system encompasses:
 | `total_expense` | int (cents) | Sum of all expenses |
 | `season_profit_loss` | int (cents) | Net result for season |
 
-**GameFinancialEvent** (future) - Tracks all financial transactions
-- `game_id`, `season`, `type`, `amount`, `description`, `created_at`
+**transfer_offers** - Tracks buy/sell offers
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | uuid | Primary key |
+| `game_id` | uuid | FK to games |
+| `player_id` | uuid | FK to players (reference data) |
+| `game_player_id` | uuid | FK to game_players (if selling own player) |
+| `from_team_id` | uuid | Buying club |
+| `to_team_id` | uuid | Selling club |
+| `direction` | enum | 'incoming' (AI buying from you) or 'outgoing' (you buying) |
+| `offer_type` | enum | 'listed' (you put player for sale) or 'unsolicited' (AI poaching) |
+| `transfer_fee` | int (cents) | Offered/agreed fee |
+| `wage_offered` | int (cents) | Proposed annual wage (for buys) |
+| `status` | enum | 'pending', 'accepted', 'rejected', 'rejected_by_player', 'completed', 'expired' |
+| `expires_at` | date | When offer expires |
+| `created_at` | timestamp | When offer was made |
 
-**YouthProspect** (future) - Academy players not yet promoted
+**scout_pool** - Available players to buy (regenerated periodically)
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | uuid | Primary key |
+| `game_id` | uuid | FK to games |
+| `player_id` | uuid | FK to players (reference data) |
+| `team_id` | uuid | Current team |
+| `asking_price` | int (cents) | Club's asking price |
+| `wage_demand` | int (cents) | Player's wage expectation |
+| `available_until` | date | When player leaves the pool |
+| `scouted` | bool | Has user viewed detailed info? |
+
+**YouthProspect** (Phase 4) - Academy players not yet promoted
 - `game_id`, `player_id`, `potential`, `generated_season`, `promoted_at`
 
 ---
@@ -189,6 +220,92 @@ This system encompasses:
 - Player knows their wage demands upfront
 - Clear budget constraints before decisions
 - No hidden gotchas
+
+---
+
+## Player Agency in Transfers (Future Feature)
+
+This section documents the planned player agency system for transfers. Not implemented in v1, but the data model and flow are designed to accommodate it later.
+
+### Overview
+
+Players have opinions about transfers. A transfer requires **three parties** to agree:
+1. **Selling club** (you or AI)
+2. **Buying club** (you or AI)
+3. **The player** (wants to move or not?)
+
+### Player Transfer Stance
+
+Each player has an implicit stance based on their situation:
+
+| Stance | Description | Behavior |
+|--------|-------------|----------|
+| `happy` | Wants to stay | Likely rejects external approaches |
+| `neutral` | Open to offers | Will consider any reasonable move |
+| `unsettled` | Wants to leave | Pushes for transfer, accepts quickly |
+
+### Factors That Determine Stance
+
+| Factor | Pulls Toward "Unsettled" | Pulls Toward "Happy" |
+|--------|--------------------------|----------------------|
+| **Playing time** | Low appearances, benched | Regular starter |
+| **Morale** | Morale < 50 | Morale > 75 |
+| **Contract** | Last year remaining | Long-term security |
+| **Age** | Young + stuck behind star | Veteran at dream club |
+| **Club stature** | Small club, big club calling | Already at top club |
+
+**Calculation** (future):
+```php
+// Pseudo-code for stance calculation
+$playingTimeScore = $appearances / $expectedAppearances; // 0-1
+$moraleScore = $morale / 100; // 0-1
+$contractScore = $yearsRemaining / 4; // 0-1 (4+ years = 1)
+
+$happinessScore = ($playingTimeScore * 0.4) + ($moraleScore * 0.4) + ($contractScore * 0.2);
+
+if ($happinessScore > 0.7) return 'happy';
+if ($happinessScore < 0.3) return 'unsettled';
+return 'neutral';
+```
+
+### Impact on Transfer Scenarios
+
+| Scenario | Player Stance | Outcome |
+|----------|---------------|---------|
+| You list player for sale | Happy | Player may refuse to talk to buyers |
+| You list player for sale | Unsettled | Accepts any reasonable offer quickly |
+| Unsolicited offer arrives | Happy | Player rejects approach (offer blocked) |
+| Unsolicited offer arrives | Unsettled | Player urges you to accept |
+| You reject a good offer | Unsettled | Morale drops, may hand in transfer request |
+
+### Transfer Request (Future)
+
+Unhappy players may formally request a transfer:
+- Triggered when morale stays low + low playing time for extended period
+- Creates pressure to sell (further morale drop if ignored)
+- Other clubs see player is available, make offers
+- Selling price may drop (everyone knows player wants out)
+
+### Data Model Additions (Future)
+
+```
+game_players:
+  + transfer_stance: enum('happy', 'neutral', 'unsettled') - calculated or cached
+  + transfer_request: bool - player has formally requested transfer
+  + transfer_request_date: date - when request was made
+```
+
+### v1 vs v2 Compatibility
+
+| Aspect | v1 (Now) | v2 (Add Player Agency) |
+|--------|----------|------------------------|
+| Accept/reject offers | Club decision only | Club accepts → player decides |
+| Offer status values | 'rejected' | Add 'rejected_by_player' |
+| Morale tracking | Already exists ✓ | Used for stance calculation |
+| Playing time tracking | Already exists ✓ | Used for stance calculation |
+| Transfer requests | Not implemented | Add notification + forced listing |
+
+The v1 implementation is designed to allow inserting a "player decision" step in the offer flow without breaking changes.
 
 ---
 
@@ -304,11 +421,24 @@ Players with identical market values should have different wages (±10% variance
   - [x] FinancialProcessor for season-end P&L calculation
   - [x] FinancialResetProcessor for new season budget preparation
   - [x] GameProjector initializes finances for new games
-  - [x] Dashboard shows finances card (balance, budgets)
+  - [x] Dedicated Finances page in navigation
   - [x] Season-end screen shows full P&L breakdown
   - [x] Backfill command for existing games
-- [ ] Phase 3: Contract Renewals
-- [ ] Phase 4: Selling Players
-- [ ] Phase 5: Youth Academy
-- [ ] Phase 6: Buying Players
-- [ ] Phase 7: Advanced Financials
+- [ ] Phase 3a: Selling Players
+  - [ ] Migration: `transfer_status` field on `game_players`
+  - [ ] Migration: `transfer_offers` table
+  - [ ] TransferService for offer generation and acceptance
+  - [ ] Transfer list UI (mark players as available)
+  - [ ] AI offer generation for listed players
+  - [ ] Accept/reject offer flow
+  - [ ] Player removal and financial update on sale
+- [ ] Phase 3b: Signing Players
+  - [ ] Migration: `scout_pool` table
+  - [ ] ScoutingService for player pool generation
+  - [ ] Scout UI (browse available players)
+  - [ ] Make bid flow
+  - [ ] Wage negotiation
+  - [ ] Player addition and financial update on signing
+- [ ] Phase 4: Youth Academy
+- [ ] Phase 5: Contract Renewals
+- [ ] Phase 6: Advanced Financials
