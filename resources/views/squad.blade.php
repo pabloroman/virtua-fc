@@ -36,6 +36,7 @@
                                 <th class="font-semibold py-2 text-center w-12">FIT</th>
                                 <th class="font-semibold py-2 text-center w-12">MOR</th>
                                 <th class="font-semibold py-2 text-center w-12">OVR</th>
+                                <th class="font-semibold py-2 text-right w-24">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -47,7 +48,7 @@
                             ] as $group)
                                 @if($group['players']->isNotEmpty())
                                     <tr class="bg-slate-200">
-                                        <td colspan="13" class="py-2 px-2 text-xs font-semibold text-slate-600 uppercase tracking-wide">
+                                        <td colspan="14" class="py-2 px-2 text-xs font-semibold text-slate-600 uppercase tracking-wide">
                                             {{ $group['name'] }}
                                         </td>
                                     </tr>
@@ -119,6 +120,33 @@
                                                 <span class="font-bold @if($gamePlayer->overall_score >= 80) text-green-600 @elseif($gamePlayer->overall_score >= 70) text-lime-600 @elseif($gamePlayer->overall_score >= 60) text-yellow-600 @else text-slate-500 @endif">
                                                     {{ $gamePlayer->overall_score }}
                                                 </span>
+                                            </td>
+                                            {{-- Actions --}}
+                                            <td class="py-2 text-right">
+                                                @if($gamePlayer->hasAgreedTransfer())
+                                                    <span class="inline-flex items-center px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded">
+                                                        Sale Agreed
+                                                    </span>
+                                                @elseif($gamePlayer->isTransferListed())
+                                                    <div class="flex items-center justify-end gap-2">
+                                                        <span class="inline-flex items-center px-2 py-1 text-xs font-medium text-amber-700 bg-amber-100 rounded">
+                                                            Listed
+                                                        </span>
+                                                        <form method="post" action="{{ route('game.transfers.unlist', [$game->id, $gamePlayer->id]) }}">
+                                                            @csrf
+                                                            <button type="submit" class="text-xs text-red-600 hover:text-red-800 hover:underline">
+                                                                Remove
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                @else
+                                                    <form method="post" action="{{ route('game.transfers.list', [$game->id, $gamePlayer->id]) }}">
+                                                        @csrf
+                                                        <button type="submit" class="text-xs text-indigo-600 hover:text-indigo-800 hover:underline">
+                                                            List for Transfer
+                                                        </button>
+                                                    </form>
+                                                @endif
                                             </td>
                                         </tr>
                                     @endforeach

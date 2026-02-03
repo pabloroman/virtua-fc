@@ -42,7 +42,12 @@ class GamePlayer extends Model
         'potential_low' => 'integer',
         'potential_high' => 'integer',
         'season_appearances' => 'integer',
+        // Transfer fields
+        'transfer_listed_at' => 'datetime',
     ];
+
+    // Transfer status constants
+    public const TRANSFER_STATUS_LISTED = 'listed';
 
     public function game(): BelongsTo
     {
@@ -62,6 +67,49 @@ class GamePlayer extends Model
     public function matchEvents(): HasMany
     {
         return $this->hasMany(MatchEvent::class);
+    }
+
+    public function transferOffers(): HasMany
+    {
+        return $this->hasMany(TransferOffer::class);
+    }
+
+    /**
+     * Get active (pending, non-expired) transfer offers for this player.
+     */
+    public function activeOffers(): HasMany
+    {
+        return $this->transferOffers()
+            ->where('status', TransferOffer::STATUS_PENDING)
+            ->where('expires_at', '>=', now());
+    }
+
+    /**
+     * Check if player is transfer listed.
+     */
+    public function isTransferListed(): bool
+    {
+        return $this->transfer_status === self::TRANSFER_STATUS_LISTED;
+    }
+
+    /**
+     * Check if player has an agreed transfer (waiting for window).
+     */
+    public function hasAgreedTransfer(): bool
+    {
+        return $this->transferOffers()
+            ->where('status', TransferOffer::STATUS_AGREED)
+            ->exists();
+    }
+
+    /**
+     * Get the agreed transfer offer (if any).
+     */
+    public function agreedTransfer(): ?TransferOffer
+    {
+        return $this->transferOffers()
+            ->where('status', TransferOffer::STATUS_AGREED)
+            ->first();
     }
 
     /**

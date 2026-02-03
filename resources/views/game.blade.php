@@ -121,6 +121,75 @@
             </div>
             @endif
 
+            {{-- Transfer Alerts --}}
+            @php
+                $hasTransferAlerts = !empty($transferAlerts['newOffers']) || !empty($transferAlerts['expiringOffers']);
+            @endphp
+            @if($hasTransferAlerts)
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border-l-4 border-indigo-500">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold text-lg text-slate-900">Transfer News</h3>
+                        <a href="{{ route('game.transfers', $game->id) }}" class="text-sm text-indigo-600 hover:text-indigo-800">
+                            View All &rarr;
+                        </a>
+                    </div>
+
+                    <div class="space-y-3">
+                        {{-- Expiring Offers (urgent) --}}
+                        @foreach($transferAlerts['expiringOffers'] as $alert)
+                        <div class="flex items-center justify-between p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-slate-900">
+                                        {{ $alert['teamName'] }} offer for {{ $alert['playerName'] }}
+                                        @if($alert['isUnsolicited'])
+                                        <span class="text-xs text-amber-600">(poaching)</span>
+                                        @endif
+                                    </div>
+                                    <div class="text-xs text-slate-500">
+                                        <span class="font-semibold text-green-600">{{ $alert['fee'] }}</span>
+                                        &middot; <span class="text-amber-600 font-medium">Expires in {{ $alert['daysLeft'] }} day{{ $alert['daysLeft'] != 1 ? 's' : '' }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
+
+                        {{-- New Offers --}}
+                        @foreach($transferAlerts['newOffers'] as $alert)
+                        <div class="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-slate-900">
+                                        {{ $alert['teamName'] }} offer for {{ $alert['playerName'] }}
+                                        @if($alert['isUnsolicited'])
+                                        <span class="text-xs text-amber-600">(poaching)</span>
+                                        @endif
+                                    </div>
+                                    <div class="text-xs text-slate-500">
+                                        <span class="font-semibold text-green-600">{{ $alert['fee'] }}</span>
+                                        &middot; Expires in {{ $alert['daysLeft'] }} days
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+            @endif
+
             {{-- Squad Alerts --}}
             @php
                 $hasAlerts = !empty($squadAlerts['injured']) || !empty($squadAlerts['suspended']) || !empty($squadAlerts['lowFitness']) || !empty($squadAlerts['yellowCardRisk']);

@@ -6,6 +6,7 @@ use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\GameStanding;
+use App\Models\TransferOffer;
 
 class ShowGame
 {
@@ -62,6 +63,9 @@ class ShowGame
         // Get squad alerts
         $squadAlerts = $this->getSquadAlerts($game, $nextMatch);
 
+        // Get transfer alerts
+        $transferAlerts = $this->getTransferAlerts($game);
+
         return view('game', [
             'game' => $game,
             'nextMatch' => $nextMatch,
@@ -71,6 +75,7 @@ class ShowGame
             'opponentForm' => $opponentForm,
             'upcomingFixtures' => $upcomingFixtures,
             'squadAlerts' => $squadAlerts,
+            'transferAlerts' => $transferAlerts,
             'finances' => $game->finances,
         ]);
     }
@@ -173,6 +178,60 @@ class ShowGame
         usort($alerts['injured'], fn($a, $b) => $a['daysRemaining'] <=> $b['daysRemaining']);
         usort($alerts['lowFitness'], fn($a, $b) => $a['fitness'] <=> $b['fitness']);
         usort($alerts['yellowCardRisk'], fn($a, $b) => $b['yellowCards'] <=> $a['yellowCards']);
+
+        return $alerts;
+    }
+
+    /**
+     * Get transfer alerts for the player's team.
+     * Only shows truly "new" items - offers created today and expiring offers as warnings.
+     */
+    private function getTransferAlerts(Game $game): array
+    {
+        $alerts = [
+            'newOffers' => [],
+            'expiringOffers' => [],
+        ];
+
+        $currentDate = $game->current_date;
+
+        // Get pending offers for the user's players
+        $pendingOffers = TransferOffer::with(['gamePlayer.player', 'offeringTeam'])
+            ->where('game_id', $game->id)
+            ->where('status', TransferOffer::STATUS_PENDING)
+            ->whereHas('gamePlayer', function ($query) use ($game) {
+                $query->where('team_id', $game->team_id);
+            })
+            ->where('expires_at', '>=', $currentDate)
+            ->orderByDesc('transfer_fee')
+            ->get();
+
+        foreach ($pendingOffers as $offer) {
+            $daysUntilExpiry = $offer->days_until_expiry;
+
+            // Expiring soon (2 days or less) - always show as warning
+            if ($daysUntilExpiry <= 2) {
+                $alerts['expiringOffers'][] = [
+                    'offer' => $offer,
+                    'playerName' => $offer->gamePlayer->player->name,
+                    'teamName' => $offer->offeringTeam->name,
+                    'fee' => $offer->formatted_transfer_fee,
+                    'daysLeft' => $daysUntilExpiry,
+                    'isUnsolicited' => $offer->isUnsolicited(),
+                ];
+            }
+            // New offers - only show if created today (current game date)
+            elseif ($offer->created_at->toDateString() === $currentDate->toDateString()) {
+                $alerts['newOffers'][] = [
+                    'offer' => $offer,
+                    'playerName' => $offer->gamePlayer->player->name,
+                    'teamName' => $offer->offeringTeam->name,
+                    'fee' => $offer->formatted_transfer_fee,
+                    'daysLeft' => $daysUntilExpiry,
+                    'isUnsolicited' => $offer->isUnsolicited(),
+                ];
+            }
+        }
 
         return $alerts;
     }

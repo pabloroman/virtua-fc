@@ -1,10 +1,14 @@
 <?php
 
+use App\Http\Actions\AcceptTransferOffer;
 use App\Http\Actions\AdvanceMatchday;
 use App\Http\Actions\ConductCupDraw;
 use App\Http\Actions\GetAutoLineup;
 use App\Http\Actions\InitGame;
+use App\Http\Actions\ListPlayerForTransfer;
+use App\Http\Actions\RejectTransferOffer;
 use App\Http\Actions\SaveLineup;
+use App\Http\Actions\UnlistPlayerFromTransfer;
 use App\Http\Views\ShowLineup;
 use App\Http\Controllers\ProfileController;
 use App\Http\Views\Dashboard;
@@ -18,6 +22,7 @@ use App\Http\Views\ShowSquad;
 use App\Http\Views\ShowSeasonEnd;
 use App\Http\Views\ShowSquadDevelopment;
 use App\Http\Views\ShowStandings;
+use App\Http\Views\ShowTransfers;
 use App\Http\Actions\ProcessSeasonDevelopment;
 use App\Http\Actions\StartNewSeason;
 use Illuminate\Support\Facades\Route;
@@ -37,6 +42,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/game/{gameId}/squad', ShowSquad::class)->name('game.squad');
     Route::get('/game/{gameId}/squad/development', ShowSquadDevelopment::class)->name('game.squad.development');
     Route::get('/game/{gameId}/finances', ShowFinances::class)->name('game.finances');
+    Route::get('/game/{gameId}/transfers', ShowTransfers::class)->name('game.transfers');
     Route::get('/game/{gameId}/calendar', ShowCalendar::class)->name('game.calendar');
     Route::get('/game/{gameId}/standings', ShowStandings::class)->name('game.standings');
     Route::get('/game/{gameId}/cup', ShowCupBracket::class)->name('game.cup');
@@ -49,6 +55,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/game/{gameId}/lineup/{matchId}/auto', GetAutoLineup::class)->name('game.lineup.auto');
     Route::post('/game/{gameId}/cup/draw/{round}', ConductCupDraw::class)->name('game.cup.draw');
     Route::post('/game/{gameId}/development/process', ProcessSeasonDevelopment::class)->name('game.development.process');
+
+    // Transfers
+    Route::post('/game/{gameId}/transfers/list/{playerId}', ListPlayerForTransfer::class)->name('game.transfers.list');
+    Route::post('/game/{gameId}/transfers/unlist/{playerId}', UnlistPlayerFromTransfer::class)->name('game.transfers.unlist');
+    Route::post('/game/{gameId}/transfers/accept/{offerId}', AcceptTransferOffer::class)->name('game.transfers.accept');
+    Route::post('/game/{gameId}/transfers/reject/{offerId}', RejectTransferOffer::class)->name('game.transfers.reject');
 
     // Season End
     Route::get('/game/{gameId}/season-end', ShowSeasonEnd::class)->name('game.season-end');

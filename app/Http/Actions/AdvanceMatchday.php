@@ -11,6 +11,7 @@ use App\Game\Handlers\KnockoutCupHandler;
 use App\Game\Services\CompetitionHandlerResolver;
 use App\Game\Services\LineupService;
 use App\Game\Services\MatchSimulator;
+use App\Game\Services\TransferService;
 use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GameMatch;
@@ -23,6 +24,7 @@ class AdvanceMatchday
         private readonly CompetitionHandlerResolver $handlerResolver,
         private readonly KnockoutCupHandler $cupHandler,
         private readonly LineupService $lineupService,
+        private readonly TransferService $transferService,
     ) {}
 
     public function __invoke(string $gameId)
@@ -105,6 +107,20 @@ class AdvanceMatchday
 
         $aggregate = GameAggregate::retrieve($gameId);
         $aggregate->advanceMatchday($command);
+
+        // Refresh game to get updated matchday
+        $game->refresh();
+
+        // Process transfers at transfer windows (complete agreed deals)
+        if ($this->transferService->isTransferWindow($game)) {
+            $this->transferService->completeAgreedTransfers($game);
+        }
+
+        // Generate offers for listed players
+        $this->transferService->generateOffersForListedPlayers($game);
+
+        // Generate unsolicited offers for star players (random chance)
+        $this->transferService->generateUnsolicitedOffers($game);
 
         // Post-match actions (e.g., resolve cup ties)
         $handler->afterMatches($game, $matches, $allPlayers);
