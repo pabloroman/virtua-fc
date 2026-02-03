@@ -24,12 +24,13 @@
                             <tr>
                                 <th class="font-semibold py-2 w-10"></th>
                                 <th class="font-semibold py-2">Name</th>
-                                <th class="font-semibold py-2 w-10"></th>
-                                <th class="font-semibold py-2 text-right">Value</th>
-                                <th class="font-semibold py-2 text-right">Wage</th>
-                                <th class="font-semibold py-2 text-center">Contract</th>
-                                <th class="font-semibold py-2 text-center">Age</th>
-                                <th class="font-semibold py-2 w-4"></th>
+                                <th class="font-semibold py-2 text-center w-12">Country</th>
+                                <th class="font-semibold py-2 text-center w-12">Age</th>
+
+                                <th class="font-semibold py-2 pr-4 text-right w-16">Value</th>
+                                <th class="font-semibold py-2 pr-4 text-right w-16">Wage</th>
+                                <th class="font-semibold py-2 pr-4 text-right w-16">Contract</th>
+
                                 <th class="font-semibold py-2 text-center w-12">TEC</th>
                                 <th class="font-semibold py-2 text-center w-12">PHY</th>
                                 <th class="font-semibold py-2 text-center w-12">FIT</th>
@@ -45,7 +46,7 @@
                                 ['name' => 'Forwards', 'players' => $forwards],
                             ] as $group)
                                 @if($group['players']->isNotEmpty())
-                                    <tr class="bg-slate-100">
+                                    <tr class="bg-slate-200">
                                         <td colspan="13" class="py-2 px-2 text-xs font-semibold text-slate-600 uppercase tracking-wide">
                                             {{ $group['name'] }}
                                         </td>
@@ -57,7 +58,7 @@
                                             $unavailabilityReason = $gamePlayer->getUnavailabilityReason($game->current_date, $nextMatchday);
                                             $positionDisplay = $gamePlayer->position_display;
                                         @endphp
-                                        <tr class="border-b border-slate-100 @if($isUnavailable) text-slate-400 @endif hover:bg-slate-50">
+                                        <tr class="border-b border-slate-200 @if($isUnavailable) text-slate-400 @endif hover:bg-slate-50">
                                             {{-- Position --}}
                                             <td class="py-2 text-center">
                                                 <span x-data="" x-tooltip.raw="{{ $gamePlayer->position }}" class="inline-flex items-center justify-center w-8 h-8 rounded text-xs font-bold cursor-help {{ $positionDisplay['bg'] }} {{ $positionDisplay['text'] }}">
@@ -74,29 +75,27 @@
                                                 @endif
                                             </td>
                                             {{-- Nationality --}}
-                                            <td class="py-2">
+                                            <td class="py-2 text-center">
                                                 @if($gamePlayer->nationality_flag)
-                                                    <img src="/flags/{{ $gamePlayer->nationality_flag['code'] }}.svg" class="w-5 h-4 rounded shadow-sm" title="{{ $gamePlayer->nationality_flag['name'] }}">
-                                                @endif
-                                            </td>
-                                            {{-- Market Value --}}
-                                            <td class="py-2 text-right text-slate-600">{{ $gamePlayer->market_value }}</td>
-                                            {{-- Annual Wage --}}
-                                            <td class="py-2 text-right text-slate-600">{{ $gamePlayer->formatted_wage }}/yr</td>
-                                            {{-- Contract --}}
-                                            <td class="py-2 text-center text-slate-600">
-                                                @if($gamePlayer->contract_until)
-                                                    {{ $gamePlayer->contract_until->format('M Y') }}
+                                                    <img src="/flags/{{ $gamePlayer->nationality_flag['code'] }}.svg" class="w-5 h-4 mx-auto rounded shadow-sm" title="{{ $gamePlayer->nationality_flag['name'] }}">
                                                 @endif
                                             </td>
                                             {{-- Age --}}
                                             <td class="py-2 text-center">{{ $gamePlayer->player->age }}</td>
-                                            {{-- Separator --}}
-                                            <td class="py-2">
-                                                <div class="w-px h-6 bg-slate-200 mx-auto"></div>
+
+                                            {{-- Market Value --}}
+                                            <td class="border-l border-slate-200 py-2 pr-4 text-right text-slate-600">{{ $gamePlayer->formatted_market_value }}</td>
+                                            {{-- Annual Wage --}}
+                                            <td class="py-2 pr-4 text-right text-slate-600">{{ $gamePlayer->formatted_wage }}</td>
+                                            {{-- Contract --}}
+                                            <td class="py-2 pr-4 text-right text-slate-600">
+                                                @if($gamePlayer->contract_until)
+                                                    {{ $gamePlayer->contract_expiry_year }}
+                                                @endif
                                             </td>
+
                                             {{-- Technical --}}
-                                            <td class="py-2 text-center @if($gamePlayer->technical_ability >= 80) text-green-600 @elseif($gamePlayer->technical_ability >= 70) text-lime-600 @elseif($gamePlayer->technical_ability < 60) text-slate-400 @endif">
+                                            <td class="border-l border-slate-200 py-2 text-center @if($gamePlayer->technical_ability >= 80) text-green-600 @elseif($gamePlayer->technical_ability >= 70) text-lime-600 @elseif($gamePlayer->technical_ability < 60) text-slate-400 @endif">
                                                 {{ $gamePlayer->technical_ability }}
                                             </td>
                                             {{-- Physical --}}

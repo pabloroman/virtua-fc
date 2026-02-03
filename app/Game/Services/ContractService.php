@@ -269,14 +269,14 @@ class ContractService
             $formatted = round($euros / 1_000_000, 1);
             // Remove .0 for whole numbers
             $formatted = ($formatted == (int) $formatted) ? (int) $formatted : $formatted;
-            return "€{$formatted}M";
+            return "€ {$formatted} M";
         }
 
         if ($euros >= 1_000) {
             $formatted = round($euros / 1_000);
-            return "€{$formatted}K";
+            return "€ {$formatted} K";
         }
 
-        return "€" . number_format($euros, 0);
+        return "€ " . number_format($euros, 0);
     }
 }

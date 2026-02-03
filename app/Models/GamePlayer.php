@@ -226,6 +226,11 @@ class GamePlayer extends Model
         return \App\Game\Services\ContractService::formatWage($this->annual_wage);
     }
 
+    public function getFormattedMarketValueAttribute(): string
+    {
+        return \App\Game\Services\ContractService::formatWage($this->market_value_cents);
+    }
+
     /**
      * Get annual wage in euros (not cents).
      */
