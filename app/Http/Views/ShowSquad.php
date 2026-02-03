@@ -2,11 +2,16 @@
 
 namespace App\Http\Views;
 
+use App\Game\Services\ContractService;
 use App\Models\Game;
 use App\Models\GamePlayer;
 
 class ShowSquad
 {
+    public function __construct(
+        private readonly ContractService $contractService,
+    ) {}
+
     public function __invoke(string $gameId)
     {
         $game = Game::with('team')->findOrFail($gameId);
@@ -19,12 +24,16 @@ class ShowSquad
             ->sortBy(fn ($p) => $this->positionSortOrder($p->position))
             ->groupBy(fn ($p) => $p->position_group);
 
+        // Count expiring contracts for the badge
+        $expiringContractsCount = $this->contractService->getPlayersEligibleForRenewal($game)->count();
+
         return view('squad', [
             'game' => $game,
             'goalkeepers' => $players->get('Goalkeeper', collect()),
             'defenders' => $players->get('Defender', collect()),
             'midfielders' => $players->get('Midfielder', collect()),
             'forwards' => $players->get('Forward', collect()),
+            'expiringContractsCount' => $expiringContractsCount,
         ]);
     }
 

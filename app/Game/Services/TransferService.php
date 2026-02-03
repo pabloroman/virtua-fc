@@ -47,6 +47,16 @@ class TransferService
     private const STAR_PLAYER_COUNT = 5;
 
     /**
+     * Chance of pre-contract offer per expiring player per matchday.
+     */
+    private const PRE_CONTRACT_OFFER_CHANCE = 0.10; // 10%
+
+    /**
+     * Pre-contract offer expiry in days.
+     */
+    private const PRE_CONTRACT_OFFER_EXPIRY_DAYS = 14;
+
+    /**
      * Winter transfer window matchday (mid-season).
      */
     private const WINTER_WINDOW_MATCHDAY = 19;
@@ -220,6 +230,131 @@ class TransferService
         }
 
         return $offers;
+    }
+
+    /**
+     * Generate pre-contract offers for players with expiring contracts.
+     * Called on each matchday advance (typically from January onwards).
+     */
+    public function generatePreContractOffers(Game $game): Collection
+    {
+        $offers = collect();
+
+        // Only generate pre-contract offers in the second half of the season (matchday 19+)
+        // This simulates the January window onwards
+        if ($game->current_matchday < self::WINTER_WINDOW_MATCHDAY) {
+            return $offers;
+        }
+
+        // Get players with expiring contracts who can receive pre-contract offers
+        $expiringPlayers = GamePlayer::where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->get()
+            ->filter(fn ($player) => $player->canReceivePreContractOffers());
+
+        foreach ($expiringPlayers as $player) {
+            // Skip if player already has a pending pre-contract offer
+            $hasPendingOffer = $player->transferOffers()
+                ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
+                ->where('status', TransferOffer::STATUS_PENDING)
+                ->exists();
+
+            if ($hasPendingOffer) {
+                continue;
+            }
+
+            // Random chance for an offer
+            if (rand(1, 100) <= self::PRE_CONTRACT_OFFER_CHANCE * 100) {
+                $buyers = $this->getEligibleBuyers($player);
+
+                if ($buyers->isNotEmpty()) {
+                    $buyer = $buyers->random();
+                    $offer = $this->createPreContractOffer($player, $buyer);
+                    $offers->push($offer);
+                }
+            }
+        }
+
+        return $offers;
+    }
+
+    /**
+     * Create a pre-contract offer for a player.
+     */
+    private function createPreContractOffer(GamePlayer $player, Team $offeringTeam): TransferOffer
+    {
+        return TransferOffer::create([
+            'id' => Str::uuid()->toString(),
+            'game_id' => $player->game_id,
+            'game_player_id' => $player->id,
+            'offering_team_id' => $offeringTeam->id,
+            'offer_type' => TransferOffer::TYPE_PRE_CONTRACT,
+            'transfer_fee' => 0, // Free transfer
+            'status' => TransferOffer::STATUS_PENDING,
+            'expires_at' => Carbon::parse($player->game->current_date)->addDays(self::PRE_CONTRACT_OFFER_EXPIRY_DAYS),
+        ]);
+    }
+
+    /**
+     * Complete all pre-contract transfers (called at end of season).
+     * Players move to their new team on a free transfer.
+     */
+    public function completePreContractTransfers(Game $game): Collection
+    {
+        $agreedPreContracts = TransferOffer::with(['gamePlayer.player', 'offeringTeam'])
+            ->where('game_id', $game->id)
+            ->where('status', TransferOffer::STATUS_AGREED)
+            ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
+            ->whereHas('gamePlayer', function ($query) use ($game) {
+                $query->where('team_id', $game->team_id);
+            })
+            ->get();
+
+        $completedTransfers = collect();
+
+        foreach ($agreedPreContracts as $offer) {
+            $this->completePreContractTransfer($offer);
+            $completedTransfers->push($offer);
+        }
+
+        return $completedTransfers;
+    }
+
+    /**
+     * Complete a single pre-contract transfer.
+     * No fee, player joins the new team.
+     */
+    private function completePreContractTransfer(TransferOffer $offer): void
+    {
+        $player = $offer->gamePlayer;
+
+        // Transfer player to the buying team
+        $player->update([
+            'team_id' => $offer->offering_team_id,
+            'transfer_status' => null,
+            'transfer_listed_at' => null,
+            // Extend their contract with the new team
+            'contract_until' => Carbon::parse($player->game->current_date)->addYears(rand(2, 4)),
+        ]);
+
+        // Mark offer as completed
+        $offer->update(['status' => TransferOffer::STATUS_COMPLETED]);
+    }
+
+    /**
+     * Get players with expiring contracts for display.
+     */
+    public function getExpiringContractPlayers(Game $game): Collection
+    {
+        return GamePlayer::with(['player', 'transferOffers' => function ($query) {
+                $query->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
+                    ->whereIn('status', [TransferOffer::STATUS_PENDING, TransferOffer::STATUS_AGREED]);
+            }])
+            ->where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->get()
+            ->filter(fn ($player) => $player->isContractExpiring())
+            ->sortBy('contract_until');
     }
 
     /**

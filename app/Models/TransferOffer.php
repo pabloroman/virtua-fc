@@ -21,6 +21,7 @@ class TransferOffer extends Model
     // Offer types
     public const TYPE_LISTED = 'listed';
     public const TYPE_UNSOLICITED = 'unsolicited';
+    public const TYPE_PRE_CONTRACT = 'pre_contract'; // Free transfer, contract expiring
 
     // Statuses
     public const STATUS_PENDING = 'pending';
@@ -75,6 +76,14 @@ class TransferOffer extends Model
     public function isUnsolicited(): bool
     {
         return $this->offer_type === self::TYPE_UNSOLICITED;
+    }
+
+    /**
+     * Check if this is a pre-contract offer (free transfer).
+     */
+    public function isPreContract(): bool
+    {
+        return $this->offer_type === self::TYPE_PRE_CONTRACT;
     }
 
     /**

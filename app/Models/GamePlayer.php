@@ -22,6 +22,7 @@ class GamePlayer extends Model
         'market_value_cents' => 'integer',
         'contract_until' => 'date',
         'annual_wage' => 'integer',
+        'pending_annual_wage' => 'integer',
         'joined_on' => 'date',
         'fitness' => 'integer',
         'morale' => 'integer',
@@ -110,6 +111,121 @@ class GamePlayer extends Model
         return $this->transferOffers()
             ->where('status', TransferOffer::STATUS_AGREED)
             ->first();
+    }
+
+    /**
+     * Check if player has an agreed pre-contract (leaving on free transfer at end of season).
+     */
+    public function hasPreContractAgreement(): bool
+    {
+        return $this->transferOffers()
+            ->where('status', TransferOffer::STATUS_AGREED)
+            ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
+            ->exists();
+    }
+
+    /**
+     * Get the agreed pre-contract offer (if any).
+     */
+    public function agreedPreContract(): ?TransferOffer
+    {
+        return $this->transferOffers()
+            ->where('status', TransferOffer::STATUS_AGREED)
+            ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
+            ->first();
+    }
+
+    /**
+     * Check if player's contract is expiring at end of current season.
+     * Returns true if contract expires within the season (typically June 30).
+     */
+    public function isContractExpiring(): bool
+    {
+        if (!$this->contract_until) {
+            return false;
+        }
+
+        $game = $this->game;
+        if (!$game) {
+            return false;
+        }
+
+        // Get the current season's end date (June 30 of season year)
+        $seasonYear = (int) $game->season;
+        $seasonEndDate = Carbon::createFromDate($seasonYear + 1, 6, 30);
+
+        return $this->contract_until->lte($seasonEndDate);
+    }
+
+    /**
+     * Check if player can receive pre-contract offers.
+     * Available when contract expires at end of season and no agreement exists.
+     */
+    public function canReceivePreContractOffers(): bool
+    {
+        if (!$this->isContractExpiring()) {
+            return false;
+        }
+
+        // Already has a pre-contract agreement
+        if ($this->hasPreContractAgreement()) {
+            return false;
+        }
+
+        // Already has an agreed transfer (shouldn't happen, but be safe)
+        if ($this->hasAgreedTransfer()) {
+            return false;
+        }
+
+        // Contract was renewed (no longer expiring)
+        if ($this->hasRenewalAgreed()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Check if player has a pending contract renewal (new wage takes effect at end of season).
+     */
+    public function hasRenewalAgreed(): bool
+    {
+        return $this->pending_annual_wage !== null;
+    }
+
+    /**
+     * Check if player can be offered a contract renewal.
+     * Only for players with expiring contracts who haven't already agreed to leave.
+     */
+    public function canBeOfferedRenewal(): bool
+    {
+        if (!$this->isContractExpiring()) {
+            return false;
+        }
+
+        // Already agreed to leave on pre-contract
+        if ($this->hasPreContractAgreement()) {
+            return false;
+        }
+
+        // Already has a renewal agreed
+        if ($this->hasRenewalAgreed()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Get the formatted pending wage for display.
+     */
+    public function getFormattedPendingWageAttribute(): ?string
+    {
+        if ($this->pending_annual_wage === null) {
+            return null;
+        }
+
+        return \App\Game\Services\ContractService::formatWage($this->pending_annual_wage);
     }
 
     /**

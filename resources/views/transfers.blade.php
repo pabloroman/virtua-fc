@@ -165,6 +165,21 @@
                     </div>
                     @endif
 
+                    {{-- Expiring Contracts Notice --}}
+                    @if($expiringContractPlayers->isNotEmpty())
+                    <div class="mb-8 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <span class="w-2 h-2 bg-red-500 rounded-full"></span>
+                                <span class="font-medium text-slate-900">{{ $expiringContractPlayers->count() }} player(s) with expiring contracts</span>
+                            </div>
+                            <a href="{{ route('game.squad.contracts', $game->id) }}" class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">
+                                Manage Contracts &rarr;
+                            </a>
+                        </div>
+                    </div>
+                    @endif
+
                     {{-- Listed Players --}}
                     <div class="mb-8">
                         <div class="flex items-center justify-between mb-4">

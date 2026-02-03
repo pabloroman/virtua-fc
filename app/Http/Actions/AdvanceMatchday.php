@@ -141,6 +141,7 @@ class AdvanceMatchday
         // Generate transfer offers
         $this->transferService->generateOffersForListedPlayers($game);
         $this->transferService->generateUnsolicitedOffers($game);
+        $this->transferService->generatePreContractOffers($game);
 
         // Competition-specific post-match actions
         $allPlayers = GamePlayer::with('player')

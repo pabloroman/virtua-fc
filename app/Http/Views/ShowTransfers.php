@@ -31,19 +31,23 @@ class ShowTransfers
             ->orderByDesc('transfer_fee')
             ->get();
 
-        // Separate by offer type
+        // Separate by offer type (exclude pre-contract offers - those are on the contracts page)
         $unsolicitedOffers = $pendingOffers->where('offer_type', TransferOffer::TYPE_UNSOLICITED);
         $listedOffers = $pendingOffers->where('offer_type', TransferOffer::TYPE_LISTED);
 
-        // Get agreed transfers (waiting for window)
+        // Get agreed transfers (waiting for window) - exclude pre-contracts
         $agreedTransfers = TransferOffer::with(['gamePlayer.player', 'offeringTeam'])
             ->where('game_id', $gameId)
             ->where('status', TransferOffer::STATUS_AGREED)
+            ->where('offer_type', '!=', TransferOffer::TYPE_PRE_CONTRACT)
             ->whereHas('gamePlayer', function ($query) use ($game) {
                 $query->where('team_id', $game->team_id);
             })
             ->orderByDesc('transfer_fee')
             ->get();
+
+        // Get players with expiring contracts (for notification banner)
+        $expiringContractPlayers = $this->transferService->getExpiringContractPlayers($game);
 
         // Get listed players (even those without offers, excluding those with agreed deals)
         $agreedPlayerIds = $agreedTransfers->pluck('game_player_id')->toArray();
@@ -69,10 +73,10 @@ class ShowTransfers
 
         return view('transfers', [
             'game' => $game,
-            'pendingOffers' => $pendingOffers,
             'unsolicitedOffers' => $unsolicitedOffers,
             'listedOffers' => $listedOffers,
             'agreedTransfers' => $agreedTransfers,
+            'expiringContractPlayers' => $expiringContractPlayers,
             'listedPlayers' => $listedPlayers,
             'recentTransfers' => $recentTransfers,
             'nextWindow' => $nextWindow,

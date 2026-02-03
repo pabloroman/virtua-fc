@@ -6,6 +6,7 @@ use App\Http\Actions\ConductCupDraw;
 use App\Http\Actions\GetAutoLineup;
 use App\Http\Actions\InitGame;
 use App\Http\Actions\ListPlayerForTransfer;
+use App\Http\Actions\OfferRenewal;
 use App\Http\Actions\RejectTransferOffer;
 use App\Http\Actions\SaveLineup;
 use App\Http\Actions\UnlistPlayerFromTransfer;
@@ -19,6 +20,7 @@ use App\Http\Views\ShowGame;
 use App\Http\Views\ShowCupBracket;
 use App\Http\Views\ShowMatchResults;
 use App\Http\Views\ShowSquad;
+use App\Http\Views\ShowContracts;
 use App\Http\Views\ShowSeasonEnd;
 use App\Http\Views\ShowSquadDevelopment;
 use App\Http\Views\ShowStandings;
@@ -41,6 +43,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/game/{gameId}', ShowGame::class)->name('show-game');
     Route::get('/game/{gameId}/squad', ShowSquad::class)->name('game.squad');
     Route::get('/game/{gameId}/squad/development', ShowSquadDevelopment::class)->name('game.squad.development');
+    Route::get('/game/{gameId}/squad/contracts', ShowContracts::class)->name('game.squad.contracts');
     Route::get('/game/{gameId}/finances', ShowFinances::class)->name('game.finances');
     Route::get('/game/{gameId}/transfers', ShowTransfers::class)->name('game.transfers');
     Route::get('/game/{gameId}/calendar', ShowCalendar::class)->name('game.calendar');
@@ -61,6 +64,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/game/{gameId}/transfers/unlist/{playerId}', UnlistPlayerFromTransfer::class)->name('game.transfers.unlist');
     Route::post('/game/{gameId}/transfers/accept/{offerId}', AcceptTransferOffer::class)->name('game.transfers.accept');
     Route::post('/game/{gameId}/transfers/reject/{offerId}', RejectTransferOffer::class)->name('game.transfers.reject');
+    Route::post('/game/{gameId}/transfers/renew/{playerId}', OfferRenewal::class)->name('game.transfers.renew');
 
     // Season End
     Route::get('/game/{gameId}/season-end', ShowSeasonEnd::class)->name('game.season-end');

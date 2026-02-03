@@ -147,9 +147,10 @@ class AlertService
             'offer' => $offer,
             'playerName' => $offer->gamePlayer->player->name,
             'teamName' => $offer->offeringTeam->name,
-            'fee' => $offer->formatted_transfer_fee,
+            'fee' => $offer->isPreContract() ? 'Free Transfer' : $offer->formatted_transfer_fee,
             'daysLeft' => $offer->days_until_expiry,
             'isUnsolicited' => $offer->isUnsolicited(),
+            'isPreContract' => $offer->isPreContract(),
         ];
     }
 }

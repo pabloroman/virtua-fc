@@ -279,4 +279,153 @@ class ContractService
 
         return "€ " . number_format($euros, 0);
     }
+
+    // =========================================
+    // CONTRACT RENEWAL
+    // =========================================
+
+    /**
+     * Renewal premium: players want a raise to renew.
+     */
+    private const RENEWAL_PREMIUM = 1.15; // 15% raise
+
+    /**
+     * Default renewal contract length in years.
+     */
+    private const DEFAULT_RENEWAL_YEARS = 3;
+
+    /**
+     * Calculate what wage a player demands for a contract renewal.
+     * Players expect a raise over their current wage, based on market value.
+     *
+     * @param GamePlayer $player
+     * @return array{wage: int, contractYears: int, formattedWage: string}
+     */
+    public function calculateRenewalDemand(GamePlayer $player): array
+    {
+        $minimumWage = $this->getMinimumWageForTeam($player->team);
+
+        // Calculate fair market wage based on current market value
+        $marketWage = $this->calculateAnnualWage(
+            $player->market_value_cents,
+            $minimumWage,
+            $player->age
+        );
+
+        // Player wants the higher of: current wage + premium, or market wage
+        $currentWageWithPremium = (int) ($player->annual_wage * self::RENEWAL_PREMIUM);
+        $demandedWage = max($currentWageWithPremium, $marketWage);
+
+        // Round to nearest 100K (cents)
+        $demandedWage = (int) (round($demandedWage / 10_000_000) * 10_000_000);
+
+        // Contract length based on age
+        $contractYears = $this->calculateRenewalYears($player->age);
+
+        return [
+            'wage' => $demandedWage,
+            'contractYears' => $contractYears,
+            'formattedWage' => self::formatWage($demandedWage),
+        ];
+    }
+
+    /**
+     * Calculate how many years a player will sign for based on age.
+     */
+    private function calculateRenewalYears(int $age): int
+    {
+        if ($age >= 33) {
+            return 1; // Veterans get 1-year deals
+        }
+        if ($age >= 30) {
+            return 2; // 30-32 get 2-year deals
+        }
+
+        return self::DEFAULT_RENEWAL_YEARS; // Under 30 get 3-year deals
+    }
+
+    /**
+     * Process a contract renewal offer.
+     * Updates contract end date immediately, stores pending wage for end of season.
+     *
+     * @param GamePlayer $player
+     * @param int $newWage The agreed wage (in cents)
+     * @param int $contractYears How many years to extend
+     * @return bool Success
+     */
+    public function processRenewal(GamePlayer $player, int $newWage, int $contractYears): bool
+    {
+        if (!$player->canBeOfferedRenewal()) {
+            return false;
+        }
+
+        $game = $player->game;
+        $seasonYear = (int) $game->season;
+
+        // New contract ends in June of (current season + contract years)
+        $newContractEnd = \Carbon\Carbon::createFromDate($seasonYear + $contractYears + 1, 6, 30);
+
+        $player->update([
+            'contract_until' => $newContractEnd,
+            'pending_annual_wage' => $newWage,
+        ]);
+
+        return true;
+    }
+
+    /**
+     * Apply pending wage increases (called at end of season).
+     * Returns array of players whose wages were updated.
+     *
+     * @param Game $game
+     * @return Collection<GamePlayer>
+     */
+    public function applyPendingWages(Game $game): Collection
+    {
+        $players = GamePlayer::where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->whereNotNull('pending_annual_wage')
+            ->get();
+
+        foreach ($players as $player) {
+            $player->update([
+                'annual_wage' => $player->pending_annual_wage,
+                'pending_annual_wage' => null,
+            ]);
+        }
+
+        return $players;
+    }
+
+    /**
+     * Get players eligible for contract renewal.
+     *
+     * @param Game $game
+     * @return Collection<GamePlayer>
+     */
+    public function getPlayersEligibleForRenewal(Game $game): Collection
+    {
+        return GamePlayer::with('player')
+            ->where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->get()
+            ->filter(fn ($player) => $player->canBeOfferedRenewal())
+            ->sortBy('contract_until');
+    }
+
+    /**
+     * Get players with pending renewals (wage increase at end of season).
+     *
+     * @param Game $game
+     * @return Collection<GamePlayer>
+     */
+    public function getPlayersWithPendingRenewals(Game $game): Collection
+    {
+        return GamePlayer::with('player')
+            ->where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->whereNotNull('pending_annual_wage')
+            ->orderByDesc('pending_annual_wage')
+            ->get();
+    }
 }

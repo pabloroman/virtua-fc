@@ -4,10 +4,12 @@ namespace App\Game\Services;
 
 use App\Game\Contracts\SeasonEndProcessor;
 use App\Game\DTO\SeasonTransitionData;
+use App\Game\Processors\ContractRenewalProcessor;
 use App\Game\Processors\FinancialProcessor;
 use App\Game\Processors\FinancialResetProcessor;
 use App\Game\Processors\FixtureGenerationProcessor;
 use App\Game\Processors\PlayerDevelopmentProcessor;
+use App\Game\Processors\PreContractTransferProcessor;
 use App\Game\Processors\PromotionRelegationProcessor;
 use App\Game\Processors\SeasonArchiveProcessor;
 use App\Game\Processors\StandingsResetProcessor;
@@ -25,6 +27,8 @@ class SeasonEndPipeline
 
     public function __construct(
         SeasonArchiveProcessor $seasonArchive,
+        PreContractTransferProcessor $preContractTransfer,
+        ContractRenewalProcessor $contractRenewal,
         PlayerDevelopmentProcessor $playerDevelopment,
         FinancialProcessor $financial,
         StatsResetProcessor $statsReset,
@@ -36,6 +40,8 @@ class SeasonEndPipeline
     ) {
         $this->processors = [
             $seasonArchive,
+            $preContractTransfer,
+            $contractRenewal,
             $playerDevelopment,
             $financial,
             $statsReset,
