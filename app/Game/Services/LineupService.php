@@ -3,6 +3,7 @@
 namespace App\Game\Services;
 
 use App\Game\Enums\Formation;
+use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use Carbon\Carbon;
@@ -338,33 +339,6 @@ class LineupService
     }
 
     /**
-     * Check if a match needs lineup selection for a given team.
-     */
-    public function needsLineup(GameMatch $match, string $teamId): bool
-    {
-        if ($match->played) {
-            return false;
-        }
-
-        // Check if lineup is already set
-        if ($match->home_team_id === $teamId && !empty($match->home_lineup)) {
-            return false;
-        }
-
-        if ($match->away_team_id === $teamId && !empty($match->away_lineup)) {
-            return false;
-        }
-
-        // Only need lineup if team has players available
-        // (edge case: tests or new games without players)
-        $playerCount = GamePlayer::where('game_id', $match->game_id)
-            ->where('team_id', $teamId)
-            ->count();
-
-        return $playerCount > 0;
-    }
-
-    /**
      * Get the lineup for a team from a match.
      */
     public function getLineup(GameMatch $match, string $teamId): ?array
@@ -378,21 +352,6 @@ class LineupService
         }
 
         return null;
-    }
-
-    /**
-     * Get lineup players as a collection.
-     */
-    public function getLineupPlayers(string $gameId, array $playerIds): Collection
-    {
-        if (empty($playerIds)) {
-            return collect();
-        }
-
-        return GamePlayer::with('player')
-            ->where('game_id', $gameId)
-            ->whereIn('id', $playerIds)
-            ->get();
     }
 
     /**
@@ -443,5 +402,96 @@ class LineupService
             'lineup' => $filteredLineup,
             'formation' => $previousFormation,
         ];
+    }
+
+    /**
+     * Ensure all matches have lineups set (auto-select for AI teams).
+     * Uses the player's preferred lineup, formation, and mentality for their team.
+     */
+    public function ensureLineupsForMatches($matches, Game $game): void
+    {
+        $playerFormation = $game->default_formation
+            ? Formation::tryFrom($game->default_formation)
+            : null;
+        $playerPreferredLineup = $game->default_lineup;
+        $playerMentality = $game->default_mentality ?? 'balanced';
+
+        foreach ($matches as $match) {
+            $matchday = $match->round_number ?? $game->current_matchday + 1;
+            $matchDate = $match->scheduled_date;
+
+            $this->ensureTeamLineup(
+                $match,
+                $game,
+                'home',
+                $matchDate,
+                $matchday,
+                $playerFormation,
+                $playerPreferredLineup,
+                $playerMentality
+            );
+
+            $this->ensureTeamLineup(
+                $match,
+                $game,
+                'away',
+                $matchDate,
+                $matchday,
+                $playerFormation,
+                $playerPreferredLineup,
+                $playerMentality
+            );
+        }
+    }
+
+    /**
+     * Ensure lineup is set for one team in a match.
+     */
+    private function ensureTeamLineup(
+        GameMatch $match,
+        Game $game,
+        string $side,
+        $matchDate,
+        int $matchday,
+        ?Formation $playerFormation,
+        ?array $playerPreferredLineup,
+        string $playerMentality
+    ): void {
+        $lineupField = $side . '_lineup';
+        $teamIdField = $side . '_team_id';
+
+        if (!empty($match->$lineupField)) {
+            return;
+        }
+
+        $teamId = $match->$teamIdField;
+        $isPlayerTeam = $teamId === $game->team_id;
+
+        if ($isPlayerTeam) {
+            $lineup = $this->selectLineupWithPreferences(
+                $game->id,
+                $teamId,
+                $matchDate,
+                $matchday,
+                $playerFormation,
+                $playerPreferredLineup
+            );
+        } else {
+            $lineup = $this->autoSelectLineup(
+                $game->id,
+                $teamId,
+                $matchDate,
+                $matchday
+            );
+        }
+
+        $this->saveLineup($match, $teamId, $lineup);
+
+        if ($isPlayerTeam) {
+            if ($playerFormation) {
+                $this->saveFormation($match, $teamId, $playerFormation->value);
+            }
+            $this->saveMentality($match, $teamId, $playerMentality);
+        }
     }
 }

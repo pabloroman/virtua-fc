@@ -7,12 +7,10 @@ use App\Game\DTO\MatchEventData;
 use App\Game\Enums\Formation;
 use App\Game\Enums\Mentality;
 use App\Game\Game as GameAggregate;
-use App\Game\Handlers\KnockoutCupHandler;
-use App\Game\Services\CompetitionHandlerResolver;
 use App\Game\Services\LineupService;
+use App\Game\Services\MatchdayService;
 use App\Game\Services\MatchSimulator;
 use App\Game\Services\TransferService;
-use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
@@ -20,10 +18,9 @@ use App\Models\GamePlayer;
 class AdvanceMatchday
 {
     public function __construct(
-        private readonly MatchSimulator $matchSimulator,
-        private readonly CompetitionHandlerResolver $handlerResolver,
-        private readonly KnockoutCupHandler $cupHandler,
+        private readonly MatchdayService $matchdayService,
         private readonly LineupService $lineupService,
+        private readonly MatchSimulator $matchSimulator,
         private readonly TransferService $transferService,
     ) {}
 
@@ -31,130 +28,57 @@ class AdvanceMatchday
     {
         $game = Game::findOrFail($gameId);
 
-        // Find the next unplayed match to determine target date
-        $nextMatch = GameMatch::where('game_id', $gameId)
-            ->where('played', false)
-            ->orderBy('scheduled_date')
-            ->first();
+        // Get next batch of matches to play
+        $batch = $this->matchdayService->getNextMatchBatch($game);
 
-        if (!$nextMatch) {
+        if (!$batch) {
             return redirect()->route('show-game', $gameId)
                 ->with('message', 'Season complete!');
         }
 
-        // Conduct any pending cup draws based on the target date
-        // This must happen BEFORE we determine which match to play,
-        // as the draw may create cup matches that are scheduled earlier
-        $this->cupHandler->beforeMatches($game, $nextMatch->scheduled_date->toDateString());
+        $matches = $batch['matches'];
+        $handler = $batch['handler'];
+        $matchday = $batch['matchday'];
+        $currentDate = $batch['currentDate'];
 
-        // Re-fetch the next match in case cup matches were created
-        $nextMatch = GameMatch::where('game_id', $gameId)
-            ->where('played', false)
-            ->orderBy('scheduled_date')
-            ->first();
-
-        if (!$nextMatch) {
-            return redirect()->route('show-game', $gameId)
-                ->with('message', 'Season complete!');
-        }
-
-        // Get the handler for this competition type
-        $competition = Competition::find($nextMatch->competition_id);
-        $handler = $this->handlerResolver->resolve($competition);
-
-        // Pre-match actions (handler-specific, e.g., additional draws for later rounds)
-        $handler->beforeMatches($game, $nextMatch->scheduled_date->toDateString());
-
-        // Get the batch of matches to play
-        $matches = $handler->getMatchBatch($gameId, $nextMatch);
-        $matches->load('competition');
-
-        if ($matches->isEmpty()) {
-            return redirect()->route('show-game', $gameId)
-                ->with('message', 'No matches to play.');
-        }
-
-        // For matchdays spanning multiple days, use the latest date
-        $currentDate = $matches->max('scheduled_date')->toDateString();
-
-        // Load all game players for this game, grouped by team
-        $allPlayers = GamePlayer::with('player')->where('game_id', $gameId)->get()->groupBy('team_id');
-
-        // Ensure all matches have lineups set (auto-select for AI teams)
-        $this->ensureLineupsSet($matches, $game, $allPlayers);
+        // Prepare lineups for all matches
+        $this->lineupService->ensureLineupsForMatches($matches, $game);
 
         // Simulate all matches
-        $matchResults = [];
-        foreach ($matches as $match) {
-            $matchResults[] = $this->simulateMatch($match, $allPlayers);
-        }
+        $matchResults = $this->simulateMatches($matches, $gameId);
 
-        // Determine matchday number
-        // For league matches, use the round_number (matchday)
-        // For cup matches, keep the existing league matchday to avoid corrupting it
-        $matchCompetition = $matches->first()?->competition;
-        $isLeagueMatch = $matchCompetition?->type === 'league';
-        $matchday = $isLeagueMatch
-            ? ($matches->first()->round_number ?? $game->current_matchday)
-            : $game->current_matchday;
+        // Record results via event sourcing
+        $this->recordMatchResults($gameId, $matchday, $currentDate, $matchResults);
 
-        // Create command and advance the game
-        $command = new AdvanceMatchdayCommand(
-            matchday: $matchday,
-            currentDate: $currentDate,
-            matchResults: $matchResults,
-        );
-
-        $aggregate = GameAggregate::retrieve($gameId);
-        $aggregate->advanceMatchday($command);
-
-        // Refresh game to get updated matchday
+        // Process post-match actions
         $game->refresh();
+        $this->processPostMatchActions($game, $matches, $handler);
 
-        // Process transfers at transfer windows (complete agreed deals)
-        if ($this->transferService->isTransferWindow($game)) {
-            $this->transferService->completeAgreedTransfers($game);
-        }
-
-        // Generate offers for listed players
-        $this->transferService->generateOffersForListedPlayers($game);
-
-        // Generate unsolicited offers for star players (random chance)
-        $this->transferService->generateUnsolicitedOffers($game);
-
-        // Post-match actions (e.g., resolve cup ties)
-        $handler->afterMatches($game, $matches, $allPlayers);
-
-        // Redirect based on competition type
         return redirect()->to($handler->getRedirectRoute($game, $matches, $matchday));
     }
 
-    /**
-     * Simulate a single match using lineup players.
-     */
+    private function simulateMatches($matches, string $gameId): array
+    {
+        $allPlayers = GamePlayer::with('player')
+            ->where('game_id', $gameId)
+            ->get()
+            ->groupBy('team_id');
+
+        $results = [];
+        foreach ($matches as $match) {
+            $results[] = $this->simulateMatch($match, $allPlayers);
+        }
+
+        return $results;
+    }
+
     private function simulateMatch(GameMatch $match, $allPlayers): array
     {
-        // Get lineup players only (filter from all players)
-        $homeLineupIds = $match->home_lineup ?? [];
-        $awayLineupIds = $match->away_lineup ?? [];
+        $homePlayers = $this->getLineupPlayers($match, $allPlayers, 'home');
+        $awayPlayers = $this->getLineupPlayers($match, $allPlayers, 'away');
 
-        $allHomePlayers = $allPlayers->get($match->home_team_id, collect());
-        $allAwayPlayers = $allPlayers->get($match->away_team_id, collect());
-
-        // Filter to only lineup players if lineups are set
-        $homePlayers = !empty($homeLineupIds)
-            ? $allHomePlayers->filter(fn ($p) => in_array($p->id, $homeLineupIds))
-            : $allHomePlayers;
-
-        $awayPlayers = !empty($awayLineupIds)
-            ? $allAwayPlayers->filter(fn ($p) => in_array($p->id, $awayLineupIds))
-            : $allAwayPlayers;
-
-        // Get formations (default to 4-4-2 if not set)
         $homeFormation = Formation::tryFrom($match->home_formation) ?? Formation::F_4_4_2;
         $awayFormation = Formation::tryFrom($match->away_formation) ?? Formation::F_4_4_2;
-
-        // Get mentalities (default to balanced if not set)
         $homeMentality = Mentality::tryFrom($match->home_mentality ?? '') ?? Mentality::BALANCED;
         $awayMentality = Mentality::tryFrom($match->away_mentality ?? '') ?? Mentality::BALANCED;
 
@@ -169,9 +93,6 @@ class AdvanceMatchday
             $awayMentality,
         );
 
-        // Convert events to array format for storage
-        $eventsArray = $result->events->map(fn (MatchEventData $e) => $e->toArray())->all();
-
         return [
             'matchId' => $match->id,
             'homeTeamId' => $match->home_team_id,
@@ -179,96 +100,54 @@ class AdvanceMatchday
             'homeScore' => $result->homeScore,
             'awayScore' => $result->awayScore,
             'competitionId' => $match->competition_id,
-            'events' => $eventsArray,
+            'events' => $result->events->map(fn (MatchEventData $e) => $e->toArray())->all(),
         ];
     }
 
-    /**
-     * Ensure all matches have lineups set (auto-select for AI teams).
-     * Uses the player's preferred lineup, formation, and mentality for their team.
-     */
-    private function ensureLineupsSet($matches, Game $game, $allPlayers): void
+    private function getLineupPlayers(GameMatch $match, $allPlayers, string $side)
     {
-        // Get player's preferences
-        $playerFormation = $game->default_formation
-            ? Formation::tryFrom($game->default_formation)
-            : null;
-        $playerPreferredLineup = $game->default_lineup;
-        $playerMentality = $game->default_mentality ?? 'balanced';
+        $lineupField = $side . '_lineup';
+        $teamIdField = $side . '_team_id';
 
-        foreach ($matches as $match) {
-            $matchday = $match->round_number ?? $game->current_matchday + 1;
-            $matchDate = $match->scheduled_date;
+        $lineupIds = $match->$lineupField ?? [];
+        $teamPlayers = $allPlayers->get($match->$teamIdField, collect());
 
-            // Auto-select home lineup if not set
-            if (empty($match->home_lineup)) {
-                $isPlayerTeam = $match->home_team_id === $game->team_id;
-
-                if ($isPlayerTeam) {
-                    // Use preferred lineup with fallback for player's team
-                    $lineup = $this->lineupService->selectLineupWithPreferences(
-                        $game->id,
-                        $match->home_team_id,
-                        $matchDate,
-                        $matchday,
-                        $playerFormation,
-                        $playerPreferredLineup
-                    );
-                } else {
-                    // Standard auto-select for AI teams
-                    $lineup = $this->lineupService->autoSelectLineup(
-                        $game->id,
-                        $match->home_team_id,
-                        $matchDate,
-                        $matchday
-                    );
-                }
-
-                $this->lineupService->saveLineup($match, $match->home_team_id, $lineup);
-
-                // Save formation and mentality if it's the player's team
-                if ($isPlayerTeam) {
-                    if ($playerFormation) {
-                        $this->lineupService->saveFormation($match, $match->home_team_id, $playerFormation->value);
-                    }
-                    $this->lineupService->saveMentality($match, $match->home_team_id, $playerMentality);
-                }
-            }
-
-            // Auto-select away lineup if not set
-            if (empty($match->away_lineup)) {
-                $isPlayerTeam = $match->away_team_id === $game->team_id;
-
-                if ($isPlayerTeam) {
-                    // Use preferred lineup with fallback for player's team
-                    $lineup = $this->lineupService->selectLineupWithPreferences(
-                        $game->id,
-                        $match->away_team_id,
-                        $matchDate,
-                        $matchday,
-                        $playerFormation,
-                        $playerPreferredLineup
-                    );
-                } else {
-                    // Standard auto-select for AI teams
-                    $lineup = $this->lineupService->autoSelectLineup(
-                        $game->id,
-                        $match->away_team_id,
-                        $matchDate,
-                        $matchday
-                    );
-                }
-
-                $this->lineupService->saveLineup($match, $match->away_team_id, $lineup);
-
-                // Save formation and mentality if it's the player's team
-                if ($isPlayerTeam) {
-                    if ($playerFormation) {
-                        $this->lineupService->saveFormation($match, $match->away_team_id, $playerFormation->value);
-                    }
-                    $this->lineupService->saveMentality($match, $match->away_team_id, $playerMentality);
-                }
-            }
+        if (empty($lineupIds)) {
+            return $teamPlayers;
         }
+
+        return $teamPlayers->filter(fn ($p) => in_array($p->id, $lineupIds));
+    }
+
+    private function recordMatchResults(string $gameId, int $matchday, string $currentDate, array $matchResults): void
+    {
+        $command = new AdvanceMatchdayCommand(
+            matchday: $matchday,
+            currentDate: $currentDate,
+            matchResults: $matchResults,
+        );
+
+        $aggregate = GameAggregate::retrieve($gameId);
+        $aggregate->advanceMatchday($command);
+    }
+
+    private function processPostMatchActions(Game $game, $matches, $handler): void
+    {
+        // Process transfers at transfer windows
+        if ($this->transferService->isTransferWindow($game)) {
+            $this->transferService->completeAgreedTransfers($game);
+        }
+
+        // Generate transfer offers
+        $this->transferService->generateOffersForListedPlayers($game);
+        $this->transferService->generateUnsolicitedOffers($game);
+
+        // Competition-specific post-match actions
+        $allPlayers = GamePlayer::with('player')
+            ->where('game_id', $game->id)
+            ->get()
+            ->groupBy('team_id');
+
+        $handler->afterMatches($game, $matches, $allPlayers);
     }
 }
