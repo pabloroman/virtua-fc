@@ -16,7 +16,7 @@
 
                     <table class="min-w-full table-fixed text-right divide-y divide-slate-300 border-spacing-2">
                         <thead>
-                        <tr class="text-slate-900">
+                        <tr>
                             <th class="font-semibold text-left w-8 p-2"></th>
                             <th class="font-semibold text-left p-2"></th>
                             <th class="font-semibold w-8 p-2">P</th>

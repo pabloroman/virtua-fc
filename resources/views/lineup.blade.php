@@ -439,7 +439,7 @@
                             <div class="col-span-2 overflow-x-auto">
                                 <table class="w-full text-sm">
                                     <thead class="text-left border-b sticky top-0 bg-white">
-                                        <tr class="text-slate-900">
+                                        <tr>
                                             <th class="font-semibold py-2 w-10"></th>
                                             <th class="font-semibold py-2 w-10"></th>
                                             <th class="font-semibold py-2">Name</th>

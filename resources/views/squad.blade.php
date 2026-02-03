@@ -20,7 +20,7 @@
                     </div>
 
                     <table class="w-full text-sm">
-                        <thead class="text-left text-slate-900 border-b">
+                        <thead class="text-left border-b">
                             <tr>
                                 <th class="font-semibold py-2 w-10"></th>
                                 <th class="font-semibold py-2">Name</th>

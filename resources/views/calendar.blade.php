@@ -13,7 +13,7 @@
 
                     @foreach($calendar as $month => $matches)
                         <div class="mb-8">
-                            <h4 class="text-md font-semibold text-gray-600 mb-3 border-b pb-2">{{ $month }}</h4>
+                            <h4 class="text-md font-semibold mb-3 border-b pb-2">{{ $month }}</h4>
                             <div class="space-y-2">
                                 @foreach($matches as $match)
                                     @php
@@ -43,7 +43,7 @@
                                                     $result = $yourScore > $oppScore ? 'W' : ($yourScore < $oppScore ? 'L' : 'D');
                                                     $resultClass = $result === 'W' ? 'text-green-600' : ($result === 'L' ? 'text-red-600' : 'text-gray-600');
                                                 @endphp
-                                                <span class="{{ $resultClass }} font-bold">{{ $yourScore }} - {{ $oppScore }}</span>
+                                                <span class="{{ $resultClass }} font-semibold">{{ $yourScore }} - {{ $oppScore }}</span>
                                             @elseif($isNextMatch)
                                                 <span class="text-yellow-600 font-semibold">NEXT</span>
                                             @else
