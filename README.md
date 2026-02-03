@@ -182,6 +182,18 @@ End of season processing uses a pluggable processor system:
 
 New processors can be added without modifying existing code.
 
+## Game Design Documentation
+
+Detailed documentation on game systems and design decisions:
+
+- **[Game Systems Overview](docs/game-systems/README.md)** - Index of all game system documentation
+- **[Player Abilities](docs/game-systems/player-abilities.md)** - How technical/physical abilities are calculated from market value and age
+- **[Player Potential](docs/game-systems/player-potential.md)** - Hidden potential system and scouting ranges
+- **[Player Development](docs/game-systems/player-development.md)** - Age-based growth curves and playing time bonuses
+- **[Market Value Dynamics](docs/game-systems/market-value-dynamics.md)** - How player values evolve over seasons
+- **[Match Simulation](docs/game-systems/match-simulation.md)** - Poisson distribution, team strength, striker bonus
+- **[Club Economy System](docs/game-systems/club-economy-system.md)** - Contracts, wages, transfers, youth academy (roadmap)
+
 ## Data Structure
 
 Reference data is stored in JSON files under `data/`:

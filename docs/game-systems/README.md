@@ -21,6 +21,7 @@ VirtuaFC aims to simulate football management with these guiding principles:
 | [Player Development](player-development.md) | How players grow and decline over seasons |
 | [Market Value Dynamics](market-value-dynamics.md) | How market value evolves with player performance |
 | [Match Simulation](match-simulation.md) | How match results are determined |
+| [Club Economy System](club-economy-system.md) | Contracts, wages, transfers, youth academy (implementation roadmap) |
 
 ## The Unified Loop
 
@@ -67,6 +68,7 @@ All systems work together in a coherent feedback loop:
 | `app/Game/Services/PlayerDevelopmentService.php` | Development, potential, and market value updates |
 | `app/Game/Services/DevelopmentCurve.php` | Age-based development multipliers |
 | `app/Game/Services/MatchSimulator.php` | Match result simulation |
+| `app/Game/Services/ContractService.php` | Wage calculation with age modifiers |
 | `config/match_simulation.php` | Tunable match simulation parameters |
 
 ## Design Decisions
