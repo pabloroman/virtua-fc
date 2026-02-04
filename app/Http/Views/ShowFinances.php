@@ -4,6 +4,7 @@ namespace App\Http\Views;
 
 use App\Game\Services\ContractService;
 use App\Game\Services\FinancialService;
+use App\Models\FinancialTransaction;
 use App\Models\Game;
 use App\Models\GamePlayer;
 
@@ -51,6 +52,14 @@ class ShowFinances
             ? min(100, round(($wageBill / $finances->wage_budget) * 100))
             : 0;
 
+        // Get recent transactions
+        $transactions = FinancialTransaction::with('relatedPlayer.player')
+            ->where('game_id', $gameId)
+            ->orderByDesc('transaction_date')
+            ->orderByDesc('created_at')
+            ->limit(20)
+            ->get();
+
         return view('finances', [
             'game' => $game,
             'finances' => $finances,
@@ -61,6 +70,7 @@ class ShowFinances
             'mostValuable' => $mostValuable,
             'expiringThisSeason' => $expiringThisSeason,
             'expiringNextSeason' => $expiringNextSeason,
+            'transactions' => $transactions,
         ]);
     }
 }

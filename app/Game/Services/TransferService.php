@@ -2,6 +2,7 @@
 
 namespace App\Game\Services;
 
+use App\Models\FinancialTransaction;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\Team;
@@ -327,6 +328,9 @@ class TransferService
     private function completePreContractTransfer(TransferOffer $offer): void
     {
         $player = $offer->gamePlayer;
+        $playerName = $player->player->name;
+        $buyerName = $offer->offeringTeam->name;
+        $game = $player->game;
 
         // Transfer player to the buying team
         $player->update([
@@ -334,8 +338,18 @@ class TransferService
             'transfer_status' => null,
             'transfer_listed_at' => null,
             // Extend their contract with the new team
-            'contract_until' => Carbon::parse($player->game->current_date)->addYears(rand(2, 4)),
+            'contract_until' => Carbon::parse($game->current_date)->addYears(rand(2, 4)),
         ]);
+
+        // Record the transaction (free transfer, but still useful to track)
+        FinancialTransaction::recordIncome(
+            gameId: $game->id,
+            category: FinancialTransaction::CATEGORY_TRANSFER_IN,
+            amount: 0,
+            description: "{$playerName} left on free transfer to {$buyerName}",
+            transactionDate: $game->current_date,
+            relatedPlayerId: $player->id,
+        );
 
         // Mark offer as completed
         $offer->update(['status' => TransferOffer::STATUS_COMPLETED]);
@@ -403,6 +417,8 @@ class TransferService
     private function completeTransfer(TransferOffer $offer, Game $game): void
     {
         $player = $offer->gamePlayer;
+        $playerName = $player->player->name;
+        $buyerName = $offer->offeringTeam->name;
 
         // Transfer player to the buying team
         $player->update([
@@ -413,11 +429,21 @@ class TransferService
 
         // Update finances - add transfer fee to balance and transfer budget
         $finances = $game->finances;
-        if ($finances) {
+        if ($finances && $offer->transfer_fee > 0) {
             $finances->update([
                 'balance' => $finances->balance + $offer->transfer_fee,
                 'transfer_budget' => $finances->transfer_budget + $offer->transfer_fee,
             ]);
+
+            // Record the transaction
+            FinancialTransaction::recordIncome(
+                gameId: $game->id,
+                category: FinancialTransaction::CATEGORY_TRANSFER_IN,
+                amount: $offer->transfer_fee,
+                description: "Sold {$playerName} to {$buyerName}",
+                transactionDate: $game->current_date,
+                relatedPlayerId: $player->id,
+            );
         }
 
         // Mark offer as completed

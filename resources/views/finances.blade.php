@@ -59,6 +59,59 @@
                         </div>
                     </div>
 
+                    {{-- Transaction History --}}
+                    <div class="mb-8">
+                        <h4 class="font-semibold text-lg text-slate-900 mb-4 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                            </svg>
+                            Transaction History
+                        </h4>
+                        @if($transactions->isNotEmpty())
+                        <div class="border rounded-lg overflow-hidden">
+                            <table class="min-w-full divide-y divide-slate-200">
+                                <thead class="bg-slate-50">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Date</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Type</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Description</th>
+                                        <th class="px-4 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-slate-200">
+                                    @foreach($transactions as $transaction)
+                                    <tr>
+                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-slate-500">
+                                            {{ $transaction->transaction_date->format('d M Y') }}
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $transaction->isIncome() ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                                {{ $transaction->category_label }}
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-3 text-sm text-slate-900">
+                                            {{ $transaction->description }}
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap text-sm font-semibold text-right {{ $transaction->amount == 0 ? 'text-slate-400' : ($transaction->isIncome() ? 'text-green-600' : 'text-red-600') }}">
+                                            @if($transaction->amount == 0)
+                                                Free
+                                            @else
+                                                {{ $transaction->signed_amount }}
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        @else
+                        <div class="border rounded-lg p-6 text-center text-slate-500">
+                            <p>No transactions recorded yet.</p>
+                            <p class="text-sm mt-1">Transfers, wages, and other financial activities will appear here.</p>
+                        </div>
+                        @endif
+                    </div>
+
                     {{-- Season Revenue & Expenses --}}
                     @if($finances->total_revenue > 0 || $finances->total_expense > 0)
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
