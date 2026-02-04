@@ -21,8 +21,8 @@ return [
     | Home teams score ~1.5 goals on average, away teams ~1.0
     |
     */
-    'base_home_goals' => 0.5,
-    'base_away_goals' => 0.3,
+    'base_home_goals' => 0.8,
+    'base_away_goals' => 0.5,
 
     /*
     |--------------------------------------------------------------------------
@@ -47,8 +47,8 @@ return [
     |   - exponent 1.8: ratio becomes ~65% vs 35%
     |
     */
-    'strength_multiplier' => 3.0,
-    'strength_exponent' => 2.0,
+    'strength_multiplier' => 0.8,
+    'strength_exponent' => 1.3,
 
     /*
     |--------------------------------------------------------------------------
@@ -69,8 +69,8 @@ return [
     |   - 0.8 = 20% reduction (significant away disadvantage)
     |
     */
-    'home_advantage_goals' => 0.15,
-    'away_disadvantage_multiplier' => 0.8,
+    'home_advantage_goals' => 0.2,
+    'away_disadvantage_multiplier' => 0.85,
 
     /*
     |--------------------------------------------------------------------------
@@ -90,9 +90,9 @@ return [
     |   - Default 0.80-1.20 means players can perform 20% below or above their rating
     |
     */
-    'performance_std_dev' => 0.06,
-    'performance_min' => 0.85,
-    'performance_max' => 1.15,
+    'performance_std_dev' => 0.10,
+    'performance_min' => 0.80,
+    'performance_max' => 1.20,
 
     /*
     |--------------------------------------------------------------------------
@@ -106,7 +106,7 @@ return [
     |   - 7 = realistic cap (historical max in La Liga is 9-0)
     |
     */
-    'max_goals_cap' => 7,
+    'max_goals_cap' => 6,
 
     /*
     |--------------------------------------------------------------------------
