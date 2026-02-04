@@ -11,7 +11,7 @@
                 <div class="p-12">
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="font-semibold text-xl text-slate-900">Your Games</h3>
-                        <a href="{{ route('select-team') }}" class="text-sky-600 hover:text-sky-800">+ New Game</a>
+                        <a href="{{ route('select-team') }}" class="text-indigo-600 hover:text-indigo-800">+ New Game</a>
                     </div>
                     <ul role="list" class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                         @foreach($games as $game)
@@ -20,7 +20,7 @@
                                     <img class="mx-auto h-20 w-20 flex-shrink-0" src="{{ $game->team->image }}" alt="">
                                     <h3 class="text-xl font-semibold leading-tight text-slate-900">{{ $game->team->name }}</h3>
                                     <dl class="flex flex-col justify-between">
-                                        <dd class="text-sm text-gray-500">Season {{ $game->season }}</dd>
+                                        <dd class="text-sm text-slate-500">Season {{ $game->season }}</dd>
                                         @if($game->current_date)
                                             <dd class="mt-2 mb-2">
                                                 <span class="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">

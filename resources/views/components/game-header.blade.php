@@ -1,6 +1,14 @@
 @props(['game', 'nextMatch' => null, 'continueToHome' => false])
 
-<div class="flex justify-between text-gray-400">
+@php
+    // Get competitions the team participates in for this season
+    $teamCompetitions = $game->team->competitions()
+        ->wherePivot('season', $game->season)
+        ->orderBy('tier')
+        ->get();
+@endphp
+
+<div class="flex justify-between text-slate-400">
     <div class="flex items-center space-x-4">
         <img src="{{ $game->team->image }}" class="w-16 h-16">
         <div>
@@ -51,6 +59,21 @@
     <div><a class="hover:text-slate-300 @if(Route::currentRouteName() == 'game.finances') text-white @endif" href="{{ route('game.finances', $game->id) }}">Finances</a></div>
     <div><a class="hover:text-slate-300 @if(Route::currentRouteName() == 'game.transfers') text-white @endif" href="{{ route('game.transfers', $game->id) }}">Transfers</a></div>
     <div><a class="hover:text-slate-300 @if(Route::currentRouteName() == 'game.calendar') text-white @endif" href="{{ route('game.calendar', $game->id) }}">Calendar</a></div>
-    <div><a class="hover:text-slate-300 @if(Route::currentRouteName() == 'game.standings') text-white @endif" href="{{ route('game.standings', $game->id) }}">Standings</a></div>
-    <div><a class="hover:text-slate-300 @if(Route::currentRouteName() == 'game.cup') text-white @endif" href="{{ route('game.cup', $game->id) }}">Copa del Rey</a></div>
+    <div class="relative" x-data="{ open: false }" @click.outside="open = false">
+        <button @click="open = !open" class="hover:text-slate-300 flex items-center gap-1 @if(Route::currentRouteName() == 'game.competition') text-white @endif">
+            Competitions
+            <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+        </button>
+        <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="absolute left-0 z-50 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5" style="display: none;">
+            <div class="py-1">
+                @foreach($teamCompetitions as $competition)
+                <a href="{{ route('game.competition', [$game->id, $competition->id]) }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 @if(request()->route('competitionId') == $competition->id) bg-slate-100 font-semibold @endif">
+                    {{ $competition->name }}
+                </a>
+                @endforeach
+            </div>
+        </div>
+    </div>
 </nav>

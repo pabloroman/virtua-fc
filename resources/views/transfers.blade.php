@@ -85,7 +85,7 @@
                     @if($listedOffers->isNotEmpty())
                     <div class="mb-8">
                         <h4 class="font-semibold text-lg text-slate-900 mb-4 flex items-center gap-2">
-                            <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+                            <span class="w-2 h-2 bg-slate-400 rounded-full"></span>
                             Offers Received
                         </h4>
                         <div class="space-y-3">

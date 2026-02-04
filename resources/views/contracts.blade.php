@@ -32,13 +32,13 @@
                     @if($preContractOffers->isNotEmpty())
                     <div class="mb-8">
                         <h4 class="font-semibold text-lg text-slate-900 mb-4 flex items-center gap-2">
-                            <span class="w-2 h-2 bg-purple-500 rounded-full"></span>
+                            <span class="w-2 h-2 bg-amber-500 rounded-full"></span>
                             Pre-Contract Offers Received
                             <span class="text-sm font-normal text-slate-500">(other clubs want your players)</span>
                         </h4>
                         <div class="space-y-3">
                             @foreach($preContractOffers as $offer)
-                            <div class="border border-purple-200 bg-purple-50 rounded-lg p-4">
+                            <div class="border border-amber-200 bg-amber-50 rounded-lg p-4">
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center gap-4">
                                         <img src="{{ $offer->offeringTeam->image }}" class="w-10 h-10">
@@ -54,13 +54,13 @@
                                     </div>
                                     <div class="flex items-center gap-4">
                                         <div class="text-right">
-                                            <div class="text-xl font-bold text-purple-600">Free Transfer</div>
+                                            <div class="text-xl font-bold text-amber-600">Free Transfer</div>
                                             <div class="text-xs text-slate-500">Expires in {{ $offer->days_until_expiry }} days</div>
                                         </div>
                                         <div class="flex gap-2">
                                             <form method="post" action="{{ route('game.transfers.accept', [$game->id, $offer->id]) }}">
                                                 @csrf
-                                                <button type="submit" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold rounded-lg transition-colors">
+                                                <button type="submit" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-sm font-semibold rounded-lg transition-colors">
                                                     Let Go
                                                 </button>
                                             </form>
@@ -83,13 +83,13 @@
                     @if($agreedPreContracts->isNotEmpty())
                     <div class="mb-8">
                         <h4 class="font-semibold text-lg text-slate-900 mb-4 flex items-center gap-2">
-                            <span class="w-2 h-2 bg-purple-500 rounded-full"></span>
+                            <span class="w-2 h-2 bg-red-500 rounded-full"></span>
                             Leaving on Free Transfer
                             <span class="text-sm font-normal text-slate-500">(at end of season)</span>
                         </h4>
                         <div class="space-y-3">
                             @foreach($agreedPreContracts as $transfer)
-                            <div class="border border-purple-200 bg-purple-50 rounded-lg p-4">
+                            <div class="border border-red-200 bg-red-50 rounded-lg p-4">
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center gap-4">
                                         <img src="{{ $transfer->offeringTeam->image }}" class="w-10 h-10">
@@ -103,8 +103,8 @@
                                         </div>
                                     </div>
                                     <div class="text-right">
-                                        <div class="text-xl font-bold text-purple-600">Free Transfer</div>
-                                        <div class="text-xs text-purple-700">Pre-contract signed</div>
+                                        <div class="text-xl font-bold text-red-600">Free Transfer</div>
+                                        <div class="text-xs text-red-700">Pre-contract signed</div>
                                     </div>
                                 </div>
                             </div>
@@ -117,13 +117,13 @@
                     @if($pendingRenewals->isNotEmpty())
                     <div class="mb-8">
                         <h4 class="font-semibold text-lg text-slate-900 mb-4 flex items-center gap-2">
-                            <span class="w-2 h-2 bg-teal-500 rounded-full"></span>
+                            <span class="w-2 h-2 bg-green-500 rounded-full"></span>
                             Renewals Agreed
                             <span class="text-sm font-normal text-slate-500">(new wages take effect next season)</span>
                         </h4>
                         <div class="space-y-3">
                             @foreach($pendingRenewals as $player)
-                            <div class="border border-teal-200 bg-teal-50 rounded-lg p-4">
+                            <div class="border border-green-200 bg-green-50 rounded-lg p-4">
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center gap-4">
                                         <div>
@@ -137,9 +137,9 @@
                                     <div class="text-right">
                                         <div class="text-sm text-slate-600">
                                             {{ $player->formatted_wage }} &rarr;
-                                            <span class="font-semibold text-teal-600">{{ $player->formatted_pending_wage }}</span>
+                                            <span class="font-semibold text-green-600">{{ $player->formatted_pending_wage }}</span>
                                         </div>
-                                        <div class="text-xs text-teal-700">New wage from next season</div>
+                                        <div class="text-xs text-green-700">New wage from next season</div>
                                     </div>
                                 </div>
                             </div>
@@ -190,7 +190,7 @@
                                         @if($demand)
                                         <form method="post" action="{{ route('game.transfers.renew', [$game->id, $player->id]) }}">
                                             @csrf
-                                            <button type="submit" class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold rounded-lg transition-colors">
+                                            <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg transition-colors">
                                                 Renew
                                             </button>
                                         </form>

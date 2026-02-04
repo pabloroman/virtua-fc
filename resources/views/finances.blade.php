@@ -51,9 +51,9 @@
                         </div>
 
                         {{-- Transfer Budget --}}
-                        <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4">
+                        <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-lg p-4">
                             <div class="text-xs text-slate-500 uppercase tracking-wide">Transfer Budget</div>
-                            <div class="text-2xl font-bold text-purple-700">
+                            <div class="text-2xl font-bold text-indigo-700">
                                 {{ $finances->formatted_transfer_budget }}
                             </div>
                         </div>

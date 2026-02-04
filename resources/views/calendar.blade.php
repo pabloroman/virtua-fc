@@ -21,14 +21,14 @@
                                         $opponent = $isHome ? $match->awayTeam : $match->homeTeam;
                                         $isNextMatch = !$match->played && $game->next_match?->id === $match->id;
                                     @endphp
-                                    <div class="flex items-center p-3 rounded-lg @if($isNextMatch) bg-yellow-50 ring-2 ring-yellow-400 @elseif($match->played) bg-gray-50 @else bg-white border @endif">
-                                        <div class="w-24 text-sm text-gray-500">
+                                    <div class="flex items-center p-3 rounded-lg @if($isNextMatch) bg-yellow-50 ring-2 ring-yellow-400 @elseif($match->played) bg-slate-50 @else bg-white border @endif">
+                                        <div class="w-24 text-sm text-slate-500">
                                             {{ $match->scheduled_date->format('D d M') }}
                                         </div>
                                         <div class="w-20 text-center">
-                                            <span class="text-xs uppercase tracking-wide text-gray-400">{{ $isHome ? 'HOME' : 'AWAY' }}</span>
+                                            <span class="text-xs uppercase tracking-wide text-slate-400">{{ $isHome ? 'HOME' : 'AWAY' }}</span>
                                         </div>
-                                        <div class="w-24 text-xs text-gray-500 truncate" title="{{ $match->competition->name ?? '' }}">
+                                        <div class="w-24 text-xs text-slate-500 truncate" title="{{ $match->competition->name ?? '' }}">
                                             {{ $match->competition->name ?? 'League' }}
                                         </div>
                                         <div class="flex-1 flex items-center gap-2">
@@ -41,13 +41,13 @@
                                                     $yourScore = $isHome ? $match->home_score : $match->away_score;
                                                     $oppScore = $isHome ? $match->away_score : $match->home_score;
                                                     $result = $yourScore > $oppScore ? 'W' : ($yourScore < $oppScore ? 'L' : 'D');
-                                                    $resultClass = $result === 'W' ? 'text-green-600' : ($result === 'L' ? 'text-red-600' : 'text-gray-600');
+                                                    $resultClass = $result === 'W' ? 'text-green-600' : ($result === 'L' ? 'text-red-600' : 'text-slate-600');
                                                 @endphp
                                                 <span class="{{ $resultClass }} font-semibold">{{ $yourScore }} - {{ $oppScore }}</span>
                                             @elseif($isNextMatch)
                                                 <span class="text-yellow-600 font-semibold">NEXT</span>
                                             @else
-                                                <span class="text-gray-400">-</span>
+                                                <span class="text-slate-400">-</span>
                                             @endif
                                         </div>
                                     </div>

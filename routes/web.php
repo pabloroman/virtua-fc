@@ -17,13 +17,12 @@ use App\Http\Views\SelectTeam;
 use App\Http\Views\ShowCalendar;
 use App\Http\Views\ShowFinances;
 use App\Http\Views\ShowGame;
-use App\Http\Views\ShowCupBracket;
+use App\Http\Views\ShowCompetition;
 use App\Http\Views\ShowMatchResults;
 use App\Http\Views\ShowSquad;
 use App\Http\Views\ShowContracts;
 use App\Http\Views\ShowSeasonEnd;
 use App\Http\Views\ShowSquadDevelopment;
-use App\Http\Views\ShowStandings;
 use App\Http\Views\ShowTransfers;
 use App\Http\Actions\ProcessSeasonDevelopment;
 use App\Http\Actions\StartNewSeason;
@@ -47,8 +46,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/game/{gameId}/finances', ShowFinances::class)->name('game.finances');
     Route::get('/game/{gameId}/transfers', ShowTransfers::class)->name('game.transfers');
     Route::get('/game/{gameId}/calendar', ShowCalendar::class)->name('game.calendar');
-    Route::get('/game/{gameId}/standings', ShowStandings::class)->name('game.standings');
-    Route::get('/game/{gameId}/cup', ShowCupBracket::class)->name('game.cup');
+    Route::get('/game/{gameId}/competition/{competitionId}', ShowCompetition::class)->name('game.competition');
     Route::get('/game/{gameId}/results/{competition}/{matchday}', ShowMatchResults::class)->name('game.results');
     Route::get('/game/{gameId}/lineup/{matchId}', ShowLineup::class)->name('game.lineup');
 

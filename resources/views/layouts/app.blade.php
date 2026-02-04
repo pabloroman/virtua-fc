@@ -9,7 +9,7 @@
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=barlow-condensed:400,600,800&display=swap" rel="stylesheet" />
+        <link href="https://fonts.bunny.net/css?family=barlow-semi-condensed:400,600,800&display=swap" rel="stylesheet" />
         <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
 
         <!-- Scripts -->

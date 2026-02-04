@@ -19,14 +19,14 @@
                                     Round {{ $game->cup_round }}
                                 </span>
                             @else
-                                <span class="px-3 py-1 text-sm bg-gray-100 text-gray-600 rounded-full">Not yet entered</span>
+                                <span class="px-3 py-1 text-sm bg-slate-100 text-slate-600 rounded-full">Not yet entered</span>
                             @endif
-                            <a href="{{ route('show-game', $game->id) }}" class="text-sky-600 hover:text-sky-800">Back to Dashboard</a>
+                            <a href="{{ route('show-game', $game->id) }}" class="text-indigo-600 hover:text-indigo-800">Back to Dashboard</a>
                         </div>
                     </div>
 
                     @if($rounds->isEmpty())
-                        <div class="text-center py-12 text-gray-500">
+                        <div class="text-center py-12 text-slate-500">
                             <p>Cup data not available.</p>
                         </div>
                     @else
@@ -52,7 +52,7 @@
                                                 {{ $playerTie->getScoreDisplay() }}
                                             </div>
                                         @else
-                                            <div class="text-gray-400">vs</div>
+                                            <div class="text-slate-400">vs</div>
                                         @endif
                                     </div>
                                     <div class="flex items-center gap-3 flex-1">
@@ -63,7 +63,7 @@
                                     </div>
                                 </div>
                                 @if($round?->isTwoLegged())
-                                    <div class="text-center text-sm text-gray-500 mt-2">Two-legged tie</div>
+                                    <div class="text-center text-sm text-slate-500 mt-2">Two-legged tie</div>
                                 @endif
                             </div>
                         @elseif($playerTie && $playerTie->completed)
@@ -101,8 +101,8 @@
                                     @php $ties = $tiesByRound->get($round->round_number, collect()); @endphp
                                     <div class="flex-shrink-0 w-64">
                                         <div class="text-center mb-4">
-                                            <h4 class="font-semibold text-gray-700">{{ $round->round_name }}</h4>
-                                            <div class="text-xs text-gray-400">
+                                            <h4 class="font-semibold text-slate-700">{{ $round->round_name }}</h4>
+                                            <div class="text-xs text-slate-400">
                                                 {{ $round->first_leg_date->format('M d') }}
                                                 @if($round->isTwoLegged())
                                                     / {{ $round->second_leg_date->format('M d') }}
@@ -112,7 +112,7 @@
 
                                         @if($ties->isEmpty())
                                             <div class="p-4 text-center border border-dashed rounded-lg">
-                                                <div class="text-gray-400 text-sm mb-2">Draw pending</div>
+                                                <div class="text-slate-400 text-sm mb-2">Draw pending</div>
                                                 @php
                                                     $canDraw = app(\App\Game\Services\CupDrawService::class)
                                                         ->needsDrawForRound($game->id, 'ESPCUP', $round->round_number);
@@ -134,7 +134,7 @@
                                                         $homeWon = $tie->winner_id === $tie->home_team_id;
                                                         $awayWon = $tie->winner_id === $tie->away_team_id;
                                                     @endphp
-                                                    <div class="border rounded-lg overflow-hidden {{ $isPlayerTie ? 'border-sky-300 bg-sky-50' : 'border-gray-200' }}">
+                                                    <div class="border rounded-lg overflow-hidden {{ $isPlayerTie ? 'border-sky-300 bg-sky-50' : 'border-slate-200' }}">
                                                         {{-- Home Team --}}
                                                         <div class="flex items-center gap-2 p-2 {{ $homeWon ? 'bg-green-50' : '' }} {{ $awayWon ? 'opacity-50' : '' }}">
                                                             <img src="{{ $tie->homeTeam->image }}" class="w-5 h-5">
@@ -161,7 +161,7 @@
                                                         </div>
                                                         {{-- Resolution info --}}
                                                         @if($tie->completed && $tie->resolution && $tie->resolution['type'] !== 'normal')
-                                                            <div class="text-xs text-center text-gray-400 py-1 border-t bg-gray-50">
+                                                            <div class="text-xs text-center text-slate-400 py-1 border-t bg-slate-50">
                                                                 @if($tie->resolution['type'] === 'penalties')
                                                                     Pens: {{ $tie->resolution['penalties'] }}
                                                                 @elseif($tie->resolution['type'] === 'extra_time')
@@ -183,7 +183,7 @@
                         </div>
 
                         {{-- Legend --}}
-                        <div class="mt-8 pt-4 border-t text-xs text-gray-500">
+                        <div class="mt-8 pt-4 border-t text-xs text-slate-500">
                             <div class="flex gap-6">
                                 <div class="flex items-center gap-2">
                                     <div class="w-3 h-3 bg-sky-100 border border-sky-300 rounded"></div>

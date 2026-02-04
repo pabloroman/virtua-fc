@@ -141,11 +141,11 @@
                                             {{-- Actions --}}
                                             <td class="py-2 text-right">
                                                 @if($gamePlayer->hasPreContractAgreement())
-                                                    <span class="inline-flex items-center px-2 py-1 text-xs font-medium text-purple-700 bg-purple-100 rounded">
+                                                    <span class="inline-flex items-center px-2 py-1 text-xs font-medium text-red-700 bg-red-100 rounded">
                                                         Leaving (Free)
                                                     </span>
                                                 @elseif($gamePlayer->hasRenewalAgreed())
-                                                    <span class="inline-flex items-center px-2 py-1 text-xs font-medium text-teal-700 bg-teal-100 rounded">
+                                                    <span class="inline-flex items-center px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded">
                                                         Renewed
                                                     </span>
                                                 @elseif($gamePlayer->hasAgreedTransfer())

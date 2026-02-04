@@ -13,10 +13,10 @@
                         <div>
                             <h3 class="font-semibold text-xl text-slate-900">Matchday {{ $matchday }} Results</h3>
                             @if($competition)
-                                <p class="text-sm text-gray-500">{{ $competition->name }}</p>
+                                <p class="text-sm text-slate-500">{{ $competition->name }}</p>
                             @endif
                         </div>
-                        <a href="{{ route('show-game', $game->id) }}" class="text-sky-600 hover:text-sky-800">Back to Dashboard</a>
+                        <a href="{{ route('show-game', $game->id) }}" class="text-indigo-600 hover:text-indigo-800">Back to Dashboard</a>
                     </div>
 
                     {{-- Player's Match Highlight --}}
@@ -62,19 +62,19 @@
                                     <div class="flex gap-8 text-sm">
                                         <div class="flex-1 text-right">
                                             @foreach($homeGoals->sortBy('minute') as $event)
-                                                <div class="text-gray-600">
+                                                <div class="text-slate-600">
                                                     {{ $event->gamePlayer->player->name }}
                                                     @if($event->event_type === 'own_goal')<span class="text-red-500">(OG)</span>@endif
-                                                    <span class="text-gray-400">{{ $event->minute }}'</span>
+                                                    <span class="text-slate-400">{{ $event->minute }}'</span>
                                                 </div>
                                             @endforeach
                                         </div>
                                         <div class="flex-1">
                                             @foreach($awayGoals->sortBy('minute') as $event)
-                                                <div class="text-gray-600">
+                                                <div class="text-slate-600">
                                                     {{ $event->gamePlayer->player->name }}
                                                     @if($event->event_type === 'own_goal')<span class="text-red-500">(OG)</span>@endif
-                                                    <span class="text-gray-400">{{ $event->minute }}'</span>
+                                                    <span class="text-slate-400">{{ $event->minute }}'</span>
                                                 </div>
                                             @endforeach
                                         </div>
@@ -89,7 +89,7 @@
                             @endphp
                             @if($cards->isNotEmpty())
                                 <div class="mt-3 pt-3 border-t border-sky-200">
-                                    <div class="flex gap-8 text-xs text-gray-500">
+                                    <div class="flex gap-8 text-xs text-slate-500">
                                         <div class="flex-1 text-right">
                                             @foreach($homeCards as $event)
                                                 <div class="inline-flex items-center gap-1 justify-end">
@@ -121,10 +121,10 @@
                     @endif
 
                     {{-- All Results --}}
-                    <h4 class="text-md font-semibold text-gray-600 mb-3">All Results</h4>
+                    <h4 class="text-md font-semibold text-slate-600 mb-3">All Results</h4>
                     <div class="space-y-2">
                         @foreach($matches as $match)
-                            <div class="flex items-center p-4 rounded-lg @if($match->id === $playerMatch?->id) bg-sky-50 @else bg-gray-50 @endif">
+                            <div class="flex items-center p-4 rounded-lg @if($match->id === $playerMatch?->id) bg-sky-50 @else bg-slate-50 @endif">
                                 <div class="flex items-center gap-2 flex-1 justify-end">
                                     <span class="@if($match->home_score > $match->away_score) font-semibold @endif">
                                         {{ $match->homeTeam->name }}
@@ -145,7 +145,7 @@
                     </div>
 
                     <div class="mt-6 text-center">
-                        <a href="{{ route('game.standings', $game->id) }}" class="text-sky-600 hover:text-sky-800">View Updated Standings</a>
+                        <a href="{{ route('game.standings', $game->id) }}" class="text-indigo-600 hover:text-indigo-800">View Updated Standings</a>
                     </div>
                 </div>
             </div>

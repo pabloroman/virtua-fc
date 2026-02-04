@@ -163,10 +163,10 @@
 
                         {{-- New Offers --}}
                         @foreach($transferAlerts['newOffers'] as $alert)
-                        <div class="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                        <div class="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-lg">
                             <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                                     </svg>
                                 </div>
@@ -369,7 +369,7 @@
                         @endif
 
                         <div class="mt-4 pt-4 border-t text-center">
-                            <a href="{{ route('game.standings', $game->id) }}" class="text-sky-600 hover:text-sky-800 text-sm font-medium">
+                            <a href="{{ route('game.standings', $game->id) }}" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">
                                 View Full Standings
                             </a>
                         </div>
@@ -423,7 +423,7 @@
                         @endif
 
                         <div class="mt-4 pt-4 border-t text-center">
-                            <a href="{{ route('game.calendar', $game->id) }}" class="text-sky-600 hover:text-sky-800 text-sm font-medium">
+                            <a href="{{ route('game.calendar', $game->id) }}" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">
                                 View Full Calendar
                             </a>
                         </div>

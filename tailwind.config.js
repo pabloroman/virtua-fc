@@ -12,7 +12,7 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Barlow Condensed', ...defaultTheme.fontFamily.sans],
+                sans: ['Barlow Semi Condensed', ...defaultTheme.fontFamily.sans],
             },
             fontSize: {
                 xs: '0.8rem',
