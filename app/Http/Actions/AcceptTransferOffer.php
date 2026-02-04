@@ -32,7 +32,7 @@ class AcceptTransferOffer
         $playerName = $offer->gamePlayer->player->name;
         $teamName = $offer->offeringTeam->name;
         $fee = $offer->formatted_transfer_fee;
-        $nextWindow = $this->transferService->getNextTransferWindow($game);
+        $nextWindow = $game->getNextWindowName();
 
         $this->transferService->acceptOffer($offer);
 

@@ -58,11 +58,6 @@ class TransferService
     private const PRE_CONTRACT_OFFER_EXPIRY_DAYS = 14;
 
     /**
-     * Winter transfer window matchday (mid-season).
-     */
-    private const WINTER_WINDOW_MATCHDAY = 19;
-
-    /**
      * Transfer windows configuration.
      */
     public const WINDOW_SUMMER = 'summer';
@@ -241,9 +236,14 @@ class TransferService
     {
         $offers = collect();
 
-        // Only generate pre-contract offers in the second half of the season (matchday 19+)
-        // This simulates the January window onwards
-        if ($game->current_matchday < self::WINTER_WINDOW_MATCHDAY) {
+        // Only generate pre-contract offers from January through May
+        // Players can sign pre-contracts 6 months before their contract expires (June 30)
+        if (!$game->current_date) {
+            return $offers;
+        }
+
+        $month = $game->current_date->month;
+        if ($month < 1 || $month > 5) {
             return $offers;
         }
 
@@ -448,38 +448,6 @@ class TransferService
 
         // Mark offer as completed
         $offer->update(['status' => TransferOffer::STATUS_COMPLETED]);
-    }
-
-    /**
-     * Check if we're at a transfer window.
-     */
-    public function isTransferWindow(Game $game): bool
-    {
-        // Summer window: at season start (matchday 0)
-        if ($game->current_matchday === 0) {
-            return true;
-        }
-
-        // Winter window: around matchday 19
-        if ($game->current_matchday === self::WINTER_WINDOW_MATCHDAY) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Get the next transfer window description.
-     */
-    public function getNextTransferWindow(Game $game): string
-    {
-        $matchday = $game->current_matchday;
-
-        if ($matchday < self::WINTER_WINDOW_MATCHDAY) {
-            return 'Winter (Matchday ' . self::WINTER_WINDOW_MATCHDAY . ')';
-        }
-
-        return 'Summer (End of Season)';
     }
 
     /**

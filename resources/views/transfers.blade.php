@@ -20,7 +20,14 @@
                         <h3 class="font-semibold text-xl text-slate-900">Transfers</h3>
                         <div class="flex items-center gap-6 text-sm">
                             <div class="text-slate-600">
-                                Next Window: <span class="font-semibold text-slate-900">{{ $nextWindow }}</span>
+                                @if($isTransferWindow)
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                                        {{ $currentWindow }} Window Open
+                                    </span>
+                                @else
+                                    Window: <span class="font-semibold text-slate-900">Closed</span>
+                                @endif
                             </div>
                             @if($game->finances)
                             <div class="text-slate-600">
@@ -137,7 +144,7 @@
                         <h4 class="font-semibold text-lg text-slate-900 mb-4 flex items-center gap-2">
                             <span class="w-2 h-2 bg-green-500 rounded-full"></span>
                             Agreed Transfers
-                            <span class="text-sm font-normal text-slate-500">(completing at {{ $nextWindow }} window)</span>
+                            <span class="text-sm font-normal text-slate-500">(completing at {{ $game->getNextWindowName() }} window)</span>
                         </h4>
                         <div class="space-y-3">
                             @foreach($agreedTransfers as $transfer)

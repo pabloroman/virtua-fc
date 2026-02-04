@@ -19,6 +19,7 @@ use App\Game\Services\PlayerDevelopmentService;
 use App\Game\Services\StandingsCalculator;
 use App\Models\CompetitionTeam;
 use App\Models\CupTie;
+use App\Models\FinancialTransaction;
 use App\Models\FixtureTemplate;
 use App\Models\Game;
 use App\Models\GameMatch;
@@ -149,15 +150,65 @@ class GameProjector extends Projector
     public function onCupTieCompleted(CupTieCompleted $event): void
     {
         $gameId = $event->aggregateRootUuid();
+        $game = Game::find($gameId);
 
         // Check if the player's team was eliminated
-        $game = Game::find($gameId);
         if ($event->loserId === $game->team_id) {
             $game->update(['cup_eliminated' => true]);
         }
 
-        // The tie is already updated by CupTieResolver, this event
-        // is mainly for audit trail and potential future reactors
+        // Award cup prize money if player's team won
+        if ($event->winnerId === $game->team_id) {
+            $this->awardCupPrizeMoney($game, $event->competitionId, $event->roundNumber);
+        }
+    }
+
+    /**
+     * Award prize money for advancing in a cup competition.
+     */
+    private function awardCupPrizeMoney(Game $game, string $competitionId, int $roundNumber): void
+    {
+        // Prize money increases with each round (in cents)
+        // Round 1: €100K, Round 2: €200K, QF: €500K, SF: €1M, Final: €2M
+        $prizeAmounts = [
+            1 => 10_000_000,      // €100K - Round of 64/32
+            2 => 20_000_000,      // €200K - Round of 32/16
+            3 => 30_000_000,      // €300K - Round of 16
+            4 => 50_000_000,      // €500K - Quarter-finals
+            5 => 100_000_000,     // €1M - Semi-finals
+            6 => 200_000_000,     // €2M - Final
+        ];
+
+        $amount = $prizeAmounts[$roundNumber] ?? $prizeAmounts[1];
+
+        // Get competition name for description
+        $competition = \App\Models\Competition::find($competitionId);
+        $competitionName = $competition?->name ?? 'Cup';
+
+        // Get round name from the tie
+        $tie = CupTie::where('game_id', $game->id)
+            ->where('competition_id', $competitionId)
+            ->where('round_number', $roundNumber)
+            ->first();
+        $roundName = $tie?->round_name ?? "Round $roundNumber";
+
+        // Record the income transaction
+        FinancialTransaction::recordIncome(
+            gameId: $game->id,
+            category: FinancialTransaction::CATEGORY_CUP_BONUS,
+            amount: $amount,
+            description: "{$competitionName} - {$roundName} advancement",
+            transactionDate: $game->current_date->toDateString(),
+        );
+
+        // Update finances
+        $finances = $game->finances;
+        if ($finances) {
+            $finances->increment('balance', $amount);
+            $finances->increment('cup_bonus', $amount);
+            $finances->increment('total_revenue', $amount);
+            $finances->increment('season_profit_loss', $amount);
+        }
     }
 
     public function onSeasonDevelopmentProcessed(SeasonDevelopmentProcessed $event): void

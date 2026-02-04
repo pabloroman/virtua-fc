@@ -85,4 +85,122 @@ class Game extends Model
             ->orderBy('scheduled_date')
             ->first();
     }
+
+    // ==========================================
+    // Transfer Window Logic (Calendar-based)
+    // ==========================================
+
+    /**
+     * Summer transfer window: July 1 - August 31
+     * This is when the season starts, contracts renew, etc.
+     */
+    public function isSummerWindowOpen(): bool
+    {
+        if (!$this->current_date) {
+            return false;
+        }
+
+        $month = $this->current_date->month;
+        return $month === 7 || $month === 8;
+    }
+
+    /**
+     * Winter transfer window: January 1 - January 31
+     * Mid-season transfer period.
+     */
+    public function isWinterWindowOpen(): bool
+    {
+        if (!$this->current_date) {
+            return false;
+        }
+
+        return $this->current_date->month === 1;
+    }
+
+    /**
+     * Check if any transfer window is currently open.
+     */
+    public function isTransferWindowOpen(): bool
+    {
+        return $this->isSummerWindowOpen() || $this->isWinterWindowOpen();
+    }
+
+    /**
+     * Check if we've just entered the summer window (July 1).
+     * Used to trigger one-time events like wage payments, TV rights, etc.
+     */
+    public function isStartOfSummerWindow(): bool
+    {
+        if (!$this->current_date) {
+            return false;
+        }
+
+        // First day of July
+        return $this->current_date->month === 7 && $this->current_date->day <= 7;
+    }
+
+    /**
+     * Check if we've just entered the winter window (January 1).
+     * Used to trigger one-time events like wage payments.
+     */
+    public function isStartOfWinterWindow(): bool
+    {
+        if (!$this->current_date) {
+            return false;
+        }
+
+        // First week of January
+        return $this->current_date->month === 1 && $this->current_date->day <= 7;
+    }
+
+    /**
+     * Check if we're at the start of either transfer window.
+     * This is when financial events (wages, TV rights) should be processed.
+     */
+    public function isTransferWindowStart(): bool
+    {
+        return $this->isStartOfSummerWindow() || $this->isStartOfWinterWindow();
+    }
+
+    /**
+     * Get the current transfer window name, or null if none is open.
+     */
+    public function getCurrentWindowName(): ?string
+    {
+        if ($this->isSummerWindowOpen()) {
+            return 'Summer';
+        }
+
+        if ($this->isWinterWindowOpen()) {
+            return 'Winter';
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the next transfer window name.
+     */
+    public function getNextWindowName(): string
+    {
+        if (!$this->current_date) {
+            return 'Summer';
+        }
+
+        $month = $this->current_date->month;
+
+        // If we're before or in winter window (Jan), next is summer (July)
+        // If we're after winter but before summer (Feb-Jun), next is summer
+        // If we're in or after summer (Jul-Dec), next is winter (Jan)
+        if ($month >= 2 && $month <= 6) {
+            return 'Summer';
+        }
+
+        if ($month >= 8 && $month <= 12) {
+            return 'Winter';
+        }
+
+        // Currently in a window
+        return $this->getCurrentWindowName() ?? 'Summer';
+    }
 }

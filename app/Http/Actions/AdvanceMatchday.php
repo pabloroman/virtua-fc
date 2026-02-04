@@ -7,6 +7,7 @@ use App\Game\DTO\MatchEventData;
 use App\Game\Enums\Formation;
 use App\Game\Enums\Mentality;
 use App\Game\Game as GameAggregate;
+use App\Game\Services\FinancialService;
 use App\Game\Services\LineupService;
 use App\Game\Services\MatchdayService;
 use App\Game\Services\MatchSimulator;
@@ -22,6 +23,7 @@ class AdvanceMatchday
         private readonly LineupService $lineupService,
         private readonly MatchSimulator $matchSimulator,
         private readonly TransferService $transferService,
+        private readonly FinancialService $financialService,
     ) {}
 
     public function __invoke(string $gameId)
@@ -133,14 +135,21 @@ class AdvanceMatchday
 
     private function processPostMatchActions(Game $game, $matches, $handler): void
     {
-        // Process transfers at transfer windows
-        if ($this->transferService->isTransferWindow($game)) {
+        // Process financial events at transfer window starts (wages, TV rights)
+        $this->financialService->processTransferWindowFinances($game);
+
+        // Process transfers when window is open
+        if ($game->isTransferWindowOpen()) {
             $this->transferService->completeAgreedTransfers($game);
         }
 
-        // Generate transfer offers
-        $this->transferService->generateOffersForListedPlayers($game);
-        $this->transferService->generateUnsolicitedOffers($game);
+        // Generate transfer offers (can happen anytime, but more during windows)
+        if ($game->isTransferWindowOpen()) {
+            $this->transferService->generateOffersForListedPlayers($game);
+            $this->transferService->generateUnsolicitedOffers($game);
+        }
+
+        // Pre-contract offers (January onwards for expiring contracts)
         $this->transferService->generatePreContractOffers($game);
 
         // Competition-specific post-match actions

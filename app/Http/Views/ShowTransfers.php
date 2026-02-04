@@ -67,9 +67,9 @@ class ShowTransfers
             ->limit(10)
             ->get();
 
-        // Get next transfer window info
-        $nextWindow = $this->transferService->getNextTransferWindow($game);
-        $isTransferWindow = $this->transferService->isTransferWindow($game);
+        // Get transfer window info from Game model
+        $isTransferWindow = $game->isTransferWindowOpen();
+        $currentWindow = $game->getCurrentWindowName();
 
         return view('transfers', [
             'game' => $game,
@@ -79,7 +79,7 @@ class ShowTransfers
             'expiringContractPlayers' => $expiringContractPlayers,
             'listedPlayers' => $listedPlayers,
             'recentTransfers' => $recentTransfers,
-            'nextWindow' => $nextWindow,
+            'currentWindow' => $currentWindow,
             'isTransferWindow' => $isTransferWindow,
         ]);
     }

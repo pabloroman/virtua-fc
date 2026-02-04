@@ -2,6 +2,7 @@
 
 namespace App\Game\Services;
 
+use App\Models\FinancialTransaction;
 use App\Models\Game;
 use App\Models\GameFinances;
 use App\Models\GamePlayer;
@@ -82,6 +83,8 @@ class FinancialService
 
     /**
      * Calculate end of season financials.
+     * Note: TV rights, cup bonuses, and wages are now tracked incrementally during the season.
+     * This method adds the performance bonus and calculates final totals.
      */
     public function calculateSeasonEnd(Game $game): GameFinances
     {
@@ -91,33 +94,25 @@ class FinancialService
             $finances = $this->initializeFinances($game);
         }
 
-        // Calculate revenues
-        $squadValue = $this->calculateSquadValue($game);
-        $leagueTier = $this->getLeagueTier($game);
-        $tvRevenue = $this->calculateTvRevenue($squadValue, $leagueTier);
+        // Calculate and award performance bonus based on final league position
         $performanceBonus = $this->calculatePerformanceBonus($game);
-        $cupBonus = $this->calculateCupBonus($game);
-        $totalRevenue = $tvRevenue + $performanceBonus + $cupBonus;
 
-        // Calculate expenses
-        $wageExpense = $this->calculateAnnualWageBill($game);
-        $transferExpense = $finances->transfer_expense; // Already tracked during season
-        $totalExpense = $wageExpense + $transferExpense;
+        if ($performanceBonus > 0) {
+            // Record the transaction
+            FinancialTransaction::recordIncome(
+                gameId: $game->id,
+                category: FinancialTransaction::CATEGORY_PERFORMANCE_BONUS,
+                amount: $performanceBonus,
+                description: "Season {$game->season} league position bonus",
+                transactionDate: $game->current_date->toDateString(),
+            );
 
-        // Calculate profit/loss
-        $profitLoss = $totalRevenue - $totalExpense;
-        $newBalance = $finances->balance + $profitLoss;
-
-        $finances->update([
-            'tv_revenue' => $tvRevenue,
-            'performance_bonus' => $performanceBonus,
-            'cup_bonus' => $cupBonus,
-            'total_revenue' => $totalRevenue,
-            'wage_expense' => $wageExpense,
-            'total_expense' => $totalExpense,
-            'season_profit_loss' => $profitLoss,
-            'balance' => $newBalance,
-        ]);
+            // Update finances
+            $finances->increment('balance', $performanceBonus);
+            $finances->increment('performance_bonus', $performanceBonus);
+            $finances->increment('total_revenue', $performanceBonus);
+            $finances->increment('season_profit_loss', $performanceBonus);
+        }
 
         return $finances->fresh();
     }
@@ -278,4 +273,106 @@ class FinancialService
         return $league?->tier ?? 1;
     }
 
+    // ==========================================
+    // Transfer Window Financial Processing
+    // ==========================================
+
+    /**
+     * Process all transfer window financial events.
+     * Called when entering a transfer window period.
+     */
+    public function processTransferWindowFinances(Game $game): void
+    {
+        if (!$game->isTransferWindowStart()) {
+            return;
+        }
+
+        $this->processWagePayments($game);
+
+        // TV rights only paid at summer window (start of season)
+        if ($game->isStartOfSummerWindow()) {
+            $this->processTvRightsPayment($game);
+        }
+    }
+
+    /**
+     * Process TV rights payment at the start of the season.
+     * Called once per season at the summer window.
+     */
+    public function processTvRightsPayment(Game $game): void
+    {
+        $finances = $game->finances;
+        if (!$finances) {
+            return;
+        }
+
+        // Calculate TV revenue based on current squad value
+        $squadValue = $this->calculateSquadValue($game);
+        $leagueTier = $this->getLeagueTier($game);
+        $tvRevenue = $this->calculateTvRevenue($squadValue, $leagueTier);
+
+        if ($tvRevenue <= 0) {
+            return;
+        }
+
+        // Record the income transaction
+        FinancialTransaction::recordIncome(
+            gameId: $game->id,
+            category: FinancialTransaction::CATEGORY_TV_RIGHTS,
+            amount: $tvRevenue,
+            description: "Season {$game->season} TV rights distribution",
+            transactionDate: $game->current_date->toDateString(),
+        );
+
+        // Update finances
+        $finances->increment('balance', $tvRevenue);
+        $finances->increment('total_revenue', $tvRevenue);
+        $finances->increment('season_profit_loss', $tvRevenue);
+        $finances->update(['tv_revenue' => $tvRevenue]);
+    }
+
+    /**
+     * Process wage payments for the player's team.
+     * Called twice per season at transfer windows (pays half the annual wage each time).
+     */
+    public function processWagePayments(Game $game): void
+    {
+        // Get all players in the player's team
+        $players = GamePlayer::where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->get();
+
+        if ($players->isEmpty()) {
+            return;
+        }
+
+        // Calculate total wages (half of annual wages since paid twice per season)
+        $totalWages = (int) ($players->sum('annual_wage') / 2);
+
+        if ($totalWages <= 0) {
+            return;
+        }
+
+        // Determine the payment period
+        $period = $game->getCurrentWindowName() ?? 'Season';
+
+        // Record the expense transaction
+        FinancialTransaction::recordExpense(
+            gameId: $game->id,
+            category: FinancialTransaction::CATEGORY_WAGE,
+            amount: $totalWages,
+            description: "{$period} wage payment ({$players->count()} players)",
+            transactionDate: $game->current_date->toDateString(),
+        );
+
+        // Update finances
+        $finances = $game->finances;
+        if ($finances) {
+            $finances->decrement('wage_budget', $totalWages);
+            $finances->decrement('balance', $totalWages);
+            $finances->increment('wage_expense', $totalWages);
+            $finances->increment('total_expense', $totalWages);
+            $finances->decrement('season_profit_loss', $totalWages);
+        }
+    }
 }
