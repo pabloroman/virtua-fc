@@ -143,10 +143,6 @@
                             </div>
                         @endforeach
                     </div>
-
-                    <div class="mt-6 text-center">
-                        <a href="{{ route('game.standings', $game->id) }}" class="text-sky-600 hover:text-sky-800">View Updated Standings</a>
-                    </div>
                 </div>
             </div>
         </div>

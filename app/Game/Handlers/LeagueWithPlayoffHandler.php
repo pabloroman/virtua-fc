@@ -44,7 +44,7 @@ class LeagueWithPlayoffHandler implements CompetitionHandler
                     $query->whereDate('scheduled_date', $nextMatch->scheduled_date->toDateString());
                 } else {
                     // League match - get all matches in same matchday
-                    $query->where('matchday', $nextMatch->matchday);
+                    $query->where('round_number', $nextMatch->round_number);
                 }
             })
             ->get();
