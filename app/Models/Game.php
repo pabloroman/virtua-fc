@@ -23,7 +23,14 @@ class Game extends Model
         'default_mentality' => 'string',
         'cup_round' => 'integer',
         'cup_eliminated' => 'boolean',
+        'is_preseason' => 'boolean',
+        'preseason_week' => 'integer',
     ];
+
+    // Pre-season configuration
+    public const PRESEASON_TOTAL_WEEKS = 7;
+    public const PRESEASON_START_MONTH = 7; // July
+    public const PRESEASON_START_DAY = 1;
 
     public function user(): BelongsTo
     {
@@ -202,5 +209,116 @@ class Game extends Model
 
         // Currently in a window
         return $this->getCurrentWindowName() ?? 'Summer';
+    }
+
+    // ==========================================
+    // Pre-season Logic
+    // ==========================================
+
+    /**
+     * Check if the game is currently in pre-season.
+     */
+    public function isInPreseason(): bool
+    {
+        return $this->is_preseason;
+    }
+
+    /**
+     * Get the current pre-season week (1-based).
+     */
+    public function getPreseasonWeek(): int
+    {
+        return $this->preseason_week;
+    }
+
+    /**
+     * Get the total number of pre-season weeks.
+     */
+    public function getPreseasonTotalWeeks(): int
+    {
+        return self::PRESEASON_TOTAL_WEEKS;
+    }
+
+    /**
+     * Get weeks remaining in pre-season.
+     */
+    public function getPreseasonWeeksRemaining(): int
+    {
+        return max(0, self::PRESEASON_TOTAL_WEEKS - $this->preseason_week);
+    }
+
+    /**
+     * Check if pre-season is complete.
+     */
+    public function isPreseasonComplete(): bool
+    {
+        return $this->preseason_week >= self::PRESEASON_TOTAL_WEEKS;
+    }
+
+    /**
+     * Start pre-season mode.
+     */
+    public function startPreseason(): void
+    {
+        $this->update([
+            'is_preseason' => true,
+            'preseason_week' => 0,
+            'current_date' => $this->getPreseasonStartDate(),
+        ]);
+    }
+
+    /**
+     * Advance pre-season by one week.
+     */
+    public function advancePreseasonWeek(): void
+    {
+        $this->increment('preseason_week');
+        $this->update([
+            'current_date' => $this->current_date->addWeek(),
+        ]);
+    }
+
+    /**
+     * End pre-season mode.
+     */
+    public function endPreseason(): void
+    {
+        $this->update([
+            'is_preseason' => false,
+            'preseason_week' => 0,
+        ]);
+    }
+
+    /**
+     * Get the pre-season start date (July 1 of the season year).
+     */
+    public function getPreseasonStartDate(): \Carbon\Carbon
+    {
+        $seasonYear = (int) $this->season;
+        return \Carbon\Carbon::createFromDate($seasonYear, self::PRESEASON_START_MONTH, self::PRESEASON_START_DAY);
+    }
+
+    /**
+     * Get the first competitive match of the season.
+     */
+    public function getFirstCompetitiveMatch(): ?GameMatch
+    {
+        return $this->matches()
+            ->where('played', false)
+            ->whereNull('cup_tie_id') // League match
+            ->orderBy('scheduled_date')
+            ->first();
+    }
+
+    /**
+     * Get pre-season progress as a percentage.
+     */
+    public function getPreseasonProgressPercent(): int
+    {
+        if (self::PRESEASON_TOTAL_WEEKS === 0) {
+            return 100;
+        }
+
+        return (int) (($this->preseason_week / self::PRESEASON_TOTAL_WEEKS) * 100);
     }
 }

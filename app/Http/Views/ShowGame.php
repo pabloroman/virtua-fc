@@ -18,6 +18,12 @@ class ShowGame
     public function __invoke(string $gameId)
     {
         $game = Game::with(['team', 'finances'])->findOrFail($gameId);
+
+        // Redirect to preseason if we're in preseason mode
+        if ($game->isInPreseason()) {
+            return redirect()->route('game.preseason', $gameId);
+        }
+
         $nextMatch = $this->loadNextMatch($game);
 
         return view('game', [

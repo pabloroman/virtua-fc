@@ -238,6 +238,12 @@ class GameProjector extends Projector
         // Note: For event replay to work fully, we would need to store more data
         // in the event and replay all processor actions here. For now, the pipeline
         // handles all mutations before the event is recorded.
+
+        // Start pre-season mode - this sets up the summer transfer window period
+        $game = Game::find($event->aggregateRootUuid());
+        if ($game) {
+            $game->startPreseason();
+        }
     }
 
     /**

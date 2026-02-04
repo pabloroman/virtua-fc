@@ -2,6 +2,7 @@
 
 use App\Http\Actions\AcceptTransferOffer;
 use App\Http\Actions\AdvanceMatchday;
+use App\Http\Actions\AdvancePreseasonWeek;
 use App\Http\Actions\ConductCupDraw;
 use App\Http\Actions\GetAutoLineup;
 use App\Http\Actions\InitGame;
@@ -21,6 +22,7 @@ use App\Http\Views\ShowCompetition;
 use App\Http\Views\ShowMatchResults;
 use App\Http\Views\ShowSquad;
 use App\Http\Views\ShowContracts;
+use App\Http\Views\ShowPreseason;
 use App\Http\Views\ShowSeasonEnd;
 use App\Http\Views\ShowSquadDevelopment;
 use App\Http\Views\ShowSquadStats;
@@ -69,6 +71,10 @@ Route::middleware('auth')->group(function () {
     // Season End
     Route::get('/game/{gameId}/season-end', ShowSeasonEnd::class)->name('game.season-end');
     Route::post('/game/{gameId}/start-new-season', StartNewSeason::class)->name('game.start-new-season');
+
+    // Pre-season
+    Route::get('/game/{gameId}/preseason', ShowPreseason::class)->name('game.preseason');
+    Route::post('/game/{gameId}/preseason/advance', AdvancePreseasonWeek::class)->name('game.preseason.advance');
 });
 
 Route::middleware('auth')->group(function () {

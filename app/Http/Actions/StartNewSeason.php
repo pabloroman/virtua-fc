@@ -37,7 +37,7 @@ class StartNewSeason
         $aggregate = GameAggregate::retrieve($gameId);
         $aggregate->startNewSeason($command);
 
-        return redirect()->route('show-game', $gameId)
-            ->with('message', "Welcome to the {$data->newSeason} season!");
+        return redirect()->route('game.preseason', $gameId)
+            ->with('message', "Welcome to the {$data->newSeason} pre-season!");
     }
 }
