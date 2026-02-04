@@ -114,6 +114,9 @@ class GameProjector extends Projector
         // Update appearances for players in the lineup
         $this->updateAppearances($match);
 
+        // Serve suspensions for players who missed this match due to suspension
+        $this->serveSuspensions($gameId, $match, $event->competitionId);
+
         // Update fitness and morale for players
         $this->updatePlayerCondition($match, $event->events);
 
@@ -273,6 +276,26 @@ class GameProjector extends Projector
 
         GamePlayer::whereIn('id', $allLineupIds)
             ->increment('season_appearances');
+    }
+
+    /**
+     * Serve suspensions for players who missed this match due to suspension.
+     * This decrements the matches_remaining for any suspended player on either team.
+     */
+    private function serveSuspensions(string $gameId, GameMatch $match, string $competitionId): void
+    {
+        // Get all players from both teams
+        $players = GamePlayer::where('game_id', $gameId)
+            ->whereIn('team_id', [$match->home_team_id, $match->away_team_id])
+            ->get();
+
+        foreach ($players as $player) {
+            // Check if this player is suspended in this competition
+            if ($player->isSuspendedInCompetition($competitionId)) {
+                // Serve one match of the suspension
+                $this->eligibilityService->serveSuspensionMatch($player, $competitionId);
+            }
+        }
     }
 
     /**
