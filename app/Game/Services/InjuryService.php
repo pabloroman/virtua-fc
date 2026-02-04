@@ -11,7 +11,7 @@ class InjuryService
     /**
      * Base injury chance per player per match (percentage).
      */
-    private const BASE_INJURY_CHANCE = 2.5;
+    private const BASE_INJURY_CHANCE = 4.0;
 
     /**
      * Injury types with duration ranges (in weeks) and position affinities.

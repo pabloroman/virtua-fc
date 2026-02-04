@@ -27,7 +27,7 @@ Most players are average, but some are naturally more fragile or resilient. An "
 
 ## Probability Calculation
 
-Base injury chance per player per match: **2.5%**
+Base injury chance per player per match: **4%**
 
 This is modified by multipliers:
 
@@ -67,11 +67,11 @@ Final Probability = Base × Durability × Age × Fitness × Congestion
 
 **Low risk player:**
 - Ironman (0.4x) + Prime age (1.0x) + Fresh (0.8x) + Normal rest (1.0x)
-- 2.5% × 0.4 × 1.0 × 0.8 × 1.0 = **0.8%** chance
+- 4% × 0.4 × 1.0 × 0.8 × 1.0 = **1.3%** chance
 
 **High risk player:**
 - Very Injury Prone (2.0x) + Veteran (1.5x) + Tired (1.5x) + Back-to-back (2.0x)
-- 2.5% × 2.0 × 1.5 × 1.5 × 2.0 = **22.5%** chance
+- 4% × 2.0 × 1.5 × 1.5 × 2.0 = **36%** chance (capped at 35%)
 
 The maximum probability is capped at **35%** to prevent certainty.
 
