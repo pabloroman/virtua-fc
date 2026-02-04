@@ -7,7 +7,6 @@ use App\Game\Contracts\CompetitionHandler;
 use App\Game\Game as GameAggregate;
 use App\Game\Services\CupDrawService;
 use App\Game\Services\CupTieResolver;
-use App\Models\CupRoundTemplate;
 use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameMatch;
@@ -40,19 +39,22 @@ class KnockoutCupHandler implements CompetitionHandler
     }
 
     /**
-     * Conduct any pending cup draws before matches are simulated.
+     * No pre-match actions needed - draws now happen after rounds complete.
      */
     public function beforeMatches(Game $game, string $targetDate): void
     {
-        $this->conductPendingCupDraws($game, $targetDate);
+        // Draws are now conducted after rounds complete, not before matches
     }
 
     /**
-     * Resolve cup ties after matches have been played.
+     * Resolve cup ties after matches have been played, then draw the next round if ready.
      */
     public function afterMatches(Game $game, Collection $matches, Collection $allPlayers): void
     {
         $this->resolveCupTies($matches, $allPlayers, $game->id);
+
+        // After resolving ties, check if next round can be drawn
+        $this->conductNextRoundDrawIfReady($game, $matches);
     }
 
     /**
@@ -80,36 +82,35 @@ class KnockoutCupHandler implements CompetitionHandler
     }
 
     /**
-     * Conduct any cup draws that are needed before the given date.
+     * Conduct the next round draw if the previous round is complete.
      */
-    private function conductPendingCupDraws(Game $game, string $targetDate): void
+    private function conductNextRoundDrawIfReady(Game $game, Collection $matches): void
     {
-        // Get all cup competitions this handler manages
-        $cupCompetitions = \App\Models\Competition::where('handler_type', 'knockout_cup')->pluck('id');
+        // Get competition ID from the matches just played
+        $competitionId = $matches->first()?->competition_id;
 
-        foreach ($cupCompetitions as $competitionId) {
-            $cupRounds = CupRoundTemplate::where('competition_id', $competitionId)
-                ->where('season', $game->season)
-                ->whereDate('first_leg_date', '<=', $targetDate)
-                ->orderBy('round_number')
-                ->get();
-
-            foreach ($cupRounds as $round) {
-                if ($this->cupDrawService->needsDrawForRound($game->id, $competitionId, $round->round_number)) {
-                    // Conduct the draw
-                    $ties = $this->cupDrawService->conductDraw($game->id, $competitionId, $round->round_number);
-
-                    // Record the event
-                    $command = new ConductCupDraw(
-                        competitionId: $competitionId,
-                        roundNumber: $round->round_number,
-                    );
-
-                    $aggregate = GameAggregate::retrieve($game->id);
-                    $aggregate->conductCupDraw($command, $ties->pluck('id')->toArray());
-                }
-            }
+        if (!$competitionId) {
+            return;
         }
+
+        // Check if next round needs a draw
+        $nextRound = $this->cupDrawService->getNextRoundNeedingDraw($game->id, $competitionId);
+
+        if ($nextRound === null) {
+            return;
+        }
+
+        // Conduct the draw
+        $ties = $this->cupDrawService->conductDraw($game->id, $competitionId, $nextRound);
+
+        // Record the event
+        $command = new ConductCupDraw(
+            competitionId: $competitionId,
+            roundNumber: $nextRound,
+        );
+
+        $aggregate = GameAggregate::retrieve($game->id);
+        $aggregate->conductCupDraw($command, $ties->pluck('id')->toArray());
     }
 
     /**

@@ -10,6 +10,7 @@ use App\Game\Events\MatchResultRecorded;
 use App\Game\Events\NewSeasonStarted;
 use App\Game\Events\SeasonDevelopmentProcessed;
 use App\Game\Services\ContractService;
+use App\Game\Services\CupDrawService;
 use App\Game\Services\EligibilityService;
 use App\Game\Services\FinancialService;
 use App\Game\Services\InjuryService;
@@ -38,6 +39,7 @@ class GameProjector extends Projector
         private readonly PlayerConditionService $conditionService,
         private readonly ContractService $contractService,
         private readonly FinancialService $financialService,
+        private readonly CupDrawService $cupDrawService,
     ) {}
 
     public function onGameCreated(GameCreated $event): void
@@ -79,6 +81,9 @@ class GameProjector extends Projector
         // Initialize club finances based on squad value
         $game = Game::find($gameId);
         $this->financialService->initializeFinances($game);
+
+        // Conduct first round cup draws for all cup competitions
+        $this->conductInitialCupDraws($gameId, $season);
     }
 
     public function onMatchdayAdvanced(MatchdayAdvanced $event): void
@@ -377,6 +382,22 @@ class GameProjector extends Projector
             ->toArray();
 
         $this->standingsCalculator->initializeStandings($gameId, $competitionId, $teamIds);
+    }
+
+    /**
+     * Conduct first round cup draws for all cup competitions.
+     */
+    private function conductInitialCupDraws(string $gameId, string $season): void
+    {
+        // Get all cup competitions
+        $cupCompetitions = \App\Models\Competition::where('handler_type', 'knockout_cup')->get();
+
+        foreach ($cupCompetitions as $competition) {
+            // Check if first round draw is needed
+            if ($this->cupDrawService->needsDrawForRound($gameId, $competition->id, 1)) {
+                $this->cupDrawService->conductDraw($gameId, $competition->id, 1);
+            }
+        }
     }
 
     /**
