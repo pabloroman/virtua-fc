@@ -469,8 +469,8 @@
                                                 </tr>
                                                 @foreach($group['players'] as $player)
                                                     @php
-                                                        $isUnavailable = !$player->isAvailable($matchDate, $matchday);
-                                                        $unavailabilityReason = $player->getUnavailabilityReason($matchDate, $matchday);
+                                                        $isUnavailable = !$player->isAvailable($matchDate, $competitionId);
+                                                        $unavailabilityReason = $player->getUnavailabilityReason($matchDate, $competitionId);
                                                         $positionDisplay = $player->position_display;
                                                     @endphp
                                                     <tr

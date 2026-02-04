@@ -24,16 +24,16 @@ class GetAutoLineup
         $formationValue = $request->input('formation', '4-4-2');
         $formation = Formation::tryFrom($formationValue) ?? Formation::F_4_4_2;
 
-        // Determine matchday
-        $matchday = $match->round_number ?? $game->current_matchday + 1;
+        // Get match details for availability checks
         $matchDate = $match->scheduled_date;
+        $competitionId = $match->competition_id;
 
         // Get auto-selected lineup for the formation
         $autoLineup = $this->lineupService->autoSelectLineup(
             $gameId,
             $game->team_id,
             $matchDate,
-            $matchday,
+            $competitionId,
             $formation
         );
 

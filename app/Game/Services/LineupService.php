@@ -15,13 +15,13 @@ class LineupService
     /**
      * Get available players (not injured/suspended) for a team.
      */
-    public function getAvailablePlayers(string $gameId, string $teamId, Carbon $matchDate, int $matchday): Collection
+    public function getAvailablePlayers(string $gameId, string $teamId, Carbon $matchDate, string $competitionId): Collection
     {
         return GamePlayer::with('player')
             ->where('game_id', $gameId)
             ->where('team_id', $teamId)
             ->get()
-            ->filter(fn (GamePlayer $player) => $player->isAvailable($matchDate, $matchday));
+            ->filter(fn (GamePlayer $player) => $player->isAvailable($matchDate, $competitionId));
     }
 
     /**
@@ -43,7 +43,7 @@ class LineupService
         string $gameId,
         string $teamId,
         Carbon $matchDate,
-        int $matchday,
+        string $competitionId,
         ?Formation $formation = null
     ): array {
         $formation = $formation ?? Formation::F_4_4_2;
@@ -60,7 +60,7 @@ class LineupService
             return $errors;
         }
 
-        $availablePlayers = $this->getAvailablePlayers($gameId, $teamId, $matchDate, $matchday);
+        $availablePlayers = $this->getAvailablePlayers($gameId, $teamId, $matchDate, $competitionId);
         $availableIds = $availablePlayers->pluck('id')->toArray();
 
         foreach ($playerIds as $playerId) {
@@ -92,11 +92,11 @@ class LineupService
         string $gameId,
         string $teamId,
         Carbon $matchDate,
-        int $matchday,
+        string $competitionId,
         ?Formation $formation = null
     ): array {
         return $this->selectBestXI(
-            $this->getAvailablePlayers($gameId, $teamId, $matchDate, $matchday),
+            $this->getAvailablePlayers($gameId, $teamId, $matchDate, $competitionId),
             $formation
         )->pluck('id')->toArray();
     }
@@ -167,10 +167,10 @@ class LineupService
         string $gameId,
         string $teamId,
         Carbon $matchDate,
-        int $matchday,
+        string $competitionId,
         ?Formation $formation = null
     ): array {
-        $available = $this->getAvailablePlayers($gameId, $teamId, $matchDate, $matchday);
+        $available = $this->getAvailablePlayers($gameId, $teamId, $matchDate, $competitionId);
         $bestXI = $this->selectBestXI($available, $formation);
 
         return [
@@ -188,19 +188,19 @@ class LineupService
         string $gameId,
         string $teamId,
         Carbon $matchDate,
-        int $matchday,
+        string $competitionId,
         ?Formation $formation = null,
         ?array $preferredLineup = null
     ): array {
         // If no preferred lineup, fall back to auto-select
         if (empty($preferredLineup)) {
-            return $this->autoSelectLineup($gameId, $teamId, $matchDate, $matchday, $formation);
+            return $this->autoSelectLineup($gameId, $teamId, $matchDate, $competitionId, $formation);
         }
 
         $formation = $formation ?? Formation::F_4_4_2;
         $requirements = $formation->requirements();
 
-        $available = $this->getAvailablePlayers($gameId, $teamId, $matchDate, $matchday);
+        $available = $this->getAvailablePlayers($gameId, $teamId, $matchDate, $competitionId);
         $availableIds = $available->pluck('id')->toArray();
 
         // Separate preferred players into available and unavailable
@@ -364,7 +364,7 @@ class LineupService
         string $teamId,
         string $currentMatchId,
         Carbon $matchDate,
-        int $matchday
+        string $competitionId
     ): array {
         // Find the most recent played match for this team
         $previousMatch = GameMatch::where('game_id', $gameId)
@@ -390,7 +390,7 @@ class LineupService
         }
 
         // Filter out players who are no longer available
-        $availablePlayers = $this->getAvailablePlayers($gameId, $teamId, $matchDate, $matchday);
+        $availablePlayers = $this->getAvailablePlayers($gameId, $teamId, $matchDate, $competitionId);
         $availableIds = $availablePlayers->pluck('id')->toArray();
 
         $filteredLineup = array_values(array_filter(
@@ -417,15 +417,15 @@ class LineupService
         $playerMentality = $game->default_mentality ?? 'balanced';
 
         foreach ($matches as $match) {
-            $matchday = $match->round_number ?? $game->current_matchday + 1;
             $matchDate = $match->scheduled_date;
+            $competitionId = $match->competition_id;
 
             $this->ensureTeamLineup(
                 $match,
                 $game,
                 'home',
                 $matchDate,
-                $matchday,
+                $competitionId,
                 $playerFormation,
                 $playerPreferredLineup,
                 $playerMentality
@@ -436,7 +436,7 @@ class LineupService
                 $game,
                 'away',
                 $matchDate,
-                $matchday,
+                $competitionId,
                 $playerFormation,
                 $playerPreferredLineup,
                 $playerMentality
@@ -452,7 +452,7 @@ class LineupService
         Game $game,
         string $side,
         $matchDate,
-        int $matchday,
+        string $competitionId,
         ?Formation $playerFormation,
         ?array $playerPreferredLineup,
         string $playerMentality
@@ -472,7 +472,7 @@ class LineupService
                 $game->id,
                 $teamId,
                 $matchDate,
-                $matchday,
+                $competitionId,
                 $playerFormation,
                 $playerPreferredLineup
             );
@@ -481,7 +481,7 @@ class LineupService
                 $game->id,
                 $teamId,
                 $matchDate,
-                $matchday
+                $competitionId
             );
         }
 

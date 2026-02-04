@@ -232,14 +232,15 @@ class GamePlayer extends Model
 
     /**
      * Check if player is available for selection (not injured or suspended).
+     *
+     * @param Carbon|null $gameDate Date of the match (for injury check)
+     * @param string|null $competitionId Competition ID (for suspension check)
      */
-    public function isAvailable(?Carbon $gameDate = null, ?int $matchday = null): bool
+    public function isAvailable(?Carbon $gameDate = null, ?string $competitionId = null): bool
     {
-        // Check suspension
-        if ($matchday !== null && $this->suspended_until_matchday !== null) {
-            if ($this->suspended_until_matchday > $matchday) {
-                return false;
-            }
+        // Check competition-specific suspension
+        if ($competitionId !== null && PlayerSuspension::isSuspended($this->id, $competitionId)) {
+            return false;
         }
 
         // Check injury
@@ -251,11 +252,19 @@ class GamePlayer extends Model
     }
 
     /**
-     * Check if player is suspended for a given matchday.
+     * Check if player is suspended for a given competition.
      */
-    public function isSuspended(int $matchday): bool
+    public function isSuspendedInCompetition(string $competitionId): bool
     {
-        return $this->suspended_until_matchday !== null && $this->suspended_until_matchday > $matchday;
+        return PlayerSuspension::isSuspended($this->id, $competitionId);
+    }
+
+    /**
+     * Get matches remaining in suspension for a competition.
+     */
+    public function getSuspensionMatchesRemaining(string $competitionId): int
+    {
+        return PlayerSuspension::getMatchesRemaining($this->id, $competitionId);
     }
 
     /**
@@ -273,11 +282,14 @@ class GamePlayer extends Model
 
     /**
      * Get the unavailability reason if player is not available.
+     *
+     * @param Carbon|null $gameDate Date of the match (for injury check)
+     * @param string|null $competitionId Competition ID (for suspension check)
      */
-    public function getUnavailabilityReason(?Carbon $gameDate = null, ?int $matchday = null): ?string
+    public function getUnavailabilityReason(?Carbon $gameDate = null, ?string $competitionId = null): ?string
     {
-        if ($matchday !== null && $this->isSuspended($matchday)) {
-            $remaining = $this->suspended_until_matchday - $matchday;
+        if ($competitionId !== null && $this->isSuspendedInCompetition($competitionId)) {
+            $remaining = $this->getSuspensionMatchesRemaining($competitionId);
             return "Suspended ({$remaining} match" . ($remaining > 1 ? 'es' : '') . ")";
         }
 

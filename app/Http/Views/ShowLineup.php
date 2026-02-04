@@ -30,9 +30,9 @@ class ShowLineup
         // Get all players (including unavailable for display)
         $allPlayers = $this->lineupService->getAllPlayers($gameId, $game->team_id);
 
-        // Determine matchday for suspension check
-        $matchday = $match->round_number ?? $game->current_matchday + 1;
+        // Get match date and competition for availability checks
         $matchDate = $match->scheduled_date;
+        $competitionId = $match->competition_id;
 
         // Group and sort players by position
         $players = $allPlayers
@@ -53,7 +53,7 @@ class ShowLineup
                 $game->team_id,
                 $matchId,
                 $matchDate,
-                $matchday
+                $competitionId
             );
             $currentLineup = $previous['lineup'];
             // Use previous formation if available, otherwise default
@@ -69,7 +69,7 @@ class ShowLineup
         $currentMentality = $currentMentality ?? $defaultMentality;
 
         // Get auto-selected lineup for quick select (using current formation)
-        $autoLineup = $this->lineupService->autoSelectLineup($gameId, $game->team_id, $matchDate, $matchday, $formationEnum);
+        $autoLineup = $this->lineupService->autoSelectLineup($gameId, $game->team_id, $matchDate, $competitionId, $formationEnum);
 
         // If still no lineup (first match ever), use auto lineup
         if (empty($currentLineup)) {
@@ -90,7 +90,7 @@ class ShowLineup
             'physicalAbility' => $p->physical_ability,
             'fitness' => $p->fitness,
             'morale' => $p->morale,
-            'isAvailable' => $p->isAvailable($matchDate, $matchday),
+            'isAvailable' => $p->isAvailable($matchDate, $competitionId),
         ])->keyBy('id')->toArray();
 
         // Prepare pitch slots for each formation
@@ -103,14 +103,14 @@ class ShowLineup
         $slotCompatibility = PositionSlotMapper::SLOT_COMPATIBILITY;
 
         // Get opponent scouting data
-        $opponentData = $this->getOpponentData($gameId, $opponent->id, $matchDate, $matchday);
+        $opponentData = $this->getOpponentData($gameId, $opponent->id, $matchDate, $competitionId);
 
         return view('lineup', [
             'game' => $game,
             'match' => $match,
             'isHome' => $isHome,
             'opponent' => $opponent,
-            'matchday' => $matchday,
+            'competitionId' => $competitionId,
             'matchDate' => $matchDate,
             'goalkeepers' => $players->get('Goalkeeper', collect()),
             'defenders' => $players->get('Defender', collect()),
@@ -134,7 +134,7 @@ class ShowLineup
     /**
      * Get opponent scouting data.
      */
-    private function getOpponentData(string $gameId, string $opponentTeamId, $matchDate, int $matchday): array
+    private function getOpponentData(string $gameId, string $opponentTeamId, $matchDate, string $competitionId): array
     {
         // Get opponent's players
         $opponentPlayers = GamePlayer::with('player')
@@ -147,7 +147,7 @@ class ShowLineup
             $gameId,
             $opponentTeamId,
             $matchDate,
-            $matchday
+            $competitionId
         );
 
         // Get their top scorer
@@ -182,7 +182,7 @@ class ShowLineup
 
         // Count unavailable players
         $injuredCount = $opponentPlayers->filter(fn($p) => $p->isInjured($matchDate))->count();
-        $suspendedCount = $opponentPlayers->filter(fn($p) => $p->isSuspended($matchday))->count();
+        $suspendedCount = $opponentPlayers->filter(fn($p) => $p->isSuspendedInCompetition($competitionId))->count();
 
         return [
             'teamAverage' => $bestXIData['average'],

@@ -159,7 +159,7 @@
                                     @foreach($squadAlerts['suspended'] as $alert)
                                     <div class="flex items-center justify-between text-sm pl-6 py-1">
                                         <span class="text-slate-700">{{ $alert['player']->name }}</span>
-                                        <span class="text-slate-400 text-xs">{{ $alert['matchesRemaining'] }}m</span>
+                                        <span class="text-slate-400 text-xs">{{ $alert['matchesRemaining'] }}m ({{ $alert['competition'] }})</span>
                                     </div>
                                     @endforeach
                                 </div>

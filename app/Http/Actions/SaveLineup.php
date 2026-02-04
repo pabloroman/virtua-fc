@@ -34,9 +34,9 @@ class SaveLineup
         // Ensure we have an array of strings
         $playerIds = array_values(array_filter((array) $playerIds));
 
-        // Determine matchday for validation
-        $matchday = $match->round_number ?? $game->current_matchday + 1;
+        // Get match details for validation
         $matchDate = $match->scheduled_date;
+        $competitionId = $match->competition_id;
 
         // Validate the lineup against the formation
         $errors = $this->lineupService->validateLineup(
@@ -44,7 +44,7 @@ class SaveLineup
             $gameId,
             $game->team_id,
             $matchDate,
-            $matchday,
+            $competitionId,
             $formation
         );
 

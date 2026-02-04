@@ -109,7 +109,7 @@ class GameProjector extends Projector
         ]);
 
         // Store match events and update player stats
-        $this->processMatchEvents($gameId, $event->matchId, $event->events, $event->matchday, $match->scheduled_date);
+        $this->processMatchEvents($gameId, $event->matchId, $event->events, $event->competitionId, $match->scheduled_date);
 
         // Update appearances for players in the lineup
         $this->updateAppearances($match);
@@ -189,7 +189,7 @@ class GameProjector extends Projector
     /**
      * Process match events: store them and update player stats.
      */
-    private function processMatchEvents(string $gameId, string $matchId, array $events, int $matchday, $matchDate): void
+    private function processMatchEvents(string $gameId, string $matchId, array $events, string $competitionId, $matchDate): void
     {
         foreach ($events as $eventData) {
             // Store the event
@@ -225,17 +225,17 @@ class GameProjector extends Projector
 
                 case 'yellow_card':
                     $player->increment('yellow_cards');
-                    // Check for yellow card accumulation suspension
+                    // Check for yellow card accumulation suspension (applies to this competition)
                     $suspension = $this->eligibilityService->checkYellowCardAccumulation($player->fresh());
                     if ($suspension) {
-                        $this->eligibilityService->applySuspension($player, $suspension, $matchday);
+                        $this->eligibilityService->applySuspension($player, $suspension, $competitionId);
                     }
                     break;
 
                 case 'red_card':
                     $player->increment('red_cards');
                     $isSecondYellow = $eventData['metadata']['second_yellow'] ?? false;
-                    $this->eligibilityService->processRedCard($player, $isSecondYellow, $matchday);
+                    $this->eligibilityService->processRedCard($player, $isSecondYellow, $competitionId);
                     break;
 
                 case 'injury':

@@ -6,6 +6,7 @@ use App\Game\Contracts\SeasonEndProcessor;
 use App\Game\DTO\SeasonTransitionData;
 use App\Models\Game;
 use App\Models\GamePlayer;
+use App\Models\PlayerSuspension;
 
 /**
  * Resets player and game stats for the new season.
@@ -23,6 +24,10 @@ class StatsResetProcessor implements SeasonEndProcessor
         // Reset all player stats for the game
         // We need to iterate because fitness/morale need random values
         $players = GamePlayer::where('game_id', $game->id)->get();
+        $playerIds = $players->pluck('id')->toArray();
+
+        // Clear all competition-specific suspensions
+        PlayerSuspension::whereIn('game_player_id', $playerIds)->delete();
 
         foreach ($players as $player) {
             $player->update([
@@ -35,7 +40,7 @@ class StatsResetProcessor implements SeasonEndProcessor
                 'goals_conceded' => 0,
                 'clean_sheets' => 0,
                 'season_appearances' => 0,
-                'suspended_until_matchday' => null,
+                'suspended_until_matchday' => null, // Legacy field, clear just in case
                 'injury_until' => null,
                 'injury_type' => null,
                 'fitness' => rand(90, 100),

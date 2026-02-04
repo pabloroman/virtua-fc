@@ -5,6 +5,7 @@ namespace App\Game\Services;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
+use App\Models\PlayerSuspension;
 use App\Models\TransferOffer;
 
 class AlertService
@@ -29,7 +30,6 @@ class AlertService
     public function getSquadAlerts(Game $game, ?GameMatch $nextMatch): array
     {
         $currentDate = $game->current_date;
-        $nextMatchday = $nextMatch?->round_number ?? $game->current_matchday + 1;
 
         $players = GamePlayer::with('player')
             ->where('game_id', $game->id)
@@ -45,8 +45,8 @@ class AlertService
 
         foreach ($players as $player) {
             $this->checkInjury($player, $currentDate, $alerts);
-            $this->checkSuspension($player, $nextMatchday, $alerts);
-            $this->checkLowFitness($player, $currentDate, $nextMatchday, $alerts);
+            $this->checkSuspension($player, $alerts);
+            $this->checkLowFitness($player, $currentDate, $alerts);
             $this->checkYellowCardRisk($player, $alerts);
         }
 
@@ -102,21 +102,27 @@ class AlertService
         }
     }
 
-    private function checkSuspension(GamePlayer $player, int $nextMatchday, array &$alerts): void
+    private function checkSuspension(GamePlayer $player, array &$alerts): void
     {
-        if ($player->suspended_until_matchday && $player->suspended_until_matchday > $nextMatchday) {
+        // Get all active suspensions for this player
+        $suspensions = PlayerSuspension::where('game_player_id', $player->id)
+            ->where('matches_remaining', '>', 0)
+            ->with('competition')
+            ->get();
+
+        foreach ($suspensions as $suspension) {
             $alerts['suspended'][] = [
                 'player' => $player,
-                'matchesRemaining' => $player->suspended_until_matchday - $nextMatchday,
+                'matchesRemaining' => $suspension->matches_remaining,
+                'competition' => $suspension->competition?->name ?? 'Unknown',
             ];
         }
     }
 
-    private function checkLowFitness(GamePlayer $player, $currentDate, int $nextMatchday, array &$alerts): void
+    private function checkLowFitness(GamePlayer $player, $currentDate, array &$alerts): void
     {
         if ($player->fitness < self::LOW_FITNESS_THRESHOLD &&
-            !$player->isInjured($currentDate) &&
-            !$player->isSuspended($nextMatchday)) {
+            !$player->isInjured($currentDate)) {
             $alerts['lowFitness'][] = [
                 'player' => $player,
                 'fitness' => $player->fitness,
