@@ -20,7 +20,7 @@ class ConductCupDraw
 
         // Check if draw is needed
         if (!$this->cupDrawService->needsDrawForRound($gameId, $competitionId, $round)) {
-            return redirect()->route('game.cup', $gameId)
+            return redirect()->route('game.competition', [$gameId, $competitionId])
                 ->with('error', 'Draw not needed for this round');
         }
 
@@ -36,7 +36,7 @@ class ConductCupDraw
         $aggregate = GameAggregate::retrieve($gameId);
         $aggregate->conductCupDraw($command, $ties->pluck('id')->toArray());
 
-        return redirect()->route('game.cup', $gameId)
+        return redirect()->route('game.competition', [$gameId, $competitionId])
             ->with('message', "Round {$round} draw conducted: {$ties->count()} ties created");
     }
 }

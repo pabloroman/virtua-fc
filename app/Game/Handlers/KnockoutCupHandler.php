@@ -70,7 +70,8 @@ class KnockoutCupHandler implements CompetitionHandler
 
         // Only show cup page if player's team was involved and not eliminated
         if ($playerTeamPlayed && !$game->cup_eliminated) {
-            return route('game.cup', $game->id);
+            $competitionId = $matches->first()?->competition_id ?? 'ESPCUP';
+            return route('game.competition', [$game->id, $competitionId]);
         }
 
         // If player didn't participate in these cup matches, go to dashboard
