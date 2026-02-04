@@ -482,117 +482,107 @@ class GameProjector extends Projector
 
     /**
      * Initialize game players for all teams in the competition.
-     * Reads career data (position, market value, contract) from JSON files.
+     * Reads from data/{season}/{competitionId}/teams.json with embedded players.
      */
     private function initializeGamePlayers(string $gameId, string $competitionId, string $season): void
     {
-        // Get competition data path
-        $basePath = base_path("data/{$competitionId}/{$season}");
-        $playersPath = "{$basePath}/players";
-
-        if (!is_dir($playersPath)) {
+        $teamsFilePath = base_path("data/{$season}/{$competitionId}/teams.json");
+        if (!file_exists($teamsFilePath)) {
             return;
         }
 
-        // Get minimum wage for this competition
         $minimumWage = $this->contractService->getMinimumWageForCompetition($competitionId);
+        $data = json_decode(file_get_contents($teamsFilePath), true);
+        $clubs = $data['clubs'] ?? [];
 
-        // Get all teams in this competition
-        $teams = Team::whereHas('competitions', function ($query) use ($competitionId, $season) {
-            $query->where('competition_id', $competitionId)
-                ->where('competition_teams.season', $season);
-        })->get();
+        foreach ($clubs as $club) {
+            $transfermarktId = $club['transfermarktId'] ?? null;
+            if (!$transfermarktId) {
+                continue;
+            }
 
-        foreach ($teams as $team) {
-            $this->initializeTeamPlayers($gameId, $team, $playersPath, $minimumWage);
+            $team = Team::where('transfermarkt_id', $transfermarktId)->first();
+            if (!$team) {
+                continue;
+            }
+
+            $playersData = $club['players'] ?? [];
+            foreach ($playersData as $playerData) {
+                $this->createGamePlayer($gameId, $team, $playerData, $minimumWage);
+            }
         }
     }
 
     /**
-     * Initialize game players for a specific team from JSON data.
+     * Create a game player from player data.
      */
-    private function initializeTeamPlayers(string $gameId, Team $team, string $playersPath, int $minimumWage): void
+    private function createGamePlayer(string $gameId, Team $team, array $playerData, int $minimumWage): void
     {
-        if (!$team->transfermarkt_id) {
+        // Find the reference player by transfermarkt_id
+        $player = Player::where('transfermarkt_id', $playerData['id'])->first();
+        if (!$player) {
             return;
         }
 
-        $playerFile = "{$playersPath}/{$team->transfermarkt_id}.json";
-        if (!file_exists($playerFile)) {
-            return;
+        // Parse contract date
+        $contractUntil = null;
+        if (!empty($playerData['contract'])) {
+            try {
+                $contractUntil = Carbon::parse($playerData['contract'])->toDateString();
+            } catch (\Exception $e) {
+                // Ignore invalid dates
+            }
         }
 
-        $data = json_decode(file_get_contents($playerFile), true);
-        $playersData = $data['players'] ?? [];
-
-        foreach ($playersData as $playerData) {
-            // Find the reference player by transfermarkt_id
-            $player = Player::where('transfermarkt_id', $playerData['id'])->first();
-            if (!$player) {
-                continue;
+        // Parse joined date
+        $joinedOn = null;
+        if (!empty($playerData['joinedOn'])) {
+            try {
+                $joinedOn = Carbon::parse($playerData['joinedOn'])->toDateString();
+            } catch (\Exception $e) {
+                // Ignore invalid dates
             }
-
-            // Parse contract date
-            $contractUntil = null;
-            if (!empty($playerData['contract'])) {
-                try {
-                    $contractUntil = Carbon::parse($playerData['contract'])->toDateString();
-                } catch (\Exception $e) {
-                    // Ignore invalid dates
-                }
-            }
-
-            // Parse joined date
-            $joinedOn = null;
-            if (!empty($playerData['joinedOn'])) {
-                try {
-                    $joinedOn = Carbon::parse($playerData['joinedOn'])->toDateString();
-                } catch (\Exception $e) {
-                    // Ignore invalid dates
-                }
-            }
-
-            // Parse market value to cents
-            $marketValueCents = $this->parseMarketValue($playerData['marketValue'] ?? null);
-
-            // Calculate annual wage based on market value, minimum, and age
-            // Age affects wage: young players have rookie contracts, veterans have legacy contracts
-            $annualWage = $this->contractService->calculateAnnualWage($marketValueCents, $minimumWage, $player->age);
-
-            // Calculate current ability and generate potential
-            $currentAbility = (int) round(
-                ($player->technical_ability + $player->physical_ability) / 2
-            );
-            $potentialData = $this->developmentService->generatePotential(
-                $player->age,
-                $currentAbility
-            );
-
-            // Create game player with career data snapshot and development fields
-            GamePlayer::create([
-                'id' => Str::uuid()->toString(),
-                'game_id' => $gameId,
-                'player_id' => $player->id,
-                'team_id' => $team->id,
-                'position' => $playerData['position'] ?? 'Unknown',
-                'market_value' => $playerData['marketValue'] ?? null,
-                'market_value_cents' => $marketValueCents,
-                'contract_until' => $contractUntil,
-                'annual_wage' => $annualWage,
-                'signed_from' => $playerData['signedFrom'] ?? null,
-                'joined_on' => $joinedOn,
-                'fitness' => rand(90, 100),
-                'morale' => rand(65, 80),
-                'durability' => InjuryService::generateDurability(),
-                // Development fields
-                'game_technical_ability' => $player->technical_ability,
-                'game_physical_ability' => $player->physical_ability,
-                'potential' => $potentialData['potential'],
-                'potential_low' => $potentialData['low'],
-                'potential_high' => $potentialData['high'],
-                'season_appearances' => 0,
-            ]);
         }
+
+        // Parse market value to cents
+        $marketValueCents = $this->parseMarketValue($playerData['marketValue'] ?? null);
+
+        // Calculate annual wage based on market value, minimum, and age
+        $annualWage = $this->contractService->calculateAnnualWage($marketValueCents, $minimumWage, $player->age);
+
+        // Calculate current ability and generate potential
+        $currentAbility = (int) round(
+            ($player->technical_ability + $player->physical_ability) / 2
+        );
+        $potentialData = $this->developmentService->generatePotential(
+            $player->age,
+            $currentAbility
+        );
+
+        // Create game player with career data snapshot and development fields
+        GamePlayer::create([
+            'id' => Str::uuid()->toString(),
+            'game_id' => $gameId,
+            'player_id' => $player->id,
+            'team_id' => $team->id,
+            'position' => $playerData['position'] ?? 'Unknown',
+            'market_value' => $playerData['marketValue'] ?? null,
+            'market_value_cents' => $marketValueCents,
+            'contract_until' => $contractUntil,
+            'annual_wage' => $annualWage,
+            'signed_from' => $playerData['signedFrom'] ?? null,
+            'joined_on' => $joinedOn,
+            'fitness' => rand(90, 100),
+            'morale' => rand(65, 80),
+            'durability' => InjuryService::generateDurability(),
+            // Development fields
+            'game_technical_ability' => $player->technical_ability,
+            'game_physical_ability' => $player->physical_ability,
+            'potential' => $potentialData['potential'],
+            'potential_low' => $potentialData['low'],
+            'potential_high' => $potentialData['high'],
+            'season_appearances' => 0,
+        ]);
     }
 
     /**

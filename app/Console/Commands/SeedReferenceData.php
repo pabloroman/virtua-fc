@@ -14,36 +14,36 @@ class SeedReferenceData extends Command
 {
     protected $signature = 'app:seed-reference-data {--fresh : Clear existing data before seeding}';
 
-    protected $description = 'Seed teams, competitions, fixtures, and players from JSON data files';
+    protected $description = 'Seed teams, competitions, fixtures, and players from 2025 season JSON data files';
 
     private array $competitionsToSeed = [
         [
             'code' => 'ESP1',
-            'path' => 'data/ESP1/2024',
+            'path' => 'data/2025/ESP1',
             'tier' => 1,
             'handler' => 'league',
             'minimum_annual_wage' => 20_000_000, // €200,000 in cents (La Liga minimum)
         ],
         [
             'code' => 'ESP2',
-            'path' => 'data/ESP2/2024',
+            'path' => 'data/2025/ESP2',
             'tier' => 2,
             'handler' => 'league_with_playoff',
             'minimum_annual_wage' => 10_000_000, // €100,000 in cents (La Liga 2 minimum)
         ],
         [
             'code' => 'ESPSUP',
-            'path' => 'data/transfermarkt/ESPSUP/2024',
+            'path' => 'data/2025/ESPSUP',
             'tier' => 0,
             'handler' => 'knockout_cup',
-            'minimum_annual_wage' => null, // Cups don't have minimums; use team's league minimum
+            'minimum_annual_wage' => null,
         ],
         [
             'code' => 'ESPCUP',
-            'path' => 'data/transfermarkt/ESPCUP/2024',
+            'path' => 'data/2025/ESPCUP',
             'tier' => 0,
             'handler' => 'knockout_cup',
-            'minimum_annual_wage' => null, // Cups don't have minimums; use team's league minimum
+            'minimum_annual_wage' => null,
         ],
     ];
 
@@ -66,7 +66,7 @@ class SeedReferenceData extends Command
 
     private function createDefaultUser(): void
     {
-        $user = User::firstOrCreate(
+        User::firstOrCreate(
             ['email' => 'test@test.com'],
             [
                 'name' => 'Test User',
@@ -81,17 +81,15 @@ class SeedReferenceData extends Command
     {
         $this->info('Clearing existing reference data...');
 
-        // Clear game-scoped tables first (they reference both games and reference tables)
+        // Clear game-scoped tables first
         DB::table('game_players')->delete();
         DB::table('match_events')->delete();
         DB::table('cup_ties')->delete();
-
-        // Clear other game-scoped tables
         DB::table('game_standings')->delete();
         DB::table('game_matches')->delete();
         DB::table('games')->delete();
 
-        // Clear reference tables in correct order
+        // Clear reference tables
         DB::table('cup_round_templates')->delete();
         DB::table('fixture_templates')->delete();
         DB::table('competition_teams')->delete();
@@ -110,7 +108,6 @@ class SeedReferenceData extends Command
         $handler = $config['handler'] ?? 'league';
         $minimumAnnualWage = $config['minimum_annual_wage'] ?? null;
 
-        // Derive competition type from handler
         $isCup = in_array($handler, ['knockout_cup', 'group_stage_cup']);
 
         $this->info("Seeding {$code}...");
@@ -124,32 +121,29 @@ class SeedReferenceData extends Command
 
     private function seedLeagueCompetition(string $basePath, string $code, int $tier, string $handler, ?int $minimumAnnualWage): void
     {
-        // Load competition metadata
-        $competitionData = $this->loadJson("{$basePath}/competition.json");
         $teamsData = $this->loadJson("{$basePath}/teams.json");
         $fixturesData = $this->loadJson("{$basePath}/fixtures.json");
 
-        // Seed competition
-        $this->seedCompetitionRecord($code, $competitionData, $tier, 'league', $handler, $minimumAnnualWage);
+        // Seed competition record
+        $this->seedCompetitionRecord($code, $teamsData, $tier, 'league', $handler, $minimumAnnualWage);
 
-        // Seed teams
-        $this->seedTeams($teamsData['clubs'], $code, $competitionData['seasonID']);
+        // Build team ID mapping (transfermarktId -> UUID)
+        $teamIdMap = $this->seedTeams($teamsData['clubs'], $code, $teamsData['seasonID']);
 
-        // Seed players
-        $this->seedPlayers($basePath, $teamsData['clubs']);
+        // Seed players (embedded in teams data)
+        $this->seedPlayersFromTeams($teamsData['clubs'], $teamIdMap);
 
         // Seed fixtures
-        $this->seedFixtures($fixturesData['matchdays'], $code, $competitionData['seasonID']);
+        $this->seedFixtures($fixturesData['matchdays'], $code, $teamsData['seasonID'], $teamIdMap);
     }
 
     private function seedCupCompetition(string $basePath, string $code, int $tier, string $handler, ?int $minimumAnnualWage): void
     {
-        // Load cup data
         $teamsData = $this->loadJson("{$basePath}/teams.json");
         $roundsData = $this->loadJson("{$basePath}/rounds.json");
         $matchdaysData = $this->loadJson("{$basePath}/matchdays.json");
 
-        $season = $teamsData['seasonID'] ?? '2024';
+        $season = '2025';
 
         // Seed competition record
         $this->seedCompetitionRecord($code, $teamsData, $tier, 'cup', $handler, $minimumAnnualWage);
@@ -157,12 +151,14 @@ class SeedReferenceData extends Command
         // Seed cup round templates
         $this->seedCupRoundTemplates($code, $season, $roundsData, $matchdaysData);
 
-        // Seed teams with entry rounds (no fixtures for cups - draws happen dynamically)
+        // Seed cup teams (link existing teams to cup)
         $this->seedCupTeams($teamsData['clubs'], $code, $season);
     }
 
     private function seedCompetitionRecord(string $code, array $data, int $tier, string $type, string $handler, ?int $minimumAnnualWage): void
     {
+        $season = $data['seasonID'] ?? '2025';
+
         DB::table('competitions')->updateOrInsert(
             ['id' => $code],
             [
@@ -171,7 +167,7 @@ class SeedReferenceData extends Command
                 'tier' => $tier,
                 'type' => $type,
                 'handler_type' => $handler,
-                'season' => $data['seasonID'],
+                'season' => $season,
                 'minimum_annual_wage' => $minimumAnnualWage,
             ]
         );
@@ -182,35 +178,56 @@ class SeedReferenceData extends Command
         $this->line("  Competition: {$data['name']} ({$wageDisplay})");
     }
 
-    private function seedTeams(array $clubs, string $competitionId, string $season): void
+    /**
+     * Seed teams and return mapping of transfermarktId -> UUID.
+     */
+    private function seedTeams(array $clubs, string $competitionId, string $season): array
     {
+        $teamIdMap = [];
         $count = 0;
 
         foreach ($clubs as $club) {
-            // Parse stadium seats (remove dots from Spanish number format)
-            $stadiumSeats = isset($club['stadiumSeats'])
-                ? (int) str_replace('.', '', $club['stadiumSeats'])
-                : 0;
+            $transfermarktId = $club['transfermarktId'] ?? null;
+            if (!$transfermarktId) {
+                $this->warn("  Skipping club without transfermarktId: {$club['name']}");
+                continue;
+            }
 
-            // Insert or update team
-            DB::table('teams')->updateOrInsert(
-                ['id' => $club['id']],
-                [
-                    'transfermarkt_id' => $club['transfermarktId'] ?? null,
+            // Check if team already exists
+            $existingTeam = DB::table('teams')
+                ->where('transfermarkt_id', $transfermarktId)
+                ->first();
+
+            if ($existingTeam) {
+                $teamId = $existingTeam->id;
+            } else {
+                $teamId = Str::uuid()->toString();
+
+                // Parse stadium seats
+                $stadiumSeats = isset($club['stadiumSeats'])
+                    ? (int) str_replace(['.', ','], '', $club['stadiumSeats'])
+                    : 0;
+
+                DB::table('teams')->insert([
+                    'id' => $teamId,
+                    'transfermarkt_id' => $transfermarktId,
                     'name' => $club['name'],
                     'country' => 'ES',
                     'image' => $club['image'] ?? null,
                     'stadium_name' => $club['stadiumName'] ?? null,
                     'stadium_seats' => $stadiumSeats,
+                    'created_at' => now(),
                     'updated_at' => now(),
-                ]
-            );
+                ]);
+            }
+
+            $teamIdMap[$transfermarktId] = $teamId;
 
             // Link team to competition
             DB::table('competition_teams')->updateOrInsert(
                 [
                     'competition_id' => $competitionId,
-                    'team_id' => $club['id'],
+                    'team_id' => $teamId,
                     'season' => $season,
                 ],
                 []
@@ -220,32 +237,24 @@ class SeedReferenceData extends Command
         }
 
         $this->line("  Teams: {$count}");
+
+        return $teamIdMap;
     }
 
-    private function seedPlayers(string $basePath, array $clubs): void
+    /**
+     * Seed players from embedded team data.
+     */
+    private function seedPlayersFromTeams(array $clubs, array $teamIdMap): void
     {
-        $playersPath = "{$basePath}/players";
         $count = 0;
-
-        if (!is_dir($playersPath)) {
-            $this->warn("  No players directory found at {$playersPath}");
-            return;
-        }
 
         foreach ($clubs as $club) {
             $transfermarktId = $club['transfermarktId'] ?? null;
-            if (!$transfermarktId) {
+            if (!$transfermarktId || !isset($teamIdMap[$transfermarktId])) {
                 continue;
             }
 
-            $playerFile = "{$playersPath}/{$transfermarktId}.json";
-            if (!file_exists($playerFile)) {
-                $this->warn("  No player file for team {$club['name']}");
-                continue;
-            }
-
-            $playerData = $this->loadJson($playerFile);
-            $players = $playerData['players'] ?? [];
+            $players = $club['players'] ?? [];
 
             foreach ($players as $player) {
                 // Parse date of birth
@@ -274,7 +283,7 @@ class SeedReferenceData extends Command
                 $position = $player['position'] ?? 'Central Midfield';
                 [$technical, $physical] = $this->calculateAbilities($marketValueCents, $position, $age);
 
-                // Insert player (biographical data + base abilities)
+                // Insert player
                 DB::table('players')->updateOrInsert(
                     ['transfermarkt_id' => $player['id']],
                     [
@@ -301,7 +310,7 @@ class SeedReferenceData extends Command
     {
         $count = 0;
 
-        // Build a map of matchday names to dates
+        // Build date lookup from matchdays
         $dateLookup = [];
         foreach ($matchdays as $md) {
             $roundNum = $md['round'] ?? 0;
@@ -312,7 +321,7 @@ class SeedReferenceData extends Command
                 $dateLookup[$roundNum] = ['first' => null, 'second' => null, 'name' => $matchdayName];
             }
 
-            // Check if this is a second leg (contains "Vuelta" or is the second entry for same round)
+            // Check if this is a second leg
             if (str_contains($matchdayName, 'Vuelta')) {
                 $dateLookup[$roundNum]['second'] = $date;
             } elseif ($dateLookup[$roundNum]['first'] === null) {
@@ -330,7 +339,7 @@ class SeedReferenceData extends Command
             $dates = $dateLookup[$roundNumber] ?? ['first' => null, 'second' => null, 'name' => "Round {$roundNumber}"];
             $roundName = $dates['name'];
 
-            // Clean up round name (remove "(Ida)" suffix if present)
+            // Clean up round name
             $roundName = preg_replace('/\s*\(Ida\)$/', '', $roundName);
 
             DB::table('cup_round_templates')->updateOrInsert(
@@ -344,7 +353,7 @@ class SeedReferenceData extends Command
                     'type' => $type,
                     'first_leg_date' => $dates['first'] ? Carbon::parse($dates['first']) : null,
                     'second_leg_date' => $dates['second'] ? Carbon::parse($dates['second']) : null,
-                    'teams_entering' => 0, // Will be calculated based on teams
+                    'teams_entering' => 0,
                 ]
             );
 
@@ -358,38 +367,35 @@ class SeedReferenceData extends Command
     {
         $count = 0;
 
-        // Build lookup of existing teams by transfermarkt_id
-        // The cup JSON uses numeric IDs which are transfermarkt IDs
+        // Get existing teams by transfermarkt_id
         $teamsByTransfermarktId = DB::table('teams')
             ->whereNotNull('transfermarkt_id')
             ->pluck('id', 'transfermarkt_id')
             ->toArray();
 
-        // Supercopa de España teams enter the Copa del Rey at Round 3
-        // (they play the Supercopa first, so they join later)
-        // Get Supercopa team transfermarkt IDs from the database
-        $supercopaTeamIds = DB::table('competition_teams')
-            ->join('teams', 'competition_teams.team_id', '=', 'teams.id')
-            ->where('competition_teams.competition_id', 'ESPSUP')
-            ->where('competition_teams.season', $season)
-            ->whereNotNull('teams.transfermarkt_id')
-            ->pluck('teams.transfermarkt_id')
-            ->map(fn ($id) => (string) $id)
-            ->toArray();
+        // Get Supercopa teams for entry round calculation
+        $supercopaTeamIds = [];
+        if ($competitionId === 'ESPCUP') {
+            $supercopaTeamIds = DB::table('competition_teams')
+                ->join('teams', 'competition_teams.team_id', '=', 'teams.id')
+                ->where('competition_teams.competition_id', 'ESPSUP')
+                ->where('competition_teams.season', $season)
+                ->whereNotNull('teams.transfermarkt_id')
+                ->pluck('teams.transfermarkt_id')
+                ->map(fn ($id) => (string) $id)
+                ->toArray();
+        }
 
         foreach ($clubs as $club) {
-            $cupTeamId = $club['id']; // This is the transfermarkt ID
+            $cupTeamId = $club['id'];
 
-            // Determine entry round:
-            // - Supercopa teams enter at round 3 (they play the Supercopa first)
-            // - All other teams enter at round 1
+            // Determine entry round
             $entryRound = in_array($cupTeamId, $supercopaTeamIds) ? 3 : 1;
 
-            // Find existing team by transfermarkt_id, or create new one
+            // Find or create team
             $teamId = $teamsByTransfermarktId[$cupTeamId] ?? null;
 
             if (!$teamId) {
-                // Team doesn't exist in our system - create it
                 $teamId = Str::uuid()->toString();
                 DB::table('teams')->insert([
                     'id' => $teamId,
@@ -397,20 +403,13 @@ class SeedReferenceData extends Command
                     'name' => $club['name'],
                     'country' => 'ES',
                     'image' => "https://tmssl.akamaized.net/images/wappen/big/{$cupTeamId}.png",
+                    'created_at' => now(),
                     'updated_at' => now(),
                 ]);
-            } else {
-                // Update existing team's image if not set
-                DB::table('teams')
-                    ->where('id', $teamId)
-                    ->whereNull('image')
-                    ->update([
-                        'image' => "https://tmssl.akamaized.net/images/wappen/big/{$cupTeamId}.png",
-                        'updated_at' => now(),
-                    ]);
+                $teamsByTransfermarktId[$cupTeamId] = $teamId;
             }
 
-            // Link team to cup competition with entry round
+            // Link team to cup competition
             DB::table('competition_teams')->updateOrInsert(
                 [
                     'competition_id' => $competitionId,
@@ -425,7 +424,7 @@ class SeedReferenceData extends Command
             $count++;
         }
 
-        // Update teams_entering count for each round
+        // Update teams_entering counts
         $this->updateTeamsEnteringCounts($competitionId, $season);
 
         $this->line("  Cup teams: {$count}");
@@ -433,7 +432,6 @@ class SeedReferenceData extends Command
 
     private function updateTeamsEnteringCounts(string $competitionId, string $season): void
     {
-        // Count teams entering at each round
         $entryCounts = DB::table('competition_teams')
             ->where('competition_id', $competitionId)
             ->where('season', $season)
@@ -451,36 +449,68 @@ class SeedReferenceData extends Command
         }
     }
 
-    private function seedFixtures(array $matchdays, string $competitionId, string $season): void
+    /**
+     * Seed fixtures from the new matchdays format.
+     */
+    private function seedFixtures(array $matchdays, string $competitionId, string $season, array $teamIdMap): void
     {
         $count = 0;
 
         foreach ($matchdays as $matchday) {
-            // Handle both integer and string matchday values
-            $roundNumber = (int) ($matchday['matchday'] ?? $matchday['RoundNumber'] ?? 0);
+            $roundNumber = (int) ($matchday['matchday'] ?? 0);
 
             if ($roundNumber === 0) {
                 $this->warn("  Skipping matchday with no round number");
                 continue;
             }
 
-            foreach ($matchday['fixtures'] as $fixture) {
+            // Parse date (format: dd/mm/yy)
+            $dateStr = $matchday['date'] ?? null;
+            $scheduledDate = null;
+            if ($dateStr) {
+                try {
+                    $scheduledDate = Carbon::createFromFormat('d/m/y', $dateStr);
+                } catch (\Exception $e) {
+                    $this->warn("  Could not parse date: {$dateStr}");
+                }
+            }
+
+            $matches = $matchday['matches'] ?? [];
+            $matchNumber = 1;
+
+            foreach ($matches as $match) {
+                $homeTransfermarktId = $match['homeTeamId'] ?? null;
+                $awayTransfermarktId = $match['awayTeamId'] ?? null;
+
+                if (!$homeTransfermarktId || !$awayTransfermarktId) {
+                    continue;
+                }
+
+                $homeTeamId = $teamIdMap[$homeTransfermarktId] ?? null;
+                $awayTeamId = $teamIdMap[$awayTransfermarktId] ?? null;
+
+                if (!$homeTeamId || !$awayTeamId) {
+                    $this->warn("  Team not found: home={$homeTransfermarktId}, away={$awayTransfermarktId}");
+                    continue;
+                }
+
                 DB::table('fixture_templates')->updateOrInsert(
                     [
                         'competition_id' => $competitionId,
                         'season' => $season,
                         'round_number' => $roundNumber,
-                        'home_team_id' => $fixture['HomeTeam'],
-                        'away_team_id' => $fixture['AwayTeam'],
+                        'home_team_id' => $homeTeamId,
+                        'away_team_id' => $awayTeamId,
                     ],
                     [
                         'id' => Str::uuid()->toString(),
-                        'match_number' => $fixture['MatchNumber'] ?? null,
-                        'scheduled_date' => Carbon::parse($fixture['DateUtc']),
-                        'location' => $fixture['Location'] ?? null,
+                        'match_number' => $matchNumber,
+                        'scheduled_date' => $scheduledDate,
+                        'location' => null,
                     ]
                 );
 
+                $matchNumber++;
                 $count++;
             }
         }
@@ -488,167 +518,121 @@ class SeedReferenceData extends Command
         $this->line("  Fixtures: {$count}");
     }
 
-    /**
-     * Parse market value string to cents.
-     * Examples: "€45.00m" -> 4500000000, "€800k" -> 80000000, "€2.50m" -> 250000000
-     */
     private function parseMarketValue(?string $value): int
     {
         if (!$value) {
             return 0;
         }
 
-        // Remove currency symbol and whitespace
         $value = trim(str_replace(['€', ' '], '', $value));
 
-        // Extract number and multiplier
         if (preg_match('/^([\d.]+)(k|m)?$/i', $value, $matches)) {
             $number = (float) $matches[1];
             $multiplier = strtolower($matches[2] ?? '');
 
-            $cents = match ($multiplier) {
-                'm' => (int) ($number * 1_000_000 * 100), // millions to cents
-                'k' => (int) ($number * 1_000 * 100),     // thousands to cents
-                default => (int) ($number * 100),         // raw value to cents
+            return match ($multiplier) {
+                'm' => (int) ($number * 1_000_000 * 100),
+                'k' => (int) ($number * 1_000 * 100),
+                default => (int) ($number * 100),
             };
-
-            return $cents;
         }
 
         return 0;
     }
 
-    /**
-     * Calculate technical and physical abilities from market value, position, and age.
-     *
-     * Key insight: Market value reflects different things at different ages:
-     * - Young players (under 23): Value includes "potential premium" - they're not at peak skill yet
-     * - Prime players (23-30): Value closely reflects current ability
-     * - Veterans (31+): Value is depressed by age, but skill declines slower than value
-     *
-     * A €15M 36-year-old is exceptional (most are worth €1-3M at that age).
-     * A €120M 17-year-old has potential, but isn't at peak ability yet.
-     *
-     * @return array{0: int, 1: int} [technical_ability, physical_ability]
-     */
     private function calculateAbilities(int $marketValueCents, string $position, ?int $age): array
     {
-        $age = $age ?? 25; // Default to prime age if unknown
+        $age = $age ?? 25;
 
-        // Step 1: Get raw ability from market value tier
         $rawAbility = $this->marketValueToRawAbility($marketValueCents);
-
-        // Step 2: Apply age-based adjustments
         $baseAbility = $this->adjustAbilityForAge($rawAbility, $marketValueCents, $age);
 
-        // Step 3: Position-based split (technical vs physical emphasis)
-        // Higher ratio = more technical, lower = more physical
         $technicalRatio = match ($position) {
-            'Goalkeeper' => 0.55,           // Distribution, handling matter
-            'Centre-Back' => 0.35,          // More physical
+            'Goalkeeper' => 0.55,
+            'Centre-Back' => 0.35,
             'Left-Back', 'Right-Back' => 0.45,
             'Defensive Midfield' => 0.45,
             'Central Midfield' => 0.55,
             'Left Midfield', 'Right Midfield' => 0.55,
-            'Attacking Midfield' => 0.70,   // Very technical
+            'Attacking Midfield' => 0.70,
             'Left Winger', 'Right Winger' => 0.65,
             'Second Striker' => 0.70,
-            'Centre-Forward' => 0.65,       // Elite strikers are technical (finishing, movement)
+            'Centre-Forward' => 0.65,
             default => 0.50,
         };
 
-        // Apply variance: one attribute slightly higher, one slightly lower
         $variance = rand(2, 5);
         $technical = (int) round($baseAbility + ($technicalRatio - 0.5) * $variance * 2);
         $physical = (int) round($baseAbility + (0.5 - $technicalRatio) * $variance * 2);
 
-        // Physical decline for veterans (in addition to age-adjusted ability)
-        // This reflects that physical attributes decline faster than technical
         if ($age > 33) {
             $physical = (int) round($physical * 0.92);
         } elseif ($age > 30) {
             $physical = (int) round($physical * 0.96);
         }
 
-        // Clamp to 30-99
         $technical = max(30, min(99, $technical));
         $physical = max(30, min(99, $physical));
 
         return [$technical, $physical];
     }
 
-    /**
-     * Convert market value to a raw ability estimate.
-     */
     private function marketValueToRawAbility(int $marketValueCents): int
     {
         return match (true) {
-            $marketValueCents >= 10_000_000_000 => rand(88, 95), // €100M+
-            $marketValueCents >= 5_000_000_000 => rand(83, 90),  // €50-100M
-            $marketValueCents >= 2_000_000_000 => rand(78, 85),  // €20-50M
-            $marketValueCents >= 1_000_000_000 => rand(73, 80),  // €10-20M
-            $marketValueCents >= 500_000_000 => rand(68, 75),    // €5-10M
-            $marketValueCents >= 200_000_000 => rand(63, 70),    // €2-5M
-            $marketValueCents >= 100_000_000 => rand(58, 65),    // €1-2M
-            $marketValueCents > 0 => rand(50, 60),               // Under €1M
-            default => rand(45, 55),                              // Unknown value
+            $marketValueCents >= 10_000_000_000 => rand(88, 95),
+            $marketValueCents >= 5_000_000_000 => rand(83, 90),
+            $marketValueCents >= 2_000_000_000 => rand(78, 85),
+            $marketValueCents >= 1_000_000_000 => rand(73, 80),
+            $marketValueCents >= 500_000_000 => rand(68, 75),
+            $marketValueCents >= 200_000_000 => rand(63, 70),
+            $marketValueCents >= 100_000_000 => rand(58, 65),
+            $marketValueCents > 0 => rand(50, 60),
+            default => rand(45, 55),
         };
     }
 
-    /**
-     * Adjust raw ability based on age.
-     *
-     * Young players: Cap ability (their value includes potential, not current skill)
-     * Veterans: Boost ability (their low market value is due to age, not skill loss)
-     */
     private function adjustAbilityForAge(int $rawAbility, int $marketValueCents, int $age): int
     {
-        // YOUNG PLAYERS (under 23): Cap ability based on age
-        // A €120M 17-year-old is valued for potential, not peak skill
         if ($age < 23) {
             // Base cap increases with age: 17yo = 75, 22yo = 85
-            $ageCap = 73 + ($age - 17) * 2;
+            $ageCap = 75 + ($age - 17) * 2;
 
-            // Exceptional market value raises the cap (they're playing at top level)
-            if ($marketValueCents >= 10_000_000_000) { // €100M+
-                $ageCap += 8;  // Can reach 91 at 22
+            // Exceptional market value raises the cap significantly
+            // A €200M teenager is already world-class, not just "promising"
+            if ($marketValueCents >= 15_000_000_000) { // €150M+ (generational talent)
+                $ageCap += 14;
+            } elseif ($marketValueCents >= 10_000_000_000) { // €100M+
+                $ageCap += 10;
             } elseif ($marketValueCents >= 5_000_000_000) { // €50M+
-                $ageCap += 5;  // Can reach 88 at 22
+                $ageCap += 6;
             } elseif ($marketValueCents >= 2_000_000_000) { // €20M+
-                $ageCap += 3;  // Can reach 86 at 22
+                $ageCap += 3;
             }
 
             return min($rawAbility, $ageCap);
         }
 
-        // PRIME YEARS (23-30): Use raw ability directly
         if ($age <= 30) {
             return $rawAbility;
         }
 
-        // VETERANS (31+): Boost ability based on how exceptional their value is for age
-        // The fact that they still command significant value means they're still good
-
-        // Typical market value for a player of this age
         $typicalValueForAge = match (true) {
-            $age <= 32 => 500_000_000,   // €5M
-            $age <= 34 => 300_000_000,   // €3M
-            $age <= 36 => 150_000_000,   // €1.5M
-            default => 80_000_000,        // €800K
+            $age <= 32 => 500_000_000,
+            $age <= 34 => 300_000_000,
+            $age <= 36 => 150_000_000,
+            default => 80_000_000,
         };
 
-        // How much above typical is this player?
         $valueRatio = $marketValueCents / max(1, $typicalValueForAge);
 
-        // Boost ability for exceptional veterans
-        // A 36yo worth €15M when typical is €1.5M has ratio of 10 = elite
         $abilityBoost = match (true) {
-            $valueRatio >= 10 => 12,  // 10x+ typical = still world class
-            $valueRatio >= 5 => 8,    // 5-10x typical = very good veteran
-            $valueRatio >= 3 => 5,    // 3-5x typical = above average
-            $valueRatio >= 2 => 3,    // 2-3x typical = solid
-            $valueRatio >= 1 => 1,    // At typical = average for age
-            default => 0,             // Below typical
+            $valueRatio >= 10 => 12,
+            $valueRatio >= 5 => 8,
+            $valueRatio >= 3 => 5,
+            $valueRatio >= 2 => 3,
+            $valueRatio >= 1 => 1,
+            default => 0,
         };
 
         return min(95, $rawAbility + $abilityBoost);

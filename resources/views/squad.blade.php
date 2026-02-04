@@ -44,9 +44,9 @@
                                 <th class="font-semibold py-2 text-center w-12">Country</th>
                                 <th class="font-semibold py-2 text-center w-12">Age</th>
 
-                                <th class="font-semibold py-2 pr-4 text-right w-16">Value</th>
-                                <th class="font-semibold py-2 pr-4 text-right w-16">Wage</th>
-                                <th class="font-semibold py-2 pr-4 text-right w-16">Contract</th>
+                                <th class="font-semibold py-2 pr-4 text-right w-20">Value</th>
+                                <th class="font-semibold py-2 pr-4 text-right w-20">Wage</th>
+                                <th class="font-semibold py-2 pr-4 text-right w-20">Contract</th>
 
                                 <th class="font-semibold py-2 text-center w-12">TEC</th>
                                 <th class="font-semibold py-2 text-center w-12">PHY</th>
@@ -106,7 +106,7 @@
                                             {{-- Annual Wage --}}
                                             <td class="py-2 pr-4 text-right text-slate-600">{{ $gamePlayer->formatted_wage }}</td>
                                             {{-- Contract --}}
-                                            <td class="py-2 pr-4 text-right text-slate-600">
+                                            <td class="py-2 pr-4 text-center text-slate-600">
                                                 @if($gamePlayer->contract_until)
                                                     @if($gamePlayer->isContractExpiring())
                                                         <span class="text-red-600 font-medium" title="Contract expiring">
@@ -196,7 +196,7 @@
                         $totalWageBill = $allPlayers->sum('annual_wage');
                         $formattedWageBill = \App\Support\Money::format($totalWageBill);
                     @endphp
-                    <div class="mt-8 pt-6 border-t">
+                    <div class="pt-6 border-t">
                         <div class="flex flex-wrap gap-8 text-sm text-slate-600">
                             <div>
                                 <span class="font-semibold text-slate-900">{{ $allPlayers->count() }}</span>

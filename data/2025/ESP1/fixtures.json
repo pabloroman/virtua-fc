@@ -1,0 +1,1753 @@
+{
+  "id": "ES1",
+  "matchdays": [
+    {
+      "date": "17/08/25",
+      "matchday": 1,
+      "matches": [
+        {
+          "awayTeamId": "367",
+          "homeTeamId": "12321"
+        },
+        {
+          "awayTeamId": "2497",
+          "homeTeamId": "1050"
+        },
+        {
+          "awayTeamId": "131",
+          "homeTeamId": "237"
+        },
+        {
+          "awayTeamId": "3368",
+          "homeTeamId": "1108"
+        },
+        {
+          "awayTeamId": "681",
+          "homeTeamId": "1049"
+        },
+        {
+          "awayTeamId": "3709",
+          "homeTeamId": "940"
+        },
+        {
+          "awayTeamId": "368",
+          "homeTeamId": "621"
+        },
+        {
+          "awayTeamId": "13",
+          "homeTeamId": "714"
+        },
+        {
+          "awayTeamId": "150",
+          "homeTeamId": "1531"
+        },
+        {
+          "awayTeamId": "331",
+          "homeTeamId": "418"
+        }
+      ]
+    },
+    {
+      "date": "24/08/25",
+      "matchday": 2,
+      "matches": [
+        {
+          "awayTeamId": "1108",
+          "homeTeamId": "150"
+        },
+        {
+          "awayTeamId": "940",
+          "homeTeamId": "237"
+        },
+        {
+          "awayTeamId": "1531",
+          "homeTeamId": "13"
+        },
+        {
+          "awayTeamId": "131",
+          "homeTeamId": "3368"
+        },
+        {
+          "awayTeamId": "1049",
+          "homeTeamId": "331"
+        },
+        {
+          "awayTeamId": "12321",
+          "homeTeamId": "1050"
+        },
+        {
+          "awayTeamId": "714",
+          "homeTeamId": "681"
+        },
+        {
+          "awayTeamId": "418",
+          "homeTeamId": "2497"
+        },
+        {
+          "awayTeamId": "367",
+          "homeTeamId": "621"
+        },
+        {
+          "awayTeamId": "3709",
+          "homeTeamId": "368"
+        }
+      ]
+    },
+    {
+      "date": "31/08/25",
+      "matchday": 3,
+      "matches": [
+        {
+          "awayTeamId": "3368",
+          "homeTeamId": "1531"
+        },
+        {
+          "awayTeamId": "3709",
+          "homeTeamId": "1049"
+        },
+        {
+          "awayTeamId": "13",
+          "homeTeamId": "1108"
+        },
+        {
+          "awayTeamId": "681",
+          "homeTeamId": "2497"
+        },
+        {
+          "awayTeamId": "368",
+          "homeTeamId": "12321"
+        },
+        {
+          "awayTeamId": "237",
+          "homeTeamId": "418"
+        },
+        {
+          "awayTeamId": "1050",
+          "homeTeamId": "940"
+        },
+        {
+          "awayTeamId": "621",
+          "homeTeamId": "150"
+        },
+        {
+          "awayTeamId": "331",
+          "homeTeamId": "714"
+        },
+        {
+          "awayTeamId": "131",
+          "homeTeamId": "367"
+        }
+      ]
+    },
+    {
+      "date": "14/09/25",
+      "matchday": 4,
+      "matches": [
+        {
+          "awayTeamId": "1531",
+          "homeTeamId": "368"
+        },
+        {
+          "awayTeamId": "2497",
+          "homeTeamId": "3709"
+        },
+        {
+          "awayTeamId": "418",
+          "homeTeamId": "681"
+        },
+        {
+          "awayTeamId": "1108",
+          "homeTeamId": "621"
+        },
+        {
+          "awayTeamId": "1050",
+          "homeTeamId": "13"
+        },
+        {
+          "awayTeamId": "12321",
+          "homeTeamId": "940"
+        },
+        {
+          "awayTeamId": "150",
+          "homeTeamId": "3368"
+        },
+        {
+          "awayTeamId": "367",
+          "homeTeamId": "331"
+        },
+        {
+          "awayTeamId": "1049",
+          "homeTeamId": "131"
+        },
+        {
+          "awayTeamId": "237",
+          "homeTeamId": "714"
+        }
+      ]
+    },
+    {
+      "date": "21/09/25",
+      "matchday": 5,
+      "matches": [
+        {
+          "awayTeamId": "681",
+          "homeTeamId": "150"
+        },
+        {
+          "awayTeamId": "3368",
+          "homeTeamId": "12321"
+        },
+        {
+          "awayTeamId": "714",
+          "homeTeamId": "418"
+        },
+        {
+          "awayTeamId": "368",
+          "homeTeamId": "1108"
+        },
+        {
+          "awayTeamId": "331",
+          "homeTeamId": "1050"
+        },
+        {
+          "awayTeamId": "621",
+          "homeTeamId": "1049"
+        },
+        {
+          "awayTeamId": "940",
+          "homeTeamId": "367"
+        },
+        {
+          "awayTeamId": "13",
+          "homeTeamId": "237"
+        },
+        {
+          "awayTeamId": "2497",
+          "homeTeamId": "1531"
+        },
+        {
+          "awayTeamId": "3709",
+          "homeTeamId": "131"
+        }
+      ]
+    },
+    {
+      "date": "27/08/25",
+      "matchday": 6,
+      "matches": [
+        {
+          "awayTeamId": "150",
+          "homeTeamId": "940"
+        },
+        {
+          "awayTeamId": "12321",
+          "homeTeamId": "621"
+        },
+        {
+          "awayTeamId": "1049",
+          "homeTeamId": "714"
+        },
+        {
+          "awayTeamId": "418",
+          "homeTeamId": "3368"
+        },
+        {
+          "awayTeamId": "1050",
+          "homeTeamId": "368"
+        },
+        {
+          "awayTeamId": "1108",
+          "homeTeamId": "3709"
+        },
+        {
+          "awayTeamId": "237",
+          "homeTeamId": "681"
+        },
+        {
+          "awayTeamId": "367",
+          "homeTeamId": "13"
+        },
+        {
+          "awayTeamId": "1531",
+          "homeTeamId": "331"
+        },
+        {
+          "awayTeamId": "131",
+          "homeTeamId": "2497"
+        }
+      ]
+    },
+    {
+      "date": "28/09/25",
+      "matchday": 7,
+      "matches": [
+        {
+          "awayTeamId": "714",
+          "homeTeamId": "12321"
+        },
+        {
+          "awayTeamId": "3368",
+          "homeTeamId": "3709"
+        },
+        {
+          "awayTeamId": "418",
+          "homeTeamId": "13"
+        },
+        {
+          "awayTeamId": "1108",
+          "homeTeamId": "237"
+        },
+        {
+          "awayTeamId": "621",
+          "homeTeamId": "1050"
+        },
+        {
+          "awayTeamId": "368",
+          "homeTeamId": "367"
+        },
+        {
+          "awayTeamId": "940",
+          "homeTeamId": "1531"
+        },
+        {
+          "awayTeamId": "681",
+          "homeTeamId": "131"
+        },
+        {
+          "awayTeamId": "331",
+          "homeTeamId": "150"
+        },
+        {
+          "awayTeamId": "2497",
+          "homeTeamId": "1049"
+        }
+      ]
+    },
+    {
+      "date": "05/10/25",
+      "matchday": 8,
+      "matches": [
+        {
+          "awayTeamId": "3709",
+          "homeTeamId": "331"
+        },
+        {
+          "awayTeamId": "3368",
+          "homeTeamId": "2497"
+        },
+        {
+          "awayTeamId": "1049",
+          "homeTeamId": "12321"
+        },
+        {
+          "awayTeamId": "237",
+          "homeTeamId": "621"
+        },
+        {
+          "awayTeamId": "1050",
+          "homeTeamId": "418"
+        },
+        {
+          "awayTeamId": "1531",
+          "homeTeamId": "1108"
+        },
+        {
+          "awayTeamId": "131",
+          "homeTeamId": "368"
+        },
+        {
+          "awayTeamId": "150",
+          "homeTeamId": "714"
+        },
+        {
+          "awayTeamId": "367",
+          "homeTeamId": "681"
+        },
+        {
+          "awayTeamId": "13",
+          "homeTeamId": "940"
+        }
+      ]
+    },
+    {
+      "date": "19/10/25",
+      "matchday": 9,
+      "matches": [
+        {
+          "awayTeamId": "714",
+          "homeTeamId": "2497"
+        },
+        {
+          "awayTeamId": "237",
+          "homeTeamId": "368"
+        },
+        {
+          "awayTeamId": "12321",
+          "homeTeamId": "131"
+        },
+        {
+          "awayTeamId": "150",
+          "homeTeamId": "1050"
+        },
+        {
+          "awayTeamId": "331",
+          "homeTeamId": "13"
+        },
+        {
+          "awayTeamId": "621",
+          "homeTeamId": "1531"
+        },
+        {
+          "awayTeamId": "681",
+          "homeTeamId": "940"
+        },
+        {
+          "awayTeamId": "367",
+          "homeTeamId": "3368"
+        },
+        {
+          "awayTeamId": "418",
+          "homeTeamId": "3709"
+        },
+        {
+          "awayTeamId": "1049",
+          "homeTeamId": "1108"
+        }
+      ]
+    },
+    {
+      "date": "26/10/25",
+      "matchday": 10,
+      "matches": [
+        {
+          "awayTeamId": "368",
+          "homeTeamId": "681"
+        },
+        {
+          "awayTeamId": "2497",
+          "homeTeamId": "12321"
+        },
+        {
+          "awayTeamId": "1531",
+          "homeTeamId": "714"
+        },
+        {
+          "awayTeamId": "3709",
+          "homeTeamId": "621"
+        },
+        {
+          "awayTeamId": "1050",
+          "homeTeamId": "1049"
+        },
+        {
+          "awayTeamId": "3368",
+          "homeTeamId": "237"
+        },
+        {
+          "awayTeamId": "131",
+          "homeTeamId": "418"
+        },
+        {
+          "awayTeamId": "940",
+          "homeTeamId": "331"
+        },
+        {
+          "awayTeamId": "1108",
+          "homeTeamId": "367"
+        },
+        {
+          "awayTeamId": "13",
+          "homeTeamId": "150"
+        }
+      ]
+    },
+    {
+      "date": "02/11/25",
+      "matchday": 11,
+      "matches": [
+        {
+          "awayTeamId": "12321",
+          "homeTeamId": "3709"
+        },
+        {
+          "awayTeamId": "367",
+          "homeTeamId": "1050"
+        },
+        {
+          "awayTeamId": "368",
+          "homeTeamId": "13"
+        },
+        {
+          "awayTeamId": "621",
+          "homeTeamId": "681"
+        },
+        {
+          "awayTeamId": "1049",
+          "homeTeamId": "418"
+        },
+        {
+          "awayTeamId": "940",
+          "homeTeamId": "3368"
+        },
+        {
+          "awayTeamId": "714",
+          "homeTeamId": "1108"
+        },
+        {
+          "awayTeamId": "1531",
+          "homeTeamId": "131"
+        },
+        {
+          "awayTeamId": "237",
+          "homeTeamId": "150"
+        },
+        {
+          "awayTeamId": "331",
+          "homeTeamId": "2497"
+        }
+      ]
+    },
+    {
+      "date": "09/11/25",
+      "matchday": 12,
+      "matches": [
+        {
+          "awayTeamId": "681",
+          "homeTeamId": "1531"
+        },
+        {
+          "awayTeamId": "1108",
+          "homeTeamId": "12321"
+        },
+        {
+          "awayTeamId": "331",
+          "homeTeamId": "368"
+        },
+        {
+          "awayTeamId": "3368",
+          "homeTeamId": "13"
+        },
+        {
+          "awayTeamId": "1050",
+          "homeTeamId": "714"
+        },
+        {
+          "awayTeamId": "2497",
+          "homeTeamId": "621"
+        },
+        {
+          "awayTeamId": "418",
+          "homeTeamId": "367"
+        },
+        {
+          "awayTeamId": "150",
+          "homeTeamId": "1049"
+        },
+        {
+          "awayTeamId": "3709",
+          "homeTeamId": "237"
+        },
+        {
+          "awayTeamId": "131",
+          "homeTeamId": "940"
+        }
+      ]
+    },
+    {
+      "date": "23/11/25",
+      "matchday": 13,
+      "matches": [
+        {
+          "awayTeamId": "3368",
+          "homeTeamId": "1049"
+        },
+        {
+          "awayTeamId": "940",
+          "homeTeamId": "1108"
+        },
+        {
+          "awayTeamId": "621",
+          "homeTeamId": "131"
+        },
+        {
+          "awayTeamId": "681",
+          "homeTeamId": "331"
+        },
+        {
+          "awayTeamId": "237",
+          "homeTeamId": "1050"
+        },
+        {
+          "awayTeamId": "367",
+          "homeTeamId": "2497"
+        },
+        {
+          "awayTeamId": "12321",
+          "homeTeamId": "150"
+        },
+        {
+          "awayTeamId": "13",
+          "homeTeamId": "3709"
+        },
+        {
+          "awayTeamId": "418",
+          "homeTeamId": "1531"
+        },
+        {
+          "awayTeamId": "368",
+          "homeTeamId": "714"
+        }
+      ]
+    },
+    {
+      "date": "30/11/25",
+      "matchday": 14,
+      "matches": [
+        {
+          "awayTeamId": "1531",
+          "homeTeamId": "3709"
+        },
+        {
+          "awayTeamId": "331",
+          "homeTeamId": "237"
+        },
+        {
+          "awayTeamId": "1108",
+          "homeTeamId": "131"
+        },
+        {
+          "awayTeamId": "621",
+          "homeTeamId": "3368"
+        },
+        {
+          "awayTeamId": "2497",
+          "homeTeamId": "13"
+        },
+        {
+          "awayTeamId": "1050",
+          "homeTeamId": "681"
+        },
+        {
+          "awayTeamId": "150",
+          "homeTeamId": "368"
+        },
+        {
+          "awayTeamId": "714",
+          "homeTeamId": "940"
+        },
+        {
+          "awayTeamId": "418",
+          "homeTeamId": "12321"
+        },
+        {
+          "awayTeamId": "1049",
+          "homeTeamId": "367"
+        }
+      ]
+    },
+    {
+      "date": "07/12/25",
+      "matchday": 15,
+      "matches": [
+        {
+          "awayTeamId": "237",
+          "homeTeamId": "2497"
+        },
+        {
+          "awayTeamId": "3709",
+          "homeTeamId": "1050"
+        },
+        {
+          "awayTeamId": "681",
+          "homeTeamId": "1108"
+        },
+        {
+          "awayTeamId": "131",
+          "homeTeamId": "150"
+        },
+        {
+          "awayTeamId": "13",
+          "homeTeamId": "621"
+        },
+        {
+          "awayTeamId": "12321",
+          "homeTeamId": "1531"
+        },
+        {
+          "awayTeamId": "368",
+          "homeTeamId": "1049"
+        },
+        {
+          "awayTeamId": "367",
+          "homeTeamId": "714"
+        },
+        {
+          "awayTeamId": "940",
+          "homeTeamId": "418"
+        },
+        {
+          "awayTeamId": "3368",
+          "homeTeamId": "331"
+        }
+      ]
+    },
+    {
+      "date": "14/12/25",
+      "matchday": 16,
+      "matches": [
+        {
+          "awayTeamId": "12321",
+          "homeTeamId": "681"
+        },
+        {
+          "awayTeamId": "1049",
+          "homeTeamId": "13"
+        },
+        {
+          "awayTeamId": "1531",
+          "homeTeamId": "237"
+        },
+        {
+          "awayTeamId": "331",
+          "homeTeamId": "131"
+        },
+        {
+          "awayTeamId": "714",
+          "homeTeamId": "3709"
+        },
+        {
+          "awayTeamId": "2497",
+          "homeTeamId": "368"
+        },
+        {
+          "awayTeamId": "621",
+          "homeTeamId": "940"
+        },
+        {
+          "awayTeamId": "418",
+          "homeTeamId": "1108"
+        },
+        {
+          "awayTeamId": "150",
+          "homeTeamId": "367"
+        },
+        {
+          "awayTeamId": "1050",
+          "homeTeamId": "3368"
+        }
+      ]
+    },
+    {
+      "date": "21/12/25",
+      "matchday": 17,
+      "matches": [
+        {
+          "awayTeamId": "237",
+          "homeTeamId": "1049"
+        },
+        {
+          "awayTeamId": "940",
+          "homeTeamId": "2497"
+        },
+        {
+          "awayTeamId": "681",
+          "homeTeamId": "3368"
+        },
+        {
+          "awayTeamId": "1108",
+          "homeTeamId": "331"
+        },
+        {
+          "awayTeamId": "368",
+          "homeTeamId": "418"
+        },
+        {
+          "awayTeamId": "13",
+          "homeTeamId": "12321"
+        },
+        {
+          "awayTeamId": "131",
+          "homeTeamId": "1050"
+        },
+        {
+          "awayTeamId": "367",
+          "homeTeamId": "1531"
+        },
+        {
+          "awayTeamId": "3709",
+          "homeTeamId": "150"
+        },
+        {
+          "awayTeamId": "714",
+          "homeTeamId": "621"
+        }
+      ]
+    },
+    {
+      "date": "04/01/26",
+      "matchday": 18,
+      "matches": [
+        {
+          "awayTeamId": "3709",
+          "homeTeamId": "367"
+        },
+        {
+          "awayTeamId": "1049",
+          "homeTeamId": "940"
+        },
+        {
+          "awayTeamId": "621",
+          "homeTeamId": "331"
+        },
+        {
+          "awayTeamId": "1050",
+          "homeTeamId": "1531"
+        },
+        {
+          "awayTeamId": "131",
+          "homeTeamId": "714"
+        },
+        {
+          "awayTeamId": "3368",
+          "homeTeamId": "368"
+        },
+        {
+          "awayTeamId": "150",
+          "homeTeamId": "418"
+        },
+        {
+          "awayTeamId": "12321",
+          "homeTeamId": "237"
+        },
+        {
+          "awayTeamId": "2497",
+          "homeTeamId": "1108"
+        },
+        {
+          "awayTeamId": "13",
+          "homeTeamId": "681"
+        }
+      ]
+    },
+    {
+      "date": "11/01/26",
+      "matchday": 19,
+      "matches": [
+        {
+          "awayTeamId": "13",
+          "homeTeamId": "131"
+        },
+        {
+          "awayTeamId": "418",
+          "homeTeamId": "621"
+        },
+        {
+          "awayTeamId": "681",
+          "homeTeamId": "3709"
+        },
+        {
+          "awayTeamId": "150",
+          "homeTeamId": "2497"
+        },
+        {
+          "awayTeamId": "1108",
+          "homeTeamId": "1050"
+        },
+        {
+          "awayTeamId": "331",
+          "homeTeamId": "12321"
+        },
+        {
+          "awayTeamId": "1531",
+          "homeTeamId": "1049"
+        },
+        {
+          "awayTeamId": "237",
+          "homeTeamId": "367"
+        },
+        {
+          "awayTeamId": "714",
+          "homeTeamId": "3368"
+        },
+        {
+          "awayTeamId": "940",
+          "homeTeamId": "368"
+        }
+      ]
+    },
+    {
+      "date": "18/01/26",
+      "matchday": 20,
+      "matches": [
+        {
+          "awayTeamId": "12321",
+          "homeTeamId": "714"
+        },
+        {
+          "awayTeamId": "3368",
+          "homeTeamId": "418"
+        },
+        {
+          "awayTeamId": "621",
+          "homeTeamId": "237"
+        },
+        {
+          "awayTeamId": "2497",
+          "homeTeamId": "331"
+        },
+        {
+          "awayTeamId": "1050",
+          "homeTeamId": "150"
+        },
+        {
+          "awayTeamId": "1049",
+          "homeTeamId": "3709"
+        },
+        {
+          "awayTeamId": "1108",
+          "homeTeamId": "13"
+        },
+        {
+          "awayTeamId": "367",
+          "homeTeamId": "940"
+        },
+        {
+          "awayTeamId": "131",
+          "homeTeamId": "681"
+        },
+        {
+          "awayTeamId": "368",
+          "homeTeamId": "1531"
+        }
+      ]
+    },
+    {
+      "date": "25/01/26",
+      "matchday": 21,
+      "matches": [
+        {
+          "awayTeamId": "1531",
+          "homeTeamId": "3368"
+        },
+        {
+          "awayTeamId": "331",
+          "homeTeamId": "367"
+        },
+        {
+          "awayTeamId": "714",
+          "homeTeamId": "1049"
+        },
+        {
+          "awayTeamId": "621",
+          "homeTeamId": "368"
+        },
+        {
+          "awayTeamId": "418",
+          "homeTeamId": "1050"
+        },
+        {
+          "awayTeamId": "237",
+          "homeTeamId": "13"
+        },
+        {
+          "awayTeamId": "2497",
+          "homeTeamId": "131"
+        },
+        {
+          "awayTeamId": "940",
+          "homeTeamId": "681"
+        },
+        {
+          "awayTeamId": "150",
+          "homeTeamId": "1108"
+        },
+        {
+          "awayTeamId": "3709",
+          "homeTeamId": "12321"
+        }
+      ]
+    },
+    {
+      "date": "01/02/26",
+      "matchday": 22,
+      "matches": [
+        {
+          "awayTeamId": "1108",
+          "homeTeamId": "714"
+        },
+        {
+          "awayTeamId": "12321",
+          "homeTeamId": "2497"
+        },
+        {
+          "awayTeamId": "1050",
+          "homeTeamId": "331"
+        },
+        {
+          "awayTeamId": "13",
+          "homeTeamId": "3368"
+        },
+        {
+          "awayTeamId": "131",
+          "homeTeamId": "1531"
+        },
+        {
+          "awayTeamId": "367",
+          "homeTeamId": "418"
+        },
+        {
+          "awayTeamId": "1049",
+          "homeTeamId": "150"
+        },
+        {
+          "awayTeamId": "940",
+          "homeTeamId": "3709"
+        },
+        {
+          "awayTeamId": "681",
+          "homeTeamId": "621"
+        },
+        {
+          "awayTeamId": "368",
+          "homeTeamId": "237"
+        }
+      ]
+    },
+    {
+      "date": "08/02/26",
+      "matchday": 23,
+      "matches": [
+        {
+          "awayTeamId": "331",
+          "homeTeamId": "940"
+        },
+        {
+          "awayTeamId": "2497",
+          "homeTeamId": "367"
+        },
+        {
+          "awayTeamId": "237",
+          "homeTeamId": "131"
+        },
+        {
+          "awayTeamId": "12321",
+          "homeTeamId": "368"
+        },
+        {
+          "awayTeamId": "1531",
+          "homeTeamId": "681"
+        },
+        {
+          "awayTeamId": "3709",
+          "homeTeamId": "1108"
+        },
+        {
+          "awayTeamId": "3368",
+          "homeTeamId": "621"
+        },
+        {
+          "awayTeamId": "150",
+          "homeTeamId": "13"
+        },
+        {
+          "awayTeamId": "418",
+          "homeTeamId": "1049"
+        },
+        {
+          "awayTeamId": "714",
+          "homeTeamId": "1050"
+        }
+      ]
+    },
+    {
+      "date": "15/02/26",
+      "matchday": 24,
+      "matches": [
+        {
+          "awayTeamId": "331",
+          "homeTeamId": "1531"
+        },
+        {
+          "awayTeamId": "940",
+          "homeTeamId": "714"
+        },
+        {
+          "awayTeamId": "13",
+          "homeTeamId": "367"
+        },
+        {
+          "awayTeamId": "1108",
+          "homeTeamId": "368"
+        },
+        {
+          "awayTeamId": "681",
+          "homeTeamId": "418"
+        },
+        {
+          "awayTeamId": "621",
+          "homeTeamId": "2497"
+        },
+        {
+          "awayTeamId": "1050",
+          "homeTeamId": "3709"
+        },
+        {
+          "awayTeamId": "1049",
+          "homeTeamId": "3368"
+        },
+        {
+          "awayTeamId": "150",
+          "homeTeamId": "237"
+        },
+        {
+          "awayTeamId": "131",
+          "homeTeamId": "12321"
+        }
+      ]
+    },
+    {
+      "date": "22/02/26",
+      "matchday": 25,
+      "matches": [
+        {
+          "awayTeamId": "1531",
+          "homeTeamId": "621"
+        },
+        {
+          "awayTeamId": "2497",
+          "homeTeamId": "681"
+        },
+        {
+          "awayTeamId": "367",
+          "homeTeamId": "150"
+        },
+        {
+          "awayTeamId": "418",
+          "homeTeamId": "331"
+        },
+        {
+          "awayTeamId": "714",
+          "homeTeamId": "13"
+        },
+        {
+          "awayTeamId": "368",
+          "homeTeamId": "3709"
+        },
+        {
+          "awayTeamId": "3368",
+          "homeTeamId": "131"
+        },
+        {
+          "awayTeamId": "237",
+          "homeTeamId": "940"
+        },
+        {
+          "awayTeamId": "1049",
+          "homeTeamId": "1050"
+        },
+        {
+          "awayTeamId": "12321",
+          "homeTeamId": "1108"
+        }
+      ]
+    },
+    {
+      "date": "01/03/26",
+      "matchday": 26,
+      "matches": [
+        {
+          "awayTeamId": "13",
+          "homeTeamId": "2497"
+        },
+        {
+          "awayTeamId": "940",
+          "homeTeamId": "12321"
+        },
+        {
+          "awayTeamId": "3709",
+          "homeTeamId": "418"
+        },
+        {
+          "awayTeamId": "331",
+          "homeTeamId": "1049"
+        },
+        {
+          "awayTeamId": "1050",
+          "homeTeamId": "131"
+        },
+        {
+          "awayTeamId": "368",
+          "homeTeamId": "150"
+        },
+        {
+          "awayTeamId": "714",
+          "homeTeamId": "1531"
+        },
+        {
+          "awayTeamId": "681",
+          "homeTeamId": "237"
+        },
+        {
+          "awayTeamId": "1108",
+          "homeTeamId": "3368"
+        },
+        {
+          "awayTeamId": "621",
+          "homeTeamId": "367"
+        }
+      ]
+    },
+    {
+      "date": "08/03/26",
+      "matchday": 27,
+      "matches": [
+        {
+          "awayTeamId": "12321",
+          "homeTeamId": "3368"
+        },
+        {
+          "awayTeamId": "237",
+          "homeTeamId": "331"
+        },
+        {
+          "awayTeamId": "367",
+          "homeTeamId": "368"
+        },
+        {
+          "awayTeamId": "131",
+          "homeTeamId": "621"
+        },
+        {
+          "awayTeamId": "681",
+          "homeTeamId": "13"
+        },
+        {
+          "awayTeamId": "418",
+          "homeTeamId": "940"
+        },
+        {
+          "awayTeamId": "2497",
+          "homeTeamId": "714"
+        },
+        {
+          "awayTeamId": "1108",
+          "homeTeamId": "1049"
+        },
+        {
+          "awayTeamId": "150",
+          "homeTeamId": "3709"
+        },
+        {
+          "awayTeamId": "1531",
+          "homeTeamId": "1050"
+        }
+      ]
+    },
+    {
+      "date": "15/03/26",
+      "matchday": 28,
+      "matches": [
+        {
+          "awayTeamId": "1531",
+          "homeTeamId": "418"
+        },
+        {
+          "awayTeamId": "714",
+          "homeTeamId": "237"
+        },
+        {
+          "awayTeamId": "3368",
+          "homeTeamId": "367"
+        },
+        {
+          "awayTeamId": "1050",
+          "homeTeamId": "1108"
+        },
+        {
+          "awayTeamId": "331",
+          "homeTeamId": "681"
+        },
+        {
+          "awayTeamId": "3709",
+          "homeTeamId": "13"
+        },
+        {
+          "awayTeamId": "368",
+          "homeTeamId": "131"
+        },
+        {
+          "awayTeamId": "940",
+          "homeTeamId": "150"
+        },
+        {
+          "awayTeamId": "1049",
+          "homeTeamId": "2497"
+        },
+        {
+          "awayTeamId": "621",
+          "homeTeamId": "12321"
+        }
+      ]
+    },
+    {
+      "date": "22/03/26",
+      "matchday": 29,
+      "matches": [
+        {
+          "awayTeamId": "13",
+          "homeTeamId": "418"
+        },
+        {
+          "awayTeamId": "12321",
+          "homeTeamId": "331"
+        },
+        {
+          "awayTeamId": "681",
+          "homeTeamId": "1050"
+        },
+        {
+          "awayTeamId": "150",
+          "homeTeamId": "621"
+        },
+        {
+          "awayTeamId": "367",
+          "homeTeamId": "131"
+        },
+        {
+          "awayTeamId": "237",
+          "homeTeamId": "1531"
+        },
+        {
+          "awayTeamId": "3709",
+          "homeTeamId": "714"
+        },
+        {
+          "awayTeamId": "2497",
+          "homeTeamId": "3368"
+        },
+        {
+          "awayTeamId": "1049",
+          "homeTeamId": "368"
+        },
+        {
+          "awayTeamId": "1108",
+          "homeTeamId": "940"
+        }
+      ]
+    },
+    {
+      "date": "05/04/26",
+      "matchday": 30,
+      "matches": [
+        {
+          "awayTeamId": "940",
+          "homeTeamId": "1049"
+        },
+        {
+          "awayTeamId": "1531",
+          "homeTeamId": "367"
+        },
+        {
+          "awayTeamId": "3368",
+          "homeTeamId": "681"
+        },
+        {
+          "awayTeamId": "331",
+          "homeTeamId": "1108"
+        },
+        {
+          "awayTeamId": "131",
+          "homeTeamId": "13"
+        },
+        {
+          "awayTeamId": "714",
+          "homeTeamId": "150"
+        },
+        {
+          "awayTeamId": "1050",
+          "homeTeamId": "12321"
+        },
+        {
+          "awayTeamId": "418",
+          "homeTeamId": "237"
+        },
+        {
+          "awayTeamId": "368",
+          "homeTeamId": "2497"
+        },
+        {
+          "awayTeamId": "621",
+          "homeTeamId": "3709"
+        }
+      ]
+    },
+    {
+      "date": "12/04/26",
+      "matchday": 31,
+      "matches": [
+        {
+          "awayTeamId": "3709",
+          "homeTeamId": "3368"
+        },
+        {
+          "awayTeamId": "12321",
+          "homeTeamId": "418"
+        },
+        {
+          "awayTeamId": "1050",
+          "homeTeamId": "621"
+        },
+        {
+          "awayTeamId": "714",
+          "homeTeamId": "131"
+        },
+        {
+          "awayTeamId": "2497",
+          "homeTeamId": "940"
+        },
+        {
+          "awayTeamId": "1049",
+          "homeTeamId": "1531"
+        },
+        {
+          "awayTeamId": "367",
+          "homeTeamId": "237"
+        },
+        {
+          "awayTeamId": "1108",
+          "homeTeamId": "681"
+        },
+        {
+          "awayTeamId": "13",
+          "homeTeamId": "368"
+        },
+        {
+          "awayTeamId": "150",
+          "homeTeamId": "331"
+        }
+      ]
+    },
+    {
+      "date": "19/04/26",
+      "matchday": 32,
+      "matches": [
+        {
+          "awayTeamId": "12321",
+          "homeTeamId": "1049"
+        },
+        {
+          "awayTeamId": "237",
+          "homeTeamId": "1108"
+        },
+        {
+          "awayTeamId": "418",
+          "homeTeamId": "150"
+        },
+        {
+          "awayTeamId": "3368",
+          "homeTeamId": "714"
+        },
+        {
+          "awayTeamId": "368",
+          "homeTeamId": "331"
+        },
+        {
+          "awayTeamId": "681",
+          "homeTeamId": "367"
+        },
+        {
+          "awayTeamId": "621",
+          "homeTeamId": "13"
+        },
+        {
+          "awayTeamId": "131",
+          "homeTeamId": "3709"
+        },
+        {
+          "awayTeamId": "940",
+          "homeTeamId": "1050"
+        },
+        {
+          "awayTeamId": "1531",
+          "homeTeamId": "2497"
+        }
+      ]
+    },
+    {
+      "date": "22/04/26",
+      "matchday": 33,
+      "matches": [
+        {
+          "awayTeamId": "3709",
+          "homeTeamId": "681"
+        },
+        {
+          "awayTeamId": "331",
+          "homeTeamId": "621"
+        },
+        {
+          "awayTeamId": "940",
+          "homeTeamId": "131"
+        },
+        {
+          "awayTeamId": "368",
+          "homeTeamId": "3368"
+        },
+        {
+          "awayTeamId": "1049",
+          "homeTeamId": "237"
+        },
+        {
+          "awayTeamId": "1050",
+          "homeTeamId": "2497"
+        },
+        {
+          "awayTeamId": "1108",
+          "homeTeamId": "418"
+        },
+        {
+          "awayTeamId": "13",
+          "homeTeamId": "1531"
+        },
+        {
+          "awayTeamId": "150",
+          "homeTeamId": "12321"
+        },
+        {
+          "awayTeamId": "714",
+          "homeTeamId": "367"
+        }
+      ]
+    },
+    {
+      "date": "03/05/26",
+      "matchday": 34,
+      "matches": [
+        {
+          "awayTeamId": "3368",
+          "homeTeamId": "1050"
+        },
+        {
+          "awayTeamId": "681",
+          "homeTeamId": "368"
+        },
+        {
+          "awayTeamId": "621",
+          "homeTeamId": "1108"
+        },
+        {
+          "awayTeamId": "2497",
+          "homeTeamId": "150"
+        },
+        {
+          "awayTeamId": "1531",
+          "homeTeamId": "940"
+        },
+        {
+          "awayTeamId": "418",
+          "homeTeamId": "714"
+        },
+        {
+          "awayTeamId": "367",
+          "homeTeamId": "3709"
+        },
+        {
+          "awayTeamId": "237",
+          "homeTeamId": "12321"
+        },
+        {
+          "awayTeamId": "13",
+          "homeTeamId": "1049"
+        },
+        {
+          "awayTeamId": "131",
+          "homeTeamId": "331"
+        }
+      ]
+    },
+    {
+      "date": "10/05/26",
+      "matchday": 35,
+      "matches": [
+        {
+          "awayTeamId": "12321",
+          "homeTeamId": "367"
+        },
+        {
+          "awayTeamId": "1049",
+          "homeTeamId": "621"
+        },
+        {
+          "awayTeamId": "940",
+          "homeTeamId": "13"
+        },
+        {
+          "awayTeamId": "418",
+          "homeTeamId": "131"
+        },
+        {
+          "awayTeamId": "331",
+          "homeTeamId": "3368"
+        },
+        {
+          "awayTeamId": "1050",
+          "homeTeamId": "237"
+        },
+        {
+          "awayTeamId": "1108",
+          "homeTeamId": "1531"
+        },
+        {
+          "awayTeamId": "150",
+          "homeTeamId": "681"
+        },
+        {
+          "awayTeamId": "714",
+          "homeTeamId": "368"
+        },
+        {
+          "awayTeamId": "3709",
+          "homeTeamId": "2497"
+        }
+      ]
+    },
+    {
+      "date": "13/05/26",
+      "matchday": 36,
+      "matches": [
+        {
+          "awayTeamId": "131",
+          "homeTeamId": "1108"
+        },
+        {
+          "awayTeamId": "1531",
+          "homeTeamId": "150"
+        },
+        {
+          "awayTeamId": "3368",
+          "homeTeamId": "940"
+        },
+        {
+          "awayTeamId": "237",
+          "homeTeamId": "3709"
+        },
+        {
+          "awayTeamId": "681",
+          "homeTeamId": "12321"
+        },
+        {
+          "awayTeamId": "621",
+          "homeTeamId": "714"
+        },
+        {
+          "awayTeamId": "13",
+          "homeTeamId": "331"
+        },
+        {
+          "awayTeamId": "367",
+          "homeTeamId": "1049"
+        },
+        {
+          "awayTeamId": "368",
+          "homeTeamId": "1050"
+        },
+        {
+          "awayTeamId": "2497",
+          "homeTeamId": "418"
+        }
+      ]
+    },
+    {
+      "date": "17/05/26",
+      "matchday": 37,
+      "matches": [
+        {
+          "awayTeamId": "940",
+          "homeTeamId": "621"
+        },
+        {
+          "awayTeamId": "12321",
+          "homeTeamId": "13"
+        },
+        {
+          "awayTeamId": "150",
+          "homeTeamId": "131"
+        },
+        {
+          "awayTeamId": "3709",
+          "homeTeamId": "1531"
+        },
+        {
+          "awayTeamId": "237",
+          "homeTeamId": "3368"
+        },
+        {
+          "awayTeamId": "1050",
+          "homeTeamId": "367"
+        },
+        {
+          "awayTeamId": "1049",
+          "homeTeamId": "681"
+        },
+        {
+          "awayTeamId": "1108",
+          "homeTeamId": "2497"
+        },
+        {
+          "awayTeamId": "714",
+          "homeTeamId": "331"
+        },
+        {
+          "awayTeamId": "418",
+          "homeTeamId": "368"
+        }
+      ]
+    },
+    {
+      "date": "24/05/26",
+      "matchday": 38,
+      "matches": [
+        {
+          "awayTeamId": "367",
+          "homeTeamId": "1108"
+        },
+        {
+          "awayTeamId": "3368",
+          "homeTeamId": "150"
+        },
+        {
+          "awayTeamId": "368",
+          "homeTeamId": "940"
+        },
+        {
+          "awayTeamId": "681",
+          "homeTeamId": "714"
+        },
+        {
+          "awayTeamId": "331",
+          "homeTeamId": "3709"
+        },
+        {
+          "awayTeamId": "2497",
+          "homeTeamId": "237"
+        },
+        {
+          "awayTeamId": "621",
+          "homeTeamId": "418"
+        },
+        {
+          "awayTeamId": "13",
+          "homeTeamId": "1050"
+        },
+        {
+          "awayTeamId": "131",
+          "homeTeamId": "1049"
+        },
+        {
+          "awayTeamId": "1531",
+          "homeTeamId": "12321"
+        }
+      ]
+    }
+  ]
+}

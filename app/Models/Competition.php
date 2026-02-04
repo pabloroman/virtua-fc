@@ -37,7 +37,8 @@ class Competition extends Model
     public function teams(): BelongsToMany
     {
         return $this->belongsToMany(Team::class, 'competition_teams')
-            ->withPivot('season');
+            ->withPivot('season')
+            ->orderBy('name');
     }
 
     public function fixtureTemplates(): HasMany
