@@ -73,13 +73,13 @@
                                     @if($finances->performance_bonus > 0)
                                     <div class="flex justify-between">
                                         <span class="text-slate-600">Performance Bonus</span>
-                                        <span class="font-medium text-slate-900">{{ \App\Game\Services\ContractService::formatWage($finances->performance_bonus) }}</span>
+                                        <span class="font-medium text-slate-900">{{ \App\Support\Money::format($finances->performance_bonus) }}</span>
                                     </div>
                                     @endif
                                     @if($finances->cup_bonus > 0)
                                     <div class="flex justify-between">
                                         <span class="text-slate-600">Cup Prize Money</span>
-                                        <span class="font-medium text-slate-900">{{ \App\Game\Services\ContractService::formatWage($finances->cup_bonus) }}</span>
+                                        <span class="font-medium text-slate-900">{{ \App\Support\Money::format($finances->cup_bonus) }}</span>
                                     </div>
                                     @endif
                                     <div class="flex justify-between pt-2 border-t border-green-200">
@@ -100,7 +100,7 @@
                                     @if($finances->transfer_expense > 0)
                                     <div class="flex justify-between">
                                         <span class="text-slate-600">Transfers</span>
-                                        <span class="font-medium text-slate-900">{{ \App\Game\Services\ContractService::formatWage($finances->transfer_expense) }}</span>
+                                        <span class="font-medium text-slate-900">{{ \App\Support\Money::format($finances->transfer_expense) }}</span>
                                     </div>
                                     @endif
                                     <div class="flex justify-between pt-2 border-t border-red-200">

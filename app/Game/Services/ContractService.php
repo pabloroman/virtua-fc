@@ -6,6 +6,7 @@ use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\Team;
+use App\Support\Money;
 use Illuminate\Support\Collection;
 
 class ContractService
@@ -255,31 +256,6 @@ class ContractService
             ->groupBy(fn ($player) => $player->contract_until->year);
     }
 
-    /**
-     * Format wage in cents to a display string.
-     *
-     * @param int $wageCents
-     * @return string e.g., "€2.5M", "€450K", "€200K"
-     */
-    public static function formatWage(int $wageCents): string
-    {
-        $euros = $wageCents / 100;
-
-        if ($euros >= 1_000_000) {
-            $formatted = round($euros / 1_000_000, 1);
-            // Remove .0 for whole numbers
-            $formatted = ($formatted == (int) $formatted) ? (int) $formatted : $formatted;
-            return "€ {$formatted} M";
-        }
-
-        if ($euros >= 1_000) {
-            $formatted = round($euros / 1_000);
-            return "€ {$formatted} K";
-        }
-
-        return "€ " . number_format($euros, 0);
-    }
-
     // =========================================
     // CONTRACT RENEWAL
     // =========================================
@@ -325,7 +301,7 @@ class ContractService
         return [
             'wage' => $demandedWage,
             'contractYears' => $contractYears,
-            'formattedWage' => self::formatWage($demandedWage),
+            'formattedWage' => Money::format($demandedWage),
         ];
     }
 

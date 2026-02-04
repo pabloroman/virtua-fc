@@ -459,7 +459,7 @@
                                             ['name' => 'Forwards', 'players' => $forwards, 'role' => 'Forward'],
                                         ] as $group)
                                             @if($group['players']->isNotEmpty())
-                                                <tr class="bg-slate-100">
+                                                <tr class="bg-slate-200">
                                                     <td colspan="9" class="py-2 px-2 text-xs font-semibold text-slate-600 uppercase tracking-wide">
                                                         {{ $group['name'] }}
                                                         <span class="font-normal text-slate-400">
@@ -475,7 +475,7 @@
                                                     @endphp
                                                     <tr
                                                         @click="toggle('{{ $player->id }}', {{ $isUnavailable ? 'true' : 'false' }})"
-                                                        class="border-b border-slate-100 transition-colors
+                                                        class="border-b border-slate-200 transition-colors
                                                             @if($isUnavailable)
                                                                 text-slate-400 cursor-not-allowed
                                                             @else

@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Game\Services\ContractService;
 use App\Models\Competition;
+use App\Support\Money;
 use App\Models\GamePlayer;
 use App\Models\Team;
 use Illuminate\Console\Command;
@@ -74,7 +75,7 @@ class BackfillPlayerWages extends Command
                     'name' => $player->name,
                     'age' => $player->age,
                     'market_value' => $player->market_value,
-                    'wage' => ContractService::formatWage($annualWage),
+                    'wage' => Money::format($annualWage),
                 ];
             }
 

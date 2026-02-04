@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Game\Services\ContractService;
+use App\Support\Money;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -105,7 +105,7 @@ class TransferOffer extends Model
      */
     public function getFormattedTransferFeeAttribute(): string
     {
-        return ContractService::formatWage($this->transfer_fee);
+        return Money::format($this->transfer_fee);
     }
 
     /**

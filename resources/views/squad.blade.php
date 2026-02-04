@@ -188,7 +188,7 @@
                         $lowFitnessCount = $allPlayers->filter(fn($p) => $p->fitness < 70)->count();
                         $lowMoraleCount = $allPlayers->filter(fn($p) => $p->morale < 65)->count();
                         $totalWageBill = $allPlayers->sum('annual_wage');
-                        $formattedWageBill = \App\Game\Services\ContractService::formatWage($totalWageBill);
+                        $formattedWageBill = \App\Support\Money::format($totalWageBill);
                     @endphp
                     <div class="mt-8 pt-6 border-t">
                         <div class="flex flex-wrap gap-8 text-sm text-slate-600">

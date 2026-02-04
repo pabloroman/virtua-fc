@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Support\CountryCodeMapper;
+use App\Support\Money;
 use App\Support\PositionMapper;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
@@ -225,7 +226,7 @@ class GamePlayer extends Model
             return null;
         }
 
-        return \App\Game\Services\ContractService::formatWage($this->pending_annual_wage);
+        return Money::format($this->pending_annual_wage);
     }
 
     /**
@@ -387,12 +388,12 @@ class GamePlayer extends Model
      */
     public function getFormattedWageAttribute(): string
     {
-        return \App\Game\Services\ContractService::formatWage($this->annual_wage);
+        return Money::format($this->annual_wage);
     }
 
     public function getFormattedMarketValueAttribute(): string
     {
-        return \App\Game\Services\ContractService::formatWage($this->market_value_cents);
+        return Money::format($this->market_value_cents);
     }
 
     /**

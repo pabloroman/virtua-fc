@@ -28,7 +28,7 @@
                         <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4">
                             <div class="text-xs text-slate-500 uppercase tracking-wide">Squad Value</div>
                             <div class="text-2xl font-bold text-blue-700">
-                                {{ \App\Game\Services\ContractService::formatWage($squadValue) }}
+                                {{ \App\Support\Money::format($squadValue) }}
                             </div>
                         </div>
 
@@ -78,13 +78,13 @@
                                 @if($finances->performance_bonus > 0)
                                 <div class="flex justify-between items-center">
                                     <span class="text-slate-600">Performance Bonus</span>
-                                    <span class="font-semibold">{{ \App\Game\Services\ContractService::formatWage($finances->performance_bonus) }}</span>
+                                    <span class="font-semibold">{{ \App\Support\Money::format($finances->performance_bonus) }}</span>
                                 </div>
                                 @endif
                                 @if($finances->cup_bonus > 0)
                                 <div class="flex justify-between items-center">
                                     <span class="text-slate-600">Cup Prize Money</span>
-                                    <span class="font-semibold">{{ \App\Game\Services\ContractService::formatWage($finances->cup_bonus) }}</span>
+                                    <span class="font-semibold">{{ \App\Support\Money::format($finances->cup_bonus) }}</span>
                                 </div>
                                 @endif
                                 <div class="flex justify-between items-center pt-3 border-t border-green-200">
@@ -110,7 +110,7 @@
                                 @if($finances->transfer_expense > 0)
                                 <div class="flex justify-between items-center">
                                     <span class="text-slate-600">Transfer Fees</span>
-                                    <span class="font-semibold">{{ \App\Game\Services\ContractService::formatWage($finances->transfer_expense) }}</span>
+                                    <span class="font-semibold">{{ \App\Support\Money::format($finances->transfer_expense) }}</span>
                                 </div>
                                 @endif
                                 <div class="flex justify-between items-center pt-3 border-t border-red-200">
@@ -163,7 +163,7 @@
                             <div class="mt-4 pt-4 border-t text-sm text-slate-600">
                                 <div class="flex justify-between">
                                     <span>Total Annual Wage Bill</span>
-                                    <span class="font-semibold">{{ \App\Game\Services\ContractService::formatWage($wageBill) }}</span>
+                                    <span class="font-semibold">{{ \App\Support\Money::format($wageBill) }}</span>
                                 </div>
                             </div>
                             @else
@@ -196,7 +196,7 @@
                             <div class="mt-4 pt-4 border-t text-sm text-slate-600">
                                 <div class="flex justify-between">
                                     <span>Total Squad Value</span>
-                                    <span class="font-semibold text-blue-700">{{ \App\Game\Services\ContractService::formatWage($squadValue) }}</span>
+                                    <span class="font-semibold text-blue-700">{{ \App\Support\Money::format($squadValue) }}</span>
                                 </div>
                             </div>
                             @else

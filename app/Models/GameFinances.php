@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Game\Services\ContractService;
+use App\Support\Money;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -45,7 +45,7 @@ class GameFinances extends Model
      */
     public function getFormattedBalanceAttribute(): string
     {
-        return ContractService::formatWage($this->balance);
+        return Money::format($this->balance);
     }
 
     /**
@@ -53,7 +53,7 @@ class GameFinances extends Model
      */
     public function getFormattedWageBudgetAttribute(): string
     {
-        return ContractService::formatWage($this->wage_budget);
+        return Money::format($this->wage_budget);
     }
 
     /**
@@ -61,7 +61,7 @@ class GameFinances extends Model
      */
     public function getFormattedTransferBudgetAttribute(): string
     {
-        return ContractService::formatWage($this->transfer_budget);
+        return Money::format($this->transfer_budget);
     }
 
     /**
@@ -69,7 +69,7 @@ class GameFinances extends Model
      */
     public function getFormattedTvRevenueAttribute(): string
     {
-        return ContractService::formatWage($this->tv_revenue);
+        return Money::format($this->tv_revenue);
     }
 
     /**
@@ -77,7 +77,7 @@ class GameFinances extends Model
      */
     public function getFormattedTotalRevenueAttribute(): string
     {
-        return ContractService::formatWage($this->total_revenue);
+        return Money::format($this->total_revenue);
     }
 
     /**
@@ -85,7 +85,7 @@ class GameFinances extends Model
      */
     public function getFormattedTotalExpenseAttribute(): string
     {
-        return ContractService::formatWage($this->total_expense);
+        return Money::format($this->total_expense);
     }
 
     /**
@@ -93,8 +93,7 @@ class GameFinances extends Model
      */
     public function getFormattedSeasonProfitLossAttribute(): string
     {
-        $prefix = $this->season_profit_loss >= 0 ? '+' : '';
-        return $prefix . ContractService::formatWage($this->season_profit_loss);
+        return Money::formatSigned($this->season_profit_loss);
     }
 
     /**
@@ -102,6 +101,6 @@ class GameFinances extends Model
      */
     public function getFormattedWageExpenseAttribute(): string
     {
-        return ContractService::formatWage($this->wage_expense);
+        return Money::format($this->wage_expense);
     }
 }

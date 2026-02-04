@@ -278,11 +278,4 @@ class FinancialService
         return $league?->tier ?? 1;
     }
 
-    /**
-     * Format a money value for display.
-     */
-    public static function formatMoney(int $cents): string
-    {
-        return ContractService::formatWage($cents);
-    }
 }
