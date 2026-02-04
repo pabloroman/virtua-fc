@@ -27,6 +27,7 @@ class GamePlayer extends Model
         'joined_on' => 'date',
         'fitness' => 'integer',
         'morale' => 'integer',
+        'durability' => 'integer',
         'injury_until' => 'date',
         'suspended_until_matchday' => 'integer',
         'appearances' => 'integer',

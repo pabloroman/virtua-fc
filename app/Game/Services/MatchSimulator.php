@@ -8,10 +8,15 @@ use App\Game\Enums\Formation;
 use App\Game\Enums\Mentality;
 use App\Models\GamePlayer;
 use App\Models\Team;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
 class MatchSimulator
 {
+    public function __construct(
+        private readonly InjuryService $injuryService = new InjuryService(),
+    ) {
+    }
     /**
      * Match performance cache - stores per-player performance modifiers for the current match.
      * Each player gets a random "form on the day" that affects their contribution.
@@ -72,15 +77,6 @@ class MatchSimulator
         'Goalkeeper' => 4,
     ];
 
-    // Injury types with weeks out
-    private const INJURY_TYPES = [
-        'Muscle strain' => [1, 2],
-        'Hamstring injury' => [2, 4],
-        'Knee injury' => [3, 6],
-        'Ankle injury' => [2, 4],
-        'Calf injury' => [2, 3],
-        'Groin injury' => [2, 4],
-    ];
 
     /**
      * Simulate a match result between two teams.
@@ -346,50 +342,39 @@ class MatchSimulator
     }
 
     /**
-     * Generate injury events (rare).
+     * Generate injury events using the InjuryService.
+     * Checks each player individually based on their durability, fitness, and age.
      *
+     * @param string $teamId
+     * @param Collection $players
+     * @param Carbon|null $lastMatchDate The date of the team's last match (for congestion)
+     * @param Carbon|null $currentMatchDate The date of the current match
      * @return Collection<MatchEventData>
      */
-    private function generateInjuryEvents(string $teamId, Collection $players): Collection
-    {
+    private function generateInjuryEvents(
+        string $teamId,
+        Collection $players,
+        ?Carbon $lastMatchDate = null,
+        ?Carbon $currentMatchDate = null,
+    ): Collection {
         $events = collect();
 
-        // Chance of injury per team per match (configurable)
-        $injuryChance = config('match_simulation.injury_chance', 5.0);
-        if (!$this->percentChance($injuryChance)) {
-            return $events;
+        foreach ($players as $player) {
+            if ($this->injuryService->rollForInjury($player, $lastMatchDate, $currentMatchDate)) {
+                $injury = $this->injuryService->generateInjury($player);
+
+                $events->push(MatchEventData::injury(
+                    $teamId,
+                    $player->id,
+                    $injury['minute'],
+                    $injury['type'],
+                    $injury['weeks'],
+                ));
+
+                // Only one injury per team per match (to avoid multiple injuries in a single game)
+                break;
+            }
         }
-
-        // Pick a random player (weighted slightly toward physical players)
-        $player = $this->pickPlayerByPosition($players, [
-            'Centre-Forward' => 10,
-            'Left Winger' => 10,
-            'Right Winger' => 10,
-            'Central Midfield' => 10,
-            'Defensive Midfield' => 10,
-            'Left-Back' => 8,
-            'Right-Back' => 8,
-            'Centre-Back' => 8,
-            'Attacking Midfield' => 8,
-            'Second Striker' => 8,
-            'Left Midfield' => 8,
-            'Right Midfield' => 8,
-            'Goalkeeper' => 2,
-        ]);
-
-        if (!$player) {
-            return $events;
-        }
-
-        // Pick random injury type
-        $injuryTypes = array_keys(self::INJURY_TYPES);
-        $injuryType = $injuryTypes[array_rand($injuryTypes)];
-        $weeksRange = self::INJURY_TYPES[$injuryType];
-        $weeksOut = rand($weeksRange[0], $weeksRange[1]);
-
-        $minute = rand(1, 85);
-
-        $events->push(MatchEventData::injury($teamId, $player->id, $minute, $injuryType, $weeksOut));
 
         return $events;
     }

@@ -12,6 +12,7 @@ use App\Game\Events\SeasonDevelopmentProcessed;
 use App\Game\Services\ContractService;
 use App\Game\Services\EligibilityService;
 use App\Game\Services\FinancialService;
+use App\Game\Services\InjuryService;
 use App\Game\Services\PlayerConditionService;
 use App\Game\Services\PlayerDevelopmentService;
 use App\Game\Services\StandingsCalculator;
@@ -481,6 +482,7 @@ class GameProjector extends Projector
                 'joined_on' => $joinedOn,
                 'fitness' => rand(90, 100),
                 'morale' => rand(65, 80),
+                'durability' => InjuryService::generateDurability(),
                 // Development fields
                 'game_technical_ability' => $player->technical_ability,
                 'game_physical_ability' => $player->physical_ability,

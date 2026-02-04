@@ -20,6 +20,8 @@ A football manager simulation game built with Laravel and Event Sourcing.
 - Player squads with technical and physical attributes
 - Fitness system: players lose fitness when playing, recover during rest
 - Morale system: affected by match results and individual performance
+- Injury system: realistic injuries from minor strains to season-ending ACL tears
+- Hidden durability attribute affects injury proneness
 - Lineup selection with position compatibility indicators
 
 ### Season Progression
@@ -192,6 +194,7 @@ Detailed documentation on game systems and design decisions:
 - **[Player Development](docs/game-systems/player-development.md)** - Age-based growth curves and playing time bonuses
 - **[Market Value Dynamics](docs/game-systems/market-value-dynamics.md)** - How player values evolve over seasons
 - **[Match Simulation](docs/game-systems/match-simulation.md)** - Poisson distribution, team strength, striker bonus
+- **[Injury System](docs/game-systems/injury-system.md)** - Durability, injury probability, and recovery times
 - **[Club Economy System](docs/game-systems/club-economy-system.md)** - Contracts, wages, transfers, youth academy (roadmap)
 
 ## Data Structure
