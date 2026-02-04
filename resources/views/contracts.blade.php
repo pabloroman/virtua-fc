@@ -203,6 +203,75 @@
                     </div>
                     @endif
 
+                    {{-- Two Column: Highest Earners & Most Valuable --}}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        {{-- Highest Earners --}}
+                        <div class="border rounded-lg p-6">
+                            <h4 class="font-semibold text-lg text-slate-900 mb-4">Highest Earners</h4>
+                            @if($highestEarners->isNotEmpty())
+                            <div class="space-y-3">
+                                @foreach($highestEarners as $player)
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <span class="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-600">
+                                            {{ $loop->iteration }}
+                                        </span>
+                                        <div>
+                                            <div class="font-medium text-slate-900">{{ $player->player->name }}</div>
+                                            <div class="text-xs text-slate-500">{{ $player->position }} &middot; {{ $player->age }} years</div>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="font-semibold text-slate-900">{{ $player->formatted_wage }}/yr</div>
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
+                            <div class="mt-4 pt-4 border-t text-sm text-slate-600">
+                                <div class="flex justify-between">
+                                    <span>Total Annual Wage Bill</span>
+                                    <span class="font-semibold">{{ \App\Support\Money::format($wageBill) }}</span>
+                                </div>
+                            </div>
+                            @else
+                            <p class="text-slate-500">No players found.</p>
+                            @endif
+                        </div>
+
+                        {{-- Most Valuable --}}
+                        <div class="border rounded-lg p-6">
+                            <h4 class="font-semibold text-lg text-slate-900 mb-4">Most Valuable Players</h4>
+                            @if($mostValuable->isNotEmpty())
+                            <div class="space-y-3">
+                                @foreach($mostValuable as $player)
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <span class="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-xs font-bold text-blue-600">
+                                            {{ $loop->iteration }}
+                                        </span>
+                                        <div>
+                                            <div class="font-medium text-slate-900">{{ $player->player->name }}</div>
+                                            <div class="text-xs text-slate-500">{{ $player->position }} &middot; {{ $player->age }} years</div>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="font-semibold text-blue-700">{{ $player->formatted_market_value }}</div>
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
+                            <div class="mt-4 pt-4 border-t text-sm text-slate-600">
+                                <div class="flex justify-between">
+                                    <span>Total Squad Value</span>
+                                    <span class="font-semibold text-blue-700">{{ \App\Support\Money::format($squadValue) }}</span>
+                                </div>
+                            </div>
+                            @else
+                            <p class="text-slate-500">No players found.</p>
+                            @endif
+                        </div>
+                    </div>
+
                     {{-- Contracts Overview by Year --}}
                     @if($contractsByYear->isNotEmpty())
                     <div class="border-t pt-6">

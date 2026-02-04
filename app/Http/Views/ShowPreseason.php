@@ -37,7 +37,7 @@ class ShowPreseason
         $playersWithOffers = $incomingOffers->pluck('game_player_id')->toArray();
 
         // Get completed transfers this window
-        $completedTransfers = TransferOffer::with(['gamePlayer.player', 'offeringTeam', 'sellingTeam'])
+        $completedTransfers = TransferOffer::with(['gamePlayer.player', 'gamePlayer.team', 'offeringTeam'])
             ->where('game_id', $gameId)
             ->where('status', TransferOffer::STATUS_COMPLETED)
             ->whereHas('gamePlayer', function ($q) use ($game) {

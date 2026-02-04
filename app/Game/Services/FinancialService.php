@@ -62,23 +62,53 @@ class FinancialService
         $tvRevenue = $this->calculateTvRevenue($squadValue, $this->getLeagueTier($game));
         $wageBill = $this->calculateAnnualWageBill($game);
 
-        // Initial balance: 20% of TV revenue as starting capital
-        $initialBalance = (int) ($tvRevenue * 0.20);
+        // Initial balance: TV revenue minus first half of wages
+        $firstWagePayment = (int) ($wageBill / 2);
+        $initialBalance = $tvRevenue - $firstWagePayment;
 
-        // Wage budget: 70% of expected TV revenue
-        $wageBudget = (int) ($tvRevenue * 0.70);
+        // Wage budget: 70% of expected TV revenue (remaining after first payment)
+        $wageBudget = (int) ($tvRevenue * 0.70) - $firstWagePayment;
 
-        // Transfer budget: 10% of TV revenue + (wage budget - actual wage bill)
-        $wageHeadroom = max(0, $wageBudget - $wageBill);
+        // Transfer budget: 10% of TV revenue + (wage budget headroom)
+        $expectedRemainingWages = $wageBill - $firstWagePayment;
+        $wageHeadroom = max(0, $wageBudget - $expectedRemainingWages);
         $transferBudget = (int) ($tvRevenue * 0.10) + (int) ($wageHeadroom * 0.5);
 
-        return GameFinances::create([
+        $finances = GameFinances::create([
             'game_id' => $game->id,
             'balance' => $initialBalance,
-            'wage_budget' => $wageBudget,
+            'wage_budget' => max(0, $wageBudget),
             'transfer_budget' => $transferBudget,
             'tv_revenue' => $tvRevenue,
+            'wage_expense' => $firstWagePayment,
+            'total_revenue' => $tvRevenue,
+            'total_expense' => $firstWagePayment,
+            'season_profit_loss' => $tvRevenue - $firstWagePayment,
         ]);
+
+        // Record TV rights transaction
+        FinancialTransaction::recordIncome(
+            gameId: $game->id,
+            category: FinancialTransaction::CATEGORY_TV_RIGHTS,
+            amount: $tvRevenue,
+            description: "Season {$game->season} TV rights distribution",
+            transactionDate: $game->current_date?->toDateString() ?? now()->toDateString(),
+        );
+
+        // Record initial wage payment transaction
+        $playerCount = GamePlayer::where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->count();
+
+        FinancialTransaction::recordExpense(
+            gameId: $game->id,
+            category: FinancialTransaction::CATEGORY_WAGE,
+            amount: $firstWagePayment,
+            description: "Summer wage payment ({$playerCount} players)",
+            transactionDate: $game->current_date?->toDateString() ?? now()->toDateString(),
+        );
+
+        return $finances;
     }
 
     /**

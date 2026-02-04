@@ -46,6 +46,15 @@ class TransferOffer extends Model
     }
 
     /**
+     * Get the selling team (the player's current team).
+     * This is accessed through the gamePlayer relationship.
+     */
+    public function getSellingTeamAttribute(): ?Team
+    {
+        return $this->gamePlayer?->team;
+    }
+
+    /**
      * Check if the offer is still pending.
      */
     public function isPending(): bool
