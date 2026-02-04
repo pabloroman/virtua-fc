@@ -6,431 +6,275 @@
     </x-slot>
 
     <div>
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-
-            {{-- Next Match Hero --}}
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             @if($nextMatch)
-            <div class="bg-gradient-to-br from-orange-50 to-orange-200 overflow-hidden shadow-lg sm:rounded-lg">
-                <div class="p-8">
-                    {{-- Competition & Date --}}
-                    <div class="text-center mb-6">
-                        <span class="inline-flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full text-sm text-slate-600">
-                            <span>{{ $nextMatch->competition->name ?? 'League' }}</span>
-                            <span class="text-slate-500">|</span>
-                            <span>{{ $nextMatch->round_name ?? 'Matchday '.$nextMatch->round_number }}</span>
-                            <span class="text-slate-500">|</span>
-                            <span>{{ $nextMatch->scheduled_date->format('D, M j') }}</span>
-                        </span>
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-12 grid grid-cols-3 gap-12">
+                    {{-- Left Column (2/3) - Main Content --}}
+                    <div class="col-span-2 space-y-8">
+                        {{-- Next Match --}}
+                        <div>
+                            {{-- Competition & Date Header --}}
+                            <div class="flex items-center justify-between mb-6">
+                                <h3 class="font-semibold text-xl text-slate-900">Next Match</h3>
+                                <div class="flex items-center gap-3 text-sm text-slate-500">
+                                    <span>{{ $nextMatch->competition->name ?? 'League' }}</span>
+                                    <span class="text-slate-300">|</span>
+                                    <span>{{ $nextMatch->round_name ?? 'Matchday '.$nextMatch->round_number }}</span>
+                                    <span class="text-slate-300">|</span>
+                                    <span class="font-medium text-slate-700">{{ $nextMatch->scheduled_date->format('D, M j') }}</span>
+                                </div>
+                            </div>
+
+                            {{-- Teams Face-off --}}
+                            <div class="flex items-center justify-between py-4">
+                                {{-- Home Team --}}
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-4">
+                                        <img src="{{ $nextMatch->homeTeam->image }}" class="w-20 h-20">
+                                        <div>
+                                            <h4 class="text-xl font-bold text-slate-900">{{ $nextMatch->homeTeam->name }}</h4>
+                                            @if($homeStanding)
+                                            <div class="text-sm text-slate-500 mt-1">
+                                                {{ $homeStanding->position }}{{ $homeStanding->position == 1 ? 'st' : ($homeStanding->position == 2 ? 'nd' : ($homeStanding->position == 3 ? 'rd' : 'th')) }} &middot; {{ $homeStanding->points }} pts
+                                            </div>
+                                            @endif
+                                            <div class="flex gap-1 mt-2">
+                                                @php $homeForm = $nextMatch->home_team_id === $game->team_id ? $playerForm : $opponentForm; @endphp
+                                                @forelse($homeForm as $result)
+                                                    <span class="w-5 h-5 rounded text-xs font-bold flex items-center justify-center
+                                                        @if($result === 'W') bg-green-500 text-white
+                                                        @elseif($result === 'D') bg-slate-400 text-white
+                                                        @else bg-red-500 text-white @endif">
+                                                        {{ $result }}
+                                                    </span>
+                                                @empty
+                                                    <span class="text-slate-400 text-xs">No form</span>
+                                                @endforelse
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- VS --}}
+                                <div class="px-8 text-center">
+                                    <div class="text-2xl font-black text-slate-300">vs</div>
+                                </div>
+
+                                {{-- Away Team --}}
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-4 flex-row-reverse">
+                                        <img src="{{ $nextMatch->awayTeam->image }}" class="w-20 h-20">
+                                        <div class="text-right">
+                                            <h4 class="text-xl font-bold text-slate-900">{{ $nextMatch->awayTeam->name }}</h4>
+                                            @if($awayStanding)
+                                            <div class="text-sm text-slate-500 mt-1">
+                                                {{ $awayStanding->position }}{{ $awayStanding->position == 1 ? 'st' : ($awayStanding->position == 2 ? 'nd' : ($awayStanding->position == 3 ? 'rd' : 'th')) }} &middot; {{ $awayStanding->points }} pts
+                                            </div>
+                                            @endif
+                                            <div class="flex gap-1 mt-2 justify-end">
+                                                @php $awayForm = $nextMatch->away_team_id === $game->team_id ? $playerForm : $opponentForm; @endphp
+                                                @forelse($awayForm as $result)
+                                                    <span class="w-5 h-5 rounded text-xs font-bold flex items-center justify-center
+                                                        @if($result === 'W') bg-green-500 text-white
+                                                        @elseif($result === 'D') bg-slate-400 text-white
+                                                        @else bg-red-500 text-white @endif">
+                                                        {{ $result }}
+                                                    </span>
+                                                @empty
+                                                    <span class="text-slate-400 text-xs">No form</span>
+                                                @endforelse
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Set Lineup Button --}}
+                            <div class="mt-4">
+                                <a href="{{ route('game.lineup', [$game->id, $nextMatch->id]) }}"
+                                   class="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg transition-colors">
+                                    Set Lineup
+                                </a>
+                            </div>
+                        </div>
+
+                        {{-- Upcoming Fixtures --}}
+                        @if($upcomingFixtures->isNotEmpty())
+                        <div class="pt-8 border-t">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-semibold text-xl text-slate-900">Upcoming Fixtures</h3>
+                                <a href="{{ route('game.calendar', $game->id) }}" class="text-sm text-sky-600 hover:text-sky-800">
+                                    Full Calendar &rarr;
+                                </a>
+                            </div>
+
+                            <div class="space-y-2">
+                                @foreach($upcomingFixtures->take(5) as $fixture)
+                                    <x-fixture-row :match="$fixture" :game="$game" :show-score="false" :highlight-next="false" />
+                                @endforeach
+                            </div>
+                        </div>
+                        @endif
                     </div>
 
-                    {{-- Teams --}}
-                    <div class="flex items-center justify-center gap-8 md:gap-16">
-                        {{-- Home Team --}}
-                        <div class="flex-1 text-center">
-                            <img src="{{ $nextMatch->homeTeam->image }}" class="w-20 h-20 md:w-24 md:h-24 mx-auto mb-3">
-                            <h3 class="text-3xl font-bold text-slate-800">
-                                {{ $nextMatch->homeTeam->name }}
-                            </h3>
-                            @if($nextMatch->home_team_id === $game->team_id)
-                                {{-- Player's form --}}
-                                <div class="flex justify-center gap-1 mt-2">
-                                    @forelse($playerForm as $result)
-                                        <span class="w-6 h-6 rounded text-xs font-bold flex items-center justify-center
-                                            @if($result === 'W') bg-green-500 text-white
-                                            @elseif($result === 'D') bg-slate-500 text-white
-                                            @else bg-red-500 text-white @endif">
-                                            {{ $result }}
-                                        </span>
-                                    @empty
-                                        <span class="text-slate-600 text-sm">No matches yet</span>
-                                    @endforelse
-                                </div>
-                            @else
-                                {{-- Opponent's form --}}
-                                <div class="flex justify-center gap-1 mt-2">
-                                    @forelse($opponentForm as $result)
-                                        <span class="w-6 h-6 rounded text-xs font-bold flex items-center justify-center
-                                            @if($result === 'W') bg-green-500/80 text-white
-                                            @elseif($result === 'D') bg-slate-500/80 text-white
-                                            @else bg-red-500/80 text-white @endif">
-                                            {{ $result }}
-                                        </span>
-                                    @empty
-                                        <span class="text-slate-600 text-sm">No matches yet</span>
-                                    @endforelse
-                                </div>
-                            @endif
-                        </div>
+                    {{-- Right Column (1/3) - Alerts & Notifications --}}
+                    <div class="space-y-8">
+                        {{-- Squad Status --}}
+                        @php
+                            $hasSquadAlerts = !empty($squadAlerts['injured']) || !empty($squadAlerts['suspended']) || !empty($squadAlerts['lowFitness']) || !empty($squadAlerts['yellowCardRisk']);
+                        @endphp
+                        @if($hasSquadAlerts)
+                        <div>
+                            <h4 class="font-semibold text-xl text-slate-900 mb-4">Squad Status</h4>
 
-                        {{-- VS --}}
-                        <div class="flex flex-col items-center">
-                            <div class="text-3xl md:text-4xl font-black text-slate-800">&mdash;</div>
-                        </div>
+                            <div class="space-y-4">
+                                {{-- Injured --}}
+                                @if(!empty($squadAlerts['injured']))
+                                <div>
+                                    <div class="flex items-center gap-2 text-red-600 mb-2">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                        </svg>
+                                        <span class="font-medium text-sm">Injured</span>
+                                    </div>
+                                    @foreach($squadAlerts['injured'] as $alert)
+                                    <div class="flex items-center justify-between text-sm pl-6 py-1">
+                                        <span class="text-slate-700">{{ $alert['player']->name }}</span>
+                                        <span class="text-slate-400 text-xs">{{ $alert['daysRemaining'] }}d</span>
+                                    </div>
+                                    @endforeach
+                                </div>
+                                @endif
 
-                        {{-- Away Team --}}
-                        <div class="flex-1 text-center">
-                            <img src="{{ $nextMatch->awayTeam->image }}" class="w-20 h-20 md:w-24 md:h-24 mx-auto mb-3">
-                            <h3 class="text-3xl font-bold text-slate-800">
-                                {{ $nextMatch->awayTeam->name }}
-                            </h3>
-                            @if($nextMatch->away_team_id === $game->team_id)
-                                {{-- Player's form --}}
-                                <div class="flex justify-center gap-1 mt-2">
-                                    @forelse($playerForm as $result)
-                                        <span class="w-6 h-6 rounded text-xs font-bold flex items-center justify-center
-                                            @if($result === 'W') bg-green-500 text-white
-                                            @elseif($result === 'D') bg-slate-500 text-white
-                                            @else bg-red-500 text-white @endif">
-                                            {{ $result }}
-                                        </span>
-                                    @empty
-                                        <span class="text-slate-500 text-sm">No matches yet</span>
-                                    @endforelse
+                                {{-- Suspended --}}
+                                @if(!empty($squadAlerts['suspended']))
+                                <div>
+                                    <div class="flex items-center gap-2 text-orange-600 mb-2">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+                                        </svg>
+                                        <span class="font-medium text-sm">Suspended</span>
+                                    </div>
+                                    @foreach($squadAlerts['suspended'] as $alert)
+                                    <div class="flex items-center justify-between text-sm pl-6 py-1">
+                                        <span class="text-slate-700">{{ $alert['player']->name }}</span>
+                                        <span class="text-slate-400 text-xs">{{ $alert['matchesRemaining'] }}m</span>
+                                    </div>
+                                    @endforeach
                                 </div>
-                            @else
-                                {{-- Opponent's form --}}
-                                <div class="flex justify-center gap-1 mt-2">
-                                    @forelse($opponentForm as $result)
-                                        <span class="w-6 h-6 rounded text-xs font-bold flex items-center justify-center
-                                            @if($result === 'W') bg-green-500/80 text-white
-                                            @elseif($result === 'D') bg-slate-500/80 text-white
-                                            @else bg-red-500/80 text-white @endif">
-                                            {{ $result }}
-                                        </span>
-                                    @empty
-                                        <span class="text-slate-500 text-sm">No matches yet</span>
-                                    @endforelse
+                                @endif
+
+                                {{-- Low Fitness --}}
+                                @if(!empty($squadAlerts['lowFitness']))
+                                <div>
+                                    <div class="flex items-center gap-2 text-amber-600 mb-2">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                        </svg>
+                                        <span class="font-medium text-sm">Low Fitness</span>
+                                    </div>
+                                    @foreach($squadAlerts['lowFitness'] as $alert)
+                                    <div class="flex items-center justify-between text-sm pl-6 py-1">
+                                        <span class="text-slate-700">{{ $alert['player']->name }}</span>
+                                        <span class="text-amber-600 text-xs font-medium">{{ $alert['fitness'] }}%</span>
+                                    </div>
+                                    @endforeach
                                 </div>
-                            @endif
+                                @endif
+
+                                {{-- Yellow Card Risk --}}
+                                @if(!empty($squadAlerts['yellowCardRisk']))
+                                <div>
+                                    <div class="flex items-center gap-2 text-yellow-600 mb-2">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                            <rect x="6" y="3" width="12" height="18" rx="2" />
+                                        </svg>
+                                        <span class="font-medium text-sm">Card Risk</span>
+                                    </div>
+                                    @foreach($squadAlerts['yellowCardRisk'] as $alert)
+                                    <div class="flex items-center justify-between text-sm pl-6 py-1">
+                                        <span class="text-slate-700">{{ $alert['player']->name }}</span>
+                                        <span class="text-yellow-600 text-xs font-medium">{{ $alert['yellowCards'] }} YC</span>
+                                    </div>
+                                    @endforeach
+                                </div>
+                                @endif
+                            </div>
                         </div>
+                        @endif
+
+                        {{-- Transfer Offers --}}
+                        @php
+                            $hasTransferAlerts = !empty($transferAlerts['newOffers']) || !empty($transferAlerts['expiringOffers']);
+                        @endphp
+                        @if($hasTransferAlerts)
+                        <div class="@if($hasSquadAlerts) pt-8 border-t @endif">
+                            <div class="flex items-center justify-between mb-4">
+                                <h4 class="font-semibold text-xl text-slate-900">Transfer Offers</h4>
+                                <a href="{{ route('game.transfers', $game->id) }}" class="text-sm text-sky-600 hover:text-sky-800">
+                                    View All
+                                </a>
+                            </div>
+
+                            <div class="space-y-3">
+                                @foreach($transferAlerts['expiringOffers'] as $alert)
+                                <div class="p-3 bg-amber-50 rounded-lg">
+                                    <div class="text-sm font-medium text-slate-900">{{ $alert['playerName'] }}</div>
+                                    <div class="text-xs text-slate-600 mt-1">
+                                        {{ $alert['teamName'] }} &middot;
+                                        <span class="text-green-600 font-medium">{{ $alert['fee'] }}</span>
+                                    </div>
+                                    <div class="text-xs text-amber-600 font-medium mt-1">
+                                        Expires in {{ $alert['daysLeft'] }}d
+                                    </div>
+                                </div>
+                                @endforeach
+
+                                @foreach($transferAlerts['newOffers'] as $alert)
+                                <div class="p-3 bg-slate-50 rounded-lg">
+                                    <div class="text-sm font-medium text-slate-900">{{ $alert['playerName'] }}</div>
+                                    <div class="text-xs text-slate-600 mt-1">
+                                        {{ $alert['teamName'] }} &middot;
+                                        <span class="text-green-600 font-medium">{{ $alert['fee'] }}</span>
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        @endif
+
+                        {{-- No Alerts State --}}
+                        @if(!$hasSquadAlerts && !$hasTransferAlerts)
+                        <div>
+                            <h4 class="font-semibold text-xl text-slate-900 mb-4">Notifications</h4>
+                            <div class="text-center py-8">
+                                <div class="text-slate-300 mb-2">
+                                    <svg class="w-10 h-10 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                </div>
+                                <p class="text-sm text-slate-400">All clear</p>
+                            </div>
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>
             @else
             {{-- Season Complete State --}}
-            <div class="bg-gradient-to-br from-amber-600 to-amber-700 overflow-hidden shadow-lg sm:rounded-lg">
-                <div class="p-8 text-center">
-                    <div class="text-5xl mb-4">&#127942;</div>
-                    <h2 class="text-2xl font-bold text-white mb-2">Season Complete!</h2>
-                    <p class="text-amber-100 mb-6">Congratulations on finishing the {{ $game->season }} season.</p>
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-12 text-center">
+                    <div class="text-6xl mb-4">&#127942;</div>
+                    <h2 class="text-3xl font-bold text-slate-900 mb-2">Season Complete!</h2>
+                    <p class="text-slate-500 mb-8">Congratulations on finishing the {{ $game->season }} season.</p>
                     <a href="{{ route('game.season-end', $game->id) }}"
-                       class="inline-flex items-center px-6 py-3 bg-white/20 hover:bg-white/30 border border-white/30 rounded-lg text-white font-semibold transition-colors">
+                       class="inline-flex items-center px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors">
                         View Season Summary
                     </a>
                 </div>
             </div>
             @endif
-
-            {{-- Transfer Alerts --}}
-            @php
-                $hasTransferAlerts = !empty($transferAlerts['newOffers']) || !empty($transferAlerts['expiringOffers']);
-            @endphp
-            @if($hasTransferAlerts)
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border-l-4 border-indigo-500">
-                <div class="p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="font-semibold text-lg text-slate-900">Transfer News</h3>
-                        <a href="{{ route('game.transfers', $game->id) }}" class="text-sm text-indigo-600 hover:text-indigo-800">
-                            View All &rarr;
-                        </a>
-                    </div>
-
-                    <div class="space-y-3">
-                        {{-- Expiring Offers (urgent) --}}
-                        @foreach($transferAlerts['expiringOffers'] as $alert)
-                        <div class="flex items-center justify-between p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center">
-                                    <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                    </svg>
-                                </div>
-                                <div>
-                                    <div class="text-sm font-medium text-slate-900">
-                                        {{ $alert['teamName'] }} offer for {{ $alert['playerName'] }}
-                                        @if($alert['isUnsolicited'])
-                                        <span class="text-xs text-amber-600">(poaching)</span>
-                                        @endif
-                                    </div>
-                                    <div class="text-xs text-slate-500">
-                                        <span class="font-semibold text-green-600">{{ $alert['fee'] }}</span>
-                                        &middot; <span class="text-amber-600 font-medium">Expires in {{ $alert['daysLeft'] }} day{{ $alert['daysLeft'] != 1 ? 's' : '' }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        @endforeach
-
-                        {{-- New Offers --}}
-                        @foreach($transferAlerts['newOffers'] as $alert)
-                        <div class="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-lg">
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center">
-                                    <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                                    </svg>
-                                </div>
-                                <div>
-                                    <div class="text-sm font-medium text-slate-900">
-                                        {{ $alert['teamName'] }} offer for {{ $alert['playerName'] }}
-                                        @if($alert['isUnsolicited'])
-                                        <span class="text-xs text-amber-600">(poaching)</span>
-                                        @endif
-                                    </div>
-                                    <div class="text-xs text-slate-500">
-                                        <span class="font-semibold text-green-600">{{ $alert['fee'] }}</span>
-                                        &middot; Expires in {{ $alert['daysLeft'] }} days
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-            @endif
-
-            {{-- Squad Alerts --}}
-            @php
-                $hasAlerts = !empty($squadAlerts['injured']) || !empty($squadAlerts['suspended']) || !empty($squadAlerts['lowFitness']) || !empty($squadAlerts['yellowCardRisk']);
-            @endphp
-            @if($hasAlerts)
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <h3 class="font-semibold text-lg text-slate-900 mb-4">Squad Alerts</h3>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        {{-- Injured --}}
-                        @if(!empty($squadAlerts['injured']))
-                        <div class="space-y-2">
-                            <div class="flex items-center gap-2 text-red-600">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                                </svg>
-                                <span class="font-semibold text-sm">Injured ({{ count($squadAlerts['injured']) }})</span>
-                            </div>
-                            @foreach($squadAlerts['injured'] as $alert)
-                            <div class="flex items-center justify-between text-sm pl-7">
-                                <span class="text-slate-700">{{ $alert['player']->name }}</span>
-                                <span class="text-slate-500 text-xs">{{ $alert['daysRemaining'] }}d</span>
-                            </div>
-                            @endforeach
-                        </div>
-                        @endif
-
-                        {{-- Suspended --}}
-                        @if(!empty($squadAlerts['suspended']))
-                        <div class="space-y-2">
-                            <div class="flex items-center gap-2 text-orange-600">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
-                                </svg>
-                                <span class="font-semibold text-sm">Suspended ({{ count($squadAlerts['suspended']) }})</span>
-                            </div>
-                            @foreach($squadAlerts['suspended'] as $alert)
-                            <div class="flex items-center justify-between text-sm pl-7">
-                                <span class="text-slate-700">{{ $alert['player']->name }}</span>
-                                <span class="text-slate-500 text-xs">{{ $alert['matchesRemaining'] }} match{{ $alert['matchesRemaining'] > 1 ? 'es' : '' }}</span>
-                            </div>
-                            @endforeach
-                        </div>
-                        @endif
-
-                        {{-- Low Fitness --}}
-                        @if(!empty($squadAlerts['lowFitness']))
-                        <div class="space-y-2">
-                            <div class="flex items-center gap-2 text-amber-600">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                                </svg>
-                                <span class="font-semibold text-sm">Low Fitness ({{ count($squadAlerts['lowFitness']) }})</span>
-                            </div>
-                            @foreach($squadAlerts['lowFitness'] as $alert)
-                            <div class="flex items-center justify-between text-sm pl-7">
-                                <span class="text-slate-700">{{ $alert['player']->name }}</span>
-                                <span class="text-amber-600 text-xs font-medium">{{ $alert['fitness'] }}%</span>
-                            </div>
-                            @endforeach
-                        </div>
-                        @endif
-
-                        {{-- Yellow Card Risk --}}
-                        @if(!empty($squadAlerts['yellowCardRisk']))
-                        <div class="space-y-2">
-                            <div class="flex items-center gap-2 text-yellow-600">
-                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                    <rect x="6" y="3" width="12" height="18" rx="2" />
-                                </svg>
-                                <span class="font-semibold text-sm">Card Risk ({{ count($squadAlerts['yellowCardRisk']) }})</span>
-                            </div>
-                            @foreach($squadAlerts['yellowCardRisk'] as $alert)
-                            <div class="flex items-center justify-between text-sm pl-7">
-                                <span class="text-slate-700">{{ $alert['player']->name }}</span>
-                                <span class="text-yellow-600 text-xs font-medium">{{ $alert['yellowCards'] }} yellows</span>
-                            </div>
-                            @endforeach
-                        </div>
-                        @endif
-                    </div>
-                </div>
-            </div>
-            @endif
-
-            {{-- Two Column Layout --}}
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-                {{-- Your Position Card --}}
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6">
-                        <h3 class="font-semibold text-lg text-slate-900 mb-4">Your Position</h3>
-
-                        @if($playerStanding)
-                        <div class="flex items-center gap-6">
-                            {{-- Position Badge --}}
-                            <div class="text-center">
-                                <div class="text-5xl font-black text-slate-900">{{ $playerStanding->position }}</div>
-                                <div class="text-sm text-slate-500 mt-1">
-                                    @if($playerStanding->position === 1)
-                                        1st
-                                    @elseif($playerStanding->position === 2)
-                                        2nd
-                                    @elseif($playerStanding->position === 3)
-                                        3rd
-                                    @else
-                                        {{ $playerStanding->position }}th
-                                    @endif
-                                </div>
-                            </div>
-
-                            {{-- Stats --}}
-                            <div class="flex-1 space-y-3">
-                                {{-- Points --}}
-                                <div class="flex items-center justify-between">
-                                    <span class="text-slate-600">Points</span>
-                                    <span class="font-bold text-slate-900">{{ $playerStanding->points }}</span>
-                                </div>
-
-                                {{-- Record --}}
-                                <div class="flex items-center justify-between">
-                                    <span class="text-slate-600">Record</span>
-                                    <span class="font-medium text-slate-900">
-                                        {{ $playerStanding->won }}W - {{ $playerStanding->drawn }}D - {{ $playerStanding->lost }}L
-                                    </span>
-                                </div>
-
-                                {{-- Goals --}}
-                                <div class="flex items-center justify-between">
-                                    <span class="text-slate-600">Goals</span>
-                                    <span class="font-medium text-slate-900">
-                                        {{ $playerStanding->goals_for }} scored, {{ $playerStanding->goals_against }} conceded
-                                        <span class="text-sm @if($playerStanding->goal_difference > 0) text-green-600 @elseif($playerStanding->goal_difference < 0) text-red-600 @else text-slate-400 @endif">
-                                            ({{ $playerStanding->goal_difference > 0 ? '+' : '' }}{{ $playerStanding->goal_difference }})
-                                        </span>
-                                    </span>
-                                </div>
-
-                                {{-- Gap to Leader --}}
-                                @if($leaderStanding && $playerStanding->position > 1)
-                                <div class="flex items-center justify-between">
-                                    <span class="text-slate-600">Gap to 1st</span>
-                                    <span class="font-medium text-red-600">
-                                        -{{ $leaderStanding->points - $playerStanding->points }} pts
-                                    </span>
-                                </div>
-                                @elseif($playerStanding->position === 1)
-                                <div class="flex items-center justify-between">
-                                    <span class="text-slate-600">Status</span>
-                                    <span class="font-medium text-green-600">League Leader!</span>
-                                </div>
-                                @endif
-                            </div>
-                        </div>
-
-                        {{-- Form --}}
-                        <div class="mt-4 pt-4 border-t">
-                            <div class="flex items-center justify-between">
-                                <span class="text-sm text-slate-600">Recent Form</span>
-                                <div class="flex gap-1">
-                                    @forelse($playerForm as $result)
-                                        <span class="w-7 h-7 rounded text-xs font-bold flex items-center justify-center
-                                            @if($result === 'W') bg-green-500 text-white
-                                            @elseif($result === 'D') bg-slate-400 text-white
-                                            @else bg-red-500 text-white @endif">
-                                            {{ $result }}
-                                        </span>
-                                    @empty
-                                        <span class="text-slate-400 text-sm">No matches played yet</span>
-                                    @endforelse
-                                </div>
-                            </div>
-                        </div>
-                        @else
-                        <p class="text-slate-500">No standings data available yet.</p>
-                        @endif
-
-                        <div class="mt-4 pt-4 border-t text-center">
-                            <a href="{{ route('game.standings', $game->id) }}" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">
-                                View Full Standings
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Upcoming Fixtures Card --}}
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6">
-                        <h3 class="font-semibold text-lg text-slate-900 mb-4">Upcoming Fixtures</h3>
-
-                        @if($upcomingFixtures->isEmpty())
-                            <p class="text-slate-500">No upcoming fixtures.</p>
-                        @else
-                            <div class="space-y-3">
-                                @foreach($upcomingFixtures as $index => $fixture)
-                                    @php
-                                        $isHome = $fixture->home_team_id === $game->team_id;
-                                        $opponent = $isHome ? $fixture->awayTeam : $fixture->homeTeam;
-                                    @endphp
-                                    <div class="flex items-center gap-4 p-3 rounded-lg @if($index === 0) bg-sky-50 border border-sky-100 @else hover:bg-slate-50 @endif">
-                                        {{-- Date --}}
-                                        <div class="text-center w-14">
-                                            <div class="text-xs text-slate-500 uppercase">{{ $fixture->scheduled_date->format('M') }}</div>
-                                            <div class="text-xl font-bold text-slate-900">{{ $fixture->scheduled_date->format('j') }}</div>
-                                        </div>
-
-                                        {{-- Opponent --}}
-                                        <div class="flex-1 flex items-center gap-3">
-                                            <img src="{{ $opponent->image }}" class="w-8 h-8">
-                                            <div>
-                                                <div class="font-medium text-slate-900">
-                                                    {{ $isHome ? 'vs' : '@' }} {{ $opponent->name }}
-                                                </div>
-                                                <div class="text-xs text-slate-500">
-                                                    {{ $fixture->competition->name ?? 'League' }}
-                                                    @if($fixture->round_name)
-                                                        &middot; {{ $fixture->round_name }}
-                                                    @endif
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {{-- Home/Away Badge --}}
-                                        <div class="text-xs font-semibold px-2 py-1 rounded @if($isHome) bg-green-100 text-green-700 @else bg-slate-100 text-slate-600 @endif">
-                                            {{ $isHome ? 'H' : 'A' }}
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @endif
-
-                        <div class="mt-4 pt-4 border-t text-center">
-                            <a href="{{ route('game.calendar', $game->id) }}" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">
-                                View Full Calendar
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
         </div>
     </div>
 </x-app-layout>

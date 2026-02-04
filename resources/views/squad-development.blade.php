@@ -11,7 +11,7 @@
                 <div class="p-12">
                     <div class="flex items-center justify-between mb-6">
                         <h3 class="font-semibold text-xl text-slate-900">Squad Development</h3>
-                        <a href="{{ route('game.squad', $game->id) }}" class="text-sm text-indigo-600 hover:text-indigo-800">
+                        <a href="{{ route('game.squad', $game->id) }}" class="text-sm text-sky-600 hover:text-sky-800">
                             &larr; Back to Squad
                         </a>
                     </div>
@@ -20,7 +20,7 @@
                     <div class="flex gap-2 mb-6">
                         <a href="{{ route('game.squad.development', ['gameId' => $game->id, 'filter' => 'high_potential']) }}"
                            class="px-4 py-2 rounded-full text-sm font-medium transition-colors
-                                  {{ $filter === 'high_potential' ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' }}">
+                                  {{ $filter === 'high_potential' ? 'bg-sky-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' }}">
                             High Potential
                             <span class="ml-1 text-xs opacity-75">({{ $stats['high_potential'] }})</span>
                         </a>
@@ -102,7 +102,7 @@
                                         {{-- Potential range --}}
                                         <td class="py-3 text-center">
                                             @if($player->potential_low && $player->potential_high)
-                                                <span class="font-medium @if($potentialGap >= 8) text-indigo-600 @elseif($potentialGap >= 4) text-indigo-500 @else text-slate-600 @endif">
+                                                <span class="font-medium @if($potentialGap >= 8) text-sky-600 @elseif($potentialGap >= 4) text-sky-500 @else text-slate-600 @endif">
                                                     {{ $player->potential_low }}-{{ $player->potential_high }}
                                                 </span>
                                             @else

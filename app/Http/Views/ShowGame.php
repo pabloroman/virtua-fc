@@ -23,8 +23,8 @@ class ShowGame
         return view('game', [
             'game' => $game,
             'nextMatch' => $nextMatch,
-            'playerStanding' => $this->getPlayerStanding($game),
-            'leaderStanding' => $this->getLeaderStanding($game),
+            'homeStanding' => $nextMatch ? $this->getTeamStanding($game, $nextMatch->home_team_id) : null,
+            'awayStanding' => $nextMatch ? $this->getTeamStanding($game, $nextMatch->away_team_id) : null,
             'playerForm' => $this->calendarService->getTeamForm($game->id, $game->team_id),
             'opponentForm' => $this->getOpponentForm($game, $nextMatch),
             'upcomingFixtures' => $this->calendarService->getUpcomingFixtures($game),
@@ -45,20 +45,11 @@ class ShowGame
         return $nextMatch;
     }
 
-    private function getPlayerStanding(Game $game): ?GameStanding
-    {
-        return GameStanding::with('team')
-            ->where('game_id', $game->id)
-            ->where('competition_id', $game->competition_id)
-            ->where('team_id', $game->team_id)
-            ->first();
-    }
-
-    private function getLeaderStanding(Game $game): ?GameStanding
+    private function getTeamStanding(Game $game, string $teamId): ?GameStanding
     {
         return GameStanding::where('game_id', $game->id)
             ->where('competition_id', $game->competition_id)
-            ->orderBy('position')
+            ->where('team_id', $teamId)
             ->first();
     }
 

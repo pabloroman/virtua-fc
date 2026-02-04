@@ -21,7 +21,7 @@
                             @else
                                 <span class="px-3 py-1 text-sm bg-slate-100 text-slate-600 rounded-full">Not yet entered</span>
                             @endif
-                            <a href="{{ route('show-game', $game->id) }}" class="text-indigo-600 hover:text-indigo-800">Back to Dashboard</a>
+                            <a href="{{ route('show-game', $game->id) }}" class="text-sky-600 hover:text-sky-800">Back to Dashboard</a>
                         </div>
                     </div>
 

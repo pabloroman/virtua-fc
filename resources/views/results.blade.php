@@ -16,7 +16,7 @@
                                 <p class="text-sm text-slate-500">{{ $competition->name }}</p>
                             @endif
                         </div>
-                        <a href="{{ route('show-game', $game->id) }}" class="text-indigo-600 hover:text-indigo-800">Back to Dashboard</a>
+                        <a href="{{ route('show-game', $game->id) }}" class="text-sky-600 hover:text-sky-800">Back to Dashboard</a>
                     </div>
 
                     {{-- Player's Match Highlight --}}
@@ -145,7 +145,7 @@
                     </div>
 
                     <div class="mt-6 text-center">
-                        <a href="{{ route('game.standings', $game->id) }}" class="text-indigo-600 hover:text-indigo-800">View Updated Standings</a>
+                        <a href="{{ route('game.standings', $game->id) }}" class="text-sky-600 hover:text-sky-800">View Updated Standings</a>
                     </div>
                 </div>
             </div>

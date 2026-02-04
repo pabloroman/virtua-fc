@@ -21,7 +21,7 @@
                                 <span class="ml-1.5 px-1.5 py-0.5 text-xs font-bold bg-red-600 text-white rounded-full">{{ $expiringContractsCount }}</span>
                                 @endif
                             </a>
-                            <a href="{{ route('game.squad.development', $game->id) }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-indigo-600 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors">
+                            <a href="{{ route('game.squad.development', $game->id) }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-sky-600 bg-sky-50 rounded-lg hover:bg-sky-100 transition-colors">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                                 </svg>
@@ -167,7 +167,7 @@
                                                 @else
                                                     <form method="post" action="{{ route('game.transfers.list', [$game->id, $gamePlayer->id]) }}">
                                                         @csrf
-                                                        <button type="submit" class="text-xs text-indigo-600 hover:text-indigo-800 hover:underline">
+                                                        <button type="submit" class="text-xs text-sky-600 hover:text-sky-800 hover:underline">
                                                             List for Transfer
                                                         </button>
                                                     </form>

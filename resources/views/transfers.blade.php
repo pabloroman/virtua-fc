@@ -173,7 +173,7 @@
                                 <span class="w-2 h-2 bg-red-500 rounded-full"></span>
                                 <span class="font-medium text-slate-900">{{ $expiringContractPlayers->count() }} player(s) with expiring contracts</span>
                             </div>
-                            <a href="{{ route('game.squad.contracts', $game->id) }}" class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">
+                            <a href="{{ route('game.squad.contracts', $game->id) }}" class="text-sm text-sky-600 hover:text-sky-800 font-medium">
                                 Manage Contracts &rarr;
                             </a>
                         </div>
@@ -187,7 +187,7 @@
                                 <span class="w-2 h-2 bg-slate-400 rounded-full"></span>
                                 Listed Players
                             </h4>
-                            <a href="{{ route('game.squad', $game->id) }}" class="text-sm text-indigo-600 hover:text-indigo-800">
+                            <a href="{{ route('game.squad', $game->id) }}" class="text-sm text-sky-600 hover:text-sky-800">
                                 List more players from Squad &rarr;
                             </a>
                         </div>
@@ -195,7 +195,7 @@
                         @if($listedPlayers->isEmpty())
                         <div class="text-center py-8 text-slate-500 border rounded-lg bg-slate-50">
                             <p>No players listed for transfer.</p>
-                            <a href="{{ route('game.squad', $game->id) }}" class="text-indigo-600 hover:text-indigo-800 text-sm">
+                            <a href="{{ route('game.squad', $game->id) }}" class="text-sky-600 hover:text-sky-800 text-sm">
                                 Go to Squad to list players
                             </a>
                         </div>

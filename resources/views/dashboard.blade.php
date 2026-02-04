@@ -11,7 +11,7 @@
                 <div class="p-12">
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="font-semibold text-xl text-slate-900">Your Games</h3>
-                        <a href="{{ route('select-team') }}" class="text-indigo-600 hover:text-indigo-800">+ New Game</a>
+                        <a href="{{ route('select-team') }}" class="text-sky-600 hover:text-sky-800">+ New Game</a>
                     </div>
                     <ul role="list" class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                         @foreach($games as $game)

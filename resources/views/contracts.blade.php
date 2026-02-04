@@ -23,7 +23,7 @@
                 <div class="p-8">
                     <div class="flex items-center justify-between mb-6">
                         <h3 class="font-semibold text-xl text-slate-900">Contract Management</h3>
-                        <a href="{{ route('game.squad', $game->id) }}" class="text-sm text-indigo-600 hover:text-indigo-800">
+                        <a href="{{ route('game.squad', $game->id) }}" class="text-sm text-sky-600 hover:text-sky-800">
                             &larr; Back to Squad
                         </a>
                     </div>
