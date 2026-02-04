@@ -16,7 +16,6 @@ class TeamFactory extends Factory
             'id' => Str::uuid()->toString(),
             'transfermarkt_id' => $this->faker->unique()->numberBetween(1000, 99999),
             'name' => $this->faker->city() . ' FC',
-            'official_name' => $this->faker->company() . ' Football Club',
             'country' => 'ES',
             'image' => null,
             'stadium_name' => $this->faker->city() . ' Stadium',

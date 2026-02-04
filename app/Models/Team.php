@@ -14,9 +14,7 @@ class Team extends Model
     protected $guarded = [];
 
     protected $casts = [
-        'colors' => 'array',
         'stadium_seats' => 'integer',
-        'founded_on' => 'date',
     ];
 
     public function competitions(): BelongsToMany

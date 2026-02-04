@@ -192,30 +192,16 @@ class SeedReferenceData extends Command
                 ? (int) str_replace('.', '', $club['stadiumSeats'])
                 : 0;
 
-            // Parse founded date
-            $foundedOn = null;
-            if (!empty($club['foundedOn'])) {
-                try {
-                    $foundedOn = Carbon::parse($club['foundedOn'])->toDateString();
-                } catch (\Exception $e) {
-                    // Ignore invalid dates
-                }
-            }
-
             // Insert or update team
             DB::table('teams')->updateOrInsert(
                 ['id' => $club['id']],
                 [
                     'transfermarkt_id' => $club['transfermarktId'] ?? null,
                     'name' => $club['name'],
-                    'official_name' => $club['officialName'] ?? null,
                     'country' => 'ES',
                     'image' => $club['image'] ?? null,
                     'stadium_name' => $club['stadiumName'] ?? null,
                     'stadium_seats' => $stadiumSeats,
-                    'colors' => isset($club['colors']) ? json_encode($club['colors']) : null,
-                    'current_market_value' => $club['currentMarketValue'] ?? null,
-                    'founded_on' => $foundedOn,
                     'updated_at' => now(),
                 ]
             );
