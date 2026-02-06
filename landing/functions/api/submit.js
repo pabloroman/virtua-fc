@@ -43,7 +43,11 @@ export async function onRequestPost(context) {
             headers,
         });
     } catch (err) {
-        return new Response(JSON.stringify({ error: 'Error interno del servidor.' }), {
+        console.error('Submit error:', err);
+        return new Response(JSON.stringify({
+            error: 'Error interno del servidor.',
+            details: err.message
+        }), {
             status: 500,
             headers,
         });
