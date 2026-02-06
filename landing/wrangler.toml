@@ -1,0 +1,8 @@
+name = "virtua-fc-landing"
+compatibility_date = "2024-12-01"
+pages_build_output_dir = "public"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "virtua-fc-waitlist"
+database_id = "" # Fill in after running: npx wrangler d1 create virtua-fc-waitlist
