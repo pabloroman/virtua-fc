@@ -2,7 +2,6 @@
 
 namespace App\Http\Actions;
 
-use App\Game\Services\FinancialService;
 use App\Game\Services\ScoutingService;
 use App\Game\Services\TransferService;
 use App\Models\Game;
@@ -11,7 +10,6 @@ use App\Models\GamePlayer;
 class AdvancePreseasonWeek
 {
     public function __construct(
-        private readonly FinancialService $financialService,
         private readonly TransferService $transferService,
         private readonly ScoutingService $scoutingService,
     ) {}
@@ -57,10 +55,6 @@ class AdvancePreseasonWeek
 
     private function processFirstWeekEvents(Game $game): void
     {
-        // Process financial events at the start of summer window
-        $this->financialService->processTvRightsPayment($game);
-        $this->financialService->processWagePayments($game);
-
         // Complete any agreed transfers from previous season
         $this->transferService->completeAgreedTransfers($game);
         $this->transferService->completeIncomingTransfers($game);

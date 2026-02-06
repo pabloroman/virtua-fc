@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Team extends Model
 {
@@ -26,6 +27,11 @@ class Team extends Model
     public function players(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(GamePlayer::class);
+    }
+
+    public function clubProfile(): HasOne
+    {
+        return $this->hasOne(ClubProfile::class);
     }
 
     public function getGoalDifferenceAttribute(): int

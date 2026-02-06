@@ -428,13 +428,13 @@ class TransferService
             'transfer_listed_at' => null,
         ]);
 
-        // Update finances - add transfer fee to balance and transfer budget
-        $finances = $game->finances;
-        if ($finances && $offer->transfer_fee > 0) {
-            $finances->update([
-                'balance' => $finances->balance + $offer->transfer_fee,
-                'transfer_budget' => $finances->transfer_budget + $offer->transfer_fee,
-            ]);
+        // Update transfer budget and record the transaction
+        $investment = $game->currentInvestment;
+        if ($offer->transfer_fee > 0) {
+            // Add transfer fee back to transfer budget
+            if ($investment) {
+                $investment->increment('transfer_budget', $offer->transfer_fee);
+            }
 
             // Record the transaction
             FinancialTransaction::recordIncome(
@@ -640,15 +640,16 @@ class TransferService
             'transfer_listed_at' => null,
             'contract_until' => $newContractEnd,
             'annual_wage' => $offer->offered_wage ?? $player->annual_wage,
+            'joined_on' => $game->current_date,
         ]);
 
-        // Deduct from finances
-        $finances = $game->finances;
-        if ($finances && $offer->transfer_fee > 0) {
-            $finances->update([
-                'balance' => $finances->balance - $offer->transfer_fee,
-                'transfer_budget' => $finances->transfer_budget - $offer->transfer_fee,
-            ]);
+        // Deduct from transfer budget and record the transaction
+        $investment = $game->currentInvestment;
+        if ($offer->transfer_fee > 0) {
+            // Deduct from transfer budget
+            if ($investment) {
+                $investment->decrement('transfer_budget', $offer->transfer_fee);
+            }
 
             FinancialTransaction::recordExpense(
                 gameId: $game->id,
@@ -683,7 +684,10 @@ class TransferService
             'status' => Loan::STATUS_ACTIVE,
         ]);
 
-        $player->update(['team_id' => $game->team_id]);
+        $player->update([
+            'team_id' => $game->team_id,
+            'joined_on' => $game->current_date,
+        ]);
         $offer->update(['status' => TransferOffer::STATUS_COMPLETED]);
     }
 

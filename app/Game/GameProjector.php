@@ -9,10 +9,10 @@ use App\Game\Events\MatchdayAdvanced;
 use App\Game\Events\MatchResultRecorded;
 use App\Game\Events\NewSeasonStarted;
 use App\Game\Events\SeasonDevelopmentProcessed;
+use App\Game\Services\BudgetProjectionService;
 use App\Game\Services\ContractService;
 use App\Game\Services\CupDrawService;
 use App\Game\Services\EligibilityService;
-use App\Game\Services\FinancialService;
 use App\Game\Services\InjuryService;
 use App\Game\Services\PlayerConditionService;
 use App\Game\Services\PlayerDevelopmentService;
@@ -39,7 +39,7 @@ class GameProjector extends Projector
         private readonly PlayerDevelopmentService $developmentService,
         private readonly PlayerConditionService $conditionService,
         private readonly ContractService $contractService,
-        private readonly FinancialService $financialService,
+        private readonly BudgetProjectionService $budgetProjectionService,
         private readonly CupDrawService $cupDrawService,
     ) {}
 
@@ -79,9 +79,9 @@ class GameProjector extends Projector
         // Initialize game players for all teams in the competition
         $this->initializeGamePlayers($gameId, $competitionId, $season);
 
-        // Initialize club finances based on squad value
+        // Initialize club finances with projections
         $game = Game::find($gameId);
-        $this->financialService->initializeFinances($game);
+        $this->budgetProjectionService->generateProjections($game);
 
         // Conduct first round cup draws for all cup competitions
         $this->conductInitialCupDraws($gameId, $season);
@@ -193,6 +193,7 @@ class GameProjector extends Projector
         $roundName = $tie?->round_name ?? "Round $roundNumber";
 
         // Record the income transaction
+        // Cup prizes are tracked via transactions and calculated at season end
         FinancialTransaction::recordIncome(
             gameId: $game->id,
             category: FinancialTransaction::CATEGORY_CUP_BONUS,
@@ -200,15 +201,6 @@ class GameProjector extends Projector
             description: "{$competitionName} - {$roundName} advancement",
             transactionDate: $game->current_date->toDateString(),
         );
-
-        // Update finances
-        $finances = $game->finances;
-        if ($finances) {
-            $finances->increment('balance', $amount);
-            $finances->increment('cup_bonus', $amount);
-            $finances->increment('total_revenue', $amount);
-            $finances->increment('season_profit_loss', $amount);
-        }
     }
 
     public function onSeasonDevelopmentProcessed(SeasonDevelopmentProcessed $event): void

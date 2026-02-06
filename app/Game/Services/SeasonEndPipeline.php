@@ -4,19 +4,20 @@ namespace App\Game\Services;
 
 use App\Game\Contracts\SeasonEndProcessor;
 use App\Game\DTO\SeasonTransitionData;
+use App\Game\Processors\BudgetProjectionProcessor;
 use App\Game\Processors\ContractExpirationProcessor;
 use App\Game\Processors\ContractRenewalProcessor;
-use App\Game\Processors\FinancialProcessor;
-use App\Game\Processors\FinancialResetProcessor;
 use App\Game\Processors\FixtureGenerationProcessor;
 use App\Game\Processors\LoanReturnProcessor;
 use App\Game\Processors\PlayerDevelopmentProcessor;
 use App\Game\Processors\PreContractTransferProcessor;
 use App\Game\Processors\PromotionRelegationProcessor;
 use App\Game\Processors\SeasonArchiveProcessor;
+use App\Game\Processors\SeasonSettlementProcessor;
 use App\Game\Processors\StandingsResetProcessor;
 use App\Game\Processors\StatsResetProcessor;
 use App\Game\Processors\SupercopaQualificationProcessor;
+use App\Game\Processors\YouthAcademyProcessor;
 use App\Models\Game;
 
 /**
@@ -34,13 +35,14 @@ class SeasonEndPipeline
         ContractExpirationProcessor $contractExpiration,
         ContractRenewalProcessor $contractRenewal,
         PlayerDevelopmentProcessor $playerDevelopment,
-        FinancialProcessor $financial,
+        SeasonSettlementProcessor $seasonSettlement,
         StatsResetProcessor $statsReset,
         SupercopaQualificationProcessor $supercopaQualification,
         PromotionRelegationProcessor $promotionRelegation,
         FixtureGenerationProcessor $fixtureGeneration,
         StandingsResetProcessor $standingsReset,
-        FinancialResetProcessor $financialReset,
+        BudgetProjectionProcessor $budgetProjection,
+        YouthAcademyProcessor $youthAcademy,
     ) {
         $this->processors = [
             $seasonArchive,
@@ -49,13 +51,14 @@ class SeasonEndPipeline
             $contractExpiration,
             $contractRenewal,
             $playerDevelopment,
-            $financial,
+            $seasonSettlement,
             $statsReset,
             $supercopaQualification,
             $promotionRelegation,
             $fixtureGeneration,
             $standingsReset,
-            $financialReset,
+            $budgetProjection,
+            $youthAcademy,
         ];
 
         // Sort by priority (lower numbers first)
@@ -93,7 +96,8 @@ class SeasonEndPipeline
             $parts = explode('-', $season);
             $startYear = (int) $parts[0] + 1;
             $endYear = (int) $parts[1] + 1;
-            return $startYear . '-' . str_pad($endYear, 2, '0', STR_PAD_LEFT);
+
+            return $startYear.'-'.str_pad($endYear, 2, '0', STR_PAD_LEFT);
         }
 
         return (string) ((int) $season + 1);

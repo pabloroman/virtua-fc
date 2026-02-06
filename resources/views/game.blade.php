@@ -258,6 +258,35 @@
                             </div>
                         </div>
                         @endif
+
+                        {{-- Club Finances Summary --}}
+                        @if($finances)
+                        <div class="pt-8 border-t">
+                            <div class="flex items-center justify-between mb-4">
+                                <h4 class="font-semibold text-xl text-slate-900">Club Finances</h4>
+                                <a href="{{ route('game.finances', $game->id) }}" class="text-sm text-sky-600 hover:text-sky-800">
+                                    Details &rarr;
+                                </a>
+                            </div>
+
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                                    <span class="text-sm text-slate-600">Projected Position</span>
+                                    <span class="font-bold text-slate-900">{{ $finances->projected_position }}</span>
+                                </div>
+                                <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                                    <span class="text-sm text-slate-600">Transfer Budget</span>
+                                    <span class="font-bold text-sky-700">{{ $investment?->formatted_transfer_budget ?? '€0' }}</span>
+                                </div>
+                                @if($finances->carried_debt > 0)
+                                <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg">
+                                    <span class="text-sm text-red-600">Carried Debt</span>
+                                    <span class="font-bold text-red-700">{{ $finances->formatted_carried_debt }}</span>
+                                </div>
+                                @endif
+                            </div>
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>

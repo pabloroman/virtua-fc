@@ -17,7 +17,7 @@ class ShowSeasonEnd
 
     public function __invoke(string $gameId)
     {
-        $game = Game::with(['team', 'finances'])->findOrFail($gameId);
+        $game = Game::with('team')->findOrFail($gameId);
 
         // Check if season is actually complete
         $unplayedMatches = $game->matches()->where('played', false)->count();
@@ -127,7 +127,8 @@ class ShowSeasonEnd
             'bestGoalkeeper' => $bestGoalkeeper,
             'playerTeamStats' => $playerTeamStats,
             'developmentPreview' => $squadPlayers,
-            'finances' => $game->finances,
+            'finances' => $game->currentFinances,
+            'investment' => $game->currentInvestment,
         ]);
     }
 }

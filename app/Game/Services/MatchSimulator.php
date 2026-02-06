@@ -6,6 +6,7 @@ use App\Game\DTO\MatchEventData;
 use App\Game\DTO\MatchResult;
 use App\Game\Enums\Formation;
 use App\Game\Enums\Mentality;
+use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\Team;
 use Carbon\Carbon;
@@ -14,9 +15,9 @@ use Illuminate\Support\Collection;
 class MatchSimulator
 {
     public function __construct(
-        private readonly InjuryService $injuryService = new InjuryService(),
-    ) {
-    }
+        private readonly InjuryService $injuryService = new InjuryService,
+    ) {}
+
     /**
      * Match performance cache - stores per-player performance modifiers for the current match.
      * Each player gets a random "form on the day" that affects their contribution.
@@ -77,18 +78,16 @@ class MatchSimulator
         'Goalkeeper' => 4,
     ];
 
-
     /**
      * Simulate a match result between two teams.
      *
-     * @param Team $homeTeam
-     * @param Team $awayTeam
-     * @param Collection<GamePlayer> $homePlayers Players for home team (lineup)
-     * @param Collection<GamePlayer> $awayPlayers Players for away team (lineup)
-     * @param Formation|null $homeFormation Formation for home team
-     * @param Formation|null $awayFormation Formation for away team
-     * @param Mentality|null $homeMentality Mentality for home team
-     * @param Mentality|null $awayMentality Mentality for away team
+     * @param  Collection<GamePlayer>  $homePlayers  Players for home team (lineup)
+     * @param  Collection<GamePlayer>  $awayPlayers  Players for away team (lineup)
+     * @param  Formation|null  $homeFormation  Formation for home team
+     * @param  Formation|null  $awayFormation  Formation for away team
+     * @param  Mentality|null  $homeMentality  Mentality for home team
+     * @param  Mentality|null  $awayMentality  Mentality for away team
+     * @param  Game|null  $game  Optional game for medical tier effects on injuries
      */
     public function simulate(
         Team $homeTeam,
@@ -99,6 +98,7 @@ class MatchSimulator
         ?Formation $awayFormation = null,
         ?Mentality $homeMentality = null,
         ?Mentality $awayMentality = null,
+        ?Game $game = null,
     ): MatchResult {
         // Reset per-match performance modifiers for fresh randomness
         $this->resetMatchPerformance();
@@ -189,9 +189,9 @@ class MatchSimulator
             $awayCardEvents = $this->generateCardEvents($awayTeam->id, $awayPlayers, $goalDifference);
             $events = $events->merge($homeCardEvents)->merge($awayCardEvents);
 
-            // Generate injury events (rare)
-            $homeInjuryEvents = $this->generateInjuryEvents($homeTeam->id, $homePlayers);
-            $awayInjuryEvents = $this->generateInjuryEvents($awayTeam->id, $awayPlayers);
+            // Generate injury events (rare) - pass game for medical tier effects
+            $homeInjuryEvents = $this->generateInjuryEvents($homeTeam->id, $homePlayers, null, null, $game);
+            $awayInjuryEvents = $this->generateInjuryEvents($awayTeam->id, $awayPlayers, null, null, $game);
             $events = $events->merge($homeInjuryEvents)->merge($awayInjuryEvents);
 
             // Sort events by minute
@@ -238,13 +238,14 @@ class MatchSimulator
                         $ownGoalScorer->id,
                         $minute
                     ));
+
                     continue;
                 }
             }
 
             // Regular goal
             $scorer = $this->pickPlayerByPosition($scoringTeamPlayers, self::SCORING_WEIGHTS);
-            if (!$scorer) {
+            if (! $scorer) {
                 continue;
             }
 
@@ -270,9 +271,7 @@ class MatchSimulator
     /**
      * Generate card events for a team.
      *
-     * @param string $teamId
-     * @param Collection $players
-     * @param int $goalDifference Negative = losing (more cards), positive = winning (fewer cards)
+     * @param  int  $goalDifference  Negative = losing (more cards), positive = winning (fewer cards)
      * @return Collection<MatchEventData>
      */
     private function generateCardEvents(string $teamId, Collection $players, int $goalDifference = 0): Collection
@@ -302,7 +301,7 @@ class MatchSimulator
 
         for ($i = 0; $i < $yellowCount; $i++) {
             $player = $this->pickPlayerByPosition($players, self::CARD_WEIGHTS);
-            if (!$player) {
+            if (! $player) {
                 continue;
             }
 
@@ -332,7 +331,7 @@ class MatchSimulator
 
         if ($this->percentChance($directRedChance)) {
             $player = $this->pickPlayerByPosition($players, self::CARD_WEIGHTS);
-            if ($player && !$playersWithYellow->has($player->id)) {
+            if ($player && ! $playersWithYellow->has($player->id)) {
                 $minute = $this->generateUniqueMinute($usedMinutes);
                 $events->push(MatchEventData::redCard($teamId, $player->id, $minute, false));
             }
@@ -345,10 +344,9 @@ class MatchSimulator
      * Generate injury events using the InjuryService.
      * Checks each player individually based on their durability, fitness, and age.
      *
-     * @param string $teamId
-     * @param Collection $players
-     * @param Carbon|null $lastMatchDate The date of the team's last match (for congestion)
-     * @param Carbon|null $currentMatchDate The date of the current match
+     * @param  Carbon|null  $lastMatchDate  The date of the team's last match (for congestion)
+     * @param  Carbon|null  $currentMatchDate  The date of the current match
+     * @param  Game|null  $game  Optional game for medical tier effects
      * @return Collection<MatchEventData>
      */
     private function generateInjuryEvents(
@@ -356,12 +354,13 @@ class MatchSimulator
         Collection $players,
         ?Carbon $lastMatchDate = null,
         ?Carbon $currentMatchDate = null,
+        ?Game $game = null,
     ): Collection {
         $events = collect();
 
         foreach ($players as $player) {
-            if ($this->injuryService->rollForInjury($player, $lastMatchDate, $currentMatchDate)) {
-                $injury = $this->injuryService->generateInjury($player);
+            if ($this->injuryService->rollForInjury($player, $lastMatchDate, $currentMatchDate, $game)) {
+                $injury = $this->injuryService->generateInjury($player, $game);
 
                 $events->push(MatchEventData::injury(
                     $teamId,
@@ -460,7 +459,7 @@ class MatchSimulator
      * Calculate team strength based on lineup player attributes.
      * Incorporates match-day performance modifiers for realistic variance.
      *
-     * @param Collection<GamePlayer> $lineup
+     * @param  Collection<GamePlayer>  $lineup
      */
     private function calculateTeamStrength(Collection $lineup): float
     {
@@ -502,7 +501,7 @@ class MatchSimulator
      * Elite forwards (90+) provide a significant boost to their team's
      * expected goals, reflecting their ability to create chances from nothing.
      *
-     * @param Collection<GamePlayer> $lineup
+     * @param  Collection<GamePlayer>  $lineup
      * @return float Bonus expected goals (0.0 to ~0.5)
      */
     private function calculateStrikerBonus(Collection $lineup): float
@@ -649,7 +648,7 @@ class MatchSimulator
      * Convert match performance to a display rating (1-10 scale).
      * This can be used for post-match player ratings.
      *
-     * @param float $performance The raw performance modifier (0.7-1.3)
+     * @param  float  $performance  The raw performance modifier (0.7-1.3)
      * @return float Rating on 1-10 scale
      */
     public static function performanceToRating(float $performance): float
@@ -753,8 +752,12 @@ class MatchSimulator
             $homeScored = $this->penaltyScored();
             $awayScored = $this->penaltyScored();
 
-            if ($homeScored) $homeScore++;
-            if ($awayScored) $awayScore++;
+            if ($homeScored) {
+                $homeScore++;
+            }
+            if ($awayScored) {
+                $awayScore++;
+            }
 
             // In sudden death, if both miss or both score, continue
             // If only one scores, they win

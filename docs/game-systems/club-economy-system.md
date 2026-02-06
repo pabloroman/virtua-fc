@@ -574,27 +574,30 @@ The system naturally creates different club identities based on consistent choic
 ## Implementation Phases
 
 ### Phase 1: Data Model & Club Profiles
-- [ ] Create `club_profiles` table with base financial data for all La Liga/La Liga 2 teams
-- [ ] Populate base matchday revenue, reputation level, commercial revenue for each team
-- [ ] Modify `game_finances` table for projected vs actual structure
-- [ ] Create `game_investments` table
-- [ ] Add `joined_at` field to `game_players` for wage pro-rating
+- [x] Create `club_profiles` table with base financial data for all La Liga/La Liga 2 teams
+- [x] Populate base matchday revenue, reputation level, commercial revenue for each team
+- [x] Modify `game_finances` table for projected vs actual structure
+- [x] Create `game_investments` table
+- [x] Use existing `joined_on` field in `game_players` for wage pro-rating
 
 ### Phase 2: Projection System
-- [ ] Implement squad strength calculation (avg OVR of best 18)
-- [ ] Implement projected position calculation (rank teams by strength)
-- [ ] Implement projected revenue calculation (TV, matchday, prizes, commercial)
-- [ ] Implement projected wages calculation
-- [ ] Implement projected surplus calculation
-- [ ] Show projections in pre-season UI
+- [x] Implement squad strength calculation (avg OVR of best 18)
+- [x] Implement projected position calculation (rank teams by strength)
+- [x] Implement projected revenue calculation (TV, matchday, prizes, commercial)
+- [x] Implement projected wages calculation
+- [x] Implement projected surplus calculation
+- [x] Show projections in pre-season UI
+- [x] Create BudgetProjectionProcessor for season end pipeline
+- [x] Create SeasonSettlementProcessor for calculating actual revenue/variance
 
 ### Phase 3: Budget Allocation UI
-- [ ] Create pre-season budget allocation screen
-- [ ] Implement 5-slider interface
-- [ ] Show available surplus (projected minus carried debt)
-- [ ] Show real-time tier feedback as sliders move
-- [ ] Enforce minimum Tier 1 requirements (€1.5M total)
-- [ ] Save allocations to `game_investments`
+- [x] Create pre-season budget allocation screen
+- [x] Implement 5-slider interface
+- [x] Show available surplus (projected minus carried debt)
+- [x] Show real-time tier feedback as sliders move
+- [x] Enforce minimum Tier 1 requirements (€1.5M total)
+- [x] Save allocations to `game_investments`
+- [x] Add budget allocation banner to pre-season page
 
 ### Phase 4: Actual Revenue & Settlement
 - [ ] Implement actual revenue calculation at season end

@@ -9,12 +9,21 @@ use App\Models\ScoutReport;
 use App\Models\Team;
 use App\Models\TransferOffer;
 use App\Support\Money;
-use Carbon\Carbon;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 
 class ScoutingService
 {
+    /**
+     * Scouting tier effects on searches.
+     * [weeks_reduction, extra_results, ability_fuzz_reduction]
+     */
+    private const SCOUTING_TIER_EFFECTS = [
+        0 => [0, 0, 0],   // No scouting department
+        1 => [0, 0, 0],   // Basic - baseline
+        2 => [0, 1, 2],   // Good - 1 extra result, 2 less fuzz
+        3 => [1, 2, 4],   // Excellent - 1 week faster, 2 extra results, 4 less fuzz
+        4 => [1, 3, 6],   // World-class - 1 week faster, 3 extra results, 6 less fuzz
+    ];
+
     public function __construct(
         private readonly ContractService $contractService,
     ) {}
@@ -70,7 +79,7 @@ class ScoutingService
      */
     public function startSearch(Game $game, array $filters): ScoutReport
     {
-        $weeks = $this->calculateSearchWeeks($filters);
+        $weeks = $this->calculateSearchWeeks($filters, $game);
 
         return ScoutReport::create([
             'game_id' => $game->id,
@@ -91,24 +100,33 @@ class ScoutingService
 
     /**
      * Calculate how many weeks a search takes.
+     * Higher scouting tier = faster searches.
      */
-    public function calculateSearchWeeks(array $filters): int
+    public function calculateSearchWeeks(array $filters, ?Game $game = null): int
     {
         $position = $filters['position'] ?? '';
         $league = $filters['league'] ?? null;
 
+        // Base weeks calculation
+        $baseWeeks = 2; // Medium search
+
         // Broad search (position group like "any defender")
         if (str_starts_with($position, 'any_')) {
-            return 3;
+            $baseWeeks = 3;
         }
-
         // Narrow search (specific position + specific league)
-        if ($league && $league !== 'all') {
-            return 1;
+        elseif ($league && $league !== 'all') {
+            $baseWeeks = 1;
         }
 
-        // Medium search (specific position, all leagues)
-        return 2;
+        // Apply scouting tier reduction
+        if ($game) {
+            $tier = $game->currentInvestment?->scouting_tier ?? 1;
+            $reduction = self::SCOUTING_TIER_EFFECTS[$tier][0] ?? 0;
+            $baseWeeks = max(1, $baseWeeks - $reduction);
+        }
+
+        return $baseWeeks;
     }
 
     /**
@@ -121,7 +139,7 @@ class ScoutingService
             ->where('status', ScoutReport::STATUS_SEARCHING)
             ->first();
 
-        if (!$report) {
+        if (! $report) {
             return null;
         }
 
@@ -148,7 +166,7 @@ class ScoutingService
             ->whereIn('position', $positions);
 
         // League filter
-        if (!empty($filters['league']) && $filters['league'] !== 'all') {
+        if (! empty($filters['league']) && $filters['league'] !== 'all') {
             $leagueTeamIds = Team::whereHas('competitions', function ($q) use ($filters) {
                 $q->where('competitions.id', $filters['league']);
             })->pluck('id');
@@ -157,19 +175,19 @@ class ScoutingService
         }
 
         // Age filter
-        if (!empty($filters['age_min']) || !empty($filters['age_max'])) {
+        if (! empty($filters['age_min']) || ! empty($filters['age_max'])) {
             $query->whereHas('player', function ($q) use ($filters) {
-                if (!empty($filters['age_min'])) {
+                if (! empty($filters['age_min'])) {
                     $q->where('age', '>=', $filters['age_min']);
                 }
-                if (!empty($filters['age_max'])) {
+                if (! empty($filters['age_max'])) {
                     $q->where('age', '<=', $filters['age_max']);
                 }
             });
         }
 
         // Max budget filter
-        if (!empty($filters['max_budget'])) {
+        if (! empty($filters['max_budget'])) {
             $budgetCents = $filters['max_budget'] * 100; // Convert euros to cents
             $query->where('market_value_cents', '<=', $budgetCents);
         }
@@ -195,12 +213,14 @@ class ScoutingService
                 'status' => ScoutReport::STATUS_COMPLETED,
                 'player_ids' => [],
             ]);
+
             return;
         }
 
         // Score each player by availability (lower importance = more available)
         $scored = $candidates->map(function ($player) {
             $importance = $this->calculatePlayerImportance($player);
+
             return [
                 'player' => $player,
                 'importance' => $importance,
@@ -211,8 +231,15 @@ class ScoutingService
         // Sort by availability (highest = most available)
         $sorted = $scored->sortByDesc('availability_score');
 
-        // Take 5-8 players, biased toward available ones but include 1-2 stretch targets
-        $count = min($candidates->count(), rand(5, 8));
+        // Base result count: 5-8 players
+        $baseCount = rand(5, 8);
+
+        // Apply scouting tier bonus for extra results
+        $tier = $game->currentInvestment?->scouting_tier ?? 1;
+        $extraResults = self::SCOUTING_TIER_EFFECTS[$tier][1] ?? 0;
+
+        // Take players, biased toward available ones but include 1-2 stretch targets
+        $count = min($candidates->count(), $baseCount + $extraResults);
 
         // Get the most available ones
         $available = $sorted->take(max($count - 2, 3));
@@ -285,6 +312,7 @@ class ScoutingService
 
         // Convert rank to 0.0-1.0 scale (0 = worst, 1 = best)
         $total = $sorted->count();
+
         return 1.0 - ($rank / max($total - 1, 1));
     }
 
@@ -293,17 +321,26 @@ class ScoutingService
      */
     private function getContractModifier(GamePlayer $player): float
     {
-        if (!$player->contract_until) {
+        if (! $player->contract_until) {
             return 0.5;
         }
 
         $game = $player->game;
         $yearsLeft = $player->contract_until->diffInYears($game->current_date);
 
-        if ($yearsLeft >= 4) return 1.2;
-        if ($yearsLeft >= 3) return 1.1;
-        if ($yearsLeft >= 2) return 1.0;
-        if ($yearsLeft >= 1) return 0.85;
+        if ($yearsLeft >= 4) {
+            return 1.2;
+        }
+        if ($yearsLeft >= 3) {
+            return 1.1;
+        }
+        if ($yearsLeft >= 2) {
+            return 1.0;
+        }
+        if ($yearsLeft >= 1) {
+            return 0.85;
+        }
+
         return 0.5; // Expiring
     }
 
@@ -312,8 +349,13 @@ class ScoutingService
      */
     private function getAgeModifier(int $age): float
     {
-        if ($age < 23) return 1.15;
-        if ($age <= 29) return 1.0;
+        if ($age < 23) {
+            return 1.15;
+        }
+        if ($age <= 29) {
+            return 1.0;
+        }
+
         return max(0.5, 1.0 - ($age - 29) * 0.05);
     }
 
@@ -340,7 +382,7 @@ class ScoutingService
                 'result' => 'accepted',
                 'counter_amount' => null,
                 'asking_price' => $askingPrice,
-                'message' => $player->team->name . ' have accepted your bid.',
+                'message' => $player->team->name.' have accepted your bid.',
             ];
         }
 
@@ -352,7 +394,7 @@ class ScoutingService
                 'result' => 'counter',
                 'counter_amount' => $counterAmount,
                 'asking_price' => $askingPrice,
-                'message' => $player->team->name . ' have made a counter-offer of ' . Money::format($counterAmount) . '.',
+                'message' => $player->team->name.' have made a counter-offer of '.Money::format($counterAmount).'.',
             ];
         }
 
@@ -360,7 +402,7 @@ class ScoutingService
             'result' => 'rejected',
             'counter_amount' => null,
             'asking_price' => $askingPrice,
-            'message' => $player->team->name . ' have rejected your bid. It was too far below their valuation.',
+            'message' => $player->team->name.' have rejected your bid. It was too far below their valuation.',
         ];
     }
 
@@ -370,6 +412,7 @@ class ScoutingService
     private function isKeyPlayer(GamePlayer $player): bool
     {
         $importance = $this->calculatePlayerImportance($player);
+
         return $importance > 0.85; // Roughly top 3 out of ~25 players
     }
 
@@ -389,7 +432,7 @@ class ScoutingService
         if ($importance > 0.7) {
             return [
                 'result' => 'rejected',
-                'message' => $player->team->name . ' rejected the loan request. ' . $player->name . ' is a key player for them.',
+                'message' => $player->team->name.' rejected the loan request. '.$player->name.' is a key player for them.',
             ];
         }
 
@@ -398,18 +441,19 @@ class ScoutingService
             if (rand(0, 1) === 1) {
                 return [
                     'result' => 'accepted',
-                    'message' => $player->team->name . ' have agreed to loan ' . $player->name . ' to your club.',
+                    'message' => $player->team->name.' have agreed to loan '.$player->name.' to your club.',
                 ];
             }
+
             return [
                 'result' => 'rejected',
-                'message' => $player->team->name . ' decided to keep ' . $player->name . ' for now.',
+                'message' => $player->team->name.' decided to keep '.$player->name.' for now.',
             ];
         }
 
         return [
             'result' => 'accepted',
-            'message' => $player->team->name . ' have agreed to loan ' . $player->name . ' to your club.',
+            'message' => $player->team->name.' have agreed to loan '.$player->name.' to your club.',
         ];
     }
 
@@ -447,18 +491,24 @@ class ScoutingService
         $wageDemand = $this->calculateWageDemand($player);
         $importance = $this->calculatePlayerImportance($player);
 
-        $finances = $game->finances;
-        $canAffordFee = $finances ? $askingPrice <= $finances->transfer_budget : false;
+        $investment = $game->currentInvestment;
+        $finances = $game->currentFinances;
+        $canAffordFee = $investment ? $askingPrice <= $investment->transfer_budget : false;
         $currentWageBill = GamePlayer::where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->sum('annual_wage');
-        $wageBudget = $finances ? $finances->wage_budget : 0;
-        $canAffordWage = ($currentWageBill + $wageDemand) <= $wageBudget;
+        // Allow up to 10% over projected wages for flexibility
+        $maxWages = $finances ? (int) ($finances->projected_wages * 1.10) : 0;
+        $canAffordWage = ($currentWageBill + $wageDemand) <= $maxWages;
 
-        // Fuzzy ability range (±5, clamped 1-99)
+        // Fuzzy ability range - higher scouting tier = more accurate
         $techAbility = $player->current_technical_ability;
         $physAbility = $player->current_physical_ability;
-        $fuzz = rand(3, 7);
+
+        $tier = $game->currentInvestment?->scouting_tier ?? 1;
+        $fuzzReduction = self::SCOUTING_TIER_EFFECTS[$tier][2] ?? 0;
+        $baseFuzz = rand(3, 7);
+        $fuzz = max(1, $baseFuzz - $fuzzReduction);
 
         return [
             'player' => $player,

@@ -2,8 +2,8 @@
 
 namespace App\Game\Services;
 
+use App\Models\Game;
 use App\Models\GamePlayer;
-use App\Models\GameMatch;
 use Carbon\Carbon;
 
 class InjuryService
@@ -12,6 +12,30 @@ class InjuryService
      * Base injury chance per player per match (percentage).
      */
     private const BASE_INJURY_CHANCE = 4.0;
+
+    /**
+     * Medical tier multipliers for injury prevention.
+     * Higher tier = lower injury chance.
+     */
+    private const MEDICAL_INJURY_MULTIPLIER = [
+        0 => 1.3,   // No medical staff - higher risk
+        1 => 1.0,   // Basic - baseline
+        2 => 0.85,  // Good - 15% reduction
+        3 => 0.70,  // Excellent - 30% reduction
+        4 => 0.55,  // World-class - 45% reduction
+    ];
+
+    /**
+     * Medical tier multipliers for recovery time.
+     * Higher tier = faster recovery.
+     */
+    private const MEDICAL_RECOVERY_MULTIPLIER = [
+        0 => 1.2,   // No medical staff - slower recovery
+        1 => 1.0,   // Basic - baseline
+        2 => 0.9,   // Good - 10% faster
+        3 => 0.8,   // Excellent - 20% faster
+        4 => 0.7,   // World-class - 30% faster
+    ];
 
     /**
      * Injury types with duration ranges (in weeks) and position affinities.
@@ -113,11 +137,11 @@ class InjuryService
     /**
      * Calculate the injury probability for a player in a given match context.
      *
-     * @param GamePlayer $player
-     * @param Carbon|null $lastMatchDate Date of player's last match (for congestion)
+     * @param  Carbon|null  $lastMatchDate  Date of player's last match (for congestion)
+     * @param  Game|null  $game  Optional game to get medical tier
      * @return float Injury probability as percentage (0-100)
      */
-    public function calculateInjuryProbability(GamePlayer $player, ?Carbon $lastMatchDate = null, ?Carbon $currentMatchDate = null): float
+    public function calculateInjuryProbability(GamePlayer $player, ?Carbon $lastMatchDate = null, ?Carbon $currentMatchDate = null, ?Game $game = null): float
     {
         $baseProbability = self::BASE_INJURY_CHANCE;
 
@@ -126,13 +150,15 @@ class InjuryService
         $ageMultiplier = $this->getAgeMultiplier($player->age);
         $fitnessMultiplier = $this->getFitnessMultiplier($player->fitness);
         $congestionMultiplier = $this->getCongestionMultiplier($lastMatchDate, $currentMatchDate);
+        $medicalMultiplier = $this->getMedicalInjuryMultiplier($game);
 
         // Calculate final probability
         $finalProbability = $baseProbability
             * $durabilityMultiplier
             * $ageMultiplier
             * $fitnessMultiplier
-            * $congestionMultiplier;
+            * $congestionMultiplier
+            * $medicalMultiplier;
 
         // Cap at reasonable maximum
         return min($finalProbability, 35.0);
@@ -141,27 +167,25 @@ class InjuryService
     /**
      * Determine if a player gets injured based on their calculated probability.
      *
-     * @param GamePlayer $player
-     * @param Carbon|null $lastMatchDate
-     * @param Carbon|null $currentMatchDate
-     * @return bool
+     * @param  Game|null  $game  Optional game to get medical tier
      */
-    public function rollForInjury(GamePlayer $player, ?Carbon $lastMatchDate = null, ?Carbon $currentMatchDate = null): bool
+    public function rollForInjury(GamePlayer $player, ?Carbon $lastMatchDate = null, ?Carbon $currentMatchDate = null, ?Game $game = null): bool
     {
-        $probability = $this->calculateInjuryProbability($player, $lastMatchDate, $currentMatchDate);
+        $probability = $this->calculateInjuryProbability($player, $lastMatchDate, $currentMatchDate, $game);
+
         return $this->percentChance($probability);
     }
 
     /**
      * Generate an injury for a player, returning injury details.
      *
-     * @param GamePlayer $player
+     * @param  Game|null  $game  Optional game to get medical tier
      * @return array{type: string, weeks: int, minute: int}
      */
-    public function generateInjury(GamePlayer $player): array
+    public function generateInjury(GamePlayer $player, ?Game $game = null): array
     {
         $injuryType = $this->selectInjuryType($player);
-        $weeksOut = $this->calculateInjuryDuration($injuryType, $player);
+        $weeksOut = $this->calculateInjuryDuration($injuryType, $player, $game);
         $minute = rand(1, 85);
 
         return [
@@ -173,9 +197,6 @@ class InjuryService
 
     /**
      * Select an injury type based on player's position.
-     *
-     * @param GamePlayer $player
-     * @return string
      */
     private function selectInjuryType(GamePlayer $player): string
     {
@@ -197,13 +218,12 @@ class InjuryService
     }
 
     /**
-     * Calculate injury duration, potentially affected by player age.
+     * Calculate injury duration, potentially affected by player age and medical tier.
      *
-     * @param string $injuryType
-     * @param GamePlayer $player
+     * @param  Game|null  $game  Optional game to get medical tier
      * @return int Weeks out
      */
-    private function calculateInjuryDuration(string $injuryType, GamePlayer $player): int
+    private function calculateInjuryDuration(string $injuryType, GamePlayer $player, ?Game $game = null): int
     {
         $config = self::INJURY_TYPES[$injuryType];
         [$minWeeks, $maxWeeks] = $config['weeks'];
@@ -217,7 +237,12 @@ class InjuryService
             $baseWeeks = (int) ceil($baseWeeks * 1.1);
         }
 
-        return $baseWeeks;
+        // Apply medical tier recovery multiplier
+        $medicalMultiplier = $this->getMedicalRecoveryMultiplier($game);
+        $baseWeeks = (int) ceil($baseWeeks * $medicalMultiplier);
+
+        // Minimum 1 week for any injury
+        return max(1, $baseWeeks);
     }
 
     /**
@@ -269,7 +294,7 @@ class InjuryService
      */
     private function getCongestionMultiplier(?Carbon $lastMatchDate, ?Carbon $currentMatchDate): float
     {
-        if (!$lastMatchDate || !$currentMatchDate) {
+        if (! $lastMatchDate || ! $currentMatchDate) {
             return 1.0;
         }
 
@@ -284,6 +309,36 @@ class InjuryService
         }
 
         return 1.0; // Normal rest
+    }
+
+    /**
+     * Get medical tier multiplier for injury prevention.
+     */
+    private function getMedicalInjuryMultiplier(?Game $game): float
+    {
+        if (! $game) {
+            return 1.0;
+        }
+
+        $investment = $game->currentInvestment;
+        $tier = $investment?->medical_tier ?? 1;
+
+        return self::MEDICAL_INJURY_MULTIPLIER[$tier] ?? 1.0;
+    }
+
+    /**
+     * Get medical tier multiplier for recovery time.
+     */
+    private function getMedicalRecoveryMultiplier(?Game $game): float
+    {
+        if (! $game) {
+            return 1.0;
+        }
+
+        $investment = $game->currentInvestment;
+        $tier = $investment?->medical_tier ?? 1;
+
+        return self::MEDICAL_RECOVERY_MULTIPLIER[$tier] ?? 1.0;
     }
 
     /**
@@ -350,10 +405,19 @@ class InjuryService
      */
     public static function getDurabilityLabel(int $durability): string
     {
-        if ($durability <= 20) return 'Very Injury Prone';
-        if ($durability <= 40) return 'Injury Prone';
-        if ($durability <= 60) return 'Average';
-        if ($durability <= 80) return 'Resilient';
+        if ($durability <= 20) {
+            return 'Very Injury Prone';
+        }
+        if ($durability <= 40) {
+            return 'Injury Prone';
+        }
+        if ($durability <= 60) {
+            return 'Average';
+        }
+        if ($durability <= 80) {
+            return 'Resilient';
+        }
+
         return 'Ironman';
     }
 }

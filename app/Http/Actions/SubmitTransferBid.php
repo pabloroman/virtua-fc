@@ -17,7 +17,7 @@ class SubmitTransferBid
 
     public function __invoke(Request $request, string $gameId, string $playerId)
     {
-        $game = Game::with('finances')->findOrFail($gameId);
+        $game = Game::findOrFail($gameId);
         $player = GamePlayer::with(['player', 'team'])->findOrFail($playerId);
 
         $validated = $request->validate([
@@ -27,8 +27,8 @@ class SubmitTransferBid
         $bidAmountCents = (int) ($validated['bid_amount'] * 100);
 
         // Budget validation
-        $finances = $game->finances;
-        if ($finances && $bidAmountCents > $finances->transfer_budget) {
+        $investment = $game->currentInvestment;
+        if ($investment && $bidAmountCents > $investment->transfer_budget) {
             return redirect()->route('game.scouting.player', [$gameId, $playerId])
                 ->with('error', 'Bid exceeds your transfer budget.');
         }

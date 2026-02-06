@@ -17,7 +17,12 @@ class ShowGame
 
     public function __invoke(string $gameId)
     {
-        $game = Game::with(['team', 'finances'])->findOrFail($gameId);
+        $game = Game::with('team')->findOrFail($gameId);
+
+        // Redirect to onboarding if not completed
+        if ($game->needsOnboarding()) {
+            return redirect()->route('game.onboarding', $gameId);
+        }
 
         // Redirect to preseason if we're in preseason mode
         if ($game->isInPreseason()) {
@@ -36,7 +41,8 @@ class ShowGame
             'upcomingFixtures' => $this->calendarService->getUpcomingFixtures($game),
             'squadAlerts' => $this->alertService->getSquadAlerts($game, $nextMatch),
             'transferAlerts' => $this->alertService->getTransferAlerts($game),
-            'finances' => $game->finances,
+            'finances' => $game->currentFinances,
+            'investment' => $game->currentInvestment,
         ]);
     }
 

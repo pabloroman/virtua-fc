@@ -33,6 +33,7 @@ class LoanService
         // Move player to user's team
         $player->update([
             'team_id' => $game->team_id,
+            'joined_on' => $game->current_date,
         ]);
 
         return $loan;

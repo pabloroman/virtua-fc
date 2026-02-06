@@ -5,6 +5,7 @@ namespace App\Http\Views;
 use App\Models\FinancialTransaction;
 use App\Models\Game;
 use App\Models\GamePlayer;
+use App\Models\Loan;
 use App\Models\TransferOffer;
 
 class ShowPreseason
@@ -14,7 +15,7 @@ class ShowPreseason
         $game = Game::with(['team', 'finances'])->findOrFail($gameId);
 
         // Redirect to dashboard if not in pre-season
-        if (!$game->isInPreseason()) {
+        if (! $game->isInPreseason()) {
             return redirect()->route('show-game', $gameId);
         }
 
@@ -23,13 +24,27 @@ class ShowPreseason
             ->where('game_id', $gameId)
             ->where('team_id', $game->team_id)
             ->get()
-            ->sortBy(fn($p) => $this->positionSortOrder($p->position));
+            ->sortBy(fn ($p) => $this->positionSortOrder($p->position));
+
+        // Get youth academy prospects (players signed from Youth Academy this season)
+        $youthProspects = $squad->filter(fn ($p) => $p->signed_from === 'Youth Academy'
+            && $p->joined_on
+            && $p->joined_on->year == (int) $game->season
+        );
+
+        // Get players who returned from loan this season
+        $loanReturns = Loan::with(['gamePlayer.player', 'loanTeam'])
+            ->where('game_id', $gameId)
+            ->where('parent_team_id', $game->team_id)
+            ->where('status', Loan::STATUS_COMPLETED)
+            ->whereYear('return_at', (int) $game->season - 1) // Returned at end of previous season
+            ->get();
 
         // Get incoming offers for our players
         $incomingOffers = TransferOffer::with(['gamePlayer.player', 'offeringTeam'])
             ->where('game_id', $gameId)
             ->where('status', TransferOffer::STATUS_PENDING)
-            ->whereHas('gamePlayer', fn($q) => $q->where('team_id', $game->team_id))
+            ->whereHas('gamePlayer', fn ($q) => $q->where('team_id', $game->team_id))
             ->orderByDesc('transfer_fee')
             ->get();
 
@@ -49,17 +64,15 @@ class ShowPreseason
             ->get();
 
         // Separate into incoming and outgoing transfers
-        $transfersIn = $completedTransfers->filter(fn($t) =>
-            $t->direction === TransferOffer::DIRECTION_INCOMING
+        $transfersIn = $completedTransfers->filter(fn ($t) => $t->direction === TransferOffer::DIRECTION_INCOMING
             || $t->gamePlayer->team_id === $game->team_id
         );
-        $transfersOut = $completedTransfers->filter(fn($t) =>
-            ($t->direction === TransferOffer::DIRECTION_OUTGOING || $t->direction === null)
+        $transfersOut = $completedTransfers->filter(fn ($t) => ($t->direction === TransferOffer::DIRECTION_OUTGOING || $t->direction === null)
             && $t->gamePlayer->team_id !== $game->team_id
         );
 
         // Get listed players
-        $listedPlayers = $squad->filter(fn($p) => $p->isTransferListed());
+        $listedPlayers = $squad->filter(fn ($p) => $p->isTransferListed());
 
         // Get first competitive match date
         $firstMatch = $game->getFirstCompetitiveMatch();
@@ -93,6 +106,8 @@ class ShowPreseason
         return view('preseason', [
             'game' => $game,
             'squad' => $squad,
+            'youthProspects' => $youthProspects,
+            'loanReturns' => $loanReturns,
             'incomingOffers' => $incomingOffers,
             'playersWithOffers' => $playersWithOffers,
             'transfersIn' => $transfersIn,

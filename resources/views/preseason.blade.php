@@ -45,19 +45,50 @@
                 </div>
             </div>
 
-            {{-- Budget Cards --}}
-            <div class="grid grid-cols-3 gap-4 mb-6">
+            {{-- Budget Allocation Banner (if not yet allocated) --}}
+            @if(!$game->currentInvestment)
+            <a href="{{ route('game.budget', $game->id) }}" class="block mb-6">
+                <div class="bg-gradient-to-r from-sky-500 to-sky-600 rounded-lg shadow-sm p-6 text-white hover:from-sky-600 hover:to-sky-700 transition">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-semibold text-xl mb-1">Allocate Season Budget</h3>
+                            <p class="text-sky-100">
+                                You have {{ $game->currentFinances?->formatted_available_surplus ?? '€0' }} to allocate across infrastructure and transfers.
+                            </p>
+                        </div>
+                        <div class="flex items-center gap-2 text-white">
+                            <span class="font-semibold">Set Up Budget</span>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            @endif
+
+            {{-- Financial Projections Cards --}}
+            <div class="grid grid-cols-4 gap-4 mb-6">
+                <div class="bg-white rounded-lg shadow-sm p-4">
+                    <div class="text-sm text-slate-500 mb-1">Projected Position</div>
+                    <div class="text-2xl font-bold text-slate-900">{{ $game->currentFinances?->projected_position ?? '-' }}</div>
+                </div>
+                <a href="{{ route('game.budget', $game->id) }}" class="bg-white rounded-lg shadow-sm p-4 hover:bg-slate-50 transition">
+                    <div class="text-sm text-slate-500 mb-1">Available Surplus</div>
+                    <div class="text-2xl font-bold text-slate-900">{{ $game->currentFinances?->formatted_available_surplus ?? '€0' }}</div>
+                    @if($game->currentInvestment)
+                    <div class="text-xs text-sky-600 mt-1">Click to adjust</div>
+                    @else
+                    <div class="text-xs text-sky-600 mt-1">Click to allocate</div>
+                    @endif
+                </a>
                 <div class="bg-white rounded-lg shadow-sm p-4">
                     <div class="text-sm text-slate-500 mb-1">Transfer Budget</div>
-                    <div class="text-2xl font-bold text-slate-900">{{ $game->finances?->formatted_transfer_budget ?? '€0' }}</div>
+                    <div class="text-2xl font-bold text-slate-900">{{ $game->currentInvestment?->formatted_transfer_budget ?? '€0' }}</div>
                 </div>
                 <div class="bg-white rounded-lg shadow-sm p-4">
-                    <div class="text-sm text-slate-500 mb-1">Available Balance</div>
-                    <div class="text-2xl font-bold text-slate-900">{{ $game->finances?->formatted_balance ?? '€0' }}</div>
-                </div>
-                <div class="bg-white rounded-lg shadow-sm p-4">
-                    <div class="text-sm text-slate-500 mb-1">Wage Budget Remaining</div>
-                    <div class="text-2xl font-bold text-slate-900">{{ $game->finances?->formatted_wage_budget ?? '€0' }}</div>
+                    <div class="text-sm text-slate-500 mb-1">Projected Wages</div>
+                    <div class="text-2xl font-bold text-slate-900">{{ $game->currentFinances?->formatted_projected_wages ?? '€0' }}</div>
                 </div>
             </div>
 
@@ -118,6 +149,85 @@
                             </div>
                         @endif
                     </div>
+
+                    {{-- Youth Academy Prospects --}}
+                    @if($youthProspects->isNotEmpty())
+                        <div class="bg-white rounded-lg shadow-sm p-6 mt-6">
+                            <h3 class="font-semibold text-lg text-slate-900 mb-4 flex items-center gap-2">
+                                <span class="w-2 h-2 bg-purple-500 rounded-full"></span>
+                                Youth Academy Prospects
+                                <span class="text-sm font-normal text-slate-500">({{ $youthProspects->count() }})</span>
+                            </h3>
+                            <p class="text-sm text-slate-500 mb-4">New talents promoted from the youth academy this season.</p>
+                            <div class="space-y-3">
+                                @foreach($youthProspects as $prospect)
+                                    <div class="border border-purple-200 bg-purple-50 rounded-lg p-4">
+                                        <div class="flex items-start justify-between">
+                                            <div>
+                                                <div class="font-semibold text-slate-900">{{ $prospect->player->name }}</div>
+                                                <div class="flex items-center gap-2 mt-1">
+                                                    <span class="px-1.5 py-0.5 text-xs font-medium rounded {{ $prospect->position_display['bg'] }} {{ $prospect->position_display['text'] }}">
+                                                        {{ $prospect->position_display['abbreviation'] }}
+                                                    </span>
+                                                    <span class="text-sm text-slate-600">Age {{ $prospect->age }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="text-right">
+                                                <div class="text-sm text-slate-500">Potential</div>
+                                                <div class="flex items-center gap-1 mt-0.5">
+                                                    @for($i = 0; $i < 5; $i++)
+                                                        @if($prospect->potential >= 80 - ($i * 5))
+                                                            <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+                                                        @else
+                                                            <span class="w-2 h-2 rounded-full bg-slate-200"></span>
+                                                        @endif
+                                                    @endfor
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-4 mt-3 text-xs text-slate-500">
+                                            <span>Tech: {{ $prospect->game_technical_ability }}</span>
+                                            <span>Phys: {{ $prospect->game_physical_ability }}</span>
+                                            <span>Contract: {{ $prospect->contract_until->format('Y') }}</span>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
+                    {{-- Loan Returns --}}
+                    @if($loanReturns->isNotEmpty())
+                        <div class="bg-white rounded-lg shadow-sm p-6 mt-6">
+                            <h3 class="font-semibold text-lg text-slate-900 mb-4 flex items-center gap-2">
+                                <span class="w-2 h-2 bg-sky-500 rounded-full"></span>
+                                Loan Returns
+                                <span class="text-sm font-normal text-slate-500">({{ $loanReturns->count() }})</span>
+                            </h3>
+                            <p class="text-sm text-slate-500 mb-4">Players returning from loan spells.</p>
+                            <div class="space-y-3">
+                                @foreach($loanReturns as $loan)
+                                    <div class="border border-sky-200 bg-sky-50 rounded-lg p-4">
+                                        <div class="flex items-start justify-between">
+                                            <div>
+                                                <div class="font-semibold text-slate-900">{{ $loan->gamePlayer->player->name }}</div>
+                                                <div class="flex items-center gap-2 mt-1">
+                                                    <span class="px-1.5 py-0.5 text-xs font-medium rounded {{ $loan->gamePlayer->position_display['bg'] }} {{ $loan->gamePlayer->position_display['text'] }}">
+                                                        {{ $loan->gamePlayer->position_display['abbreviation'] }}
+                                                    </span>
+                                                    <span class="text-sm text-slate-600">Age {{ $loan->gamePlayer->age }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="text-right">
+                                                <div class="text-xs text-slate-500">Returned from</div>
+                                                <div class="text-sm font-medium text-slate-700 mt-0.5">{{ $loan->loanTeam->name }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
 
                     {{-- Completed Transfers --}}
                     @if($transfersIn->isNotEmpty() || $transfersOut->isNotEmpty())

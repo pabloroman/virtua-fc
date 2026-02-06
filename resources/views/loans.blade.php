@@ -34,9 +34,9 @@
                                     Window: <span class="font-semibold text-slate-900">Closed</span>
                                 @endif
                             </div>
-                            @if($game->finances)
+                            @if($game->currentInvestment)
                             <div class="text-slate-600">
-                                Budget: <span class="font-semibold text-slate-900">{{ $game->finances->formatted_transfer_budget }}</span>
+                                Budget: <span class="font-semibold text-slate-900">{{ $game->currentInvestment->formatted_transfer_budget }}</span>
                             </div>
                             @endif
                         </div>

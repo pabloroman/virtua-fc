@@ -14,17 +14,28 @@ class GameFinances extends Model
     protected $guarded = [];
 
     protected $casts = [
-        'balance' => 'integer',
-        'wage_budget' => 'integer',
-        'transfer_budget' => 'integer',
-        'tv_revenue' => 'integer',
-        'performance_bonus' => 'integer',
-        'cup_bonus' => 'integer',
-        'total_revenue' => 'integer',
-        'wage_expense' => 'integer',
-        'transfer_expense' => 'integer',
-        'total_expense' => 'integer',
-        'season_profit_loss' => 'integer',
+        'season' => 'integer',
+        // Projections
+        'projected_position' => 'integer',
+        'projected_tv_revenue' => 'integer',
+        'projected_prize_revenue' => 'integer',
+        'projected_matchday_revenue' => 'integer',
+        'projected_commercial_revenue' => 'integer',
+        'projected_total_revenue' => 'integer',
+        'projected_wages' => 'integer',
+        'projected_surplus' => 'integer',
+        // Actuals
+        'actual_tv_revenue' => 'integer',
+        'actual_prize_revenue' => 'integer',
+        'actual_matchday_revenue' => 'integer',
+        'actual_commercial_revenue' => 'integer',
+        'actual_transfer_income' => 'integer',
+        'actual_total_revenue' => 'integer',
+        'actual_wages' => 'integer',
+        'actual_surplus' => 'integer',
+        // Settlement
+        'variance' => 'integer',
+        'carried_debt' => 'integer',
     ];
 
     public function game(): BelongsTo
@@ -33,74 +44,115 @@ class GameFinances extends Model
     }
 
     /**
-     * Check if the club is in debt.
+     * Check if the club has debt carried from previous season.
      */
-    public function isInDebt(): bool
+    public function hasCarriedDebt(): bool
     {
-        return $this->balance < 0;
+        return $this->carried_debt > 0;
     }
 
     /**
-     * Get formatted balance for display.
+     * Check if season ended with negative variance (underperformed).
      */
-    public function getFormattedBalanceAttribute(): string
+    public function hasNegativeVariance(): bool
     {
-        return Money::format($this->balance);
+        return $this->variance < 0;
     }
 
     /**
-     * Get formatted wage budget for display.
+     * Calculate available surplus for budget allocation.
+     * Projected surplus minus any carried debt.
      */
-    public function getFormattedWageBudgetAttribute(): string
+    public function getAvailableSurplusAttribute(): int
     {
-        return Money::format($this->wage_budget);
+        return max(0, $this->projected_surplus - $this->carried_debt);
     }
 
-    /**
-     * Get formatted transfer budget for display.
-     */
-    public function getFormattedTransferBudgetAttribute(): string
+    // Formatted accessors for projections
+    public function getFormattedProjectedTvRevenueAttribute(): string
     {
-        return Money::format($this->transfer_budget);
+        return Money::format($this->projected_tv_revenue);
     }
 
-    /**
-     * Get formatted TV revenue for display.
-     */
-    public function getFormattedTvRevenueAttribute(): string
+    public function getFormattedProjectedMatchdayRevenueAttribute(): string
     {
-        return Money::format($this->tv_revenue);
+        return Money::format($this->projected_matchday_revenue);
     }
 
-    /**
-     * Get formatted total revenue for display.
-     */
-    public function getFormattedTotalRevenueAttribute(): string
+    public function getFormattedProjectedCommercialRevenueAttribute(): string
     {
-        return Money::format($this->total_revenue);
+        return Money::format($this->projected_commercial_revenue);
     }
 
-    /**
-     * Get formatted total expense for display.
-     */
-    public function getFormattedTotalExpenseAttribute(): string
+    public function getFormattedProjectedTotalRevenueAttribute(): string
     {
-        return Money::format($this->total_expense);
+        return Money::format($this->projected_total_revenue);
     }
 
-    /**
-     * Get formatted season profit/loss for display.
-     */
-    public function getFormattedSeasonProfitLossAttribute(): string
+    public function getFormattedProjectedWagesAttribute(): string
     {
-        return Money::formatSigned($this->season_profit_loss);
+        return Money::format($this->projected_wages);
     }
 
-    /**
-     * Get formatted wage expense for display.
-     */
-    public function getFormattedWageExpenseAttribute(): string
+    public function getFormattedProjectedSurplusAttribute(): string
     {
-        return Money::format($this->wage_expense);
+        return Money::format($this->projected_surplus);
+    }
+
+    // Formatted accessors for actuals
+    public function getFormattedActualTvRevenueAttribute(): string
+    {
+        return Money::format($this->actual_tv_revenue);
+    }
+
+    public function getFormattedActualMatchdayRevenueAttribute(): string
+    {
+        return Money::format($this->actual_matchday_revenue);
+    }
+
+    public function getFormattedActualCommercialRevenueAttribute(): string
+    {
+        return Money::format($this->actual_commercial_revenue);
+    }
+
+    public function getFormattedActualPrizeRevenueAttribute(): string
+    {
+        return Money::format($this->actual_prize_revenue);
+    }
+
+    public function getFormattedActualTransferIncomeAttribute(): string
+    {
+        return Money::format($this->actual_transfer_income);
+    }
+
+    public function getFormattedActualTotalRevenueAttribute(): string
+    {
+        return Money::format($this->actual_total_revenue);
+    }
+
+    public function getFormattedActualWagesAttribute(): string
+    {
+        return Money::format($this->actual_wages);
+    }
+
+    public function getFormattedActualSurplusAttribute(): string
+    {
+        return Money::format($this->actual_surplus);
+    }
+
+    // Formatted accessors for settlement
+    public function getFormattedVarianceAttribute(): string
+    {
+        return Money::formatSigned($this->variance);
+    }
+
+    public function getFormattedCarriedDebtAttribute(): string
+    {
+        return Money::format($this->carried_debt);
+    }
+
+    public function getFormattedAvailableSurplusAttribute(): string
+    {
+        return Money::format($this->available_surplus);
     }
 }

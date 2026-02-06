@@ -26,6 +26,7 @@ class Game extends Model
         'cup_eliminated' => 'boolean',
         'is_preseason' => 'boolean',
         'preseason_week' => 'integer',
+        'needs_onboarding' => 'boolean',
     ];
 
     // Pre-season configuration
@@ -63,9 +64,32 @@ class Game extends Model
         return $this->hasMany(CupTie::class);
     }
 
-    public function finances(): HasOne
+    public function finances(): HasMany
     {
-        return $this->hasOne(GameFinances::class);
+        return $this->hasMany(GameFinances::class);
+    }
+
+    /**
+     * Get the finances for the current season.
+     * Note: Use lazy loading ($game->currentFinances) rather than eager loading.
+     */
+    public function currentFinances(): HasOne
+    {
+        return $this->hasOne(GameFinances::class)->where('season', $this->season);
+    }
+
+    public function investments(): HasMany
+    {
+        return $this->hasMany(GameInvestment::class);
+    }
+
+    /**
+     * Get the investment for the current season.
+     * Note: Use lazy loading ($game->currentInvestment) rather than eager loading.
+     */
+    public function currentInvestment(): HasOne
+    {
+        return $this->hasOne(GameInvestment::class)->where('season', $this->season);
     }
 
     public function loans(): HasMany
@@ -346,5 +370,25 @@ class Game extends Model
         }
 
         return (int) (($this->preseason_week / self::PRESEASON_TOTAL_WEEKS) * 100);
+    }
+
+    // ==========================================
+    // Onboarding
+    // ==========================================
+
+    /**
+     * Check if the game needs onboarding (first-time setup).
+     */
+    public function needsOnboarding(): bool
+    {
+        return $this->needs_onboarding ?? false;
+    }
+
+    /**
+     * Complete the onboarding process.
+     */
+    public function completeOnboarding(): void
+    {
+        $this->update(['needs_onboarding' => false]);
     }
 }

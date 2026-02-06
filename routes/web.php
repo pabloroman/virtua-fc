@@ -1,10 +1,13 @@
 <?php
 
 use App\Http\Actions\AcceptCounterOffer;
+use App\Http\Actions\CompleteOnboarding;
 use App\Http\Actions\AcceptTransferOffer;
 use App\Http\Actions\AdvanceMatchday;
 use App\Http\Actions\AdvancePreseasonWeek;
 use App\Http\Actions\CancelScoutSearch;
+use App\Http\Actions\SaveBudgetAllocation;
+use App\Http\Views\ShowBudgetAllocation;
 use App\Http\Actions\ConductCupDraw;
 use App\Http\Actions\GetAutoLineup;
 use App\Http\Actions\InitGame;
@@ -24,6 +27,7 @@ use App\Http\Views\SelectTeam;
 use App\Http\Views\ShowCalendar;
 use App\Http\Views\ShowFinances;
 use App\Http\Views\ShowGame;
+use App\Http\Views\ShowOnboarding;
 use App\Http\Views\ShowCompetition;
 use App\Http\Views\ShowMatchResults;
 use App\Http\Views\ShowSquad;
@@ -96,6 +100,14 @@ Route::middleware('auth')->group(function () {
     // Pre-season
     Route::get('/game/{gameId}/preseason', ShowPreseason::class)->name('game.preseason');
     Route::post('/game/{gameId}/preseason/advance', AdvancePreseasonWeek::class)->name('game.preseason.advance');
+
+    // Budget Allocation
+    Route::get('/game/{gameId}/budget', ShowBudgetAllocation::class)->name('game.budget');
+    Route::post('/game/{gameId}/budget', SaveBudgetAllocation::class)->name('game.budget.save');
+
+    // Onboarding
+    Route::get('/game/{gameId}/onboarding', ShowOnboarding::class)->name('game.onboarding');
+    Route::post('/game/{gameId}/onboarding', CompleteOnboarding::class)->name('game.onboarding.complete');
 });
 
 Route::middleware('auth')->group(function () {

@@ -7,7 +7,6 @@ use App\Game\DTO\MatchEventData;
 use App\Game\Enums\Formation;
 use App\Game\Enums\Mentality;
 use App\Game\Game as GameAggregate;
-use App\Game\Services\FinancialService;
 use App\Game\Services\LineupService;
 use App\Game\Services\MatchdayService;
 use App\Game\Services\MatchSimulator;
@@ -24,7 +23,6 @@ class AdvanceMatchday
         private readonly LineupService $lineupService,
         private readonly MatchSimulator $matchSimulator,
         private readonly TransferService $transferService,
-        private readonly FinancialService $financialService,
         private readonly ScoutingService $scoutingService,
     ) {}
 
@@ -35,7 +33,7 @@ class AdvanceMatchday
         // Get next batch of matches to play
         $batch = $this->matchdayService->getNextMatchBatch($game);
 
-        if (!$batch) {
+        if (! $batch) {
             return redirect()->route('show-game', $gameId)
                 ->with('message', 'Season complete!');
         }
@@ -48,8 +46,8 @@ class AdvanceMatchday
         // Prepare lineups for all matches
         $this->lineupService->ensureLineupsForMatches($matches, $game);
 
-        // Simulate all matches
-        $matchResults = $this->simulateMatches($matches, $gameId);
+        // Simulate all matches (pass game for medical tier effects on injuries)
+        $matchResults = $this->simulateMatches($matches, $game);
 
         // Record results via event sourcing
         $this->recordMatchResults($gameId, $matchday, $currentDate, $matchResults);
@@ -61,22 +59,22 @@ class AdvanceMatchday
         return redirect()->to($handler->getRedirectRoute($game, $matches, $matchday));
     }
 
-    private function simulateMatches($matches, string $gameId): array
+    private function simulateMatches($matches, Game $game): array
     {
         $allPlayers = GamePlayer::with('player')
-            ->where('game_id', $gameId)
+            ->where('game_id', $game->id)
             ->get()
             ->groupBy('team_id');
 
         $results = [];
         foreach ($matches as $match) {
-            $results[] = $this->simulateMatch($match, $allPlayers);
+            $results[] = $this->simulateMatch($match, $allPlayers, $game);
         }
 
         return $results;
     }
 
-    private function simulateMatch(GameMatch $match, $allPlayers): array
+    private function simulateMatch(GameMatch $match, $allPlayers, Game $game): array
     {
         $homePlayers = $this->getLineupPlayers($match, $allPlayers, 'home');
         $awayPlayers = $this->getLineupPlayers($match, $allPlayers, 'away');
@@ -95,6 +93,7 @@ class AdvanceMatchday
             $awayFormation,
             $homeMentality,
             $awayMentality,
+            $game,
         );
 
         return [
@@ -110,8 +109,8 @@ class AdvanceMatchday
 
     private function getLineupPlayers(GameMatch $match, $allPlayers, string $side)
     {
-        $lineupField = $side . '_lineup';
-        $teamIdField = $side . '_team_id';
+        $lineupField = $side.'_lineup';
+        $teamIdField = $side.'_team_id';
 
         $lineupIds = $match->$lineupField ?? [];
         $teamPlayers = $allPlayers->get($match->$teamIdField, collect());
@@ -137,9 +136,6 @@ class AdvanceMatchday
 
     private function processPostMatchActions(Game $game, $matches, $handler): void
     {
-        // Process financial events at transfer window starts (wages, TV rights)
-        $this->financialService->processTransferWindowFinances($game);
-
         // Process transfers when window is open
         if ($game->isTransferWindowOpen()) {
             $this->transferService->completeAgreedTransfers($game);

@@ -23,6 +23,6 @@ class InitGame
 
         $game = Game::create($command);
 
-        return redirect()->route('show-game', $game->uuid());
+        return redirect()->route('game.onboarding', $game->uuid());
     }
 }

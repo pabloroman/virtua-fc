@@ -12,21 +12,23 @@ class Money
      */
     public static function format(int $cents): string
     {
-        $euros = $cents / 100;
+        $isNegative = $cents < 0;
+        $euros = abs($cents) / 100;
+        $prefix = $isNegative ? '-' : '';
 
         if ($euros >= 1_000_000) {
             $formatted = round($euros / 1_000_000, 1);
             // Remove .0 for whole numbers
             $formatted = ($formatted == (int) $formatted) ? (int) $formatted : $formatted;
-            return "€ {$formatted}M";
+            return "{$prefix}€ {$formatted}M";
         }
 
         if ($euros >= 1_000) {
             $formatted = round($euros / 1_000);
-            return "€ {$formatted}K";
+            return "{$prefix}€ {$formatted}K";
         }
 
-        return "€ " . number_format($euros, 0);
+        return "{$prefix}€ " . number_format($euros, 0);
     }
 
     /**
@@ -37,7 +39,9 @@ class Money
      */
     public static function formatSigned(int $cents): string
     {
-        $prefix = $cents >= 0 ? '+' : '';
-        return $prefix . self::format($cents);
+        if ($cents >= 0) {
+            return '+' . self::format($cents);
+        }
+        return self::format($cents);
     }
 }
