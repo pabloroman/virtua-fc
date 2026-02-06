@@ -41,6 +41,7 @@ class ShowGame
             'upcomingFixtures' => $this->calendarService->getUpcomingFixtures($game),
             'squadAlerts' => $this->alertService->getSquadAlerts($game, $nextMatch),
             'transferAlerts' => $this->alertService->getTransferAlerts($game),
+            'scoutReport' => $game->activeScoutReport,
             'finances' => $game->currentFinances,
             'investment' => $game->currentInvestment,
         ]);

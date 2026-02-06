@@ -390,6 +390,16 @@ class ScoutingService
             $counterAmount = (int) (($bidAmount + $askingPrice) / 2);
             $counterAmount = (int) (round($counterAmount / 10_000_000) * 10_000_000);
 
+            // If rounding makes counter equal to bid, just accept the bid
+            if ($counterAmount <= $bidAmount) {
+                return [
+                    'result' => 'accepted',
+                    'counter_amount' => null,
+                    'asking_price' => $askingPrice,
+                    'message' => $player->team->name.' have accepted your bid.',
+                ];
+            }
+
             return [
                 'result' => 'counter',
                 'counter_amount' => $counterAmount,

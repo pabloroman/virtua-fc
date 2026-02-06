@@ -136,9 +136,9 @@ class SeasonSettlementProcessor implements SeasonEndProcessor
 
     private function calculateTransferIncome(Game $game): int
     {
-        // Get transfer income from financial transactions
+        // Get transfer income from financial transactions (player sales)
         return FinancialTransaction::where('game_id', $game->id)
-            ->where('category', FinancialTransaction::CATEGORY_TRANSFER)
+            ->where('category', FinancialTransaction::CATEGORY_TRANSFER_IN)
             ->where('type', FinancialTransaction::TYPE_INCOME)
             ->sum('amount');
     }

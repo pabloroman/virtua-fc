@@ -42,6 +42,88 @@
 
                     <div class="mt-6"></div>
 
+                    {{-- Pending Bids (User's offers awaiting response) --}}
+                    @if($pendingBids->isNotEmpty())
+                    <div class="mb-8">
+                        <h4 class="font-semibold text-lg text-slate-900 mb-4 flex items-center gap-2">
+                            <span class="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></span>
+                            Your Pending Bids
+                            <span class="text-sm font-normal text-slate-500">(awaiting response)</span>
+                        </h4>
+                        <div class="space-y-3">
+                            @foreach($pendingBids as $bid)
+                            <div class="border border-amber-200 bg-amber-50 rounded-lg p-4">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-4">
+                                        @if($bid->sellingTeam)
+                                        <img src="{{ $bid->sellingTeam->image }}" class="w-10 h-10">
+                                        @endif
+                                        <div>
+                                            <div class="font-semibold text-slate-900">
+                                                {{ $bid->gamePlayer->player->name }}
+                                                <span class="text-slate-500 font-normal">from</span>
+                                                {{ $bid->sellingTeam?->name ?? 'Unknown' }}
+                                            </div>
+                                            <div class="text-sm text-slate-600">
+                                                {{ $bid->gamePlayer->position }} &middot; {{ $bid->gamePlayer->age }} years
+                                                @if($bid->offer_type === 'loan_in')
+                                                    &middot; <span class="text-emerald-600 font-medium">Loan Request</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        @if($bid->transfer_fee > 0)
+                                            <div class="text-xl font-bold text-amber-600">{{ $bid->formatted_transfer_fee }}</div>
+                                        @else
+                                            <div class="text-sm font-semibold text-emerald-600">Loan (no fee)</div>
+                                        @endif
+                                        <div class="text-xs text-amber-700">Response on next matchday</div>
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
+
+                    {{-- Rejected Bids (User's declined offers) --}}
+                    @if($rejectedBids->isNotEmpty())
+                    <div class="mb-8">
+                        <h4 class="font-semibold text-lg text-slate-900 mb-4 flex items-center gap-2">
+                            <span class="w-2 h-2 bg-red-400 rounded-full"></span>
+                            Rejected Bids
+                        </h4>
+                        <div class="space-y-3">
+                            @foreach($rejectedBids as $bid)
+                            <div class="border border-red-200 bg-red-50 rounded-lg p-4 opacity-75">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-4">
+                                        @if($bid->sellingTeam)
+                                        <img src="{{ $bid->sellingTeam->image }}" class="w-10 h-10 grayscale">
+                                        @endif
+                                        <div>
+                                            <div class="font-semibold text-slate-700">
+                                                {{ $bid->gamePlayer->player->name }}
+                                                <span class="text-slate-500 font-normal">from</span>
+                                                {{ $bid->sellingTeam?->name ?? 'Unknown' }}
+                                            </div>
+                                            <div class="text-sm text-slate-500">
+                                                {{ $bid->gamePlayer->position }} &middot; {{ $bid->gamePlayer->age }} years
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-lg font-bold text-red-600 line-through">{{ $bid->formatted_transfer_fee }}</div>
+                                        <div class="text-xs text-red-600">Bid rejected</div>
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
+
                     {{-- Incoming Agreed Transfers (User buying players) --}}
                     @if($incomingAgreedTransfers->isNotEmpty())
                     <div class="mb-8">

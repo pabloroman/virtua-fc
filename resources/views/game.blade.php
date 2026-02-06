@@ -123,12 +123,39 @@
                         {{-- Squad Status --}}
                         @php
                             $hasSquadAlerts = !empty($squadAlerts['injured']) || !empty($squadAlerts['suspended']) || !empty($squadAlerts['lowFitness']) || !empty($squadAlerts['yellowCardRisk']);
+                            $hasScoutNotification = isset($scoutReport) && $scoutReport;
                         @endphp
-                        @if($hasSquadAlerts)
+                        @if($hasSquadAlerts || $hasScoutNotification)
                         <div>
                             <h4 class="font-semibold text-xl text-slate-900 mb-4">Squad Status</h4>
 
                             <div class="space-y-4">
+                                {{-- Scout Report Notification --}}
+                                @if($hasScoutNotification)
+                                <div>
+                                    @if($scoutReport->isCompleted())
+                                    <a href="{{ route('game.scouting', $game->id) }}" class="block p-3 bg-sky-50 border border-sky-200 rounded-lg hover:bg-sky-100 transition-colors">
+                                        <div class="flex items-center gap-2 text-sky-700">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                            </svg>
+                                            <span class="font-medium text-sm">Scout Report Ready</span>
+                                        </div>
+                                        <p class="text-xs text-sky-600 mt-1 pl-6">{{ $scoutReport->players->count() }} players available to review.</p>
+                                    </a>
+                                    @else
+                                    <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg">
+                                        <div class="flex items-center gap-2 text-slate-600">
+                                            <svg class="w-4 h-4 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                            </svg>
+                                            <span class="font-medium text-sm">Scout Searching...</span>
+                                        </div>
+                                        <p class="text-xs text-slate-500 mt-1 pl-6">{{ $scoutReport->weeks_remaining }} week{{ $scoutReport->weeks_remaining > 1 ? 's' : '' }} remaining</p>
+                                    </div>
+                                    @endif
+                                </div>
+                                @endif
                                 {{-- Injured --}}
                                 @if(!empty($squadAlerts['injured']))
                                 <div>

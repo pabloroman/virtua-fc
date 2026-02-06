@@ -76,6 +76,23 @@ class ShowTransfers
             ->orderByDesc('created_at')
             ->get();
 
+        // Get pending bids (user's offers awaiting response)
+        $pendingBids = TransferOffer::with(['gamePlayer.player', 'gamePlayer.team', 'sellingTeam'])
+            ->where('game_id', $gameId)
+            ->where('status', TransferOffer::STATUS_PENDING)
+            ->where('direction', TransferOffer::DIRECTION_INCOMING)
+            ->orderByDesc('created_at')
+            ->get();
+
+        // Get rejected bids (user's offers that were declined - show for 7 days)
+        $rejectedBids = TransferOffer::with(['gamePlayer.player', 'gamePlayer.team', 'sellingTeam'])
+            ->where('game_id', $gameId)
+            ->where('status', TransferOffer::STATUS_REJECTED)
+            ->where('direction', TransferOffer::DIRECTION_INCOMING)
+            ->where('updated_at', '>=', $game->current_date->subDays(7))
+            ->orderByDesc('updated_at')
+            ->get();
+
         // Get transfer window info from Game model
         $isTransferWindow = $game->isTransferWindowOpen();
         $currentWindow = $game->getCurrentWindowName();
@@ -86,6 +103,8 @@ class ShowTransfers
             'listedOffers' => $listedOffers,
             'agreedTransfers' => $agreedTransfers,
             'incomingAgreedTransfers' => $incomingAgreedTransfers,
+            'pendingBids' => $pendingBids,
+            'rejectedBids' => $rejectedBids,
             'expiringContractPlayers' => $expiringContractPlayers,
             'listedPlayers' => $listedPlayers,
             'recentTransfers' => $recentTransfers,

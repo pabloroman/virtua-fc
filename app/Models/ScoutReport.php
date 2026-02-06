@@ -40,6 +40,7 @@ class ScoutReport extends Model
 
     /**
      * Get the scouted players (only when completed).
+     * Excludes players who have since joined the user's team.
      */
     public function getPlayersAttribute()
     {
@@ -49,6 +50,7 @@ class ScoutReport extends Model
 
         return GamePlayer::with(['player', 'team'])
             ->whereIn('id', $this->player_ids)
+            ->where('team_id', '!=', $this->game->team_id) // Exclude players now on user's team
             ->get();
     }
 
