@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtua FC — Simulador de Manager de Fútbol</title>
+    <meta name="description" content="Construye tu plantilla ideal, domina La Liga y conquista la Copa del Rey. Virtua FC es un simulador de fútbol con motor de partidos realista, desarrollo de jugadores y profundidad táctica.">
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=barlow-semi-condensed:400,600,800" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                fontSize: {
+                    xs: '0.8rem',
+                    sm: '1rem',
+                    base: '1.25rem',
+                    xl: '1.563rem',
+                    '2xl': '1.953rem',
+                    '3xl': '2.441rem',
+                    '4xl': '3.052rem',
+                },
+                extend: {
+                    fontFamily: {
+                        sans: ['"Barlow Semi Condensed"', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        html { scroll-behavior: smooth; }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-bl from-slate-900 via-cyan-950 to-teal-950 font-sans text-white antialiased">
+
+    <!-- Nav -->
+    <nav class="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
+        <div class="-skew-x-12 bg-red-600 px-4 py-1">
+            <span class="skew-x-12 inline-block text-3xl font-bold text-white tracking-tight">Virtua FC</span>
+        </div>
+        <a href="#features" class="text-sm text-white/60 hover:text-white transition duration-150 uppercase tracking-widest font-semibold">
+            Características
+        </a>
+    </nav>
+
+    <!-- Hero + Form (above the fold) -->
+    <section class="max-w-7xl mx-auto px-6 pt-12 pb-24 sm:pt-20 sm:pb-32">
+        <div class="grid lg:grid-cols-2 gap-16 items-center">
+            <!-- Copy -->
+            <div>
+                <h1 class="text-4xl sm:text-[3.5rem] font-bold leading-tight tracking-tight">
+                    Tu Club. Tu Táctica.<br>
+                    <span class="text-red-500">Tu Legado.</span>
+                </h1>
+                <p class="mt-6 text-xl text-slate-300 leading-relaxed">
+                    Construye tu plantilla ideal, domina La Liga y conquista la Copa del Rey. Un simulador de manager de fútbol con motor de partidos realista, desarrollo de jugadores y decisiones tácticas con impacto real.
+                </p>
+            </div>
+
+            <!-- Waitlist Form -->
+            <div id="waitlist" class="bg-white/5 backdrop-blur border border-white/10 rounded-lg p-8 sm:p-10">
+                <h2 class="text-2xl font-bold mb-2">Acceso Anticipado</h2>
+                <p class="text-sm text-slate-400 mb-8">Sé el primero en jugar. Apúntate a la lista de espera y te avisaremos cuando lancemos Virtua FC. Sin spam, nunca.</p>
+
+                <form id="waitlist-form" class="space-y-4">
+                    <div>
+                        <label for="name" class="block text-sm font-semibold text-slate-300 mb-1">Nombre</label>
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            required
+                            placeholder="Tu nombre"
+                            class="w-full px-4 py-3 rounded-md bg-white/10 border border-white/20 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent transition"
+                        >
+                    </div>
+                    <div>
+                        <label for="email" class="block text-sm font-semibold text-slate-300 mb-1">Email</label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            required
+                            placeholder="tu@email.com"
+                            class="w-full px-4 py-3 rounded-md bg-white/10 border border-white/20 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent transition"
+                        >
+                    </div>
+                    <button
+                        type="submit"
+                        id="submit-btn"
+                        class="w-full bg-red-600 hover:bg-red-700 active:bg-red-900 text-white px-8 py-3 rounded-md font-semibold uppercase tracking-widest text-sm transition ease-in-out duration-150"
+                    >
+                        Unirme a la Lista de Espera
+                    </button>
+                    <div id="form-message" class="hidden text-sm text-center mt-4"></div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="max-w-7xl mx-auto px-6 py-16">
+        <div class="bg-white/5 backdrop-blur border border-white/10 rounded-lg p-12 grid sm:grid-cols-3 gap-8 text-center">
+            <div>
+                <div class="text-4xl font-bold text-red-500">40+</div>
+                <div class="text-sm text-slate-400 mt-2">Equipos Reales</div>
+            </div>
+            <div>
+                <div class="text-4xl font-bold text-sky-400">3</div>
+                <div class="text-sm text-slate-400 mt-2">Competiciones</div>
+            </div>
+            <div>
+                <div class="text-4xl font-bold text-teal-400">1000+</div>
+                <div class="text-sm text-slate-400 mt-2">Jugadores Reales</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="max-w-7xl mx-auto px-6 py-20">
+        <h2 class="text-3xl font-bold text-center mb-16">Qué Hace Diferente a Virtua FC</h2>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+
+            <div class="bg-white/5 backdrop-blur border border-white/10 rounded-lg p-8">
+                <div class="w-10 h-10 bg-red-600 rounded-md flex items-center justify-center mb-4">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Motor de Partidos Realista</h3>
+                <p class="text-sm text-slate-400 leading-relaxed">Simulación basada en distribución de Poisson donde la táctica, la formación y la calidad de los jugadores determinan el resultado. Los mejores equipos ganan más — a lo largo de la temporada, la calidad importa.</p>
+            </div>
+
+            <div class="bg-white/5 backdrop-blur border border-white/10 rounded-lg p-8">
+                <div class="w-10 h-10 bg-sky-600 rounded-md flex items-center justify-center mb-4">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Desarrollo de Jugadores</h3>
+                <p class="text-sm text-slate-400 leading-relaxed">Los jóvenes crecen, los veteranos declinan. Potencial oculto, curvas de desarrollo por edad y tiempo de juego moldean las carreras. Ojeá, desarrollá y vendé en el momento justo.</p>
+            </div>
+
+            <div class="bg-white/5 backdrop-blur border border-white/10 rounded-lg p-8">
+                <div class="w-10 h-10 bg-teal-600 rounded-md flex items-center justify-center mb-4">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Finanzas del Club</h3>
+                <p class="text-sm text-slate-400 leading-relaxed">Gestiona contratos, negocia fichajes, controla la masa salarial. Cada fichaje tiene un impacto financiero — gasta con cabeza o enfrenta las consecuencias.</p>
+            </div>
+
+            <div class="bg-white/5 backdrop-blur border border-white/10 rounded-lg p-8">
+                <div class="w-10 h-10 bg-amber-600 rounded-md flex items-center justify-center mb-4">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Profundidad Táctica</h3>
+                <p class="text-sm text-slate-400 leading-relaxed">Elige formaciones del 4-4-2 al 3-5-2. Define la mentalidad del equipo. Cada decisión cambia el equilibrio entre ataque y defensa con consecuencias reales en el campo.</p>
+            </div>
+
+            <div class="bg-white/5 backdrop-blur border border-white/10 rounded-lg p-8">
+                <div class="w-10 h-10 bg-green-600 rounded-md flex items-center justify-center mb-4">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Calendario Completo</h3>
+                <p class="text-sm text-slate-400 leading-relaxed">Juega La Liga, Segunda División y Copa del Rey. Gestiona la acumulación de partidos, rota tu plantilla y pelea por el ascenso o el título.</p>
+            </div>
+
+            <div class="bg-white/5 backdrop-blur border border-white/10 rounded-lg p-8">
+                <div class="w-10 h-10 bg-purple-600 rounded-md flex items-center justify-center mb-4">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Ojeadores y Fichajes</h3>
+                <p class="text-sm text-slate-400 leading-relaxed">Ojea jugadores en todas las divisiones, envía ofertas de cesión, negocia contratos. Construye desde la cantera o compra tu camino a la gloria — tú decides.</p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Bottom CTA -->
+    <section class="max-w-7xl mx-auto px-6 py-20 text-center">
+        <h2 class="text-3xl font-bold mb-4">¿Listo para dirigir tu club?</h2>
+        <p class="text-sm text-slate-400 mb-8">Apúntate a la lista de espera y sé el primero en enterarte del lanzamiento.</p>
+        <a href="#waitlist" class="inline-block bg-red-600 hover:bg-red-700 active:bg-red-900 text-white px-10 py-3 rounded-md font-semibold uppercase tracking-widest text-sm transition ease-in-out duration-150">
+            Unirme a la Lista de Espera
+        </a>
+    </section>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto px-6 py-12 border-t border-white/10">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="-skew-x-12 bg-red-600 px-3 py-1">
+                <span class="skew-x-12 inline-block text-xl font-bold text-white tracking-tight">Virtua FC</span>
+            </div>
+            <p class="text-xs text-slate-500">&copy; 2026 Virtua FC. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script>
+        const form = document.getElementById('waitlist-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const formMessage = document.getElementById('form-message');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const name = form.name.value.trim();
+            const email = form.email.value.trim();
+
+            if (!name || !email) return;
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Enviando...';
+            formMessage.classList.add('hidden');
+
+            try {
+                const res = await fetch('/api/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email }),
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    formMessage.textContent = '¡Estás en la lista! Te avisaremos pronto.';
+                    formMessage.className = 'text-sm text-center mt-4 text-green-400';
+                    formMessage.classList.remove('hidden');
+                    form.reset();
+                } else {
+                    formMessage.textContent = data.error || 'Algo salió mal. Inténtalo de nuevo.';
+                    formMessage.className = 'text-sm text-center mt-4 text-red-400';
+                    formMessage.classList.remove('hidden');
+                }
+            } catch (err) {
+                formMessage.textContent = 'Error de conexión. Inténtalo de nuevo.';
+                formMessage.className = 'text-sm text-center mt-4 text-red-400';
+                formMessage.classList.remove('hidden');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Unirme a la Lista de Espera';
+            }
+        });
+    </script>
+
+</body>
+</html>
