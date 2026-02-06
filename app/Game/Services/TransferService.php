@@ -373,20 +373,32 @@ class TransferService
     }
 
     /**
-     * Accept a transfer offer (marks as agreed, completes at transfer window).
+     * Accept a transfer offer.
+     * If transfer window is open, completes immediately.
+     * If outside window, marks as agreed and completes when next window opens.
+     *
+     * @return bool True if transfer completed immediately, false if waiting for window
      */
-    public function acceptOffer(TransferOffer $offer): void
+    public function acceptOffer(TransferOffer $offer): bool
     {
         $player = $offer->gamePlayer;
-
-        // Mark offer as agreed (waiting for transfer window)
-        $offer->update(['status' => TransferOffer::STATUS_AGREED]);
+        $game = $offer->game;
 
         // Reject all other pending offers for this player
         TransferOffer::where('game_player_id', $player->id)
             ->where('id', '!=', $offer->id)
             ->where('status', TransferOffer::STATUS_PENDING)
             ->update(['status' => TransferOffer::STATUS_REJECTED]);
+
+        // If transfer window is open, complete immediately
+        if ($game->isTransferWindowOpen()) {
+            $this->completeTransfer($offer, $game);
+            return true;
+        }
+
+        // Otherwise, mark as agreed (waiting for next transfer window)
+        $offer->update(['status' => TransferOffer::STATUS_AGREED]);
+        return false;
     }
 
     /**
@@ -618,6 +630,32 @@ class TransferService
         }
 
         return $completedTransfers;
+    }
+
+    /**
+     * Accept an incoming transfer offer (user buying a player).
+     * If transfer window is open, completes immediately.
+     * If outside window, marks as agreed and completes when next window opens.
+     *
+     * @return bool True if transfer completed immediately, false if waiting for window
+     */
+    public function acceptIncomingOffer(TransferOffer $offer): bool
+    {
+        $game = $offer->game;
+
+        // If transfer window is open, complete immediately
+        if ($game->isTransferWindowOpen()) {
+            if ($offer->offer_type === TransferOffer::TYPE_LOAN_IN) {
+                $this->completeLoanIn($offer, $game);
+            } else {
+                $this->completeIncomingTransfer($offer, $game);
+            }
+            return true;
+        }
+
+        // Otherwise, mark as agreed (waiting for next transfer window)
+        $offer->update(['status' => TransferOffer::STATUS_AGREED]);
+        return false;
     }
 
     /**

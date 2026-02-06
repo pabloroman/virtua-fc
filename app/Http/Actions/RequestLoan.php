@@ -75,8 +75,9 @@ class RequestLoan
             'expires_at' => $game->current_date->addDays(30),
         ]);
 
+        $nextWindow = $game->getNextWindowName();
         return redirect()->route('game.scouting.player', [$game->id, $player->id])
-            ->with('success', $evaluation['message'] . ' The loan will begin at the next transfer window.');
+            ->with('success', $evaluation['message'] . " The loan will begin when the {$nextWindow} window opens.");
     }
 
     private function handleLoanOut(Game $game, GamePlayer $player)
@@ -128,7 +129,8 @@ class RequestLoan
             'expires_at' => $game->current_date->addDays(30),
         ]);
 
+        $nextWindow = $game->getNextWindowName();
         return redirect()->route('game.loans', $game->id)
-            ->with('success', $player->name . ' loan to ' . $destination->name . ' will begin at the next transfer window.');
+            ->with('success', $player->name . ' loan to ' . $destination->name . " will begin when the {$nextWindow} window opens.");
     }
 }

@@ -130,7 +130,7 @@
                         <h4 class="font-semibold text-lg text-slate-900 mb-4 flex items-center gap-2">
                             <span class="w-2 h-2 bg-sky-500 rounded-full"></span>
                             Incoming Transfers
-                            <span class="text-sm font-normal text-slate-500">(completing at {{ $game->isTransferWindowOpen() ? 'window close' : $game->getNextWindowName() . ' window' }})</span>
+                            <span class="text-sm font-normal text-slate-500">(completing when {{ $game->getNextWindowName() }} window opens)</span>
                         </h4>
                         <div class="space-y-3">
                             @foreach($incomingAgreedTransfers as $transfer)
@@ -274,7 +274,7 @@
                         <h4 class="font-semibold text-lg text-slate-900 mb-4 flex items-center gap-2">
                             <span class="w-2 h-2 bg-green-500 rounded-full"></span>
                             Agreed Transfers
-                            <span class="text-sm font-normal text-slate-500">(completing at {{ $game->getNextWindowName() }} window)</span>
+                            <span class="text-sm font-normal text-slate-500">(completing when {{ $game->getNextWindowName() }} window opens)</span>
                         </h4>
                         <div class="space-y-3">
                             @foreach($agreedTransfers as $transfer)

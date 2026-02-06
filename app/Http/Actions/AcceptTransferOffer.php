@@ -32,12 +32,18 @@ class AcceptTransferOffer
         $playerName = $offer->gamePlayer->player->name;
         $teamName = $offer->offeringTeam->name;
         $fee = $offer->formatted_transfer_fee;
-        $nextWindow = $game->getNextWindowName();
 
-        $this->transferService->acceptOffer($offer);
+        $completedImmediately = $this->transferService->acceptOffer($offer);
+
+        if ($completedImmediately) {
+            $message = "Transfer complete! {$playerName} has joined {$teamName} for {$fee}.";
+        } else {
+            $nextWindow = $game->getNextWindowName();
+            $message = "Deal agreed! {$playerName} will join {$teamName} for {$fee} when the {$nextWindow} window opens.";
+        }
 
         return redirect()
             ->route('game.transfers', $gameId)
-            ->with('success', "Deal agreed! {$playerName} will join {$teamName} for {$fee} at the {$nextWindow} transfer window.");
+            ->with('success', $message);
     }
 }
