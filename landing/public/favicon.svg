@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <style>
+      .bg { fill: #dc2626; transform: skewX(-12deg); transform-origin: center; }
+      .letter { fill: white; font-family: 'Arial Black', sans-serif; font-weight: 800; font-size: 20px; }
+    </style>
+  </defs>
+  <rect class="bg" x="4" y="4" width="24" height="24" rx="2"/>
+  <text class="letter" x="16" y="23" text-anchor="middle">V</text>
+</svg>
