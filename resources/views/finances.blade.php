@@ -184,9 +184,16 @@
                                 </div>
                                 <div class="text-xs text-slate-500 mt-2">
                                     @php
-                                        $youthInfo = \App\Game\Services\YouthAcademyService::getProspectInfo($investment->youth_academy_tier);
+                                        $youthDesc = match($investment->youth_academy_tier) {
+                                            0 => 'No youth development program',
+                                            1 => 'Basic academy - occasional prospects',
+                                            2 => 'Good academy - regular talent pipeline',
+                                            3 => 'Elite academy - high-potential wonderkids',
+                                            4 => 'World-class - top-tier homegrown stars',
+                                            default => 'No youth development program',
+                                        };
                                     @endphp
-                                    {{ $youthInfo['min_prospects'] }}-{{ $youthInfo['max_prospects'] }} prospects/year
+                                    {{ $youthDesc }}
                                 </div>
                             </div>
 
@@ -210,15 +217,16 @@
                                 </div>
                                 <div class="text-xs text-slate-500 mt-2">
                                     @php
-                                        $injuryReduction = match($investment->medical_tier) {
-                                            1 => '0%',
-                                            2 => '15%',
-                                            3 => '30%',
-                                            4 => '45%',
-                                            default => '0%',
+                                        $medicalDesc = match($investment->medical_tier) {
+                                            0 => 'No medical staff',
+                                            1 => 'Basic care - standard recovery',
+                                            2 => 'Good facilities - 15% faster recovery',
+                                            3 => 'Elite staff - 30% faster, fewer injuries',
+                                            4 => 'World-class - 50% faster, prevention',
+                                            default => 'No medical staff',
                                         };
                                     @endphp
-                                    {{ $injuryReduction }} injury reduction
+                                    {{ $medicalDesc }}
                                 </div>
                             </div>
 
@@ -242,15 +250,16 @@
                                 </div>
                                 <div class="text-xs text-slate-500 mt-2">
                                     @php
-                                        $scoutInfo = match($investment->scouting_tier) {
-                                            1 => 'Standard reports',
-                                            2 => '+1 result, better accuracy',
-                                            3 => 'Faster, +2 results',
-                                            4 => 'Fastest, +3 results',
-                                            default => 'No scouting',
+                                        $scoutDesc = match($investment->scouting_tier) {
+                                            0 => 'No scouting network',
+                                            1 => 'Local scouts - domestic players only',
+                                            2 => 'Regional network - nearby leagues',
+                                            3 => 'Continental reach - top European leagues',
+                                            4 => 'Global network - worldwide talent access',
+                                            default => 'No scouting network',
                                         };
                                     @endphp
-                                    {{ $scoutInfo }}
+                                    {{ $scoutDesc }}
                                 </div>
                             </div>
 
@@ -274,9 +283,16 @@
                                 </div>
                                 <div class="text-xs text-slate-500 mt-2">
                                     @php
-                                        $facilitiesMultiplier = \App\Models\GameInvestment::FACILITIES_MULTIPLIER[$investment->facilities_tier] ?? 1.0;
+                                        $facilitiesDesc = match($investment->facilities_tier) {
+                                            0 => 'No investment - base matchday revenue',
+                                            1 => 'Basic upgrades - 1.0x revenue',
+                                            2 => 'Modern facilities - 1.15x revenue',
+                                            3 => 'Premium experience - 1.35x revenue',
+                                            4 => 'World-class stadium - 1.6x revenue',
+                                            default => 'No investment - base matchday revenue',
+                                        };
                                     @endphp
-                                    {{ number_format($facilitiesMultiplier, 2) }}x matchday revenue
+                                    {{ $facilitiesDesc }}
                                 </div>
                             </div>
                         </div>

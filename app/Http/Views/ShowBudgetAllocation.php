@@ -27,21 +27,17 @@ class ShowBudgetAllocation
         // Calculate available surplus
         $availableSurplus = $finances->available_surplus ?? 0;
 
-        // Get current allocations (or defaults)
-        $allocations = $investment ? [
-            'youth_academy' => $investment->youth_academy_amount,
-            'medical' => $investment->medical_amount,
-            'scouting' => $investment->scouting_amount,
-            'facilities' => $investment->facilities_amount,
-            'transfer_budget' => $investment->transfer_budget,
-        ] : $this->getDefaultAllocations($availableSurplus);
-
-        // Calculate tiers for each area
-        $tiers = [
-            'youth_academy' => GameInvestment::calculateTier('youth_academy', $allocations['youth_academy']),
-            'medical' => GameInvestment::calculateTier('medical', $allocations['medical']),
-            'scouting' => GameInvestment::calculateTier('scouting', $allocations['scouting']),
-            'facilities' => GameInvestment::calculateTier('facilities', $allocations['facilities']),
+        // Get current tiers (0-4 for each area), default to Tier 1
+        $tiers = $investment ? [
+            'youth_academy' => $investment->youth_academy_tier,
+            'medical' => $investment->medical_tier,
+            'scouting' => $investment->scouting_tier,
+            'facilities' => $investment->facilities_tier,
+        ] : [
+            'youth_academy' => 1,
+            'medical' => 1,
+            'scouting' => 1,
+            'facilities' => 1,
         ];
 
         return view('budget-allocation', [
@@ -49,25 +45,9 @@ class ShowBudgetAllocation
             'finances' => $finances,
             'investment' => $investment,
             'availableSurplus' => $availableSurplus,
-            'allocations' => $allocations,
             'tiers' => $tiers,
             'tierThresholds' => GameInvestment::TIER_THRESHOLDS,
-            'minimumInvestment' => GameInvestment::MINIMUM_TOTAL_INVESTMENT,
-            'isLocked' => !$game->isInPreseason(), // Can adjust during preseason, locked once season starts
+            'isLocked' => !$game->isInPreseason(),
         ]);
-    }
-
-    /**
-     * Get default allocations - start at zero, let user allocate.
-     */
-    private function getDefaultAllocations(int $availableSurplus): array
-    {
-        return [
-            'youth_academy' => 0,
-            'medical' => 0,
-            'scouting' => 0,
-            'facilities' => 0,
-            'transfer_budget' => 0,
-        ];
     }
 }

@@ -27,7 +27,7 @@ class GameInvestment extends Model
             1 => 30_000_000,      // €300K
             2 => 150_000_000,     // €1.5M
             3 => 500_000_000,     // €5M
-            4 => 1_200_000_000,   // €12M
+            4 => 1_000_000_000,   // €10M
         ],
         'scouting' => [
             1 => 20_000_000,      // €200K
@@ -47,6 +47,16 @@ class GameInvestment extends Model
      * Minimum required investment for professional leagues (Tier 1 in all areas).
      */
     public const MINIMUM_TOTAL_INVESTMENT = 150_000_000; // €1.5M in cents
+
+    /**
+     * Maximum investment ceilings per area (Tier 4 threshold - no benefit beyond this).
+     */
+    public const INVESTMENT_CEILINGS = [
+        'youth_academy' => 2_000_000_000,   // €20M
+        'medical' => 1_000_000_000,         // €10M
+        'scouting' => 1_000_000_000,        // €10M
+        'facilities' => 2_500_000_000,      // €25M
+    ];
 
     /**
      * Facilities multiplier by tier.

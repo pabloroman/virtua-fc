@@ -25,21 +25,21 @@ class CompleteOnboarding
 
         $availableSurplus = $finances->available_surplus;
 
-        // Validate request
+        // Validate request (use numeric to handle potential decimals from JS division)
         $validated = $request->validate([
-            'youth_academy' => 'required|integer|min:0',
-            'medical' => 'required|integer|min:0',
-            'scouting' => 'required|integer|min:0',
-            'facilities' => 'required|integer|min:0',
-            'transfer_budget' => 'required|integer|min:0',
+            'youth_academy' => 'required|numeric|min:0',
+            'medical' => 'required|numeric|min:0',
+            'scouting' => 'required|numeric|min:0',
+            'facilities' => 'required|numeric|min:0',
+            'transfer_budget' => 'required|numeric|min:0',
         ]);
 
-        // Convert from euros to cents (form sends values in euros)
-        $youthAcademy = $validated['youth_academy'] * 100;
-        $medical = $validated['medical'] * 100;
-        $scouting = $validated['scouting'] * 100;
-        $facilities = $validated['facilities'] * 100;
-        $transferBudget = $validated['transfer_budget'] * 100;
+        // Convert from euros to cents (form sends values in euros), round to avoid floating point issues
+        $youthAcademy = (int) round($validated['youth_academy'] * 100);
+        $medical = (int) round($validated['medical'] * 100);
+        $scouting = (int) round($validated['scouting'] * 100);
+        $facilities = (int) round($validated['facilities'] * 100);
+        $transferBudget = (int) round($validated['transfer_budget'] * 100);
 
         $total = $youthAcademy + $medical + $scouting + $facilities + $transferBudget;
 
