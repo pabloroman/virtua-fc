@@ -3,6 +3,6 @@ compatibility_date = "2025-12-01"
 pages_build_output_dir = "public"
 
 [[d1_databases]]
-binding = "DB"
+binding = "virtua_fc_waitlist"
 database_name = "virtua-fc-waitlist"
-database_id = "" # Fill in after running: npx wrangler d1 create virtua-fc-waitlist
+database_id = "625ecfb6-761a-4306-965e-5c61b9abb804"

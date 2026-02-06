@@ -6,6 +6,8 @@
 /storage/*.key
 /storage/pail
 /vendor
+/landing/.wrangler
+/landing/node_modules
 .env
 .env.backup
 .env.production
