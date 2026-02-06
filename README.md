@@ -214,4 +214,6 @@ data/
 
 ## License
 
-This project is private.
+Copyright (c) 2026 Pablo Román. All rights reserved.
+
+This source code is made available for viewing and educational purposes only. See [LICENSE](LICENSE) for details.
