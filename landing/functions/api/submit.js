@@ -23,7 +23,7 @@ export async function onRequestPost(context) {
             });
         }
 
-        const existing = await env.DB.prepare(
+        const existing = await env.virtua_fc_waitlist.prepare(
             'SELECT id FROM waitlist WHERE email = ?'
         ).bind(email).first();
 
@@ -34,7 +34,7 @@ export async function onRequestPost(context) {
             });
         }
 
-        await env.DB.prepare(
+        await env.virtua_fc_waitlist.prepare(
             'INSERT INTO waitlist (name, email, created_at) VALUES (?, ?, ?)'
         ).bind(name, email, new Date().toISOString()).run();
 
