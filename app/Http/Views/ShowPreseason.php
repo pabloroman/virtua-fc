@@ -49,8 +49,14 @@ class ShowPreseason
             ->get();
 
         // Separate into incoming and outgoing transfers
-        $transfersIn = $completedTransfers->filter(fn($t) => $t->gamePlayer->team_id === $game->team_id);
-        $transfersOut = $completedTransfers->filter(fn($t) => $t->selling_team_id === $game->team_id);
+        $transfersIn = $completedTransfers->filter(fn($t) =>
+            $t->direction === TransferOffer::DIRECTION_INCOMING
+            || $t->gamePlayer->team_id === $game->team_id
+        );
+        $transfersOut = $completedTransfers->filter(fn($t) =>
+            ($t->direction === TransferOffer::DIRECTION_OUTGOING || $t->direction === null)
+            && $t->gamePlayer->team_id !== $game->team_id
+        );
 
         // Get listed players
         $listedPlayers = $squad->filter(fn($p) => $p->isTransferListed());

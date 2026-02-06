@@ -132,9 +132,15 @@
                                         <div class="flex items-center gap-2">
                                             <span class="text-green-600 font-medium">IN</span>
                                             <span class="text-slate-900">{{ $transfer->gamePlayer->player->name }}</span>
-                                            <span class="text-slate-400">({{ $transfer->sellingTeam->name }})</span>
+                                            <span class="text-slate-400">({{ $transfer->selling_team_name ?? $transfer->offeringTeam?->name ?? '' }})</span>
                                         </div>
-                                        <span class="font-medium text-slate-700">{{ $transfer->formatted_transfer_fee }}</span>
+                                        <span class="font-medium text-slate-700">
+                                            @if($transfer->offer_type === 'loan_in')
+                                                Loan
+                                            @else
+                                                {{ $transfer->formatted_transfer_fee }}
+                                            @endif
+                                        </span>
                                     </div>
                                 @endforeach
                                 @foreach($transfersOut as $transfer)

@@ -11,6 +11,7 @@ use App\Game\Services\FinancialService;
 use App\Game\Services\LineupService;
 use App\Game\Services\MatchdayService;
 use App\Game\Services\MatchSimulator;
+use App\Game\Services\ScoutingService;
 use App\Game\Services\TransferService;
 use App\Models\Game;
 use App\Models\GameMatch;
@@ -24,6 +25,7 @@ class AdvanceMatchday
         private readonly MatchSimulator $matchSimulator,
         private readonly TransferService $transferService,
         private readonly FinancialService $financialService,
+        private readonly ScoutingService $scoutingService,
     ) {}
 
     public function __invoke(string $gameId)
@@ -141,6 +143,7 @@ class AdvanceMatchday
         // Process transfers when window is open
         if ($game->isTransferWindowOpen()) {
             $this->transferService->completeAgreedTransfers($game);
+            $this->transferService->completeIncomingTransfers($game);
         }
 
         // Generate transfer offers (can happen anytime, but more during windows)
@@ -151,6 +154,12 @@ class AdvanceMatchday
 
         // Pre-contract offers (January onwards for expiring contracts)
         $this->transferService->generatePreContractOffers($game);
+
+        // Tick scout search progress
+        $scoutReport = $this->scoutingService->tickSearch($game);
+        if ($scoutReport?->isCompleted()) {
+            session()->flash('scout_complete', 'Your scout has finished their search! Check the Scouting tab for results.');
+        }
 
         // Competition-specific post-match actions
         $allPlayers = GamePlayer::with('player')

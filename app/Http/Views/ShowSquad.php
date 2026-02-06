@@ -34,6 +34,7 @@ class ShowSquad
             'midfielders' => $players->get('Midfielder', collect()),
             'forwards' => $players->get('Forward', collect()),
             'expiringContractsCount' => $expiringContractsCount,
+            'isTransferWindow' => $game->isTransferWindowOpen() || $game->isInPreseason(),
         ]);
     }
 

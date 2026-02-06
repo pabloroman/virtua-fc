@@ -63,8 +63,17 @@ class ShowTransfers
         $recentTransfers = TransferOffer::with(['gamePlayer.player', 'offeringTeam'])
             ->where('game_id', $gameId)
             ->where('status', TransferOffer::STATUS_COMPLETED)
+            ->where('direction', '!=', TransferOffer::DIRECTION_INCOMING)
             ->orderByDesc('updated_at')
             ->limit(10)
+            ->get();
+
+        // Get incoming agreed transfers (user buying/loaning players)
+        $incomingAgreedTransfers = TransferOffer::with(['gamePlayer.player', 'gamePlayer.team', 'sellingTeam'])
+            ->where('game_id', $gameId)
+            ->where('status', TransferOffer::STATUS_AGREED)
+            ->where('direction', TransferOffer::DIRECTION_INCOMING)
+            ->orderByDesc('created_at')
             ->get();
 
         // Get transfer window info from Game model
@@ -76,6 +85,7 @@ class ShowTransfers
             'unsolicitedOffers' => $unsolicitedOffers,
             'listedOffers' => $listedOffers,
             'agreedTransfers' => $agreedTransfers,
+            'incomingAgreedTransfers' => $incomingAgreedTransfers,
             'expiringContractPlayers' => $expiringContractPlayers,
             'listedPlayers' => $listedPlayers,
             'recentTransfers' => $recentTransfers,

@@ -9,6 +9,7 @@ use App\Game\Processors\ContractRenewalProcessor;
 use App\Game\Processors\FinancialProcessor;
 use App\Game\Processors\FinancialResetProcessor;
 use App\Game\Processors\FixtureGenerationProcessor;
+use App\Game\Processors\LoanReturnProcessor;
 use App\Game\Processors\PlayerDevelopmentProcessor;
 use App\Game\Processors\PreContractTransferProcessor;
 use App\Game\Processors\PromotionRelegationProcessor;
@@ -28,6 +29,7 @@ class SeasonEndPipeline
 
     public function __construct(
         SeasonArchiveProcessor $seasonArchive,
+        LoanReturnProcessor $loanReturn,
         PreContractTransferProcessor $preContractTransfer,
         ContractExpirationProcessor $contractExpiration,
         ContractRenewalProcessor $contractRenewal,
@@ -42,6 +44,7 @@ class SeasonEndPipeline
     ) {
         $this->processors = [
             $seasonArchive,
+            $loanReturn,
             $preContractTransfer,
             $contractExpiration,
             $contractRenewal,

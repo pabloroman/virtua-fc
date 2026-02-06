@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class GamePlayer extends Model
 {
@@ -75,6 +76,46 @@ class GamePlayer extends Model
     public function transferOffers(): HasMany
     {
         return $this->hasMany(TransferOffer::class);
+    }
+
+    /**
+     * Get the active loan for this player (if any).
+     */
+    public function activeLoan(): HasOne
+    {
+        return $this->hasOne(Loan::class)->where('status', Loan::STATUS_ACTIVE);
+    }
+
+    /**
+     * Check if player is currently on loan (borrowed by another team).
+     */
+    public function isOnLoan(): bool
+    {
+        return $this->activeLoan()->exists();
+    }
+
+    /**
+     * Check if this player is loaned out by the user's team.
+     * The player's parent_team_id matches user team but they're playing elsewhere.
+     */
+    public function isLoanedOut(string $userTeamId): bool
+    {
+        return Loan::where('game_player_id', $this->id)
+            ->where('parent_team_id', $userTeamId)
+            ->where('status', Loan::STATUS_ACTIVE)
+            ->exists();
+    }
+
+    /**
+     * Check if this player is loaned in by the user's team.
+     * The player's loan_team_id matches user team.
+     */
+    public function isLoanedIn(string $userTeamId): bool
+    {
+        return Loan::where('game_player_id', $this->id)
+            ->where('loan_team_id', $userTeamId)
+            ->where('status', Loan::STATUS_ACTIVE)
+            ->exists();
     }
 
     /**

@@ -37,6 +37,54 @@
                         </div>
                     </div>
 
+                    {{-- Tab Navigation --}}
+                    <x-transfers-nav :game="$game" active="market" />
+
+                    <div class="mt-6"></div>
+
+                    {{-- Incoming Agreed Transfers (User buying players) --}}
+                    @if($incomingAgreedTransfers->isNotEmpty())
+                    <div class="mb-8">
+                        <h4 class="font-semibold text-lg text-slate-900 mb-4 flex items-center gap-2">
+                            <span class="w-2 h-2 bg-sky-500 rounded-full"></span>
+                            Incoming Transfers
+                            <span class="text-sm font-normal text-slate-500">(completing at {{ $game->isTransferWindowOpen() ? 'window close' : $game->getNextWindowName() . ' window' }})</span>
+                        </h4>
+                        <div class="space-y-3">
+                            @foreach($incomingAgreedTransfers as $transfer)
+                            <div class="border border-sky-200 bg-sky-50 rounded-lg p-4">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-4">
+                                        @if($transfer->sellingTeam)
+                                        <img src="{{ $transfer->sellingTeam->image }}" class="w-10 h-10">
+                                        @endif
+                                        <div>
+                                            <div class="font-semibold text-slate-900">
+                                                {{ $transfer->gamePlayer->player->name }} &larr; {{ $transfer->selling_team_name ?? 'Unknown' }}
+                                            </div>
+                                            <div class="text-sm text-slate-600">
+                                                {{ $transfer->gamePlayer->position }} &middot; {{ $transfer->gamePlayer->age }} years
+                                                @if($transfer->offer_type === 'loan_in')
+                                                    &middot; <span class="text-emerald-600 font-medium">Loan</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        @if($transfer->transfer_fee > 0)
+                                            <div class="text-xl font-bold text-sky-600">{{ $transfer->formatted_transfer_fee }}</div>
+                                        @else
+                                            <div class="text-sm font-semibold text-emerald-600">Loan (no fee)</div>
+                                        @endif
+                                        <div class="text-xs text-sky-700">Deal agreed</div>
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
+
                     {{-- Unsolicited Offers (Poaching) --}}
                     @if($unsolicitedOffers->isNotEmpty())
                     <div class="mb-8">

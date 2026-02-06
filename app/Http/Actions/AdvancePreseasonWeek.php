@@ -3,6 +3,7 @@
 namespace App\Http\Actions;
 
 use App\Game\Services\FinancialService;
+use App\Game\Services\ScoutingService;
 use App\Game\Services\TransferService;
 use App\Models\Game;
 use App\Models\GamePlayer;
@@ -12,6 +13,7 @@ class AdvancePreseasonWeek
     public function __construct(
         private readonly FinancialService $financialService,
         private readonly TransferService $transferService,
+        private readonly ScoutingService $scoutingService,
     ) {}
 
     public function __invoke(string $gameId)
@@ -61,6 +63,7 @@ class AdvancePreseasonWeek
 
         // Complete any agreed transfers from previous season
         $this->transferService->completeAgreedTransfers($game);
+        $this->transferService->completeIncomingTransfers($game);
     }
 
     private function generateTransferActivity(Game $game): void
@@ -70,6 +73,12 @@ class AdvancePreseasonWeek
 
         // Generate unsolicited offers for star players
         $this->transferService->generateUnsolicitedOffers($game);
+
+        // Tick scout search progress
+        $scoutReport = $this->scoutingService->tickSearch($game);
+        if ($scoutReport?->isCompleted()) {
+            session()->flash('scout_complete', 'Your scout has finished their search! Check the Scouting tab for results.');
+        }
     }
 
     private function updateSquadFitness(Game $game): void

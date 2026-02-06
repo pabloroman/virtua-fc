@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Builder;
 
 class Game extends Model
 {
@@ -65,6 +66,31 @@ class Game extends Model
     public function finances(): HasOne
     {
         return $this->hasOne(GameFinances::class);
+    }
+
+    public function loans(): HasMany
+    {
+        return $this->hasMany(Loan::class);
+    }
+
+    public function activeLoans(): HasMany
+    {
+        return $this->hasMany(Loan::class)->where('status', Loan::STATUS_ACTIVE);
+    }
+
+    public function scoutReports(): HasMany
+    {
+        return $this->hasMany(ScoutReport::class);
+    }
+
+    /**
+     * Get the active scout report (searching or completed, most recent).
+     */
+    public function activeScoutReport(): HasOne
+    {
+        return $this->hasOne(ScoutReport::class)
+            ->whereIn('status', [ScoutReport::STATUS_SEARCHING, ScoutReport::STATUS_COMPLETED])
+            ->latest();
     }
 
     /**

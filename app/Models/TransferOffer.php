@@ -15,6 +15,8 @@ class TransferOffer extends Model
 
     protected $casts = [
         'transfer_fee' => 'integer',
+        'asking_price' => 'integer',
+        'offered_wage' => 'integer',
         'expires_at' => 'date',
     ];
 
@@ -22,6 +24,13 @@ class TransferOffer extends Model
     public const TYPE_LISTED = 'listed';
     public const TYPE_UNSOLICITED = 'unsolicited';
     public const TYPE_PRE_CONTRACT = 'pre_contract'; // Free transfer, contract expiring
+    public const TYPE_USER_BID = 'user_bid';         // User buying a player
+    public const TYPE_LOAN_IN = 'loan_in';           // User borrowing a player
+    public const TYPE_LOAN_OUT = 'loan_out';         // User lending a player
+
+    // Directions
+    public const DIRECTION_OUTGOING = 'outgoing'; // User selling
+    public const DIRECTION_INCOMING = 'incoming'; // User buying
 
     // Statuses
     public const STATUS_PENDING = 'pending';
@@ -45,13 +54,61 @@ class TransferOffer extends Model
         return $this->belongsTo(Team::class, 'offering_team_id');
     }
 
-    /**
-     * Get the selling team (the player's current team).
-     * This is accessed through the gamePlayer relationship.
-     */
-    public function getSellingTeamAttribute(): ?Team
+    public function sellingTeam(): BelongsTo
     {
-        return $this->gamePlayer?->team;
+        return $this->belongsTo(Team::class, 'selling_team_id');
+    }
+
+    /**
+     * Get the selling team - from relationship if set, otherwise from player's current team.
+     */
+    public function getSellingTeamNameAttribute(): ?string
+    {
+        if ($this->selling_team_id) {
+            return $this->sellingTeam?->name;
+        }
+
+        return $this->gamePlayer?->team?->name;
+    }
+
+    /**
+     * Check if this is an incoming transfer (user buying).
+     */
+    public function isIncoming(): bool
+    {
+        return $this->direction === self::DIRECTION_INCOMING;
+    }
+
+    /**
+     * Check if this is a user bid.
+     */
+    public function isUserBid(): bool
+    {
+        return $this->offer_type === self::TYPE_USER_BID;
+    }
+
+    /**
+     * Check if this is a loan-in offer.
+     */
+    public function isLoanIn(): bool
+    {
+        return $this->offer_type === self::TYPE_LOAN_IN;
+    }
+
+    /**
+     * Get formatted asking price for display.
+     */
+    public function getFormattedAskingPriceAttribute(): string
+    {
+        return Money::format($this->asking_price ?? 0);
+    }
+
+    /**
+     * Get formatted offered wage for display.
+     */
+    public function getFormattedOfferedWageAttribute(): string
+    {
+        return Money::format($this->offered_wage ?? 0);
     }
 
     /**

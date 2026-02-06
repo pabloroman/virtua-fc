@@ -5,6 +5,7 @@ namespace App\Game\Services;
 use App\Models\FinancialTransaction;
 use App\Models\Game;
 use App\Models\GamePlayer;
+use App\Models\Loan;
 use App\Models\Team;
 use App\Models\TransferOffer;
 use Carbon\Carbon;
@@ -579,5 +580,138 @@ class TransferService
             ->where('transfer_status', GamePlayer::TRANSFER_STATUS_LISTED)
             ->orderByDesc('market_value_cents')
             ->get();
+    }
+
+    /**
+     * Complete all agreed incoming transfers (user buying/loaning players).
+     * Called at transfer window or preseason week 1.
+     */
+    public function completeIncomingTransfers(Game $game): Collection
+    {
+        $agreedIncoming = TransferOffer::with(['gamePlayer.player', 'sellingTeam'])
+            ->where('game_id', $game->id)
+            ->where('status', TransferOffer::STATUS_AGREED)
+            ->where('direction', TransferOffer::DIRECTION_INCOMING)
+            ->get();
+
+        // Also get loan-out agreements
+        $agreedLoanOuts = TransferOffer::with(['gamePlayer.player', 'offeringTeam'])
+            ->where('game_id', $game->id)
+            ->where('status', TransferOffer::STATUS_AGREED)
+            ->where('offer_type', TransferOffer::TYPE_LOAN_OUT)
+            ->get();
+
+        $completedTransfers = collect();
+
+        foreach ($agreedIncoming as $offer) {
+            if ($offer->offer_type === TransferOffer::TYPE_LOAN_IN) {
+                $this->completeLoanIn($offer, $game);
+            } else {
+                $this->completeIncomingTransfer($offer, $game);
+            }
+            $completedTransfers->push($offer);
+        }
+
+        foreach ($agreedLoanOuts as $offer) {
+            $this->completeLoanOut($offer, $game);
+            $completedTransfers->push($offer);
+        }
+
+        return $completedTransfers;
+    }
+
+    /**
+     * Complete a single incoming transfer (user buys player).
+     */
+    private function completeIncomingTransfer(TransferOffer $offer, Game $game): void
+    {
+        $player = $offer->gamePlayer;
+        $playerName = $player->player->name;
+        $sellerName = $offer->sellingTeam?->name ?? $player->team?->name ?? 'Unknown';
+
+        // Transfer player to user's team
+        $age = $player->age;
+        $contractYears = $age >= 33 ? 2 : ($age >= 30 ? 3 : rand(3, 5));
+        $newContractEnd = Carbon::parse($game->current_date)->addYears($contractYears);
+
+        $player->update([
+            'team_id' => $game->team_id,
+            'transfer_status' => null,
+            'transfer_listed_at' => null,
+            'contract_until' => $newContractEnd,
+            'annual_wage' => $offer->offered_wage ?? $player->annual_wage,
+        ]);
+
+        // Deduct from finances
+        $finances = $game->finances;
+        if ($finances && $offer->transfer_fee > 0) {
+            $finances->update([
+                'balance' => $finances->balance - $offer->transfer_fee,
+                'transfer_budget' => $finances->transfer_budget - $offer->transfer_fee,
+            ]);
+
+            FinancialTransaction::recordExpense(
+                gameId: $game->id,
+                category: FinancialTransaction::CATEGORY_TRANSFER_OUT,
+                amount: $offer->transfer_fee,
+                description: "Signed {$playerName} from {$sellerName}",
+                transactionDate: $game->current_date,
+                relatedPlayerId: $player->id,
+            );
+        }
+
+        $offer->update(['status' => TransferOffer::STATUS_COMPLETED]);
+    }
+
+    /**
+     * Complete a loan-in (player joins user's team on loan).
+     */
+    private function completeLoanIn(TransferOffer $offer, Game $game): void
+    {
+        $player = $offer->gamePlayer;
+        $parentTeamId = $player->team_id;
+        $seasonYear = (int) $game->season;
+        $returnDate = Carbon::createFromDate($seasonYear + 1, 6, 30);
+
+        Loan::create([
+            'game_id' => $game->id,
+            'game_player_id' => $player->id,
+            'parent_team_id' => $parentTeamId,
+            'loan_team_id' => $game->team_id,
+            'started_at' => $game->current_date,
+            'return_at' => $returnDate,
+            'status' => Loan::STATUS_ACTIVE,
+        ]);
+
+        $player->update(['team_id' => $game->team_id]);
+        $offer->update(['status' => TransferOffer::STATUS_COMPLETED]);
+    }
+
+    /**
+     * Complete a loan-out (user's player goes to AI team).
+     */
+    private function completeLoanOut(TransferOffer $offer, Game $game): void
+    {
+        $player = $offer->gamePlayer;
+        $destinationTeamId = $offer->offering_team_id;
+        $seasonYear = (int) $game->season;
+        $returnDate = Carbon::createFromDate($seasonYear + 1, 6, 30);
+
+        Loan::create([
+            'game_id' => $game->id,
+            'game_player_id' => $player->id,
+            'parent_team_id' => $game->team_id,
+            'loan_team_id' => $destinationTeamId,
+            'started_at' => $game->current_date,
+            'return_at' => $returnDate,
+            'status' => Loan::STATUS_ACTIVE,
+        ]);
+
+        $player->update([
+            'team_id' => $destinationTeamId,
+            'transfer_status' => null,
+            'transfer_listed_at' => null,
+        ]);
+        $offer->update(['status' => TransferOffer::STATUS_COMPLETED]);
     }
 }

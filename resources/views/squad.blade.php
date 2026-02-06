@@ -146,7 +146,11 @@
                                             </td>
                                             {{-- Actions --}}
                                             <td class="py-2 text-right">
-                                                @if($gamePlayer->hasPreContractAgreement())
+                                                @if($gamePlayer->isLoanedIn($game->team_id))
+                                                    <span class="inline-flex items-center px-2 py-1 text-xs font-medium text-sky-700 bg-sky-100 rounded">
+                                                        Loan
+                                                    </span>
+                                                @elseif($gamePlayer->hasPreContractAgreement())
                                                     <span class="inline-flex items-center px-2 py-1 text-xs font-medium text-red-700 bg-red-100 rounded">
                                                         Leaving (Free)
                                                     </span>
@@ -163,20 +167,52 @@
                                                         <span class="inline-flex items-center px-2 py-1 text-xs font-medium text-amber-700 bg-amber-100 rounded">
                                                             Listed
                                                         </span>
-                                                        <form method="post" action="{{ route('game.transfers.unlist', [$game->id, $gamePlayer->id]) }}">
-                                                            @csrf
-                                                            <button type="submit" class="text-xs text-red-600 hover:text-red-800 hover:underline">
-                                                                Remove
+                                                        <div x-data="{ open: false }" class="relative">
+                                                            <button @click="open = !open" class="p-1 text-slate-400 hover:text-slate-600 rounded hover:bg-slate-100">
+                                                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="4" r="1.5"/><circle cx="10" cy="10" r="1.5"/><circle cx="10" cy="16" r="1.5"/></svg>
                                                             </button>
-                                                        </form>
+                                                            <div x-show="open" @click.away="open = false" x-transition
+                                                                 class="absolute right-0 mt-1 w-36 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-10">
+                                                                <form method="post" action="{{ route('game.transfers.unlist', [$game->id, $gamePlayer->id]) }}">
+                                                                    @csrf
+                                                                    <button type="submit" class="w-full text-left px-3 py-1.5 text-xs text-red-600 hover:bg-red-50">
+                                                                        Unlist from Sale
+                                                                    </button>
+                                                                </form>
+                                                                @if($isTransferWindow)
+                                                                <form method="post" action="{{ route('game.loans.out', [$game->id, $gamePlayer->id]) }}">
+                                                                    @csrf
+                                                                    <button type="submit" class="w-full text-left px-3 py-1.5 text-xs text-amber-600 hover:bg-amber-50">
+                                                                        Loan Out
+                                                                    </button>
+                                                                </form>
+                                                                @endif
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 @else
-                                                    <form method="post" action="{{ route('game.transfers.list', [$game->id, $gamePlayer->id]) }}">
-                                                        @csrf
-                                                        <button type="submit" class="text-xs text-sky-600 hover:text-sky-800 hover:underline">
-                                                            List for Transfer
+                                                    <div x-data="{ open: false }" class="relative inline-block">
+                                                        <button @click="open = !open" class="p-1 text-slate-400 hover:text-slate-600 rounded hover:bg-slate-100">
+                                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="4" r="1.5"/><circle cx="10" cy="10" r="1.5"/><circle cx="10" cy="16" r="1.5"/></svg>
                                                         </button>
-                                                    </form>
+                                                        <div x-show="open" @click.away="open = false" x-transition
+                                                             class="absolute right-0 mt-1 w-36 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-10">
+                                                            <form method="post" action="{{ route('game.transfers.list', [$game->id, $gamePlayer->id]) }}">
+                                                                @csrf
+                                                                <button type="submit" class="w-full text-left px-3 py-1.5 text-xs text-sky-600 hover:bg-sky-50">
+                                                                    List for Sale
+                                                                </button>
+                                                            </form>
+                                                            @if($isTransferWindow)
+                                                            <form method="post" action="{{ route('game.loans.out', [$game->id, $gamePlayer->id]) }}">
+                                                                @csrf
+                                                                <button type="submit" class="w-full text-left px-3 py-1.5 text-xs text-amber-600 hover:bg-amber-50">
+                                                                    Loan Out
+                                                                </button>
+                                                            </form>
+                                                            @endif
+                                                        </div>
+                                                    </div>
                                                 @endif
                                             </td>
                                         </tr>

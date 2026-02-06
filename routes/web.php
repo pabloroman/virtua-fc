@@ -1,17 +1,23 @@
 <?php
 
+use App\Http\Actions\AcceptCounterOffer;
 use App\Http\Actions\AcceptTransferOffer;
 use App\Http\Actions\AdvanceMatchday;
 use App\Http\Actions\AdvancePreseasonWeek;
+use App\Http\Actions\CancelScoutSearch;
 use App\Http\Actions\ConductCupDraw;
 use App\Http\Actions\GetAutoLineup;
 use App\Http\Actions\InitGame;
 use App\Http\Actions\ListPlayerForTransfer;
 use App\Http\Actions\OfferRenewal;
 use App\Http\Actions\RejectTransferOffer;
+use App\Http\Actions\RequestLoan;
 use App\Http\Actions\SaveLineup;
+use App\Http\Actions\SubmitScoutSearch;
+use App\Http\Actions\SubmitTransferBid;
 use App\Http\Actions\UnlistPlayerFromTransfer;
 use App\Http\Views\ShowLineup;
+use App\Http\Views\ShowLoans;
 use App\Http\Controllers\ProfileController;
 use App\Http\Views\Dashboard;
 use App\Http\Views\SelectTeam;
@@ -23,6 +29,8 @@ use App\Http\Views\ShowMatchResults;
 use App\Http\Views\ShowSquad;
 use App\Http\Views\ShowContracts;
 use App\Http\Views\ShowPreseason;
+use App\Http\Views\ShowScouting;
+use App\Http\Views\ShowScoutingPlayer;
 use App\Http\Views\ShowSeasonEnd;
 use App\Http\Views\ShowSquadDevelopment;
 use App\Http\Views\ShowSquadStats;
@@ -67,6 +75,19 @@ Route::middleware('auth')->group(function () {
     Route::post('/game/{gameId}/transfers/accept/{offerId}', AcceptTransferOffer::class)->name('game.transfers.accept');
     Route::post('/game/{gameId}/transfers/reject/{offerId}', RejectTransferOffer::class)->name('game.transfers.reject');
     Route::post('/game/{gameId}/transfers/renew/{playerId}', OfferRenewal::class)->name('game.transfers.renew');
+
+    // Scouting
+    Route::get('/game/{gameId}/scouting', ShowScouting::class)->name('game.scouting');
+    Route::post('/game/{gameId}/scouting/search', SubmitScoutSearch::class)->name('game.scouting.search');
+    Route::post('/game/{gameId}/scouting/cancel', CancelScoutSearch::class)->name('game.scouting.cancel');
+    Route::get('/game/{gameId}/scouting/{playerId}', ShowScoutingPlayer::class)->name('game.scouting.player');
+    Route::post('/game/{gameId}/scouting/{playerId}/bid', SubmitTransferBid::class)->name('game.scouting.bid');
+    Route::post('/game/{gameId}/scouting/{playerId}/loan', RequestLoan::class)->name('game.scouting.loan');
+    Route::post('/game/{gameId}/scouting/counter/{offerId}/accept', AcceptCounterOffer::class)->name('game.scouting.counter.accept');
+
+    // Loans
+    Route::get('/game/{gameId}/loans', ShowLoans::class)->name('game.loans');
+    Route::post('/game/{gameId}/loans/out/{playerId}', RequestLoan::class)->name('game.loans.out');
 
     // Season End
     Route::get('/game/{gameId}/season-end', ShowSeasonEnd::class)->name('game.season-end');
