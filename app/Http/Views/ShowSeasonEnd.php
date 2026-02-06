@@ -5,6 +5,7 @@ namespace App\Http\Views;
 use App\Game\Services\PlayerDevelopmentService;
 use App\Models\Competition;
 use App\Models\CompetitionTeam;
+use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\GameStanding;
@@ -28,7 +29,7 @@ class ShowSeasonEnd
 
         $competition = Competition::find($game->competition_id);
 
-        // Get final standings
+        // Get final standings for player's league
         $standings = GameStanding::with('team')
             ->where('game_id', $gameId)
             ->where('competition_id', $game->competition_id)
@@ -41,10 +42,103 @@ class ShowSeasonEnd
         // Get league champion
         $champion = $standings->first();
 
+        // Get runner-up
+        $runnerUp = $standings->get(1);
+
         // Get team IDs in this competition
         $competitionTeamIds = CompetitionTeam::where('competition_id', $game->competition_id)
             ->where('season', $game->season)
             ->pluck('team_id');
+
+        // Find the cup competition for this country
+        $cupCompetition = Competition::where('country', $competition->country)
+            ->where('type', 'cup')
+            ->first();
+
+        $cupWinner = null;
+        $cupRunnerUp = null;
+        $cupName = $cupCompetition?->name ?? 'Cup';
+
+        if ($cupCompetition) {
+            // Find the final round (highest round number that was completed)
+            $cupFinal = CupTie::with(['winner', 'homeTeam', 'awayTeam'])
+                ->where('game_id', $gameId)
+                ->where('competition_id', $cupCompetition->id)
+                ->where('completed', true)
+                ->orderByDesc('round_number')
+                ->first();
+
+            $cupWinner = $cupFinal?->winner;
+            $cupRunnerUp = $cupFinal ? ($cupFinal->winner_id === $cupFinal->home_team_id
+                ? $cupFinal->awayTeam
+                : $cupFinal->homeTeam) : null;
+        }
+
+        // Find the lower-tier league for promotion display (tier = current tier + 1)
+        $lowerTierLeague = Competition::where('country', $competition->country)
+            ->where('type', 'league')
+            ->where('tier', $competition->tier + 1)
+            ->first();
+
+        // Find the higher-tier league for relegation context (tier = current tier - 1)
+        $higherTierLeague = Competition::where('country', $competition->country)
+            ->where('type', 'league')
+            ->where('tier', $competition->tier - 1)
+            ->first();
+
+        // Relegated teams (bottom 3 of current league, if tier 1)
+        $relegatedTeams = collect();
+        if ($competition->tier === 1 && $lowerTierLeague) {
+            $relegatedTeams = $standings->where('position', '>=', 18)->values();
+        }
+
+        // Promoted teams (if we're in a lower tier, show who got promoted to higher tier)
+        $directlyPromoted = collect();
+        $playoffWinner = null;
+        $promotionTargetLeague = null;
+
+        if ($competition->tier > 1 && $higherTierLeague) {
+            // We're in a lower tier, show who got promoted
+            $directlyPromoted = $standings->where('position', '<=', 2)->values();
+            $promotionTargetLeague = $higherTierLeague;
+
+            // Check for playoff winner in current competition
+            $playoffFinal = CupTie::with('winner')
+                ->where('game_id', $gameId)
+                ->where('competition_id', $competition->id)
+                ->where('completed', true)
+                ->orderByDesc('round_number')
+                ->first();
+
+            $playoffWinner = $playoffFinal?->winner;
+        } elseif ($lowerTierLeague) {
+            // We're in the top tier, show who got promoted FROM the lower tier
+            $lowerTierStandings = GameStanding::with('team')
+                ->where('game_id', $gameId)
+                ->where('competition_id', $lowerTierLeague->id)
+                ->orderBy('position')
+                ->get();
+
+            $directlyPromoted = $lowerTierStandings->where('position', '<=', 2)->values();
+            $promotionTargetLeague = $competition;
+
+            // Check for playoff winner in lower tier competition
+            $playoffFinal = CupTie::with('winner')
+                ->where('game_id', $gameId)
+                ->where('competition_id', $lowerTierLeague->id)
+                ->where('completed', true)
+                ->orderByDesc('round_number')
+                ->first();
+
+            $playoffWinner = $playoffFinal?->winner;
+        }
+
+        // Best attack and defense in the league
+        $bestAttack = $standings->sortByDesc('goals_for')->first();
+        $bestDefense = $standings->sortBy('goals_against')->first();
+
+        // Manager evaluation
+        $managerEvaluation = $this->evaluateManager($playerStanding, $game->currentFinances);
 
         // Top scorers in the league
         $topScorers = GamePlayer::with(['player', 'team'])
@@ -122,6 +216,7 @@ class ShowSeasonEnd
             'standings' => $standings,
             'playerStanding' => $playerStanding,
             'champion' => $champion,
+            'runnerUp' => $runnerUp,
             'topScorers' => $topScorers,
             'topAssisters' => $topAssisters,
             'bestGoalkeeper' => $bestGoalkeeper,
@@ -129,6 +224,61 @@ class ShowSeasonEnd
             'developmentPreview' => $squadPlayers,
             'finances' => $game->currentFinances,
             'investment' => $game->currentInvestment,
+            // New data for enhanced season review
+            'cupWinner' => $cupWinner,
+            'cupRunnerUp' => $cupRunnerUp,
+            'cupName' => $cupName,
+            'relegatedTeams' => $relegatedTeams,
+            'directlyPromoted' => $directlyPromoted,
+            'playoffWinner' => $playoffWinner,
+            'promotionTargetLeague' => $promotionTargetLeague,
+            'lowerTierLeague' => $lowerTierLeague,
+            'bestAttack' => $bestAttack,
+            'bestDefense' => $bestDefense,
+            'managerEvaluation' => $managerEvaluation,
         ]);
+    }
+
+    /**
+     * Evaluate the manager's performance based on targets.
+     */
+    private function evaluateManager($playerStanding, $finances): array
+    {
+        $actualPosition = $playerStanding->position ?? 20;
+        $targetPosition = $finances?->projected_position ?? 10;
+
+        $positionDiff = $targetPosition - $actualPosition; // Positive = better than target
+
+        // Determine grade and message
+        if ($positionDiff >= 5) {
+            $grade = 'exceptional';
+            $title = 'Exceptional Season';
+            $message = "The board is delighted with your performance. Finishing {$positionDiff} places above expectations has exceeded all targets. Your contract extension is already being prepared.";
+        } elseif ($positionDiff >= 2) {
+            $grade = 'exceeded';
+            $title = 'Exceeded Expectations';
+            $message = "An impressive campaign. You've outperformed our projected finish and the board is very pleased with the direction you're taking the club.";
+        } elseif ($positionDiff >= -1) {
+            $grade = 'met';
+            $title = 'Expectations Met';
+            $message = "A solid season that met our targets. The board is satisfied with your work and looks forward to continued progress next season.";
+        } elseif ($positionDiff >= -4) {
+            $grade = 'below';
+            $title = 'Below Expectations';
+            $message = "A disappointing campaign. We expected better results and the board will be monitoring performance closely next season.";
+        } else {
+            $grade = 'disaster';
+            $title = 'Unacceptable Performance';
+            $message = "This season has been a disaster. The board expected a finish around {$targetPosition}th place, but {$actualPosition}th is unacceptable. Significant improvement is required.";
+        }
+
+        return [
+            'grade' => $grade,
+            'title' => $title,
+            'message' => $message,
+            'actualPosition' => $actualPosition,
+            'targetPosition' => $targetPosition,
+            'positionDiff' => $positionDiff,
+        ];
     }
 }
