@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\ClubProfile;
-use App\Models\Competition;
 use App\Models\Team;
 use Illuminate\Database\Seeder;
 
@@ -73,15 +72,9 @@ class ClubProfilesSeeder extends Seeder
 
     public function run(): void
     {
-        $laliga = Competition::where('name', 'LaLiga')->first();
-        $laliga2 = Competition::where('name', 'LaLiga2')->first();
-
-        if (!$laliga || !$laliga2) {
-            $this->command->error('LaLiga or LaLiga2 competition not found');
-            return;
-        }
-
-        $allTeams = $laliga->teams->merge($laliga2->teams);
+        // Seed club profiles for all teams that match known names
+        $allTeams = Team::all();
+        $seeded = 0;
 
         foreach ($allTeams as $team) {
             $data = self::CLUB_DATA[$team->name] ?? null;
@@ -101,8 +94,10 @@ class ClubProfilesSeeder extends Seeder
                     'commercial_revenue' => $data['commercial'],
                 ]
             );
+
+            $seeded++;
         }
 
-        $this->command->info('Club profiles seeded for ' . $allTeams->count() . ' teams');
+        $this->command->info('Club profiles seeded for ' . $seeded . ' teams');
     }
 }

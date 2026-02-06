@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\User;
 use Carbon\Carbon;
+use Database\Seeders\ClubProfilesSeeder;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -93,6 +94,12 @@ class SeedReferenceData extends Command
         foreach ($this->profiles[$profile] as $competitionConfig) {
             $this->seedCompetition($competitionConfig);
         }
+
+        // Seed club profiles for all teams
+        $this->info('Seeding club profiles...');
+        $seeder = new ClubProfilesSeeder();
+        $seeder->setCommand($this);
+        $seeder->run();
 
         $this->displaySummary();
 
