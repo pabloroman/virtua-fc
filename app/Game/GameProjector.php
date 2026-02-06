@@ -48,8 +48,12 @@ class GameProjector extends Projector
         $gameId = $event->aggregateRootUuid();
         $teamId = $event->teamId;
 
-        // Find competition for the selected team
-        $competitionTeam = CompetitionTeam::where('team_id', $teamId)->first();
+        // Find competition for the selected team (prefer tier 1 league)
+        $competitionTeam = CompetitionTeam::where('team_id', $teamId)
+            ->whereHas('competition', fn($q) => $q->where('type', 'league')->where('tier', 1))
+            ->first()
+            ?? CompetitionTeam::where('team_id', $teamId)->first();
+
         $competitionId = $competitionTeam?->competition_id ?? 'ESP1';
         $season = $competitionTeam?->season ?? '2024';
 
@@ -464,11 +468,18 @@ class GameProjector extends Projector
         // Get all cup competitions
         $cupCompetitions = \App\Models\Competition::where('handler_type', 'knockout_cup')->get();
 
+        $hasDraws = false;
         foreach ($cupCompetitions as $competition) {
             // Check if first round draw is needed
             if ($this->cupDrawService->needsDrawForRound($gameId, $competition->id, 1)) {
                 $this->cupDrawService->conductDraw($gameId, $competition->id, 1);
+                $hasDraws = true;
             }
+        }
+
+        // Set initial cup round to 1 if any draws were conducted
+        if ($hasDraws) {
+            Game::where('id', $gameId)->update(['cup_round' => 1]);
         }
     }
 

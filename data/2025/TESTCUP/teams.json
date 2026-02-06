@@ -1,0 +1,10 @@
+{
+    "id": "TESTCUP",
+    "name": "Test Cup",
+    "clubs": [
+        { "id": "418", "name": "Real Madrid" },
+        { "id": "131", "name": "FC Barcelona" },
+        { "id": "13", "name": "Atlético de Madrid" },
+        { "id": "621", "name": "Athletic Bilbao" }
+    ]
+}

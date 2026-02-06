@@ -4,12 +4,9 @@ namespace App\Game\Processors;
 
 use App\Game\Contracts\SeasonEndProcessor;
 use App\Game\DTO\SeasonTransitionData;
-use App\Game\Services\BudgetProjectionService;
-use App\Models\ClubProfile;
 use App\Models\Competition;
 use App\Models\FinancialTransaction;
 use App\Models\Game;
-use App\Models\GameFinances;
 use App\Models\GameInvestment;
 use App\Models\GamePlayer;
 use App\Models\GameStanding;
@@ -21,82 +18,6 @@ use App\Models\GameStanding;
  */
 class SeasonSettlementProcessor implements SeasonEndProcessor
 {
-    /**
-     * La Liga TV revenue by position (in cents).
-     */
-    private const TV_REVENUE_LALIGA = [
-        1 => 10_000_000_000,   // €100M
-        2 => 9_000_000_000,    // €90M
-        3 => 8_500_000_000,    // €85M
-        4 => 8_000_000_000,    // €80M
-        5 => 7_500_000_000,    // €75M
-        6 => 7_000_000_000,    // €70M
-        7 => 6_500_000_000,    // €65M
-        8 => 6_000_000_000,    // €60M
-        9 => 5_800_000_000,    // €58M
-        10 => 5_600_000_000,   // €56M
-        11 => 5_400_000_000,   // €54M
-        12 => 5_200_000_000,   // €52M
-        13 => 5_000_000_000,   // €50M
-        14 => 5_000_000_000,   // €50M
-        15 => 4_800_000_000,   // €48M
-        16 => 4_600_000_000,   // €46M
-        17 => 4_400_000_000,   // €44M
-        18 => 4_200_000_000,   // €42M
-        19 => 4_000_000_000,   // €40M
-        20 => 4_000_000_000,   // €40M
-    ];
-
-    /**
-     * La Liga 2 TV revenue by position (in cents).
-     */
-    private const TV_REVENUE_LALIGA2 = [
-        1 => 2_000_000_000,    // €20M
-        2 => 1_800_000_000,    // €18M
-        3 => 1_500_000_000,    // €15M
-        4 => 1_400_000_000,    // €14M
-        5 => 1_300_000_000,    // €13M
-        6 => 1_200_000_000,    // €12M
-        7 => 1_100_000_000,    // €11M
-        8 => 1_050_000_000,    // €10.5M
-        9 => 1_000_000_000,    // €10M
-        10 => 950_000_000,     // €9.5M
-        11 => 900_000_000,     // €9M
-        12 => 850_000_000,     // €8.5M
-        13 => 800_000_000,     // €8M
-        14 => 800_000_000,     // €8M
-        15 => 750_000_000,     // €7.5M
-        16 => 700_000_000,     // €7M
-        17 => 650_000_000,     // €6.5M
-        18 => 650_000_000,     // €6.5M
-        19 => 600_000_000,     // €6M
-        20 => 600_000_000,     // €6M
-        21 => 600_000_000,     // €6M
-        22 => 600_000_000,     // €6M
-    ];
-
-    /**
-     * Position factors for matchday revenue.
-     */
-    private const POSITION_FACTORS = [
-        'top' => 1.10,      // 1st-4th
-        'mid_high' => 1.0,  // 5th-10th
-        'mid_low' => 0.95,  // 11th-16th
-        'relegation' => 0.85, // 17th-20th
-    ];
-
-    /**
-     * Copa del Rey prize money by round.
-     */
-    private const CUP_PRIZES = [
-        1 => 10_000_000,      // Round of 64: €100K
-        2 => 25_000_000,      // Round of 32: €250K
-        3 => 50_000_000,      // Round of 16: €500K
-        4 => 100_000_000,     // Quarter-finals: €1M
-        5 => 200_000_000,     // Semi-finals: €2M
-        6 => 500_000_000,     // Runner-up: €5M
-        7 => 1_000_000_000,   // Winner: €10M (additional)
-    ];
 
     public function priority(): int
     {
@@ -172,11 +93,12 @@ class SeasonSettlementProcessor implements SeasonEndProcessor
     private function calculateTvRevenue(int $position, Game $game): int
     {
         $league = $game->team->competitions()->where('type', 'league')->first();
-        $isLaLiga = $league && $league->tier === 1;
+        if (!$league) {
+            return 0;
+        }
 
-        $table = $isLaLiga ? self::TV_REVENUE_LALIGA : self::TV_REVENUE_LALIGA2;
-
-        return $table[$position] ?? $table[array_key_last($table)];
+        $config = $league->getConfig();
+        return $config->getTvRevenue($position);
     }
 
     private function calculateMatchdayRevenue(Game $game, int $position): int
@@ -194,42 +116,22 @@ class SeasonSettlementProcessor implements SeasonEndProcessor
             ? GameInvestment::FACILITIES_MULTIPLIER[$investment->facilities_tier] ?? 1.0
             : 1.0;
 
-        // Position factor
-        $positionFactor = $this->getPositionFactor($position);
+        // Position factor from competition config
+        $league = $game->team->competitions()->where('type', 'league')->first();
+        $config = $league?->getConfig();
+        $positionFactor = $config?->getPositionFactor($position) ?? 1.0;
 
         return (int) ($base * $facilitiesMultiplier * $positionFactor);
     }
 
-    private function getPositionFactor(int $position): float
-    {
-        if ($position <= 4) {
-            return self::POSITION_FACTORS['top'];
-        }
-        if ($position <= 10) {
-            return self::POSITION_FACTORS['mid_high'];
-        }
-        if ($position <= 16) {
-            return self::POSITION_FACTORS['mid_low'];
-        }
-        return self::POSITION_FACTORS['relegation'];
-    }
-
     private function calculatePrizeRevenue(Game $game): int
     {
-        // Sum up cup prizes based on rounds reached
-        $cupRound = $game->cup_round ?? 0;
-        $prize = 0;
-
-        for ($round = 1; $round <= $cupRound; $round++) {
-            $prize += self::CUP_PRIZES[$round] ?? 0;
-        }
-
-        // Add winner bonus if they won (assumed if eliminated = false and cup_round >= 6)
-        if (!$game->cup_eliminated && $cupRound >= 6) {
-            $prize += self::CUP_PRIZES[7] ?? 0;
-        }
-
-        return $prize;
+        // Prize revenue is calculated via FinancialTransactions during the season
+        // (recorded when cups are won). We sum it up here.
+        return FinancialTransaction::where('game_id', $game->id)
+            ->where('category', FinancialTransaction::CATEGORY_CUP_BONUS)
+            ->where('type', FinancialTransaction::TYPE_INCOME)
+            ->sum('amount');
     }
 
     private function calculateTransferIncome(Game $game): int

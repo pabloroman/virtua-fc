@@ -2,7 +2,6 @@
 
 namespace App\Game\Services;
 
-use App\Models\ClubProfile;
 use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GameFinances;
@@ -12,70 +11,6 @@ use App\Models\Team;
 
 class BudgetProjectionService
 {
-    /**
-     * La Liga TV revenue by position (in cents).
-     */
-    private const TV_REVENUE_LALIGA = [
-        1 => 10_000_000_000,   // €100M
-        2 => 9_000_000_000,    // €90M
-        3 => 8_500_000_000,    // €85M
-        4 => 8_000_000_000,    // €80M
-        5 => 7_500_000_000,    // €75M
-        6 => 7_000_000_000,    // €70M
-        7 => 6_500_000_000,    // €65M
-        8 => 6_000_000_000,    // €60M
-        9 => 5_800_000_000,    // €58M
-        10 => 5_600_000_000,   // €56M
-        11 => 5_400_000_000,   // €54M
-        12 => 5_200_000_000,   // €52M
-        13 => 5_000_000_000,   // €50M
-        14 => 5_000_000_000,   // €50M
-        15 => 4_800_000_000,   // €48M
-        16 => 4_600_000_000,   // €46M
-        17 => 4_400_000_000,   // €44M
-        18 => 4_200_000_000,   // €42M
-        19 => 4_000_000_000,   // €40M
-        20 => 4_000_000_000,   // €40M
-    ];
-
-    /**
-     * La Liga 2 TV revenue by position (in cents).
-     */
-    private const TV_REVENUE_LALIGA2 = [
-        1 => 2_000_000_000,    // €20M
-        2 => 1_800_000_000,    // €18M
-        3 => 1_500_000_000,    // €15M
-        4 => 1_400_000_000,    // €14M
-        5 => 1_300_000_000,    // €13M
-        6 => 1_200_000_000,    // €12M
-        7 => 1_100_000_000,    // €11M
-        8 => 1_050_000_000,    // €10.5M
-        9 => 1_000_000_000,    // €10M
-        10 => 950_000_000,     // €9.5M
-        11 => 900_000_000,     // €9M
-        12 => 850_000_000,     // €8.5M
-        13 => 800_000_000,     // €8M
-        14 => 800_000_000,     // €8M
-        15 => 750_000_000,     // €7.5M
-        16 => 700_000_000,     // €7M
-        17 => 650_000_000,     // €6.5M
-        18 => 650_000_000,     // €6.5M
-        19 => 600_000_000,     // €6M
-        20 => 600_000_000,     // €6M
-        21 => 600_000_000,     // €6M
-        22 => 600_000_000,     // €6M
-    ];
-
-    /**
-     * Position factors for matchday revenue.
-     */
-    private const POSITION_FACTORS = [
-        'top' => 1.10,      // 1st-4th
-        'mid_high' => 1.0,  // 5th-10th
-        'mid_low' => 0.95,  // 11th-16th
-        'relegation' => 0.85, // 17th-20th
-    ];
-
     /**
      * Conservative prize money estimate (Round of 16 cup exit).
      * Includes: Round of 64 (€100K) + Round of 32 (€250K) + Round of 16 (€500K)
@@ -212,10 +147,9 @@ class BudgetProjectionService
      */
     public function calculateTvRevenue(int $position, Competition $league): int
     {
-        $isLaLiga = $league->tier === 1;
-        $table = $isLaLiga ? self::TV_REVENUE_LALIGA : self::TV_REVENUE_LALIGA2;
+        $config = $league->getConfig();
 
-        return $table[$position] ?? $table[array_key_last($table)];
+        return $config->getTvRevenue($position);
     }
 
     /**
@@ -238,27 +172,12 @@ class BudgetProjectionService
             ? GameInvestment::FACILITIES_MULTIPLIER[$investment->facilities_tier] ?? 1.0
             : 1.0;
 
-        // Position factor
-        $positionFactor = $this->getPositionFactor($position);
+        // Position factor from competition config
+        $league = $team->competitions()->where('type', 'league')->first();
+        $config = $league?->getConfig();
+        $positionFactor = $config?->getPositionFactor($position) ?? 1.0;
 
         return (int) ($base * $facilitiesMultiplier * $positionFactor);
-    }
-
-    /**
-     * Get position factor for matchday revenue.
-     */
-    private function getPositionFactor(int $position): float
-    {
-        if ($position <= 4) {
-            return self::POSITION_FACTORS['top'];
-        }
-        if ($position <= 10) {
-            return self::POSITION_FACTORS['mid_high'];
-        }
-        if ($position <= 16) {
-            return self::POSITION_FACTORS['mid_low'];
-        }
-        return self::POSITION_FACTORS['relegation'];
     }
 
     /**
