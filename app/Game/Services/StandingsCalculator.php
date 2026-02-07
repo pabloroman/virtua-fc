@@ -8,6 +8,7 @@ class StandingsCalculator
 {
     /**
      * Update standings after a match result.
+     * Note: Call recalculatePositions() separately after processing all matches for a matchday.
      */
     public function updateAfterMatch(
         string $gameId,
@@ -45,9 +46,6 @@ class StandingsCalculator
             drawn: $draw,
             lost: $homeWin,
         );
-
-        // Recalculate positions for all teams in competition
-        $this->recalculatePositions($gameId, $competitionId);
     }
 
     /**

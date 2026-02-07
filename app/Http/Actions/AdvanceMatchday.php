@@ -11,6 +11,7 @@ use App\Game\Services\LineupService;
 use App\Game\Services\MatchdayService;
 use App\Game\Services\MatchSimulator;
 use App\Game\Services\ScoutingService;
+use App\Game\Services\StandingsCalculator;
 use App\Game\Services\TransferService;
 use App\Models\Game;
 use App\Models\GameMatch;
@@ -25,6 +26,7 @@ class AdvanceMatchday
         private readonly MatchSimulator $matchSimulator,
         private readonly TransferService $transferService,
         private readonly ScoutingService $scoutingService,
+        private readonly StandingsCalculator $standingsCalculator,
     ) {}
 
     public function __invoke(string $gameId)
@@ -65,6 +67,9 @@ class AdvanceMatchday
 
         // Record results via event sourcing
         $this->recordMatchResults($gameId, $matchday, $currentDate, $matchResults);
+
+        // Recalculate standings positions once per league competition (not per match)
+        $this->recalculateLeaguePositions($gameId, $matches);
 
         // Process post-match actions
         $game->refresh();
@@ -141,6 +146,20 @@ class AdvanceMatchday
 
         $aggregate = GameAggregate::retrieve($gameId);
         $aggregate->advanceMatchday($command);
+    }
+
+    private function recalculateLeaguePositions(string $gameId, $matches): void
+    {
+        // Get unique league competition IDs from this batch
+        $leagueCompetitionIds = $matches
+            ->filter(fn ($match) => $match->competition?->isLeague())
+            ->pluck('competition_id')
+            ->unique();
+
+        // Recalculate positions once per league
+        foreach ($leagueCompetitionIds as $competitionId) {
+            $this->standingsCalculator->recalculatePositions($gameId, $competitionId);
+        }
     }
 
     private function processPostMatchActions(Game $game, $matches, $handler, $allPlayers): void

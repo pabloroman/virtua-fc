@@ -6,6 +6,7 @@ use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class PlayerConditionService
 {
@@ -65,6 +66,10 @@ class PlayerConditionService
             ->whereIn('team_id', [$match->home_team_id, $match->away_team_id])
             ->get();
 
+        if ($allPlayers->isEmpty()) {
+            return;
+        }
+
         // Get lineup player IDs
         $homeLineupIds = $match->home_lineup ?? [];
         $awayLineupIds = $match->away_lineup ?? [];
@@ -84,18 +89,13 @@ class PlayerConditionService
         $awayWon = $match->away_score > $match->home_score;
         $isDraw = $match->home_score === $match->away_score;
 
+        // Calculate new values for all players
+        $updates = [];
         foreach ($allPlayers as $player) {
             $isInLineup = in_array($player->id, $allLineupIds);
             $isHomePlayer = $player->team_id === $match->home_team_id;
 
-            // Calculate fitness change
-            $fitnessChange = $this->calculateFitnessChange(
-                $player,
-                $isInLineup,
-                $daysSinceLastMatch
-            );
-
-            // Calculate morale change
+            $fitnessChange = $this->calculateFitnessChange($player, $isInLineup, $daysSinceLastMatch);
             $moraleChange = $this->calculateMoraleChange(
                 $player,
                 $isInLineup,
@@ -105,15 +105,42 @@ class PlayerConditionService
                 $eventsByPlayer[$player->id] ?? []
             );
 
-            // Apply changes
-            $newFitness = max(self::MIN_FITNESS, min(self::MAX_FITNESS, $player->fitness + $fitnessChange));
-            $newMorale = max(self::MIN_MORALE, min(self::MAX_MORALE, $player->morale + $moraleChange));
-
-            $player->update([
-                'fitness' => $newFitness,
-                'morale' => $newMorale,
-            ]);
+            $updates[$player->id] = [
+                'fitness' => max(self::MIN_FITNESS, min(self::MAX_FITNESS, $player->fitness + $fitnessChange)),
+                'morale' => max(self::MIN_MORALE, min(self::MAX_MORALE, $player->morale + $moraleChange)),
+            ];
         }
+
+        // Build bulk update query with CASE statements
+        $this->bulkUpdateConditions($updates);
+    }
+
+    /**
+     * Perform bulk update of fitness and morale using a single query.
+     */
+    private function bulkUpdateConditions(array $updates): void
+    {
+        if (empty($updates)) {
+            return;
+        }
+
+        $ids = array_keys($updates);
+        $fitnessCases = [];
+        $moraleCases = [];
+
+        foreach ($updates as $id => $values) {
+            $fitnessCases[] = "WHEN id = '{$id}' THEN {$values['fitness']}";
+            $moraleCases[] = "WHEN id = '{$id}' THEN {$values['morale']}";
+        }
+
+        $idList = "'" . implode("','", $ids) . "'";
+
+        DB::statement("
+            UPDATE game_players
+            SET fitness = CASE " . implode(' ', $fitnessCases) . " END,
+                morale = CASE " . implode(' ', $moraleCases) . " END
+            WHERE id IN ({$idList})
+        ");
     }
 
     /**
