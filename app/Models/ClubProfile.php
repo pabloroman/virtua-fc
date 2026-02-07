@@ -11,7 +11,11 @@ class ClubProfile extends Model
 {
     use HasUuids;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'team_id',
+        'reputation_level',
+        'commercial_revenue',
+    ];
 
     public const REPUTATION_ELITE = 'elite';
     public const REPUTATION_CONTINENTAL = 'continental';

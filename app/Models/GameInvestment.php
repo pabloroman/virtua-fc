@@ -11,7 +11,20 @@ class GameInvestment extends Model
 {
     use HasUuids;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'game_id',
+        'season',
+        'available_surplus',
+        'youth_academy_amount',
+        'youth_academy_tier',
+        'medical_amount',
+        'medical_tier',
+        'scouting_amount',
+        'scouting_tier',
+        'facilities_amount',
+        'facilities_tier',
+        'transfer_budget',
+    ];
 
     /**
      * Investment tier thresholds (in cents).

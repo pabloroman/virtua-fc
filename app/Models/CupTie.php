@@ -11,7 +11,18 @@ class CupTie extends Model
 {
     use HasFactory, HasUuids;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'game_id',
+        'competition_id',
+        'round_number',
+        'home_team_id',
+        'away_team_id',
+        'first_leg_match_id',
+        'second_leg_match_id',
+        'winner_id',
+        'completed',
+        'resolution',
+    ];
 
     protected $casts = [
         'round_number' => 'integer',

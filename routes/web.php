@@ -53,61 +53,64 @@ Route::middleware('auth')->group(function () {
     Route::get('/new-game', SelectTeam::class)->name('select-team');
     Route::post('/new-game', InitGame::class)->name('init-game');
 
-    // Game Views
-    Route::get('/game/{gameId}', ShowGame::class)->name('show-game');
-    Route::get('/game/{gameId}/squad', ShowSquad::class)->name('game.squad');
-    Route::get('/game/{gameId}/squad/development', ShowSquadDevelopment::class)->name('game.squad.development');
-    Route::get('/game/{gameId}/squad/contracts', ShowContracts::class)->name('game.squad.contracts');
-    Route::get('/game/{gameId}/squad/stats', ShowSquadStats::class)->name('game.squad.stats');
-    Route::get('/game/{gameId}/finances', ShowFinances::class)->name('game.finances');
-    Route::get('/game/{gameId}/transfers', ShowTransfers::class)->name('game.transfers');
-    Route::get('/game/{gameId}/calendar', ShowCalendar::class)->name('game.calendar');
-    Route::get('/game/{gameId}/competition/{competitionId}', ShowCompetition::class)->name('game.competition');
-    Route::get('/game/{gameId}/results/{competition}/{matchday}', ShowMatchResults::class)->name('game.results');
-    Route::get('/game/{gameId}/lineup/{matchId}', ShowLineup::class)->name('game.lineup');
+    // All game routes require ownership verification
+    Route::middleware('game.owner')->group(function () {
+        // Game Views
+        Route::get('/game/{gameId}', ShowGame::class)->name('show-game');
+        Route::get('/game/{gameId}/squad', ShowSquad::class)->name('game.squad');
+        Route::get('/game/{gameId}/squad/development', ShowSquadDevelopment::class)->name('game.squad.development');
+        Route::get('/game/{gameId}/squad/contracts', ShowContracts::class)->name('game.squad.contracts');
+        Route::get('/game/{gameId}/squad/stats', ShowSquadStats::class)->name('game.squad.stats');
+        Route::get('/game/{gameId}/finances', ShowFinances::class)->name('game.finances');
+        Route::get('/game/{gameId}/transfers', ShowTransfers::class)->name('game.transfers');
+        Route::get('/game/{gameId}/calendar', ShowCalendar::class)->name('game.calendar');
+        Route::get('/game/{gameId}/competition/{competitionId}', ShowCompetition::class)->name('game.competition');
+        Route::get('/game/{gameId}/results/{competition}/{matchday}', ShowMatchResults::class)->name('game.results');
+        Route::get('/game/{gameId}/lineup/{matchId}', ShowLineup::class)->name('game.lineup');
 
-    // Game Actions
-    Route::post('/game/{gameId}/advance', AdvanceMatchday::class)->name('game.advance');
-    Route::post('/game/{gameId}/lineup/{matchId}', SaveLineup::class)->name('game.lineup.save');
-    Route::get('/game/{gameId}/lineup/{matchId}/auto', GetAutoLineup::class)->name('game.lineup.auto');
-    Route::post('/game/{gameId}/cup/draw/{round}', ConductCupDraw::class)->name('game.cup.draw');
-    Route::post('/game/{gameId}/development/process', ProcessSeasonDevelopment::class)->name('game.development.process');
+        // Game Actions
+        Route::post('/game/{gameId}/advance', AdvanceMatchday::class)->name('game.advance');
+        Route::post('/game/{gameId}/lineup/{matchId}', SaveLineup::class)->name('game.lineup.save');
+        Route::get('/game/{gameId}/lineup/{matchId}/auto', GetAutoLineup::class)->name('game.lineup.auto');
+        Route::post('/game/{gameId}/cup/draw/{round}', ConductCupDraw::class)->name('game.cup.draw');
+        Route::post('/game/{gameId}/development/process', ProcessSeasonDevelopment::class)->name('game.development.process');
 
-    // Transfers
-    Route::post('/game/{gameId}/transfers/list/{playerId}', ListPlayerForTransfer::class)->name('game.transfers.list');
-    Route::post('/game/{gameId}/transfers/unlist/{playerId}', UnlistPlayerFromTransfer::class)->name('game.transfers.unlist');
-    Route::post('/game/{gameId}/transfers/accept/{offerId}', AcceptTransferOffer::class)->name('game.transfers.accept');
-    Route::post('/game/{gameId}/transfers/reject/{offerId}', RejectTransferOffer::class)->name('game.transfers.reject');
-    Route::post('/game/{gameId}/transfers/renew/{playerId}', OfferRenewal::class)->name('game.transfers.renew');
+        // Transfers
+        Route::post('/game/{gameId}/transfers/list/{playerId}', ListPlayerForTransfer::class)->name('game.transfers.list');
+        Route::post('/game/{gameId}/transfers/unlist/{playerId}', UnlistPlayerFromTransfer::class)->name('game.transfers.unlist');
+        Route::post('/game/{gameId}/transfers/accept/{offerId}', AcceptTransferOffer::class)->name('game.transfers.accept');
+        Route::post('/game/{gameId}/transfers/reject/{offerId}', RejectTransferOffer::class)->name('game.transfers.reject');
+        Route::post('/game/{gameId}/transfers/renew/{playerId}', OfferRenewal::class)->name('game.transfers.renew');
 
-    // Scouting
-    Route::get('/game/{gameId}/scouting', ShowScouting::class)->name('game.scouting');
-    Route::post('/game/{gameId}/scouting/search', SubmitScoutSearch::class)->name('game.scouting.search');
-    Route::post('/game/{gameId}/scouting/cancel', CancelScoutSearch::class)->name('game.scouting.cancel');
-    Route::get('/game/{gameId}/scouting/{playerId}', ShowScoutingPlayer::class)->name('game.scouting.player');
-    Route::post('/game/{gameId}/scouting/{playerId}/bid', SubmitTransferBid::class)->name('game.scouting.bid');
-    Route::post('/game/{gameId}/scouting/{playerId}/loan', RequestLoan::class)->name('game.scouting.loan');
-    Route::post('/game/{gameId}/scouting/counter/{offerId}/accept', AcceptCounterOffer::class)->name('game.scouting.counter.accept');
+        // Scouting
+        Route::get('/game/{gameId}/scouting', ShowScouting::class)->name('game.scouting');
+        Route::post('/game/{gameId}/scouting/search', SubmitScoutSearch::class)->name('game.scouting.search');
+        Route::post('/game/{gameId}/scouting/cancel', CancelScoutSearch::class)->name('game.scouting.cancel');
+        Route::get('/game/{gameId}/scouting/{playerId}', ShowScoutingPlayer::class)->name('game.scouting.player');
+        Route::post('/game/{gameId}/scouting/{playerId}/bid', SubmitTransferBid::class)->name('game.scouting.bid');
+        Route::post('/game/{gameId}/scouting/{playerId}/loan', RequestLoan::class)->name('game.scouting.loan');
+        Route::post('/game/{gameId}/scouting/counter/{offerId}/accept', AcceptCounterOffer::class)->name('game.scouting.counter.accept');
 
-    // Loans
-    Route::get('/game/{gameId}/loans', ShowLoans::class)->name('game.loans');
-    Route::post('/game/{gameId}/loans/out/{playerId}', RequestLoan::class)->name('game.loans.out');
+        // Loans
+        Route::get('/game/{gameId}/loans', ShowLoans::class)->name('game.loans');
+        Route::post('/game/{gameId}/loans/out/{playerId}', RequestLoan::class)->name('game.loans.out');
 
-    // Season End
-    Route::get('/game/{gameId}/season-end', ShowSeasonEnd::class)->name('game.season-end');
-    Route::post('/game/{gameId}/start-new-season', StartNewSeason::class)->name('game.start-new-season');
+        // Season End
+        Route::get('/game/{gameId}/season-end', ShowSeasonEnd::class)->name('game.season-end');
+        Route::post('/game/{gameId}/start-new-season', StartNewSeason::class)->name('game.start-new-season');
 
-    // Pre-season
-    Route::get('/game/{gameId}/preseason', ShowPreseason::class)->name('game.preseason');
-    Route::post('/game/{gameId}/preseason/advance', AdvancePreseasonWeek::class)->name('game.preseason.advance');
+        // Pre-season
+        Route::get('/game/{gameId}/preseason', ShowPreseason::class)->name('game.preseason');
+        Route::post('/game/{gameId}/preseason/advance', AdvancePreseasonWeek::class)->name('game.preseason.advance');
 
-    // Budget Allocation
-    Route::get('/game/{gameId}/budget', ShowBudgetAllocation::class)->name('game.budget');
-    Route::post('/game/{gameId}/budget', SaveBudgetAllocation::class)->name('game.budget.save');
+        // Budget Allocation
+        Route::get('/game/{gameId}/budget', ShowBudgetAllocation::class)->name('game.budget');
+        Route::post('/game/{gameId}/budget', SaveBudgetAllocation::class)->name('game.budget.save');
 
-    // Onboarding
-    Route::get('/game/{gameId}/onboarding', ShowOnboarding::class)->name('game.onboarding');
-    Route::post('/game/{gameId}/onboarding', CompleteOnboarding::class)->name('game.onboarding.complete');
+        // Onboarding
+        Route::get('/game/{gameId}/onboarding', ShowOnboarding::class)->name('game.onboarding');
+        Route::post('/game/{gameId}/onboarding', CompleteOnboarding::class)->name('game.onboarding.complete');
+    });
 });
 
 Route::middleware('auth')->group(function () {

@@ -12,7 +12,15 @@ class MatchEvent extends Model
 
     const UPDATED_AT = null;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'game_id',
+        'game_match_id',
+        'game_player_id',
+        'team_id',
+        'minute',
+        'event_type',
+        'metadata',
+    ];
 
     protected $casts = [
         'minute' => 'integer',

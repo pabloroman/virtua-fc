@@ -12,7 +12,18 @@ class Team extends Model
 {
     use HasFactory, HasUuids;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'transfermarkt_id',
+        'name',
+        'official_name',
+        'country',
+        'image',
+        'stadium_name',
+        'stadium_seats',
+        'colors',
+        'current_market_value',
+        'founded_on',
+    ];
 
     protected $casts = [
         'stadium_seats' => 'integer',

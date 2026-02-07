@@ -11,7 +11,28 @@ class GameFinances extends Model
 {
     use HasUuids;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'game_id',
+        'season',
+        'projected_position',
+        'projected_tv_revenue',
+        'projected_prize_revenue',
+        'projected_matchday_revenue',
+        'projected_commercial_revenue',
+        'projected_total_revenue',
+        'projected_wages',
+        'projected_surplus',
+        'actual_tv_revenue',
+        'actual_prize_revenue',
+        'actual_matchday_revenue',
+        'actual_commercial_revenue',
+        'actual_transfer_income',
+        'actual_total_revenue',
+        'actual_wages',
+        'actual_surplus',
+        'variance',
+        'carried_debt',
+    ];
 
     protected $casts = [
         'season' => 'integer',

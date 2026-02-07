@@ -10,7 +10,14 @@ class ScoutReport extends Model
 {
     use HasUuids;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'game_id',
+        'status',
+        'filters',
+        'weeks_total',
+        'weeks_remaining',
+        'player_ids',
+    ];
 
     protected $casts = [
         'filters' => 'array',

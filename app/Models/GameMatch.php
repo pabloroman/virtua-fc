@@ -14,7 +14,31 @@ class GameMatch extends Model
 
     public $timestamps = false;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'game_id',
+        'competition_id',
+        'round_number',
+        'round_name',
+        'home_team_id',
+        'away_team_id',
+        'scheduled_date',
+        'home_score',
+        'away_score',
+        'played',
+        'played_at',
+        'home_lineup',
+        'away_lineup',
+        'home_formation',
+        'away_formation',
+        'home_mentality',
+        'away_mentality',
+        'cup_tie_id',
+        'is_extra_time',
+        'home_score_et',
+        'away_score_et',
+        'home_score_penalties',
+        'away_score_penalties',
+    ];
 
     protected $casts = [
         'round_number' => 'integer',

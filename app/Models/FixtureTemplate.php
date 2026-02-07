@@ -12,7 +12,16 @@ class FixtureTemplate extends Model
 
     public $timestamps = false;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'competition_id',
+        'season',
+        'round_number',
+        'match_number',
+        'home_team_id',
+        'away_team_id',
+        'scheduled_date',
+        'location',
+    ];
 
     protected $casts = [
         'round_number' => 'integer',

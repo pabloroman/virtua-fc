@@ -16,7 +16,12 @@ class ConductCupDraw
     public function __invoke(string $gameId, int $round)
     {
         $game = Game::findOrFail($gameId);
-        $competitionId = 'ESPCUP';
+
+        if ($round < 1 || $round > 10) {
+            abort(404);
+        }
+
+        $competitionId = config('game.cup_competition_id', 'ESPCUP');
 
         // Check if draw is needed
         if (!$this->cupDrawService->needsDrawForRound($gameId, $competitionId, $round)) {

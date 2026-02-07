@@ -18,7 +18,41 @@ class GamePlayer extends Model
 
     public $timestamps = false;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'game_id',
+        'player_id',
+        'team_id',
+        'position',
+        'market_value',
+        'market_value_cents',
+        'contract_until',
+        'annual_wage',
+        'pending_annual_wage',
+        'signed_from',
+        'joined_on',
+        'fitness',
+        'morale',
+        'durability',
+        'injury_until',
+        'injury_type',
+        'suspended_until_matchday',
+        'appearances',
+        'goals',
+        'own_goals',
+        'assists',
+        'yellow_cards',
+        'red_cards',
+        'goals_conceded',
+        'clean_sheets',
+        'game_technical_ability',
+        'game_physical_ability',
+        'potential',
+        'potential_low',
+        'potential_high',
+        'season_appearances',
+        'transfer_status',
+        'transfer_listed_at',
+    ];
 
     protected $casts = [
         'market_value_cents' => 'integer',

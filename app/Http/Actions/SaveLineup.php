@@ -8,6 +8,7 @@ use App\Game\Services\LineupService;
 use App\Models\Game;
 use App\Models\GameMatch;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rules\Enum;
 
 class SaveLineup
 {
@@ -20,19 +21,16 @@ class SaveLineup
         $game = Game::findOrFail($gameId);
         $match = GameMatch::where('game_id', $gameId)->findOrFail($matchId);
 
-        // Get selected player IDs from request
-        $playerIds = $request->input('players', []);
+        $validated = $request->validate([
+            'players' => 'required|array|min:1',
+            'players.*' => 'required|string|uuid',
+            'formation' => ['required', 'string', new Enum(Formation::class)],
+            'mentality' => ['required', 'string', new Enum(Mentality::class)],
+        ]);
 
-        // Get formation from request
-        $formationValue = $request->input('formation', '4-4-2');
-        $formation = Formation::tryFrom($formationValue) ?? Formation::F_4_4_2;
-
-        // Get mentality from request
-        $mentalityValue = $request->input('mentality', 'balanced');
-        $mentality = Mentality::tryFrom($mentalityValue) ?? Mentality::BALANCED;
-
-        // Ensure we have an array of strings
-        $playerIds = array_values(array_filter((array) $playerIds));
+        $playerIds = array_values(array_filter($validated['players']));
+        $formation = Formation::from($validated['formation']);
+        $mentality = Mentality::from($validated['mentality']);
 
         // Get match details for validation
         $matchDate = $match->scheduled_date;

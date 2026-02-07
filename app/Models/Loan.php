@@ -10,7 +10,15 @@ class Loan extends Model
 {
     use HasUuids;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'game_id',
+        'game_player_id',
+        'parent_team_id',
+        'loan_team_id',
+        'started_at',
+        'return_at',
+        'status',
+    ];
 
     protected $casts = [
         'started_at' => 'date',

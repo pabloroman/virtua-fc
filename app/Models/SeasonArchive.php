@@ -10,7 +10,15 @@ class SeasonArchive extends Model
 {
     use HasUuids;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'game_id',
+        'season',
+        'final_standings',
+        'player_season_stats',
+        'season_awards',
+        'match_results',
+        'match_events_archive',
+    ];
 
     protected $casts = [
         'final_standings' => 'array',

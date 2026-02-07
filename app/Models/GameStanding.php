@@ -9,7 +9,20 @@ class GameStanding extends Model
 {
     public $timestamps = false;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'game_id',
+        'competition_id',
+        'team_id',
+        'position',
+        'prev_position',
+        'played',
+        'won',
+        'drawn',
+        'lost',
+        'goals_for',
+        'goals_against',
+        'points',
+    ];
 
     protected $casts = [
         'position' => 'integer',

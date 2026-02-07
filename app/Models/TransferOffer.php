@@ -11,7 +11,19 @@ class TransferOffer extends Model
 {
     use HasUuids;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'game_id',
+        'game_player_id',
+        'offering_team_id',
+        'offer_type',
+        'transfer_fee',
+        'status',
+        'expires_at',
+        'direction',
+        'selling_team_id',
+        'asking_price',
+        'offered_wage',
+    ];
 
     protected $casts = [
         'transfer_fee' => 'integer',

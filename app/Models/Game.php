@@ -14,7 +14,23 @@ class Game extends Model
 {
     use HasFactory, HasUuids;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'id',
+        'user_id',
+        'player_name',
+        'team_id',
+        'season',
+        'current_date',
+        'current_matchday',
+        'default_formation',
+        'default_lineup',
+        'default_mentality',
+        'cup_round',
+        'cup_eliminated',
+        'is_preseason',
+        'preseason_week',
+        'needs_onboarding',
+    ];
 
     protected $casts = [
         'current_date' => 'date',

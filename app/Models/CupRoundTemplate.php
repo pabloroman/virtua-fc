@@ -9,7 +9,16 @@ class CupRoundTemplate extends Model
 {
     public $timestamps = false;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'competition_id',
+        'season',
+        'round_number',
+        'round_name',
+        'type',
+        'first_leg_date',
+        'second_leg_date',
+        'teams_entering',
+    ];
 
     protected $casts = [
         'round_number' => 'integer',

@@ -11,7 +11,15 @@ class FinancialTransaction extends Model
 {
     use HasUuids;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'game_id',
+        'type',
+        'category',
+        'amount',
+        'description',
+        'related_player_id',
+        'transaction_date',
+    ];
 
     protected $casts = [
         'amount' => 'integer',

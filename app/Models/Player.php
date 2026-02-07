@@ -10,7 +10,16 @@ class Player extends Model
 {
     use HasUuids;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'transfermarkt_id',
+        'name',
+        'date_of_birth',
+        'nationality',
+        'height',
+        'foot',
+        'technical_ability',
+        'physical_ability',
+    ];
 
     protected $casts = [
         'nationality' => 'array',

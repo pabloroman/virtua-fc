@@ -10,7 +10,11 @@ class PlayerSuspension extends Model
 {
     use HasUuids;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'game_player_id',
+        'competition_id',
+        'matches_remaining',
+    ];
 
     protected $casts = [
         'matches_remaining' => 'integer',

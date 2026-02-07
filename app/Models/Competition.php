@@ -18,7 +18,16 @@ class Competition extends Model
     protected $keyType = 'string';
     public $timestamps = false;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'id',
+        'name',
+        'country',
+        'tier',
+        'type',
+        'season',
+        'handler_type',
+        'minimum_annual_wage',
+    ];
 
     protected $casts = [
         'tier' => 'integer',
