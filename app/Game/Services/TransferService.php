@@ -547,25 +547,22 @@ class TransferService
         // Get all teams in the same league(s) as the player's team, excluding player's team
         $leagueTeamIds = Team::whereHas('competitions', function ($query) use ($game) {
             $query->where('type', 'league');
-        })->pluck('id')->toArray();
+        })->where('id', '!=', $playerTeamId)->pluck('id')->toArray();
+
+        // Pre-compute squad values for all candidate teams in a single query
+        $squadValues = GamePlayer::where('game_id', $game->id)
+            ->whereIn('team_id', $leagueTeamIds)
+            ->selectRaw('team_id, SUM(market_value_cents) as total_value')
+            ->groupBy('team_id')
+            ->pluck('total_value', 'team_id');
 
         // Filter to teams that could reasonably afford the player
-        // (teams with similar or higher squad value)
-        $eligibleTeams = Team::whereIn('id', $leagueTeamIds)
-            ->where('id', '!=', $playerTeamId)
-            ->get()
-            ->filter(function ($team) use ($game, $playerValue) {
-                // Calculate team's squad value
-                $squadValue = GamePlayer::where('game_id', $game->id)
-                    ->where('team_id', $team->id)
-                    ->sum('market_value_cents');
+        $eligibleTeamIds = $squadValues
+            ->filter(fn ($totalValue) => $totalValue >= $playerValue * 0.2)
+            ->keys()
+            ->toArray();
 
-                // Team should have at least 20% of player's value in total squad
-                // (rough proxy for "can afford")
-                return $squadValue >= $playerValue * 0.2;
-            });
-
-        return $eligibleTeams;
+        return Team::whereIn('id', $eligibleTeamIds)->get();
     }
 
     /**

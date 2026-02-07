@@ -9,6 +9,7 @@ use App\Models\ScoutReport;
 use App\Models\Team;
 use App\Models\TransferOffer;
 use App\Support\Money;
+use Illuminate\Support\Collection;
 
 class ScoutingService
 {
@@ -217,9 +218,17 @@ class ScoutingService
             return;
         }
 
+        // Pre-load all team rosters for candidates to avoid N+1 queries
+        $candidateTeamIds = $candidates->pluck('team_id')->unique();
+        $teamRosters = GamePlayer::where('game_id', $game->id)
+            ->whereIn('team_id', $candidateTeamIds)
+            ->get()
+            ->groupBy('team_id');
+
         // Score each player by availability (lower importance = more available)
-        $scored = $candidates->map(function ($player) {
-            $importance = $this->calculatePlayerImportance($player);
+        $scored = $candidates->map(function ($player) use ($teamRosters) {
+            $teammates = $teamRosters->get($player->team_id, collect());
+            $importance = $this->calculatePlayerImportance($player, $teammates);
 
             return [
                 'player' => $player,
@@ -288,12 +297,17 @@ class ScoutingService
 
     /**
      * Calculate player importance within their team (0.0 to 1.0).
+     *
+     * @param GamePlayer $player
+     * @param Collection|null $teammates Pre-loaded teammates to avoid repeated queries
      */
-    public function calculatePlayerImportance(GamePlayer $player): float
+    public function calculatePlayerImportance(GamePlayer $player, ?Collection $teammates = null): float
     {
-        $teammates = GamePlayer::where('game_id', $player->game_id)
-            ->where('team_id', $player->team_id)
-            ->get();
+        if ($teammates === null) {
+            $teammates = GamePlayer::where('game_id', $player->game_id)
+                ->where('team_id', $player->team_id)
+                ->get();
+        }
 
         if ($teammates->isEmpty()) {
             return 0.5;

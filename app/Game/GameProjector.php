@@ -247,41 +247,93 @@ class GameProjector extends Projector
      */
     private function processMatchEvents(string $gameId, string $matchId, array $events, string $competitionId, $matchDate): void
     {
-        foreach ($events as $eventData) {
-            // Store the event
-            MatchEvent::create([
-                'id' => Str::uuid()->toString(),
-                'game_id' => $gameId,
-                'game_match_id' => $matchId,
-                'game_player_id' => $eventData['game_player_id'],
-                'team_id' => $eventData['team_id'],
-                'minute' => $eventData['minute'],
-                'event_type' => $eventData['event_type'],
-                'metadata' => $eventData['metadata'] ?? null,
-            ]);
+        // Bulk insert all match events in a single query
+        $now = now();
+        $matchEventRows = array_map(fn ($eventData) => [
+            'id' => Str::uuid()->toString(),
+            'game_id' => $gameId,
+            'game_match_id' => $matchId,
+            'game_player_id' => $eventData['game_player_id'],
+            'team_id' => $eventData['team_id'],
+            'minute' => $eventData['minute'],
+            'event_type' => $eventData['event_type'],
+            'metadata' => isset($eventData['metadata']) ? json_encode($eventData['metadata']) : null,
+            'created_at' => $now,
+        ], $events);
 
-            // Update player stats based on event type
-            $player = GamePlayer::find($eventData['game_player_id']);
+        // Insert in chunks to respect SQLite variable limits
+        foreach (array_chunk($matchEventRows, 50) as $chunk) {
+            MatchEvent::insert($chunk);
+        }
+
+        // Aggregate stat increments per player to minimize queries
+        $statIncrements = []; // [player_id => [goals => N, assists => N, ...]]
+        $specialEvents = [];  // Events requiring individual processing (cards, injuries)
+
+        foreach ($events as $eventData) {
+            $playerId = $eventData['game_player_id'];
+            $type = $eventData['event_type'];
+
+            if (!isset($statIncrements[$playerId])) {
+                $statIncrements[$playerId] = [];
+            }
+
+            switch ($type) {
+                case 'goal':
+                case 'own_goal':
+                case 'assist':
+                    $column = match ($type) {
+                        'goal' => 'goals',
+                        'own_goal' => 'own_goals',
+                        'assist' => 'assists',
+                    };
+                    $statIncrements[$playerId][$column] = ($statIncrements[$playerId][$column] ?? 0) + 1;
+                    break;
+
+                case 'yellow_card':
+                    $statIncrements[$playerId]['yellow_cards'] = ($statIncrements[$playerId]['yellow_cards'] ?? 0) + 1;
+                    $specialEvents[] = $eventData;
+                    break;
+
+                case 'red_card':
+                    $statIncrements[$playerId]['red_cards'] = ($statIncrements[$playerId]['red_cards'] ?? 0) + 1;
+                    $specialEvents[] = $eventData;
+                    break;
+
+                case 'injury':
+                    $specialEvents[] = $eventData;
+                    break;
+            }
+        }
+
+        // Batch-load all affected players in a single query
+        $playerIds = array_keys($statIncrements);
+        $specialPlayerIds = array_column($specialEvents, 'game_player_id');
+        $allPlayerIds = array_unique(array_merge($playerIds, $specialPlayerIds));
+        $players = GamePlayer::whereIn('id', $allPlayerIds)->get()->keyBy('id');
+
+        // Apply stat increments per player (one save per player instead of one per event)
+        foreach ($statIncrements as $playerId => $increments) {
+            $player = $players->get($playerId);
+            if (!$player) {
+                continue;
+            }
+
+            foreach ($increments as $column => $amount) {
+                $player->{$column} += $amount;
+            }
+            $player->save();
+        }
+
+        // Process special events that need individual handling (cards, injuries)
+        foreach ($specialEvents as $eventData) {
+            $player = $players->get($eventData['game_player_id']);
             if (!$player) {
                 continue;
             }
 
             switch ($eventData['event_type']) {
-                case 'goal':
-                    $player->increment('goals');
-                    break;
-
-                case 'own_goal':
-                    $player->increment('own_goals');
-                    break;
-
-                case 'assist':
-                    $player->increment('assists');
-                    break;
-
                 case 'yellow_card':
-                    $player->increment('yellow_cards');
-                    // Check for yellow card accumulation suspension (applies to this competition)
                     $suspension = $this->eligibilityService->checkYellowCardAccumulation($player->fresh());
                     if ($suspension) {
                         $this->eligibilityService->applySuspension($player, $suspension, $competitionId);
@@ -289,7 +341,6 @@ class GameProjector extends Projector
                     break;
 
                 case 'red_card':
-                    $player->increment('red_cards');
                     $isSecondYellow = $eventData['metadata']['second_yellow'] ?? false;
                     $this->eligibilityService->processRedCard($player, $isSecondYellow, $competitionId);
                     break;
