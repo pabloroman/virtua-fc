@@ -14,6 +14,7 @@ use App\Game\Services\ContractService;
 use App\Game\Services\CupDrawService;
 use App\Game\Services\EligibilityService;
 use App\Game\Services\InjuryService;
+use App\Game\Services\NotificationService;
 use App\Game\Services\PlayerConditionService;
 use App\Game\Services\PlayerDevelopmentService;
 use App\Game\Services\SeasonGoalService;
@@ -45,6 +46,7 @@ class GameProjector extends Projector
         private readonly BudgetProjectionService $budgetProjectionService,
         private readonly CupDrawService $cupDrawService,
         private readonly SeasonGoalService $seasonGoalService,
+        private readonly NotificationService $notificationService,
     ) {}
 
     public function onGameCreated(GameCreated $event): void
@@ -338,6 +340,9 @@ class GameProjector extends Projector
             $player->save();
         }
 
+        // Load game for notification creation (only for user's team players)
+        $game = Game::find($gameId);
+
         // Process special events that need individual handling (cards, injuries)
         foreach ($specialEvents as $eventData) {
             $player = $players->get($eventData['game_player_id']);
@@ -345,17 +350,41 @@ class GameProjector extends Projector
                 continue;
             }
 
+            // Check if player belongs to user's team (for notifications)
+            $isUserTeamPlayer = $game && $player->team_id === $game->team_id;
+
             switch ($eventData['event_type']) {
                 case 'yellow_card':
                     $suspension = $this->eligibilityService->checkYellowCardAccumulation($player->fresh());
                     if ($suspension) {
                         $this->eligibilityService->applySuspension($player, $suspension, $competitionId);
+
+                        // Create notification for user's team player
+                        if ($isUserTeamPlayer) {
+                            $this->notificationService->notifySuspension(
+                                $game,
+                                $player,
+                                $suspension,
+                                __('notifications.reason_yellow_accumulation')
+                            );
+                        }
                     }
                     break;
 
                 case 'red_card':
                     $isSecondYellow = $eventData['metadata']['second_yellow'] ?? false;
                     $this->eligibilityService->processRedCard($player, $isSecondYellow, $competitionId);
+
+                    // Create notification for user's team player
+                    if ($isUserTeamPlayer) {
+                        $suspensionMatches = $isSecondYellow ? 1 : 1;
+                        $this->notificationService->notifySuspension(
+                            $game,
+                            $player,
+                            $suspensionMatches,
+                            __('notifications.reason_red_card')
+                        );
+                    }
                     break;
 
                 case 'injury':
@@ -367,6 +396,11 @@ class GameProjector extends Projector
                         $weeksOut,
                         Carbon::parse($matchDate)
                     );
+
+                    // Create notification for user's team player
+                    if ($isUserTeamPlayer) {
+                        $this->notificationService->notifyInjury($game, $player, $injuryType, $weeksOut);
+                    }
                     break;
             }
         }

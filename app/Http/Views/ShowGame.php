@@ -2,8 +2,8 @@
 
 namespace App\Http\Views;
 
-use App\Game\Services\AlertService;
 use App\Game\Services\CalendarService;
+use App\Game\Services\NotificationService;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GameStanding;
@@ -11,8 +11,8 @@ use App\Models\GameStanding;
 class ShowGame
 {
     public function __construct(
-        private readonly AlertService $alertService,
         private readonly CalendarService $calendarService,
+        private readonly NotificationService $notificationService,
     ) {}
 
     public function __invoke(string $gameId)
@@ -34,11 +34,8 @@ class ShowGame
             'playerForm' => $this->calendarService->getTeamForm($game->id, $game->team_id),
             'opponentForm' => $this->getOpponentForm($game, $nextMatch),
             'upcomingFixtures' => $this->calendarService->getUpcomingFixtures($game),
-            'squadAlerts' => $this->alertService->getSquadAlerts($game, $nextMatch),
-            'transferAlerts' => $this->alertService->getTransferAlerts($game),
-            'scoutReport' => $game->activeScoutReport,
-            'finances' => $game->currentFinances,
-            'investment' => $game->currentInvestment,
+            'notifications' => $this->notificationService->getNotifications($game->id, false, 10),
+            'unreadNotificationCount' => $this->notificationService->getUnreadCount($game->id),
         ]);
     }
 

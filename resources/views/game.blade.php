@@ -118,202 +118,72 @@
                         @endif
                     </div>
 
-                    {{-- Right Column (1/3) - Alerts & Notifications --}}
+                    {{-- Right Column (1/3) - Notifications Inbox --}}
                     <div class="space-y-8">
-                        {{-- Squad Status --}}
-                        @php
-                            $hasSquadAlerts = !empty($squadAlerts['injured']) || !empty($squadAlerts['suspended']) || !empty($squadAlerts['lowFitness']) || !empty($squadAlerts['yellowCardRisk']);
-                            $hasScoutNotification = isset($scoutReport) && $scoutReport;
-                        @endphp
-                        @if($hasSquadAlerts || $hasScoutNotification)
+                        {{-- Notifications Inbox --}}
                         <div>
-                            <h4 class="font-semibold text-xl text-slate-900 mb-4">{{ __('game.squad_status') }}</h4>
-
-                            <div class="space-y-4">
-                                {{-- Scout Report Notification --}}
-                                @if($hasScoutNotification)
-                                <div>
-                                    @if($scoutReport->isCompleted())
-                                    <a href="{{ route('game.scouting', $game->id) }}" class="block p-3 bg-sky-50 border border-sky-200 rounded-lg hover:bg-sky-100 transition-colors">
-                                        <div class="flex items-center gap-2 text-sky-700">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                                            </svg>
-                                            <span class="font-medium text-sm">{{ __('game.scout_report_ready') }}</span>
-                                        </div>
-                                        <p class="text-xs text-sky-600 mt-1 pl-6">{{ __('game.players_to_review', ['count' => $scoutReport->players->count()]) }}</p>
-                                    </a>
-                                    @else
-                                    <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg">
-                                        <div class="flex items-center gap-2 text-slate-600">
-                                            <svg class="w-4 h-4 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                                            </svg>
-                                            <span class="font-medium text-sm">{{ __('game.scout_searching') }}</span>
-                                        </div>
-                                        <p class="text-xs text-slate-500 mt-1 pl-6">{{ trans_choice('game.weeks_remaining', $scoutReport->weeks_remaining, ['count' => $scoutReport->weeks_remaining]) }}</p>
-                                    </div>
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-2">
+                                    <h4 class="font-semibold text-xl text-slate-900">{{ __('notifications.inbox') }}</h4>
+                                    @if($unreadNotificationCount > 0)
+                                    <span class="inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full">
+                                        {{ $unreadNotificationCount > 9 ? '9+' : $unreadNotificationCount }}
+                                    </span>
                                     @endif
                                 </div>
-                                @endif
-                                {{-- Injured --}}
-                                @if(!empty($squadAlerts['injured']))
-                                <div>
-                                    <div class="flex items-center gap-2 text-red-600 mb-2">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                                        </svg>
-                                        <span class="font-medium text-sm">{{ __('game.injured') }}</span>
-                                    </div>
-                                    @foreach($squadAlerts['injured'] as $alert)
-                                    <div class="flex items-center justify-between text-sm pl-6 py-1">
-                                        <span class="text-slate-700">{{ $alert['player']->name }}</span>
-                                        <span class="text-slate-400 text-xs">{{ $alert['daysRemaining'] }}d</span>
-                                    </div>
-                                    @endforeach
-                                </div>
-                                @endif
-
-                                {{-- Suspended --}}
-                                @if(!empty($squadAlerts['suspended']))
-                                <div>
-                                    <div class="flex items-center gap-2 text-orange-600 mb-2">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
-                                        </svg>
-                                        <span class="font-medium text-sm">{{ __('game.suspended') }}</span>
-                                    </div>
-                                    @foreach($squadAlerts['suspended'] as $alert)
-                                    <div class="flex items-center justify-between text-sm pl-6 py-1">
-                                        <span class="text-slate-700">{{ $alert['player']->name }}</span>
-                                        <span class="text-slate-400 text-xs">{{ $alert['matchesRemaining'] }}m ({{ $alert['competition'] }})</span>
-                                    </div>
-                                    @endforeach
-                                </div>
-                                @endif
-
-                                {{-- Low Fitness --}}
-                                @if(!empty($squadAlerts['lowFitness']))
-                                <div>
-                                    <div class="flex items-center gap-2 text-amber-600 mb-2">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                                        </svg>
-                                        <span class="font-medium text-sm">{{ __('game.low_fitness') }}</span>
-                                    </div>
-                                    @foreach($squadAlerts['lowFitness'] as $alert)
-                                    <div class="flex items-center justify-between text-sm pl-6 py-1">
-                                        <span class="text-slate-700">{{ $alert['player']->name }}</span>
-                                        <span class="text-amber-600 text-xs font-medium">{{ $alert['fitness'] }}%</span>
-                                    </div>
-                                    @endforeach
-                                </div>
-                                @endif
-
-                                {{-- Yellow Card Risk --}}
-                                @if(!empty($squadAlerts['yellowCardRisk']))
-                                <div>
-                                    <div class="flex items-center gap-2 text-yellow-600 mb-2">
-                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                            <rect x="6" y="3" width="12" height="18" rx="2" />
-                                        </svg>
-                                        <span class="font-medium text-sm">{{ __('game.card_risk') }}</span>
-                                    </div>
-                                    @foreach($squadAlerts['yellowCardRisk'] as $alert)
-                                    <div class="flex items-center justify-between text-sm pl-6 py-1">
-                                        <span class="text-slate-700">{{ $alert['player']->name }}</span>
-                                        <span class="text-yellow-600 text-xs font-medium">{{ $alert['yellowCards'] }} YC</span>
-                                    </div>
-                                    @endforeach
-                                </div>
+                                @if($unreadNotificationCount > 0)
+                                <form action="{{ route('game.notifications.read-all', $game->id) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="text-xs text-sky-600 hover:text-sky-800">
+                                        {{ __('notifications.mark_all_read') }}
+                                    </button>
+                                </form>
                                 @endif
                             </div>
-                        </div>
-                        @endif
 
-                        {{-- Transfer Offers --}}
-                        @php
-                            $hasTransferAlerts = !empty($transferAlerts['newOffers']) || !empty($transferAlerts['expiringOffers']);
-                        @endphp
-                        @if($hasTransferAlerts)
-                        <div class="@if($hasSquadAlerts) pt-8 border-t @endif">
-                            <div class="flex items-center justify-between mb-4">
-                                <h4 class="font-semibold text-xl text-slate-900">{{ __('game.transfer_offers') }}</h4>
-                                <a href="{{ route('game.transfers', $game->id) }}" class="text-sm text-sky-600 hover:text-sky-800">
-                                    {{ __('app.view_all') }}
-                                </a>
-                            </div>
-
-                            <div class="space-y-3">
-                                @foreach($transferAlerts['expiringOffers'] as $alert)
-                                <div class="p-3 bg-amber-50 rounded-lg">
-                                    <div class="text-sm font-medium text-slate-900">{{ $alert['playerName'] }}</div>
-                                    <div class="text-xs text-slate-600 mt-1">
-                                        {{ $alert['teamName'] }} &middot;
-                                        <span class="text-green-600 font-medium">{{ $alert['fee'] }}</span>
-                                    </div>
-                                    <div class="text-xs text-amber-600 font-medium mt-1">
-                                        {{ __('game.expires_in', ['days' => $alert['daysLeft']]) }}
-                                    </div>
-                                </div>
-                                @endforeach
-
-                                @foreach($transferAlerts['newOffers'] as $alert)
-                                <div class="p-3 bg-slate-50 rounded-lg">
-                                    <div class="text-sm font-medium text-slate-900">{{ $alert['playerName'] }}</div>
-                                    <div class="text-xs text-slate-600 mt-1">
-                                        {{ $alert['teamName'] }} &middot;
-                                        <span class="text-green-600 font-medium">{{ $alert['fee'] }}</span>
-                                    </div>
-                                </div>
-                                @endforeach
-                            </div>
-                        </div>
-                        @endif
-
-                        {{-- No Alerts State --}}
-                        @if(!$hasSquadAlerts && !$hasTransferAlerts)
-                        <div>
-                            <h4 class="font-semibold text-xl text-slate-900 mb-4">{{ __('game.notifications') }}</h4>
+                            @if($notifications->isEmpty())
                             <div class="text-center py-8">
                                 <div class="text-slate-300 mb-2">
                                     <svg class="w-10 h-10 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
                                 </div>
-                                <p class="text-sm text-slate-400">{{ __('app.all_clear') }}</p>
+                                <p class="text-sm text-slate-400">{{ __('notifications.all_caught_up') }}</p>
                             </div>
-                        </div>
-                        @endif
+                            @else
+                            <div class="space-y-2">
+                                @foreach($notifications as $notification)
+                                @php $classes = $notification->getPriorityClasses(); @endphp
+                                <form action="{{ route('game.notifications.read', [$game->id, $notification->id]) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="w-full text-left block p-3 {{ $classes['bg'] }} border {{ $classes['border'] }} rounded-lg hover:opacity-90 transition-opacity">
+                                        <div class="flex items-start gap-3">
+                                            {{-- Unread indicator --}}
+                                            @if($notification->isUnread())
+                                            <span class="w-2 h-2 mt-1.5 {{ $classes['dot'] }} rounded-full flex-shrink-0"></span>
+                                            @else
+                                            <span class="w-2 h-2 mt-1.5 bg-transparent flex-shrink-0"></span>
+                                            @endif
 
-                        {{-- Club Finances Summary --}}
-                        @if($finances)
-                        <div class="pt-8 border-t">
-                            <div class="flex items-center justify-between mb-4">
-                                <h4 class="font-semibold text-xl text-slate-900">{{ __('game.club_finances') }}</h4>
-                                <a href="{{ route('game.finances', $game->id) }}" class="text-sm text-sky-600 hover:text-sky-800">
-                                    {{ __('app.details') }} &rarr;
-                                </a>
+                                            <div class="flex-1 min-w-0">
+                                                <div class="flex items-center justify-between gap-2">
+                                                    <span class="font-medium text-sm {{ $classes['text'] }} truncate">{{ $notification->title }}</span>
+                                                    <svg class="w-4 h-4 {{ $classes['icon'] }} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                                    </svg>
+                                                </div>
+                                                @if($notification->message)
+                                                <p class="text-xs text-slate-600 mt-1 line-clamp-2">{{ $notification->message }}</p>
+                                                @endif
+                                                <p class="text-xs text-slate-400 mt-1">{{ $notification->getTimeAgo() }}</p>
+                                            </div>
+                                        </div>
+                                    </button>
+                                </form>
+                                @endforeach
                             </div>
-
-                            <div class="space-y-3">
-                                <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                                    <span class="text-sm text-slate-600">{{ __('game.projected_position') }}</span>
-                                    <span class="font-bold text-slate-900">{{ $finances->projected_position }}</span>
-                                </div>
-                                <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                                    <span class="text-sm text-slate-600">{{ __('game.transfer_budget') }}</span>
-                                    <span class="font-bold text-sky-700">{{ $investment?->formatted_transfer_budget ?? '€0' }}</span>
-                                </div>
-                                @if($finances->carried_debt > 0)
-                                <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg">
-                                    <span class="text-sm text-red-600">{{ __('game.carried_debt') }}</span>
-                                    <span class="font-bold text-red-700">{{ $finances->formatted_carried_debt }}</span>
-                                </div>
-                                @endif
-                            </div>
+                            @endif
                         </div>
-                        @endif
                     </div>
                 </div>
             </div>

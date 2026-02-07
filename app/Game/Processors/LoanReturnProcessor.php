@@ -5,6 +5,7 @@ namespace App\Game\Processors;
 use App\Game\Contracts\SeasonEndProcessor;
 use App\Game\DTO\SeasonTransitionData;
 use App\Game\Services\LoanService;
+use App\Game\Services\NotificationService;
 use App\Models\Game;
 
 /**
@@ -15,6 +16,7 @@ class LoanReturnProcessor implements SeasonEndProcessor
 {
     public function __construct(
         private readonly LoanService $loanService,
+        private readonly NotificationService $notificationService,
     ) {}
 
     public function priority(): int
@@ -34,6 +36,17 @@ class LoanReturnProcessor implements SeasonEndProcessor
             'loanTeamId' => $loan->loan_team_id,
             'loanTeamName' => $loan->loanTeam->name,
         ])->toArray();
+
+        // Create notifications for players returning to user's team
+        foreach ($returnedLoans as $loan) {
+            if ($loan->parent_team_id === $game->team_id) {
+                $this->notificationService->notifyLoanReturn(
+                    $game,
+                    $loan->gamePlayer,
+                    $loan->loanTeam->name
+                );
+            }
+        }
 
         return $data->setMetadata('loanReturns', $loanReturns);
     }

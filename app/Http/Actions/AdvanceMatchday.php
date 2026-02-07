@@ -10,13 +10,16 @@ use App\Game\Game as GameAggregate;
 use App\Game\Services\LineupService;
 use App\Game\Services\MatchdayService;
 use App\Game\Services\MatchSimulator;
+use App\Game\Services\NotificationService;
 use App\Game\Services\ScoutingService;
 use App\Game\Services\StandingsCalculator;
 use App\Game\Services\TransferService;
 use App\Models\Game;
 use App\Models\GameMatch;
+use App\Models\GameNotification;
 use App\Models\GamePlayer;
 use App\Models\PlayerSuspension;
+use App\Models\TransferOffer;
 
 class AdvanceMatchday
 {
@@ -27,6 +30,7 @@ class AdvanceMatchday
         private readonly TransferService $transferService,
         private readonly ScoutingService $scoutingService,
         private readonly StandingsCalculator $standingsCalculator,
+        private readonly NotificationService $notificationService,
     ) {}
 
     public function __invoke(string $gameId)
@@ -172,20 +176,119 @@ class AdvanceMatchday
 
         // Generate transfer offers (can happen anytime, but more during windows)
         if ($game->isTransferWindowOpen()) {
-            $this->transferService->generateOffersForListedPlayers($game, $allPlayers);
-            $this->transferService->generateUnsolicitedOffers($game, $allPlayers);
+            $listedOffers = $this->transferService->generateOffersForListedPlayers($game, $allPlayers);
+            $unsolicitedOffers = $this->transferService->generateUnsolicitedOffers($game, $allPlayers);
+
+            // Create notifications for new offers
+            foreach ($listedOffers->merge($unsolicitedOffers) as $offer) {
+                $this->notificationService->notifyTransferOffer($game, $offer);
+            }
         }
 
         // Pre-contract offers (January onwards for expiring contracts)
-        $this->transferService->generatePreContractOffers($game, $allPlayers);
+        $preContractOffers = $this->transferService->generatePreContractOffers($game, $allPlayers);
+
+        // Create notifications for pre-contract offers
+        foreach ($preContractOffers as $offer) {
+            $this->notificationService->notifyTransferOffer($game, $offer);
+        }
 
         // Tick scout search progress
         $scoutReport = $this->scoutingService->tickSearch($game);
         if ($scoutReport?->isCompleted()) {
-            session()->flash('scout_complete', 'Your scout has finished their search! Check the Scouting tab for results.');
+            // Create notification instead of session flash
+            $this->notificationService->notifyScoutComplete($game, $scoutReport);
         }
+
+        // Check for expiring transfer offers (2 days or less)
+        $this->checkExpiringOffers($game);
+
+        // Check for recovered players
+        $this->checkRecoveredPlayers($game, $allPlayers);
+
+        // Check for low fitness players
+        $this->checkLowFitnessPlayers($game, $allPlayers);
+
+        // Clean up old read notifications
+        $this->notificationService->cleanupOldNotifications($game->id);
 
         // Competition-specific post-match actions
         $handler->afterMatches($game, $matches, $allPlayers);
+    }
+
+    /**
+     * Check for transfer offers that are about to expire and notify.
+     */
+    private function checkExpiringOffers(Game $game): void
+    {
+        $expiringOffers = TransferOffer::with(['gamePlayer.player', 'offeringTeam'])
+            ->where('game_id', $game->id)
+            ->where('status', TransferOffer::STATUS_PENDING)
+            ->whereHas('gamePlayer', fn($q) => $q->where('team_id', $game->team_id))
+            ->get()
+            ->filter(fn($offer) => $offer->days_until_expiry <= 2 && $offer->days_until_expiry > 0);
+
+        foreach ($expiringOffers as $offer) {
+            // Check if we already have a recent expiring notification for this offer
+            if (!$this->notificationService->hasRecentNotification(
+                $game->id,
+                GameNotification::TYPE_TRANSFER_OFFER_EXPIRING,
+                ['offer_id' => $offer->id],
+                24
+            )) {
+                $this->notificationService->notifyExpiringOffer($game, $offer);
+            }
+        }
+    }
+
+    /**
+     * Check for players who have recovered from injuries.
+     */
+    private function checkRecoveredPlayers(Game $game, $allPlayers): void
+    {
+        $userTeamPlayers = $allPlayers->get($game->team_id, collect());
+
+        foreach ($userTeamPlayers as $player) {
+            // Check if player was injured but is now recovered
+            if ($player->injury_until && $player->injury_until->lte($game->current_date)) {
+                // Check if we haven't already notified about this recovery
+                if (!$this->notificationService->hasRecentNotification(
+                    $game->id,
+                    GameNotification::TYPE_PLAYER_RECOVERED,
+                    ['player_id' => $player->id],
+                    168 // 7 days
+                )) {
+                    $this->notificationService->notifyRecovery($game, $player);
+                }
+            }
+        }
+    }
+
+    /**
+     * Check for players with low fitness and notify.
+     */
+    private function checkLowFitnessPlayers(Game $game, $allPlayers): void
+    {
+        $userTeamPlayers = $allPlayers->get($game->team_id, collect());
+
+        foreach ($userTeamPlayers as $player) {
+            // Skip injured players
+            if ($player->injury_until && $player->injury_until->gt($game->current_date)) {
+                continue;
+            }
+
+            // Check if player has low fitness (below 60%)
+            if ($player->fitness < 60) {
+                // Only notify once per week per player
+                if (!$this->notificationService->hasRecentNotification(
+                    $game->id,
+                    GameNotification::TYPE_LOW_FITNESS,
+                    ['player_id' => $player->id],
+                    168 // 7 days
+                )) {
+                    $this->notificationService->notifyLowFitness($game, $player);
+                }
+            }
+        }
     }
 }

@@ -128,6 +128,16 @@ class Game extends Model
         return $this->hasMany(ScoutReport::class);
     }
 
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(GameNotification::class);
+    }
+
+    public function unreadNotifications(): HasMany
+    {
+        return $this->hasMany(GameNotification::class)->whereNull('read_at');
+    }
+
     /**
      * Get the active scout report (searching or completed, most recent).
      */

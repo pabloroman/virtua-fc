@@ -5,6 +5,8 @@ use App\Http\Actions\CompleteOnboarding;
 use App\Http\Actions\AcceptTransferOffer;
 use App\Http\Actions\AdvanceMatchday;
 use App\Http\Actions\CancelScoutSearch;
+use App\Http\Actions\MarkAllNotificationsRead;
+use App\Http\Actions\MarkNotificationRead;
 use App\Http\Actions\SaveBudgetAllocation;
 use App\Http\Views\ShowBudgetAllocation;
 use App\Http\Actions\ConductCupDraw;
@@ -104,6 +106,10 @@ Route::middleware('auth')->group(function () {
         // Onboarding
         Route::get('/game/{gameId}/onboarding', ShowOnboarding::class)->name('game.onboarding');
         Route::post('/game/{gameId}/onboarding', CompleteOnboarding::class)->name('game.onboarding.complete');
+
+        // Notifications
+        Route::post('/game/{gameId}/notifications/{notificationId}/read', MarkNotificationRead::class)->name('game.notifications.read');
+        Route::post('/game/{gameId}/notifications/read-all', MarkAllNotificationsRead::class)->name('game.notifications.read-all');
     });
 });
 
