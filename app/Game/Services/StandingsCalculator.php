@@ -3,7 +3,6 @@
 namespace App\Game\Services;
 
 use App\Models\GameStanding;
-use Illuminate\Support\Facades\DB;
 
 class StandingsCalculator
 {
@@ -64,20 +63,23 @@ class StandingsCalculator
         bool $drawn,
         bool $lost,
     ): void {
-        $points = $won ? 3 : ($drawn ? 1 : 0);
-
-        GameStanding::where('game_id', $gameId)
+        $standing = GameStanding::where('game_id', $gameId)
             ->where('competition_id', $competitionId)
             ->where('team_id', $teamId)
-            ->update([
-                'played' => DB::raw('played + 1'),
-                'won' => DB::raw('won + ' . ($won ? 1 : 0)),
-                'drawn' => DB::raw('drawn + ' . ($drawn ? 1 : 0)),
-                'lost' => DB::raw('lost + ' . ($lost ? 1 : 0)),
-                'goals_for' => DB::raw('goals_for + ' . $goalsFor),
-                'goals_against' => DB::raw('goals_against + ' . $goalsAgainst),
-                'points' => DB::raw('points + ' . $points),
-            ]);
+            ->first();
+
+        if (! $standing) {
+            return;
+        }
+
+        $standing->played += 1;
+        $standing->won += $won ? 1 : 0;
+        $standing->drawn += $drawn ? 1 : 0;
+        $standing->lost += $lost ? 1 : 0;
+        $standing->goals_for += $goalsFor;
+        $standing->goals_against += $goalsAgainst;
+        $standing->points += $won ? 3 : ($drawn ? 1 : 0);
+        $standing->save();
     }
 
     /**
