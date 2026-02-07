@@ -112,6 +112,11 @@ class GamePlayer extends Model
         return $this->hasMany(TransferOffer::class);
     }
 
+    public function suspensions(): HasMany
+    {
+        return $this->hasMany(PlayerSuspension::class);
+    }
+
     /**
      * Get the active loan for this player (if any).
      */
@@ -307,18 +312,17 @@ class GamePlayer extends Model
 
     /**
      * Check if player is available for selection (not injured or suspended).
+     * Uses eager-loaded suspensions relationship when available to avoid N+1.
      *
      * @param Carbon|null $gameDate Date of the match (for injury check)
      * @param string|null $competitionId Competition ID (for suspension check)
      */
     public function isAvailable(?Carbon $gameDate = null, ?string $competitionId = null): bool
     {
-        // Check competition-specific suspension
-        if ($competitionId !== null && PlayerSuspension::isSuspended($this->id, $competitionId)) {
+        if ($competitionId !== null && $this->isSuspendedInCompetition($competitionId)) {
             return false;
         }
 
-        // Check injury
         if ($this->injury_until && $gameDate && $this->injury_until->gt($gameDate)) {
             return false;
         }
@@ -328,17 +332,34 @@ class GamePlayer extends Model
 
     /**
      * Check if player is suspended for a given competition.
+     * Uses eager-loaded suspensions relationship when available to avoid N+1.
      */
     public function isSuspendedInCompetition(string $competitionId): bool
     {
+        if ($this->relationLoaded('suspensions')) {
+            return $this->suspensions
+                ->where('competition_id', $competitionId)
+                ->where('matches_remaining', '>', 0)
+                ->isNotEmpty();
+        }
+
         return PlayerSuspension::isSuspended($this->id, $competitionId);
     }
 
     /**
      * Get matches remaining in suspension for a competition.
+     * Uses eager-loaded suspensions relationship when available to avoid N+1.
      */
     public function getSuspensionMatchesRemaining(string $competitionId): int
     {
+        if ($this->relationLoaded('suspensions')) {
+            return $this->suspensions
+                ->where('competition_id', $competitionId)
+                ->where('matches_remaining', '>', 0)
+                ->first()
+                ?->matches_remaining ?? 0;
+        }
+
         return PlayerSuspension::getMatchesRemaining($this->id, $competitionId);
     }
 

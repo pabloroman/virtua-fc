@@ -206,3 +206,12 @@ lang/es/
 1. Add the key and Spanish translation to the appropriate file in `lang/es/`
 2. Use the key in your blade template or PHP code
 3. Test that the translation displays correctly
+
+## Code Quality
+
+### No Dead Code
+
+- **Never leave dead code:** Remove functions, methods, and classes that are not called from anywhere
+- **Clean up after refactoring:** When refactoring, ensure you remove any code that becomes unused
+- **Don't create unused functions:** Only write functions that are actually called by other code
+- **Remove commented-out code:** Don't leave commented-out code blocks in the codebase

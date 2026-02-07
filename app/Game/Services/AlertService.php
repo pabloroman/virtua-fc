@@ -7,22 +7,12 @@ use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\PlayerSuspension;
 use App\Models\TransferOffer;
+use Illuminate\Support\Collection;
 
 class AlertService
 {
     private const LOW_FITNESS_THRESHOLD = 70;
     private const YELLOW_CARD_WARNING_THRESHOLD = 4;
-
-    /**
-     * Get all alerts for the dashboard.
-     */
-    public function getDashboardAlerts(Game $game, ?GameMatch $nextMatch): array
-    {
-        return [
-            'squad' => $this->getSquadAlerts($game, $nextMatch),
-            'transfer' => $this->getTransferAlerts($game),
-        ];
-    }
 
     /**
      * Get squad alerts (injuries, suspensions, fitness, card risk).
@@ -45,11 +35,11 @@ class AlertService
 
         foreach ($players as $player) {
             $this->checkInjury($player, $currentDate, $alerts);
-            $this->checkSuspension($player, $alerts);
             $this->checkLowFitness($player, $currentDate, $alerts);
             $this->checkYellowCardRisk($player, $alerts);
         }
 
+        $this->checkSuspensions($players, $alerts);
         $this->sortAlertsByUrgency($alerts);
 
         return $alerts;
@@ -102,20 +92,27 @@ class AlertService
         }
     }
 
-    private function checkSuspension(GamePlayer $player, array &$alerts): void
+    /**
+     * Check suspensions for all players (single query, avoids N+1).
+     */
+    private function checkSuspensions(Collection $players, array &$alerts): void
     {
-        // Get all active suspensions for this player
-        $suspensions = PlayerSuspension::where('game_player_id', $player->id)
+        $suspensions = PlayerSuspension::whereIn('game_player_id', $players->pluck('id'))
             ->where('matches_remaining', '>', 0)
             ->with('competition')
             ->get();
 
+        $playersById = $players->keyBy('id');
+
         foreach ($suspensions as $suspension) {
-            $alerts['suspended'][] = [
-                'player' => $player,
-                'matchesRemaining' => $suspension->matches_remaining,
-                'competition' => $suspension->competition?->name ?? 'Unknown',
-            ];
+            $player = $playersById->get($suspension->game_player_id);
+            if ($player) {
+                $alerts['suspended'][] = [
+                    'player' => $player,
+                    'matchesRemaining' => $suspension->matches_remaining,
+                    'competition' => $suspension->competition?->name ?? 'Unknown',
+                ];
+            }
         }
     }
 

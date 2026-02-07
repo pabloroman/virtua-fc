@@ -16,41 +16,6 @@ class EligibilityService
     ];
 
     /**
-     * Check if a player is eligible to play in a specific competition.
-     */
-    public function isEligible(GamePlayer $player, string $competitionId, ?Carbon $matchDate = null): bool
-    {
-        // Check competition-specific suspension
-        if (PlayerSuspension::isSuspended($player->id, $competitionId)) {
-            return false;
-        }
-
-        // Check injury
-        if ($matchDate && $player->injury_until !== null && $player->injury_until->gt($matchDate)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Get the reason why a player is ineligible.
-     */
-    public function getIneligibilityReason(GamePlayer $player, string $competitionId, ?Carbon $matchDate = null): ?string
-    {
-        $matchesRemaining = PlayerSuspension::getMatchesRemaining($player->id, $competitionId);
-        if ($matchesRemaining > 0) {
-            return "Suspended ({$matchesRemaining} match" . ($matchesRemaining > 1 ? 'es' : '') . " remaining)";
-        }
-
-        if ($matchDate && $player->injury_until !== null && $player->injury_until->gt($matchDate)) {
-            return "Injured until " . $player->injury_until->format('M j');
-        }
-
-        return null;
-    }
-
-    /**
      * Apply a suspension to a player for a specific competition.
      *
      * @param GamePlayer $player The player to suspend
@@ -125,33 +90,5 @@ class EligibilityService
         }
 
         return false;
-    }
-
-    /**
-     * Clear a player's injury if they have recovered.
-     */
-    public function clearInjuryIfRecovered(GamePlayer $player, Carbon $currentDate): bool
-    {
-        if ($player->injury_until !== null && $player->injury_until->lte($currentDate)) {
-            $player->injury_type = null;
-            $player->injury_until = null;
-            $player->save();
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Get all active suspensions for a player.
-     *
-     * @return array<string, int> Map of competition_id => matches_remaining
-     */
-    public function getActiveSuspensions(GamePlayer $player): array
-    {
-        return PlayerSuspension::where('game_player_id', $player->id)
-            ->where('matches_remaining', '>', 0)
-            ->pluck('matches_remaining', 'competition_id')
-            ->toArray();
     }
 }

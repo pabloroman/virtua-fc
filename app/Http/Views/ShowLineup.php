@@ -8,7 +8,6 @@ use App\Game\Services\LineupService;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
-use App\Models\PlayerSuspension;
 use App\Support\PositionSlotMapper;
 
 class ShowLineup
@@ -79,19 +78,10 @@ class ShowLineup
 
         $currentLineup = $currentLineup ?? [];
 
-        // Batch load suspended player IDs for this competition (single query, avoids N+1)
-        $suspendedPlayerIds = PlayerSuspension::where('competition_id', $competitionId)
-            ->where('matches_remaining', '>', 0)
-            ->whereIn('game_player_id', $allPlayers->pluck('id'))
-            ->pluck('game_player_id')
-            ->toArray();
-
         // Prepare player data for JavaScript (flat array with all needed info)
-        $playersData = $allPlayers->map(function ($p) use ($matchDate, $suspendedPlayerIds) {
-            // Check availability using pre-loaded suspension data
-            $isSuspended = in_array($p->id, $suspendedPlayerIds);
-            $isInjured = $p->injury_until && $matchDate && $p->injury_until->gt($matchDate);
-            $isAvailable = !$isSuspended && !$isInjured;
+        // Suspensions are eager-loaded via getAllPlayers, so no extra queries needed
+        $playersData = $allPlayers->map(function ($p) use ($matchDate, $competitionId) {
+            $isAvailable = $p->isAvailable($matchDate, $competitionId);
 
             return [
                 'id' => $p->id,
@@ -152,7 +142,7 @@ class ShowLineup
     private function getOpponentData(string $gameId, string $opponentTeamId, $matchDate, string $competitionId): array
     {
         // Get opponent's players
-        $opponentPlayers = GamePlayer::with('player')
+        $opponentPlayers = GamePlayer::with(['player', 'suspensions'])
             ->where('game_id', $gameId)
             ->where('team_id', $opponentTeamId)
             ->get();
@@ -195,14 +185,9 @@ class ShowLineup
             return 'D';
         })->reverse()->values()->toArray();
 
-        // Count unavailable players (batch load suspensions to avoid N+1)
+        // Count unavailable players (uses eager-loaded suspensions, no extra queries)
         $injuredCount = $opponentPlayers->filter(fn($p) => $p->isInjured($matchDate))->count();
-        $suspendedPlayerIds = PlayerSuspension::where('competition_id', $competitionId)
-            ->where('matches_remaining', '>', 0)
-            ->whereIn('game_player_id', $opponentPlayers->pluck('id'))
-            ->pluck('game_player_id')
-            ->toArray();
-        $suspendedCount = count($suspendedPlayerIds);
+        $suspendedCount = $opponentPlayers->filter(fn($p) => $p->isSuspendedInCompetition($competitionId))->count();
 
         return [
             'teamAverage' => $bestXIData['average'],
