@@ -244,12 +244,12 @@
                                 {{-- Team Average with Opponent Comparison --}}
                                 <div class="flex items-center gap-3 px-3 py-1.5 bg-slate-200 rounded-md">
                                     <div class="flex items-center gap-1.5">
-                                        <span class="text-sm text-slate-600">{{ __('squad.you') }}:</span>
+                                        <img src="{{ $game->team->image }}" class="w-6 h-6" alt="{{ $game->team->name }}">
                                         <span class="font-semibold text-slate-900" x-text="teamAverage || '-'"></span>
                                     </div>
                                     <span class="text-slate-400">vs</span>
                                     <div class="flex items-center gap-1.5">
-                                        <span class="text-sm text-slate-600">{{ __('squad.opp') }}:</span>
+                                        <img src="{{ $opponent->image }}" class="w-6 h-6" alt="{{ $opponent->name }}">
                                         <span class="font-semibold {{ $opponentData['teamAverage'] > 0 ? 'text-slate-900' : 'text-slate-400' }}">{{ $opponentData['teamAverage'] ?: '-' }}</span>
                                     </div>
                                     {{-- Advantage indicator --}}

@@ -77,9 +77,7 @@ return [
     'formation' => 'Formación',
     'mentality' => 'Mentalidad',
     'auto_select' => 'Selección Auto',
-    'you' => 'Tú',
     'opponent' => 'Rival',
-    'opp' => 'Riv',
     'need' => 'necesitas',
 
     // Compatibility
