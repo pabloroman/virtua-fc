@@ -6,6 +6,7 @@ use App\Game\Enums\Formation;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
+use App\Models\PlayerSuspension;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
@@ -14,14 +15,34 @@ class LineupService
 
     /**
      * Get available players (not injured/suspended) for a team.
+     * Batch loads suspensions to avoid N+1 queries.
      */
     public function getAvailablePlayers(string $gameId, string $teamId, Carbon $matchDate, string $competitionId): Collection
     {
-        return GamePlayer::with('player')
+        $players = GamePlayer::with('player')
             ->where('game_id', $gameId)
             ->where('team_id', $teamId)
-            ->get()
-            ->filter(fn (GamePlayer $player) => $player->isAvailable($matchDate, $competitionId));
+            ->get();
+
+        // Batch load suspended player IDs for this competition (single query)
+        $suspendedPlayerIds = PlayerSuspension::where('competition_id', $competitionId)
+            ->where('matches_remaining', '>', 0)
+            ->whereIn('game_player_id', $players->pluck('id'))
+            ->pluck('game_player_id')
+            ->toArray();
+
+        // Filter in memory using pre-loaded suspension data
+        return $players->filter(function (GamePlayer $player) use ($matchDate, $suspendedPlayerIds) {
+            // Check if suspended (using pre-loaded IDs)
+            if (in_array($player->id, $suspendedPlayerIds)) {
+                return false;
+            }
+            // Check injury
+            if ($player->injury_until && $matchDate && $player->injury_until->gt($matchDate)) {
+                return false;
+            }
+            return true;
+        });
     }
 
     /**
@@ -407,8 +428,11 @@ class LineupService
     /**
      * Ensure all matches have lineups set (auto-select for AI teams).
      * Uses the player's preferred lineup, formation, and mentality for their team.
+     *
+     * @param Collection|null $allPlayersGrouped Pre-loaded players grouped by team_id (optional, for N+1 optimization)
+     * @param array $suspendedPlayerIds Array of player IDs who are suspended (optional, for N+1 optimization)
      */
-    public function ensureLineupsForMatches($matches, Game $game): void
+    public function ensureLineupsForMatches($matches, Game $game, $allPlayersGrouped = null, array $suspendedPlayerIds = []): void
     {
         $playerFormation = $game->default_formation
             ? Formation::tryFrom($game->default_formation)
@@ -428,7 +452,9 @@ class LineupService
                 $competitionId,
                 $playerFormation,
                 $playerPreferredLineup,
-                $playerMentality
+                $playerMentality,
+                $allPlayersGrouped,
+                $suspendedPlayerIds
             );
 
             $this->ensureTeamLineup(
@@ -439,13 +465,18 @@ class LineupService
                 $competitionId,
                 $playerFormation,
                 $playerPreferredLineup,
-                $playerMentality
+                $playerMentality,
+                $allPlayersGrouped,
+                $suspendedPlayerIds
             );
         }
     }
 
     /**
      * Ensure lineup is set for one team in a match.
+     *
+     * @param Collection|null $allPlayersGrouped Pre-loaded players grouped by team_id
+     * @param array $suspendedPlayerIds Array of player IDs who are suspended
      */
     private function ensureTeamLineup(
         GameMatch $match,
@@ -455,7 +486,9 @@ class LineupService
         string $competitionId,
         ?Formation $playerFormation,
         ?array $playerPreferredLineup,
-        string $playerMentality
+        string $playerMentality,
+        $allPlayersGrouped = null,
+        array $suspendedPlayerIds = []
     ): void {
         $lineupField = $side . '_lineup';
         $teamIdField = $side . '_team_id';
@@ -467,22 +500,38 @@ class LineupService
         $teamId = $match->$teamIdField;
         $isPlayerTeam = $teamId === $game->team_id;
 
-        if ($isPlayerTeam) {
-            $lineup = $this->selectLineupWithPreferences(
-                $game->id,
-                $teamId,
-                $matchDate,
-                $competitionId,
+        // Use pre-loaded players if available, otherwise load (backward compatibility)
+        if ($allPlayersGrouped !== null) {
+            $teamPlayers = $allPlayersGrouped->get($teamId, collect());
+            // Filter available players using pre-loaded suspension data
+            $availablePlayers = $teamPlayers->filter(function ($player) use ($matchDate, $suspendedPlayerIds) {
+                // Check if suspended (using pre-loaded IDs)
+                if (in_array($player->id, $suspendedPlayerIds)) {
+                    return false;
+                }
+                // Check injury
+                if ($player->injury_until && $matchDate && $player->injury_until->gt($matchDate)) {
+                    return false;
+                }
+                return true;
+            });
+        } else {
+            // Fallback to original method (triggers N+1 but maintains backward compatibility)
+            $availablePlayers = $this->getAvailablePlayers($game->id, $teamId, $matchDate, $competitionId);
+        }
+
+        if ($isPlayerTeam && !empty($playerPreferredLineup)) {
+            // Select lineup with preferences using pre-loaded data
+            $availableIds = $availablePlayers->pluck('id')->toArray();
+            $lineup = $this->selectLineupWithPreferencesFromCollection(
+                $availablePlayers,
                 $playerFormation,
-                $playerPreferredLineup
+                $playerPreferredLineup,
+                $availableIds
             );
         } else {
-            $lineup = $this->autoSelectLineup(
-                $game->id,
-                $teamId,
-                $matchDate,
-                $competitionId
-            );
+            // Auto-select best XI from available players
+            $lineup = $this->selectBestXI($availablePlayers, $playerFormation)->pluck('id')->toArray();
         }
 
         $this->saveLineup($match, $teamId, $lineup);
@@ -493,5 +542,80 @@ class LineupService
             }
             $this->saveMentality($match, $teamId, $playerMentality);
         }
+    }
+
+    /**
+     * Select lineup using preferred players from a pre-loaded collection (no DB queries).
+     */
+    private function selectLineupWithPreferencesFromCollection(
+        Collection $availablePlayers,
+        ?Formation $formation,
+        array $preferredLineup,
+        array $availableIds
+    ): array {
+        $formation = $formation ?? Formation::F_4_4_2;
+        $requirements = $formation->requirements();
+
+        // Separate preferred players into available and unavailable
+        $availablePreferred = [];
+        $unavailablePositionGroups = [];
+
+        $playersById = $availablePlayers->keyBy('id');
+
+        foreach ($preferredLineup as $playerId) {
+            if (in_array($playerId, $availableIds)) {
+                $availablePreferred[] = $playerId;
+            } else {
+                // Find the player to determine their position group for replacement
+                $player = $playersById->get($playerId);
+                if ($player) {
+                    $unavailablePositionGroups[] = $player->position_group;
+                }
+            }
+        }
+
+        // If all preferred players are available, use them
+        if (count($availablePreferred) === 11) {
+            return $availablePreferred;
+        }
+
+        // Start with available preferred players
+        $lineup = $availablePreferred;
+
+        // Group remaining available players by position
+        $remainingAvailable = $availablePlayers->filter(fn ($p) => !in_array($p->id, $lineup));
+        $grouped = $remainingAvailable->groupBy(fn ($p) => $p->position_group);
+
+        // Fill gaps with best available from each missing position group
+        foreach ($unavailablePositionGroups as $positionGroup) {
+            if (count($lineup) >= 11) {
+                break;
+            }
+
+            $candidates = ($grouped->get($positionGroup) ?? collect())
+                ->filter(fn ($p) => !in_array($p->id, $lineup))
+                ->sortByDesc('overall_score');
+
+            $replacement = $candidates->first();
+            if ($replacement) {
+                $lineup[] = $replacement->id;
+            }
+        }
+
+        // If still not 11, fill with best available from any position
+        if (count($lineup) < 11) {
+            $remaining = $availablePlayers
+                ->filter(fn ($p) => !in_array($p->id, $lineup))
+                ->sortByDesc('overall_score');
+
+            foreach ($remaining as $player) {
+                if (count($lineup) >= 11) {
+                    break;
+                }
+                $lineup[] = $player->id;
+            }
+        }
+
+        return $lineup;
     }
 }

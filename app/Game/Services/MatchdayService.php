@@ -54,7 +54,7 @@ class MatchdayService
 
         // Get the batch of matches to play
         $matches = $handler->getMatchBatch($game->id, $nextMatch);
-        $matches->load('competition');
+        $matches->load(['competition', 'homeTeam', 'awayTeam']);
 
         if ($matches->isEmpty()) {
             return null;

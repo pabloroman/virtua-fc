@@ -122,35 +122,49 @@ class TransferService
     /**
      * Generate offers for all listed players.
      * Called on each matchday advance.
+     *
+     * @param Collection|null $allPlayersGrouped Pre-loaded players grouped by team_id (optional, for N+1 optimization)
      */
-    public function generateOffersForListedPlayers(Game $game): Collection
+    public function generateOffersForListedPlayers(Game $game, $allPlayersGrouped = null): Collection
     {
         $offers = collect();
 
-        // Get all listed players for the user's team
-        $listedPlayers = GamePlayer::where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
-            ->where('transfer_status', GamePlayer::TRANSFER_STATUS_LISTED)
-            ->get();
+        // Use pre-loaded players if available, otherwise load
+        if ($allPlayersGrouped !== null) {
+            $teamPlayers = $allPlayersGrouped->get($game->team_id, collect());
+            $listedPlayers = $teamPlayers->filter(
+                fn ($p) => $p->transfer_status === GamePlayer::TRANSFER_STATUS_LISTED
+            );
+        } else {
+            $listedPlayers = GamePlayer::with('transferOffers')
+                ->where('game_id', $game->id)
+                ->where('team_id', $game->team_id)
+                ->where('transfer_status', GamePlayer::TRANSFER_STATUS_LISTED)
+                ->get();
+        }
 
         foreach ($listedPlayers as $player) {
+            // Use pre-loaded transferOffers relationship to avoid N+1
+            $playerOffers = $player->relationLoaded('transferOffers')
+                ? $player->transferOffers
+                : $player->transferOffers()->get();
+
             // Skip if player already has an agreed transfer (waiting for window)
-            $hasAgreedTransfer = $player->transferOffers()
+            $hasAgreedTransfer = $playerOffers
                 ->where('status', TransferOffer::STATUS_AGREED)
-                ->exists();
+                ->isNotEmpty();
 
             if ($hasAgreedTransfer) {
                 continue;
             }
 
             // Check how many pending offers the player already has
-            $pendingOfferCount = $player->transferOffers()
+            $pendingOffers = $playerOffers
                 ->where('offer_type', TransferOffer::TYPE_LISTED)
-                ->where('status', TransferOffer::STATUS_PENDING)
-                ->count();
+                ->where('status', TransferOffer::STATUS_PENDING);
 
             // Skip if player already has 3+ pending offers
-            if ($pendingOfferCount >= 3) {
+            if ($pendingOffers->count() >= 3) {
                 continue;
             }
 
@@ -159,7 +173,7 @@ class TransferService
                 $buyers = $this->getEligibleBuyers($player);
 
                 // Exclude teams that already made offers
-                $existingOfferTeamIds = $player->transferOffers()
+                $existingOfferTeamIds = $playerOffers
                     ->where('status', TransferOffer::STATUS_PENDING)
                     ->pluck('offering_team_id')
                     ->toArray();
@@ -186,25 +200,41 @@ class TransferService
     /**
      * Generate unsolicited offers for star players.
      * Called on each matchday advance.
+     *
+     * @param Collection|null $allPlayersGrouped Pre-loaded players grouped by team_id (optional, for N+1 optimization)
      */
-    public function generateUnsolicitedOffers(Game $game): Collection
+    public function generateUnsolicitedOffers(Game $game, $allPlayersGrouped = null): Collection
     {
         $offers = collect();
 
-        // Get top players by market value who are NOT listed
-        $starPlayers = GamePlayer::where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
-            ->whereNull('transfer_status')
-            ->orderByDesc('market_value_cents')
-            ->limit(self::STAR_PLAYER_COUNT)
-            ->get();
+        // Use pre-loaded players if available, otherwise load
+        if ($allPlayersGrouped !== null) {
+            $teamPlayers = $allPlayersGrouped->get($game->team_id, collect());
+            $starPlayers = $teamPlayers
+                ->filter(fn ($p) => $p->transfer_status === null)
+                ->sortByDesc('market_value_cents')
+                ->take(self::STAR_PLAYER_COUNT);
+        } else {
+            $starPlayers = GamePlayer::with('transferOffers')
+                ->where('game_id', $game->id)
+                ->where('team_id', $game->team_id)
+                ->whereNull('transfer_status')
+                ->orderByDesc('market_value_cents')
+                ->limit(self::STAR_PLAYER_COUNT)
+                ->get();
+        }
 
         foreach ($starPlayers as $player) {
+            // Use pre-loaded transferOffers relationship to avoid N+1
+            $playerOffers = $player->relationLoaded('transferOffers')
+                ? $player->transferOffers
+                : $player->transferOffers()->get();
+
             // Skip if player already has a pending unsolicited offer
-            $hasPendingOffer = $player->transferOffers()
+            $hasPendingOffer = $playerOffers
                 ->where('offer_type', TransferOffer::TYPE_UNSOLICITED)
                 ->where('status', TransferOffer::STATUS_PENDING)
-                ->exists();
+                ->isNotEmpty();
 
             if ($hasPendingOffer) {
                 continue;
@@ -232,8 +262,10 @@ class TransferService
     /**
      * Generate pre-contract offers for players with expiring contracts.
      * Called on each matchday advance (typically from January onwards).
+     *
+     * @param Collection|null $allPlayersGrouped Pre-loaded players grouped by team_id (optional, for N+1 optimization)
      */
-    public function generatePreContractOffers(Game $game): Collection
+    public function generatePreContractOffers(Game $game, $allPlayersGrouped = null): Collection
     {
         $offers = collect();
 
@@ -248,18 +280,56 @@ class TransferService
             return $offers;
         }
 
-        // Get players with expiring contracts who can receive pre-contract offers
-        $expiringPlayers = GamePlayer::where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
-            ->get()
-            ->filter(fn ($player) => $player->canReceivePreContractOffers());
+        // Get the season end date for contract expiry check
+        $seasonYear = (int) $game->season;
+        $seasonEndDate = Carbon::createFromDate($seasonYear + 1, 6, 30);
+
+        // Use pre-loaded players if available, otherwise load
+        if ($allPlayersGrouped !== null) {
+            $teamPlayers = $allPlayersGrouped->get($game->team_id, collect());
+            // Filter to players with expiring contracts who can receive offers
+            $expiringPlayers = $teamPlayers->filter(function ($player) use ($seasonEndDate) {
+                // Check if contract is expiring
+                if (!$player->contract_until || !$player->contract_until->lte($seasonEndDate)) {
+                    return false;
+                }
+                // Check if they have pending_annual_wage (renewal agreed)
+                if ($player->pending_annual_wage !== null) {
+                    return false;
+                }
+                // Use pre-loaded transferOffers to check for existing agreements
+                $playerOffers = $player->relationLoaded('transferOffers')
+                    ? $player->transferOffers
+                    : collect();
+                $hasPreContract = $playerOffers
+                    ->where('status', TransferOffer::STATUS_AGREED)
+                    ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
+                    ->isNotEmpty();
+                $hasAgreedTransfer = $playerOffers
+                    ->where('status', TransferOffer::STATUS_AGREED)
+                    ->isNotEmpty();
+
+                return !$hasPreContract && !$hasAgreedTransfer;
+            });
+        } else {
+            $expiringPlayers = GamePlayer::with(['game', 'transferOffers'])
+                ->where('game_id', $game->id)
+                ->where('team_id', $game->team_id)
+                ->get()
+                ->filter(fn ($player) => $player->canReceivePreContractOffers());
+        }
 
         foreach ($expiringPlayers as $player) {
+            // Use pre-loaded transferOffers relationship to avoid N+1
+            $playerOffers = $player->relationLoaded('transferOffers')
+                ? $player->transferOffers
+                : $player->transferOffers()->get();
+
             // Skip if player already has a pending pre-contract offer
-            $hasPendingOffer = $player->transferOffers()
+            $hasPendingOffer = $playerOffers
                 ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
                 ->where('status', TransferOffer::STATUS_PENDING)
-                ->exists();
+                ->isNotEmpty();
 
             if ($hasPendingOffer) {
                 continue;

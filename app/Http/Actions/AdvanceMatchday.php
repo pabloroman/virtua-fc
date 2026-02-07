@@ -15,6 +15,7 @@ use App\Game\Services\TransferService;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
+use App\Models\PlayerSuspension;
 
 class AdvanceMatchday
 {
@@ -43,29 +44,37 @@ class AdvanceMatchday
         $matchday = $batch['matchday'];
         $currentDate = $batch['currentDate'];
 
-        // Prepare lineups for all matches
-        $this->lineupService->ensureLineupsForMatches($matches, $game);
+        // Load ALL players once with needed relationships (avoids N+1)
+        $allPlayers = GamePlayer::with(['player', 'transferOffers', 'activeLoan'])
+            ->where('game_id', $game->id)
+            ->get()
+            ->groupBy('team_id');
+
+        // Batch load suspensions for all competitions in the match batch
+        $competitionIds = $matches->pluck('competition_id')->unique()->toArray();
+        $suspendedPlayerIds = PlayerSuspension::whereIn('competition_id', $competitionIds)
+            ->where('matches_remaining', '>', 0)
+            ->pluck('game_player_id')
+            ->toArray();
+
+        // Prepare lineups for all matches (pass pre-loaded data)
+        $this->lineupService->ensureLineupsForMatches($matches, $game, $allPlayers, $suspendedPlayerIds);
 
         // Simulate all matches (pass game for medical tier effects on injuries)
-        $matchResults = $this->simulateMatches($matches, $game);
+        $matchResults = $this->simulateMatches($matches, $game, $allPlayers);
 
         // Record results via event sourcing
         $this->recordMatchResults($gameId, $matchday, $currentDate, $matchResults);
 
         // Process post-match actions
         $game->refresh();
-        $this->processPostMatchActions($game, $matches, $handler);
+        $this->processPostMatchActions($game, $matches, $handler, $allPlayers);
 
         return redirect()->to($handler->getRedirectRoute($game, $matches, $matchday));
     }
 
-    private function simulateMatches($matches, Game $game): array
+    private function simulateMatches($matches, Game $game, $allPlayers): array
     {
-        $allPlayers = GamePlayer::with('player')
-            ->where('game_id', $game->id)
-            ->get()
-            ->groupBy('team_id');
-
         $results = [];
         foreach ($matches as $match) {
             $results[] = $this->simulateMatch($match, $allPlayers, $game);
@@ -134,7 +143,7 @@ class AdvanceMatchday
         $aggregate->advanceMatchday($command);
     }
 
-    private function processPostMatchActions(Game $game, $matches, $handler): void
+    private function processPostMatchActions(Game $game, $matches, $handler, $allPlayers): void
     {
         // Process transfers when window is open
         if ($game->isTransferWindowOpen()) {
@@ -144,12 +153,12 @@ class AdvanceMatchday
 
         // Generate transfer offers (can happen anytime, but more during windows)
         if ($game->isTransferWindowOpen()) {
-            $this->transferService->generateOffersForListedPlayers($game);
-            $this->transferService->generateUnsolicitedOffers($game);
+            $this->transferService->generateOffersForListedPlayers($game, $allPlayers);
+            $this->transferService->generateUnsolicitedOffers($game, $allPlayers);
         }
 
         // Pre-contract offers (January onwards for expiring contracts)
-        $this->transferService->generatePreContractOffers($game);
+        $this->transferService->generatePreContractOffers($game, $allPlayers);
 
         // Tick scout search progress
         $scoutReport = $this->scoutingService->tickSearch($game);
@@ -158,11 +167,6 @@ class AdvanceMatchday
         }
 
         // Competition-specific post-match actions
-        $allPlayers = GamePlayer::with('player')
-            ->where('game_id', $game->id)
-            ->get()
-            ->groupBy('team_id');
-
         $handler->afterMatches($game, $matches, $allPlayers);
     }
 }
