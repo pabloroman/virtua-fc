@@ -25,6 +25,7 @@ use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\MatchEvent;
+use App\Models\PlayerSuspension;
 use App\Models\Player;
 use App\Models\Team;
 use Carbon\Carbon;
@@ -388,17 +389,17 @@ class GameProjector extends Projector
      */
     private function serveSuspensions(string $gameId, GameMatch $match, string $competitionId): void
     {
-        // Get all players from both teams
-        $players = GamePlayer::where('game_id', $gameId)
-            ->whereIn('team_id', [$match->home_team_id, $match->away_team_id])
+        // Query suspensions directly for players on either team in this competition
+        $suspensions = PlayerSuspension::where('competition_id', $competitionId)
+            ->where('matches_remaining', '>', 0)
+            ->whereHas('gamePlayer', function ($query) use ($gameId, $match) {
+                $query->where('game_id', $gameId)
+                    ->whereIn('team_id', [$match->home_team_id, $match->away_team_id]);
+            })
             ->get();
 
-        foreach ($players as $player) {
-            // Check if this player is suspended in this competition
-            if ($player->isSuspendedInCompetition($competitionId)) {
-                // Serve one match of the suspension
-                $this->eligibilityService->serveSuspensionMatch($player, $competitionId);
-            }
+        foreach ($suspensions as $suspension) {
+            $suspension->serveMatch();
         }
     }
 
