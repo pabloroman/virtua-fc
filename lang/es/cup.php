@@ -5,7 +5,7 @@ return [
     'eliminated' => 'Eliminado',
     'round_n' => 'Ronda :round',
     'not_yet_entered' => 'Aún no participa',
-    'back_to_dashboard' => 'Volver al Panel',
+    'back_to_dashboard' => 'Volver al Inicio',
 
     // Data
     'cup_data_not_available' => 'Datos de la copa no disponibles.',

@@ -2,7 +2,7 @@
 
 return [
     // Navigation
-    'dashboard' => 'Panel',
+    'dashboard' => 'Inicio',
     'squad' => 'Plantilla',
     'starting_xi' => 'Once Inicial',
     'finances' => 'Finanzas',

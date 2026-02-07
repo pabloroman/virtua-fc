@@ -122,7 +122,7 @@ return [
     // Results page
     'results' => 'Resultados',
     'matchday_results' => 'Resultados :name',
-    'back_to_dashboard' => 'Volver al Panel',
+    'back_to_dashboard' => 'Volver al Inicio',
     'all_results' => 'Todos los Resultados',
     'og' => 'PP',
 
