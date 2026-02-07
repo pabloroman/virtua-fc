@@ -3,6 +3,7 @@
 namespace App\Http\Views;
 
 use App\Game\Services\PlayerDevelopmentService;
+use App\Game\Services\SeasonGoalService;
 use App\Models\Competition;
 use App\Models\CompetitionTeam;
 use App\Models\CupTie;
@@ -14,6 +15,7 @@ class ShowSeasonEnd
 {
     public function __construct(
         private readonly PlayerDevelopmentService $developmentService,
+        private readonly SeasonGoalService $seasonGoalService,
     ) {}
 
     public function __invoke(string $gameId)
@@ -137,8 +139,8 @@ class ShowSeasonEnd
         $bestAttack = $standings->sortByDesc('goals_for')->first();
         $bestDefense = $standings->sortBy('goals_against')->first();
 
-        // Manager evaluation
-        $managerEvaluation = $this->evaluateManager($playerStanding, $game->currentFinances);
+        // Manager evaluation based on season goal
+        $managerEvaluation = $this->seasonGoalService->evaluatePerformance($game, $playerStanding->position ?? 20);
 
         // Top scorers in the league
         $topScorers = GamePlayer::with(['player', 'team'])
@@ -239,46 +241,4 @@ class ShowSeasonEnd
         ]);
     }
 
-    /**
-     * Evaluate the manager's performance based on targets.
-     */
-    private function evaluateManager($playerStanding, $finances): array
-    {
-        $actualPosition = $playerStanding->position ?? 20;
-        $targetPosition = $finances?->projected_position ?? 10;
-
-        $positionDiff = $targetPosition - $actualPosition; // Positive = better than target
-
-        // Determine grade and message
-        if ($positionDiff >= 5) {
-            $grade = 'exceptional';
-            $title = 'Exceptional Season';
-            $message = "The board is delighted with your performance. Finishing {$positionDiff} places above expectations has exceeded all targets. Your contract extension is already being prepared.";
-        } elseif ($positionDiff >= 2) {
-            $grade = 'exceeded';
-            $title = 'Exceeded Expectations';
-            $message = "An impressive campaign. You've outperformed our projected finish and the board is very pleased with the direction you're taking the club.";
-        } elseif ($positionDiff >= -1) {
-            $grade = 'met';
-            $title = 'Expectations Met';
-            $message = "A solid season that met our targets. The board is satisfied with your work and looks forward to continued progress next season.";
-        } elseif ($positionDiff >= -4) {
-            $grade = 'below';
-            $title = 'Below Expectations';
-            $message = "A disappointing campaign. We expected better results and the board will be monitoring performance closely next season.";
-        } else {
-            $grade = 'disaster';
-            $title = 'Unacceptable Performance';
-            $message = "This season has been a disaster. The board expected a finish around {$targetPosition}th place, but {$actualPosition}th is unacceptable. Significant improvement is required.";
-        }
-
-        return [
-            'grade' => $grade,
-            'title' => $title,
-            'message' => $message,
-            'actualPosition' => $actualPosition,
-            'targetPosition' => $targetPosition,
-            'positionDiff' => $positionDiff,
-        ];
-    }
 }

@@ -4,6 +4,9 @@
 /** @var int $availableSurplus */
 /** @var array $tiers */
 /** @var array $tierThresholds */
+/** @var string|null $seasonGoal */
+/** @var string|null $seasonGoalLabel */
+/** @var int|null $seasonGoalTarget */
 @endphp
 
 <x-app-layout>
@@ -70,11 +73,13 @@
                             <div class="bg-amber-50 border border-amber-200 rounded-lg p-3">
                                 <div class="flex items-start gap-3">
                                     <div class="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                        <span class="text-amber-700 font-bold text-sm">{{ $finances->projected_position ?? '?' }}</span>
+                                        <svg class="w-4 h-4 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                                        </svg>
                                     </div>
                                     <div>
-                                        <div class="font-medium text-amber-900">{{ __('game.finish_position_or_better', ['position' => __('game.position_suffix', ['position' => $finances->projected_position ?? '?'])]) }}</div>
-                                        <div class="text-xs text-amber-700 mt-0.5">{{ __('game.board_expectations_hint') }}</div>
+                                        <div class="font-medium text-amber-900">{{ __($seasonGoalLabel ?? 'game.goal_top_half') }}</div>
+                                        <div class="text-xs text-amber-700 mt-0.5">{{ __('game.board_expects_position', ['position' => $seasonGoalTarget ?? 10]) }}</div>
                                     </div>
                                 </div>
                             </div>

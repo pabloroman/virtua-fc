@@ -5,6 +5,8 @@ namespace App\Game\Processors;
 use App\Game\Contracts\SeasonEndProcessor;
 use App\Game\DTO\SeasonTransitionData;
 use App\Game\Services\BudgetProjectionService;
+use App\Game\Services\SeasonGoalService;
+use App\Models\Competition;
 use App\Models\Game;
 
 /**
@@ -15,6 +17,7 @@ class BudgetProjectionProcessor implements SeasonEndProcessor
 {
     public function __construct(
         private readonly BudgetProjectionService $projectionService,
+        private readonly SeasonGoalService $seasonGoalService,
     ) {}
 
     public function priority(): int
@@ -24,13 +27,20 @@ class BudgetProjectionProcessor implements SeasonEndProcessor
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData
     {
-        // Update the game's season to the new season before generating projections
-        $game->update(['season' => $data->newSeason]);
+        // Determine season goal based on team reputation and competition
+        $competition = Competition::find($game->competition_id);
+        $seasonGoal = $this->seasonGoalService->determineGoalForTeam($game->team, $competition);
+
+        // Update the game's season and goal
+        $game->update([
+            'season' => $data->newSeason,
+            'season_goal' => $seasonGoal,
+        ]);
 
         // Generate projections for the new season
         $finances = $this->projectionService->generateProjections($game);
 
-        // Store projections in metadata for pre-season display
+        // Store projections in metadata for season display
         $data->setMetadata('new_season_projections', [
             'projected_position' => $finances->projected_position,
             'projected_total_revenue' => $finances->projected_total_revenue,
@@ -38,6 +48,7 @@ class BudgetProjectionProcessor implements SeasonEndProcessor
             'projected_surplus' => $finances->projected_surplus,
             'carried_debt' => $finances->carried_debt,
             'available_surplus' => $finances->available_surplus,
+            'season_goal' => $seasonGoal,
         ]);
 
         return $data;

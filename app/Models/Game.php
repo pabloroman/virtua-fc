@@ -15,6 +15,17 @@ class Game extends Model
 {
     use HasFactory, HasUuids;
 
+    // La Liga season goals
+    public const GOAL_TITLE = 'title';
+    public const GOAL_CHAMPIONS_LEAGUE = 'champions_league';
+    public const GOAL_EUROPA_LEAGUE = 'europa_league';
+    public const GOAL_TOP_HALF = 'top_half';
+    public const GOAL_SURVIVAL = 'survival';
+
+    // Segunda División season goals
+    public const GOAL_PROMOTION = 'promotion';
+    public const GOAL_PLAYOFF = 'playoff';
+
     protected $fillable = [
         'id',
         'user_id',
@@ -28,6 +39,7 @@ class Game extends Model
         'default_mentality',
         'cup_round',
         'cup_eliminated',
+        'season_goal',
         'needs_onboarding',
     ];
 
@@ -39,6 +51,7 @@ class Game extends Model
         'default_mentality' => 'string',
         'cup_round' => 'integer',
         'cup_eliminated' => 'boolean',
+        'season_goal' => 'string',
         'needs_onboarding' => 'boolean',
     ];
 

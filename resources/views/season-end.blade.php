@@ -105,7 +105,7 @@
                             <div class="flex items-center justify-between mb-2">
                                 <div class="font-bold text-lg">{{ $managerEvaluation['title'] }}</div>
                                 <div class="text-sm">
-                                    {{ __('season.target') }}: {{ __('season.place', ['position' => $managerEvaluation['targetPosition']]) }}
+                                    {{ __('season.target') }}: {{ $managerEvaluation['goalLabel'] }}
                                     &rarr;
                                     {{ __('season.actual') }}: {{ __('season.place', ['position' => $managerEvaluation['actualPosition']]) }}
                                 </div>

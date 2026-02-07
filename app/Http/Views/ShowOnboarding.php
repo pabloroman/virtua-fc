@@ -3,6 +3,8 @@
 namespace App\Http\Views;
 
 use App\Game\Services\BudgetProjectionService;
+use App\Game\Services\SeasonGoalService;
+use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GameInvestment;
 use App\Models\GamePlayer;
@@ -11,6 +13,7 @@ class ShowOnboarding
 {
     public function __construct(
         private readonly BudgetProjectionService $projectionService,
+        private readonly SeasonGoalService $seasonGoalService,
     ) {}
 
     public function __invoke(string $gameId)
@@ -70,6 +73,12 @@ class ShowOnboarding
         $isHomeMatch = $nextMatch && $nextMatch->home_team_id === $game->team_id;
         $opponent = $nextMatch ? ($isHomeMatch ? $nextMatch->awayTeam : $nextMatch->homeTeam) : null;
 
+        // Get season goal data
+        $competition = Competition::find($game->competition_id);
+        $seasonGoal = $game->season_goal;
+        $seasonGoalLabel = ($seasonGoal && $competition) ? $this->seasonGoalService->getGoalLabel($seasonGoal, $competition) : null;
+        $seasonGoalTarget = ($seasonGoal && $competition) ? $this->seasonGoalService->getTargetPosition($seasonGoal, $competition) : null;
+
         return view('onboarding', [
             'game' => $game,
             'finances' => $finances,
@@ -85,6 +94,9 @@ class ShowOnboarding
             'nextMatch' => $nextMatch,
             'isHomeMatch' => $isHomeMatch,
             'opponent' => $opponent,
+            'seasonGoal' => $seasonGoal,
+            'seasonGoalLabel' => $seasonGoalLabel,
+            'seasonGoalTarget' => $seasonGoalTarget,
         ]);
     }
 }

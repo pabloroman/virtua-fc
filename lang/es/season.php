@@ -24,11 +24,16 @@ return [
     // Manager evaluation
     'target' => 'Objetivo',
     'actual' => 'Real',
-    'evaluation_exceptional' => 'Excepcional',
-    'evaluation_exceeded' => 'Superado',
-    'evaluation_met' => 'Cumplido',
-    'evaluation_below' => 'Por Debajo',
-    'evaluation_disaster' => 'Desastre',
+    'evaluation_exceptional' => 'Temporada Excepcional',
+    'evaluation_exceeded' => 'Superaste las Expectativas',
+    'evaluation_met' => 'Expectativas Cumplidas',
+    'evaluation_below' => 'Por Debajo de las Expectativas',
+    'evaluation_disaster' => 'Rendimiento Inaceptable',
+    'evaluation_exceptional_message' => 'La directiva está encantada con tu rendimiento. Terminar :diff puestos por encima de lo esperado ha superado todos los objetivos.',
+    'evaluation_exceeded_message' => 'Una campaña impresionante. Has superado nuestra posición proyectada y la directiva está muy satisfecha con la dirección que le estás dando al club.',
+    'evaluation_met_message' => 'Una temporada sólida que cumplió con nuestros objetivos. La directiva está satisfecha con tu trabajo y espera más progreso la próxima temporada.',
+    'evaluation_below_message' => 'Una campaña decepcionante. Esperábamos mejores resultados y la directiva estará monitoreando de cerca el rendimiento la próxima temporada.',
+    'evaluation_disaster_message' => 'Esta temporada ha sido un desastre. La directiva esperaba terminar alrededor de la posición :target, pero la :actual es inaceptable. Se requiere una mejora significativa.',
 
     // Individual awards
     'individual_awards' => 'Premios Individuales',

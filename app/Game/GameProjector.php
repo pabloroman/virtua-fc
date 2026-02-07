@@ -16,7 +16,9 @@ use App\Game\Services\EligibilityService;
 use App\Game\Services\InjuryService;
 use App\Game\Services\PlayerConditionService;
 use App\Game\Services\PlayerDevelopmentService;
+use App\Game\Services\SeasonGoalService;
 use App\Game\Services\StandingsCalculator;
+use App\Models\Competition;
 use App\Models\CompetitionTeam;
 use App\Models\CupTie;
 use App\Models\FinancialTransaction;
@@ -42,6 +44,7 @@ class GameProjector extends Projector
         private readonly ContractService $contractService,
         private readonly BudgetProjectionService $budgetProjectionService,
         private readonly CupDrawService $cupDrawService,
+        private readonly SeasonGoalService $seasonGoalService,
     ) {}
 
     public function onGameCreated(GameCreated $event): void
@@ -64,6 +67,11 @@ class GameProjector extends Projector
             ->orderBy('scheduled_date')
             ->first();
 
+        // Determine initial season goal based on team reputation
+        $team = Team::with('clubProfile')->find($teamId);
+        $competition = Competition::find($competitionId);
+        $seasonGoal = $this->seasonGoalService->determineGoalForTeam($team, $competition);
+
         // Create game record
         Game::create([
             'id' => $gameId,
@@ -73,6 +81,7 @@ class GameProjector extends Projector
             'season' => $season,
             'current_date' => $firstFixture?->scheduled_date?->toDateString(),
             'current_matchday' => 0,
+            'season_goal' => $seasonGoal,
         ]);
 
         // Copy fixture templates to game matches

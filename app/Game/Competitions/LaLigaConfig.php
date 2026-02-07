@@ -3,6 +3,8 @@
 namespace App\Game\Competitions;
 
 use App\Game\Contracts\CompetitionConfig;
+use App\Models\ClubProfile;
+use App\Models\Game;
 
 class LaLigaConfig implements CompetitionConfig
 {
@@ -39,6 +41,28 @@ class LaLigaConfig implements CompetitionConfig
         'relegation' => 0.85, // 17th-20th
     ];
 
+    /**
+     * Season goals with target positions.
+     */
+    private const SEASON_GOALS = [
+        Game::GOAL_TITLE => ['targetPosition' => 1, 'label' => 'game.goal_title'],
+        Game::GOAL_CHAMPIONS_LEAGUE => ['targetPosition' => 4, 'label' => 'game.goal_champions_league'],
+        Game::GOAL_EUROPA_LEAGUE => ['targetPosition' => 6, 'label' => 'game.goal_europa_league'],
+        Game::GOAL_TOP_HALF => ['targetPosition' => 10, 'label' => 'game.goal_top_half'],
+        Game::GOAL_SURVIVAL => ['targetPosition' => 17, 'label' => 'game.goal_survival'],
+    ];
+
+    /**
+     * Map reputation to season goal.
+     */
+    private const REPUTATION_TO_GOAL = [
+        ClubProfile::REPUTATION_ELITE => Game::GOAL_TITLE,
+        ClubProfile::REPUTATION_CONTINENTAL => Game::GOAL_CHAMPIONS_LEAGUE,
+        ClubProfile::REPUTATION_ESTABLISHED => Game::GOAL_EUROPA_LEAGUE,
+        ClubProfile::REPUTATION_MODEST => Game::GOAL_TOP_HALF,
+        ClubProfile::REPUTATION_LOCAL => Game::GOAL_SURVIVAL,
+    ];
+
     public function getTvRevenue(int $position): int
     {
         return self::TV_REVENUE[$position] ?? self::TV_REVENUE[20];
@@ -61,5 +85,20 @@ class LaLigaConfig implements CompetitionConfig
     public function getMaxPositions(): int
     {
         return 20;
+    }
+
+    public function getSeasonGoal(string $reputation): string
+    {
+        return self::REPUTATION_TO_GOAL[$reputation] ?? Game::GOAL_TOP_HALF;
+    }
+
+    public function getGoalTargetPosition(string $goal): int
+    {
+        return self::SEASON_GOALS[$goal]['targetPosition'] ?? 10;
+    }
+
+    public function getAvailableGoals(): array
+    {
+        return self::SEASON_GOALS;
     }
 }
