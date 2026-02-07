@@ -57,6 +57,51 @@ class LineupService
     }
 
     /**
+     * Get all players for a team, sorted and grouped by position.
+     *
+     * @return array{goalkeepers: Collection, defenders: Collection, midfielders: Collection, forwards: Collection, all: Collection}
+     */
+    public function getPlayersByPositionGroup(string $gameId, string $teamId): array
+    {
+        $allPlayers = $this->getAllPlayers($gameId, $teamId);
+
+        $grouped = $allPlayers
+            ->sortBy(fn ($p) => $this->positionSortOrder($p->position))
+            ->groupBy(fn ($p) => $p->position_group);
+
+        return [
+            'goalkeepers' => $grouped->get('Goalkeeper', collect()),
+            'defenders' => $grouped->get('Defender', collect()),
+            'midfielders' => $grouped->get('Midfielder', collect()),
+            'forwards' => $grouped->get('Forward', collect()),
+            'all' => $allPlayers,
+        ];
+    }
+
+    /**
+     * Get sort order for positions within their group.
+     */
+    private function positionSortOrder(string $position): int
+    {
+        return match ($position) {
+            'Goalkeeper' => 1,
+            'Centre-Back' => 10,
+            'Left-Back' => 11,
+            'Right-Back' => 12,
+            'Defensive Midfield' => 20,
+            'Central Midfield' => 21,
+            'Left Midfield' => 22,
+            'Right Midfield' => 23,
+            'Attacking Midfield' => 24,
+            'Left Winger' => 30,
+            'Right Winger' => 31,
+            'Second Striker' => 32,
+            'Centre-Forward' => 33,
+            default => 99,
+        };
+    }
+
+    /**
      * Validate lineup: 11 players, all available, correct positions for formation.
      */
     public function validateLineup(

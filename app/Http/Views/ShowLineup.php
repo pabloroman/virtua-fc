@@ -27,17 +27,13 @@ class ShowLineup
         $isHome = $match->home_team_id === $game->team_id;
         $opponent = $isHome ? $match->awayTeam : $match->homeTeam;
 
-        // Get all players (including unavailable for display)
-        $allPlayers = $this->lineupService->getAllPlayers($gameId, $game->team_id);
+        // Get all players (including unavailable for display), sorted and grouped
+        $playersByGroup = $this->lineupService->getPlayersByPositionGroup($gameId, $game->team_id);
+        $allPlayers = $playersByGroup['all'];
 
         // Get match date and competition for availability checks
         $matchDate = $match->scheduled_date;
         $competitionId = $match->competition_id;
-
-        // Group and sort players by position
-        $players = $allPlayers
-            ->sortBy(fn ($p) => $this->positionSortOrder($p->position))
-            ->groupBy(fn ($p) => $p->position_group);
 
         // Get current lineup if any
         $currentLineup = $this->lineupService->getLineup($match, $game->team_id);
@@ -117,10 +113,10 @@ class ShowLineup
             'opponent' => $opponent,
             'competitionId' => $competitionId,
             'matchDate' => $matchDate,
-            'goalkeepers' => $players->get('Goalkeeper', collect()),
-            'defenders' => $players->get('Defender', collect()),
-            'midfielders' => $players->get('Midfielder', collect()),
-            'forwards' => $players->get('Forward', collect()),
+            'goalkeepers' => $playersByGroup['goalkeepers'],
+            'defenders' => $playersByGroup['defenders'],
+            'midfielders' => $playersByGroup['midfielders'],
+            'forwards' => $playersByGroup['forwards'],
             'currentLineup' => $currentLineup,
             'autoLineup' => $autoLineup,
             'formations' => Formation::cases(),
@@ -199,28 +195,5 @@ class ShowLineup
             'injuredCount' => $injuredCount,
             'suspendedCount' => $suspendedCount,
         ];
-    }
-
-    /**
-     * Get sort order for positions within their group.
-     */
-    private function positionSortOrder(string $position): int
-    {
-        return match ($position) {
-            'Goalkeeper' => 1,
-            'Centre-Back' => 10,
-            'Left-Back' => 11,
-            'Right-Back' => 12,
-            'Defensive Midfield' => 20,
-            'Central Midfield' => 21,
-            'Left Midfield' => 22,
-            'Right Midfield' => 23,
-            'Attacking Midfield' => 24,
-            'Left Winger' => 30,
-            'Right Winger' => 31,
-            'Second Striker' => 32,
-            'Centre-Forward' => 33,
-            default => 99,
-        };
     }
 }

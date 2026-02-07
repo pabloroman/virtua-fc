@@ -17,8 +17,7 @@ class LoanService
     public function processLoanIn(Game $game, GamePlayer $player): Loan
     {
         $parentTeamId = $player->team_id;
-        $seasonYear = (int) $game->season;
-        $returnDate = Carbon::createFromDate($seasonYear + 1, 6, 30);
+        $returnDate = $game->getSeasonEndDate();
 
         $loan = Loan::create([
             'game_id' => $game->id,
@@ -44,8 +43,7 @@ class LoanService
      */
     public function processLoanOut(Game $game, GamePlayer $player, Team $destinationTeam): Loan
     {
-        $seasonYear = (int) $game->season;
-        $returnDate = Carbon::createFromDate($seasonYear + 1, 6, 30);
+        $returnDate = $game->getSeasonEndDate();
 
         $loan = Loan::create([
             'game_id' => $game->id,

@@ -280,9 +280,7 @@ class TransferService
             return $offers;
         }
 
-        // Get the season end date for contract expiry check
-        $seasonYear = (int) $game->season;
-        $seasonEndDate = Carbon::createFromDate($seasonYear + 1, 6, 30);
+        $seasonEndDate = $game->getSeasonEndDate();
 
         // Use pre-loaded players if available, otherwise load
         if ($allPlayersGrouped !== null) {
@@ -316,7 +314,7 @@ class TransferService
                 ->where('game_id', $game->id)
                 ->where('team_id', $game->team_id)
                 ->get()
-                ->filter(fn ($player) => $player->canReceivePreContractOffers());
+                ->filter(fn ($player) => $player->canReceivePreContractOffers($seasonEndDate));
         }
 
         foreach ($expiringPlayers as $player) {
@@ -431,6 +429,8 @@ class TransferService
      */
     public function getExpiringContractPlayers(Game $game): Collection
     {
+        $seasonEndDate = $game->getSeasonEndDate();
+
         return GamePlayer::with(['player', 'transferOffers' => function ($query) {
                 $query->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
                     ->whereIn('status', [TransferOffer::STATUS_PENDING, TransferOffer::STATUS_AGREED]);
@@ -438,7 +438,7 @@ class TransferService
             ->where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->get()
-            ->filter(fn ($player) => $player->isContractExpiring())
+            ->filter(fn ($player) => $player->isContractExpiring($seasonEndDate))
             ->sortBy('contract_until');
     }
 
@@ -776,8 +776,7 @@ class TransferService
     {
         $player = $offer->gamePlayer;
         $parentTeamId = $player->team_id;
-        $seasonYear = (int) $game->season;
-        $returnDate = Carbon::createFromDate($seasonYear + 1, 6, 30);
+        $returnDate = $game->getSeasonEndDate();
 
         Loan::create([
             'game_id' => $game->id,
@@ -803,8 +802,7 @@ class TransferService
     {
         $player = $offer->gamePlayer;
         $destinationTeamId = $offer->offering_team_id;
-        $seasonYear = (int) $game->season;
-        $returnDate = Carbon::createFromDate($seasonYear + 1, 6, 30);
+        $returnDate = $game->getSeasonEndDate();
 
         Loan::create([
             'game_id' => $game->id,

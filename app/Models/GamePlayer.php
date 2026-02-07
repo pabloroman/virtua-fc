@@ -207,34 +207,24 @@ class GamePlayer extends Model
     }
 
     /**
-     * Get the agreed pre-contract offer (if any).
-     */
-    public function agreedPreContract(): ?TransferOffer
-    {
-        return $this->transferOffers()
-            ->where('status', TransferOffer::STATUS_AGREED)
-            ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
-            ->first();
-    }
-
-    /**
      * Check if player's contract is expiring at end of current season.
      * Returns true if contract expires within the season (typically June 30).
+     *
+     * @param Carbon|null $seasonEndDate The season end date. If null, calculated from game.
      */
-    public function isContractExpiring(): bool
+    public function isContractExpiring(?Carbon $seasonEndDate = null): bool
     {
         if (!$this->contract_until) {
             return false;
         }
 
-        $game = $this->game;
-        if (!$game) {
-            return false;
+        if ($seasonEndDate === null) {
+            $game = $this->game;
+            if (!$game) {
+                return false;
+            }
+            $seasonEndDate = $game->getSeasonEndDate();
         }
-
-        // Get the current season's end date (June 30 of season year)
-        $seasonYear = (int) $game->season;
-        $seasonEndDate = Carbon::createFromDate($seasonYear + 1, 6, 30);
 
         return $this->contract_until->lte($seasonEndDate);
     }
@@ -242,10 +232,12 @@ class GamePlayer extends Model
     /**
      * Check if player can receive pre-contract offers.
      * Available when contract expires at end of season and no agreement exists.
+     *
+     * @param Carbon|null $seasonEndDate The season end date. If null, calculated from game.
      */
-    public function canReceivePreContractOffers(): bool
+    public function canReceivePreContractOffers(?Carbon $seasonEndDate = null): bool
     {
-        if (!$this->isContractExpiring()) {
+        if (!$this->isContractExpiring($seasonEndDate)) {
             return false;
         }
 
@@ -278,10 +270,12 @@ class GamePlayer extends Model
     /**
      * Check if player can be offered a contract renewal.
      * Only for players with expiring contracts who haven't already agreed to leave.
+     *
+     * @param Carbon|null $seasonEndDate The season end date. If null, calculated from game.
      */
-    public function canBeOfferedRenewal(): bool
+    public function canBeOfferedRenewal(?Carbon $seasonEndDate = null): bool
     {
-        if (!$this->isContractExpiring()) {
+        if (!$this->isContractExpiring($seasonEndDate)) {
             return false;
         }
 

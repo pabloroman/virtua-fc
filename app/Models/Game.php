@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -358,10 +359,19 @@ class Game extends Model
     /**
      * Get the pre-season start date (July 1 of the season year).
      */
-    public function getPreseasonStartDate(): \Carbon\Carbon
+    public function getPreseasonStartDate(): Carbon
     {
         $seasonYear = (int) $this->season;
-        return \Carbon\Carbon::createFromDate($seasonYear, self::PRESEASON_START_MONTH, self::PRESEASON_START_DAY);
+        return Carbon::createFromDate($seasonYear, self::PRESEASON_START_MONTH, self::PRESEASON_START_DAY);
+    }
+
+    /**
+     * Get the season end date (June 30 of the following year).
+     */
+    public function getSeasonEndDate(): Carbon
+    {
+        $seasonYear = (int) $this->season;
+        return Carbon::createFromDate($seasonYear + 1, 6, 30);
     }
 
     /**

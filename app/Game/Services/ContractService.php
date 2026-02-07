@@ -331,11 +331,13 @@ class ContractService
      */
     public function processRenewal(GamePlayer $player, int $newWage, int $contractYears): bool
     {
-        if (!$player->canBeOfferedRenewal()) {
+        $game = $player->game;
+        $seasonEndDate = $game->getSeasonEndDate();
+
+        if (!$player->canBeOfferedRenewal($seasonEndDate)) {
             return false;
         }
 
-        $game = $player->game;
         $seasonYear = (int) $game->season;
 
         // New contract ends in June of (current season + contract years)
@@ -381,11 +383,13 @@ class ContractService
      */
     public function getPlayersEligibleForRenewal(Game $game): Collection
     {
+        $seasonEndDate = $game->getSeasonEndDate();
+
         return GamePlayer::with('player')
             ->where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->get()
-            ->filter(fn ($player) => $player->canBeOfferedRenewal())
+            ->filter(fn ($player) => $player->canBeOfferedRenewal($seasonEndDate))
             ->sortBy('contract_until');
     }
 
