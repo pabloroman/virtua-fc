@@ -17,8 +17,8 @@
                     <p class="text-sm text-slate-500">{{ __('finances.season_budget', ['season' => $game->season]) }}</p>
                 </div>
             </div>
-            <a href="{{ route('game.preseason', $game->id) }}" class="text-sm text-slate-600 hover:text-slate-900">
-                {{ __('game.back_to_preseason') }}
+            <a href="{{ route('game.finances', $game->id) }}" class="text-sm text-slate-600 hover:text-slate-900">
+                ← {{ __('app.back') }}
             </a>
         </div>
     </x-slot>

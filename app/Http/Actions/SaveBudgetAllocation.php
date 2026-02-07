@@ -12,12 +12,6 @@ class SaveBudgetAllocation
     {
         $game = Game::findOrFail($gameId);
 
-        // Only allow allocation/changes during preseason
-        if (!$game->isInPreseason()) {
-            return redirect()->route('game.budget', $gameId)
-                ->with('error', __('messages.budget_preseason_only'));
-        }
-
         $finances = $game->currentFinances;
         if (!$finances) {
             return redirect()->route('game.budget', $gameId)
@@ -81,7 +75,7 @@ class SaveBudgetAllocation
             ]
         );
 
-        return redirect()->route('game.preseason', $gameId)
+        return redirect()->route('game.finances', $gameId)
             ->with('success', __('messages.budget_saved'));
     }
 }

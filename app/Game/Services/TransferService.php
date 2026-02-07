@@ -663,7 +663,7 @@ class TransferService
 
     /**
      * Complete all agreed incoming transfers (user buying/loaning players).
-     * Called at transfer window or preseason week 1.
+     * Called when transfer window opens.
      */
     public function completeIncomingTransfers(Game $game): Collection
     {

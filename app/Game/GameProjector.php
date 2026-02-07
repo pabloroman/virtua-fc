@@ -236,10 +236,13 @@ class GameProjector extends Projector
         // in the event and replay all processor actions here. For now, the pipeline
         // handles all mutations before the event is recorded.
 
-        // Start pre-season mode - this sets up the summer transfer window period
+        // Set current date to the first match of the new season
         $game = Game::find($event->aggregateRootUuid());
         if ($game) {
-            $game->startPreseason();
+            $firstMatch = $game->getFirstCompetitiveMatch();
+            if ($firstMatch) {
+                $game->update(['current_date' => $firstMatch->scheduled_date]);
+            }
         }
     }
 

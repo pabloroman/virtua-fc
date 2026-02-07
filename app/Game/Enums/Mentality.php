@@ -14,9 +14,9 @@ enum Mentality: string
     public function label(): string
     {
         return match ($this) {
-            self::DEFENSIVE => 'Defensive',
-            self::BALANCED => 'Balanced',
-            self::ATTACKING => 'Attacking',
+            self::DEFENSIVE => __('game.mentality_defensive'),
+            self::BALANCED => __('game.mentality_balanced'),
+            self::ATTACKING => __('game.mentality_attacking'),
         };
     }
 

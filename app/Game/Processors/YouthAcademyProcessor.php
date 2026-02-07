@@ -19,7 +19,7 @@ class YouthAcademyProcessor implements SeasonEndProcessor
 
     public function priority(): int
     {
-        return 55; // After budget projection (50), before preseason starts
+        return 55; // After budget projection (50)
     }
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData
@@ -31,7 +31,7 @@ class YouthAcademyProcessor implements SeasonEndProcessor
         $prospects = $this->youthAcademyService->generateProspects($game);
 
         if ($prospects->isNotEmpty()) {
-            // Store prospect info in metadata for preseason display
+            // Store prospect info in metadata for season start display
             $data->setMetadata('youth_prospects', $prospects->map(function ($prospect) {
                 return [
                     'id' => $prospect->id,

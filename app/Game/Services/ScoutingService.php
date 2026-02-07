@@ -131,7 +131,7 @@ class ScoutingService
     }
 
     /**
-     * Tick scout search progress. Called on matchday advance or preseason week.
+     * Tick scout search progress. Called on matchday advance.
      * If search completes, generates results.
      */
     public function tickSearch(Game $game): ?ScoutReport

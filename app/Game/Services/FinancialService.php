@@ -384,7 +384,7 @@ class FinancialService
         }
 
         // Determine the payment period
-        $period = $game->getCurrentWindowName() ?? 'Season';
+        $period = $game->getCurrentWindowName() ?? __('game.season');
 
         // Record the expense transaction
         FinancialTransaction::recordExpense(

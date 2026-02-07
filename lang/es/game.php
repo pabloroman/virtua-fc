@@ -6,7 +6,6 @@ return [
     'season_n' => 'Temporada :season',
     'matchday' => 'Jornada',
     'matchday_n' => 'Jornada :number',
-    'pre_season' => 'Pretemporada',
     'season_complete' => '¡Temporada Completada!',
     'season_complete_congrats' => 'Felicidades por completar la temporada :season.',
     'view_season_summary' => 'Ver Resumen de Temporada',
@@ -49,6 +48,11 @@ return [
     'notifications' => 'Notificaciones',
     'squad_status' => 'Estado de la Plantilla',
 
+    // Mentality
+    'mentality_defensive' => 'Defensiva',
+    'mentality_balanced' => 'Equilibrada',
+    'mentality_attacking' => 'Ofensiva',
+
     // Alerts
     'injured' => 'Lesionado',
     'suspended' => 'Sancionado',
@@ -80,31 +84,6 @@ return [
     'scored' => 'Marcados',
     'conceded' => 'Encajados',
     'home_vs_away' => 'Casa vs Fuera',
-
-    // Preseason
-    'back_to_preseason' => 'Volver a Pretemporada',
-    'preseason_title' => 'Pretemporada :season',
-    'summer_window_open' => 'Ventana de Verano Abierta',
-    'season_starts' => 'La temporada comienza: :date',
-    'week_of' => 'Semana :current de :total',
-    'advance_week' => 'Avanzar Semana',
-    'allocate_budget' => 'Asignar Presupuesto de Temporada',
-    'allocate_budget_desc' => 'Tienes :amount para asignar entre infraestructura y fichajes.',
-    'set_up_budget' => 'Configurar Presupuesto',
-    'available_surplus' => 'Superávit Disponible',
-    'projected_wages' => 'Salarios Proyectados',
-    'click_to_adjust' => 'Clic para ajustar',
-    'click_to_allocate' => 'Clic para asignar',
-    'offers_for_your_players' => 'Ofertas por tus Jugadores',
-    'no_offers_yet' => 'Aún no hay ofertas',
-    'list_players_hint' => 'Pon jugadores a la venta para atraer ofertas',
-    'your_squad' => 'Tu Plantilla',
-    'offer_received' => 'Oferta recibida',
-    'listed' => 'En venta',
-    'list_for_sale' => 'Poner a la venta',
-    'advance_week_hint' => 'Haz clic en "Avanzar Semana" para comenzar la pretemporada y recibir los derechos de TV.',
-    'window_closing_soon' => '¡La ventana de fichajes cierra pronto! Finaliza tus operaciones.',
-    'build_squad_hint' => 'Usa este tiempo para construir tu plantilla para la próxima temporada.',
 
     // Youth & Loans
     'youth_academy_prospects' => 'Promesas de la Cantera',

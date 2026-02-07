@@ -47,7 +47,7 @@ class ShowBudgetAllocation
             'availableSurplus' => $availableSurplus,
             'tiers' => $tiers,
             'tierThresholds' => GameInvestment::TIER_THRESHOLDS,
-            'isLocked' => !$game->isInPreseason(),
+            'isLocked' => false,
         ]);
     }
 }

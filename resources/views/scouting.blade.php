@@ -28,7 +28,7 @@
                                 @if($isTransferWindow)
                                     <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                         <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
-                                        {{ $currentWindow }} {{ __('app.window_open') }}
+                                        {{ __('transfers.window_open', ['window' => $currentWindow]) }}
                                     </span>
                                 @else
                                     {{ __('transfers.window') }}: <span class="font-semibold text-slate-900">{{ __('app.window_closed') }}</span>

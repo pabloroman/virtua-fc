@@ -38,8 +38,10 @@ return [
 
     // Budget messages
     'budget_saved' => 'Asignación de presupuesto guardada.',
-    'budget_preseason_only' => 'El presupuesto solo puede ajustarse durante la pretemporada.',
     'budget_no_projections' => 'No se encontraron proyecciones financieras.',
+
+    // Season messages
+    'new_season_started' => '¡Bienvenido a la temporada :season!',
     'budget_exceeds_surplus' => 'La asignación total supera el superávit disponible.',
     'budget_minimum_tier' => 'Todas las áreas de infraestructura deben ser al menos Nivel 1.',
 

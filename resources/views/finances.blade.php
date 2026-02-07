@@ -156,11 +156,9 @@
                                 </svg>
                                 {{ __('finances.infrastructure_investment') }}
                             </h4>
-                            @if($game->isInPreseason())
                             <a href="{{ route('game.budget', $game->id) }}" class="text-sm text-sky-600 hover:text-sky-800">
                                 {{ __('finances.adjust_allocation') }} &rarr;
                             </a>
-                            @endif
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -257,7 +255,7 @@
                             </div>
                         </div>
                     </div>
-                    @elseif($game->isInPreseason())
+                    @else
                     <div class="mb-8">
                         <a href="{{ route('game.budget', $game->id) }}" class="block">
                             <div class="bg-gradient-to-r from-sky-500 to-sky-600 rounded-lg p-6 text-white hover:from-sky-600 hover:to-sky-700 transition">

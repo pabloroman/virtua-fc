@@ -30,7 +30,7 @@ class ShowSquad
             'midfielders' => $players['midfielders'],
             'forwards' => $players['forwards'],
             'expiringContractsCount' => $expiringContractsCount,
-            'isTransferWindow' => $game->isTransferWindowOpen() || $game->isInPreseason(),
+            'isTransferWindow' => $game->isTransferWindowOpen(),
         ]);
     }
 }
