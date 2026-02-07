@@ -108,12 +108,12 @@
 
         getCompatibilityDisplay(position, slotCode) {
             const score = this.getSlotCompatibility(position, slotCode);
-            if (score >= 100) return { label: 'Natural', class: 'text-green-600', ring: 'ring-green-500', score };
-            if (score >= 80) return { label: 'Very Good', class: 'text-emerald-600', ring: 'ring-emerald-500', score };
-            if (score >= 60) return { label: 'Good', class: 'text-lime-600', ring: 'ring-lime-500', score };
-            if (score >= 40) return { label: 'Okay', class: 'text-yellow-600', ring: 'ring-yellow-500', score };
-            if (score >= 20) return { label: 'Poor', class: 'text-orange-500', ring: 'ring-orange-500', score };
-            return { label: 'Unsuitable', class: 'text-red-600', ring: 'ring-red-500', score };
+            if (score >= 100) return { label: '{{ __('squad.natural') }}', class: 'text-green-600', ring: 'ring-green-500', score };
+            if (score >= 80) return { label: '{{ __('squad.very_good') }}', class: 'text-emerald-600', ring: 'ring-emerald-500', score };
+            if (score >= 60) return { label: '{{ __('squad.good') }}', class: 'text-lime-600', ring: 'ring-lime-500', score };
+            if (score >= 40) return { label: '{{ __('squad.okay') }}', class: 'text-yellow-600', ring: 'ring-yellow-500', score };
+            if (score >= 20) return { label: '{{ __('squad.poor') }}', class: 'text-orange-500', ring: 'ring-orange-500', score };
+            return { label: '{{ __('squad.unsuitable') }}', class: 'text-red-600', ring: 'ring-red-500', score };
         },
 
         isSelected(id) { return this.selectedPlayers.includes(id) },
@@ -209,7 +209,7 @@
                             <div class="flex items-center gap-6">
                                 {{-- Formation Selector --}}
                                 <div class="flex items-center gap-2">
-                                    <label class="text-sm font-medium text-slate-700">Formation:</label>
+                                    <label class="text-sm font-medium text-slate-700">{{ __('squad.formation') }}:</label>
                                     <select
                                         x-model="selectedFormation"
                                         @change="updateAutoLineup()"
@@ -223,7 +223,7 @@
 
                                 {{-- Mentality Selector --}}
                                 <div class="flex items-center gap-2">
-                                    <label class="text-sm font-medium text-slate-700">Mentality:</label>
+                                    <label class="text-sm font-medium text-slate-700">{{ __('squad.mentality') }}:</label>
                                     <select
                                         x-model="selectedMentality"
                                         class="text-sm font-semibold border-slate-300 rounded-md focus:border-sky-500 focus:ring-sky-500"
@@ -244,12 +244,12 @@
                                 {{-- Team Average with Opponent Comparison --}}
                                 <div class="flex items-center gap-3 px-3 py-1.5 bg-slate-200 rounded-md">
                                     <div class="flex items-center gap-1.5">
-                                        <span class="text-sm text-slate-600">You:</span>
+                                        <span class="text-sm text-slate-600">{{ __('squad.you') }}:</span>
                                         <span class="font-semibold text-slate-900" x-text="teamAverage || '-'"></span>
                                     </div>
                                     <span class="text-slate-400">vs</span>
                                     <div class="flex items-center gap-1.5">
-                                        <span class="text-sm text-slate-600">Opp:</span>
+                                        <span class="text-sm text-slate-600">{{ __('squad.opp') }}:</span>
                                         <span class="font-semibold {{ $opponentData['teamAverage'] > 0 ? 'text-slate-900' : 'text-slate-400' }}">{{ $opponentData['teamAverage'] ?: '-' }}</span>
                                     </div>
                                     {{-- Advantage indicator --}}
@@ -269,17 +269,17 @@
 
                             <div class="flex items-center gap-3">
                                 <button type="button" @click="clearSelection()" class="px-4 py-2 text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-200 rounded transition-colors">
-                                    Clear
+                                    {{ __('app.clear') }}
                                 </button>
                                 <button type="button" @click="quickSelect()" class="px-4 py-2 text-sm bg-slate-200 text-slate-700 hover:bg-slate-300 rounded transition-colors">
-                                    Auto Select
+                                    {{ __('squad.auto_select') }}
                                 </button>
                                 <button
                                     type="submit"
                                     class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-white uppercase tracking-wide hover:bg-red-700 focus:bg-red-700 active:bg-red-900 transition ease-in-out duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
                                     :disabled="selectedCount !== 11"
                                 >
-                                    Confirm
+                                    {{ __('app.confirm') }}
                                 </button>
                             </div>
                         </div>
@@ -371,7 +371,7 @@
 
                                 {{-- Opponent Scout Card --}}
                                 <div class="mt-4 bg-slate-50 rounded-lg p-4 border border-slate-200">
-                                    <div class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Opponent</div>
+                                    <div class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">{{ __('squad.opponent') }}</div>
 
                                     {{-- Team Info --}}
                                     <div class="flex items-center gap-3 mb-3">
@@ -379,7 +379,7 @@
                                         <div>
                                             <div class="font-semibold text-slate-900">{{ $opponent->name }}</div>
                                             <div class="text-sm text-slate-600">
-                                                Team Rating: <span class="font-semibold">{{ $opponentData['teamAverage'] ?: '-' }}</span>
+                                                {{ __('squad.team_rating') }}: <span class="font-semibold">{{ $opponentData['teamAverage'] ?: '-' }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -387,7 +387,7 @@
                                     {{-- Form --}}
                                     @if(count($opponentData['form']) > 0)
                                         <div class="flex items-center gap-2 mb-3">
-                                            <span class="text-xs text-slate-500">Form:</span>
+                                            <span class="text-xs text-slate-500">{{ __('game.form') }}:</span>
                                             <div class="flex gap-1">
                                                 @foreach($opponentData['form'] as $result)
                                                     <span class="w-5 h-5 rounded-full text-xs font-semibold flex items-center justify-center
@@ -406,7 +406,7 @@
                                         {{-- Top Scorer --}}
                                         @if($opponentData['topScorer'])
                                             <div class="flex items-center gap-1">
-                                                <span class="text-slate-500">Top scorer:</span>
+                                                <span class="text-slate-500">{{ __('squad.top_scorer') }}:</span>
                                                 <span class="font-medium text-slate-700">{{ $opponentData['topScorer']['name'] }}</span>
                                                 <span class="text-slate-500">({{ $opponentData['topScorer']['goals'] }})</span>
                                             </div>
@@ -420,13 +420,13 @@
                                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                                                         </svg>
-                                                        {{ $opponentData['injuredCount'] }} injured
+                                                        {{ $opponentData['injuredCount'] }} {{ __('squad.injured') }}
                                                     </span>
                                                 @endif
                                                 @if($opponentData['suspendedCount'] > 0)
                                                     <span class="flex items-center gap-1 text-red-600">
                                                         <span class="w-2.5 h-3 bg-red-500 rounded-sm"></span>
-                                                        {{ $opponentData['suspendedCount'] }} suspended
+                                                        {{ $opponentData['suspendedCount'] }} {{ __('squad.suspended') }}
                                                     </span>
                                                 @endif
                                             </div>
@@ -442,28 +442,28 @@
                                         <tr>
                                             <th class="font-semibold py-2 w-10"></th>
                                             <th class="font-semibold py-2 w-10"></th>
-                                            <th class="font-semibold py-2">Name</th>
+                                            <th class="font-semibold py-2">{{ __('app.name') }}</th>
                                             <th class="font-semibold py-2 w-10"></th>
-                                            <th class="font-semibold py-2 text-center w-8">OVR</th>
-                                            <th class="font-semibold py-2 text-center w-8">TEC</th>
-                                            <th class="font-semibold py-2 text-center w-8">PHY</th>
-                                            <th class="font-semibold py-2 text-center w-8">FIT</th>
-                                            <th class="font-semibold py-2 text-center w-8">MOR</th>
+                                            <th class="font-semibold py-2 text-center w-8">{{ __('squad.overall') }}</th>
+                                            <th class="font-semibold py-2 text-center w-8">{{ __('squad.technical') }}</th>
+                                            <th class="font-semibold py-2 text-center w-8">{{ __('squad.physical') }}</th>
+                                            <th class="font-semibold py-2 text-center w-8">{{ __('squad.fitness') }}</th>
+                                            <th class="font-semibold py-2 text-center w-8">{{ __('squad.morale') }}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach([
-                                            ['name' => 'Goalkeepers', 'players' => $goalkeepers, 'role' => 'Goalkeeper'],
-                                            ['name' => 'Defenders', 'players' => $defenders, 'role' => 'Defender'],
-                                            ['name' => 'Midfielders', 'players' => $midfielders, 'role' => 'Midfielder'],
-                                            ['name' => 'Forwards', 'players' => $forwards, 'role' => 'Forward'],
+                                            ['name' => __('squad.goalkeepers'), 'players' => $goalkeepers, 'role' => 'Goalkeeper'],
+                                            ['name' => __('squad.defenders'), 'players' => $defenders, 'role' => 'Defender'],
+                                            ['name' => __('squad.midfielders'), 'players' => $midfielders, 'role' => 'Midfielder'],
+                                            ['name' => __('squad.forwards'), 'players' => $forwards, 'role' => 'Forward'],
                                         ] as $group)
                                             @if($group['players']->isNotEmpty())
                                                 <tr class="bg-slate-200">
                                                     <td colspan="9" class="py-2 px-2 text-xs font-semibold text-slate-600 uppercase tracking-wide">
                                                         {{ $group['name'] }}
                                                         <span class="font-normal text-slate-400">
-                                                            (need <span x-text="currentSlots.filter(s => s.role === '{{ $group['role'] }}').length"></span>)
+                                                            ({{ __('squad.need') }} <span x-text="currentSlots.filter(s => s.role === '{{ $group['role'] }}').length"></span>)
                                                         </span>
                                                     </td>
                                                 </tr>
@@ -525,7 +525,7 @@
                                                                 <span
                                                                     class="text-xs font-medium px-1.5 py-0.5 rounded whitespace-nowrap"
                                                                     :class="getCompatibilityDisplay('{{ $player->position }}', getPlayerSlot('{{ $player->id }}')).class"
-                                                                    x-text="getPlayerSlot('{{ $player->id }}') + (getCompatibilityDisplay('{{ $player->position }}', getPlayerSlot('{{ $player->id }}')).label !== 'Natural' ? ' (' + getCompatibilityDisplay('{{ $player->position }}', getPlayerSlot('{{ $player->id }}')).label + ')' : '')"
+                                                                    x-text="getPlayerSlot('{{ $player->id }}') + (getCompatibilityDisplay('{{ $player->position }}', getPlayerSlot('{{ $player->id }}')).label !== '{{ __('squad.natural') }}' ? ' (' + getCompatibilityDisplay('{{ $player->position }}', getPlayerSlot('{{ $player->id }}')).label + ')' : '')"
                                                                 ></span>
                                                             </template>
                                                         </td>

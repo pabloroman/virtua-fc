@@ -59,7 +59,7 @@ class RequestLoan
             $this->loanService->processLoanIn($game, $player);
 
             return redirect()->route('game.scouting.player', [$game->id, $player->id])
-                ->with('success', $evaluation['message'] . ' The loan is now active.');
+                ->with('success', __('messages.loan_in_complete', ['message' => $evaluation['message']]));
         }
 
         // Create agreed loan offer record (will be processed at next window)
@@ -77,7 +77,7 @@ class RequestLoan
 
         $nextWindow = $game->getNextWindowName();
         return redirect()->route('game.scouting.player', [$game->id, $player->id])
-            ->with('success', $evaluation['message'] . " The loan will begin when the {$nextWindow} window opens.");
+            ->with('success', __('messages.loan_agreed', ['message' => $evaluation['message'], 'window' => $nextWindow]));
     }
 
     private function handleLoanOut(Game $game, GamePlayer $player)
@@ -85,7 +85,7 @@ class RequestLoan
         // Check player isn't already on loan
         if ($player->isOnLoan()) {
             return redirect()->route('game.loans', $game->id)
-                ->with('error', $player->name . ' is already on loan.');
+                ->with('error', __('messages.already_on_loan', ['player' => $player->name]));
         }
 
         // Find a destination team
@@ -93,7 +93,7 @@ class RequestLoan
 
         if (!$destination) {
             return redirect()->route('game.loans', $game->id)
-                ->with('error', 'No suitable club found for loan.');
+                ->with('error', __('messages.no_suitable_club'));
         }
 
         // If window is open, complete immediately
@@ -113,7 +113,7 @@ class RequestLoan
             $this->loanService->processLoanOut($game, $player, $destination);
 
             return redirect()->route('game.loans', $game->id)
-                ->with('success', $player->name . ' has been loaned to ' . $destination->name . '.');
+                ->with('success', __('messages.loan_complete', ['player' => $player->name, 'team' => $destination->name]));
         }
 
         // Create agreed loan offer record (will be processed at next window)
@@ -131,6 +131,6 @@ class RequestLoan
 
         $nextWindow = $game->getNextWindowName();
         return redirect()->route('game.loans', $game->id)
-            ->with('success', $player->name . ' loan to ' . $destination->name . " will begin when the {$nextWindow} window opens.");
+            ->with('success', __('messages.loan_agreed', ['message' => $player->name . ' loan to ' . $destination->name, 'window' => $nextWindow]));
     }
 }

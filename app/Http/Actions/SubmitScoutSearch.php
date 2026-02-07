@@ -20,7 +20,7 @@ class SubmitScoutSearch
         $existing = $this->scoutingService->getActiveReport($game);
         if ($existing) {
             return redirect()->route('game.scouting', $gameId)
-                ->with('error', 'You already have an active scout search. Cancel it first or wait for results.');
+                ->with('error', __('messages.scout_already_searching'));
         }
 
         $validated = $request->validate([
@@ -42,6 +42,6 @@ class SubmitScoutSearch
         $this->scoutingService->startSearch($game, $filters);
 
         return redirect()->route('game.scouting', $gameId)
-            ->with('success', 'Scout search started. Advance matchdays or preseason weeks to get results.');
+            ->with('success', __('messages.scout_search_started'));
     }
 }

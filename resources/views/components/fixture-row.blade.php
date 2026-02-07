@@ -26,15 +26,15 @@
     {{-- Date & Competition --}}
     <div class="w-16">
         <div class="text-xs text-slate-700">{{ $match->scheduled_date->format('D d M') }}</div>
-        <div class="text-xs text-slate-400 truncate" title="{{ $match->competition->name ?? 'League' }}">
-            {{ $match->competition->name ?? 'League' }}
+        <div class="text-xs text-slate-400 truncate" title="{{ $match->competition->name ?? __('transfers.league') }}">
+            {{ $match->competition->name ?? __('transfers.league') }}
         </div>
     </div>
 
     {{-- Home/Away indicator --}}
     <div>
         <span class="text-xs font-semibold px-2 py-1 rounded @if($isHome) bg-green-100 text-green-700 @else bg-slate-100 text-slate-600 @endif">
-            {{ $isHome ? 'HOME' : 'AWAY' }}
+            {{ $isHome ? mb_strtoupper(__('game.home')) : mb_strtoupper(__('game.away')) }}
         </span>
     </div>
 
@@ -49,7 +49,7 @@
         @if($showScore && $match->played)
             <span class="{{ $resultClass }} font-semibold">{{ $resultText }}</span>
         @elseif($isNextMatch)
-            <span class="text-yellow-600 font-semibold text-sm">NEXT</span>
+            <span class="text-yellow-600 font-semibold text-sm">{{ mb_strtoupper(__('game.next')) }}</span>
         @else
             <span class="text-slate-400">-</span>
         @endif

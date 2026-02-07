@@ -31,7 +31,7 @@ class SubmitTransferBid
         $investment = $game->currentInvestment;
         if ($investment && $bidAmountCents > $investment->transfer_budget) {
             return redirect()->route('game.scouting.player', [$gameId, $playerId])
-                ->with('error', 'Bid exceeds your transfer budget.');
+                ->with('error', __('messages.bid_exceeds_budget'));
         }
 
         // Evaluate bid
@@ -59,12 +59,12 @@ class SubmitTransferBid
 
             if ($completedImmediately) {
                 return redirect()->route('game.scouting', $gameId)
-                    ->with('success', "Transfer complete! {$player->player->name} has joined your squad.");
+                    ->with('success', __('messages.transfer_complete', ['player' => $player->player->name]));
             }
 
             $nextWindow = $game->getNextWindowName();
             return redirect()->route('game.scouting', $gameId)
-                ->with('success', $evaluation['message'] . " The transfer will complete when the {$nextWindow} window opens.");
+                ->with('success', __('messages.transfer_agreed', ['message' => $evaluation['message'], 'window' => $nextWindow]));
         }
 
         if ($evaluation['result'] === 'counter') {

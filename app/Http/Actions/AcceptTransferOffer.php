@@ -36,10 +36,19 @@ class AcceptTransferOffer
         $completedImmediately = $this->transferService->acceptOffer($offer);
 
         if ($completedImmediately) {
-            $message = "Transfer complete! {$playerName} has joined {$teamName} for {$fee}.";
+            $message = __('messages.offer_accepted_sale', [
+                'player' => $playerName,
+                'team' => $teamName,
+                'fee' => $fee,
+            ]);
         } else {
             $nextWindow = $game->getNextWindowName();
-            $message = "Deal agreed! {$playerName} will join {$teamName} for {$fee} when the {$nextWindow} window opens.";
+            $message = __('messages.offer_accepted_pre_contract', [
+                'player' => $playerName,
+                'team' => $teamName,
+                'fee' => $fee,
+                'window' => $nextWindow,
+            ]);
         }
 
         return redirect()

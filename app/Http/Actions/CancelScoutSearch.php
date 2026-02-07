@@ -22,6 +22,6 @@ class CancelScoutSearch
         }
 
         return redirect()->route('game.scouting', $gameId)
-            ->with('success', 'Scout search cancelled.');
+            ->with('success', __('messages.scout_search_cancelled'));
     }
 }

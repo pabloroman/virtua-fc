@@ -39,11 +39,11 @@
                             <a class="text-sm text-slate-400 cursor-pointer hover:text-slate-300" :href="route('logout')"
                                onclick="event.preventDefault();
                                                 this.closest('form').submit();">
-                                {{ __('Log Out') }}
+                                {{ __('app.log_out') }}
                             </a>
                         </form>
-                        <a class="text-sm text-slate-400 hover:text-slate-300" href="{{ route('select-team') }}">Nueva partida</a>
-                        <a class="text-sm text-slate-400 hover:text-slate-300" href="{{ route('dashboard') }}">Cargar partida</a>
+                        <a class="text-sm text-slate-400 hover:text-slate-300" href="{{ route('select-team') }}">{{ __('app.new_game') }}</a>
+                        <a class="text-sm text-slate-400 hover:text-slate-300" href="{{ route('dashboard') }}">{{ __('app.load_game') }}</a>
                     </div>
                 </div>
             </footer>

@@ -11,12 +11,12 @@
                 <div class="p-12">
                     <div class="flex justify-between items-center mb-6">
                         <div>
-                            <h3 class="font-semibold text-xl text-slate-900">{{ $matches->first()?->round_name ?? "Matchday $matchday" }} Results</h3>
+                            <h3 class="font-semibold text-xl text-slate-900">{{ __('game.matchday_results', ['name' => $matches->first()?->round_name ?? __('game.matchday_n', ['number' => $matchday])]) }}</h3>
                             @if($competition)
                                 <p class="text-sm text-slate-500">{{ $competition->name }}</p>
                             @endif
                         </div>
-                        <a href="{{ route('show-game', $game->id) }}" class="text-sky-600 hover:text-sky-800">Back to Dashboard</a>
+                        <a href="{{ route('show-game', $game->id) }}" class="text-sky-600 hover:text-sky-800">{{ __('game.back_to_dashboard') }}</a>
                     </div>
 
                     {{-- Player's Match Highlight --}}
@@ -64,7 +64,7 @@
                                             @foreach($homeGoals->sortBy('minute') as $event)
                                                 <div class="text-slate-600">
                                                     {{ $event->gamePlayer->player->name }}
-                                                    @if($event->event_type === 'own_goal')<span class="text-red-500">(OG)</span>@endif
+                                                    @if($event->event_type === 'own_goal')<span class="text-red-500">({{ __('game.og') }})</span>@endif
                                                     <span class="text-slate-400">{{ $event->minute }}'</span>
                                                 </div>
                                             @endforeach
@@ -73,7 +73,7 @@
                                             @foreach($awayGoals->sortBy('minute') as $event)
                                                 <div class="text-slate-600">
                                                     {{ $event->gamePlayer->player->name }}
-                                                    @if($event->event_type === 'own_goal')<span class="text-red-500">(OG)</span>@endif
+                                                    @if($event->event_type === 'own_goal')<span class="text-red-500">({{ __('game.og') }})</span>@endif
                                                     <span class="text-slate-400">{{ $event->minute }}'</span>
                                                 </div>
                                             @endforeach
@@ -121,7 +121,7 @@
                     @endif
 
                     {{-- All Results --}}
-                    <h4 class="text-md font-semibold text-slate-600 mb-3">All Results</h4>
+                    <h4 class="text-md font-semibold text-slate-600 mb-3">{{ __('game.all_results') }}</h4>
                     <div class="space-y-2">
                         @foreach($matches as $match)
                             <div class="flex items-center p-4 rounded-lg @if($match->id === $playerMatch?->id) bg-sky-50 @else bg-slate-50 @endif">

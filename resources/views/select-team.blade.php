@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-white leading-tight text-center">
-            New Game
+            {{ __('app.new_game') }}
         </h2>
     </x-slot>
 
@@ -16,7 +16,7 @@
                                           type="text"
                                           name="name"
                                           autofocus
-                                          placeholder="Manager name"
+                                          placeholder="{{ __('game.manager_name') }}"
                                           required/>
                         </label>
                         <x-input-error :messages="$errors->get('name')" class="mt-2"/>
@@ -48,7 +48,7 @@
                         </div>
                         <div class="grid">
                             <x-primary-button-spin class="place-self-center text-lg">
-                                Start Game
+                                {{ __('game.start_game') }}
                             </x-primary-button-spin>
                         </div>
                     </form>

@@ -13,21 +13,21 @@
                         <h3 class="font-semibold text-xl text-slate-900">{{ $competition->name }}</h3>
                         <div class="flex items-center gap-4">
                             @if($game->cup_eliminated)
-                                <span class="px-3 py-1 text-sm bg-red-100 text-red-700 rounded-full">Eliminated</span>
+                                <span class="px-3 py-1 text-sm bg-red-100 text-red-700 rounded-full">{{ __('cup.eliminated') }}</span>
                             @elseif($game->cup_round > 0)
                                 <span class="px-3 py-1 text-sm bg-green-100 text-green-700 rounded-full">
-                                    Round {{ $game->cup_round }}
+                                    {{ __('cup.round_n', ['round' => $game->cup_round]) }}
                                 </span>
                             @else
-                                <span class="px-3 py-1 text-sm bg-slate-100 text-slate-600 rounded-full">Not yet entered</span>
+                                <span class="px-3 py-1 text-sm bg-slate-100 text-slate-600 rounded-full">{{ __('cup.not_yet_entered') }}</span>
                             @endif
-                            <a href="{{ route('show-game', $game->id) }}" class="text-sky-600 hover:text-sky-800">Back to Dashboard</a>
+                            <a href="{{ route('show-game', $game->id) }}" class="text-sky-600 hover:text-sky-800">{{ __('cup.back_to_dashboard') }}</a>
                         </div>
                     </div>
 
                     @if($rounds->isEmpty())
                         <div class="text-center py-12 text-slate-500">
-                            <p>Cup data not available.</p>
+                            <p>{{ __('cup.cup_data_not_available') }}</p>
                         </div>
                     @else
                         {{-- Player's Current Tie Highlight --}}
@@ -38,7 +38,7 @@
                                 $round = $rounds->firstWhere('round_number', $playerTie->round_number);
                             @endphp
                             <div class="mb-8 p-6 rounded-xl bg-gradient-to-r from-sky-50 to-sky-100 border border-sky-200">
-                                <div class="text-center text-sm text-sky-600 mb-3">Your Current Cup Tie - {{ $round?->round_name }}</div>
+                                <div class="text-center text-sm text-sky-600 mb-3">{{ __('cup.your_current_cup_tie', ['round' => $round?->round_name]) }}</div>
                                 <div class="flex items-center justify-center gap-6">
                                     <div class="flex items-center gap-3 flex-1 justify-end">
                                         <span class="text-xl font-semibold @if($playerTie->home_team_id === $game->team_id) text-sky-700 @endif">
@@ -52,7 +52,7 @@
                                                 {{ $playerTie->getScoreDisplay() }}
                                             </div>
                                         @else
-                                            <div class="text-slate-400">vs</div>
+                                            <div class="text-slate-400">{{ __('game.vs') }}</div>
                                         @endif
                                     </div>
                                     <div class="flex items-center gap-3 flex-1">
@@ -63,7 +63,7 @@
                                     </div>
                                 </div>
                                 @if($round?->isTwoLegged())
-                                    <div class="text-center text-sm text-slate-500 mt-2">Two-legged tie</div>
+                                    <div class="text-center text-sm text-slate-500 mt-2">{{ __('cup.two_legged_tie') }}</div>
                                 @endif
                             </div>
                         @elseif($playerTie && $playerTie->completed)
@@ -72,7 +72,7 @@
                             @endphp
                             <div class="mb-8 p-6 rounded-xl {{ $won ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200' }} border">
                                 <div class="text-center text-sm {{ $won ? 'text-green-600' : 'text-red-600' }} mb-3">
-                                    {{ $won ? 'Advanced to Next Round!' : 'Eliminated' }}
+                                    {{ $won ? __('cup.advanced_to_next_round') : __('cup.eliminated') }}
                                 </div>
                                 <div class="flex items-center justify-center gap-6">
                                     <div class="flex items-center gap-3 flex-1 justify-end">
@@ -112,7 +112,7 @@
 
                                         @if($ties->isEmpty())
                                             <div class="p-4 text-center border border-dashed rounded-lg">
-                                                <div class="text-slate-400 text-sm mb-2">Draw pending</div>
+                                                <div class="text-slate-400 text-sm mb-2">{{ __('cup.draw_pending') }}</div>
                                                 @php
                                                     $canDraw = app(\App\Game\Services\CupDrawService::class)
                                                         ->needsDrawForRound($game->id, 'ESPCUP', $round->round_number);
@@ -121,7 +121,7 @@
                                                     <form method="POST" action="{{ route('game.cup.draw', [$game->id, $round->round_number]) }}">
                                                         @csrf
                                                         <button type="submit" class="text-xs px-3 py-1 bg-sky-500 text-white rounded hover:bg-sky-600">
-                                                            Conduct Draw
+                                                            {{ __('cup.conduct_draw') }}
                                                         </button>
                                                     </form>
                                                 @endif
@@ -163,13 +163,13 @@
                                                         @if($tie->completed && $tie->resolution && $tie->resolution['type'] !== 'normal')
                                                             <div class="text-xs text-center text-slate-400 py-1 border-t bg-slate-50">
                                                                 @if($tie->resolution['type'] === 'penalties')
-                                                                    Pens: {{ $tie->resolution['penalties'] }}
+                                                                    {{ __('cup.pens') }} {{ $tie->resolution['penalties'] }}
                                                                 @elseif($tie->resolution['type'] === 'extra_time')
-                                                                    AET
+                                                                    {{ __('cup.aet') }}
                                                                 @elseif($tie->resolution['type'] === 'away_goals')
-                                                                    Away goals
+                                                                    {{ __('cup.away_goals') }}
                                                                 @elseif($tie->resolution['type'] === 'aggregate')
-                                                                    Agg: {{ $tie->resolution['aggregate'] }}
+                                                                    {{ __('cup.agg') }} {{ $tie->resolution['aggregate'] }}
                                                                 @endif
                                                             </div>
                                                         @endif
@@ -187,11 +187,11 @@
                             <div class="flex gap-6">
                                 <div class="flex items-center gap-2">
                                     <div class="w-3 h-3 bg-sky-100 border border-sky-300 rounded"></div>
-                                    <span>Your matches</span>
+                                    <span>{{ __('cup.your_matches') }}</span>
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <div class="w-3 h-3 bg-green-50 rounded"></div>
-                                    <span>Winner</span>
+                                    <span>{{ __('cup.winner') }}</span>
                                 </div>
                             </div>
                         </div>

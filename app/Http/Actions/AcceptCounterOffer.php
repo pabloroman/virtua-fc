@@ -19,7 +19,7 @@ class AcceptCounterOffer
 
         if (!$offer->isPending() || !$offer->isIncoming()) {
             return redirect()->route('game.scouting', $gameId)
-                ->with('error', 'This offer is no longer available.');
+                ->with('error', __('messages.counter_offer_expired'));
         }
 
         // Accept counter: update transfer_fee to counter amount (stored in asking_price)
@@ -32,11 +32,11 @@ class AcceptCounterOffer
 
         if ($completedImmediately) {
             return redirect()->route('game.scouting', $gameId)
-                ->with('success', "Transfer complete! {$playerName} has joined your squad.");
+                ->with('success', __('messages.counter_offer_accepted_immediate', ['player' => $playerName]));
         }
 
         $nextWindow = $game->getNextWindowName();
         return redirect()->route('game.scouting', $gameId)
-            ->with('success', "Counter-offer accepted! {$playerName} will join when the {$nextWindow} window opens.");
+            ->with('success', __('messages.counter_offer_accepted', ['player' => $playerName, 'window' => $nextWindow]));
     }
 }

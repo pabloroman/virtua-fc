@@ -10,13 +10,13 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-12">
                     <div class="flex items-center justify-between mb-6">
-                        <h3 class="font-semibold text-xl text-slate-900">{{ $game->team->name }} Squad</h3>
+                        <h3 class="font-semibold text-xl text-slate-900">{{ __('squad.title', ['team' => $game->team->name]) }}</h3>
                         <div class="flex items-center gap-3">
                             <a href="{{ route('game.squad.contracts', $game->id) }}" class="inline-flex items-center px-4 py-2 text-sm font-medium {{ $expiringContractsCount > 0 ? 'text-red-600 bg-red-50 hover:bg-red-100' : 'text-slate-600 bg-slate-50 hover:bg-slate-100' }} rounded-lg transition-colors">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
-                                Contracts
+                                {{ __('squad.contracts') }}
                                 @if($expiringContractsCount > 0)
                                 <span class="ml-1.5 px-1.5 py-0.5 text-xs font-bold bg-red-600 text-white rounded-full">{{ $expiringContractsCount }}</span>
                                 @endif
@@ -25,13 +25,13 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                                 </svg>
-                                Development
+                                {{ __('squad.development') }}
                             </a>
                             <a href="{{ route('game.squad.stats', $game->id) }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-slate-600 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                                 </svg>
-                                Stats
+                                {{ __('squad.stats') }}
                             </a>
                         </div>
                     </div>
@@ -40,28 +40,28 @@
                         <thead class="text-left border-b">
                             <tr>
                                 <th class="font-semibold py-2 w-10"></th>
-                                <th class="font-semibold py-2">Name</th>
-                                <th class="font-semibold py-2 text-center w-12">Country</th>
-                                <th class="font-semibold py-2 text-center w-12">Age</th>
+                                <th class="font-semibold py-2">{{ __('app.name') }}</th>
+                                <th class="font-semibold py-2 text-center w-12">{{ __('app.country') }}</th>
+                                <th class="font-semibold py-2 text-center w-12">{{ __('app.age') }}</th>
 
-                                <th class="font-semibold py-2 pr-4 text-right w-20">Value</th>
-                                <th class="font-semibold py-2 pr-4 text-right w-20">Wage</th>
-                                <th class="font-semibold py-2 pr-4 text-right w-20">Contract</th>
+                                <th class="font-semibold py-2 pr-4 text-right w-20">{{ __('app.value') }}</th>
+                                <th class="font-semibold py-2 pr-4 text-right w-20">{{ __('app.wage') }}</th>
+                                <th class="font-semibold py-2 pr-4 text-right w-20">{{ __('app.contract') }}</th>
 
-                                <th class="font-semibold py-2 text-center w-12">TEC</th>
-                                <th class="font-semibold py-2 text-center w-12">PHY</th>
-                                <th class="font-semibold py-2 text-center w-12">FIT</th>
-                                <th class="font-semibold py-2 text-center w-12">MOR</th>
-                                <th class="font-semibold py-2 text-center w-12">OVR</th>
-                                <th class="font-semibold py-2 text-right w-24">Actions</th>
+                                <th class="font-semibold py-2 text-center w-12">{{ __('squad.technical') }}</th>
+                                <th class="font-semibold py-2 text-center w-12">{{ __('squad.physical') }}</th>
+                                <th class="font-semibold py-2 text-center w-12">{{ __('squad.fitness') }}</th>
+                                <th class="font-semibold py-2 text-center w-12">{{ __('squad.morale') }}</th>
+                                <th class="font-semibold py-2 text-center w-12">{{ __('squad.overall') }}</th>
+                                <th class="font-semibold py-2 text-right w-24">{{ __('app.actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach([
-                                ['name' => 'Goalkeepers', 'players' => $goalkeepers],
-                                ['name' => 'Defenders', 'players' => $defenders],
-                                ['name' => 'Midfielders', 'players' => $midfielders],
-                                ['name' => 'Forwards', 'players' => $forwards],
+                                ['name' => __('squad.goalkeepers'), 'players' => $goalkeepers],
+                                ['name' => __('squad.defenders'), 'players' => $defenders],
+                                ['name' => __('squad.midfielders'), 'players' => $midfielders],
+                                ['name' => __('squad.forwards'), 'players' => $forwards],
                             ] as $group)
                                 @if($group['players']->isNotEmpty())
                                     <tr class="bg-slate-200">
@@ -148,24 +148,24 @@
                                             <td class="py-2 text-right">
                                                 @if($gamePlayer->isLoanedIn($game->team_id))
                                                     <span class="inline-flex items-center px-2 py-1 text-xs font-medium text-sky-700 bg-sky-100 rounded">
-                                                        Loan
+                                                        {{ __('squad.on_loan') }}
                                                     </span>
                                                 @elseif($gamePlayer->hasPreContractAgreement())
                                                     <span class="inline-flex items-center px-2 py-1 text-xs font-medium text-red-700 bg-red-100 rounded">
-                                                        Leaving (Free)
+                                                        {{ __('squad.leaving_free') }}
                                                     </span>
                                                 @elseif($gamePlayer->hasRenewalAgreed())
                                                     <span class="inline-flex items-center px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded">
-                                                        Renewed
+                                                        {{ __('squad.renewed') }}
                                                     </span>
                                                 @elseif($gamePlayer->hasAgreedTransfer())
                                                     <span class="inline-flex items-center px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded">
-                                                        Sale Agreed
+                                                        {{ __('squad.sale_agreed') }}
                                                     </span>
                                                 @elseif($gamePlayer->isTransferListed())
                                                     <div class="flex items-center justify-end gap-2">
                                                         <span class="inline-flex items-center px-2 py-1 text-xs font-medium text-amber-700 bg-amber-100 rounded">
-                                                            Listed
+                                                            {{ __('squad.listed') }}
                                                         </span>
                                                         <div x-data="{ open: false }" class="relative">
                                                             <button @click="open = !open" class="p-1 text-slate-400 hover:text-slate-600 rounded hover:bg-slate-100">
@@ -176,14 +176,14 @@
                                                                 <form method="post" action="{{ route('game.transfers.unlist', [$game->id, $gamePlayer->id]) }}">
                                                                     @csrf
                                                                     <button type="submit" class="w-full text-left px-3 py-1.5 text-xs text-red-600 hover:bg-red-50">
-                                                                        Unlist from Sale
+                                                                        {{ __('squad.unlist_from_sale') }}
                                                                     </button>
                                                                 </form>
                                                                 @if($isTransferWindow)
                                                                 <form method="post" action="{{ route('game.loans.out', [$game->id, $gamePlayer->id]) }}">
                                                                     @csrf
                                                                     <button type="submit" class="w-full text-left px-3 py-1.5 text-xs text-amber-600 hover:bg-amber-50">
-                                                                        Loan Out
+                                                                        {{ __('squad.loan_out') }}
                                                                     </button>
                                                                 </form>
                                                                 @endif
@@ -200,14 +200,14 @@
                                                             <form method="post" action="{{ route('game.transfers.list', [$game->id, $gamePlayer->id]) }}">
                                                                 @csrf
                                                                 <button type="submit" class="w-full text-left px-3 py-1.5 text-xs text-sky-600 hover:bg-sky-50">
-                                                                    List for Sale
+                                                                    {{ __('squad.list_for_sale') }}
                                                                 </button>
                                                             </form>
                                                             @if($isTransferWindow)
                                                             <form method="post" action="{{ route('game.loans.out', [$game->id, $gamePlayer->id]) }}">
                                                                 @csrf
                                                                 <button type="submit" class="w-full text-left px-3 py-1.5 text-xs text-amber-600 hover:bg-amber-50">
-                                                                    Loan Out
+                                                                    {{ __('squad.loan_out') }}
                                                                 </button>
                                                             </form>
                                                             @endif
@@ -236,11 +236,11 @@
                         <div class="flex flex-wrap gap-8 text-sm text-slate-600">
                             <div>
                                 <span class="font-semibold text-slate-900">{{ $allPlayers->count() }}</span>
-                                <span class="text-slate-400 ml-1">players</span>
+                                <span class="text-slate-400 ml-1">{{ __('app.players') }}</span>
                             </div>
                             <div>
-                                <span class="text-slate-400">Wage Bill:</span>
-                                <span class="font-semibold text-slate-900">{{ $formattedWageBill }}/yr</span>
+                                <span class="text-slate-400">{{ __('squad.wage_bill') }}:</span>
+                                <span class="font-semibold text-slate-900">{{ $formattedWageBill }}{{ __('squad.per_year') }}</span>
                             </div>
                             <div class="flex items-center gap-1">
                                 <span class="inline-flex items-center justify-center w-5 h-5 rounded text-xs font-bold bg-amber-100 text-amber-700">GK</span>
@@ -259,17 +259,17 @@
                                 <span class="font-medium">{{ $forwards->count() }}</span>
                             </div>
                             <div class="border-l pl-8 flex items-center gap-1">
-                                <span class="text-slate-400">Avg Fitness:</span>
+                                <span class="text-slate-400">{{ __('squad.avg_fitness') }}:</span>
                                 <span class="font-semibold @if($avgFitness >= 85) text-green-600 @elseif($avgFitness < 70) text-yellow-600 @else text-slate-900 @endif">{{ round($avgFitness) }}</span>
                                 @if($lowFitnessCount > 0)
-                                    <span class="text-xs text-yellow-600">({{ $lowFitnessCount }} low)</span>
+                                    <span class="text-xs text-yellow-600">({{ $lowFitnessCount }} {{ __('squad.low') }})</span>
                                 @endif
                             </div>
                             <div class="flex items-center gap-1">
-                                <span class="text-slate-400">Avg Morale:</span>
+                                <span class="text-slate-400">{{ __('squad.avg_morale') }}:</span>
                                 <span class="font-semibold @if($avgMorale >= 80) text-green-600 @elseif($avgMorale < 65) text-yellow-600 @else text-slate-900 @endif">{{ round($avgMorale) }}</span>
                                 @if($lowMoraleCount > 0)
-                                    <span class="text-xs text-yellow-600">({{ $lowMoraleCount }} low)</span>
+                                    <span class="text-xs text-yellow-600">({{ $lowMoraleCount }} {{ __('squad.low') }})</span>
                                 @endif
                             </div>
                         </div>

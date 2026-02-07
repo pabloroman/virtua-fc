@@ -10,9 +10,9 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-12">
                     <div class="flex items-center justify-between mb-6">
-                        <h3 class="font-semibold text-xl text-slate-900">Squad Development</h3>
+                        <h3 class="font-semibold text-xl text-slate-900">{{ __('squad.squad_development') }}</h3>
                         <a href="{{ route('game.squad', $game->id) }}" class="text-sm text-sky-600 hover:text-sky-800">
-                            &larr; Back to Squad
+                            &larr; {{ __('squad.back_to_squad') }}
                         </a>
                     </div>
 
@@ -21,45 +21,45 @@
                         <a href="{{ route('game.squad.development', ['gameId' => $game->id, 'filter' => 'high_potential']) }}"
                            class="px-4 py-2 rounded-full text-sm font-medium transition-colors
                                   {{ $filter === 'high_potential' ? 'bg-sky-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' }}">
-                            High Potential
+                            {{ __('squad.high_potential') }}
                             <span class="ml-1 text-xs opacity-75">({{ $stats['high_potential'] }})</span>
                         </a>
                         <a href="{{ route('game.squad.development', ['gameId' => $game->id, 'filter' => 'growing']) }}"
                            class="px-4 py-2 rounded-full text-sm font-medium transition-colors
                                   {{ $filter === 'growing' ? 'bg-green-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' }}">
-                            Growing
+                            {{ __('squad.growing') }}
                             <span class="ml-1 text-xs opacity-75">({{ $stats['growing'] }})</span>
                         </a>
                         <a href="{{ route('game.squad.development', ['gameId' => $game->id, 'filter' => 'declining']) }}"
                            class="px-4 py-2 rounded-full text-sm font-medium transition-colors
                                   {{ $filter === 'declining' ? 'bg-red-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' }}">
-                            Declining
+                            {{ __('squad.declining') }}
                             <span class="ml-1 text-xs opacity-75">({{ $stats['declining'] }})</span>
                         </a>
                         <a href="{{ route('game.squad.development', $game->id) }}"
                            class="px-4 py-2 rounded-full text-sm font-medium transition-colors
                                   {{ $filter === 'all' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' }}">
-                            All
+                            {{ __('squad.all') }}
                             <span class="ml-1 text-xs opacity-75">({{ $stats['all'] }})</span>
                         </a>
                     </div>
 
                     @if($players->isEmpty())
                         <div class="text-center py-12 text-slate-500">
-                            No players match the selected filter.
+                            {{ __('squad.no_players_match_filter') }}
                         </div>
                     @else
                         <table class="w-full text-sm">
                             <thead class="text-left border-b">
                                 <tr>
                                     <th class="font-semibold py-2 w-8"></th>
-                                    <th class="font-semibold py-2">Player</th>
-                                    <th class="font-semibold py-2 text-center">Age</th>
-                                    <th class="font-semibold py-2 text-center">POT</th>
-                                    <th class="font-semibold py-2 text-center">CUR</th>
-                                    <th class="font-semibold py-2 text-center">Status</th>
-                                    <th class="font-semibold py-2 text-center">Apps</th>
-                                    <th class="font-semibold py-2 text-center">Projection</th>
+                                    <th class="font-semibold py-2">{{ __('app.player') }}</th>
+                                    <th class="font-semibold py-2 text-center">{{ __('app.age') }}</th>
+                                    <th class="font-semibold py-2 text-center">{{ __('squad.pot') }}</th>
+                                    <th class="font-semibold py-2 text-center">{{ __('squad.cur') }}</th>
+                                    <th class="font-semibold py-2 text-center">{{ __('app.status') }}</th>
+                                    <th class="font-semibold py-2 text-center">{{ __('squad.apps') }}</th>
+                                    <th class="font-semibold py-2 text-center">{{ __('squad.projection') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -73,9 +73,9 @@
                                         {{-- Status indicator --}}
                                         <td class="py-3 text-center">
                                             @if($player->development_status === 'growing')
-                                                <span class="text-green-500 font-bold" title="Growing">^</span>
+                                                <span class="text-green-500 font-bold" title="{{ __('squad.growing') }}">^</span>
                                             @elseif($player->development_status === 'declining')
-                                                <span class="text-red-500 font-bold" title="Declining">v</span>
+                                                <span class="text-red-500 font-bold" title="{{ __('squad.declining') }}">v</span>
                                             @else
                                                 <span class="text-slate-300">-</span>
                                             @endif
@@ -119,22 +119,22 @@
                                         <td class="py-3 text-center">
                                             @if($player->development_status === 'growing')
                                                 <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
-                                                    Growing
+                                                    {{ __('squad.growing') }}
                                                 </span>
                                             @elseif($player->development_status === 'peak')
                                                 <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
-                                                    Peak
+                                                    {{ __('squad.peak') }}
                                                 </span>
                                             @else
                                                 <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-700">
-                                                    Declining
+                                                    {{ __('squad.declining') }}
                                                 </span>
                                             @endif
                                         </td>
                                         {{-- Season appearances --}}
                                         <td class="py-3 text-center">
                                             <span class="@if($hasStarterBonus) text-green-600 font-medium @else text-slate-500 @endif"
-                                                  title="{{ $hasStarterBonus ? 'Qualifies for starter bonus (+50% development)' : 'Needs 15+ appearances for starter bonus' }}">
+                                                  title="{{ $hasStarterBonus ? __('squad.qualifies_starter_bonus') : __('squad.needs_appearances', ['count' => 15]) }}">
                                                 {{ $player->season_appearances }}
                                             </span>
                                         </td>
@@ -165,21 +165,21 @@
                         <div class="flex flex-wrap gap-6 text-xs text-slate-500">
                             <div class="flex items-center gap-2">
                                 <span class="text-green-500 font-bold">^</span>
-                                <span>Growing</span>
+                                <span>{{ __('squad.growing') }}</span>
                             </div>
                             <div class="flex items-center gap-2">
                                 <span class="text-red-500 font-bold">v</span>
-                                <span>Declining</span>
+                                <span>{{ __('squad.declining') }}</span>
                             </div>
                             <div>
-                                <span class="font-medium">CUR</span> = Current Ability
+                                <span class="font-medium">{{ __('squad.cur') }}</span> = {{ __('squad.current_ability') }}
                             </div>
                             <div>
-                                <span class="font-medium">POT</span> = Potential Range
+                                <span class="font-medium">{{ __('squad.pot') }}</span> = {{ __('squad.potential_range') }}
                             </div>
                             <div>
-                                <span class="font-medium">Apps</span> = Season Appearances
-                                <span class="text-slate-400">(15+ = starter bonus)</span>
+                                <span class="font-medium">{{ __('squad.apps') }}</span> = {{ __('squad.season_appearances') }}
+                                <span class="text-slate-400">(15+ = {{ __('squad.starter_bonus') }})</span>
                             </div>
                         </div>
                     </div>

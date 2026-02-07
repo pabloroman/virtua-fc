@@ -4,9 +4,13 @@
     'tierThresholds',
     'isLocked' => false,
     'formAction',
-    'submitLabel' => 'Confirm Budget Allocation',
+    'submitLabel' => null,
     'compact' => false,
 ])
+
+@php
+$submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
+@endphp
 
 <div x-data="{
     availableSurplus: {{ $availableSurplus }},
@@ -56,11 +60,11 @@
     {{-- Allocation Summary --}}
     <div class="mb-6 p-3 bg-slate-50 rounded-lg flex items-center justify-between text-sm">
         <div class="flex items-center gap-2">
-            <span class="text-slate-500">Infrastructure:</span>
+            <span class="text-slate-500">{{ __('finances.infrastructure') }}</span>
             <span class="font-bold text-slate-900" x-text="formatMoney(infrastructureTotal)"></span>
         </div>
         <div class="flex items-center gap-2">
-            <span class="text-slate-500">Transfers:</span>
+            <span class="text-slate-500">{{ __('finances.transfers') }}</span>
             <span class="font-bold text-sky-600" x-text="formatMoney(transfer_budget)"></span>
         </div>
     </div>
@@ -71,9 +75,9 @@
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
             </svg>
-            <span class="font-semibold">Budget Locked</span>
+            <span class="font-semibold">{{ __('finances.budget_locked') }}</span>
         </div>
-        <p class="text-sm mt-1">Budget allocation is fixed for the season. Changes can be made next pre-season.</p>
+        <p class="text-sm mt-1">{{ __('finances.budget_locked_desc') }}</p>
     </div>
     @endif
 
@@ -85,16 +89,16 @@
             {{-- Youth Academy --}}
             <div class="border border-slate-200 rounded-lg p-4">
                 <div class="flex items-center justify-between mb-2">
-                    <h4 class="font-medium text-slate-900">Youth Academy</h4>
-                    <div class="text-xs font-semibold" :class="getTierColor(youth_academy_tier)">Tier <span x-text="youth_academy_tier"></span></div>
+                    <h4 class="font-medium text-slate-900">{{ __('finances.youth_academy') }}</h4>
+                    <div class="text-xs font-semibold" :class="getTierColor(youth_academy_tier)">{{ __('finances.tier_n') }} <span x-text="youth_academy_tier"></span></div>
                 </div>
                 <div class="text-lg font-bold text-slate-900 mb-1" x-text="formatMoney(youth_academy_amount)"></div>
                 <div class="text-xs text-slate-500 mb-2 h-4">
-                    <span x-show="youth_academy_tier == 0">No youth development program</span>
-                    <span x-show="youth_academy_tier == 1">Basic academy - occasional prospects</span>
-                    <span x-show="youth_academy_tier == 2">Good academy - regular talent pipeline</span>
-                    <span x-show="youth_academy_tier == 3">Elite academy - high-potential wonderkids</span>
-                    <span x-show="youth_academy_tier == 4">World-class - top-tier homegrown stars</span>
+                    <span x-show="youth_academy_tier == 0">{{ __('finances.youth_academy_tier_0') }}</span>
+                    <span x-show="youth_academy_tier == 1">{{ __('finances.youth_academy_tier_1') }}</span>
+                    <span x-show="youth_academy_tier == 2">{{ __('finances.youth_academy_tier_2') }}</span>
+                    <span x-show="youth_academy_tier == 3">{{ __('finances.youth_academy_tier_3') }}</span>
+                    <span x-show="youth_academy_tier == 4">{{ __('finances.youth_academy_tier_4') }}</span>
                 </div>
                 <input type="range" x-model="youth_academy_tier" min="0" max="4" step="1"
                        class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-sky-500"
@@ -108,16 +112,16 @@
             {{-- Medical --}}
             <div class="border border-slate-200 rounded-lg p-4">
                 <div class="flex items-center justify-between mb-2">
-                    <h4 class="font-medium text-slate-900">Medical</h4>
-                    <div class="text-xs font-semibold" :class="getTierColor(medical_tier)">Tier <span x-text="medical_tier"></span></div>
+                    <h4 class="font-medium text-slate-900">{{ __('finances.medical') }}</h4>
+                    <div class="text-xs font-semibold" :class="getTierColor(medical_tier)">{{ __('finances.tier_n') }} <span x-text="medical_tier"></span></div>
                 </div>
                 <div class="text-lg font-bold text-slate-900 mb-1" x-text="formatMoney(medical_amount)"></div>
                 <div class="text-xs text-slate-500 mb-2 h-4">
-                    <span x-show="medical_tier == 0">No medical staff</span>
-                    <span x-show="medical_tier == 1">Basic care - standard recovery</span>
-                    <span x-show="medical_tier == 2">Good facilities - 15% faster recovery</span>
-                    <span x-show="medical_tier == 3">Elite staff - 30% faster, fewer injuries</span>
-                    <span x-show="medical_tier == 4">World-class - 50% faster, prevention</span>
+                    <span x-show="medical_tier == 0">{{ __('finances.medical_tier_0') }}</span>
+                    <span x-show="medical_tier == 1">{{ __('finances.medical_tier_1') }}</span>
+                    <span x-show="medical_tier == 2">{{ __('finances.medical_tier_2') }}</span>
+                    <span x-show="medical_tier == 3">{{ __('finances.medical_tier_3') }}</span>
+                    <span x-show="medical_tier == 4">{{ __('finances.medical_tier_4') }}</span>
                 </div>
                 <input type="range" x-model="medical_tier" min="0" max="4" step="1"
                        class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-sky-500"
@@ -131,16 +135,16 @@
             {{-- Scouting --}}
             <div class="border border-slate-200 rounded-lg p-4">
                 <div class="flex items-center justify-between mb-2">
-                    <h4 class="font-medium text-slate-900">Scouting</h4>
-                    <div class="text-xs font-semibold" :class="getTierColor(scouting_tier)">Tier <span x-text="scouting_tier"></span></div>
+                    <h4 class="font-medium text-slate-900">{{ __('finances.scouting') }}</h4>
+                    <div class="text-xs font-semibold" :class="getTierColor(scouting_tier)">{{ __('finances.tier_n') }} <span x-text="scouting_tier"></span></div>
                 </div>
                 <div class="text-lg font-bold text-slate-900 mb-1" x-text="formatMoney(scouting_amount)"></div>
                 <div class="text-xs text-slate-500 mb-2 h-4">
-                    <span x-show="scouting_tier == 0">No scouting network</span>
-                    <span x-show="scouting_tier == 1">Local scouts - domestic players only</span>
-                    <span x-show="scouting_tier == 2">Regional network - nearby leagues</span>
-                    <span x-show="scouting_tier == 3">Continental reach - top European leagues</span>
-                    <span x-show="scouting_tier == 4">Global network - worldwide talent access</span>
+                    <span x-show="scouting_tier == 0">{{ __('finances.scouting_tier_0') }}</span>
+                    <span x-show="scouting_tier == 1">{{ __('finances.scouting_tier_1') }}</span>
+                    <span x-show="scouting_tier == 2">{{ __('finances.scouting_tier_2') }}</span>
+                    <span x-show="scouting_tier == 3">{{ __('finances.scouting_tier_3') }}</span>
+                    <span x-show="scouting_tier == 4">{{ __('finances.scouting_tier_4') }}</span>
                 </div>
                 <input type="range" x-model="scouting_tier" min="0" max="4" step="1"
                        class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-sky-500"
@@ -154,16 +158,16 @@
             {{-- Facilities --}}
             <div class="border border-slate-200 rounded-lg p-4">
                 <div class="flex items-center justify-between mb-2">
-                    <h4 class="font-medium text-slate-900">Facilities</h4>
-                    <div class="text-xs font-semibold" :class="getTierColor(facilities_tier)">Tier <span x-text="facilities_tier"></span></div>
+                    <h4 class="font-medium text-slate-900">{{ __('finances.facilities') }}</h4>
+                    <div class="text-xs font-semibold" :class="getTierColor(facilities_tier)">{{ __('finances.tier_n') }} <span x-text="facilities_tier"></span></div>
                 </div>
                 <div class="text-lg font-bold text-slate-900 mb-1" x-text="formatMoney(facilities_amount)"></div>
                 <div class="text-xs text-slate-500 mb-2 h-4">
-                    <span x-show="facilities_tier == 0">No investment - base matchday revenue</span>
-                    <span x-show="facilities_tier == 1">Basic upgrades - 1.0x revenue</span>
-                    <span x-show="facilities_tier == 2">Modern facilities - 1.15x revenue</span>
-                    <span x-show="facilities_tier == 3">Premium experience - 1.35x revenue</span>
-                    <span x-show="facilities_tier == 4">World-class stadium - 1.6x revenue</span>
+                    <span x-show="facilities_tier == 0">{{ __('finances.facilities_tier_0') }}</span>
+                    <span x-show="facilities_tier == 1">{{ __('finances.facilities_tier_1') }}</span>
+                    <span x-show="facilities_tier == 2">{{ __('finances.facilities_tier_2') }}</span>
+                    <span x-show="facilities_tier == 3">{{ __('finances.facilities_tier_3') }}</span>
+                    <span x-show="facilities_tier == 4">{{ __('finances.facilities_tier_4') }}</span>
                 </div>
                 <input type="range" x-model="facilities_tier" min="0" max="4" step="1"
                        class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-sky-500"
@@ -179,8 +183,8 @@
         <div class="border-2 border-sky-300 rounded-lg p-4 bg-sky-50 mb-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <h4 class="font-medium text-slate-900">Transfer Budget</h4>
-                    <p class="text-xs text-slate-500">Remainder after infrastructure</p>
+                    <h4 class="font-medium text-slate-900">{{ __('finances.transfer_budget') }}</h4>
+                    <p class="text-xs text-slate-500">{{ __('finances.remainder_after_infrastructure') }}</p>
                 </div>
                 <div class="text-xl font-bold text-sky-700" x-text="formatMoney(transfer_budget)"></div>
             </div>
@@ -189,7 +193,7 @@
 
         {{-- Warning --}}
         <div x-show="!meetsMinimumRequirements" x-cloak class="mb-6 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-            All infrastructure areas must be at least Tier 1 to maintain professional status.
+            {{ __('finances.tier_minimum_warning') }}
         </div>
 
         {{-- Submit --}}

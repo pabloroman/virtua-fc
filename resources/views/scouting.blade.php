@@ -22,21 +22,21 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-8">
                     <div class="flex items-center justify-between mb-6">
-                        <h3 class="font-semibold text-xl text-slate-900">Transfers</h3>
+                        <h3 class="font-semibold text-xl text-slate-900">{{ __('transfers.title') }}</h3>
                         <div class="flex items-center gap-6 text-sm">
                             <div class="text-slate-600">
                                 @if($isTransferWindow)
                                     <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                         <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
-                                        {{ $currentWindow }} Window Open
+                                        {{ $currentWindow }} {{ __('app.window_open') }}
                                     </span>
                                 @else
-                                    Window: <span class="font-semibold text-slate-900">Closed</span>
+                                    {{ __('transfers.window') }}: <span class="font-semibold text-slate-900">{{ __('app.window_closed') }}</span>
                                 @endif
                             </div>
                             @if($game->currentInvestment)
                             <div class="text-slate-600">
-                                Budget: <span class="font-semibold text-slate-900">{{ $game->currentInvestment->formatted_transfer_budget }}</span>
+                                {{ __('transfers.budget') }}: <span class="font-semibold text-slate-900">{{ $game->currentInvestment->formatted_transfer_budget }}</span>
                             </div>
                             @endif
                         </div>
@@ -48,33 +48,33 @@
                     {{-- State: No active search → Show search form --}}
                     @if(!$report)
                         <div class="mt-6">
-                            <h4 class="font-semibold text-lg text-slate-900 mb-4">Scout Search</h4>
-                            <p class="text-sm text-slate-600 mb-6">Send your scout to find available players matching your criteria. One search at a time.</p>
+                            <h4 class="font-semibold text-lg text-slate-900 mb-4">{{ __('transfers.scout_search') }}</h4>
+                            <p class="text-sm text-slate-600 mb-6">{{ __('transfers.scout_search_desc') }}</p>
 
                             <form method="post" action="{{ route('game.scouting.search', $game->id) }}" class="max-w-xl space-y-4">
                                 @csrf
 
                                 {{-- Position --}}
                                 <div>
-                                    <label for="position" class="block text-sm font-medium text-slate-700 mb-1">Position <span class="text-red-500">*</span></label>
+                                    <label for="position" class="block text-sm font-medium text-slate-700 mb-1">{{ __('transfers.position_required') }}</label>
                                     <select name="position" id="position" required class="w-full border-slate-300 rounded-lg shadow-sm text-sm focus:ring-sky-500 focus:border-sky-500">
-                                        <option value="">Select position...</option>
-                                        <optgroup label="Specific Positions">
-                                            <option value="GK">Goalkeeper (GK)</option>
-                                            <option value="CB">Centre-Back (CB)</option>
-                                            <option value="LB">Left-Back (LB)</option>
-                                            <option value="RB">Right-Back (RB)</option>
-                                            <option value="DM">Defensive Midfield (DM)</option>
-                                            <option value="CM">Central Midfield (CM)</option>
-                                            <option value="AM">Attacking Midfield (AM)</option>
-                                            <option value="LW">Left Winger (LW)</option>
-                                            <option value="RW">Right Winger (RW)</option>
-                                            <option value="CF">Centre-Forward (CF)</option>
+                                        <option value="">{{ __('transfers.select_position') }}</option>
+                                        <optgroup label="{{ __('transfers.specific_positions') }}">
+                                            <option value="GK">{{ __('transfers.position_gk') }}</option>
+                                            <option value="CB">{{ __('transfers.position_cb') }}</option>
+                                            <option value="LB">{{ __('transfers.position_lb') }}</option>
+                                            <option value="RB">{{ __('transfers.position_rb') }}</option>
+                                            <option value="DM">{{ __('transfers.position_dm') }}</option>
+                                            <option value="CM">{{ __('transfers.position_cm') }}</option>
+                                            <option value="AM">{{ __('transfers.position_am') }}</option>
+                                            <option value="LW">{{ __('transfers.position_lw') }}</option>
+                                            <option value="RW">{{ __('transfers.position_rw') }}</option>
+                                            <option value="CF">{{ __('transfers.position_cf') }}</option>
                                         </optgroup>
-                                        <optgroup label="Position Groups (broader search)">
-                                            <option value="any_defender">Any Defender (CB, LB, RB)</option>
-                                            <option value="any_midfielder">Any Midfielder (DM, CM, AM)</option>
-                                            <option value="any_forward">Any Forward (LW, RW, CF)</option>
+                                        <optgroup label="{{ __('transfers.position_groups') }}">
+                                            <option value="any_defender">{{ __('transfers.any_defender') }}</option>
+                                            <option value="any_midfielder">{{ __('transfers.any_midfielder') }}</option>
+                                            <option value="any_forward">{{ __('transfers.any_forward') }}</option>
                                         </optgroup>
                                     </select>
                                     @error('position')
@@ -84,9 +84,9 @@
 
                                 {{-- League --}}
                                 <div>
-                                    <label for="league" class="block text-sm font-medium text-slate-700 mb-1">League</label>
+                                    <label for="league" class="block text-sm font-medium text-slate-700 mb-1">{{ __('transfers.league') }}</label>
                                     <select name="league" id="league" class="w-full border-slate-300 rounded-lg shadow-sm text-sm focus:ring-sky-500 focus:border-sky-500">
-                                        <option value="all">All leagues</option>
+                                        <option value="all">{{ __('transfers.all_leagues') }}</option>
                                         @foreach($leagues as $league)
                                             <option value="{{ $league->id }}">{{ $league->name }}</option>
                                         @endforeach
@@ -96,25 +96,25 @@
                                 {{-- Age Range --}}
                                 <div class="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label for="age_min" class="block text-sm font-medium text-slate-700 mb-1">Min Age</label>
+                                        <label for="age_min" class="block text-sm font-medium text-slate-700 mb-1">{{ __('transfers.min_age') }}</label>
                                         <input type="number" name="age_min" id="age_min" min="16" max="45" placeholder="e.g. 18" class="w-full border-slate-300 rounded-lg shadow-sm text-sm focus:ring-sky-500 focus:border-sky-500">
                                     </div>
                                     <div>
-                                        <label for="age_max" class="block text-sm font-medium text-slate-700 mb-1">Max Age</label>
+                                        <label for="age_max" class="block text-sm font-medium text-slate-700 mb-1">{{ __('transfers.max_age') }}</label>
                                         <input type="number" name="age_max" id="age_max" min="16" max="45" placeholder="e.g. 28" class="w-full border-slate-300 rounded-lg shadow-sm text-sm focus:ring-sky-500 focus:border-sky-500">
                                     </div>
                                 </div>
 
                                 {{-- Max Budget --}}
                                 <div>
-                                    <label for="max_budget" class="block text-sm font-medium text-slate-700 mb-1">Max Transfer Fee (euros)</label>
+                                    <label for="max_budget" class="block text-sm font-medium text-slate-700 mb-1">{{ __('transfers.max_transfer_fee') }}</label>
                                     <input type="number" name="max_budget" id="max_budget" min="0" step="100000" placeholder="e.g. 20000000" class="w-full border-slate-300 rounded-lg shadow-sm text-sm focus:ring-sky-500 focus:border-sky-500">
-                                    <p class="text-xs text-slate-500 mt-1">Leave empty for no limit</p>
+                                    <p class="text-xs text-slate-500 mt-1">{{ __('transfers.leave_empty_no_limit') }}</p>
                                 </div>
 
                                 <div class="pt-2">
                                     <button type="submit" class="px-6 py-2.5 bg-sky-600 hover:bg-sky-700 text-white text-sm font-semibold rounded-lg transition-colors">
-                                        Start Scout Search
+                                        {{ __('transfers.start_scout_search') }}
                                     </button>
                                 </div>
                             </form>
@@ -127,14 +127,14 @@
                                 <svg class="w-16 h-16 mx-auto mb-4 text-sky-500 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                                 </svg>
-                                <h4 class="text-lg font-semibold text-slate-900 mb-2">Scout is searching...</h4>
+                                <h4 class="text-lg font-semibold text-slate-900 mb-2">{{ __('transfers.scout_searching') }}</h4>
                                 <p class="text-slate-600 mb-1">
-                                    {{ $report->weeks_remaining }} {{ Str::plural('week', $report->weeks_remaining) }} remaining
+                                    {{ trans_choice('game.weeks_remaining', $report->weeks_remaining, ['count' => $report->weeks_remaining]) }}
                                 </p>
                                 <p class="text-sm text-slate-500 mb-6">
-                                    Looking for: <span class="font-medium">{{ $report->filters['position'] }}</span>
+                                    {{ __('transfers.looking_for') }}: <span class="font-medium">{{ $report->filters['position'] }}</span>
                                     @if($report->filters['league'] !== 'all')
-                                        in <span class="font-medium">{{ $report->filters['league'] }}</span>
+                                        {{ __('transfers.in_league') }} <span class="font-medium">{{ $report->filters['league'] }}</span>
                                     @endif
                                 </p>
                                 <div class="w-48 mx-auto bg-slate-200 rounded-full h-2 mb-6">
@@ -144,7 +144,7 @@
                                 <form method="post" action="{{ route('game.scouting.cancel', $game->id) }}">
                                     @csrf
                                     <button type="submit" class="px-4 py-2 text-sm text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors">
-                                        Cancel Search
+                                        {{ __('transfers.cancel_search') }}
                                     </button>
                                 </form>
                             </div>
@@ -154,32 +154,32 @@
                     @elseif($report->isCompleted())
                         <div class="mt-6">
                             <div class="flex items-center justify-between mb-4">
-                                <h4 class="font-semibold text-lg text-slate-900">Scout Results</h4>
+                                <h4 class="font-semibold text-lg text-slate-900">{{ __('transfers.scout_results') }}</h4>
                                 <form method="post" action="{{ route('game.scouting.cancel', $game->id) }}">
                                     @csrf
                                     <button type="submit" class="text-sm text-sky-600 hover:text-sky-800">
-                                        New Search
+                                        {{ __('transfers.new_search') }}
                                     </button>
                                 </form>
                             </div>
 
                             @if($scoutedPlayers->isEmpty())
                                 <div class="text-center py-8 text-slate-500 border rounded-lg bg-slate-50">
-                                    <p>No players found matching your criteria.</p>
-                                    <p class="text-sm mt-1">Try broadening your search.</p>
+                                    <p>{{ __('transfers.no_players_found') }}</p>
+                                    <p class="text-sm mt-1">{{ __('transfers.try_broadening') }}</p>
                                 </div>
                             @else
                                 <div class="overflow-x-auto">
                                     <table class="w-full text-sm">
                                         <thead class="text-left border-b border-slate-200">
                                             <tr>
-                                                <th class="font-medium text-slate-500 pb-2">Player</th>
-                                                <th class="font-medium text-slate-500 pb-2">Pos</th>
-                                                <th class="font-medium text-slate-500 pb-2 text-center">Age</th>
-                                                <th class="font-medium text-slate-500 pb-2">Team</th>
-                                                <th class="font-medium text-slate-500 pb-2 text-right">Value</th>
-                                                <th class="font-medium text-slate-500 pb-2 text-center">Contract</th>
-                                                <th class="font-medium text-slate-500 pb-2 text-center">Ability</th>
+                                                <th class="font-medium text-slate-500 pb-2">{{ __('app.player') }}</th>
+                                                <th class="font-medium text-slate-500 pb-2">{{ __('app.position') }}</th>
+                                                <th class="font-medium text-slate-500 pb-2 text-center">{{ __('app.age') }}</th>
+                                                <th class="font-medium text-slate-500 pb-2">{{ __('app.team') }}</th>
+                                                <th class="font-medium text-slate-500 pb-2 text-right">{{ __('app.value') }}</th>
+                                                <th class="font-medium text-slate-500 pb-2 text-center">{{ __('app.contract') }}</th>
+                                                <th class="font-medium text-slate-500 pb-2 text-center">{{ __('transfers.ability') }}</th>
                                                 <th class="font-medium text-slate-500 pb-2 text-right"></th>
                                             </tr>
                                         </thead>
@@ -222,7 +222,7 @@
                                                     <td class="py-3 text-right">
                                                         <a href="{{ route('game.scouting.player', [$game->id, $player->id]) }}"
                                                            class="px-3 py-1.5 text-xs font-semibold text-sky-600 hover:text-sky-800 hover:bg-sky-50 rounded-lg transition-colors">
-                                                            View Report
+                                                            {{ __('transfers.view_report') }}
                                                         </a>
                                                     </td>
                                                 </tr>

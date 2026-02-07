@@ -143,3 +143,66 @@ Match simulation can be tuned without code changes via `config/match_simulation.
 - Event probabilities (cards, injuries)
 
 Clear cache after changes: `php artisan config:clear`
+
+## Internationalization (i18n)
+
+The application uses Spanish as the default language. All user-facing strings must be translatable.
+
+### Translation Files
+
+```
+lang/es/
+├── app.php        # General UI (buttons, labels, navigation)
+├── game.php       # Game-specific terms (season, matchday, etc.)
+├── squad.php      # Squad/player related
+├── transfers.php  # Transfers, scouting, contracts
+├── finances.php   # Financial terms
+├── season.php     # Season end, awards, promotions
+└── messages.php   # Flash messages (success, error, info)
+```
+
+### Coding Standards
+
+**Blade templates:** Always wrap user-facing strings in `__()`:
+
+```blade
+{{-- Static strings --}}
+<h3>{{ __('squad.title') }}</h3>
+<button>{{ __('app.save') }}</button>
+
+{{-- With parameters --}}
+<h3>{{ __('squad.title', ['team' => $game->team->name]) }}</h3>
+<p>{{ __('game.expires_in', ['days' => $daysLeft]) }}</p>
+
+{{-- Pluralization --}}
+<span>{{ trans_choice('game.weeks_remaining', $weeks, ['count' => $weeks]) }}</span>
+```
+
+**Action files (flash messages):** Use translation keys with parameters:
+
+```php
+// Before
+->with('success', "Transfer complete! {$playerName} joined.");
+
+// After
+->with('success', __('messages.transfer_complete', ['player' => $playerName]));
+```
+
+### Key Patterns
+
+| Category | Key Format | Example |
+|----------|-----------|---------|
+| Buttons/actions | `app.*` | `app.save`, `app.confirm` |
+| Navigation | `app.*` | `app.dashboard`, `app.squad` |
+| Game terms | `game.*` | `game.season`, `game.matchday` |
+| Squad labels | `squad.*` | `squad.goalkeepers`, `squad.fitness` |
+| Transfer terms | `transfers.*` | `transfers.bid_rejected` |
+| Finance terms | `finances.*` | `finances.transfer_budget` |
+| Flash messages | `messages.*` | `messages.player_listed` |
+| Season end | `season.*` | `season.champion`, `season.relegated` |
+
+### Adding New Strings
+
+1. Add the key and Spanish translation to the appropriate file in `lang/es/`
+2. Use the key in your blade template or PHP code
+3. Test that the translation displays correctly

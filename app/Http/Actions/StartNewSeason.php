@@ -21,7 +21,7 @@ class StartNewSeason
         $unplayedMatches = $game->matches()->where('played', false)->count();
         if ($unplayedMatches > 0) {
             return redirect()->route('show-game', $gameId)
-                ->with('error', 'Cannot start new season - current season is not complete.');
+                ->with('error', __('messages.season_not_complete'));
         }
 
         // Run the season end pipeline

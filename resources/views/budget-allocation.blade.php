@@ -13,12 +13,12 @@
             <div class="flex items-center gap-4">
                 <img src="{{ $game->team->image }}" alt="{{ $game->team->name }}" class="w-12 h-12">
                 <div>
-                    <h2 class="font-semibold text-xl text-slate-800">Budget Allocation</h2>
-                    <p class="text-sm text-slate-500">{{ $game->team->name }} - Season {{ $game->season }}</p>
+                    <h2 class="font-semibold text-xl text-slate-800">{{ __('finances.budget_allocation') }}</h2>
+                    <p class="text-sm text-slate-500">{{ __('finances.season_budget', ['season' => $game->season]) }}</p>
                 </div>
             </div>
             <a href="{{ route('game.preseason', $game->id) }}" class="text-sm text-slate-600 hover:text-slate-900">
-                Back to Pre-Season
+                {{ __('game.back_to_preseason') }}
             </a>
         </div>
     </x-slot>
@@ -40,11 +40,11 @@
             <div class="bg-white rounded-lg shadow-sm p-8">
                 {{-- Available Surplus Header --}}
                 <div class="mb-8 text-center">
-                    <div class="text-sm text-slate-500 uppercase tracking-wide mb-1">Available Surplus</div>
+                    <div class="text-sm text-slate-500 uppercase tracking-wide mb-1">{{ __('finances.available_surplus') }}</div>
                     <div class="text-4xl font-bold text-slate-900">{{ \App\Support\Money::format($availableSurplus) }}</div>
                     @if($finances->carried_debt > 0)
                     <div class="text-sm text-red-600 mt-1">
-                        (After {{ \App\Support\Money::format($finances->carried_debt) }} debt deduction)
+                        ({{ __('finances.after_debt_deduction', ['amount' => \App\Support\Money::format($finances->carried_debt)]) }})
                     </div>
                     @endif
                 </div>
@@ -55,7 +55,7 @@
                     :tier-thresholds="$tierThresholds"
                     :is-locked="$isLocked"
                     :form-action="route('game.budget.save', $game->id)"
-                    submit-label="Confirm Budget Allocation"
+                    :submit-label="__('finances.confirm_budget_allocation')"
                 />
             </div>
         </div>

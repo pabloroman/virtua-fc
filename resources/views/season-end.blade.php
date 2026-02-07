@@ -13,14 +13,14 @@
 
                     {{-- Season Honours --}}
                     <div class="text-center text-slate-500 font-semibold text-sm uppercase tracking-wide mb-4">
-                        <span>&#9733;</span> Season {{ $game->season }} Honours <span>&#9733;</span>
+                        <span>&#9733;</span> {{ __('season.season_honours', ['season' => $game->season]) }} <span>&#9733;</span>
                     </div>
 
                     {{-- Major Trophies Grid --}}
                     <div class="grid grid-cols-2 gap-4 mb-6">
                         {{-- League Champion --}}
                         <div class="text-center py-6 bg-gradient-to-b from-amber-50 to-white rounded-lg border border-amber-200">
-                            <div class="text-amber-600 font-semibold text-sm uppercase tracking-wide mb-2">{{ $competition->name }} Champion</div>
+                            <div class="text-amber-600 font-semibold text-sm uppercase tracking-wide mb-2">{{ __('season.league_champion', ['league' => $competition->name]) }}</div>
                             <div class="flex justify-center items-center gap-3 mb-2">
                                 <img src="{{ $champion->team->image }}" class="w-14 h-14">
                             </div>
@@ -37,17 +37,17 @@
                                 </div>
                                 <div class="text-xl font-bold text-slate-900">{{ $cupWinner->name }}</div>
                                 <div class="text-sm text-slate-500">
-                                    Beat {{ $cupRunnerUp?->name ?? 'opponent' }}
+                                    {{ __('season.beat', ['team' => $cupRunnerUp?->name ?? 'opponent']) }}
                                 </div>
                             @else
-                                <div class="text-slate-400 py-4">Competition in progress</div>
+                                <div class="text-slate-400 py-4">{{ __('season.competition_in_progress') }}</div>
                             @endif
                         </div>
                     </div>
 
                     {{-- League Top 3 --}}
                     <div class="bg-slate-50 rounded-lg p-4 mb-6">
-                        <div class="text-xs text-slate-500 uppercase tracking-wide mb-3 text-center">Final League Standings</div>
+                        <div class="text-xs text-slate-500 uppercase tracking-wide mb-3 text-center">{{ __('season.final_standings') }}</div>
                         <div class="space-y-2">
                             @foreach($standings->take(3) as $standing)
                                 <div class="flex items-center gap-3 {{ $standing->team_id === $game->team_id ? 'bg-amber-100 -mx-2 px-2 py-1 rounded' : '' }}">
@@ -64,7 +64,7 @@
 
                     {{-- Your Season Section --}}
                     <div class="border-t pt-6">
-                        <div class="text-center text-slate-500 font-semibold text-sm uppercase tracking-wide mb-4">Your Season</div>
+                        <div class="text-center text-slate-500 font-semibold text-sm uppercase tracking-wide mb-4">{{ __('season.your_season') }}</div>
 
                         <div class="flex justify-center items-center gap-4 mb-4">
                             <img src="{{ $game->team->image }}" class="w-12 h-12">
@@ -76,19 +76,18 @@
                         <div class="flex justify-center">
                             <div class="inline-block bg-slate-100 rounded-lg px-6 py-4 mb-4 text-center">
                                 <div class="text-3xl font-bold text-slate-900">
-                                    {{ $playerStanding->position }}{{ $playerStanding->position == 1 ? 'st' : ($playerStanding->position == 2 ? 'nd' : ($playerStanding->position == 3 ? 'rd' : 'th')) }}
-                                    Place
+                                    {{ __('season.place', ['position' => $playerStanding->position]) }}
                                 </div>
-                                <div class="text-lg text-slate-600">{{ $playerStanding->points }} points</div>
+                                <div class="text-lg text-slate-600">{{ $playerStanding->points }} {{ __('season.points') }}</div>
                             </div>
                         </div>
 
                         <div class="flex justify-center gap-6 text-sm text-slate-600 mb-6">
-                            <div><span class="font-semibold">W</span> {{ $playerTeamStats['won'] }}</div>
-                            <div><span class="font-semibold">D</span> {{ $playerTeamStats['drawn'] }}</div>
-                            <div><span class="font-semibold">L</span> {{ $playerTeamStats['lost'] }}</div>
-                            <div><span class="font-semibold">GF</span> {{ $playerTeamStats['goalsFor'] }}</div>
-                            <div><span class="font-semibold">GA</span> {{ $playerTeamStats['goalsAgainst'] }}</div>
+                            <div><span class="font-semibold">{{ __('season.won') }}</span> {{ $playerTeamStats['won'] }}</div>
+                            <div><span class="font-semibold">{{ __('season.drawn') }}</span> {{ $playerTeamStats['drawn'] }}</div>
+                            <div><span class="font-semibold">{{ __('season.lost') }}</span> {{ $playerTeamStats['lost'] }}</div>
+                            <div><span class="font-semibold">{{ __('season.goals_for') }}</span> {{ $playerTeamStats['goalsFor'] }}</div>
+                            <div><span class="font-semibold">{{ __('season.goals_against') }}</span> {{ $playerTeamStats['goalsAgainst'] }}</div>
                         </div>
 
                         {{-- Manager Evaluation --}}
@@ -106,9 +105,9 @@
                             <div class="flex items-center justify-between mb-2">
                                 <div class="font-bold text-lg">{{ $managerEvaluation['title'] }}</div>
                                 <div class="text-sm">
-                                    Target: {{ $managerEvaluation['targetPosition'] }}{{ $managerEvaluation['targetPosition'] == 1 ? 'st' : ($managerEvaluation['targetPosition'] == 2 ? 'nd' : ($managerEvaluation['targetPosition'] == 3 ? 'rd' : 'th')) }}
+                                    {{ __('season.target') }}: {{ __('season.place', ['position' => $managerEvaluation['targetPosition']]) }}
                                     &rarr;
-                                    Actual: {{ $managerEvaluation['actualPosition'] }}{{ $managerEvaluation['actualPosition'] == 1 ? 'st' : ($managerEvaluation['actualPosition'] == 2 ? 'nd' : ($managerEvaluation['actualPosition'] == 3 ? 'rd' : 'th')) }}
+                                    {{ __('season.actual') }}: {{ __('season.place', ['position' => $managerEvaluation['actualPosition']]) }}
                                 </div>
                             </div>
                             <p class="text-sm opacity-90">{{ $managerEvaluation['message'] }}</p>
@@ -118,13 +117,13 @@
                     {{-- Season Awards Section --}}
                     <div class="border-t pt-6">
                         <div class="text-center text-slate-500 font-semibold text-sm uppercase tracking-wide mb-6">
-                            <span>&#9733;</span> Individual Awards <span>&#9733;</span>
+                            <span>&#9733;</span> {{ __('season.individual_awards') }} <span>&#9733;</span>
                         </div>
 
                         <div class="grid grid-cols-3 gap-4 mb-6">
                             {{-- Top Scorer --}}
                             <div class="bg-slate-50 rounded-lg p-4 text-center">
-                                <div class="text-xs text-slate-500 uppercase tracking-wide mb-2">Pichichi (Top Scorer)</div>
+                                <div class="text-xs text-slate-500 uppercase tracking-wide mb-2">{{ __('season.pichichi') }}</div>
                                 @if($topScorers->isNotEmpty())
                                     @php $scorer = $topScorers->first(); @endphp
                                     <div class="flex items-center justify-center gap-2 mb-1">
@@ -132,15 +131,15 @@
                                         <span class="font-semibold text-slate-900">{{ $scorer->player->name }}</span>
                                     </div>
                                     <div class="text-2xl font-bold text-slate-900">{{ $scorer->goals }}</div>
-                                    <div class="text-xs text-slate-500">goals</div>
+                                    <div class="text-xs text-slate-500">{{ __('season.goals') }}</div>
                                 @else
-                                    <div class="text-slate-400">No goals scored</div>
+                                    <div class="text-slate-400">{{ __('season.no_goals_scored') }}</div>
                                 @endif
                             </div>
 
                             {{-- Most Assists --}}
                             <div class="bg-slate-50 rounded-lg p-4 text-center">
-                                <div class="text-xs text-slate-500 uppercase tracking-wide mb-2">Most Assists</div>
+                                <div class="text-xs text-slate-500 uppercase tracking-wide mb-2">{{ __('season.most_assists') }}</div>
                                 @if($topAssisters->isNotEmpty())
                                     @php $assister = $topAssisters->first(); @endphp
                                     <div class="flex items-center justify-center gap-2 mb-1">
@@ -148,27 +147,27 @@
                                         <span class="font-semibold text-slate-900">{{ $assister->player->name }}</span>
                                     </div>
                                     <div class="text-2xl font-bold text-slate-900">{{ $assister->assists }}</div>
-                                    <div class="text-xs text-slate-500">assists</div>
+                                    <div class="text-xs text-slate-500">{{ __('season.assists') }}</div>
                                 @else
-                                    <div class="text-slate-400">No assists recorded</div>
+                                    <div class="text-slate-400">{{ __('season.no_assists_recorded') }}</div>
                                 @endif
                             </div>
 
                             {{-- Best Goalkeeper --}}
                             <div class="bg-slate-50 rounded-lg p-4 text-center">
-                                <div class="text-xs text-slate-500 uppercase tracking-wide mb-2">Zamora (Best GK)</div>
+                                <div class="text-xs text-slate-500 uppercase tracking-wide mb-2">{{ __('season.zamora') }}</div>
                                 @if($bestGoalkeeper)
                                     <div class="flex items-center justify-center gap-2 mb-1">
                                         <img src="{{ $bestGoalkeeper->team->image }}" class="w-5 h-5">
                                         <span class="font-semibold text-slate-900">{{ $bestGoalkeeper->player->name }}</span>
                                     </div>
                                     <div class="text-2xl font-bold text-slate-900">{{ $bestGoalkeeper->clean_sheets }}</div>
-                                    <div class="text-xs text-slate-500">clean sheets</div>
+                                    <div class="text-xs text-slate-500">{{ __('season.clean_sheets') }}</div>
                                     <div class="text-xs text-slate-400 mt-1">
-                                        {{ number_format($bestGoalkeeper->goals_conceded / max(1, $bestGoalkeeper->appearances), 2) }} goals/game
+                                        {{ number_format($bestGoalkeeper->goals_conceded / max(1, $bestGoalkeeper->appearances), 2) }} {{ __('season.goals_per_game') }}
                                     </div>
                                 @else
-                                    <div class="text-slate-400">Not enough data</div>
+                                    <div class="text-slate-400">{{ __('season.not_enough_data') }}</div>
                                 @endif
                             </div>
                         </div>
@@ -181,7 +180,7 @@
                                     &#9917;
                                 </div>
                                 <div class="flex-1">
-                                    <div class="text-xs text-slate-500 uppercase tracking-wide">Best Attack</div>
+                                    <div class="text-xs text-slate-500 uppercase tracking-wide">{{ __('season.best_attack') }}</div>
                                     <div class="flex items-center gap-2">
                                         <img src="{{ $bestAttack->team->image }}" class="w-4 h-4">
                                         <span class="font-medium text-slate-900 text-sm">{{ $bestAttack->team->name }}</span>
@@ -189,7 +188,7 @@
                                 </div>
                                 <div class="text-right">
                                     <div class="font-bold text-green-600">{{ $bestAttack->goals_for }}</div>
-                                    <div class="text-xs text-slate-400">goals</div>
+                                    <div class="text-xs text-slate-400">{{ __('season.goals') }}</div>
                                 </div>
                             </div>
 
@@ -199,7 +198,7 @@
                                     &#128737;
                                 </div>
                                 <div class="flex-1">
-                                    <div class="text-xs text-slate-500 uppercase tracking-wide">Best Defense</div>
+                                    <div class="text-xs text-slate-500 uppercase tracking-wide">{{ __('season.best_defense') }}</div>
                                     <div class="flex items-center gap-2">
                                         <img src="{{ $bestDefense->team->image }}" class="w-4 h-4">
                                         <span class="font-medium text-slate-900 text-sm">{{ $bestDefense->team->name }}</span>
@@ -207,7 +206,7 @@
                                 </div>
                                 <div class="text-right">
                                     <div class="font-bold text-blue-600">{{ $bestDefense->goals_against }}</div>
-                                    <div class="text-xs text-slate-400">conceded</div>
+                                    <div class="text-xs text-slate-400">{{ __('season.conceded') }}</div>
                                 </div>
                             </div>
                         </div>
@@ -216,28 +215,28 @@
                     {{-- Promotion & Relegation --}}
                     @if($relegatedTeams->isNotEmpty() || $directlyPromoted->isNotEmpty() || $playoffWinner)
                     <div class="border-t pt-6">
-                        <div class="text-center text-slate-500 font-semibold text-sm uppercase tracking-wide mb-4">League Movements</div>
+                        <div class="text-center text-slate-500 font-semibold text-sm uppercase tracking-wide mb-4">{{ __('season.league_movements') }}</div>
 
                         <div class="grid {{ ($relegatedTeams->isNotEmpty() && ($directlyPromoted->isNotEmpty() || $playoffWinner)) ? 'grid-cols-2' : 'grid-cols-1' }} gap-4">
                             {{-- Promoted --}}
                             @if($directlyPromoted->isNotEmpty() || $playoffWinner)
                             <div class="bg-green-50 rounded-lg p-4 border border-green-200">
                                 <div class="flex items-center gap-2 text-green-700 font-semibold text-sm mb-3">
-                                    <span>&#9650;</span> Promoted to {{ $promotionTargetLeague?->name ?? 'Top Division' }}
+                                    <span>&#9650;</span> {{ __('season.promoted_to', ['league' => $promotionTargetLeague?->name ?? 'Top Division']) }}
                                 </div>
                                 <div class="space-y-2">
                                     @foreach($directlyPromoted as $promoted)
                                         <div class="flex items-center gap-2">
                                             <img src="{{ $promoted->team->image }}" class="w-5 h-5">
                                             <span class="text-sm text-slate-900">{{ $promoted->team->name }}</span>
-                                            <span class="text-xs text-green-600">({{ $promoted->position }}{{ $promoted->position == 1 ? 'st' : 'nd' }})</span>
+                                            <span class="text-xs text-green-600">({{ __('season.place', ['position' => $promoted->position]) }})</span>
                                         </div>
                                     @endforeach
                                     @if($playoffWinner)
                                         <div class="flex items-center gap-2">
                                             <img src="{{ $playoffWinner->image }}" class="w-5 h-5">
                                             <span class="text-sm text-slate-900">{{ $playoffWinner->name }}</span>
-                                            <span class="text-xs text-green-600">(Playoff winner)</span>
+                                            <span class="text-xs text-green-600">({{ __('season.playoff_winner') }})</span>
                                         </div>
                                     @endif
                                 </div>
@@ -248,14 +247,14 @@
                             @if($relegatedTeams->isNotEmpty())
                             <div class="bg-red-50 rounded-lg p-4 border border-red-200">
                                 <div class="flex items-center gap-2 text-red-700 font-semibold text-sm mb-3">
-                                    <span>&#9660;</span> Relegated to {{ $lowerTierLeague?->name ?? 'Lower Division' }}
+                                    <span>&#9660;</span> {{ __('season.relegated_to', ['league' => $lowerTierLeague?->name ?? 'Lower Division']) }}
                                 </div>
                                 <div class="space-y-2">
                                     @foreach($relegatedTeams as $relegated)
                                         <div class="flex items-center gap-2">
                                             <img src="{{ $relegated->team->image }}" class="w-5 h-5">
                                             <span class="text-sm text-slate-900">{{ $relegated->team->name }}</span>
-                                            <span class="text-xs text-red-600">({{ $relegated->position }}th)</span>
+                                            <span class="text-xs text-red-600">({{ __('season.place', ['position' => $relegated->position]) }})</span>
                                         </div>
                                     @endforeach
                                 </div>
@@ -268,7 +267,7 @@
                     {{-- Player Development Preview --}}
                     @if($developmentPreview->isNotEmpty())
                     <div class="border-t pt-6">
-                        <div class="text-center text-slate-500 font-semibold text-sm uppercase tracking-wide mb-4">Player Development</div>
+                        <div class="text-center text-slate-500 font-semibold text-sm uppercase tracking-wide mb-4">{{ __('season.player_development') }}</div>
 
                         <div class="space-y-2">
                             @foreach($developmentPreview as $item)
@@ -277,9 +276,9 @@
                                     $icon = $change > 0 ? '&#9650;' : ($change < 0 ? '&#9660;' : '&#8212;');
                                     $colorClass = $change > 0 ? 'text-green-600' : ($change < 0 ? 'text-red-600' : 'text-slate-400');
                                     $statusLabel = match($item['status']) {
-                                        'growing' => 'Growing',
-                                        'peak' => 'Peak',
-                                        'declining' => 'Declining',
+                                        'growing' => __('season.growing'),
+                                        'peak' => __('season.peak'),
+                                        'declining' => __('season.declining'),
                                         default => '',
                                     };
                                     $statusClass = match($item['status']) {
@@ -319,7 +318,7 @@
                             <button type="submit"
                                     class="inline-flex items-center gap-2 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white px-8 py-4 rounded-lg text-xl font-bold shadow-lg transition-all transform hover:scale-105"
                                     :disabled="loading">
-                                <span x-show="!loading">Start Season {{ (int)$game->season + 1 }}</span>
+                                <span x-show="!loading">{{ __('season.start_new_season', ['season' => (int)$game->season + 1]) }}</span>
                                 <span x-show="loading" x-cloak>
                                     <svg class="animate-spin h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>

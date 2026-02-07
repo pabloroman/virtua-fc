@@ -35,6 +35,6 @@ class RejectTransferOffer
 
         return redirect()
             ->route('game.transfers', $gameId)
-            ->with('success', "Offer from {$teamName} rejected.");
+            ->with('success', __('messages.offer_rejected', ['team' => $teamName]));
     }
 }

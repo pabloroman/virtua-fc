@@ -21,7 +21,7 @@ class ConductCupDraw
         // Check if draw is needed
         if (!$this->cupDrawService->needsDrawForRound($gameId, $competitionId, $round)) {
             return redirect()->route('game.competition', [$gameId, $competitionId])
-                ->with('error', 'Draw not needed for this round');
+                ->with('error', __('messages.draw_not_needed'));
         }
 
         // Conduct the draw

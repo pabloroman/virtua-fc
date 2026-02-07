@@ -27,6 +27,6 @@ class ListPlayerForTransfer
 
         return redirect()
             ->route('game.transfers', $gameId)
-            ->with('success', "{$player->player->name} listed for transfer. Offers may arrive after the next matchday.");
+            ->with('success', __('messages.player_listed', ['player' => $player->player->name]));
     }
 }

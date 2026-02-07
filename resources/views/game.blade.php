@@ -16,7 +16,7 @@
                         <div>
                             {{-- Competition & Date Header --}}
                             <div class="flex items-center justify-between mb-6">
-                                <h3 class="font-semibold text-xl text-slate-900">Next Match</h3>
+                                <h3 class="font-semibold text-xl text-slate-900">{{ __('game.next_match') }}</h3>
                                 <div class="flex items-center gap-3 text-sm text-slate-500">
                                     <span>{{ $nextMatch->competition->name ?? 'League' }}</span>
                                     <span class="text-slate-300">|</span>
@@ -49,7 +49,7 @@
                                                         {{ $result }}
                                                     </span>
                                                 @empty
-                                                    <span class="text-slate-400 text-xs">No form</span>
+                                                    <span class="text-slate-400 text-xs">{{ __('game.no_form') }}</span>
                                                 @endforelse
                                             </div>
                                         </div>
@@ -82,7 +82,7 @@
                                                         {{ $result }}
                                                     </span>
                                                 @empty
-                                                    <span class="text-slate-400 text-xs">No form</span>
+                                                    <span class="text-slate-400 text-xs">{{ __('game.no_form') }}</span>
                                                 @endforelse
                                             </div>
                                         </div>
@@ -94,7 +94,7 @@
                             <div class="mt-4">
                                 <a href="{{ route('game.lineup', [$game->id, $nextMatch->id]) }}"
                                    class="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg transition-colors">
-                                    Set Lineup
+                                    {{ __('game.set_lineup') }}
                                 </a>
                             </div>
                         </div>
@@ -103,9 +103,9 @@
                         @if($upcomingFixtures->isNotEmpty())
                         <div class="pt-8 border-t">
                             <div class="flex items-center justify-between mb-4">
-                                <h3 class="font-semibold text-xl text-slate-900">Upcoming Fixtures</h3>
+                                <h3 class="font-semibold text-xl text-slate-900">{{ __('game.upcoming_fixtures') }}</h3>
                                 <a href="{{ route('game.calendar', $game->id) }}" class="text-sm text-sky-600 hover:text-sky-800">
-                                    Full Calendar &rarr;
+                                    {{ __('game.full_calendar') }} &rarr;
                                 </a>
                             </div>
 
@@ -127,7 +127,7 @@
                         @endphp
                         @if($hasSquadAlerts || $hasScoutNotification)
                         <div>
-                            <h4 class="font-semibold text-xl text-slate-900 mb-4">Squad Status</h4>
+                            <h4 class="font-semibold text-xl text-slate-900 mb-4">{{ __('game.squad_status') }}</h4>
 
                             <div class="space-y-4">
                                 {{-- Scout Report Notification --}}
@@ -139,9 +139,9 @@
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                                             </svg>
-                                            <span class="font-medium text-sm">Scout Report Ready</span>
+                                            <span class="font-medium text-sm">{{ __('game.scout_report_ready') }}</span>
                                         </div>
-                                        <p class="text-xs text-sky-600 mt-1 pl-6">{{ $scoutReport->players->count() }} players available to review.</p>
+                                        <p class="text-xs text-sky-600 mt-1 pl-6">{{ __('game.players_to_review', ['count' => $scoutReport->players->count()]) }}</p>
                                     </a>
                                     @else
                                     <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg">
@@ -149,9 +149,9 @@
                                             <svg class="w-4 h-4 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                                             </svg>
-                                            <span class="font-medium text-sm">Scout Searching...</span>
+                                            <span class="font-medium text-sm">{{ __('game.scout_searching') }}</span>
                                         </div>
-                                        <p class="text-xs text-slate-500 mt-1 pl-6">{{ $scoutReport->weeks_remaining }} week{{ $scoutReport->weeks_remaining > 1 ? 's' : '' }} remaining</p>
+                                        <p class="text-xs text-slate-500 mt-1 pl-6">{{ trans_choice('game.weeks_remaining', $scoutReport->weeks_remaining, ['count' => $scoutReport->weeks_remaining]) }}</p>
                                     </div>
                                     @endif
                                 </div>
@@ -163,7 +163,7 @@
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                                         </svg>
-                                        <span class="font-medium text-sm">Injured</span>
+                                        <span class="font-medium text-sm">{{ __('game.injured') }}</span>
                                     </div>
                                     @foreach($squadAlerts['injured'] as $alert)
                                     <div class="flex items-center justify-between text-sm pl-6 py-1">
@@ -181,7 +181,7 @@
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
                                         </svg>
-                                        <span class="font-medium text-sm">Suspended</span>
+                                        <span class="font-medium text-sm">{{ __('game.suspended') }}</span>
                                     </div>
                                     @foreach($squadAlerts['suspended'] as $alert)
                                     <div class="flex items-center justify-between text-sm pl-6 py-1">
@@ -199,7 +199,7 @@
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                                         </svg>
-                                        <span class="font-medium text-sm">Low Fitness</span>
+                                        <span class="font-medium text-sm">{{ __('game.low_fitness') }}</span>
                                     </div>
                                     @foreach($squadAlerts['lowFitness'] as $alert)
                                     <div class="flex items-center justify-between text-sm pl-6 py-1">
@@ -217,7 +217,7 @@
                                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                                             <rect x="6" y="3" width="12" height="18" rx="2" />
                                         </svg>
-                                        <span class="font-medium text-sm">Card Risk</span>
+                                        <span class="font-medium text-sm">{{ __('game.card_risk') }}</span>
                                     </div>
                                     @foreach($squadAlerts['yellowCardRisk'] as $alert)
                                     <div class="flex items-center justify-between text-sm pl-6 py-1">
@@ -238,9 +238,9 @@
                         @if($hasTransferAlerts)
                         <div class="@if($hasSquadAlerts) pt-8 border-t @endif">
                             <div class="flex items-center justify-between mb-4">
-                                <h4 class="font-semibold text-xl text-slate-900">Transfer Offers</h4>
+                                <h4 class="font-semibold text-xl text-slate-900">{{ __('game.transfer_offers') }}</h4>
                                 <a href="{{ route('game.transfers', $game->id) }}" class="text-sm text-sky-600 hover:text-sky-800">
-                                    View All
+                                    {{ __('app.view_all') }}
                                 </a>
                             </div>
 
@@ -253,7 +253,7 @@
                                         <span class="text-green-600 font-medium">{{ $alert['fee'] }}</span>
                                     </div>
                                     <div class="text-xs text-amber-600 font-medium mt-1">
-                                        Expires in {{ $alert['daysLeft'] }}d
+                                        {{ __('game.expires_in', ['days' => $alert['daysLeft']]) }}
                                     </div>
                                 </div>
                                 @endforeach
@@ -274,14 +274,14 @@
                         {{-- No Alerts State --}}
                         @if(!$hasSquadAlerts && !$hasTransferAlerts)
                         <div>
-                            <h4 class="font-semibold text-xl text-slate-900 mb-4">Notifications</h4>
+                            <h4 class="font-semibold text-xl text-slate-900 mb-4">{{ __('game.notifications') }}</h4>
                             <div class="text-center py-8">
                                 <div class="text-slate-300 mb-2">
                                     <svg class="w-10 h-10 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
                                 </div>
-                                <p class="text-sm text-slate-400">All clear</p>
+                                <p class="text-sm text-slate-400">{{ __('app.all_clear') }}</p>
                             </div>
                         </div>
                         @endif
@@ -290,24 +290,24 @@
                         @if($finances)
                         <div class="pt-8 border-t">
                             <div class="flex items-center justify-between mb-4">
-                                <h4 class="font-semibold text-xl text-slate-900">Club Finances</h4>
+                                <h4 class="font-semibold text-xl text-slate-900">{{ __('game.club_finances') }}</h4>
                                 <a href="{{ route('game.finances', $game->id) }}" class="text-sm text-sky-600 hover:text-sky-800">
-                                    Details &rarr;
+                                    {{ __('app.details') }} &rarr;
                                 </a>
                             </div>
 
                             <div class="space-y-3">
                                 <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                                    <span class="text-sm text-slate-600">Projected Position</span>
+                                    <span class="text-sm text-slate-600">{{ __('game.projected_position') }}</span>
                                     <span class="font-bold text-slate-900">{{ $finances->projected_position }}</span>
                                 </div>
                                 <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                                    <span class="text-sm text-slate-600">Transfer Budget</span>
+                                    <span class="text-sm text-slate-600">{{ __('game.transfer_budget') }}</span>
                                     <span class="font-bold text-sky-700">{{ $investment?->formatted_transfer_budget ?? '€0' }}</span>
                                 </div>
                                 @if($finances->carried_debt > 0)
                                 <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg">
-                                    <span class="text-sm text-red-600">Carried Debt</span>
+                                    <span class="text-sm text-red-600">{{ __('game.carried_debt') }}</span>
                                     <span class="font-bold text-red-700">{{ $finances->formatted_carried_debt }}</span>
                                 </div>
                                 @endif
@@ -322,11 +322,11 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-12 text-center">
                     <div class="text-6xl mb-4">&#127942;</div>
-                    <h2 class="text-3xl font-bold text-slate-900 mb-2">Season Complete!</h2>
-                    <p class="text-slate-500 mb-8">Congratulations on finishing the {{ $game->season }} season.</p>
+                    <h2 class="text-3xl font-bold text-slate-900 mb-2">{{ __('game.season_complete') }}</h2>
+                    <p class="text-slate-500 mb-8">{{ __('game.season_complete_congrats', ['season' => $game->season]) }}</p>
                     <a href="{{ route('game.season-end', $game->id) }}"
                        class="inline-flex items-center px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors">
-                        View Season Summary
+                        {{ __('game.view_season_summary') }}
                     </a>
                 </div>
             </div>

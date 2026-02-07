@@ -15,13 +15,13 @@ class SaveBudgetAllocation
         // Only allow allocation/changes during preseason
         if (!$game->isInPreseason()) {
             return redirect()->route('game.budget', $gameId)
-                ->with('error', 'Budget can only be adjusted during pre-season.');
+                ->with('error', __('messages.budget_preseason_only'));
         }
 
         $finances = $game->currentFinances;
         if (!$finances) {
             return redirect()->route('game.budget', $gameId)
-                ->with('error', 'No financial projections found.');
+                ->with('error', __('messages.budget_no_projections'));
         }
 
         $availableSurplus = $finances->available_surplus;
@@ -47,7 +47,7 @@ class SaveBudgetAllocation
         // Validate total doesn't exceed available surplus
         if ($total > $availableSurplus) {
             return redirect()->route('game.budget', $gameId)
-                ->with('error', 'Total allocation exceeds available surplus.');
+                ->with('error', __('messages.budget_exceeds_surplus'));
         }
 
         // Validate minimum tier requirements
@@ -58,7 +58,7 @@ class SaveBudgetAllocation
 
         if ($youthTier < 1 || $medicalTier < 1 || $scoutingTier < 1 || $facilitiesTier < 1) {
             return redirect()->route('game.budget', $gameId)
-                ->with('error', 'All infrastructure areas must be at least Tier 1.');
+                ->with('error', __('messages.budget_minimum_tier'));
         }
 
         // Create or update the investment record
@@ -82,6 +82,6 @@ class SaveBudgetAllocation
         );
 
         return redirect()->route('game.preseason', $gameId)
-            ->with('success', 'Budget allocation saved.');
+            ->with('success', __('messages.budget_saved'));
     }
 }

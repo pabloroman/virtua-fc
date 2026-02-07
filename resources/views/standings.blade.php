@@ -12,22 +12,22 @@
                 {{-- Main standings table --}}
                 <div class="col-span-2 space-y-3">
 
-                    <h3 class="font-semibold text-xl text-slate-900">{{ $competition->name }} Standings</h3>
+                    <h3 class="font-semibold text-xl text-slate-900">{{ $competition->name }} - {{ __('game.standings') }}</h3>
 
                     <table class="min-w-full table-fixed text-right divide-y divide-slate-300 border-spacing-2">
                         <thead>
                         <tr>
                             <th class="font-semibold text-left w-8 p-2"></th>
                             <th class="font-semibold text-left p-2"></th>
-                            <th class="font-semibold w-8 p-2">P</th>
-                            <th class="font-semibold w-8 p-2">W</th>
-                            <th class="font-semibold w-8 p-2">D</th>
-                            <th class="font-semibold w-8 p-2">L</th>
-                            <th class="font-semibold w-8 p-2">GF</th>
-                            <th class="font-semibold w-8 p-2">GA</th>
-                            <th class="font-semibold w-8 p-2">GD</th>
-                            <th class="font-semibold w-8 p-2">Pts</th>
-                            <th class="font-semibold w-8 p-2 text-center">Last 5</th>
+                            <th class="font-semibold w-8 p-2">{{ __('game.played_abbr') }}</th>
+                            <th class="font-semibold w-8 p-2">{{ __('game.won_abbr') }}</th>
+                            <th class="font-semibold w-8 p-2">{{ __('game.drawn_abbr') }}</th>
+                            <th class="font-semibold w-8 p-2">{{ __('game.lost_abbr') }}</th>
+                            <th class="font-semibold w-8 p-2">{{ __('game.goals_for_abbr') }}</th>
+                            <th class="font-semibold w-8 p-2">{{ __('game.goals_against_abbr') }}</th>
+                            <th class="font-semibold w-8 p-2">{{ __('game.goal_diff_abbr') }}</th>
+                            <th class="font-semibold w-8 p-2">{{ __('game.pts_abbr') }}</th>
+                            <th class="font-semibold w-8 p-2 text-center">{{ __('game.last_5') }}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -92,30 +92,30 @@
                         <div class="flex gap-6 text-xs text-slate-500">
                             <div class="flex items-center gap-2">
                                 <div class="w-3 h-3 bg-blue-500 rounded"></div>
-                                <span>Champions League</span>
+                                <span>{{ __('game.champions_league') }}</span>
                             </div>
                             <div class="flex items-center gap-2">
                                 <div class="w-3 h-3 bg-orange-500 rounded"></div>
-                                <span>Europa League</span>
+                                <span>{{ __('game.europa_league') }}</span>
                             </div>
                             <div class="flex items-center gap-2">
                                 <div class="w-3 h-3 bg-red-500 rounded"></div>
-                                <span>Relegation</span>
+                                <span>{{ __('game.relegation') }}</span>
                             </div>
                         </div>
                     @elseif($competition->id === 'ESP2')
                         <div class="flex gap-6 text-xs text-slate-500">
                             <div class="flex items-center gap-2">
                                 <div class="w-3 h-3 bg-green-500 rounded"></div>
-                                <span>Direct Promotion</span>
+                                <span>{{ __('game.direct_promotion') }}</span>
                             </div>
                             <div class="flex items-center gap-2">
                                 <div class="w-3 h-3 bg-green-300 rounded"></div>
-                                <span>Promotion Playoff</span>
+                                <span>{{ __('game.promotion_playoff') }}</span>
                             </div>
                             <div class="flex items-center gap-2">
                                 <div class="w-3 h-3 bg-red-500 rounded"></div>
-                                <span>Relegation</span>
+                                <span>{{ __('game.relegation') }}</span>
                             </div>
                         </div>
                     @endif
@@ -123,10 +123,10 @@
 
                 {{-- Sidebar: Top Scorers --}}
                 <div class="grid-cols-1 space-y-6">
-                    <h4 class="font-semibold text-xl text-slate-900">Top Scorers</h4>
+                    <h4 class="font-semibold text-xl text-slate-900">{{ __('game.top_scorers') }}</h4>
 
                     @if($topScorers->isEmpty())
-                        <p class="text-sm text-slate-500">No goals scored yet</p>
+                        <p class="text-sm text-slate-500">{{ __('game.no_goals_yet') }}</p>
                     @else
                         <div class="space-y-2">
                             @foreach($topScorers as $index => $scorer)

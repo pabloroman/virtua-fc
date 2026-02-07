@@ -20,7 +20,7 @@ class CompleteOnboarding
         $finances = $game->currentFinances;
         if (!$finances) {
             return redirect()->route('game.onboarding', $gameId)
-                ->with('error', 'No financial projections found.');
+                ->with('error', __('messages.budget_no_projections'));
         }
 
         $availableSurplus = $finances->available_surplus;
@@ -46,7 +46,7 @@ class CompleteOnboarding
         // Validate total doesn't exceed available surplus
         if ($total > $availableSurplus) {
             return redirect()->route('game.onboarding', $gameId)
-                ->with('error', 'Total allocation exceeds available surplus.');
+                ->with('error', __('messages.budget_exceeds_surplus'));
         }
 
         // Validate minimum tier requirements
@@ -57,7 +57,7 @@ class CompleteOnboarding
 
         if ($youthTier < 1 || $medicalTier < 1 || $scoutingTier < 1 || $facilitiesTier < 1) {
             return redirect()->route('game.onboarding', $gameId)
-                ->with('error', 'All infrastructure areas must be at least Tier 1.');
+                ->with('error', __('messages.budget_minimum_tier'));
         }
 
         // Create the investment record
@@ -80,6 +80,6 @@ class CompleteOnboarding
         $game->completeOnboarding();
 
         return redirect()->route('show-game', $gameId)
-            ->with('success', 'Welcome to ' . $game->team->name . '! Your season awaits.');
+            ->with('success', __('messages.welcome_to_team', ['team' => $game->team->name]));
     }
 }

@@ -1,0 +1,154 @@
+<?php
+
+return [
+    // Season
+    'season' => 'Temporada',
+    'season_n' => 'Temporada :season',
+    'matchday' => 'Jornada',
+    'matchday_n' => 'Jornada :number',
+    'pre_season' => 'Pretemporada',
+    'season_complete' => '¡Temporada Completada!',
+    'season_complete_congrats' => 'Felicidades por completar la temporada :season.',
+    'view_season_summary' => 'Ver Resumen de Temporada',
+    'start_season' => 'Comenzar Temporada :season',
+
+    // Match
+    'next' => 'Próximo',
+    'next_match' => 'Próximo Partido',
+    'upcoming_fixtures' => 'Próximos Partidos',
+    'full_calendar' => 'Calendario Completo',
+    'set_lineup' => 'Alinear',
+    'vs' => 'vs',
+    'home' => 'Casa',
+    'away' => 'Fuera',
+    'no_form' => 'Sin historial',
+    'form' => 'Forma',
+
+    // Standings
+    'standings' => 'Clasificación',
+    'pts' => 'pts',
+    'position_suffix' => ':position°',
+    'played_abbr' => 'PJ',
+    'won_abbr' => 'G',
+    'drawn_abbr' => 'E',
+    'lost_abbr' => 'P',
+    'goals_for_abbr' => 'GF',
+    'goals_against_abbr' => 'GC',
+    'goal_diff_abbr' => 'DG',
+    'pts_abbr' => 'Pts',
+    'last_5' => 'Últimos 5',
+    'champions_league' => 'Champions League',
+    'europa_league' => 'Europa League',
+    'relegation' => 'Descenso',
+    'direct_promotion' => 'Ascenso Directo',
+    'promotion_playoff' => 'Playoff de Ascenso',
+    'top_scorers' => 'Máximos Goleadores',
+    'no_goals_yet' => 'Aún no se han marcado goles',
+
+    // Notifications
+    'notifications' => 'Notificaciones',
+    'squad_status' => 'Estado de la Plantilla',
+
+    // Alerts
+    'injured' => 'Lesionado',
+    'suspended' => 'Sancionado',
+    'low_fitness' => 'Baja Forma',
+    'card_risk' => 'Riesgo Tarjeta',
+    'yellow_cards' => 'TA',
+
+    // Scout
+    'scout_report_ready' => 'Informe del Ojeador Listo',
+    'scout_searching' => 'Ojeador Buscando...',
+    'players_to_review' => ':count jugadores disponibles para revisar.',
+    'weeks_remaining' => ':count semana restante|:count semanas restantes',
+
+    // Transfer alerts
+    'transfer_offers' => 'Ofertas de Fichaje',
+    'expires_in' => 'Expira en :days días',
+
+    // Club finances
+    'club_finances' => 'Finanzas del Club',
+    'projected_position' => 'Posición Proyectada',
+    'transfer_budget' => 'Presupuesto de Fichajes',
+    'carried_debt' => 'Deuda Arrastrada',
+
+    // Calendar
+    'season_calendar' => 'Calendario de Temporada',
+    'record' => 'Récord',
+    'win_rate' => ':percent% victorias',
+    'goals' => 'Goles',
+    'scored' => 'Marcados',
+    'conceded' => 'Encajados',
+    'home_vs_away' => 'Casa vs Fuera',
+
+    // Preseason
+    'back_to_preseason' => 'Volver a Pretemporada',
+    'preseason_title' => 'Pretemporada :season',
+    'summer_window_open' => 'Ventana de Verano Abierta',
+    'season_starts' => 'La temporada comienza: :date',
+    'week_of' => 'Semana :current de :total',
+    'advance_week' => 'Avanzar Semana',
+    'allocate_budget' => 'Asignar Presupuesto de Temporada',
+    'allocate_budget_desc' => 'Tienes :amount para asignar entre infraestructura y fichajes.',
+    'set_up_budget' => 'Configurar Presupuesto',
+    'available_surplus' => 'Superávit Disponible',
+    'projected_wages' => 'Salarios Proyectados',
+    'click_to_adjust' => 'Clic para ajustar',
+    'click_to_allocate' => 'Clic para asignar',
+    'offers_for_your_players' => 'Ofertas por tus Jugadores',
+    'no_offers_yet' => 'Aún no hay ofertas',
+    'list_players_hint' => 'Pon jugadores a la venta para atraer ofertas',
+    'your_squad' => 'Tu Plantilla',
+    'offer_received' => 'Oferta recibida',
+    'listed' => 'En venta',
+    'list_for_sale' => 'Poner a la venta',
+    'advance_week_hint' => 'Haz clic en "Avanzar Semana" para comenzar la pretemporada y recibir los derechos de TV.',
+    'window_closing_soon' => '¡La ventana de fichajes cierra pronto! Finaliza tus operaciones.',
+    'build_squad_hint' => 'Usa este tiempo para construir tu plantilla para la próxima temporada.',
+
+    // Youth & Loans
+    'youth_academy_prospects' => 'Promesas de la Cantera',
+    'youth_prospects_desc' => 'Nuevos talentos promocionados de la cantera esta temporada.',
+    'potential' => 'Potencial',
+    'loan_returns' => 'Cesiones que Regresan',
+    'loan_returns_desc' => 'Jugadores que regresan de cesión.',
+    'returned_from' => 'Regresó de',
+    'completed_this_window' => 'Completados en esta Ventana',
+    'in' => 'ENTRA',
+    'out' => 'SALE',
+    'loan' => 'Cesión',
+
+    // Calendar labels
+    'july_1' => '1 de Julio',
+    'season_start' => 'Inicio de Temporada',
+    'expires' => 'Expira: :date',
+
+    // Onboarding
+    'welcome_to_team' => 'Bienvenido a :team',
+    'home_ground' => 'Estadio',
+    'club_stadium' => 'Estadio del Club',
+    'seats' => 'asientos',
+    'avg_age' => 'Edad Media',
+    'board_expectations' => 'Expectativas del Club',
+    'finish_position_or_better' => 'Terminar :position o mejor',
+    'board_expectations_hint' => 'Basado en la fuerza de la plantilla y proyecciones financieras',
+    'key_players' => 'Jugadores Clave',
+    'years_old' => 'años',
+    'ovr' => 'MED',
+    'first_match' => 'Primer Partido',
+    'allocate_budget_hint' => 'Asigna fondos entre infraestructura y fichajes',
+    'available' => 'Disponible',
+    'begin_season' => 'Comenzar Temporada',
+
+    // Results page
+    'results' => 'Resultados',
+    'matchday_results' => 'Resultados :name',
+    'back_to_dashboard' => 'Volver al Panel',
+    'all_results' => 'Todos los Resultados',
+    'og' => 'PP',
+
+    // Dashboard
+    'your_games' => 'Tus Partidas',
+    'start_game' => 'Iniciar Partida',
+    'manager_name' => 'Nombre del mánager',
+];

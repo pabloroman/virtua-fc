@@ -10,9 +10,9 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-12">
                     <div class="flex items-center justify-between mb-6">
-                        <h3 class="font-semibold text-xl text-slate-900">Squad Statistics</h3>
+                        <h3 class="font-semibold text-xl text-slate-900">{{ __('squad.squad_statistics') }}</h3>
                         <a href="{{ route('game.squad', $game->id) }}" class="text-sm text-sky-600 hover:text-sky-800">
-                            &larr; Back to Squad
+                            &larr; {{ __('squad.back_to_squad') }}
                         </a>
                     </div>
 
@@ -46,67 +46,67 @@
                                     <th class="font-semibold py-2 w-10"></th>
                                     <th class="font-semibold py-2 cursor-pointer hover:text-sky-600 select-none" @click="sortAsc = sortColumn === 'name' ? !sortAsc : true; sortColumn = 'name'; sortTable('name', sortAsc)">
                                         <span class="flex items-center gap-1">
-                                            Player
+                                            {{ __('app.player') }}
                                             <span x-show="sortColumn === 'name'" x-text="sortAsc ? '↑' : '↓'" class="text-sky-600"></span>
                                         </span>
                                     </th>
                                     <th class="font-semibold py-2 text-center w-12 cursor-pointer hover:text-sky-600 select-none" @click="sortAsc = sortColumn === 'age' ? !sortAsc : true; sortColumn = 'age'; sortTable('age', sortAsc)">
                                         <span class="flex items-center justify-center gap-1">
-                                            Age
+                                            {{ __('app.age') }}
                                             <span x-show="sortColumn === 'age'" x-text="sortAsc ? '↑' : '↓'" class="text-sky-600"></span>
                                         </span>
                                     </th>
-                                    <th class="font-semibold py-2 text-center w-12 cursor-pointer hover:text-sky-600 select-none" @click="sortAsc = sortColumn === 'appearances' ? !sortAsc : false; sortColumn = 'appearances'; sortTable('appearances', sortAsc)" title="Appearances">
+                                    <th class="font-semibold py-2 text-center w-12 cursor-pointer hover:text-sky-600 select-none" @click="sortAsc = sortColumn === 'appearances' ? !sortAsc : false; sortColumn = 'appearances'; sortTable('appearances', sortAsc)" title="{{ __('squad.appearances') }}">
                                         <span class="flex items-center justify-center gap-1">
-                                            Apps
+                                            {{ __('squad.apps') }}
                                             <span x-show="sortColumn === 'appearances'" x-text="sortAsc ? '↑' : '↓'" class="text-sky-600"></span>
                                         </span>
                                     </th>
-                                    <th class="font-semibold py-2 text-center w-12 cursor-pointer hover:text-sky-600 select-none" @click="sortAsc = sortColumn === 'goals' ? !sortAsc : false; sortColumn = 'goals'; sortTable('goals', sortAsc)" title="Goals">
+                                    <th class="font-semibold py-2 text-center w-12 cursor-pointer hover:text-sky-600 select-none" @click="sortAsc = sortColumn === 'goals' ? !sortAsc : false; sortColumn = 'goals'; sortTable('goals', sortAsc)" title="{{ __('squad.legend_goals') }}">
                                         <span class="flex items-center justify-center gap-1">
-                                            G
+                                            {{ __('squad.goals') }}
                                             <span x-show="sortColumn === 'goals'" x-text="sortAsc ? '↑' : '↓'" class="text-sky-600"></span>
                                         </span>
                                     </th>
-                                    <th class="font-semibold py-2 text-center w-12 cursor-pointer hover:text-sky-600 select-none" @click="sortAsc = sortColumn === 'assists' ? !sortAsc : false; sortColumn = 'assists'; sortTable('assists', sortAsc)" title="Assists">
+                                    <th class="font-semibold py-2 text-center w-12 cursor-pointer hover:text-sky-600 select-none" @click="sortAsc = sortColumn === 'assists' ? !sortAsc : false; sortColumn = 'assists'; sortTable('assists', sortAsc)" title="{{ __('squad.legend_assists') }}">
                                         <span class="flex items-center justify-center gap-1">
-                                            A
+                                            {{ __('squad.assists') }}
                                             <span x-show="sortColumn === 'assists'" x-text="sortAsc ? '↑' : '↓'" class="text-sky-600"></span>
                                         </span>
                                     </th>
-                                    <th class="font-semibold py-2 text-center w-12 cursor-pointer hover:text-sky-600 select-none" @click="sortAsc = sortColumn === 'contributions' ? !sortAsc : false; sortColumn = 'contributions'; sortTable('contributions', sortAsc)" title="Goal Contributions (Goals + Assists)">
+                                    <th class="font-semibold py-2 text-center w-12 cursor-pointer hover:text-sky-600 select-none" @click="sortAsc = sortColumn === 'contributions' ? !sortAsc : false; sortColumn = 'contributions'; sortTable('contributions', sortAsc)" title="{{ __('squad.legend_contributions') }}">
                                         <span class="flex items-center justify-center gap-1">
-                                            G+A
+                                            {{ __('squad.goal_contributions') }}
                                             <span x-show="sortColumn === 'contributions'" x-text="sortAsc ? '↑' : '↓'" class="text-sky-600"></span>
                                         </span>
                                     </th>
-                                    <th class="font-semibold py-2 text-center w-14 cursor-pointer hover:text-sky-600 select-none" @click="sortAsc = sortColumn === 'gpg' ? !sortAsc : false; sortColumn = 'gpg'; sortTable('gpg', sortAsc)" title="Goals per Game">
+                                    <th class="font-semibold py-2 text-center w-14 cursor-pointer hover:text-sky-600 select-none" @click="sortAsc = sortColumn === 'gpg' ? !sortAsc : false; sortColumn = 'gpg'; sortTable('gpg', sortAsc)" title="{{ __('squad.goals_per_game') }}">
                                         <span class="flex items-center justify-center gap-1">
-                                            G/Gm
+                                            {{ __('squad.goals_per_game') }}
                                             <span x-show="sortColumn === 'gpg'" x-text="sortAsc ? '↑' : '↓'" class="text-sky-600"></span>
                                         </span>
                                     </th>
-                                    <th class="font-semibold py-2 text-center w-12 cursor-pointer hover:text-sky-600 select-none" @click="sortAsc = sortColumn === 'own_goals' ? !sortAsc : false; sortColumn = 'own_goals'; sortTable('own_goals', sortAsc)" title="Own Goals">
+                                    <th class="font-semibold py-2 text-center w-12 cursor-pointer hover:text-sky-600 select-none" @click="sortAsc = sortColumn === 'own_goals' ? !sortAsc : false; sortColumn = 'own_goals'; sortTable('own_goals', sortAsc)" title="{{ __('squad.legend_own_goals') }}">
                                         <span class="flex items-center justify-center gap-1">
-                                            OG
+                                            {{ __('squad.own_goals') }}
                                             <span x-show="sortColumn === 'own_goals'" x-text="sortAsc ? '↑' : '↓'" class="text-sky-600"></span>
                                         </span>
                                     </th>
-                                    <th class="font-semibold py-2 text-center w-12 cursor-pointer hover:text-sky-600 select-none" @click="sortAsc = sortColumn === 'yellow' ? !sortAsc : false; sortColumn = 'yellow'; sortTable('yellow', sortAsc)" title="Yellow Cards">
+                                    <th class="font-semibold py-2 text-center w-12 cursor-pointer hover:text-sky-600 select-none" @click="sortAsc = sortColumn === 'yellow' ? !sortAsc : false; sortColumn = 'yellow'; sortTable('yellow', sortAsc)" title="{{ __('squad.yellow_cards') }}">
                                         <span class="flex items-center justify-center gap-1">
                                             <span class="w-3 h-4 bg-yellow-400 rounded-sm"></span>
                                             <span x-show="sortColumn === 'yellow'" x-text="sortAsc ? '↑' : '↓'" class="text-sky-600"></span>
                                         </span>
                                     </th>
-                                    <th class="font-semibold py-2 text-center w-12 cursor-pointer hover:text-sky-600 select-none" @click="sortAsc = sortColumn === 'red' ? !sortAsc : false; sortColumn = 'red'; sortTable('red', sortAsc)" title="Red Cards">
+                                    <th class="font-semibold py-2 text-center w-12 cursor-pointer hover:text-sky-600 select-none" @click="sortAsc = sortColumn === 'red' ? !sortAsc : false; sortColumn = 'red'; sortTable('red', sortAsc)" title="{{ __('squad.red_cards') }}">
                                         <span class="flex items-center justify-center gap-1">
                                             <span class="w-3 h-4 bg-red-500 rounded-sm"></span>
                                             <span x-show="sortColumn === 'red'" x-text="sortAsc ? '↑' : '↓'" class="text-sky-600"></span>
                                         </span>
                                     </th>
-                                    <th class="font-semibold py-2 text-center w-12 cursor-pointer hover:text-sky-600 select-none" @click="sortAsc = sortColumn === 'clean_sheets' ? !sortAsc : false; sortColumn = 'clean_sheets'; sortTable('clean_sheets', sortAsc)" title="Clean Sheets (Goalkeepers)">
+                                    <th class="font-semibold py-2 text-center w-12 cursor-pointer hover:text-sky-600 select-none" @click="sortAsc = sortColumn === 'clean_sheets' ? !sortAsc : false; sortColumn = 'clean_sheets'; sortTable('clean_sheets', sortAsc)" title="{{ __('squad.legend_clean_sheets') }}">
                                         <span class="flex items-center justify-center gap-1">
-                                            CS
+                                            {{ __('squad.clean_sheets') }}
                                             <span x-show="sortColumn === 'clean_sheets'" x-text="sortAsc ? '↑' : '↓'" class="text-sky-600"></span>
                                         </span>
                                     </th>
@@ -115,7 +115,7 @@
                             <tbody class="bg-slate-200 border-b-2 border-slate-300">
                                 <tr>
                                     <td class="py-2"></td>
-                                    <td class="py-2 font-semibold text-slate-700">Squad Totals</td>
+                                    <td class="py-2 font-semibold text-slate-700">{{ __('squad.squad_totals') }}</td>
                                     <td class="py-2"></td>
                                     <td class="py-2 text-center font-semibold">{{ $totals['appearances'] }}</td>
                                     <td class="py-2 text-center font-semibold text-green-600">{{ $totals['goals'] }}</td>
@@ -206,13 +206,13 @@
                     {{-- Legend --}}
                     <div class="pt-6 border-t">
                         <div class="flex flex-wrap gap-6 text-xs text-slate-500">
-                            <div><span class="font-medium">Apps</span> = Appearances</div>
-                            <div><span class="font-medium">G</span> = Goals</div>
-                            <div><span class="font-medium">A</span> = Assists</div>
-                            <div><span class="font-medium">G+A</span> = Goal Contributions</div>
-                            <div><span class="font-medium">OG</span> = Own Goals</div>
-                            <div><span class="font-medium">CS</span> = Clean Sheets (GK only)</div>
-                            <div class="text-slate-400">Click column headers to sort</div>
+                            <div><span class="font-medium">{{ __('squad.apps') }}</span> = {{ __('squad.legend_apps') }}</div>
+                            <div><span class="font-medium">{{ __('squad.goals') }}</span> = {{ __('squad.legend_goals') }}</div>
+                            <div><span class="font-medium">{{ __('squad.assists') }}</span> = {{ __('squad.legend_assists') }}</div>
+                            <div><span class="font-medium">{{ __('squad.goal_contributions') }}</span> = {{ __('squad.legend_contributions') }}</div>
+                            <div><span class="font-medium">{{ __('squad.own_goals') }}</span> = {{ __('squad.legend_own_goals') }}</div>
+                            <div><span class="font-medium">{{ __('squad.clean_sheets') }}</span> = {{ __('squad.legend_clean_sheets') }}</div>
+                            <div class="text-slate-400">{{ __('squad.click_to_sort') }}</div>
                         </div>
                     </div>
                 </div>
