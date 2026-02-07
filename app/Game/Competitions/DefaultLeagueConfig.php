@@ -98,4 +98,28 @@ class DefaultLeagueConfig implements CompetitionConfig
             Game::GOAL_SURVIVAL => ['targetPosition' => $this->getGoalTargetPosition(Game::GOAL_SURVIVAL), 'label' => 'game.goal_survival'],
         ];
     }
+
+    public function getStandingsZones(): array
+    {
+        // Calculate zones dynamically based on league size
+        $europeanZone = (int) ceil($this->numTeams * 0.20);     // Top ~20% for European spots
+        $relegationStart = $this->numTeams - 2;                  // Bottom 3 for relegation
+
+        return [
+            [
+                'minPosition' => 1,
+                'maxPosition' => $europeanZone,
+                'borderColor' => 'blue-500',
+                'bgColor' => 'bg-blue-500',
+                'label' => 'game.champions_league',
+            ],
+            [
+                'minPosition' => $relegationStart,
+                'maxPosition' => $this->numTeams,
+                'borderColor' => 'red-500',
+                'bgColor' => 'bg-red-500',
+                'label' => 'game.relegation',
+            ],
+        ];
+    }
 }

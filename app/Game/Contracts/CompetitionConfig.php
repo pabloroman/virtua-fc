@@ -47,4 +47,18 @@ interface CompetitionConfig
      * @return array<string, array{targetPosition: int, label: string}>
      */
     public function getAvailableGoals(): array;
+
+    /**
+     * Get the standings zones for this competition (UCL, UEL, relegation, promotion, etc.).
+     *
+     * Each zone has:
+     * - minPosition: First position in the zone (inclusive)
+     * - maxPosition: Last position in the zone (inclusive)
+     * - borderColor: Tailwind border color class (e.g., 'blue-500')
+     * - bgColor: Tailwind background color class for legend (e.g., 'bg-blue-500')
+     * - label: Translation key for the zone name
+     *
+     * @return array<array{minPosition: int, maxPosition: int, borderColor: string, bgColor: string, label: string}>
+     */
+    public function getStandingsZones(): array;
 }

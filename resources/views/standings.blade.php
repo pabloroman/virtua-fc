@@ -1,4 +1,18 @@
-@php /** @var App\Models\Game $game **/ @endphp
+@php
+/** @var App\Models\Game $game */
+/** @var App\Models\Competition $competition */
+/** @var array $standingsZones */
+
+// Helper function to get zone class for a position
+$getZoneClass = function($position) use ($standingsZones) {
+    foreach ($standingsZones as $zone) {
+        if ($position >= $zone['minPosition'] && $position <= $zone['maxPosition']) {
+            return 'border-l-4 border-l-' . $zone['borderColor'];
+        }
+    }
+    return '';
+};
+@endphp
 
 <x-app-layout>
     <x-slot name="header">
@@ -34,16 +48,7 @@
                         @foreach($standings as $standing)
                             @php
                                 $isPlayer = $standing->team_id === $game->team_id;
-                                $zoneClass = '';
-                                if ($competition->id === 'ESP1') {
-                                    if ($standing->position <= 4) $zoneClass = 'border-l-4 border-l-blue-500'; // UCL
-                                    elseif ($standing->position <= 6) $zoneClass = 'border-l-4 border-l-orange-500'; // UEL
-                                    elseif ($standing->position >= 18) $zoneClass = 'border-l-4 border-l-red-500'; // Relegation
-                                } elseif ($competition->id === 'ESP2') {
-                                    if ($standing->position <= 2) $zoneClass = 'border-l-4 border-l-green-500'; // Direct promotion
-                                    elseif ($standing->position <= 6) $zoneClass = 'border-l-4 border-l-green-300'; // Playoff
-                                    elseif ($standing->position >= 19) $zoneClass = 'border-l-4 border-l-red-500'; // Relegation
-                                }
+                                $zoneClass = $getZoneClass($standing->position);
                             @endphp
                             <tr class="border-b px-2 text-lg {{ $zoneClass }} @if($isPlayer) bg-amber-50 @endif">
                                 <td class="align-middle whitespace-nowrap text-left px-2 text-slate-900 font-semibold">
@@ -88,35 +93,14 @@
                         </tbody>
                     </table>
 
-                    @if($competition->id === 'ESP1')
+                    @if(count($standingsZones) > 0)
                         <div class="flex gap-6 text-xs text-slate-500">
-                            <div class="flex items-center gap-2">
-                                <div class="w-3 h-3 bg-blue-500 rounded"></div>
-                                <span>{{ __('game.champions_league') }}</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <div class="w-3 h-3 bg-orange-500 rounded"></div>
-                                <span>{{ __('game.europa_league') }}</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <div class="w-3 h-3 bg-red-500 rounded"></div>
-                                <span>{{ __('game.relegation') }}</span>
-                            </div>
-                        </div>
-                    @elseif($competition->id === 'ESP2')
-                        <div class="flex gap-6 text-xs text-slate-500">
-                            <div class="flex items-center gap-2">
-                                <div class="w-3 h-3 bg-green-500 rounded"></div>
-                                <span>{{ __('game.direct_promotion') }}</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <div class="w-3 h-3 bg-green-300 rounded"></div>
-                                <span>{{ __('game.promotion_playoff') }}</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <div class="w-3 h-3 bg-red-500 rounded"></div>
-                                <span>{{ __('game.relegation') }}</span>
-                            </div>
+                            @foreach($standingsZones as $zone)
+                                <div class="flex items-center gap-2">
+                                    <div class="w-3 h-3 {{ $zone['bgColor'] }} rounded"></div>
+                                    <span>{{ __($zone['label']) }}</span>
+                                </div>
+                            @endforeach
                         </div>
                     @endif
                 </div>

@@ -20,18 +20,18 @@ class ClubProfilesSeeder extends Seeder
 
         // La Liga - Continental
         'Sevilla FC' => ['reputation' => ClubProfile::REPUTATION_CONTINENTAL, 'commercial' => 8_000_000_000],
+        'Athletic Bilbao' => ['reputation' => ClubProfile::REPUTATION_CONTINENTAL, 'commercial' => 7_500_000_000],
+        'Valencia CF' => ['reputation' => ClubProfile::REPUTATION_CONTINENTAL, 'commercial' => 7_000_000_000],
         'Villarreal CF' => ['reputation' => ClubProfile::REPUTATION_CONTINENTAL, 'commercial' => 6_500_000_000],
         'Real Betis Balompié' => ['reputation' => ClubProfile::REPUTATION_CONTINENTAL, 'commercial' => 6_000_000_000],
-        'Valencia CF' => ['reputation' => ClubProfile::REPUTATION_CONTINENTAL, 'commercial' => 7_000_000_000],
-        'Athletic Bilbao' => ['reputation' => ClubProfile::REPUTATION_CONTINENTAL, 'commercial' => 7_500_000_000],
         'Real Sociedad' => ['reputation' => ClubProfile::REPUTATION_CONTINENTAL, 'commercial' => 5_500_000_000],
 
         // La Liga - Established
-        'Celta de Vigo' => ['reputation' => ClubProfile::REPUTATION_ESTABLISHED, 'commercial' => 3_500_000_000],
-        'CA Osasuna' => ['reputation' => ClubProfile::REPUTATION_ESTABLISHED, 'commercial' => 3_000_000_000],
         'RCD Espanyol Barcelona' => ['reputation' => ClubProfile::REPUTATION_ESTABLISHED, 'commercial' => 4_000_000_000],
-        'Getafe CF' => ['reputation' => ClubProfile::REPUTATION_ESTABLISHED, 'commercial' => 2_800_000_000],
+        'Celta de Vigo' => ['reputation' => ClubProfile::REPUTATION_ESTABLISHED, 'commercial' => 3_500_000_000],
         'RCD Mallorca' => ['reputation' => ClubProfile::REPUTATION_ESTABLISHED, 'commercial' => 3_200_000_000],
+        'CA Osasuna' => ['reputation' => ClubProfile::REPUTATION_ESTABLISHED, 'commercial' => 3_000_000_000],
+        'Getafe CF' => ['reputation' => ClubProfile::REPUTATION_ESTABLISHED, 'commercial' => 2_800_000_000],
 
         // La Liga - Modest
         'Rayo Vallecano' => ['reputation' => ClubProfile::REPUTATION_MODEST, 'commercial' => 2_000_000_000],
@@ -45,23 +45,23 @@ class ClubProfilesSeeder extends Seeder
         'Deportivo de La Coruña' => ['reputation' => ClubProfile::REPUTATION_ESTABLISHED, 'commercial' => 3_000_000_000],
         'Málaga CF' => ['reputation' => ClubProfile::REPUTATION_ESTABLISHED, 'commercial' => 2_800_000_000],
         'Sporting Gijón' => ['reputation' => ClubProfile::REPUTATION_ESTABLISHED, 'commercial' => 2_500_000_000],
-        'Real Valladolid CF' => ['reputation' => ClubProfile::REPUTATION_ESTABLISHED, 'commercial' => 2_200_000_000],
         'UD Las Palmas' => ['reputation' => ClubProfile::REPUTATION_ESTABLISHED, 'commercial' => 2_500_000_000],
+        'Real Valladolid CF' => ['reputation' => ClubProfile::REPUTATION_ESTABLISHED, 'commercial' => 2_200_000_000],
+        'Real Zaragoza' => ['reputation' => ClubProfile::REPUTATION_ESTABLISHED, 'commercial' => 2_000_000_000],
+        'Granada CF' => ['reputation' => ClubProfile::REPUTATION_ESTABLISHED, 'commercial' => 1_800_000_000],
+        'Cádiz CF' => ['reputation' => ClubProfile::REPUTATION_ESTABLISHED, 'commercial' => 1_500_000_000],
+        'Racing Santander' => ['reputation' => ClubProfile::REPUTATION_ESTABLISHED, 'commercial' => 1_400_000_000],
+        'UD Almería' => ['reputation' => ClubProfile::REPUTATION_ESTABLISHED, 'commercial' => 1_300_000_000],
 
         // La Liga 2 - Modest
-        'Granada CF' => ['reputation' => ClubProfile::REPUTATION_MODEST, 'commercial' => 1_800_000_000],
-        'Real Zaragoza' => ['reputation' => ClubProfile::REPUTATION_MODEST, 'commercial' => 2_000_000_000],
-        'Cádiz CF' => ['reputation' => ClubProfile::REPUTATION_MODEST, 'commercial' => 1_500_000_000],
         'Córdoba CF' => ['reputation' => ClubProfile::REPUTATION_MODEST, 'commercial' => 1_200_000_000],
-        'Racing Santander' => ['reputation' => ClubProfile::REPUTATION_MODEST, 'commercial' => 1_400_000_000],
-        'Albacete Balompié' => ['reputation' => ClubProfile::REPUTATION_MODEST, 'commercial' => 1_000_000_000],
-        'UD Almería' => ['reputation' => ClubProfile::REPUTATION_MODEST, 'commercial' => 1_300_000_000],
         'CD Castellón' => ['reputation' => ClubProfile::REPUTATION_MODEST, 'commercial' => 1_100_000_000],
+        'Albacete Balompié' => ['reputation' => ClubProfile::REPUTATION_MODEST, 'commercial' => 1_000_000_000],
+        'SD Huesca' => ['reputation' => ClubProfile::REPUTATION_MODEST, 'commercial' => 800_000_000],
+        'SD Eibar' => ['reputation' => ClubProfile::REPUTATION_MODEST, 'commercial' => 900_000_000],
+        'CD Leganés' => ['reputation' => ClubProfile::REPUTATION_MODEST, 'commercial' => 850_000_000],
 
         // La Liga 2 - Local
-        'SD Huesca' => ['reputation' => ClubProfile::REPUTATION_LOCAL, 'commercial' => 800_000_000],
-        'SD Eibar' => ['reputation' => ClubProfile::REPUTATION_LOCAL, 'commercial' => 900_000_000],
-        'CD Leganés' => ['reputation' => ClubProfile::REPUTATION_LOCAL, 'commercial' => 850_000_000],
         'Burgos CF' => ['reputation' => ClubProfile::REPUTATION_LOCAL, 'commercial' => 600_000_000],
         'Cultural Leonesa' => ['reputation' => ClubProfile::REPUTATION_LOCAL, 'commercial' => 500_000_000],
         'CD Mirandés' => ['reputation' => ClubProfile::REPUTATION_LOCAL, 'commercial' => 450_000_000],

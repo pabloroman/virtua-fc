@@ -102,4 +102,31 @@ class LaLiga2Config implements CompetitionConfig
     {
         return self::SEASON_GOALS;
     }
+
+    public function getStandingsZones(): array
+    {
+        return [
+            [
+                'minPosition' => 1,
+                'maxPosition' => 2,
+                'borderColor' => 'green-500',
+                'bgColor' => 'bg-green-500',
+                'label' => 'game.direct_promotion',
+            ],
+            [
+                'minPosition' => 3,
+                'maxPosition' => 6,
+                'borderColor' => 'green-300',
+                'bgColor' => 'bg-green-300',
+                'label' => 'game.promotion_playoff',
+            ],
+            [
+                'minPosition' => 19,
+                'maxPosition' => 22,
+                'borderColor' => 'red-500',
+                'bgColor' => 'bg-red-500',
+                'label' => 'game.relegation',
+            ],
+        ];
+    }
 }

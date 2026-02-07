@@ -62,12 +62,16 @@ class ShowCompetition
             ->limit(10)
             ->get();
 
+        // Get standings zones from competition config
+        $standingsZones = $competition->getConfig()->getStandingsZones();
+
         return view('standings', [
             'game' => $game,
             'competition' => $competition,
             'standings' => $standings,
             'topScorers' => $topScorers,
             'teamForms' => $teamForms,
+            'standingsZones' => $standingsZones,
         ]);
     }
 
