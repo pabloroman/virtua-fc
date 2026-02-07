@@ -112,22 +112,22 @@ class ShowCompetition
      */
     private function getTeamForms(string $gameId, string $competitionId, $teamIds): array
     {
+        // Fetch all played matches in a single query instead of one per team
+        $allMatches = GameMatch::where('game_id', $gameId)
+            ->where('competition_id', $competitionId)
+            ->where('played', true)
+            ->orderByDesc('scheduled_date')
+            ->get();
+
         $forms = [];
 
         foreach ($teamIds as $teamId) {
-            $matches = GameMatch::where('game_id', $gameId)
-                ->where('competition_id', $competitionId)
-                ->where('played', true)
-                ->where(function ($query) use ($teamId) {
-                    $query->where('home_team_id', $teamId)
-                        ->orWhere('away_team_id', $teamId);
-                })
-                ->orderByDesc('scheduled_date')
-                ->limit(5)
-                ->get();
+            $teamMatches = $allMatches->filter(function ($match) use ($teamId) {
+                return $match->home_team_id === $teamId || $match->away_team_id === $teamId;
+            })->take(5);
 
             $form = [];
-            foreach ($matches as $match) {
+            foreach ($teamMatches as $match) {
                 $isHome = $match->home_team_id === $teamId;
                 $teamScore = $isHome ? $match->home_score : $match->away_score;
                 $oppScore = $isHome ? $match->away_score : $match->home_score;

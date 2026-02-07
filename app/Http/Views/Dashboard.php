@@ -13,7 +13,7 @@ class Dashboard
 
     public function __invoke(Request $request)
     {
-        $games = Game::query()->where('user_id', $request->user()->id)->get();
+        $games = Game::with('team')->where('user_id', $request->user()->id)->get();
 
         if (! $games->count()) {
             return redirect()->route('select-team');
