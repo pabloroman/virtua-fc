@@ -2,7 +2,7 @@
             <h1 class="text-2xl font-bold text-slate-900 mb-6">Aviso Legal</h1>
 
             <div class="prose max-w-none text-slate-600">
-                <p>VirtuaFC es un proyecto independiente de código abierto creado por fans, sin ánimo de lucro.</p>
+                <p>VirtuaFC es un proyecto de software de código abierto desarrollado por Pablo Román con fines educativos y de entretenimiento. Este proyecto no tiene ánimo de lucro y se distribuye de forma gratuita.</p>
 
                 <p><strong class="font-semibold">No está afiliado, patrocinado ni respaldado por:</strong></p>
                 <ul class="not-prose">
