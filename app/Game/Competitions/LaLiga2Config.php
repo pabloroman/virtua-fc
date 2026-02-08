@@ -58,6 +58,7 @@ class LaLiga2Config implements CompetitionConfig
      */
     private const REPUTATION_TO_GOAL = [
         ClubProfile::REPUTATION_ELITE => Game::GOAL_PROMOTION,
+        ClubProfile::REPUTATION_CONTENDERS => Game::GOAL_PROMOTION,
         ClubProfile::REPUTATION_CONTINENTAL => Game::GOAL_PROMOTION,
         ClubProfile::REPUTATION_ESTABLISHED => Game::GOAL_PLAYOFF,
         ClubProfile::REPUTATION_MODEST => Game::GOAL_TOP_HALF,

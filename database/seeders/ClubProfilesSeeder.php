@@ -18,12 +18,14 @@ class ClubProfilesSeeder extends Seeder
         'FC Barcelona' => ['reputation' => ClubProfile::REPUTATION_ELITE, 'commercial' => 32_000_000_000],
         'Atlético de Madrid' => ['reputation' => ClubProfile::REPUTATION_ELITE, 'commercial' => 18_000_000_000],
 
+        // La Liga - Contenders
+        'Athletic Bilbao' => ['reputation' => ClubProfile::REPUTATION_CONTENDERS, 'commercial' => 7_500_000_000],
+        'Real Betis Balompié' => ['reputation' => ClubProfile::REPUTATION_CONTENDERS, 'commercial' => 6_000_000_000],
+        'Villarreal CF' => ['reputation' => ClubProfile::REPUTATION_CONTENDERS, 'commercial' => 6_500_000_000],
+
         // La Liga - Continental
         'Sevilla FC' => ['reputation' => ClubProfile::REPUTATION_CONTINENTAL, 'commercial' => 8_000_000_000],
-        'Athletic Bilbao' => ['reputation' => ClubProfile::REPUTATION_CONTINENTAL, 'commercial' => 7_500_000_000],
         'Valencia CF' => ['reputation' => ClubProfile::REPUTATION_CONTINENTAL, 'commercial' => 7_000_000_000],
-        'Villarreal CF' => ['reputation' => ClubProfile::REPUTATION_CONTINENTAL, 'commercial' => 6_500_000_000],
-        'Real Betis Balompié' => ['reputation' => ClubProfile::REPUTATION_CONTINENTAL, 'commercial' => 6_000_000_000],
         'Real Sociedad' => ['reputation' => ClubProfile::REPUTATION_CONTINENTAL, 'commercial' => 5_500_000_000],
 
         // La Liga - Established

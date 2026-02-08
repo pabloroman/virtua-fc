@@ -18,6 +18,7 @@ class ClubProfile extends Model
     ];
 
     public const REPUTATION_ELITE = 'elite';
+    public const REPUTATION_CONTENDERS = 'contenders';
     public const REPUTATION_CONTINENTAL = 'continental';
     public const REPUTATION_ESTABLISHED = 'established';
     public const REPUTATION_MODEST = 'modest';
@@ -30,6 +31,7 @@ class ClubProfile extends Model
      */
     public const REVENUE_PER_SEAT = [
         self::REPUTATION_ELITE => 150_000, // €1,500/seat
+        self::REPUTATION_CONTENDERS => 110_000, // €1,100/seat
         self::REPUTATION_CONTINENTAL => 80_000, // €800/seat
         self::REPUTATION_ESTABLISHED => 50_000, // €500/seat
         self::REPUTATION_MODEST => 35_000, // €350/seat
