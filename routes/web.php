@@ -47,6 +47,8 @@ Route::get('/', function () {
     return redirect('login');
 });
 
+Route::get('/legal', fn () => view('legal'))->name('legal');
+
 Route::middleware('auth')->group(function () {
     // Dashboard & Game Creation
     Route::get('/dashboard', Dashboard::class)->name('dashboard');

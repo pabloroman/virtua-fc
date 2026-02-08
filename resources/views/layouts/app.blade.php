@@ -45,6 +45,9 @@
                         <a class="text-sm text-slate-400 hover:text-slate-300" href="{{ route('select-team') }}">{{ __('app.new_game') }}</a>
                         <a class="text-sm text-slate-400 hover:text-slate-300" href="{{ route('dashboard') }}">{{ __('app.load_game') }}</a>
                     </div>
+                    <div class="mt-4 text-xs text-slate-500">
+                        © 2026 Pablo Román · Proyecto Open Source · <a href="{{ route('legal') }}" class="hover:text-slate-400">Aviso Legal</a> · <a href="https://github.com/pabloroman/virtua-fc" target="_blank" class="hover:text-slate-400">GitHub</a>
+                    </div>
                 </div>
             </footer>
         </div>
