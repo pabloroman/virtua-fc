@@ -3,11 +3,21 @@
 /** @var App\Models\Competition $competition */
 /** @var array $standingsZones */
 
+// Map border colors to complete Tailwind classes
+$borderColorMap = [
+    'blue-500' => 'border-l-4 border-l-blue-500',
+    'orange-500' => 'border-l-4 border-l-orange-500',
+    'red-500' => 'border-l-4 border-l-red-500',
+    'green-300' => 'border-l-4 border-l-green-300',
+    'green-500' => 'border-l-4 border-l-green-500',
+    'yellow-500' => 'border-l-4 border-l-yellow-500',
+];
+
 // Helper function to get zone class for a position
-$getZoneClass = function($position) use ($standingsZones) {
+$getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
     foreach ($standingsZones as $zone) {
         if ($position >= $zone['minPosition'] && $position <= $zone['maxPosition']) {
-            return 'border-l-4 border-l-' . $zone['borderColor'];
+            return $borderColorMap[$zone['borderColor']] ?? '';
         }
     }
     return '';
