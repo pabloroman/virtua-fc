@@ -7,6 +7,8 @@ export default function liveMatch(config) {
         finalHomeScore: config.finalHomeScore,
         finalAwayScore: config.finalAwayScore,
         otherMatches: config.otherMatches || [],
+        homeTeamImage: config.homeTeamImage,
+        awayTeamImage: config.awayTeamImage,
 
         // Clock state
         currentMinute: 0,
@@ -32,9 +34,8 @@ export default function liveMatch(config) {
 
         // Speed presets: match minutes per real second
         speedRates: {
-            1: 1.5,   // 60s for full match
-            2: 3.0,   // 30s
-            4: 6.0,   // 15s
+            1: 3.0,   // 30s for full match
+            2: 6.0,   // 15s
         },
 
         init() {
@@ -111,7 +112,7 @@ export default function liveMatch(config) {
             if (event.type === 'goal' || event.type === 'own_goal') {
                 this.updateScore(event);
                 this.triggerGoalFlash();
-                this.pauseForDrama(2000);
+                this.pauseForDrama(1500);
             }
         },
 
@@ -151,7 +152,7 @@ export default function liveMatch(config) {
                 this.phase = 'second_half';
                 this._lastTick = performance.now();
                 this._animFrame = requestAnimationFrame(this.tick.bind(this));
-            }, 3000);
+            }, 1500);
         },
 
         enterFullTime() {

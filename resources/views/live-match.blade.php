@@ -1,12 +1,20 @@
 @php /** @var App\Models\Game $game */ @endphp
 @php /** @var App\Models\GameMatch $match */ @endphp
 
-<x-app-layout>
-    <x-slot name="header">
-        <x-game-header :game="$game" :next-match="null"></x-game-header>
-    </x-slot>
-
-    <div>
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+        <title>{{ config('app.name', 'Laravel') }}</title>
+        <link rel="preconnect" href="https://fonts.bunny.net">
+        <link href="https://fonts.bunny.net/css?family=barlow-semi-condensed:400,600,800&display=swap" rel="stylesheet" />
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    </head>
+    <body class="font-sans antialiased">
+    <div class="min-h-screen bg-gradient-to-bl from-slate-900 via-cyan-950 to-teal-950">
+    <main class="text-slate-700 py-8">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8"
              x-data="liveMatch({
                 events: {{ Js::from($events) }},
@@ -15,6 +23,8 @@
                 finalHomeScore: {{ $match->home_score }},
                 finalAwayScore: {{ $match->away_score }},
                 otherMatches: {{ Js::from($otherMatches) }},
+                homeTeamImage: '{{ $match->homeTeam->image }}',
+                awayTeamImage: '{{ $match->awayTeam->image }}',
              })"
              x-on:keydown.escape.window="skipToEnd()"
         >
@@ -109,7 +119,7 @@
                     {{-- Speed Controls --}}
                     <div class="flex items-center justify-center gap-2 mb-6" x-show="phase !== 'full_time'">
                         <span class="text-xs text-slate-400 mr-2">{{ __('game.live_speed') }}</span>
-                        <template x-for="s in [1, 2, 4]" :key="s">
+                        <template x-for="s in [1, 2]" :key="s">
                             <button
                                 @click="setSpeed(s)"
                                 class="px-3 py-1 text-xs font-semibold rounded-md transition-colors"
@@ -141,8 +151,9 @@
                                     <span class="text-xs font-mono text-slate-400 w-8 text-right shrink-0"
                                           x-text="event.minute + '\''"></span>
                                     <span class="text-sm w-6 text-center shrink-0" x-text="getEventIcon(event.type)"></span>
-                                    <span class="w-1.5 h-6 rounded-full shrink-0"
-                                          :class="getEventSide(event) === 'home' ? 'bg-sky-400' : 'bg-red-400'"></span>
+                                    <img :src="getEventSide(event) === 'home' ? homeTeamImage : awayTeamImage"
+                                         class="w-6 h-6 shrink-0 object-contain"
+                                         :alt="getEventSide(event) === 'home' ? 'Home' : 'Away'">
                                     <div class="flex-1 min-w-0">
                                         <span class="font-semibold text-sm text-slate-800" x-text="event.playerName"></span>
                                         <template x-if="event.type === 'goal'">
@@ -187,8 +198,9 @@
                                     <span class="text-xs font-mono text-slate-400 w-8 text-right shrink-0"
                                           x-text="event.minute + '\''"></span>
                                     <span class="text-sm w-6 text-center shrink-0" x-text="getEventIcon(event.type)"></span>
-                                    <span class="w-1.5 h-6 rounded-full shrink-0"
-                                          :class="getEventSide(event) === 'home' ? 'bg-sky-400' : 'bg-red-400'"></span>
+                                    <img :src="getEventSide(event) === 'home' ? homeTeamImage : awayTeamImage"
+                                         class="w-6 h-6 shrink-0 object-contain"
+                                         :alt="getEventSide(event) === 'home' ? 'Home' : 'Away'">
                                     <div class="flex-1 min-w-0">
                                         <span class="font-semibold text-sm text-slate-800" x-text="event.playerName"></span>
                                         <template x-if="event.type === 'goal'">
@@ -254,10 +266,34 @@
                                 </div>
                             @endif
 
+                            {{-- Other Results --}}
+                            @if(count($otherMatches) > 0)
+                                <div class="mb-4">
+                                    <h4 class="text-sm font-semibold text-slate-500 uppercase mb-2">{{ __('game.live_other_results') }}</h4>
+                                    <div class="space-y-1">
+                                        @foreach($otherMatches as $other)
+                                            <div class="flex items-center py-1.5 px-2 rounded text-sm bg-slate-50">
+                                                <div class="flex items-center gap-2 flex-1 justify-end">
+                                                    <span class="@if($other['homeScore'] > $other['awayScore']) font-semibold @endif text-slate-700 truncate">{{ $other['homeTeam'] }}</span>
+                                                    <img src="{{ $other['homeTeamImage'] }}" class="w-5 h-5">
+                                                </div>
+                                                <div class="px-3 font-semibold tabular-nums text-slate-900">
+                                                    {{ $other['homeScore'] }} - {{ $other['awayScore'] }}
+                                                </div>
+                                                <div class="flex items-center gap-2 flex-1">
+                                                    <img src="{{ $other['awayTeamImage'] }}" class="w-5 h-5">
+                                                    <span class="@if($other['awayScore'] > $other['homeScore']) font-semibold @endif text-slate-700 truncate">{{ $other['awayTeam'] }}</span>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+
                             <div class="text-center">
-                                <a href="{{ $resultsUrl }}"
+                                <a href="{{ route('show-game', $game->id) }}"
                                    class="inline-flex items-center px-6 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-white uppercase tracking-wide hover:bg-red-700 transition ease-in-out duration-150">
-                                    {{ __('game.live_continue_results') }}
+                                    {{ __('game.live_continue_dashboard') }}
                                 </a>
                             </div>
                         </div>
@@ -284,5 +320,7 @@
                 </div>
             @endif
         </div>
+    </main>
     </div>
-</x-app-layout>
+    </body>
+</html>

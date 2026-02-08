@@ -133,8 +133,10 @@ return [
     'live_assist' => 'Asist.',
     'live_speed' => 'Velocidad',
     'live_skip' => 'Saltar',
+    'live_skip_match' => 'Ir a resultados',
     'live_other_results' => 'Otros',
     'live_continue_results' => 'Ver Resultados Completos',
+    'live_continue_dashboard' => 'Continuar',
     'live_injuries_report' => 'Parte de Lesiones',
     'live_weeks_out' => ':count semana de baja|:count semanas de baja',
 
@@ -142,7 +144,6 @@ return [
     'results' => 'Resultados',
     'matchday_results' => 'Resultados :name',
     'back_to_dashboard' => 'Volver al Inicio',
-    'all_results' => 'Todos los Resultados',
     'og' => 'PP',
 
     // Dashboard
