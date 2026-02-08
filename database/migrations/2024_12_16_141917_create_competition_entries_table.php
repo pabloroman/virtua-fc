@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('competition_entries', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('game_id')->constrained();
+            $table->foreignUuid('game_id')->constrained();
             $table->foreignId('team_id')->constrained();
             $table->foreignId('season_id')->constrained();
             $table->foreignId('competition_id')->constrained();

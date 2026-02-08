@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('matches', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('game_id')->constrained();
+            $table->foreignUuid('game_id')->constrained();
             $table->foreignId('competition_id')->constrained();
 
             // Knock-off tournaments have pre-fixed fixtures but teams aren't known yet
@@ -33,7 +33,7 @@ return new class extends Migration
         Schema::create('standings', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('game_id')->constrained();
+            $table->foreignUuid('game_id')->constrained();
             $table->foreignId('team_id')->constrained();
             $table->foreignId('competition_id')->constrained();
 
