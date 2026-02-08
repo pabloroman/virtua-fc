@@ -124,6 +124,10 @@
                             class="px-3 py-1 text-xs font-semibold rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors ml-2">
                             {{ __('game.live_skip') }} ▸▸
                         </button>
+                        <a href="{{ $resultsUrl }}"
+                           class="px-3 py-1 text-xs font-semibold rounded-md text-slate-400 hover:text-slate-600 transition-colors ml-2">
+                            {{ __('game.live_skip_match') }}
+                        </a>
                     </div>
 
                     {{-- Events Feed --}}

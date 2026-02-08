@@ -133,6 +133,7 @@ return [
     'live_assist' => 'Asist.',
     'live_speed' => 'Velocidad',
     'live_skip' => 'Saltar',
+    'live_skip_match' => 'Ir a resultados',
     'live_other_results' => 'Otros',
     'live_continue_results' => 'Ver Resultados Completos',
     'live_injuries_report' => 'Parte de Lesiones',
