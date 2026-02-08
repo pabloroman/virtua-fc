@@ -311,6 +311,58 @@
                     </div>
                     @endif
 
+                    {{-- Player Retirements --}}
+                    @if($retiringPlayers->isNotEmpty())
+                    <div class="border-t pt-6">
+                        <div class="text-center text-slate-500 font-semibold text-sm uppercase tracking-wide mb-4">{{ __('season.retirements') }}</div>
+
+                        @php
+                            $userTeamRetiring = $retiringPlayers->where('team_id', $game->team_id);
+                            $otherTeamRetiring = $retiringPlayers->where('team_id', '!=', $game->team_id);
+                        @endphp
+
+                        @if($userTeamRetiring->isNotEmpty())
+                        <div class="bg-orange-50 rounded-lg border border-orange-200 p-4 mb-4">
+                            <div class="text-orange-700 font-semibold text-sm mb-3">{{ __('season.your_team_retirements') }}</div>
+                            <div class="space-y-2">
+                                @foreach($userTeamRetiring as $retiringPlayer)
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-sm font-medium text-slate-900">{{ $retiringPlayer->name }}</span>
+                                            <span class="text-xs text-slate-500">({{ $retiringPlayer->age }}, {{ $retiringPlayer->position }})</span>
+                                        </div>
+                                        <span class="text-xs text-orange-600 font-medium">{{ __('season.player_retiring') }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                        @endif
+
+                        @if($otherTeamRetiring->isNotEmpty())
+                        <div class="bg-slate-50 rounded-lg p-4">
+                            <div class="text-slate-500 text-sm mb-3">{{ __('season.other_retirements') }}</div>
+                            <div class="space-y-1">
+                                @foreach($otherTeamRetiring->take(10) as $retiringPlayer)
+                                    <div class="flex items-center justify-between text-sm">
+                                        <div class="flex items-center gap-2">
+                                            <img src="{{ $retiringPlayer->team->image }}" class="w-4 h-4">
+                                            <span class="text-slate-700">{{ $retiringPlayer->name }}</span>
+                                            <span class="text-xs text-slate-400">({{ $retiringPlayer->age }})</span>
+                                        </div>
+                                        <span class="text-xs text-slate-500">{{ $retiringPlayer->position }}</span>
+                                    </div>
+                                @endforeach
+                                @if($otherTeamRetiring->count() > 10)
+                                    <div class="text-xs text-slate-400 text-center mt-2">
+                                        {{ __('season.and_more_retirements', ['count' => $otherTeamRetiring->count() - 10]) }}
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+                    @endif
+
                     {{-- Start New Season CTA --}}
                     <div class="border-t pt-8 text-center">
                         <form method="post" action="{{ route('game.start-new-season', $game->id) }}" x-data="{ loading: false }" @submit="loading = true">

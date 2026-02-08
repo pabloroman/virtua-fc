@@ -146,7 +146,11 @@
                                             </td>
                                             {{-- Actions --}}
                                             <td class="py-2 text-right">
-                                                @if($gamePlayer->isLoanedIn($game->team_id))
+                                                @if($gamePlayer->isRetiring())
+                                                    <span class="inline-flex items-center px-2 py-1 text-xs font-medium text-orange-700 bg-orange-100 rounded">
+                                                        {{ __('squad.retiring') }}
+                                                    </span>
+                                                @elseif($gamePlayer->isLoanedIn($game->team_id))
                                                     <span class="inline-flex items-center px-2 py-1 text-xs font-medium text-sky-700 bg-sky-100 rounded">
                                                         {{ __('squad.on_loan') }}
                                                     </span>
