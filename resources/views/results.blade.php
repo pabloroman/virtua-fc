@@ -11,7 +11,11 @@
                 <div class="p-12">
                     <div class="flex justify-between items-center mb-6">
                         <div>
-                            <h3 class="font-semibold text-xl text-slate-900">{{ __('game.matchday_results', ['name' => $matches->first()?->round_name ?? __('game.matchday_n', ['number' => $matchday])]) }}</h3>
+                            @if($matches->first()->round_name)
+                                <h3 class="font-semibold text-xl text-slate-900">{{ __('game.matchday_results', ['name' => $matches->first()?->round_name]) }}</h3>
+                            @else
+                                <h3 class="font-semibold text-xl text-slate-900">{{ __('game.matchday_results', ['name' => __('game.matchday_n', ['number' => $matchday])]) }}</h3>
+                            @endif
                             @if($competition)
                                 <p class="text-sm text-slate-500">{{ $competition->name }}</p>
                             @endif

@@ -20,7 +20,11 @@
                                 <div class="flex items-center gap-3 text-sm text-slate-500">
                                     <span>{{ $nextMatch->competition->name ?? 'League' }}</span>
                                     <span class="text-slate-300">|</span>
-                                    <span>{{ $nextMatch->round_name ?? 'Matchday '.$nextMatch->round_number }}</span>
+                                    @if($nextMatch->round_name)
+                                        <span>{{ $nextMatch->round_name }}</span>
+                                    @else
+                                        <span>{{ __('game.matchday_n', ['number' => $nextMatch->round_number]) }}</span>
+                                    @endif
                                     <span class="text-slate-300">|</span>
                                     <span class="font-medium text-slate-700">{{ $nextMatch->scheduled_date->format('D, M j') }}</span>
                                 </div>

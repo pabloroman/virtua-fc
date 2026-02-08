@@ -534,7 +534,6 @@ class GameProjector extends Projector
                 'game_id' => $gameId,
                 'competition_id' => $competitionId,
                 'round_number' => $fixture->round_number,
-                'round_name' => "Matchday {$fixture->round_number}",
                 'home_team_id' => $fixture->home_team_id,
                 'away_team_id' => $fixture->away_team_id,
                 'scheduled_date' => $fixture->scheduled_date,
