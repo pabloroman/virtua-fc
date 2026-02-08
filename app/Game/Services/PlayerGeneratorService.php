@@ -133,7 +133,7 @@ class PlayerGeneratorService
     private function getIdentityPool(): array
     {
         if ($this->identityPool === null) {
-            $path = base_path('data/transfermarkt/academy/players.json');
+            $path = base_path('data/academy/players.json');
             $this->identityPool = json_decode(file_get_contents($path), true);
         }
 
