@@ -40,6 +40,7 @@ class NotificationService
             'icon' => $icon ?? $this->getDefaultIcon($type),
             'priority' => $priority,
             'metadata' => $metadata,
+            'game_date' => $game->current_date,
         ]);
     }
 

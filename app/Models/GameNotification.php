@@ -49,11 +49,13 @@ class GameNotification extends Model
         'icon',
         'priority',
         'metadata',
+        'game_date',
         'read_at',
     ];
 
     protected $casts = [
         'metadata' => 'array',
+        'game_date' => 'date',
         'read_at' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
@@ -194,10 +196,14 @@ class GameNotification extends Model
     }
 
     /**
-     * Get time ago string for display.
+     * Get formatted game date for display.
      */
-    public function getTimeAgo(): string
+    public function getFormattedGameDate(): string
     {
-        return $this->created_at->diffForHumans();
+        if ($this->game_date) {
+            return $this->game_date->format('j M Y');
+        }
+
+        return $this->created_at->format('j M Y');
     }
 }

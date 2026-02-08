@@ -26,6 +26,9 @@ class ShowGame
 
         $nextMatch = $this->loadNextMatch($game);
 
+        $notifications = $this->notificationService->getNotifications($game->id, false, 15);
+        $groupedNotifications = $notifications->groupBy(fn ($n) => $n->game_date?->format('Y-m-d') ?? 'unknown');
+
         return view('game', [
             'game' => $game,
             'nextMatch' => $nextMatch,
@@ -34,7 +37,7 @@ class ShowGame
             'playerForm' => $this->calendarService->getTeamForm($game->id, $game->team_id),
             'opponentForm' => $this->getOpponentForm($game, $nextMatch),
             'upcomingFixtures' => $this->calendarService->getUpcomingFixtures($game),
-            'notifications' => $this->notificationService->getNotifications($game->id, false, 10),
+            'groupedNotifications' => $groupedNotifications,
             'unreadNotificationCount' => $this->notificationService->getUnreadCount($game->id),
         ]);
     }

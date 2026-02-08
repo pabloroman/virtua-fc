@@ -139,5 +139,5 @@ return [
     'goal_survival' => 'Evitar el descenso',
     'goal_promotion' => 'Ascenso directo',
     'goal_playoff' => 'Clasificarse para el playoff de ascenso',
-    'board_expects_position' => 'La directiva espera terminar en posición :position o mejor',
+    'board_expects_position' => 'La directiva espera que alcances la posición :position',
 ];

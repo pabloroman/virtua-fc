@@ -2,7 +2,7 @@
 
 return [
     // Inbox
-    'inbox' => 'Buzón',
+    'inbox' => 'Notificaciones',
     'mark_all_read' => 'Marcar todo como leído',
     'no_notifications' => 'No hay notificaciones',
     'all_caught_up' => 'Estás al día',

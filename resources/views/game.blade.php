@@ -141,7 +141,7 @@
                                 @endif
                             </div>
 
-                            @if($notifications->isEmpty())
+                            @if($groupedNotifications->isEmpty())
                             <div class="text-center py-8">
                                 <div class="text-slate-300 mb-2">
                                     <svg class="w-10 h-10 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -151,35 +151,46 @@
                                 <p class="text-sm text-slate-400">{{ __('notifications.all_caught_up') }}</p>
                             </div>
                             @else
-                            <div class="space-y-2">
-                                @foreach($notifications as $notification)
-                                @php $classes = $notification->getPriorityClasses(); @endphp
-                                <form action="{{ route('game.notifications.read', [$game->id, $notification->id]) }}" method="POST">
-                                    @csrf
-                                    <button type="submit" class="w-full text-left block p-3 {{ $classes['bg'] }} border {{ $classes['border'] }} rounded-lg hover:opacity-90 transition-opacity">
-                                        <div class="flex items-start gap-3">
-                                            {{-- Unread indicator --}}
-                                            @if($notification->isUnread())
-                                            <span class="w-2 h-2 mt-1.5 {{ $classes['dot'] }} rounded-full flex-shrink-0"></span>
-                                            @else
-                                            <span class="w-2 h-2 mt-1.5 bg-transparent flex-shrink-0"></span>
-                                            @endif
+                            <div class="space-y-4">
+                                @foreach($groupedNotifications as $date => $notifications)
+                                <div>
+                                    {{-- Date Header --}}
+                                    <div class="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">
+                                        {{ \Carbon\Carbon::parse($date)->format('j M Y') }}
+                                    </div>
 
-                                            <div class="flex-1 min-w-0">
-                                                <div class="flex items-center justify-between gap-2">
-                                                    <span class="font-medium text-sm {{ $classes['text'] }} truncate">{{ $notification->title }}</span>
-                                                    <svg class="w-4 h-4 {{ $classes['icon'] }} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                                                    </svg>
+                                    {{-- Notifications for this date --}}
+                                    <div class="space-y-2">
+                                        @foreach($notifications as $notification)
+                                        @php $classes = $notification->getPriorityClasses(); @endphp
+                                        <form action="{{ route('game.notifications.read', [$game->id, $notification->id]) }}" method="POST">
+                                            @csrf
+                                            <button type="submit" class="w-full text-left block p-3 {{ $classes['bg'] }} border {{ $classes['border'] }} rounded-lg hover:opacity-90 transition-opacity">
+                                                <div class="flex items-start gap-3">
+                                                    {{-- Unread indicator --}}
+                                                    @if($notification->isUnread())
+                                                    <span class="w-2 h-2 mt-2.5 {{ $classes['dot'] }} rounded-full flex-shrink-0"></span>
+                                                    @else
+                                                    <span class="w-2 h-2 mt-2.5 bg-transparent flex-shrink-0"></span>
+                                                    @endif
+
+                                                    <div class="flex-1 min-w-0">
+                                                        <div class="flex items-center justify-between gap-2">
+                                                            <span class="font-medium text-sm {{ $classes['text'] }} truncate">{{ $notification->title }}</span>
+                                                            <svg class="w-4 h-4 {{ $classes['icon'] }} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                                            </svg>
+                                                        </div>
+                                                        @if($notification->message)
+                                                        <p class="text-xs text-slate-600 mt-1 line-clamp-2">{{ $notification->message }}</p>
+                                                        @endif
+                                                    </div>
                                                 </div>
-                                                @if($notification->message)
-                                                <p class="text-xs text-slate-600 mt-1 line-clamp-2">{{ $notification->message }}</p>
-                                                @endif
-                                                <p class="text-xs text-slate-400 mt-1">{{ $notification->getTimeAgo() }}</p>
-                                            </div>
-                                        </div>
-                                    </button>
-                                </form>
+                                            </button>
+                                        </form>
+                                        @endforeach
+                                    </div>
+                                </div>
                                 @endforeach
                             </div>
                             @endif
