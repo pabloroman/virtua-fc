@@ -2,12 +2,11 @@
 
 namespace App\Game\Services;
 
+use App\Game\DTO\GeneratedPlayerData;
 use App\Models\Game;
 use App\Models\GamePlayer;
-use App\Models\Player;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 
 class YouthAcademyService
 {
@@ -21,38 +20,6 @@ class YouthAcademyService
         2 => [1, 2, 65, 75, 40, 55],       // Good
         3 => [2, 3, 70, 82, 45, 60],       // Excellent
         4 => [2, 4, 75, 90, 50, 70],       // World-class
-    ];
-
-    /**
-     * Spanish first names for youth players.
-     */
-    private const FIRST_NAMES = [
-        'Alejandro', 'Pablo', 'Carlos', 'Daniel', 'David', 'Diego',
-        'Fernando', 'Gabriel', 'Hugo', 'Ivan', 'Javier', 'Jorge',
-        'Jose', 'Juan', 'Lucas', 'Luis', 'Manuel', 'Marco',
-        'Mario', 'Martin', 'Miguel', 'Nicolas', 'Oscar', 'Pedro',
-        'Rafael', 'Roberto', 'Ruben', 'Sergio', 'Victor', 'Adrian',
-        'Alvaro', 'Andres', 'Antonio', 'Bruno', 'Eduardo', 'Enrique',
-        'Felipe', 'Gonzalo', 'Hector', 'Ignacio', 'Jaime', 'Jesus',
-        'Joaquin', 'Marcos', 'Mateo', 'Nacho', 'Pau', 'Raul',
-        'Samuel', 'Santiago', 'Tomas', 'Xavier', 'Yeray', 'Iker',
-        'Unai', 'Aitor', 'Asier', 'Gorka', 'Mikel', 'Oier',
-    ];
-
-    /**
-     * Spanish surnames for youth players.
-     */
-    private const SURNAMES = [
-        'Garcia', 'Rodriguez', 'Martinez', 'Lopez', 'Gonzalez', 'Hernandez',
-        'Perez', 'Sanchez', 'Ramirez', 'Torres', 'Flores', 'Rivera',
-        'Gomez', 'Diaz', 'Reyes', 'Moreno', 'Jimenez', 'Ruiz',
-        'Alvarez', 'Romero', 'Alonso', 'Navarro', 'Dominguez', 'Gil',
-        'Vazquez', 'Serrano', 'Blanco', 'Molina', 'Morales', 'Ortega',
-        'Delgado', 'Castro', 'Ortiz', 'Rubio', 'Marin', 'Sanz',
-        'Nunez', 'Iglesias', 'Medina', 'Garrido', 'Cortes', 'Castillo',
-        'Santos', 'Lozano', 'Guerrero', 'Cano', 'Prieto', 'Mendez',
-        'Cruz', 'Calvo', 'Gallego', 'Vidal', 'Leon', 'Herrera',
-        'Marquez', 'Cabrera', 'Aguilar', 'Vega', 'Campos', 'Fuentes',
     ];
 
     /**
@@ -72,8 +39,7 @@ class YouthAcademyService
     ];
 
     public function __construct(
-        private readonly ContractService $contractService,
-        private readonly PlayerDevelopmentService $developmentService,
+        private readonly PlayerGeneratorService $playerGenerator,
     ) {}
 
     /**
@@ -120,98 +86,37 @@ class YouthAcademyService
         int $minAbility,
         int $maxAbility,
     ): GamePlayer {
-        // Generate player base data
-        $name = $this->generateName();
-        $dateOfBirth = $this->generateDateOfBirth($game);
         $position = $this->selectPosition();
-        $nationality = $this->selectNationality();
-
-        // Generate abilities based on tier
         $technical = rand($minAbility, $maxAbility);
         $physical = rand($minAbility, $maxAbility);
 
-        // Create Player record
-        $player = Player::create([
-            'id' => Str::uuid()->toString(),
-            'name' => $name,
-            'nationality' => $nationality,
-            'date_of_birth' => $dateOfBirth,
-            'technical_ability' => $technical,
-            'physical_ability' => $physical,
-        ]);
+        // Youth players are 16-18 years old
+        $age = rand(16, 18);
+        $currentYear = (int) $game->season;
+        $dateOfBirth = Carbon::createFromDate($currentYear - $age, rand(1, 12), rand(1, 28));
 
-        // Calculate age for contract and wage
-        $age = $dateOfBirth->age;
-
-        // Youth players get low wages
-        $marketValue = $this->calculateYouthMarketValue($technical, $physical, $age);
-        $annualWage = $this->contractService->calculateAnnualWage($marketValue, 0, $age);
-
-        // Youth contracts are 3 years
-        $contractUntil = Carbon::createFromDate((int) $game->season + 3, 6, 30);
-
-        // Generate potential based on tier range
+        // Youth potential is tier-driven rather than market-value-driven
         $potential = rand($minPotential, $maxPotential);
         $potentialVariance = rand(3, 8);
         $potentialLow = max($potential - $potentialVariance, max($technical, $physical));
         $potentialHigh = min($potential + $potentialVariance, 99);
 
-        // Create GamePlayer record
-        $gamePlayer = GamePlayer::create([
-            'id' => Str::uuid()->toString(),
-            'game_id' => $game->id,
-            'player_id' => $player->id,
-            'team_id' => $game->team_id,
-            'position' => $position,
-            'market_value' => $this->formatMarketValue($marketValue),
-            'market_value_cents' => $marketValue,
-            'contract_until' => $contractUntil,
-            'annual_wage' => $annualWage,
-            'signed_from' => 'Youth Academy',
-            'joined_on' => Carbon::createFromDate((int) $game->season, 7, 1),
-            'fitness' => rand(85, 100),
-            'morale' => rand(70, 90),
-            'durability' => InjuryService::generateDurability(),
-            // Development fields
-            'game_technical_ability' => $technical,
-            'game_physical_ability' => $physical,
-            'potential' => $potential,
-            'potential_low' => $potentialLow,
-            'potential_high' => $potentialHigh,
-            'season_appearances' => 0,
-        ]);
-
-        return $gamePlayer;
-    }
-
-    /**
-     * Generate a Spanish-style name.
-     */
-    private function generateName(): string
-    {
-        $firstName = self::FIRST_NAMES[array_rand(self::FIRST_NAMES)];
-        $surname = self::SURNAMES[array_rand(self::SURNAMES)];
-
-        // 30% chance of double surname
-        if (rand(1, 100) <= 30) {
-            $surname2 = self::SURNAMES[array_rand(self::SURNAMES)];
-
-            return "$firstName $surname $surname2";
-        }
-
-        return "$firstName $surname";
-    }
-
-    /**
-     * Generate a date of birth for a 16-18 year old.
-     */
-    private function generateDateOfBirth(Game $game): Carbon
-    {
-        $currentYear = (int) $game->season;
-        $age = rand(16, 18);
-        $birthYear = $currentYear - $age;
-
-        return Carbon::createFromDate($birthYear, rand(1, 12), rand(1, 28));
+        return $this->playerGenerator->create($game, new GeneratedPlayerData(
+            teamId: $game->team_id,
+            position: $position,
+            technical: $technical,
+            physical: $physical,
+            dateOfBirth: $dateOfBirth,
+            contractYears: 3,
+            signedFrom: 'Youth Academy',
+            potential: $potential,
+            potentialLow: $potentialLow,
+            potentialHigh: $potentialHigh,
+            fitnessMin: 85,
+            fitnessMax: 100,
+            moraleMin: 70,
+            moraleMax: 90,
+        ));
     }
 
     /**
@@ -230,64 +135,6 @@ class YouthAcademyService
         }
 
         return 'Central Midfield';
-    }
-
-    /**
-     * Select nationality (mostly Spanish for La Liga academies).
-     */
-    private function selectNationality(): array
-    {
-        // 80% Spanish, 20% other
-        if (rand(1, 100) <= 80) {
-            return ['ESP'];
-        }
-
-        $otherNationalities = [
-            ['ARG'], ['BRA'], ['FRA'], ['POR'], ['MAR'],
-            ['COL'], ['URU'], ['MEX'], ['VEN'], ['ECU'],
-        ];
-
-        return $otherNationalities[array_rand($otherNationalities)];
-    }
-
-    /**
-     * Calculate market value for a youth player.
-     */
-    private function calculateYouthMarketValue(int $technical, int $physical, int $age): int
-    {
-        $averageAbility = ($technical + $physical) / 2;
-
-        // Base value: €100K-€2M based on ability
-        $baseValue = match (true) {
-            $averageAbility >= 65 => rand(100_000_000, 200_000_000),  // €1M-€2M
-            $averageAbility >= 55 => rand(50_000_000, 100_000_000),   // €500K-€1M
-            $averageAbility >= 45 => rand(20_000_000, 50_000_000),    // €200K-€500K
-            default => rand(10_000_000, 20_000_000),                   // €100K-€200K
-        };
-
-        // Young players get a slight premium
-        $ageMultiplier = match ($age) {
-            16 => 1.2,
-            17 => 1.1,
-            18 => 1.0,
-            default => 1.0,
-        };
-
-        return (int) ($baseValue * $ageMultiplier);
-    }
-
-    /**
-     * Format market value for display.
-     */
-    private function formatMarketValue(int $cents): string
-    {
-        $euros = $cents / 100;
-
-        if ($euros >= 1_000_000) {
-            return '€'.round($euros / 1_000_000, 2).'m';
-        }
-
-        return '€'.round($euros / 1_000).'K';
     }
 
     /**
