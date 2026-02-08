@@ -1,0 +1,288 @@
+@php /** @var App\Models\Game $game */ @endphp
+@php /** @var App\Models\GameMatch $match */ @endphp
+
+<x-app-layout>
+    <x-slot name="header">
+        <x-game-header :game="$game" :next-match="null"></x-game-header>
+    </x-slot>
+
+    <div>
+        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8"
+             x-data="liveMatch({
+                events: {{ Js::from($events) }},
+                homeTeamId: '{{ $match->home_team_id }}',
+                awayTeamId: '{{ $match->away_team_id }}',
+                finalHomeScore: {{ $match->home_score }},
+                finalAwayScore: {{ $match->away_score }},
+                otherMatches: {{ Js::from($otherMatches) }},
+             })"
+             x-on:keydown.escape.window="skipToEnd()"
+        >
+            {{-- Competition & Round Info --}}
+            <div class="text-center mb-4">
+                <span class="text-sm text-slate-400">
+                    {{ $match->competition->name }} &middot; {{ $match->round_name ?? __('game.matchday_n', ['number' => $match->round_number]) }}
+                </span>
+            </div>
+
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-8">
+
+                    {{-- Scoreboard --}}
+                    <div class="flex items-center justify-center gap-6 mb-2">
+                        <div class="flex items-center gap-3 flex-1 justify-end">
+                            <span class="text-xl font-semibold text-slate-900">{{ $match->homeTeam->name }}</span>
+                            <img src="{{ $match->homeTeam->image }}" class="w-14 h-14" alt="{{ $match->homeTeam->name }}">
+                        </div>
+
+                        <div class="relative px-6">
+                            {{-- Score --}}
+                            <div class="text-5xl font-bold text-slate-900 tabular-nums transition-transform duration-200"
+                                 :class="goalFlash ? 'scale-125' : 'scale-100'">
+                                <span x-text="homeScore">0</span>
+                                <span class="text-slate-300 mx-1">-</span>
+                                <span x-text="awayScore">0</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-3 flex-1">
+                            <img src="{{ $match->awayTeam->image }}" class="w-14 h-14" alt="{{ $match->awayTeam->name }}">
+                            <span class="text-xl font-semibold text-slate-900">{{ $match->awayTeam->name }}</span>
+                        </div>
+                    </div>
+
+                    {{-- Match Clock --}}
+                    <div class="text-center mb-6">
+                        <span class="inline-flex items-center gap-2 text-sm font-semibold rounded-full px-4 py-1"
+                              :class="{
+                                  'bg-slate-100 text-slate-500': phase === 'pre_match',
+                                  'bg-green-100 text-green-700': phase === 'first_half' || phase === 'second_half',
+                                  'bg-amber-100 text-amber-700': phase === 'half_time',
+                                  'bg-slate-800 text-white': phase === 'full_time',
+                              }">
+                            <span class="relative flex h-2 w-2" x-show="isRunning">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                            </span>
+                            <template x-if="phase === 'pre_match'">
+                                <span>{{ __('game.live_pre_match') }}</span>
+                            </template>
+                            <template x-if="phase === 'first_half' || phase === 'second_half'">
+                                <span><span x-text="displayMinute"></span>'</span>
+                            </template>
+                            <template x-if="phase === 'half_time'">
+                                <span>{{ __('game.live_half_time') }}</span>
+                            </template>
+                            <template x-if="phase === 'full_time'">
+                                <span>{{ __('game.live_full_time') }}</span>
+                            </template>
+                        </span>
+                    </div>
+
+                    {{-- Timeline Bar --}}
+                    <div class="relative h-2 bg-slate-100 rounded-full mb-6 overflow-visible">
+                        {{-- Progress --}}
+                        <div class="absolute top-0 left-0 h-full bg-green-500 rounded-full transition-all duration-300 ease-linear"
+                             :style="'width: ' + timelineProgress + '%'"></div>
+
+                        {{-- Half-time marker --}}
+                        <div class="absolute top-0 h-full w-px bg-slate-300" style="left: 50%"></div>
+
+                        {{-- Event markers --}}
+                        <template x-for="marker in getTimelineMarkers()" :key="marker.minute + '-' + marker.type">
+                            <div class="absolute -top-1 w-4 h-4 rounded-full border-2 border-white shadow-sm transform -translate-x-1/2 transition-all duration-300"
+                                 :style="'left: ' + marker.position + '%'"
+                                 :class="{
+                                     'bg-green-500': marker.type === 'goal',
+                                     'bg-red-400': marker.type === 'own_goal',
+                                     'bg-yellow-400': marker.type === 'yellow_card',
+                                     'bg-red-600': marker.type === 'red_card',
+                                     'bg-orange-400': marker.type === 'injury',
+                                 }"
+                                 x-transition:enter="transition ease-out duration-300"
+                                 x-transition:enter-start="scale-0 opacity-0"
+                                 x-transition:enter-end="scale-100 opacity-100"
+                            ></div>
+                        </template>
+                    </div>
+
+                    {{-- Speed Controls --}}
+                    <div class="flex items-center justify-center gap-2 mb-6" x-show="phase !== 'full_time'">
+                        <span class="text-xs text-slate-400 mr-2">{{ __('game.live_speed') }}</span>
+                        <template x-for="s in [1, 2, 4]" :key="s">
+                            <button
+                                @click="setSpeed(s)"
+                                class="px-3 py-1 text-xs font-semibold rounded-md transition-colors"
+                                :class="speed === s
+                                    ? 'bg-slate-800 text-white'
+                                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                                x-text="s + 'x'"
+                            ></button>
+                        </template>
+                        <button
+                            @click="skipToEnd()"
+                            class="px-3 py-1 text-xs font-semibold rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors ml-2">
+                            {{ __('game.live_skip') }} ▸▸
+                        </button>
+                    </div>
+
+                    {{-- Events Feed --}}
+                    <div class="border-t border-slate-100 pt-4">
+                        <div class="space-y-1 max-h-80 overflow-y-auto" id="events-feed">
+
+                            {{-- Second half events (newest first) --}}
+                            <template x-for="(event, idx) in secondHalfEvents" :key="'sh-' + idx">
+                                <div class="flex items-center gap-3 py-2 px-3 rounded-lg transition-all duration-300"
+                                     :class="isGoalEvent(event) ? 'bg-green-50' : ''"
+                                     x-transition:enter="transition ease-out duration-300"
+                                     x-transition:enter-start="opacity-0 -translate-y-2"
+                                     x-transition:enter-end="opacity-100 translate-y-0"
+                                >
+                                    <span class="text-xs font-mono text-slate-400 w-8 text-right shrink-0"
+                                          x-text="event.minute + '\''"></span>
+                                    <span class="text-sm w-6 text-center shrink-0" x-text="getEventIcon(event.type)"></span>
+                                    <span class="w-1.5 h-6 rounded-full shrink-0"
+                                          :class="getEventSide(event) === 'home' ? 'bg-sky-400' : 'bg-red-400'"></span>
+                                    <div class="flex-1 min-w-0">
+                                        <span class="font-semibold text-sm text-slate-800" x-text="event.playerName"></span>
+                                        <template x-if="event.type === 'goal'">
+                                            <span class="text-xs text-slate-500 ml-1">{{ __('game.live_goal') }}</span>
+                                        </template>
+                                        <template x-if="event.type === 'own_goal'">
+                                            <span class="text-xs text-red-500 ml-1">({{ __('game.og') }})</span>
+                                        </template>
+                                        <template x-if="event.type === 'yellow_card'">
+                                            <span class="text-xs text-slate-500 ml-1">{{ __('game.live_yellow_card') }}</span>
+                                        </template>
+                                        <template x-if="event.type === 'red_card'">
+                                            <span class="text-xs text-red-600 ml-1" x-text="event.metadata?.second_yellow ? '{{ __('game.live_second_yellow') }}' : '{{ __('game.live_red_card') }}'"></span>
+                                        </template>
+                                        <template x-if="event.type === 'injury'">
+                                            <span class="text-xs text-orange-600 ml-1">{{ __('game.live_injury') }}</span>
+                                        </template>
+                                        <template x-if="event.assistPlayerName">
+                                            <div class="text-xs text-slate-400" x-text="'{{ __('game.live_assist') }} ' + event.assistPlayerName"></div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </template>
+
+                            {{-- Half-time separator --}}
+                            <template x-if="showHalfTimeSeparator">
+                                <div class="flex items-center gap-3 py-2">
+                                    <div class="flex-1 border-t border-slate-200"></div>
+                                    <span class="text-xs font-semibold text-slate-400 uppercase">{{ __('game.live_half_time') }}</span>
+                                    <div class="flex-1 border-t border-slate-200"></div>
+                                </div>
+                            </template>
+
+                            {{-- First half events (newest first) --}}
+                            <template x-for="(event, idx) in firstHalfEvents" :key="'fh-' + idx">
+                                <div class="flex items-center gap-3 py-2 px-3 rounded-lg transition-all duration-300"
+                                     :class="isGoalEvent(event) ? 'bg-green-50' : ''"
+                                     x-transition:enter="transition ease-out duration-300"
+                                     x-transition:enter-start="opacity-0 -translate-y-2"
+                                     x-transition:enter-end="opacity-100 translate-y-0"
+                                >
+                                    <span class="text-xs font-mono text-slate-400 w-8 text-right shrink-0"
+                                          x-text="event.minute + '\''"></span>
+                                    <span class="text-sm w-6 text-center shrink-0" x-text="getEventIcon(event.type)"></span>
+                                    <span class="w-1.5 h-6 rounded-full shrink-0"
+                                          :class="getEventSide(event) === 'home' ? 'bg-sky-400' : 'bg-red-400'"></span>
+                                    <div class="flex-1 min-w-0">
+                                        <span class="font-semibold text-sm text-slate-800" x-text="event.playerName"></span>
+                                        <template x-if="event.type === 'goal'">
+                                            <span class="text-xs text-slate-500 ml-1">{{ __('game.live_goal') }}</span>
+                                        </template>
+                                        <template x-if="event.type === 'own_goal'">
+                                            <span class="text-xs text-red-500 ml-1">({{ __('game.og') }})</span>
+                                        </template>
+                                        <template x-if="event.type === 'yellow_card'">
+                                            <span class="text-xs text-slate-500 ml-1">{{ __('game.live_yellow_card') }}</span>
+                                        </template>
+                                        <template x-if="event.type === 'red_card'">
+                                            <span class="text-xs text-red-600 ml-1" x-text="event.metadata?.second_yellow ? '{{ __('game.live_second_yellow') }}' : '{{ __('game.live_red_card') }}'"></span>
+                                        </template>
+                                        <template x-if="event.type === 'injury'">
+                                            <span class="text-xs text-orange-600 ml-1">{{ __('game.live_injury') }}</span>
+                                        </template>
+                                        <template x-if="event.assistPlayerName">
+                                            <div class="text-xs text-slate-400" x-text="'{{ __('game.live_assist') }} ' + event.assistPlayerName"></div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </template>
+
+                            {{-- Kick off message --}}
+                            <template x-if="phase !== 'pre_match'">
+                                <div class="flex items-center gap-3 py-2 px-3">
+                                    <span class="text-xs font-mono text-slate-400 w-8 text-right shrink-0">1'</span>
+                                    <span class="text-sm w-6 text-center shrink-0">📣</span>
+                                    <span class="w-1.5 h-6 shrink-0"></span>
+                                    <span class="text-xs text-slate-400">{{ __('game.live_kick_off') }}</span>
+                                </div>
+                            </template>
+
+                            {{-- Empty state before kick off --}}
+                            <template x-if="phase === 'pre_match'">
+                                <div class="text-center py-8 text-slate-400 text-sm">
+                                    {{ __('game.live_about_to_start') }}
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    {{-- Full Time Summary --}}
+                    <template x-if="phase === 'full_time'">
+                        <div class="mt-6 pt-6 border-t border-slate-200">
+                            {{-- Injury details revealed at full time --}}
+                            @php
+                                $injuries = collect($events)->filter(fn($e) => $e['type'] === 'injury');
+                            @endphp
+                            @if($injuries->isNotEmpty())
+                                <div class="mb-4 p-3 bg-orange-50 rounded-lg">
+                                    <h4 class="text-sm font-semibold text-orange-800 mb-1">{{ __('game.live_injuries_report') }}</h4>
+                                    @foreach($injuries as $injury)
+                                        <div class="text-xs text-orange-700">
+                                            {{ $injury['playerName'] }} &mdash;
+                                            {{ $injury['metadata']['injury_type'] ?? __('game.live_injury') }}
+                                            @if(isset($injury['metadata']['weeks_out']))
+                                                ({{ trans_choice('game.live_weeks_out', $injury['metadata']['weeks_out'], ['count' => $injury['metadata']['weeks_out']]) }})
+                                            @endif
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
+
+                            <div class="text-center">
+                                <a href="{{ $resultsUrl }}"
+                                   class="inline-flex items-center px-6 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-white uppercase tracking-wide hover:bg-red-700 transition ease-in-out duration-150">
+                                    {{ __('game.live_continue_results') }}
+                                </a>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            {{-- Other Matches Ticker --}}
+            @if(count($otherMatches) > 0)
+                <div class="mt-4 px-4 py-3 bg-slate-800/50 rounded-lg">
+                    <div class="flex items-center gap-6 overflow-x-auto text-xs">
+                        <span class="text-slate-500 font-semibold shrink-0 uppercase">{{ __('game.live_other_results') }}</span>
+                        <template x-for="(m, idx) in otherMatches" :key="idx">
+                            <div class="flex items-center gap-2 shrink-0 text-slate-300">
+                                <img :src="m.homeTeamImage" class="w-4 h-4">
+                                <span class="truncate max-w-20" x-text="m.homeTeam"></span>
+                                <span class="font-bold tabular-nums"
+                                      x-text="otherMatchScores[idx]?.homeScore + ' - ' + otherMatchScores[idx]?.awayScore"></span>
+                                <span class="truncate max-w-20" x-text="m.awayTeam"></span>
+                                <img :src="m.awayTeamImage" class="w-4 h-4">
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            @endif
+        </div>
+    </div>
+</x-app-layout>

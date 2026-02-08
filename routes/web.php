@@ -30,6 +30,7 @@ use App\Http\Views\ShowFinances;
 use App\Http\Views\ShowGame;
 use App\Http\Views\ShowOnboarding;
 use App\Http\Views\ShowCompetition;
+use App\Http\Views\ShowLiveMatch;
 use App\Http\Views\ShowMatchResults;
 use App\Http\Views\ShowSquad;
 use App\Http\Views\ShowContracts;
@@ -68,6 +69,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/game/{gameId}/calendar', ShowCalendar::class)->name('game.calendar');
         Route::get('/game/{gameId}/competition/{competitionId}', ShowCompetition::class)->name('game.competition');
         Route::get('/game/{gameId}/results/{competition}/{matchday}', ShowMatchResults::class)->name('game.results');
+        Route::get('/game/{gameId}/live/{matchId}', ShowLiveMatch::class)->name('game.live-match');
         Route::get('/game/{gameId}/lineup/{matchId}', ShowLineup::class)->name('game.lineup');
 
         // Game Actions
