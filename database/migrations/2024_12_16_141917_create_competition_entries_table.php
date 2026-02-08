@@ -16,7 +16,7 @@ return new class extends Migration
 
             $table->foreignUuid('game_id')->constrained();
             $table->foreignId('team_id')->constrained();
-            $table->foreignId('season_id')->constrained();
+            $table->unsignedBigInteger('season_id');
             $table->foreignId('competition_id')->constrained();
         });
     }
