@@ -95,13 +95,15 @@ class NotificationService
     }
 
     /**
-     * Clean up old read notifications.
+     * Clean up old read notifications based on in-game time.
      */
-    public function cleanupOldNotifications(string $gameId): int
+    public function cleanupOldNotifications(Game $game): int
     {
-        return GameNotification::where('game_id', $gameId)
+        $cutoffDate = $game->current_date->subDays(self::CLEANUP_DAYS);
+
+        return GameNotification::where('game_id', $game->id)
             ->read()
-            ->olderThan(self::CLEANUP_DAYS)
+            ->where('game_date', '<', $cutoffDate)
             ->delete();
     }
 

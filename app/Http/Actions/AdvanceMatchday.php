@@ -210,7 +210,7 @@ class AdvanceMatchday
         $this->checkLowFitnessPlayers($game, $allPlayers);
 
         // Clean up old read notifications
-        $this->notificationService->cleanupOldNotifications($game->id);
+        $this->notificationService->cleanupOldNotifications($game);
 
         // Competition-specific post-match actions
         $handler->afterMatches($game, $matches, $allPlayers);
