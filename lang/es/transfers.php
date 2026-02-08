@@ -161,4 +161,13 @@ return [
     'position_lw' => 'Extremo Izquierdo (EI)',
     'position_rw' => 'Extremo Derecho (ED)',
     'position_cf' => 'Delantero Centro (DC)',
+
+    // Countries
+    'country_spain' => 'España',
+    'country_england' => 'Inglaterra',
+    'country_germany' => 'Alemania',
+    'country_france' => 'Francia',
+    'country_italy' => 'Italia',
+    'country_netherlands' => 'Países Bajos',
+    'country_portugal' => 'Portugal',
 ];

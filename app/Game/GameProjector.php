@@ -581,10 +581,23 @@ class GameProjector extends Projector
     }
 
     /**
-     * Initialize game players for all teams in the competition.
+     * Initialize game players for all teams across all leagues.
      * Reads from data/{season}/{competitionId}/teams.json with embedded players.
      */
     private function initializeGamePlayers(string $gameId, string $competitionId, string $season): void
+    {
+        // Get all league competitions (excluding cups)
+        $leagues = Competition::where('type', 'league')->pluck('id')->toArray();
+
+        foreach ($leagues as $leagueId) {
+            $this->initializeGamePlayersForCompetition($gameId, $leagueId, $season);
+        }
+    }
+
+    /**
+     * Initialize game players for a specific competition.
+     */
+    private function initializeGamePlayersForCompetition(string $gameId, string $competitionId, string $season): void
     {
         $teamsFilePath = base_path("data/{$season}/{$competitionId}/teams.json");
         if (!file_exists($teamsFilePath)) {
@@ -595,8 +608,11 @@ class GameProjector extends Projector
         $data = json_decode(file_get_contents($teamsFilePath), true);
         $clubs = $data['clubs'] ?? [];
 
+        $playerRows = [];
+
         foreach ($clubs as $club) {
-            $transfermarktId = $club['transfermarktId'] ?? null;
+            // Try transfermarktId or extract from image URL
+            $transfermarktId = $club['transfermarktId'] ?? $this->extractTransfermarktIdFromImage($club['image'] ?? '');
             if (!$transfermarktId) {
                 continue;
             }
@@ -608,20 +624,39 @@ class GameProjector extends Projector
 
             $playersData = $club['players'] ?? [];
             foreach ($playersData as $playerData) {
-                $this->createGamePlayer($gameId, $team, $playerData, $minimumWage);
+                $row = $this->prepareGamePlayerRow($gameId, $team, $playerData, $minimumWage);
+                if ($row) {
+                    $playerRows[] = $row;
+                }
             }
+        }
+
+        // Batch insert for better performance
+        foreach (array_chunk($playerRows, 100) as $chunk) {
+            GamePlayer::insert($chunk);
         }
     }
 
     /**
-     * Create a game player from player data.
+     * Extract transfermarkt ID from image URL.
      */
-    private function createGamePlayer(string $gameId, Team $team, array $playerData, int $minimumWage): void
+    private function extractTransfermarktIdFromImage(string $imageUrl): ?string
+    {
+        if (preg_match('/\/(\d+)\.png$/', $imageUrl, $matches)) {
+            return $matches[1];
+        }
+        return null;
+    }
+
+    /**
+     * Prepare a game player row for batch insertion.
+     */
+    private function prepareGamePlayerRow(string $gameId, Team $team, array $playerData, int $minimumWage): ?array
     {
         // Find the reference player by transfermarkt_id
         $player = Player::where('transfermarkt_id', $playerData['id'])->first();
         if (!$player) {
-            return;
+            return null;
         }
 
         // Parse contract date
@@ -659,8 +694,7 @@ class GameProjector extends Projector
             $currentAbility
         );
 
-        // Create game player with career data snapshot and development fields
-        GamePlayer::create([
+        return [
             'id' => Str::uuid()->toString(),
             'game_id' => $gameId,
             'player_id' => $player->id,
@@ -675,14 +709,15 @@ class GameProjector extends Projector
             'fitness' => rand(90, 100),
             'morale' => rand(65, 80),
             'durability' => InjuryService::generateDurability(),
-            // Development fields
             'game_technical_ability' => $player->technical_ability,
             'game_physical_ability' => $player->physical_ability,
             'potential' => $potentialData['potential'],
             'potential_low' => $potentialData['low'],
             'potential_high' => $potentialData['high'],
             'season_appearances' => 0,
-        ]);
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
     }
 
     /**

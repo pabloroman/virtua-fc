@@ -87,8 +87,12 @@
                                     <label for="league" class="block text-sm font-medium text-slate-700 mb-1">{{ __('transfers.league') }}</label>
                                     <select name="league" id="league" class="w-full border-slate-300 rounded-lg shadow-sm text-sm focus:ring-sky-500 focus:border-sky-500">
                                         <option value="all">{{ __('transfers.all_leagues') }}</option>
-                                        @foreach($leagues as $league)
-                                            <option value="{{ $league->id }}">{{ $league->name }}</option>
+                                        @foreach($leaguesByCountry as $country)
+                                            <optgroup label="{{ $country['name'] }}">
+                                                @foreach($country['leagues'] as $league)
+                                                    <option value="{{ $league->id }}">{{ $league->name }}</option>
+                                                @endforeach
+                                            </optgroup>
                                         @endforeach
                                     </select>
                                 </div>

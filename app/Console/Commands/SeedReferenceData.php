@@ -21,13 +21,15 @@ class SeedReferenceData extends Command
 
     private array $profiles = [
         'production' => [
+            // Spanish leagues (playable)
             [
                 'code' => 'ESP1',
                 'path' => 'data/2025/ESP1',
                 'tier' => 1,
                 'handler' => 'league',
                 'country' => 'ES',
-                'minimum_annual_wage' => 20_000_000, // €200,000 in cents (La Liga minimum)
+                'minimum_annual_wage' => 20_000_000,
+                'is_playable' => true,
             ],
             [
                 'code' => 'ESP2',
@@ -35,7 +37,8 @@ class SeedReferenceData extends Command
                 'tier' => 2,
                 'handler' => 'league_with_playoff',
                 'country' => 'ES',
-                'minimum_annual_wage' => 10_000_000, // €100,000 in cents (La Liga 2 minimum)
+                'minimum_annual_wage' => 10_000_000,
+                'is_playable' => true,
             ],
             [
                 'code' => 'ESPSUP',
@@ -44,6 +47,7 @@ class SeedReferenceData extends Command
                 'handler' => 'knockout_cup',
                 'country' => 'ES',
                 'minimum_annual_wage' => null,
+                'is_playable' => false,
             ],
             [
                 'code' => 'ESPCUP',
@@ -52,6 +56,68 @@ class SeedReferenceData extends Command
                 'handler' => 'knockout_cup',
                 'country' => 'ES',
                 'minimum_annual_wage' => null,
+                'is_playable' => false,
+            ],
+            // Foreign leagues (scouting/transfers only)
+            [
+                'code' => 'ENG1',
+                'name' => 'Premier League',
+                'path' => 'data/2025/ENG1',
+                'tier' => 1,
+                'handler' => 'league',
+                'country' => 'GB',
+                'minimum_annual_wage' => 25_000_000,
+                'is_playable' => false,
+            ],
+            [
+                'code' => 'DEU1',
+                'name' => 'Bundesliga',
+                'path' => 'data/2025/DEU1',
+                'tier' => 1,
+                'handler' => 'league',
+                'country' => 'DE',
+                'minimum_annual_wage' => 15_000_000,
+                'is_playable' => false,
+            ],
+            [
+                'code' => 'FRA1',
+                'name' => 'Ligue 1',
+                'path' => 'data/2025/FRA1',
+                'tier' => 1,
+                'handler' => 'league',
+                'country' => 'FR',
+                'minimum_annual_wage' => 12_000_000,
+                'is_playable' => false,
+            ],
+            [
+                'code' => 'ITA1',
+                'name' => 'Serie A',
+                'path' => 'data/2025/ITA1',
+                'tier' => 1,
+                'handler' => 'league',
+                'country' => 'IT',
+                'minimum_annual_wage' => 15_000_000,
+                'is_playable' => false,
+            ],
+            [
+                'code' => 'NLD1',
+                'name' => 'Eredivisie',
+                'path' => 'data/2025/NLD1',
+                'tier' => 1,
+                'handler' => 'league',
+                'country' => 'NL',
+                'minimum_annual_wage' => 8_000_000,
+                'is_playable' => false,
+            ],
+            [
+                'code' => 'POR1',
+                'name' => 'Primeira Liga',
+                'path' => 'data/2025/POR1',
+                'tier' => 1,
+                'handler' => 'league',
+                'country' => 'PT',
+                'minimum_annual_wage' => 8_000_000,
+                'is_playable' => false,
             ],
         ],
         'test' => [
@@ -150,6 +216,8 @@ class SeedReferenceData extends Command
         $handler = $config['handler'] ?? 'league';
         $country = $config['country'] ?? 'ES';
         $minimumAnnualWage = $config['minimum_annual_wage'] ?? null;
+        $isPlayable = $config['is_playable'] ?? true;
+        $configName = $config['name'] ?? null;
 
         $isCup = in_array($handler, ['knockout_cup', 'group_stage_cup']);
 
@@ -158,26 +226,42 @@ class SeedReferenceData extends Command
         if ($isCup) {
             $this->seedCupCompetition($basePath, $code, $tier, $handler, $country, $minimumAnnualWage);
         } else {
-            $this->seedLeagueCompetition($basePath, $code, $tier, $handler, $country, $minimumAnnualWage);
+            $this->seedLeagueCompetition($basePath, $code, $tier, $handler, $country, $minimumAnnualWage, $isPlayable, $configName);
         }
     }
 
-    private function seedLeagueCompetition(string $basePath, string $code, int $tier, string $handler, string $country, ?int $minimumAnnualWage): void
+    private function seedLeagueCompetition(string $basePath, string $code, int $tier, string $handler, string $country, ?int $minimumAnnualWage, bool $isPlayable = true, ?string $configName = null): void
     {
         $teamsData = $this->loadJson("{$basePath}/teams.json");
-        $fixturesData = $this->loadJson("{$basePath}/fixtures.json");
+
+        // Handle foreign leagues with simpler JSON structure
+        $seasonId = $teamsData['seasonID'] ?? '2025';
+        $leagueName = $teamsData['name'] ?? $configName ?? $code;
+
+        // Normalize teams data for seedCompetitionRecord
+        $normalizedData = [
+            'name' => $leagueName,
+            'seasonID' => $seasonId,
+        ];
 
         // Seed competition record
-        $this->seedCompetitionRecord($code, $teamsData, $tier, 'league', $handler, $country, $minimumAnnualWage);
+        $this->seedCompetitionRecord($code, $normalizedData, $tier, 'league', $handler, $country, $minimumAnnualWage);
 
         // Build team ID mapping (transfermarktId -> UUID)
-        $teamIdMap = $this->seedTeams($teamsData['clubs'], $code, $teamsData['seasonID'], $country);
+        $teamIdMap = $this->seedTeams($teamsData['clubs'], $code, $seasonId, $country);
 
         // Seed players (embedded in teams data)
         $this->seedPlayersFromTeams($teamsData['clubs'], $teamIdMap);
 
-        // Seed fixtures
-        $this->seedFixtures($fixturesData['matchdays'], $code, $teamsData['seasonID'], $teamIdMap);
+        // Seed fixtures only for playable leagues
+        if ($isPlayable) {
+            $fixturesData = $this->loadJson("{$basePath}/fixtures.json");
+            if (!empty($fixturesData['matchdays'])) {
+                $this->seedFixtures($fixturesData['matchdays'], $code, $seasonId, $teamIdMap);
+            }
+        } else {
+            $this->line("  Fixtures: skipped (non-playable league)");
+        }
     }
 
     private function seedCupCompetition(string $basePath, string $code, int $tier, string $handler, string $country, ?int $minimumAnnualWage): void
@@ -230,7 +314,8 @@ class SeedReferenceData extends Command
         $count = 0;
 
         foreach ($clubs as $club) {
-            $transfermarktId = $club['transfermarktId'] ?? null;
+            // Try to get transfermarktId from club data, or extract from image URL
+            $transfermarktId = $club['transfermarktId'] ?? $this->extractTransfermarktIdFromImage($club['image'] ?? '');
             if (!$transfermarktId) {
                 $this->warn("  Skipping club without transfermarktId: {$club['name']}");
                 continue;
@@ -292,7 +377,7 @@ class SeedReferenceData extends Command
         $count = 0;
 
         foreach ($clubs as $club) {
-            $transfermarktId = $club['transfermarktId'] ?? null;
+            $transfermarktId = $club['transfermarktId'] ?? $this->extractTransfermarktIdFromImage($club['image'] ?? '');
             if (!$transfermarktId || !isset($teamIdMap[$transfermarktId])) {
                 continue;
             }
@@ -690,6 +775,19 @@ class SeedReferenceData extends Command
 
         $content = file_get_contents($path);
         return json_decode($content, true) ?? [];
+    }
+
+    /**
+     * Extract transfermarkt ID from image URL.
+     * URL format: https://tmssl.akamaized.net/images/wappen/big/{id}.png
+     */
+    private function extractTransfermarktIdFromImage(string $imageUrl): ?string
+    {
+        if (preg_match('/\/(\d+)\.png$/', $imageUrl, $matches)) {
+            return $matches[1];
+        }
+
+        return null;
     }
 
     private function displaySummary(): void
