@@ -21,31 +21,8 @@ use Illuminate\Support\Str;
  */
 class PlayerGeneratorService
 {
-    private const FIRST_NAMES = [
-        'Alejandro', 'Pablo', 'Carlos', 'Daniel', 'David', 'Diego',
-        'Fernando', 'Gabriel', 'Hugo', 'Ivan', 'Javier', 'Jorge',
-        'Jose', 'Juan', 'Lucas', 'Luis', 'Manuel', 'Marco',
-        'Mario', 'Martin', 'Miguel', 'Nicolas', 'Oscar', 'Pedro',
-        'Rafael', 'Roberto', 'Ruben', 'Sergio', 'Victor', 'Adrian',
-        'Alvaro', 'Andres', 'Antonio', 'Bruno', 'Eduardo', 'Enrique',
-        'Felipe', 'Gonzalo', 'Hector', 'Ignacio', 'Jaime', 'Jesus',
-        'Joaquin', 'Marcos', 'Mateo', 'Nacho', 'Pau', 'Raul',
-        'Samuel', 'Santiago', 'Tomas', 'Xavier', 'Yeray', 'Iker',
-        'Unai', 'Aitor', 'Asier', 'Gorka', 'Mikel', 'Oier',
-    ];
-
-    private const SURNAMES = [
-        'Garcia', 'Rodriguez', 'Martinez', 'Lopez', 'Gonzalez', 'Hernandez',
-        'Perez', 'Sanchez', 'Ramirez', 'Torres', 'Flores', 'Rivera',
-        'Gomez', 'Diaz', 'Reyes', 'Moreno', 'Jimenez', 'Ruiz',
-        'Alvarez', 'Romero', 'Alonso', 'Navarro', 'Dominguez', 'Gil',
-        'Vazquez', 'Serrano', 'Blanco', 'Molina', 'Morales', 'Ortega',
-        'Delgado', 'Castro', 'Ortiz', 'Rubio', 'Marin', 'Sanz',
-        'Nunez', 'Iglesias', 'Medina', 'Garrido', 'Cortes', 'Castillo',
-        'Santos', 'Lozano', 'Guerrero', 'Cano', 'Prieto', 'Mendez',
-        'Cruz', 'Calvo', 'Gallego', 'Vidal', 'Leon', 'Herrera',
-        'Marquez', 'Cabrera', 'Aguilar', 'Vega', 'Campos', 'Fuentes',
-    ];
+    /** @var array<array{name: string, nationality: array}> Cached identity pool */
+    private ?array $identityPool = null;
 
     public function __construct(
         private readonly ContractService $contractService,
@@ -64,8 +41,9 @@ class PlayerGeneratorService
      */
     public function create(Game $game, GeneratedPlayerData $data): GamePlayer
     {
-        $name = $data->name ?? $this->generateName();
-        $nationality = $data->nationality ?? $this->selectNationality();
+        $identity = $this->pickRandomIdentity();
+        $name = $data->name ?? $identity['name'];
+        $nationality = $data->nationality ?? $identity['nationality'];
         $age = $data->dateOfBirth->age;
 
         // Create the reference Player record
@@ -124,38 +102,42 @@ class PlayerGeneratorService
     }
 
     /**
-     * Generate a Spanish-style name.
+     * Generate a name from the identity pool.
      */
     public function generateName(): string
     {
-        $firstName = self::FIRST_NAMES[array_rand(self::FIRST_NAMES)];
-        $surname = self::SURNAMES[array_rand(self::SURNAMES)];
-
-        // 30% chance of double surname
-        if (mt_rand(1, 100) <= 30) {
-            $surname2 = self::SURNAMES[array_rand(self::SURNAMES)];
-            return "$firstName $surname $surname2";
-        }
-
-        return "$firstName $surname";
+        return $this->pickRandomIdentity()['name'];
     }
 
     /**
-     * Select nationality (mostly Spanish for La Liga context).
+     * Select a nationality from the identity pool.
      */
     public function selectNationality(): array
     {
-        // 80% Spanish, 20% other
-        if (mt_rand(1, 100) <= 80) {
-            return ['ESP'];
+        return $this->pickRandomIdentity()['nationality'];
+    }
+
+    /**
+     * Pick a random identity (name + nationality) from the pool.
+     */
+    private function pickRandomIdentity(): array
+    {
+        $pool = $this->getIdentityPool();
+
+        return $pool[array_rand($pool)];
+    }
+
+    /**
+     * Load and cache the identity pool from the data file.
+     */
+    private function getIdentityPool(): array
+    {
+        if ($this->identityPool === null) {
+            $path = base_path('data/transfermarkt/academy/players.json');
+            $this->identityPool = json_decode(file_get_contents($path), true);
         }
 
-        $otherNationalities = [
-            ['ARG'], ['BRA'], ['FRA'], ['POR'], ['MAR'],
-            ['COL'], ['URU'], ['MEX'], ['VEN'], ['ECU'],
-        ];
-
-        return $otherNationalities[array_rand($otherNationalities)];
+        return $this->identityPool;
     }
 
     /**
