@@ -25,6 +25,7 @@ return [
     'leaving_free' => 'Se va (Libre)',
     'renewed' => 'Renovado',
     'sale_agreed' => 'Venta Acordada',
+    'retiring' => 'Se retira',
     'listed' => 'En Venta',
     'list_for_sale' => 'Poner a la Venta',
     'unlist_from_sale' => 'Retirar de la Venta',

@@ -65,6 +65,13 @@ return [
     'peak' => 'En su Pico',
     'declining' => 'Declinando',
 
+    // Retirements
+    'retirements' => 'Retiradas',
+    'your_team_retirements' => 'Se retiran de tu equipo',
+    'other_retirements' => 'Otras retiradas en la liga',
+    'player_retiring' => 'Se retira',
+    'and_more_retirements' => 'y :count más...',
+
     // Start new season
     'start_new_season' => 'Comenzar Temporada :season',
 ];

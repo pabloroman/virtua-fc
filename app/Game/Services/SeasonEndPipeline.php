@@ -10,6 +10,7 @@ use App\Game\Processors\ContractRenewalProcessor;
 use App\Game\Processors\FixtureGenerationProcessor;
 use App\Game\Processors\LoanReturnProcessor;
 use App\Game\Processors\PlayerDevelopmentProcessor;
+use App\Game\Processors\PlayerRetirementProcessor;
 use App\Game\Processors\PreContractTransferProcessor;
 use App\Game\Processors\PromotionRelegationProcessor;
 use App\Game\Processors\SeasonArchiveProcessor;
@@ -34,6 +35,7 @@ class SeasonEndPipeline
         PreContractTransferProcessor $preContractTransfer,
         ContractExpirationProcessor $contractExpiration,
         ContractRenewalProcessor $contractRenewal,
+        PlayerRetirementProcessor $playerRetirement,
         PlayerDevelopmentProcessor $playerDevelopment,
         SeasonSettlementProcessor $seasonSettlement,
         StatsResetProcessor $statsReset,
@@ -50,6 +52,7 @@ class SeasonEndPipeline
             $preContractTransfer,
             $contractExpiration,
             $contractRenewal,
+            $playerRetirement,
             $playerDevelopment,
             $seasonSettlement,
             $statsReset,

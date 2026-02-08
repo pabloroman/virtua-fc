@@ -187,6 +187,12 @@ class ShowSeasonEnd
             'goalsAgainst' => $playerStanding->goals_against ?? 0,
         ];
 
+        // Players retiring at end of this season (announced last season)
+        $retiringPlayers = GamePlayer::with(['player', 'team'])
+            ->where('game_id', $gameId)
+            ->where('retiring_at_season', $game->season)
+            ->get();
+
         // Get development preview for player's squad
         $squadPlayers = GamePlayer::with('player')
             ->where('game_id', $gameId)
@@ -238,6 +244,7 @@ class ShowSeasonEnd
             'bestAttack' => $bestAttack,
             'bestDefense' => $bestDefense,
             'managerEvaluation' => $managerEvaluation,
+            'retiringPlayers' => $retiringPlayers,
         ]);
     }
 

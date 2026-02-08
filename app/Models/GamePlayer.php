@@ -6,6 +6,7 @@ use App\Support\CountryCodeMapper;
 use App\Support\Money;
 use App\Support\PositionMapper;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class GamePlayer extends Model
 {
-    use HasUuids;
+    use HasFactory, HasUuids;
 
     public $timestamps = false;
 
@@ -52,6 +53,7 @@ class GamePlayer extends Model
         'season_appearances',
         'transfer_status',
         'transfer_listed_at',
+        'retiring_at_season',
     ];
 
     protected $casts = [
@@ -86,6 +88,14 @@ class GamePlayer extends Model
 
     // Transfer status constants
     public const TRANSFER_STATUS_LISTED = 'listed';
+
+    /**
+     * Check if player has announced retirement.
+     */
+    public function isRetiring(): bool
+    {
+        return $this->retiring_at_season !== null;
+    }
 
     public function game(): BelongsTo
     {
@@ -241,6 +251,11 @@ class GamePlayer extends Model
             return false;
         }
 
+        // Retiring players won't sign pre-contracts
+        if ($this->isRetiring()) {
+            return false;
+        }
+
         // Already has a pre-contract agreement
         if ($this->hasPreContractAgreement()) {
             return false;
@@ -276,6 +291,11 @@ class GamePlayer extends Model
     public function canBeOfferedRenewal(?Carbon $seasonEndDate = null): bool
     {
         if (!$this->isContractExpiring($seasonEndDate)) {
+            return false;
+        }
+
+        // Retiring players won't renew
+        if ($this->isRetiring()) {
             return false;
         }
 
