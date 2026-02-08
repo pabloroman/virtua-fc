@@ -79,6 +79,16 @@ class AdvanceMatchday
         $game->refresh();
         $this->processPostMatchActions($game, $matches, $handler, $allPlayers);
 
+        // If the player's team played, redirect to the live match view
+        $playerMatch = $matches->first(fn ($m) => $m->involvesTeam($game->team_id));
+
+        if ($playerMatch) {
+            return redirect()->route('game.live-match', [
+                'gameId' => $game->id,
+                'matchId' => $playerMatch->id,
+            ]);
+        }
+
         return redirect()->to($handler->getRedirectRoute($game, $matches, $matchday));
     }
 

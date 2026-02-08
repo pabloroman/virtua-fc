@@ -24,6 +24,7 @@ class ShowMatchResults
             'matchday' => $matchday,
             'matches' => $matches,
             'playerMatch' => $playerMatch,
+            'calendarUrl' => route('game.calendar', $gameId),
         ]);
     }
 }

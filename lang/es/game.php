@@ -119,11 +119,31 @@ return [
     'available' => 'Disponible',
     'begin_season' => 'Comenzar Temporada',
 
+    // Live match
+    'live_pre_match' => 'Previo al partido',
+    'live_half_time' => 'Descanso',
+    'live_full_time' => 'Final',
+    'live_kick_off' => 'Comienza el partido',
+    'live_about_to_start' => 'El partido está a punto de comenzar...',
+    'live_goal' => 'Gol',
+    'live_yellow_card' => 'Tarjeta amarilla',
+    'live_red_card' => 'Tarjeta roja',
+    'live_second_yellow' => 'Doble amarilla',
+    'live_injury' => 'Lesión',
+    'live_assist' => 'Asist.',
+    'live_speed' => 'Velocidad',
+    'live_skip' => 'Saltar',
+    'live_skip_match' => 'Ir a resultados',
+    'live_other_results' => 'Otros',
+    'live_continue_results' => 'Ver Resultados Completos',
+    'live_continue_dashboard' => 'Continuar',
+    'live_injuries_report' => 'Parte de Lesiones',
+    'live_weeks_out' => ':count semana de baja|:count semanas de baja',
+
     // Results page
     'results' => 'Resultados',
     'matchday_results' => 'Resultados :name',
     'back_to_dashboard' => 'Volver al Inicio',
-    'all_results' => 'Todos los Resultados',
     'og' => 'PP',
 
     // Dashboard
