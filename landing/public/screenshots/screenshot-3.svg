@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 800 450">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a"/>
+      <stop offset="100%" style="stop-color:#134e4a"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="450" fill="url(#bg)" rx="8"/>
+  <rect x="24" y="24" width="752" height="56" rx="6" fill="#1e293b" opacity="0.8"/>
+  <rect x="24" y="100" width="365" height="326" rx="6" fill="#1e293b" opacity="0.5"/>
+  <rect x="411" y="100" width="365" height="326" rx="6" fill="#1e293b" opacity="0.5"/>
+  <circle cx="206" cy="200" r="40" fill="#dc2626" opacity="0.3"/>
+  <circle cx="593" cy="200" r="40" fill="#0284c7" opacity="0.3"/>
+  <text x="206" y="320" font-family="sans-serif" font-size="16" fill="#94a3b8" text-anchor="middle">Local</text>
+  <text x="593" y="320" font-family="sans-serif" font-size="16" fill="#94a3b8" text-anchor="middle">Visitante</text>
+  <text x="400" y="240" font-family="sans-serif" font-size="20" fill="#94a3b8" text-anchor="middle">Resultado del Partido</text>
+</svg>
