@@ -98,20 +98,25 @@
                                     <span class="text-slate-600">{{ __('finances.projected_wages') }}</span>
                                     <span class="font-semibold text-red-600">-{{ $finances->formatted_projected_wages }}</span>
                                 </div>
-                                <div class="flex justify-between items-center pt-3 border-t border-slate-200">
-                                    <span class="font-semibold text-slate-700">{{ __('finances.projected_surplus') }}</span>
-                                    <span class="font-bold text-green-700 text-lg">{{ $finances->formatted_projected_surplus }}</span>
-                                </div>
                                 @if($finances->carried_debt > 0)
                                 <div class="flex justify-between items-center text-red-600">
                                     <span>{{ __('finances.carried_debt') }}</span>
                                     <span class="font-semibold">-{{ $finances->formatted_carried_debt }}</span>
                                 </div>
+                                @endif
+                                @if($investment)
+                                <div class="flex justify-between items-center">
+                                    <span class="text-slate-600">{{ __('finances.infrastructure_investment') }}</span>
+                                    <span class="font-semibold text-red-600">-{{ $investment->formatted_total_infrastructure }}</span>
+                                </div>
                                 <div class="flex justify-between items-center pt-3 border-t border-slate-200">
-                                    <span class="font-semibold text-slate-700">{{ __('finances.available_surplus') }}</span>
-                                    <span class="font-bold {{ $finances->available_surplus >= 0 ? 'text-green-700' : 'text-red-700' }} text-lg">
-                                        {{ $finances->formatted_available_surplus }}
-                                    </span>
+                                    <span class="font-semibold text-slate-700">{{ __('finances.transfer_budget') }}</span>
+                                    <span class="font-bold text-green-700 text-lg">{{ $investment->formatted_transfer_budget }}</span>
+                                </div>
+                                @else
+                                <div class="flex justify-between items-center pt-3 border-t border-slate-200">
+                                    <span class="font-semibold text-slate-700">{{ __('finances.projected_surplus') }}</span>
+                                    <span class="font-bold text-green-700 text-lg">{{ $finances->formatted_projected_surplus }}</span>
                                 </div>
                                 @endif
                             </div>

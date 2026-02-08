@@ -152,6 +152,11 @@ class GameInvestment extends Model
         return Money::format($this->available_surplus);
     }
 
+    public function getFormattedTotalInfrastructureAttribute(): string
+    {
+        return Money::format($this->total_infrastructure);
+    }
+
     public function getFormattedTransferBudgetAttribute(): string
     {
         return Money::format($this->transfer_budget);
