@@ -421,7 +421,7 @@ class ScoutingService
                 'result' => 'accepted',
                 'counter_amount' => null,
                 'asking_price' => $askingPrice,
-                'message' => $player->team->name.' have accepted your bid.',
+                'message' => __('transfers.bid_accepted', ['team' => $player->team->name]),
             ];
         }
 
@@ -435,7 +435,7 @@ class ScoutingService
                     'result' => 'accepted',
                     'counter_amount' => null,
                     'asking_price' => $askingPrice,
-                    'message' => $player->team->name.' have accepted your bid.',
+                    'message' => __('transfers.bid_accepted', ['team' => $player->team->name]),
                 ];
             }
 
@@ -443,7 +443,7 @@ class ScoutingService
                 'result' => 'counter',
                 'counter_amount' => $counterAmount,
                 'asking_price' => $askingPrice,
-                'message' => $player->team->name.' have made a counter-offer of '.Money::format($counterAmount).'.',
+                'message' => __('transfers.counter_offer_made', ['team' => $player->team->name, 'amount' => Money::format($counterAmount)]),
             ];
         }
 
@@ -451,7 +451,7 @@ class ScoutingService
             'result' => 'rejected',
             'counter_amount' => null,
             'asking_price' => $askingPrice,
-            'message' => $player->team->name.' have rejected your bid. It was too far below their valuation.',
+            'message' => __('transfers.bid_rejected_too_low', ['team' => $player->team->name]),
         ];
     }
 
@@ -481,7 +481,7 @@ class ScoutingService
         if ($importance > 0.7) {
             return [
                 'result' => 'rejected',
-                'message' => $player->team->name.' rejected the loan request. '.$player->name.' is a key player for them.',
+                'message' => __('transfers.loan_rejected_key_player', ['team' => $player->team->name, 'player' => $player->name]),
             ];
         }
 
@@ -490,19 +490,19 @@ class ScoutingService
             if (rand(0, 1) === 1) {
                 return [
                     'result' => 'accepted',
-                    'message' => $player->team->name.' have agreed to loan '.$player->name.' to your club.',
+                    'message' => __('transfers.loan_accepted', ['team' => $player->team->name, 'player' => $player->name]),
                 ];
             }
 
             return [
                 'result' => 'rejected',
-                'message' => $player->team->name.' decided to keep '.$player->name.' for now.',
+                'message' => __('transfers.loan_rejected_keep', ['team' => $player->team->name, 'player' => $player->name]),
             ];
         }
 
         return [
             'result' => 'accepted',
-            'message' => $player->team->name.' have agreed to loan '.$player->name.' to your club.',
+            'message' => __('transfers.loan_accepted', ['team' => $player->team->name, 'player' => $player->name]),
         ];
     }
 

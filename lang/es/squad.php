@@ -96,6 +96,22 @@ return [
     'injured' => 'lesionados',
     'suspended' => 'sancionados',
 
+    // Unavailability reasons
+    'suspended_matches' => 'Sancionado (:count partido)|Sancionado (:count partidos)',
+    'injured_generic' => 'Lesionado',
+
+    // Injury types
+    'injury_muscle_fatigue' => 'Fatiga muscular',
+    'injury_muscle_strain' => 'Distensión muscular',
+    'injury_calf_strain' => 'Distensión de gemelo',
+    'injury_ankle_sprain' => 'Esguince de tobillo',
+    'injury_groin_strain' => 'Distensión de aductor',
+    'injury_hamstring_tear' => 'Rotura de isquiotibial',
+    'injury_knee_contusion' => 'Contusión de rodilla',
+    'injury_metatarsal_fracture' => 'Fractura de metatarso',
+    'injury_acl_tear' => 'Rotura de ligamento cruzado',
+    'injury_achilles_rupture' => 'Rotura del tendón de Aquiles',
+
     // Development page
     'squad_development' => 'Desarrollo de Plantilla',
     'high_potential' => 'Alto Potencial',

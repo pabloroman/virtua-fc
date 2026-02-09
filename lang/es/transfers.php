@@ -135,6 +135,14 @@ return [
     'request_loan' => 'Solicitar Cesión',
     'request_loan_description' => 'Solicita el préstamo de este jugador hasta el final de la temporada. Sin coste de traspaso.',
 
+    // Bid evaluation responses
+    'bid_accepted' => ':team ha aceptado tu oferta.',
+    'counter_offer_made' => ':team ha hecho una contraoferta de :amount.',
+    'bid_rejected_too_low' => ':team ha rechazado tu oferta. Estaba muy por debajo de su valoración.',
+    'loan_rejected_key_player' => ':team rechazó la solicitud de cesión. :player es un jugador clave para ellos.',
+    'loan_accepted' => ':team ha aceptado ceder a :player a tu club.',
+    'loan_rejected_keep' => ':team ha decidido quedarse con :player por ahora.',
+
     // Loans page
     'loans_title' => 'Cesiones',
     'active_loans_out' => 'Cesiones Activas (Salidas)',

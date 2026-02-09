@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Game\Services\InjuryService;
 use App\Support\CountryCodeMapper;
 use App\Support\Money;
 use App\Support\PositionMapper;
@@ -409,11 +410,12 @@ class GamePlayer extends Model
     {
         if ($competitionId !== null && $this->isSuspendedInCompetition($competitionId)) {
             $remaining = $this->getSuspensionMatchesRemaining($competitionId);
-            return "Suspended ({$remaining} match" . ($remaining > 1 ? 'es' : '') . ")";
+            return trans_choice('squad.suspended_matches', $remaining, ['count' => $remaining]);
         }
 
         if ($this->isInjured($gameDate)) {
-            return $this->injury_type ? "{$this->injury_type}" : "Injured";
+            $translationKey = InjuryService::INJURY_TRANSLATION_MAP[$this->injury_type] ?? null;
+            return $translationKey ? __($translationKey) : __('squad.injured_generic');
         }
 
         return null;

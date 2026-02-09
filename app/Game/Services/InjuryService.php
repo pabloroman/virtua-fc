@@ -44,6 +44,22 @@ class InjuryService
      * Distribution: Minor injuries are common, severe injuries are rare.
      * Weights are inversely proportional to recovery time.
      */
+    /**
+     * Map of English injury type keys to translation keys.
+     */
+    public const INJURY_TRANSLATION_MAP = [
+        'Muscle fatigue' => 'squad.injury_muscle_fatigue',
+        'Muscle strain' => 'squad.injury_muscle_strain',
+        'Calf strain' => 'squad.injury_calf_strain',
+        'Ankle sprain' => 'squad.injury_ankle_sprain',
+        'Groin strain' => 'squad.injury_groin_strain',
+        'Hamstring tear' => 'squad.injury_hamstring_tear',
+        'Knee contusion' => 'squad.injury_knee_contusion',
+        'Metatarsal fracture' => 'squad.injury_metatarsal_fracture',
+        'ACL tear' => 'squad.injury_acl_tear',
+        'Achilles rupture' => 'squad.injury_achilles_rupture',
+    ];
+
     private const INJURY_TYPES = [
         // Minor (1-2 weeks) - Very common
         'Muscle fatigue' => [
