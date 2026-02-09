@@ -1,3 +1,43 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+    .dual-range {
+        @apply relative h-6 flex items-center;
+    }
+    .dual-range input[type="range"] {
+        @apply absolute w-full pointer-events-none appearance-none bg-transparent h-1.5;
+    }
+    .dual-range input[type="range"]::-webkit-slider-thumb {
+        @apply pointer-events-auto appearance-none w-4 h-4 rounded-full bg-red-600 border-2 border-white shadow cursor-pointer;
+    }
+    .dual-range input[type="range"]::-moz-range-thumb {
+        @apply pointer-events-auto appearance-none w-4 h-4 rounded-full bg-red-600 border-2 border-white shadow cursor-pointer;
+    }
+    .dual-range .track {
+        @apply absolute w-full h-1.5 rounded-full bg-slate-200;
+    }
+    .dual-range .track-fill {
+        @apply absolute h-1.5 rounded-full bg-red-400;
+    }
+
+    .tier-range {
+        @apply relative h-6 flex items-center;
+    }
+    .tier-range .track {
+        @apply absolute w-full h-1.5 rounded-full bg-slate-200;
+    }
+    .tier-range .track-fill {
+        @apply absolute h-1.5 rounded-full bg-sky-400;
+    }
+    .tier-range input[type="range"] {
+        @apply absolute w-full appearance-none bg-transparent h-1.5 cursor-pointer;
+    }
+    .tier-range input[type="range"]::-webkit-slider-thumb {
+        @apply appearance-none w-4 h-4 rounded-full bg-sky-500 border-2 border-white shadow cursor-pointer;
+    }
+    .tier-range input[type="range"]::-moz-range-thumb {
+        @apply appearance-none w-4 h-4 rounded-full bg-sky-500 border-2 border-white shadow cursor-pointer;
+    }
+}

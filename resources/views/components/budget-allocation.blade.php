@@ -100,9 +100,11 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
                     <span x-show="youth_academy_tier == 3">{{ __('finances.youth_academy_tier_3') }}</span>
                     <span x-show="youth_academy_tier == 4">{{ __('finances.youth_academy_tier_4') }}</span>
                 </div>
-                <input type="range" x-model="youth_academy_tier" min="0" max="4" step="1"
-                       class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-sky-500"
-                       {{ $isLocked ? 'disabled' : '' }}>
+                <div class="tier-range">
+                    <div class="track"></div>
+                    <div class="track-fill" :style="'width:' + (youth_academy_tier / 4 * 100) + '%'"></div>
+                    <input type="range" x-model="youth_academy_tier" min="0" max="4" step="1" {{ $isLocked ? 'disabled' : '' }}>
+                </div>
                 <div class="flex justify-between text-[10px] text-slate-400 mt-1">
                     <span>T0</span><span>T1</span><span>T2</span><span>T3</span><span>T4</span>
                 </div>
@@ -123,9 +125,11 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
                     <span x-show="medical_tier == 3">{{ __('finances.medical_tier_3') }}</span>
                     <span x-show="medical_tier == 4">{{ __('finances.medical_tier_4') }}</span>
                 </div>
-                <input type="range" x-model="medical_tier" min="0" max="4" step="1"
-                       class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-sky-500"
-                       {{ $isLocked ? 'disabled' : '' }}>
+                <div class="tier-range">
+                    <div class="track"></div>
+                    <div class="track-fill" :style="'width:' + (medical_tier / 4 * 100) + '%'"></div>
+                    <input type="range" x-model="medical_tier" min="0" max="4" step="1" {{ $isLocked ? 'disabled' : '' }}>
+                </div>
                 <div class="flex justify-between text-[10px] text-slate-400 mt-1">
                     <span>T0</span><span>T1</span><span>T2</span><span>T3</span><span>T4</span>
                 </div>
@@ -146,9 +150,11 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
                     <span x-show="scouting_tier == 3">{{ __('finances.scouting_tier_3') }}</span>
                     <span x-show="scouting_tier == 4">{{ __('finances.scouting_tier_4') }}</span>
                 </div>
-                <input type="range" x-model="scouting_tier" min="0" max="4" step="1"
-                       class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-sky-500"
-                       {{ $isLocked ? 'disabled' : '' }}>
+                <div class="tier-range">
+                    <div class="track"></div>
+                    <div class="track-fill" :style="'width:' + (scouting_tier / 4 * 100) + '%'"></div>
+                    <input type="range" x-model="scouting_tier" min="0" max="4" step="1" {{ $isLocked ? 'disabled' : '' }}>
+                </div>
                 <div class="flex justify-between text-[10px] text-slate-400 mt-1">
                     <span>T0</span><span>T1</span><span>T2</span><span>T3</span><span>T4</span>
                 </div>
@@ -169,9 +175,11 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
                     <span x-show="facilities_tier == 3">{{ __('finances.facilities_tier_3') }}</span>
                     <span x-show="facilities_tier == 4">{{ __('finances.facilities_tier_4') }}</span>
                 </div>
-                <input type="range" x-model="facilities_tier" min="0" max="4" step="1"
-                       class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-sky-500"
-                       {{ $isLocked ? 'disabled' : '' }}>
+                <div class="tier-range">
+                    <div class="track"></div>
+                    <div class="track-fill" :style="'width:' + (facilities_tier / 4 * 100) + '%'"></div>
+                    <input type="range" x-model="facilities_tier" min="0" max="4" step="1" {{ $isLocked ? 'disabled' : '' }}>
+                </div>
                 <div class="flex justify-between text-[10px] text-slate-400 mt-1">
                     <span>T0</span><span>T1</span><span>T2</span><span>T3</span><span>T4</span>
                 </div>

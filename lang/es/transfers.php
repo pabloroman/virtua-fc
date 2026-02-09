@@ -60,8 +60,7 @@ return [
     'recent_sales' => 'Ventas Recientes',
 
     // Scouting
-    'scout_search' => 'Búsqueda de Ojeador',
-    'scout_search_desc' => 'Envía a tu ojeador a buscar jugadores disponibles según tus criterios. Una búsqueda a la vez.',
+    'scout_search_desc' => 'Tu ojeador buscará jugadores y te presentará una lista corta de candidatos que mejor se adapten a tu equipo. Cuanto más específicos sean los criterios, mejores serán los resultados.',
     'position_required' => 'Posición *',
     'select_position' => 'Seleccionar posición...',
     'specific_positions' => 'Posiciones Específicas',
@@ -69,12 +68,14 @@ return [
     'any_defender' => 'Cualquier Defensa (CB, LB, RB)',
     'any_midfielder' => 'Cualquier Centrocampista (DM, CM, AM)',
     'any_forward' => 'Cualquier Delantero (LW, RW, CF)',
-    'league' => 'Liga',
-    'all_leagues' => 'Todas las ligas',
-    'min_age' => 'Edad Mínima',
-    'max_age' => 'Edad Máxima',
-    'max_transfer_fee' => 'Precio Máximo (euros)',
-    'leave_empty_no_limit' => 'Dejar vacío sin límite',
+    'scope' => 'Rango de búsqueda',
+    'scope_domestic' => 'Nacional',
+    'scope_international' => 'Internacional',
+    'age_range' => 'Rango de Edad',
+    'ability_range' => 'Rango de Habilidad',
+    'value_range' => 'Rango de Valor de Mercado',
+    'contract' => 'Contrato',
+    'expiring_contract' => 'Último año de contrato',
     'start_scout_search' => 'Iniciar Búsqueda',
 
     // Scout searching
