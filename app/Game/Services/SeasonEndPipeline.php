@@ -15,6 +15,7 @@ use App\Game\Processors\PreContractTransferProcessor;
 use App\Game\Processors\PromotionRelegationProcessor;
 use App\Game\Processors\SeasonArchiveProcessor;
 use App\Game\Processors\SeasonSettlementProcessor;
+use App\Game\Processors\SeasonSimulationProcessor;
 use App\Game\Processors\StandingsResetProcessor;
 use App\Game\Processors\StatsResetProcessor;
 use App\Game\Processors\SupercopaQualificationProcessor;
@@ -42,6 +43,7 @@ class SeasonEndPipeline
         StatsResetProcessor $statsReset,
         SupercopaQualificationProcessor $supercopaQualification,
         UefaQualificationProcessor $uefaQualification,
+        SeasonSimulationProcessor $seasonSimulation,
         PromotionRelegationProcessor $promotionRelegation,
         FixtureGenerationProcessor $fixtureGeneration,
         StandingsResetProcessor $standingsReset,
@@ -60,6 +62,7 @@ class SeasonEndPipeline
             $statsReset,
             $supercopaQualification,
             $uefaQualification,
+            $seasonSimulation,
             $promotionRelegation,
             $fixtureGeneration,
             $standingsReset,
