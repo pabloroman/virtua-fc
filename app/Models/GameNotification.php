@@ -21,6 +21,8 @@ class GameNotification extends Model
     public const TYPE_SCOUT_REPORT_COMPLETE = 'scout_report_complete';
     public const TYPE_CONTRACT_EXPIRING = 'contract_expiring';
     public const TYPE_LOAN_RETURN = 'loan_return';
+    public const TYPE_LOAN_DESTINATION_FOUND = 'loan_destination_found';
+    public const TYPE_LOAN_SEARCH_FAILED = 'loan_search_failed';
 
     // Priorities
     public const PRIORITY_CRITICAL = 'critical';
@@ -38,6 +40,8 @@ class GameNotification extends Model
         self::TYPE_SCOUT_REPORT_COMPLETE => 'scouting',
         self::TYPE_CONTRACT_EXPIRING => 'contracts',
         self::TYPE_LOAN_RETURN => 'squad',
+        self::TYPE_LOAN_DESTINATION_FOUND => 'loans',
+        self::TYPE_LOAN_SEARCH_FAILED => 'loans',
     ];
 
     protected $fillable = [
@@ -161,6 +165,7 @@ class GameNotification extends Model
             'transfers' => 'game.transfers',
             'scouting' => 'game.scouting',
             'contracts' => 'game.squad.contracts',
+            'loans' => 'game.loans',
             default => 'show-game',
         };
     }

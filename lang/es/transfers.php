@@ -146,6 +146,8 @@ return [
     'no_active_loans' => 'Sin cesiones activas.',
     'no_loans_in' => 'Ningún jugador cedido a tu club actualmente.',
     'no_loans_out' => 'Ningún jugador cedido desde tu club.',
+    'loan_searches' => 'Buscando Destino',
+    'searching_destination' => 'Buscando club...',
     'loan_player' => 'Ceder Jugador',
     'returns' => 'Regresa',
     'years' => 'años',

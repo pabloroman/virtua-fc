@@ -8,6 +8,7 @@ use App\Game\Enums\Formation;
 use App\Game\Enums\Mentality;
 use App\Game\Game as GameAggregate;
 use App\Game\Services\LineupService;
+use App\Game\Services\LoanService;
 use App\Game\Services\MatchdayService;
 use App\Game\Services\MatchSimulator;
 use App\Game\Services\NotificationService;
@@ -31,6 +32,7 @@ class AdvanceMatchday
         private readonly ScoutingService $scoutingService,
         private readonly StandingsCalculator $standingsCalculator,
         private readonly NotificationService $notificationService,
+        private readonly LoanService $loanService,
     ) {}
 
     public function __invoke(string $gameId)
@@ -208,6 +210,20 @@ class AdvanceMatchday
         if ($scoutReport?->isCompleted()) {
             // Create notification instead of session flash
             $this->notificationService->notifyScoutComplete($game, $scoutReport);
+        }
+
+        // Process loan searches
+        $loanResults = $this->loanService->processLoanSearches($game);
+        foreach ($loanResults['found'] as $result) {
+            $this->notificationService->notifyLoanDestinationFound(
+                $game,
+                $result['player'],
+                $result['destination'],
+                $result['windowOpen'],
+            );
+        }
+        foreach ($loanResults['expired'] as $result) {
+            $this->notificationService->notifyLoanSearchFailed($game, $result['player']);
         }
 
         // Check for expiring transfer offers (2 days or less)

@@ -6,6 +6,7 @@ use App\Models\Game;
 use App\Models\GameNotification;
 use App\Models\GamePlayer;
 use App\Models\ScoutReport;
+use App\Models\Team;
 use App\Models\TransferOffer;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -329,6 +330,47 @@ class NotificationService
         );
     }
 
+    /**
+     * Create a loan destination found notification.
+     */
+    public function notifyLoanDestinationFound(Game $game, GamePlayer $player, Team $destination, bool $windowOpen): GameNotification
+    {
+        $message = $windowOpen
+            ? __('notifications.loan_destination_found_message', ['player' => $player->name, 'team' => $destination->name])
+            : __('notifications.loan_destination_found_waiting', ['player' => $player->name, 'team' => $destination->name]);
+
+        return $this->create(
+            game: $game,
+            type: GameNotification::TYPE_LOAN_DESTINATION_FOUND,
+            title: __('notifications.loan_destination_found_title', ['player' => $player->name]),
+            message: $message,
+            priority: GameNotification::PRIORITY_INFO,
+            metadata: [
+                'player_id' => $player->id,
+                'team_id' => $destination->id,
+                'team_name' => $destination->name,
+                'window_open' => $windowOpen,
+            ],
+        );
+    }
+
+    /**
+     * Create a loan search failed notification.
+     */
+    public function notifyLoanSearchFailed(Game $game, GamePlayer $player): GameNotification
+    {
+        return $this->create(
+            game: $game,
+            type: GameNotification::TYPE_LOAN_SEARCH_FAILED,
+            title: __('notifications.loan_search_failed_title', ['player' => $player->name]),
+            message: __('notifications.loan_search_failed_message', ['player' => $player->name]),
+            priority: GameNotification::PRIORITY_WARNING,
+            metadata: [
+                'player_id' => $player->id,
+            ],
+        );
+    }
+
     // ==========================================
     // Helpers
     // ==========================================
@@ -348,6 +390,8 @@ class NotificationService
             GameNotification::TYPE_SCOUT_REPORT_COMPLETE => 'scout',
             GameNotification::TYPE_CONTRACT_EXPIRING => 'contract',
             GameNotification::TYPE_LOAN_RETURN => 'loan',
+            GameNotification::TYPE_LOAN_DESTINATION_FOUND => 'loan',
+            GameNotification::TYPE_LOAN_SEARCH_FAILED => 'loan',
             default => 'bell',
         };
     }

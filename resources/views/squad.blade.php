@@ -120,6 +120,11 @@
                                                     <svg x-data="" x-tooltip.raw="{{ __('squad.sale_agreed') }}" class="w-4 h-4 text-green-500 mx-auto cursor-help" fill="currentColor" viewBox="0 0 640 512">
                                                         <path d="M323.4 85.2l-96.8 78.4c-16.1 13-19.2 36.4-7 53.1c12.9 17.8 38 21.3 55.3 7.8l99.3-77.2c7-5.4 17-4.2 22.5 2.8s4.2 17-2.8 22.5l-20.9 16.2L550.2 352l41.8 0c26.5 0 48-21.5 48-48l0-128c0-26.5-21.5-48-48-48l-76 0-4 0-.2 0-46.6-37.7c-11.9-9.6-26.7-14.8-42-14.3c-15.3 .5-29.8 6.7-40.8 17.4l-2 2-16.2-12.7c-21-16.5-51.7-16.1-72.3 1zM64 192l0 128c0 26.5 21.5 48 48 48l89.8 0L64 192zm288 128l-.3 0-117 89.4c-16.1 12.3-37.7 15.2-56.6 7.5l-14.5-5.9c-18-7.3-34.8-17.4-49.8-30L48.1 319.9C17.3 292.7 0 254.5 0 214.4l0-22.4c0-26.5 21.5-48 48-48l108.4 0 47.2-38.2c21-17 48.1-26.1 75.5-27.1c27.5-1 54.5 5.9 76.8 21.5l3.6 2.5 7.4-6.2c34.7-29.1 85.7-27.1 118.3 4.7l1.1 1.1 20.7 0c44.2 0 80 35.8 80 80l0 128c0 44.2-35.8 80-80 80l-48 0-40 0-40 0-88 0zm-18.5 55.6l-8.6 6.6c-28.6 21.8-68 24.5-99.6 6.4l-7.1-4.1-3.4 1.4c-24 9.8-50.8 7-72.4-5.5l49.2 42.4c20 17.2 46.5 25 72.8 21.5l37.1-5c13.8-1.9 27.6 2.4 38.4 11.7l32.4 27.9c2.8 2.4 6.4 3.7 10.1 3.7c8.5 0 15.3-6.9 15.3-15.3l0-11.5c0-11.5 5.7-22.3 15.2-28.7l17-11.5c3.3-2.2 5.3-5.9 5.3-9.9c0-6.5-5.3-11.7-11.7-11.7l-44.5 0c-8.8 0-17.4-2.4-24.9-7l-24.4-14.8z"/>
                                                     </svg>
+                                                @elseif($gamePlayer->hasActiveLoanSearch())
+                                                    {{-- Loan search: magnifying glass --}}
+                                                    <svg x-data="" x-tooltip.raw="{{ __('squad.loan_searching') }}" class="w-4 h-4 text-sky-500 mx-auto cursor-help animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                                    </svg>
                                                 @elseif($gamePlayer->isTransferListed())
                                                     {{-- Listed for sale: money speech bubble --}}
                                                     <svg x-data="" x-tooltip.raw="{{ __('squad.listed') }}" class="w-4 h-4 text-amber-500 mx-auto cursor-help" fill="currentColor" viewBox="0 0 640 640">
@@ -204,7 +209,7 @@
                                                             @endif
                                                         </div>
                                                     </div>
-                                                @elseif(!$gamePlayer->isRetiring() && !$gamePlayer->isLoanedIn($game->team_id) && !$gamePlayer->hasPreContractAgreement() && !$gamePlayer->hasRenewalAgreed() && !$gamePlayer->hasAgreedTransfer())
+                                                @elseif(!$gamePlayer->isRetiring() && !$gamePlayer->isLoanedIn($game->team_id) && !$gamePlayer->hasPreContractAgreement() && !$gamePlayer->hasRenewalAgreed() && !$gamePlayer->hasAgreedTransfer() && !$gamePlayer->hasActiveLoanSearch())
                                                     <div x-data="{ open: false }" class="relative inline-block">
                                                         <button @click="open = !open" class="p-1 text-slate-400 hover:text-slate-600 rounded hover:bg-slate-100">
                                                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="4" r="1.5"/><circle cx="10" cy="10" r="1.5"/><circle cx="10" cy="16" r="1.5"/></svg>

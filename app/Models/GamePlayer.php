@@ -88,6 +88,7 @@ class GamePlayer extends Model
 
     // Transfer status constants
     public const TRANSFER_STATUS_LISTED = 'listed';
+    public const TRANSFER_STATUS_LOAN_SEARCH = 'loan_search';
 
     /**
      * Check if player has announced retirement.
@@ -183,6 +184,14 @@ class GamePlayer extends Model
     public function isTransferListed(): bool
     {
         return $this->transfer_status === self::TRANSFER_STATUS_LISTED;
+    }
+
+    /**
+     * Check if player has an active loan search in progress.
+     */
+    public function hasActiveLoanSearch(): bool
+    {
+        return $this->transfer_status === self::TRANSFER_STATUS_LOAN_SEARCH;
     }
 
     /**

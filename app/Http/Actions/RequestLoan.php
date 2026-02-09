@@ -6,7 +6,6 @@ use App\Game\Services\LoanService;
 use App\Game\Services\ScoutingService;
 use App\Models\Game;
 use App\Models\GamePlayer;
-use App\Models\Loan;
 use App\Models\TransferOffer;
 use Illuminate\Http\Request;
 
@@ -88,49 +87,21 @@ class RequestLoan
                 ->with('error', __('messages.already_on_loan', ['player' => $player->name]));
         }
 
-        // Find a destination team
-        $destination = $this->loanService->findLoanDestination($game, $player);
-
-        if (!$destination) {
+        // Check player isn't already searching for a loan
+        if ($player->hasActiveLoanSearch()) {
             return redirect()->route('game.loans', $game->id)
-                ->with('error', __('messages.no_suitable_club'));
+                ->with('error', __('messages.loan_search_active', ['player' => $player->name]));
         }
 
-        // If window is open, complete immediately
-        if ($game->isTransferWindowOpen()) {
-            TransferOffer::create([
-                'game_id' => $game->id,
-                'game_player_id' => $player->id,
-                'offering_team_id' => $destination->id,
-                'selling_team_id' => $game->team_id,
-                'offer_type' => TransferOffer::TYPE_LOAN_OUT,
-                'direction' => TransferOffer::DIRECTION_OUTGOING,
-                'transfer_fee' => 0,
-                'status' => TransferOffer::STATUS_COMPLETED,
-                'expires_at' => $game->current_date->addDays(30),
-            ]);
-
-            $this->loanService->processLoanOut($game, $player, $destination);
-
+        // Check transfer_status isn't already set (e.g. listed for sale)
+        if ($player->transfer_status !== null) {
             return redirect()->route('game.loans', $game->id)
-                ->with('success', __('messages.loan_complete', ['player' => $player->name, 'team' => $destination->name]));
+                ->with('error', __('messages.already_on_loan', ['player' => $player->name]));
         }
 
-        // Create agreed loan offer record (will be processed at next window)
-        TransferOffer::create([
-            'game_id' => $game->id,
-            'game_player_id' => $player->id,
-            'offering_team_id' => $destination->id,
-            'selling_team_id' => $game->team_id,
-            'offer_type' => TransferOffer::TYPE_LOAN_OUT,
-            'direction' => TransferOffer::DIRECTION_OUTGOING,
-            'transfer_fee' => 0,
-            'status' => TransferOffer::STATUS_AGREED,
-            'expires_at' => $game->current_date->addDays(30),
-        ]);
+        $this->loanService->startLoanSearch($game, $player);
 
-        $nextWindow = $game->getNextWindowName();
         return redirect()->route('game.loans', $game->id)
-            ->with('success', __('messages.loan_agreed', ['message' => $player->name . ' loan to ' . $destination->name, 'window' => $nextWindow]));
+            ->with('success', __('messages.loan_search_started', ['player' => $player->name]));
     }
 }

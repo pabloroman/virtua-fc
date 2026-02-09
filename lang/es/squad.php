@@ -30,6 +30,7 @@ return [
     'list_for_sale' => 'Poner a la Venta',
     'unlist_from_sale' => 'Retirar de la Venta',
     'loan_out' => 'Ceder',
+    'loan_searching' => 'Buscando destino de cesión',
 
     // Summary
     'wage_bill' => 'Masa Salarial',
