@@ -98,14 +98,14 @@ class TransferService
     {
         $offers = collect();
         $numOffers = rand(1, 3);
-        $buyers = $this->getEligibleBuyers($player);
+        ['buyers' => $buyers, 'squadValues' => $squadValues] = $this->getEligibleBuyersWithSquadValues($player);
 
         if ($buyers->isEmpty()) {
             return $offers;
         }
 
         // Select buyers weighted by player trajectory and team strength
-        $selectedBuyers = $this->selectWeightedBuyers($buyers, $player, $player->game, $numOffers);
+        $selectedBuyers = $this->selectWeightedBuyers($buyers, $player, $squadValues, $numOffers);
 
         foreach ($selectedBuyers as $buyer) {
             $offer = $this->createOffer(
@@ -170,7 +170,7 @@ class TransferService
 
             // 40% chance of receiving a new offer each matchday
             if (rand(1, 100) <= 40) {
-                $buyers = $this->getEligibleBuyers($player);
+                ['buyers' => $buyers, 'squadValues' => $squadValues] = $this->getEligibleBuyersWithSquadValues($player);
 
                 // Exclude teams that already made offers
                 $existingOfferTeamIds = $playerOffers
@@ -183,7 +183,7 @@ class TransferService
                 );
 
                 if ($availableBuyers->isNotEmpty()) {
-                    $buyer = $this->selectWeightedBuyer($availableBuyers, $player, $game);
+                    $buyer = $this->selectWeightedBuyer($availableBuyers, $player, $squadValues);
                     $offer = $this->createOffer(
                         player: $player,
                         offeringTeam: $buyer,
@@ -242,10 +242,10 @@ class TransferService
 
             // Random chance for an offer
             if (rand(1, 100) <= self::UNSOLICITED_OFFER_CHANCE * 100) {
-                $buyers = $this->getEligibleBuyers($player);
+                ['buyers' => $buyers, 'squadValues' => $squadValues] = $this->getEligibleBuyersWithSquadValues($player);
 
                 if ($buyers->isNotEmpty()) {
-                    $buyer = $this->selectWeightedBuyer($buyers, $player, $game);
+                    $buyer = $this->selectWeightedBuyer($buyers, $player, $squadValues);
                     $offer = $this->createOffer(
                         player: $player,
                         offeringTeam: $buyer,
@@ -335,10 +335,10 @@ class TransferService
 
             // Random chance for an offer
             if (rand(1, 100) <= self::PRE_CONTRACT_OFFER_CHANCE * 100) {
-                $buyers = $this->getEligibleBuyers($player);
+                ['buyers' => $buyers, 'squadValues' => $squadValues] = $this->getEligibleBuyersWithSquadValues($player);
 
                 if ($buyers->isNotEmpty()) {
-                    $buyer = $this->selectWeightedBuyer($buyers, $player, $game);
+                    $buyer = $this->selectWeightedBuyer($buyers, $player, $squadValues);
                     $offer = $this->createPreContractOffer($player, $buyer);
                     $offers->push($offer);
                 }
@@ -610,6 +610,17 @@ class TransferService
      */
     public function getEligibleBuyers(GamePlayer $player): Collection
     {
+        return $this->getEligibleBuyersWithSquadValues($player)['buyers'];
+    }
+
+    /**
+     * Get eligible AI teams and their squad values in a single pass.
+     * Avoids redundant squad value queries when the caller also needs weights.
+     *
+     * @return array{buyers: Collection, squadValues: Collection}
+     */
+    private function getEligibleBuyersWithSquadValues(GamePlayer $player): array
+    {
         $game = $player->game;
         $playerTeamId = $player->team_id;
         $playerValue = $player->market_value_cents;
@@ -627,7 +638,9 @@ class TransferService
             ->keys()
             ->toArray();
 
-        return Team::whereIn('id', $eligibleTeamIds)->get();
+        $buyers = Team::whereIn('id', $eligibleTeamIds)->get();
+
+        return ['buyers' => $buyers, 'squadValues' => $squadValues];
     }
 
     /**
@@ -649,13 +662,12 @@ class TransferService
      * Declining players (≥29) attract offers from weaker teams.
      * Peak players (24-28) attract offers uniformly.
      */
-    private function selectWeightedBuyer(Collection $buyers, GamePlayer $player, Game $game): Team
+    private function selectWeightedBuyer(Collection $buyers, GamePlayer $player, Collection $squadValues): Team
     {
         if ($buyers->count() === 1) {
             return $buyers->first();
         }
 
-        $squadValues = $this->getSquadValues($game, $buyers->pluck('id')->toArray());
         $weights = $this->calculateBuyerWeights($buyers, $player, $squadValues);
 
         return $this->weightedRandom($buyers, $weights);
@@ -665,13 +677,12 @@ class TransferService
      * Select multiple buyers weighted by player trajectory and team strength.
      * Returns up to $count unique teams, selected without replacement.
      */
-    private function selectWeightedBuyers(Collection $buyers, GamePlayer $player, Game $game, int $count): Collection
+    private function selectWeightedBuyers(Collection $buyers, GamePlayer $player, Collection $squadValues, int $count): Collection
     {
         if ($buyers->count() <= $count) {
             return $buyers;
         }
 
-        $squadValues = $this->getSquadValues($game, $buyers->pluck('id')->toArray());
         $remaining = $buyers->values();
         $selected = collect();
 
