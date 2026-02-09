@@ -298,7 +298,10 @@ class SeedReferenceData extends Command
         // Seed teams (creates new European teams, links existing Spanish teams)
         $teamIdMap = $this->seedSwissFormatTeams($teamsData['clubs'], $code, $season);
 
-        // Generate players for European teams that don't have inline player data
+        // Seed real players from embedded squad data (clubs that have a 'players' array)
+        $this->seedPlayersFromTeams($teamsData['clubs'], $teamIdMap);
+
+        // Generate synthetic players for remaining clubs without embedded player data
         $this->seedGeneratedPlayers($teamsData['clubs'], $teamIdMap);
 
         // Generate league phase fixtures using the Swiss draw algorithm
