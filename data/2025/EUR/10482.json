@@ -1,0 +1,370 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/10482.png",
+  "name": "Kairat Almaty",
+  "players": [
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Oct 14, 2003",
+      "foot": "left",
+      "height": "1,89m",
+      "id": "724942",
+      "marketValue": "€400k",
+      "name": "Temirlan Anarbekov",
+      "nationality": [
+        "Kazakhstan"
+      ],
+      "number": "77",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Nov 30, 2028",
+      "dateOfBirth": "Jun 15, 2007",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "1179141",
+      "marketValue": "€250k",
+      "name": "Sherkhan Kalmurza",
+      "nationality": [
+        "Kazakhstan"
+      ],
+      "number": "82",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Aug 29, 2002",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "764944",
+      "marketValue": "€600k",
+      "name": "Damir Kasabulat",
+      "nationality": [
+        "Kazakhstan"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Feb 5, 1995",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "597087",
+      "marketValue": "€300k",
+      "name": "Lucas Áfrico",
+      "nationality": [
+        "Brazil"
+      ],
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Aug 26, 1987",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "59352",
+      "marketValue": "€250k",
+      "name": "Aleksandr Martynovich",
+      "nationality": [
+        "Belarus",
+        "Russia"
+      ],
+      "number": "14",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Jan 2, 2003",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "661114",
+      "marketValue": "€250k",
+      "name": "Aleksandr Shirobokov",
+      "nationality": [
+        "Kazakhstan"
+      ],
+      "number": "25",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jan 21, 2004",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "724949",
+      "marketValue": "€150k",
+      "name": "Sultan Askarov",
+      "nationality": [
+        "Kazakhstan"
+      ],
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Jul 6, 1997",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "258002",
+      "marketValue": "€600k",
+      "name": "Luís Mata",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "3",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Jun 6, 2002",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "661116",
+      "marketValue": "€150k",
+      "name": "Lev Kurgin",
+      "nationality": [
+        "Kazakhstan"
+      ],
+      "number": "5",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Aug 21, 2007",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "1179142",
+      "marketValue": "€100k",
+      "name": "Daniyar Tashpulatov",
+      "nationality": [
+        "Kazakhstan"
+      ],
+      "number": "59",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Nov 30, 2028",
+      "dateOfBirth": "Jul 15, 2004",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "858389",
+      "marketValue": "€400k",
+      "name": "Aleksandr Mrynskiy",
+      "nationality": [
+        "Kazakhstan"
+      ],
+      "number": "24",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Sep 3, 1993",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "276816",
+      "marketValue": "€300k",
+      "name": "Erkin Tapalov",
+      "nationality": [
+        "Kazakhstan"
+      ],
+      "number": "20",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Apr 15, 2003",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "661111",
+      "marketValue": "€100k",
+      "name": "Egor Tkachenko",
+      "nationality": [
+        "Kazakhstan"
+      ],
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Sep 20, 1996",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "247589",
+      "marketValue": "€700k",
+      "name": "Dan Glazer",
+      "nationality": [
+        "Israel",
+        "Germany"
+      ],
+      "number": "18",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "May 26, 2002",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "881434",
+      "marketValue": "€500k",
+      "name": "Adilet Sadybekov",
+      "nationality": [
+        "Kazakhstan"
+      ],
+      "number": "6",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Feb 11, 2005",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "939183",
+      "marketValue": "€225k",
+      "name": "Olzhas Baybek",
+      "nationality": [
+        "Kazakhstan"
+      ],
+      "number": "17",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Nov 7, 2000",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "433893",
+      "marketValue": "€500k",
+      "name": "Jaakko Oksanen",
+      "nationality": [
+        "Finland"
+      ],
+      "number": "13",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Jul 13, 2007",
+      "foot": "right",
+      "height": "1,68m",
+      "id": "1271721",
+      "marketValue": "€150k",
+      "name": "Azamat Tuyakbaev",
+      "nationality": [
+        "Kazakhstan"
+      ],
+      "number": "87",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Jul 17, 2001",
+      "foot": "left",
+      "height": "1,68m",
+      "id": "1229026",
+      "marketValue": "€500k",
+      "name": "Sebastián Zeballos",
+      "nationality": [
+        "Argentina"
+      ],
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Jan 10, 2008",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "1235708",
+      "marketValue": "€175k",
+      "name": "Ismail Bekbolat",
+      "nationality": [
+        "Kazakhstan"
+      ],
+      "number": "81",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Aug 12, 2008",
+      "foot": "both",
+      "height": "1,76m",
+      "id": "1179146",
+      "marketValue": "€3.00m",
+      "name": "Dastan Satpaev",
+      "nationality": [
+        "Kazakhstan"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Nov 9, 1997",
+      "foot": "right",
+      "height": "1,69m",
+      "id": "590291",
+      "marketValue": "€800k",
+      "name": "Jorginho",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "7",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Apr 23, 2001",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "868887",
+      "marketValue": "€700k",
+      "name": "Ricardinho",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "99",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 19, 1997",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "902747",
+      "marketValue": "€300k",
+      "name": "Edmilson",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "26",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "May 17, 2004",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "858415",
+      "marketValue": "€175k",
+      "name": "Yan Trufanov",
+      "nationality": [
+        "Kazakhstan"
+      ],
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Oct 9, 2006",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "1180296",
+      "marketValue": "€150k",
+      "name": "Ramazan Bagdat",
+      "nationality": [
+        "Kazakhstan"
+      ],
+      "number": "89",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Almaty Ortalyk Stadion",
+  "stadiumSeats": "23804",
+  "transfermarktId": "10482"
+}

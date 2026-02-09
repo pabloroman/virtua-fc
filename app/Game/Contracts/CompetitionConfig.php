@@ -21,11 +21,6 @@ interface CompetitionConfig
     public function getPositionFactor(int $position): float;
 
     /**
-     * Get the maximum number of positions in this competition.
-     */
-    public function getMaxPositions(): int;
-
-    /**
      * Get the season goal for a team based on reputation level.
      *
      * @param string $reputation One of ClubProfile::REPUTATION_* constants
@@ -47,11 +42,6 @@ interface CompetitionConfig
      * @return array<string, array{targetPosition: int, label: string}>
      */
     public function getAvailableGoals(): array;
-
-    /**
-     * Get the minimum annual wage for this competition (in cents).
-     */
-    public function getMinimumAnnualWage(): int;
 
     /**
      * Get the standings zones for this competition (UCL, UEL, relegation, promotion, etc.).

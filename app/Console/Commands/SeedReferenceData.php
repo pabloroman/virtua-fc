@@ -116,7 +116,7 @@ class SeedReferenceData extends Command
                 'name' => 'Europa',
                 'path' => 'data/2025/EUR',
                 'tier' => 1,
-                'handler' => 'league',
+                'handler' => 'team_pool',
                 'country' => 'EU',
                 'role' => 'foreign',
             ],
@@ -229,10 +229,13 @@ class SeedReferenceData extends Command
 
         $isCup = in_array($handler, ['knockout_cup', 'group_stage_cup']);
         $isSwiss = $handler === 'swiss_format';
+        $isTeamPool = $handler === 'team_pool';
 
         $this->info("Seeding {$code}...");
 
-        if ($isSwiss) {
+        if ($isTeamPool) {
+            $this->seedTeamPoolCompetition($basePath, $code, $tier, $handler, $country, $role, $configName);
+        } elseif ($isSwiss) {
             $this->seedSwissFormatCompetition($basePath, $code, $tier, $handler, $country, $role);
         } elseif ($isCup) {
             $this->seedCupCompetition($basePath, $code, $tier, $handler, $country, $role);
@@ -317,6 +320,78 @@ class SeedReferenceData extends Command
         $this->seedCupRoundTemplates($code, $season, $roundsData, $matchdaysData);
 
         $this->line("  Swiss format competition seeded successfully");
+    }
+
+    /**
+     * Seed a player pool competition from individual team JSON files.
+     * Each file is named {transfermarkt_id}.json and contains {id, players}.
+     * Teams must already exist from their league seeding.
+     */
+    private function seedTeamPoolCompetition(string $basePath, string $code, int $tier, string $handler, string $country, string $role, ?string $configName = null): void
+    {
+        $season = '2025';
+
+        $this->seedCompetitionRecord($code, ['name' => $configName ?? $code, 'seasonID' => $season], $tier, 'league', $handler, $country, $role);
+
+        // Get existing teams by transfermarkt_id
+        $teamsByTransfermarktId = DB::table('teams')
+            ->whereNotNull('transfermarkt_id')
+            ->pluck('id', 'transfermarkt_id')
+            ->toArray();
+
+        $teamIdMap = [];
+        $clubs = [];
+
+        foreach (glob("{$basePath}/*.json") as $filePath) {
+            $data = $this->loadJson($filePath);
+            $transfermarktId = $this->extractTransfermarktIdFromImage($data['image'] ?? '');
+
+            if (!$transfermarktId) {
+                continue;
+            }
+
+            // Find or create team
+            $teamId = $teamsByTransfermarktId[$transfermarktId] ?? null;
+
+            if (!$teamId) {
+                $teamId = Str::uuid()->toString();
+                DB::table('teams')->insert([
+                    'id' => $teamId,
+                    'transfermarkt_id' => $transfermarktId,
+                    'name' => $data['name'] ?? "Unknown ({$transfermarktId})",
+                    'country' => $country,
+                    'image' => $data['image'] ?? null,
+                    'stadium_name' => $data['stadiumName'] ?? null,
+                    'stadium_seats' => isset($data['stadiumSeats'])
+                        ? (int) str_replace(['.', ','], '', $data['stadiumSeats'])
+                        : 0,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+                $teamsByTransfermarktId[$transfermarktId] = $teamId;
+            }
+
+            $teamIdMap[$transfermarktId] = $teamId;
+
+            // Link team to competition
+            DB::table('competition_teams')->updateOrInsert(
+                [
+                    'competition_id' => $code,
+                    'team_id' => $teamId,
+                    'season' => $season,
+                ],
+                []
+            );
+
+            // Normalize to clubs format for seedPlayersFromTeams
+            $clubs[] = [
+                'transfermarktId' => $transfermarktId,
+                'players' => $data['players'] ?? [],
+            ];
+        }
+
+        $this->line("  Teams: " . count($teamIdMap));
+        $this->seedPlayersFromTeams($clubs, $teamIdMap);
     }
 
     /**

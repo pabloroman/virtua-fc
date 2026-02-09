@@ -81,11 +81,6 @@ class ChampionsLeagueConfig implements CompetitionConfig
         return 0.95;
     }
 
-    public function getMaxPositions(): int
-    {
-        return 36;
-    }
-
     public function getSeasonGoal(string $reputation): string
     {
         return self::REPUTATION_TO_GOAL[$reputation] ?? Game::GOAL_CHAMPIONS_LEAGUE;

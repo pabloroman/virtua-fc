@@ -197,7 +197,7 @@ class SwissDrawService
                 continue;
             }
 
-            [$teamA, $teamB] = explode('-', $pairKey);
+            [$teamA, $teamB] = explode('|', $pairKey);
 
             // Determine who's home: prefer the team with fewer home games
             if ($homeCount[$teamA] < $homeCount[$teamB]) {
@@ -239,7 +239,7 @@ class SwissDrawService
 
         foreach ($assignments as $teamId => $data) {
             foreach ($data['home'] as $opponentId) {
-                $key = "{$teamId}-{$opponentId}";
+                $key = "{$teamId}|{$opponentId}";
                 if (!isset($seen[$key])) {
                     $matches[] = ['homeTeamId' => $teamId, 'awayTeamId' => $opponentId];
                     $seen[$key] = true;
@@ -337,7 +337,7 @@ class SwissDrawService
      */
     private function pairKey(string $a, string $b): string
     {
-        return $a < $b ? "{$a}-{$b}" : "{$b}-{$a}";
+        return $a < $b ? "{$a}|{$b}" : "{$b}|{$a}";
     }
 
     /**

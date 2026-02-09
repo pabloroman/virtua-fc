@@ -1,0 +1,407 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/2282.png",
+  "name": "Club Brugge KV",
+  "players": [
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 5, 1997",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "250543",
+      "marketValue": "€1.50m",
+      "name": "Nordin Jackers",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "29",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Mar 6, 1988",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "50219",
+      "marketValue": "€1.00m",
+      "name": "Simon Mignolet",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "22",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 24, 2006",
+      "foot": "left",
+      "id": "1073654",
+      "marketValue": "€400k",
+      "name": "Axl De Corte",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "71",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "May 28, 2003",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "559320",
+      "marketValue": "€200k",
+      "name": "Dani van den Heuvel",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "16",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Apr 21, 2004",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "893661",
+      "marketValue": "€28.00m",
+      "name": "Joel Ordóñez",
+      "nationality": [
+        "Ecuador"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 28, 1993",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "236168",
+      "marketValue": "€3.00m",
+      "name": "Brandon Mechele",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "44",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 21, 2005",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "743381",
+      "marketValue": "€3.00m",
+      "name": "Jorne Spileers",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "58",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Apr 6, 2006",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "1285176",
+      "marketValue": "€1.00m",
+      "name": "Vince Osuji",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "24",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 28, 2005",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "981196",
+      "marketValue": "€15.00m",
+      "name": "Joaquin Seys",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "65",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 18, 2003",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "594227",
+      "marketValue": "€3.50m",
+      "name": "Bjorn Meijer",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "14",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 26, 2005",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "743122",
+      "marketValue": "€6.00m",
+      "name": "Kyriani Sabbe",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "64",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 9, 2002",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "578680",
+      "marketValue": "€4.00m",
+      "name": "Hugo Siquet",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "41",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 19, 2001",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "699783",
+      "marketValue": "€20.00m",
+      "name": "Raphael Onyedika",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "15",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 3, 2005",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "780136",
+      "marketValue": "€15.00m",
+      "name": "Aleksandar Stanković",
+      "nationality": [
+        "Serbia",
+        "Italy"
+      ],
+      "number": "25",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Oct 13, 2003",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "623095",
+      "marketValue": "€1.80m",
+      "name": "Lynnt Audoor",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "62",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 1, 2000",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "490884",
+      "marketValue": "€6.00m",
+      "name": "Ludovit Reis",
+      "nationality": [
+        "Netherlands",
+        "Slovakia"
+      ],
+      "number": "6",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 29, 2000",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "499758",
+      "marketValue": "€3.00m",
+      "name": "Hugo Vetlesen",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "10",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 30, 2006",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "998205",
+      "marketValue": "€700k",
+      "name": "Alejandro Granados",
+      "nationality": [
+        "Spain",
+        "United States"
+      ],
+      "number": "70",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 7, 2003",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "659518",
+      "marketValue": "€10.00m",
+      "name": "Félix Lemaréchal",
+      "nationality": [
+        "France",
+        "Cote d'Ivoire"
+      ],
+      "number": "80",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 24, 1992",
+      "foot": "right",
+      "height": "1,95m",
+      "id": "137576",
+      "marketValue": "€6.00m",
+      "name": "Hans Vanaken",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "20",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Dec 16, 2003",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "632088",
+      "marketValue": "€1.50m",
+      "name": "Cisse Sandra",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "11",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 30, 2002",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "451677",
+      "marketValue": "€30.00m",
+      "name": "Christos Tzolis",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "8",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 19, 2004",
+      "foot": "left",
+      "height": "1,69m",
+      "id": "742451",
+      "marketValue": "€15.00m",
+      "name": "Carlos Forbs",
+      "nationality": [
+        "Portugal",
+        "Guinea-Bissau"
+      ],
+      "number": "9",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 22, 2005",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "1054839",
+      "marketValue": "€5.00m",
+      "name": "Mamadou Diakhon",
+      "nationality": [
+        "France",
+        "Senegal"
+      ],
+      "number": "67",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 15, 2005",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "1159786",
+      "marketValue": "€1.00m",
+      "name": "Shandre Campbell",
+      "nationality": [
+        "South Africa"
+      ],
+      "number": "84",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 20, 2004",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "717329",
+      "marketValue": "€10.00m",
+      "name": "Nicolò Tresoldi",
+      "nationality": [
+        "Germany",
+        "Italy"
+      ],
+      "number": "7",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 24, 2004",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "708454",
+      "marketValue": "€8.00m",
+      "name": "Romeo Vermant",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "17",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 23, 1997",
+      "foot": "right",
+      "height": "1,96m",
+      "id": "320440",
+      "marketValue": "€2.50m",
+      "name": "Gustaf Nilsson",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "19",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Jan Breydelstadion",
+  "stadiumSeats": "29062",
+  "transfermarktId": "2282"
+}

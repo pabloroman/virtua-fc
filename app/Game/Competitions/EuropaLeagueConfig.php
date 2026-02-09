@@ -29,11 +29,6 @@ class EuropaLeagueConfig implements CompetitionConfig
         return 0.90;
     }
 
-    public function getMaxPositions(): int
-    {
-        return 36;
-    }
-
     public function getSeasonGoal(string $reputation): string
     {
         return Game::GOAL_EUROPA_LEAGUE;

@@ -1,0 +1,413 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/683.png",
+  "name": "Olympiacos Piraeus",
+  "players": [
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Nov 8, 2002",
+      "foot": "both",
+      "height": "1,93m",
+      "id": "554389",
+      "marketValue": "€15.00m",
+      "name": "Konstantinos Tzolakis",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "88",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jul 28, 1989",
+      "foot": "right",
+      "height": "1,97m",
+      "id": "88348",
+      "marketValue": "€400k",
+      "name": "Alexandros Paschalakis",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Mar 31, 2004",
+      "height": "1,96m",
+      "id": "735364",
+      "marketValue": "€300k",
+      "name": "Nikolaos Botis",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "31",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Mar 18, 2006",
+      "id": "1060083",
+      "marketValue": "€100k",
+      "name": "Georgios Kouraklis",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "61",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 20, 2002",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "487834",
+      "marketValue": "€9.00m",
+      "name": "Lorenzo Pirola",
+      "nationality": [
+        "Italy"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 9, 1998",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "324351",
+      "marketValue": "€6.00m",
+      "name": "Panagiotis Retsos",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "45",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 31, 2000",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "536507",
+      "marketValue": "€2.50m",
+      "name": "Giulian Biancone",
+      "nationality": [
+        "France"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jul 26, 2004",
+      "foot": "both",
+      "height": "1,87m",
+      "id": "735354",
+      "marketValue": "€1.50m",
+      "name": "Alexios Kalogeropoulos",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Apr 25, 1994",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "257851",
+      "marketValue": "€800k",
+      "name": "Rúben Vezo",
+      "nationality": [
+        "Portugal",
+        "Cape Verde"
+      ],
+      "number": "21",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 19, 1999",
+      "foot": "left",
+      "height": "1,77m",
+      "id": "553663",
+      "marketValue": "€7.00m",
+      "name": "Francisco Ortega",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "3",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 3, 1999",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "701325",
+      "marketValue": "€2.50m",
+      "name": "Bruno Onyemaechi",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "70",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 26, 2000",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "539252",
+      "marketValue": "€6.00m",
+      "name": "Costinha",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "20",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 29, 1992",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "185966",
+      "marketValue": "€900k",
+      "name": "Rodinei",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "23",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 22, 2001",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "742803",
+      "marketValue": "€14.00m",
+      "name": "Santiago Hezze",
+      "nationality": [
+        "Argentina",
+        "Poland"
+      ],
+      "number": "32",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jan 4, 2005",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "1060252",
+      "marketValue": "€1.00m",
+      "name": "Theofanis Bakoulas",
+      "nationality": [
+        "Greece"
+      ],
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "May 24, 1990",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "178425",
+      "marketValue": "€800k",
+      "name": "Dani García",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "14",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 20, 2006",
+      "id": "1077556",
+      "marketValue": "€250k",
+      "name": "Argyrios Liatsikouras",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "67",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Dec 25, 2006",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "964426",
+      "marketValue": "€25.00m",
+      "name": "Christos Mouzakitis",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "96",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Nov 2, 2002",
+      "foot": "right",
+      "height": "1,66m",
+      "id": "654099",
+      "marketValue": "€3.50m",
+      "name": "Diogo Nascimento",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Nov 24, 2004",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "1010577",
+      "marketValue": "€3.50m",
+      "name": "Lorenzo Scipioni",
+      "nationality": [
+        "Argentina",
+        "Italy"
+      ],
+      "number": "16",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 19, 1995",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "334557",
+      "marketValue": "€5.00m",
+      "name": "Chiquinho",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "22",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 29, 1997",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "386726",
+      "marketValue": "€4.50m",
+      "name": "Yusuf Yazıcı",
+      "nationality": [
+        "Türkiye"
+      ],
+      "number": "97",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Oct 21, 1995",
+      "foot": "right",
+      "height": "1,70m",
+      "id": "256977",
+      "marketValue": "€5.00m",
+      "name": "Daniel Podence",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "56",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Feb 23, 2002",
+      "foot": "left",
+      "height": "1,87m",
+      "id": "919262",
+      "marketValue": "€4.00m",
+      "name": "André Luiz",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "17",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 11, 1995",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "257448",
+      "marketValue": "€2.50m",
+      "name": "Gelson Martins",
+      "nationality": [
+        "Portugal",
+        "Cape Verde"
+      ],
+      "number": "10",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 11, 1999",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "733579",
+      "marketValue": "€8.00m",
+      "name": "Clayton",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "19",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jun 25, 1993",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "521127",
+      "marketValue": "€5.00m",
+      "name": "Ayoub El Kaabi",
+      "nationality": [
+        "Morocco"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 18, 1992",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "307058",
+      "marketValue": "€2.50m",
+      "name": "Mehdi Taremi",
+      "nationality": [
+        "Iran"
+      ],
+      "number": "99",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 7, 2007",
+      "foot": "left",
+      "height": "1,97m",
+      "id": "1076179",
+      "marketValue": "€200k",
+      "name": "Konstantinos Angelakis",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "81",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Stadio Georgios Karaiskakis",
+  "stadiumSeats": "33345",
+  "transfermarktId": "683"
+}
