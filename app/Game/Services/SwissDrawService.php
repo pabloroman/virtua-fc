@@ -11,7 +11,9 @@ use Carbon\Carbon;
  * - 2 opponents from each pot (1 home, 1 away)
  * - Country protection: max 2 opponents from same country
  *
- * Outputs fixture data compatible with the FixtureTemplate seeder.
+ * Two-phase approach:
+ * 1. Opponent assignment: pot-by-pot with bidirectional tracking
+ * 2. Scheduling: extract perfect matchings (one per round) using augmenting paths
  */
 class SwissDrawService
 {
@@ -22,24 +24,15 @@ class SwissDrawService
     /**
      * Generate league phase fixtures.
      *
-     * Retries the full pipeline (opponent assignment + scheduling) since some
-     * valid opponent assignments produce match graphs that are hard to schedule
-     * into conflict-free matchdays.
-     *
-     * @param array<array{id: string, pot: int, country: string}> $teams Team data with pot and country
-     * @param Carbon $startDate First matchday date
-     * @param int $intervalDays Days between matchdays
-     * @return array<array{matchday: int, date: string, homeTeamId: string, awayTeamId: string}>
+     * @param array<array{id: string, pot: int, country: string}> $teams
      */
     public function generateFixtures(array $teams, Carbon $startDate, int $intervalDays = 14): array
     {
-        // Group teams by pot
         $pots = [];
         foreach ($teams as $team) {
             $pots[$team['pot']][] = $team;
         }
 
-        // Validate: 4 pots of 9
         foreach ([1, 2, 3, 4] as $pot) {
             if (!isset($pots[$pot]) || count($pots[$pot]) !== self::TEAMS_PER_POT) {
                 throw new \InvalidArgumentException(
@@ -48,257 +41,171 @@ class SwissDrawService
             }
         }
 
-        // Retry full pipeline: different assignments produce different match graphs
-        $maxAttempts = 200;
-
-        for ($attempt = 0; $attempt < $maxAttempts; $attempt++) {
-            $assignments = $this->tryAssignOpponents($teams, $pots);
-            if ($assignments === null) {
+        // Retry full pipeline: different random seeds produce different assignments
+        for ($attempt = 0; $attempt < 200; $attempt++) {
+            $matches = $this->tryAssignMatches($teams, $pots);
+            if ($matches === null) {
                 continue;
             }
 
-            $matches = $this->createMatches($assignments);
             $schedule = $this->tryScheduleMatchdays($matches);
-
             if ($schedule !== null) {
                 return $this->formatSchedule($schedule, $startDate, $intervalDays);
             }
-        }
-
-        // Fallback: relaxed pot constraints
-        $assignments = $this->fallbackAssignment($teams, $pots);
-        $matches = $this->createMatches($assignments);
-        $schedule = $this->tryScheduleMatchdays($matches);
-
-        if ($schedule !== null) {
-            return $this->formatSchedule($schedule, $startDate, $intervalDays);
         }
 
         throw new \RuntimeException('Failed to generate valid Swiss format fixtures');
     }
 
     /**
-     * Attempt opponent assignment with constraints. Returns null if backtracking fails.
+     * Try to assign opponents pot-by-pot. Returns 144 matches or null on failure.
+     *
+     * For each team, assigns 2 opponents from each pot. Assignments are bidirectional:
+     * when A picks B, B also gets A. This means a team can accumulate opponents from
+     * other teams' picks, so we guard against exceeding 8 total.
+     *
+     * @return array<array{homeTeamId: string, awayTeamId: string}>|null
      */
-    private function tryAssignOpponents(array $teams, array $pots): ?array
+    private function tryAssignMatches(array $teams, array $pots): ?array
     {
-        $teamIndex = [];
+        $teamPot = [];
         foreach ($teams as $team) {
-            $teamIndex[$team['id']] = $team;
+            $teamPot[$team['id']] = $team['pot'];
         }
 
-        // Track assignments: teamId => [opponentIds]
-        $opponents = [];
-        // Track match pairs: "id1|id2" => true
-        $matchPairs = [];
-        // Track opponents from same country
-        $countryCount = [];
+        $opponents = [];    // teamId => [opponentId, ...]
+        $potCount = [];     // teamId => [pot => count]
+        $countryCount = []; // teamId => [country => count]
+        $paired = [];       // "idA|idB" => true (canonical key, sorted)
 
         foreach ($teams as $team) {
             $opponents[$team['id']] = [];
+            $potCount[$team['id']] = [1 => 0, 2 => 0, 3 => 0, 4 => 0];
             $countryCount[$team['id']] = [];
         }
 
-        // For each team, assign 2 opponents from each pot
-        $shuffledTeams = $teams;
-        shuffle($shuffledTeams);
+        $shuffled = $teams;
+        shuffle($shuffled);
 
-        foreach ($shuffledTeams as $team) {
+        foreach ($shuffled as $team) {
             foreach ([1, 2, 3, 4] as $pot) {
-                // Stop if team already has all 8 opponents (from bidirectional assignments)
                 $remaining = self::MATCHES_PER_TEAM - count($opponents[$team['id']]);
                 if ($remaining <= 0) {
                     break;
                 }
 
-                $needed = 2 - $this->countOpponentsFromPot($opponents[$team['id']], $pots[$pot], $teamIndex);
+                $needed = 2 - $potCount[$team['id']][$pot];
                 if ($needed <= 0) {
                     continue;
                 }
-
-                // Don't exceed 8 total opponents
                 $needed = min($needed, $remaining);
 
                 $candidates = collect($pots[$pot])
-                    ->filter(function ($candidate) use ($team, $opponents, $matchPairs, $countryCount) {
-                        // Can't play yourself
-                        if ($candidate['id'] === $team['id']) {
-                            return false;
-                        }
+                    ->filter(function ($c) use ($team, $opponents, $paired, $countryCount) {
+                        if ($c['id'] === $team['id']) return false;
+                        if (count($opponents[$c['id']]) >= self::MATCHES_PER_TEAM) return false;
 
-                        // Already assigned as opponent
-                        if (in_array($candidate['id'], $opponents[$team['id']])) {
-                            return false;
-                        }
+                        $key = $team['id'] < $c['id']
+                            ? "{$team['id']}|{$c['id']}"
+                            : "{$c['id']}|{$team['id']}";
+                        if (isset($paired[$key])) return false;
 
-                        // Already paired in the other direction
-                        $pairKey = $this->pairKey($team['id'], $candidate['id']);
-                        if (isset($matchPairs[$pairKey])) {
-                            return false;
-                        }
-
-                        // Country protection: max 2 from same country
-                        $candidateCountry = $candidate['country'];
-                        $existingFromCountry = $countryCount[$team['id']][$candidateCountry] ?? 0;
-                        if ($existingFromCountry >= 2) {
-                            return false;
-                        }
-
-                        // Check candidate hasn't reached max opponents
-                        if (count($opponents[$candidate['id']]) >= self::MATCHES_PER_TEAM) {
-                            return false;
-                        }
+                        if (($countryCount[$team['id']][$c['country']] ?? 0) >= 2) return false;
 
                         return true;
                     })
                     ->shuffle()
-                    ->values();
+                    ->take($needed);
 
-                foreach ($candidates->take($needed) as $opponent) {
-                    $opponents[$team['id']][] = $opponent['id'];
-                    $opponents[$opponent['id']][] = $team['id'];
+                foreach ($candidates as $c) {
+                    $opponents[$team['id']][] = $c['id'];
+                    $opponents[$c['id']][] = $team['id'];
 
-                    $pairKey = $this->pairKey($team['id'], $opponent['id']);
-                    $matchPairs[$pairKey] = true;
+                    $potCount[$team['id']][$c['pot']]++;
+                    $potCount[$c['id']][$teamPot[$team['id']]]++;
 
-                    $countryCount[$team['id']][$opponent['country']] =
-                        ($countryCount[$team['id']][$opponent['country']] ?? 0) + 1;
-                    $countryCount[$opponent['id']][$team['country']] =
-                        ($countryCount[$opponent['id']][$team['country']] ?? 0) + 1;
+                    $countryCount[$team['id']][$c['country']] = ($countryCount[$team['id']][$c['country']] ?? 0) + 1;
+                    $countryCount[$c['id']][$team['country']] = ($countryCount[$c['id']][$team['country']] ?? 0) + 1;
+
+                    $key = $team['id'] < $c['id']
+                        ? "{$team['id']}|{$c['id']}"
+                        : "{$c['id']}|{$team['id']}";
+                    $paired[$key] = true;
                 }
             }
         }
 
         // Validate all teams have exactly 8 opponents
-        foreach ($opponents as $teamId => $opps) {
+        foreach ($opponents as $opps) {
             if (count($opps) !== self::MATCHES_PER_TEAM) {
-                return null; // Failed, retry
+                return null;
             }
         }
 
-        // Assign home/away: each team should have 4 home, 4 away
-        return $this->assignHomeAway($opponents, $matchPairs, $teamIndex);
-    }
-
-    /**
-     * Assign home/away for each match pair.
-     */
-    private function assignHomeAway(array $opponents, array $matchPairs, array $teamIndex): array
-    {
-        $result = [];
+        // Build matches with balanced home/away
+        $matches = [];
         $homeCount = [];
-        $awayCount = [];
-
-        foreach (array_keys($opponents) as $teamId) {
-            $result[$teamId] = ['home' => [], 'away' => []];
-            $homeCount[$teamId] = 0;
-            $awayCount[$teamId] = 0;
-        }
-
-        $processed = [];
-        $pairs = array_keys($matchPairs);
+        $pairs = array_keys($paired);
         shuffle($pairs);
 
-        foreach ($pairs as $pairKey) {
-            if (isset($processed[$pairKey])) {
-                continue;
-            }
+        foreach ($pairs as $key) {
+            [$a, $b] = explode('|', $key);
 
-            [$teamA, $teamB] = explode('|', $pairKey);
-
-            // Determine who's home: prefer the team with fewer home games
-            if ($homeCount[$teamA] < $homeCount[$teamB]) {
-                $home = $teamA;
-                $away = $teamB;
-            } elseif ($homeCount[$teamB] < $homeCount[$teamA]) {
-                $home = $teamB;
-                $away = $teamA;
+            if (($homeCount[$a] ?? 0) < ($homeCount[$b] ?? 0)) {
+                $home = $a; $away = $b;
+            } elseif (($homeCount[$b] ?? 0) < ($homeCount[$a] ?? 0)) {
+                $home = $b; $away = $a;
+            } elseif (rand(0, 1) === 0) {
+                $home = $a; $away = $b;
             } else {
-                // Equal home count, randomize
-                if (rand(0, 1) === 0) {
-                    $home = $teamA;
-                    $away = $teamB;
-                } else {
-                    $home = $teamB;
-                    $away = $teamA;
-                }
+                $home = $b; $away = $a;
             }
 
-            $result[$home]['home'][] = $away;
-            $result[$away]['away'][] = $home;
-            $homeCount[$home]++;
-            $awayCount[$away]++;
-            $processed[$pairKey] = true;
-        }
-
-        return $result;
-    }
-
-    /**
-     * Convert assignments to match list.
-     *
-     * @return array<array{homeTeamId: string, awayTeamId: string}>
-     */
-    private function createMatches(array $assignments): array
-    {
-        $matches = [];
-        $seen = [];
-
-        foreach ($assignments as $teamId => $data) {
-            foreach ($data['home'] as $opponentId) {
-                $key = "{$teamId}|{$opponentId}";
-                if (!isset($seen[$key])) {
-                    $matches[] = ['homeTeamId' => $teamId, 'awayTeamId' => $opponentId];
-                    $seen[$key] = true;
-                }
-            }
+            $matches[] = ['homeTeamId' => $home, 'awayTeamId' => $away];
+            $homeCount[$home] = ($homeCount[$home] ?? 0) + 1;
         }
 
         return $matches;
     }
 
+    // ──────────────────────────────────────────────────────────────────────
+    // Scheduling: assign matches to rounds using perfect matching extraction
+    // ──────────────────────────────────────────────────────────────────────
+
     /**
-     * Schedule matches by extracting one perfect matching per round.
+     * Schedule 144 matches into 8 rounds of 18, with no team playing twice per round.
      *
-     * Uses greedy matching + augmenting paths to find perfect matchings.
-     * Different random greedy orderings are tried since some extraction
-     * sequences leave remaining graphs without perfect matchings.
-     *
-     * @return array<int, array>|null Matchday => matches, or null on failure
+     * Extracts one perfect matching per round using greedy + augmenting paths.
+     * Retries with different random seeds since some extraction orders can fail.
      */
     private function tryScheduleMatchdays(array $matches): ?array
     {
-        // Build team → edge indices adjacency (immutable across retries)
         $teamEdges = [];
         foreach ($matches as $i => $match) {
             $teamEdges[$match['homeTeamId']][] = $i;
             $teamEdges[$match['awayTeamId']][] = $i;
         }
-
         $allTeams = array_keys($teamEdges);
 
-        // Retry with different random greedy orderings
         for ($attempt = 0; $attempt < 50; $attempt++) {
             $available = array_fill(0, count($matches), true);
-            $roundMatches = array_fill(1, self::MATCHDAYS, []);
-            $success = true;
+            $schedule = array_fill(1, self::MATCHDAYS, []);
+            $ok = true;
 
             for ($round = 1; $round <= self::MATCHDAYS; $round++) {
                 $matching = $this->findPerfectMatching($matches, $teamEdges, $available, $allTeams);
-
                 if ($matching === null) {
-                    $success = false;
+                    $ok = false;
                     break;
                 }
-
-                foreach ($matching as $edgeIdx) {
-                    $roundMatches[$round][] = $matches[$edgeIdx];
-                    $available[$edgeIdx] = false;
+                foreach ($matching as $idx) {
+                    $schedule[$round][] = $matches[$idx];
+                    $available[$idx] = false;
                 }
             }
 
-            if ($success) {
-                return $roundMatches;
+            if ($ok) {
+                return $schedule;
             }
         }
 
@@ -306,159 +213,94 @@ class SwissDrawService
     }
 
     /**
-     * Find a perfect matching using greedy + augmenting paths.
+     * Find a perfect matching (18 edges covering all 36 teams) in the available edges.
      *
-     * @return int[]|null Array of edge indices forming the matching, or null on failure
+     * Phase 1 — Greedy: pick random edges where both endpoints are free.
+     * Phase 2 — Augment: for each still-free team, BFS for an augmenting path
+     * (alternating unmatched→matched edges ending at another free team),
+     * then flip the path to grow the matching by 1.
      */
-    private function findPerfectMatching(
-        array $matches,
-        array $teamEdges,
-        array $available,
-        array $allTeams
-    ): ?array {
-        // matchOf[teamId] = edgeIdx this team is matched on, or absent if free
-        $matchOf = [];
+    private function findPerfectMatching(array $matches, array $teamEdges, array $available, array $allTeams): ?array
+    {
+        $matchOf = []; // teamId => edgeIdx
 
-        // Greedy phase: assign random available edges
-        $edgeIndices = array_keys(array_filter($available));
-        shuffle($edgeIndices);
-
-        foreach ($edgeIndices as $edgeIdx) {
-            $home = $matches[$edgeIdx]['homeTeamId'];
-            $away = $matches[$edgeIdx]['awayTeamId'];
-
-            if (!isset($matchOf[$home]) && !isset($matchOf[$away])) {
-                $matchOf[$home] = $edgeIdx;
-                $matchOf[$away] = $edgeIdx;
+        // Greedy
+        $edges = array_keys(array_filter($available));
+        shuffle($edges);
+        foreach ($edges as $idx) {
+            $h = $matches[$idx]['homeTeamId'];
+            $a = $matches[$idx]['awayTeamId'];
+            if (!isset($matchOf[$h]) && !isset($matchOf[$a])) {
+                $matchOf[$h] = $idx;
+                $matchOf[$a] = $idx;
             }
         }
 
-        // Augmenting phase: find augmenting paths for each free team
+        // Augment each free team
         foreach ($allTeams as $team) {
-            if (isset($matchOf[$team])) {
-                continue;
-            }
+            if (isset($matchOf[$team])) continue;
 
-            $path = $this->findAugmentingPath($team, $matches, $teamEdges, $available, $matchOf);
+            $visited = [$team => true];
+            $parent = [$team => null];
+            $queue = [$team];
+            $end = null;
 
-            if ($path === null) {
-                return null;
-            }
+            while (!empty($queue) && $end === null) {
+                $v = array_shift($queue);
+                foreach ($teamEdges[$v] as $idx) {
+                    if (!$available[$idx]) continue;
+                    if (isset($matchOf[$v]) && $matchOf[$v] === $idx) continue;
 
-            // Flip matching along augmenting path
-            // Path edges alternate: unmatched (pos 0), matched (pos 1), unmatched (pos 2), ...
-            // After flip: all even positions become matched, odd positions become unmatched
-            foreach ($path as $i => $edgeIdx) {
-                $home = $matches[$edgeIdx]['homeTeamId'];
-                $away = $matches[$edgeIdx]['awayTeamId'];
+                    $w = $matches[$idx]['homeTeamId'] === $v
+                        ? $matches[$idx]['awayTeamId']
+                        : $matches[$idx]['homeTeamId'];
+                    if (isset($visited[$w])) continue;
 
-                if ($i % 2 === 0) {
-                    // Was unmatched → now matched
-                    $matchOf[$home] = $edgeIdx;
-                    $matchOf[$away] = $edgeIdx;
+                    $visited[$w] = true;
+                    $parent[$w] = [$v, $idx];
+
+                    if (!isset($matchOf[$w])) {
+                        $end = $w;
+                        break;
+                    }
+
+                    // Follow matched edge to partner
+                    $mIdx = $matchOf[$w];
+                    $partner = $matches[$mIdx]['homeTeamId'] === $w
+                        ? $matches[$mIdx]['awayTeamId']
+                        : $matches[$mIdx]['homeTeamId'];
+                    if (!isset($visited[$partner])) {
+                        $visited[$partner] = true;
+                        $parent[$partner] = [$w, $mIdx];
+                        $queue[] = $partner;
+                    }
                 }
-                // Odd positions: was matched → now unmatched.
-                // The vertices are re-matched by adjacent even-position edges.
+            }
+
+            if ($end === null) return null;
+
+            // Trace and flip
+            $path = [];
+            $cur = $end;
+            while ($parent[$cur] !== null) {
+                $path[] = $parent[$cur][1];
+                $cur = $parent[$cur][0];
+            }
+
+            for ($i = count($path) - 1; $i >= 0; $i--) {
+                if ((count($path) - 1 - $i) % 2 === 0) {
+                    $matchOf[$matches[$path[$i]]['homeTeamId']] = $path[$i];
+                    $matchOf[$matches[$path[$i]]['awayTeamId']] = $path[$i];
+                }
             }
         }
 
-        // Extract unique edge indices from the matching
         return array_values(array_unique(array_values($matchOf)));
     }
 
-    /**
-     * BFS to find an augmenting path from a free vertex.
-     *
-     * An augmenting path alternates: free → (unmatched edge) → matched vertex →
-     * (matched edge) → vertex → (unmatched edge) → ... → free vertex.
-     *
-     * @return int[]|null Edge indices forming the path, or null if none found
-     */
-    private function findAugmentingPath(
-        string $startTeam,
-        array $matches,
-        array $teamEdges,
-        array $available,
-        array $matchOf
-    ): ?array {
-        $visited = [$startTeam => true];
-        // parent[team] = [prevTeam, edgeIdx] used to reach this team
-        $parent = [$startTeam => null];
-        $queue = [$startTeam];
-
-        while (!empty($queue)) {
-            $v = array_shift($queue);
-
-            // Explore all available unmatched edges from v
-            foreach ($teamEdges[$v] ?? [] as $edgeIdx) {
-                if (!$available[$edgeIdx]) {
-                    continue;
-                }
-
-                // Skip if this IS v's matched edge (we want unmatched edges)
-                if (isset($matchOf[$v]) && $matchOf[$v] === $edgeIdx) {
-                    continue;
-                }
-
-                $w = $matches[$edgeIdx]['homeTeamId'] === $v
-                    ? $matches[$edgeIdx]['awayTeamId']
-                    : $matches[$edgeIdx]['homeTeamId'];
-
-                if (isset($visited[$w])) {
-                    continue;
-                }
-
-                $visited[$w] = true;
-                $parent[$w] = [$v, $edgeIdx];
-
-                // If w is free, we found an augmenting path
-                if (!isset($matchOf[$w])) {
-                    return $this->traceAugmentingPath($parent, $w);
-                }
-
-                // w is matched — follow its matched edge to the partner
-                $matchedEdge = $matchOf[$w];
-                $partner = $matches[$matchedEdge]['homeTeamId'] === $w
-                    ? $matches[$matchedEdge]['awayTeamId']
-                    : $matches[$matchedEdge]['homeTeamId'];
-
-                if (!isset($visited[$partner])) {
-                    $visited[$partner] = true;
-                    $parent[$partner] = [$w, $matchedEdge];
-                    $queue[] = $partner;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Trace augmenting path from end vertex back to start using parent pointers.
-     *
-     * @return int[] Edge indices in forward order
-     */
-    private function traceAugmentingPath(array $parent, string $end): array
-    {
-        $edges = [];
-        $current = $end;
-
-        while ($parent[$current] !== null) {
-            [$prev, $edgeIdx] = $parent[$current];
-            $edges[] = $edgeIdx;
-            $current = $prev;
-        }
-
-        return array_reverse($edges);
-    }
-
-    /**
-     * Format matchday schedule into output array with dates.
-     */
     private function formatSchedule(array $schedule, Carbon $startDate, int $intervalDays): array
     {
         $result = [];
-
         foreach ($schedule as $md => $mdMatches) {
             $date = $startDate->copy()->addDays(($md - 1) * $intervalDays);
             foreach ($mdMatches as $match) {
@@ -470,85 +312,6 @@ class SwissDrawService
                 ];
             }
         }
-
         return $result;
-    }
-
-    /**
-     * Count how many of a team's assigned opponents come from a specific pot.
-     */
-    private function countOpponentsFromPot(array $opponentIds, array $potTeams, array $teamIndex): int
-    {
-        $potTeamIds = array_column($potTeams, 'id');
-
-        return count(array_intersect($opponentIds, $potTeamIds));
-    }
-
-    /**
-     * Canonical pair key for two teams.
-     */
-    private function pairKey(string $a, string $b): string
-    {
-        return $a < $b ? "{$a}|{$b}" : "{$b}|{$a}";
-    }
-
-    /**
-     * Fallback assignment without strict pot constraints.
-     * Used when the constraint solver fails.
-     */
-    private function fallbackAssignment(array $teams, array $pots): array
-    {
-        $opponents = [];
-        $matchPairs = [];
-        $teamIndex = [];
-
-        foreach ($teams as $team) {
-            $opponents[$team['id']] = [];
-            $teamIndex[$team['id']] = $team;
-        }
-
-        // Simple circular assignment within and between pots
-        foreach ([1, 2, 3, 4] as $pot) {
-            $potTeams = $pots[$pot];
-
-            foreach ([1, 2, 3, 4] as $targetPot) {
-                $targetTeams = $pots[$targetPot];
-
-                foreach ($potTeams as $i => $team) {
-                    if (count($opponents[$team['id']]) >= self::MATCHES_PER_TEAM) {
-                        continue;
-                    }
-
-                    // Pick opponents using circular offset
-                    for ($offset = 1; $offset <= count($targetTeams); $offset++) {
-                        if (count($opponents[$team['id']]) >= self::MATCHES_PER_TEAM) {
-                            break;
-                        }
-
-                        $opponentIdx = ($i + $offset) % count($targetTeams);
-                        $opponent = $targetTeams[$opponentIdx];
-
-                        if ($opponent['id'] === $team['id']) {
-                            continue;
-                        }
-
-                        $pairKey = $this->pairKey($team['id'], $opponent['id']);
-                        if (isset($matchPairs[$pairKey])) {
-                            continue;
-                        }
-
-                        if (count($opponents[$opponent['id']]) >= self::MATCHES_PER_TEAM) {
-                            continue;
-                        }
-
-                        $opponents[$team['id']][] = $opponent['id'];
-                        $opponents[$opponent['id']][] = $team['id'];
-                        $matchPairs[$pairKey] = true;
-                    }
-                }
-            }
-        }
-
-        return $this->assignHomeAway($opponents, $matchPairs, $teamIndex);
     }
 }
