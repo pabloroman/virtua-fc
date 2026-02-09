@@ -38,7 +38,7 @@ class RequestLoan
         $evaluation = $this->scoutingService->evaluateLoanRequest($player);
 
         if ($evaluation['result'] === 'rejected') {
-            return redirect()->route('game.scouting.player', [$game->id, $player->id])
+            return redirect()->route('game.scouting', $game->id)
                 ->with('error', $evaluation['message']);
         }
 
@@ -58,7 +58,7 @@ class RequestLoan
 
             $this->loanService->processLoanIn($game, $player);
 
-            return redirect()->route('game.scouting.player', [$game->id, $player->id])
+            return redirect()->route('game.scouting', $game->id)
                 ->with('success', __('messages.loan_in_complete', ['message' => $evaluation['message']]));
         }
 
@@ -76,7 +76,7 @@ class RequestLoan
         ]);
 
         $nextWindow = $game->getNextWindowName();
-        return redirect()->route('game.scouting.player', [$game->id, $player->id])
+        return redirect()->route('game.scouting', $game->id)
             ->with('success', __('messages.loan_agreed', ['message' => $evaluation['message'], 'window' => $nextWindow]));
     }
 

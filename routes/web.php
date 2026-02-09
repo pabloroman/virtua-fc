@@ -35,7 +35,6 @@ use App\Http\Views\ShowMatchResults;
 use App\Http\Views\ShowSquad;
 use App\Http\Views\ShowContracts;
 use App\Http\Views\ShowScouting;
-use App\Http\Views\ShowScoutingPlayer;
 use App\Http\Views\ShowSeasonEnd;
 use App\Http\Views\ShowSquadDevelopment;
 use App\Http\Views\ShowSquadStats;
@@ -90,7 +89,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/game/{gameId}/scouting', ShowScouting::class)->name('game.scouting');
         Route::post('/game/{gameId}/scouting/search', SubmitScoutSearch::class)->name('game.scouting.search');
         Route::post('/game/{gameId}/scouting/cancel', CancelScoutSearch::class)->name('game.scouting.cancel');
-        Route::get('/game/{gameId}/scouting/{playerId}', ShowScoutingPlayer::class)->name('game.scouting.player');
         Route::post('/game/{gameId}/scouting/{playerId}/bid', SubmitTransferBid::class)->name('game.scouting.bid');
         Route::post('/game/{gameId}/scouting/{playerId}/loan', RequestLoan::class)->name('game.scouting.loan');
         Route::post('/game/{gameId}/scouting/counter/{offerId}/accept', AcceptCounterOffer::class)->name('game.scouting.counter.accept');

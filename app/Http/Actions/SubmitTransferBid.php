@@ -30,7 +30,7 @@ class SubmitTransferBid
         // Budget validation
         $investment = $game->currentInvestment;
         if ($investment && $bidAmountCents > $investment->transfer_budget) {
-            return redirect()->route('game.scouting.player', [$gameId, $playerId])
+            return redirect()->route('game.scouting', $gameId)
                 ->with('error', __('messages.bid_exceeds_budget'));
         }
 
@@ -83,12 +83,12 @@ class SubmitTransferBid
                 'expires_at' => $game->current_date->addDays(14),
             ]);
 
-            return redirect()->route('game.scouting.player', [$gameId, $playerId])
+            return redirect()->route('game.scouting', $gameId)
                 ->with('success', $evaluation['message']);
         }
 
         // Rejected
-        return redirect()->route('game.scouting.player', [$gameId, $playerId])
+        return redirect()->route('game.scouting', $gameId)
             ->with('error', $evaluation['message']);
     }
 }

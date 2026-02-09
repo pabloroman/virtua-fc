@@ -85,7 +85,7 @@ return [
     'cancel_search' => 'Cancelar Búsqueda',
 
     // Scout results
-    'scout_results' => 'Resultados del Ojeador',
+    'scout_results' => 'Resultados de búsqueda',
     'new_search' => 'Nueva Búsqueda',
     'no_players_found' => 'No se encontraron jugadores con tus criterios.',
     'try_broadening' => 'Intenta ampliar tu búsqueda.',
