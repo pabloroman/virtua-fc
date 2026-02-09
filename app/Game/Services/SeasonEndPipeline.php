@@ -18,6 +18,7 @@ use App\Game\Processors\SeasonSettlementProcessor;
 use App\Game\Processors\StandingsResetProcessor;
 use App\Game\Processors\StatsResetProcessor;
 use App\Game\Processors\SupercopaQualificationProcessor;
+use App\Game\Processors\UefaQualificationProcessor;
 use App\Game\Processors\YouthAcademyProcessor;
 use App\Models\Game;
 
@@ -40,6 +41,7 @@ class SeasonEndPipeline
         SeasonSettlementProcessor $seasonSettlement,
         StatsResetProcessor $statsReset,
         SupercopaQualificationProcessor $supercopaQualification,
+        UefaQualificationProcessor $uefaQualification,
         PromotionRelegationProcessor $promotionRelegation,
         FixtureGenerationProcessor $fixtureGeneration,
         StandingsResetProcessor $standingsReset,
@@ -57,6 +59,7 @@ class SeasonEndPipeline
             $seasonSettlement,
             $statsReset,
             $supercopaQualification,
+            $uefaQualification,
             $promotionRelegation,
             $fixtureGeneration,
             $standingsReset,

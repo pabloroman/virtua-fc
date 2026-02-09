@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Game\Services\SwissDrawService;
 use App\Models\User;
 use Carbon\Carbon;
 use Database\Seeders\ClubProfilesSeeder;
@@ -110,6 +111,14 @@ class SeedReferenceData extends Command
                 'country' => 'PT',
                 'role' => 'foreign',
             ],
+            [
+                'code' => 'UCL',
+                'path' => 'data/2025/UCL',
+                'tier' => 0,
+                'handler' => 'swiss_format',
+                'country' => 'EU',
+                'role' => 'european',
+            ],
         ],
         'test' => [
             [
@@ -210,10 +219,13 @@ class SeedReferenceData extends Command
         $configName = $config['name'] ?? null;
 
         $isCup = in_array($handler, ['knockout_cup', 'group_stage_cup']);
+        $isSwiss = $handler === 'swiss_format';
 
         $this->info("Seeding {$code}...");
 
-        if ($isCup) {
+        if ($isSwiss) {
+            $this->seedSwissFormatCompetition($basePath, $code, $tier, $handler, $country, $role);
+        } elseif ($isCup) {
             $this->seedCupCompetition($basePath, $code, $tier, $handler, $country, $role);
         } else {
             $this->seedLeagueCompetition($basePath, $code, $tier, $handler, $country, $role, $configName);
@@ -270,6 +282,328 @@ class SeedReferenceData extends Command
 
         // Seed cup teams (link existing teams to cup)
         $this->seedCupTeams($teamsData['clubs'], $code, $season, $country);
+    }
+
+    private function seedSwissFormatCompetition(string $basePath, string $code, int $tier, string $handler, string $country, string $role = 'european'): void
+    {
+        $teamsData = $this->loadJson("{$basePath}/teams.json");
+        $roundsData = $this->loadJson("{$basePath}/rounds.json");
+        $matchdaysData = $this->loadJson("{$basePath}/matchdays.json");
+
+        $season = $teamsData['seasonID'] ?? '2025';
+
+        // Swiss format uses 'league' type so standings are updated during league phase
+        $this->seedCompetitionRecord($code, $teamsData, $tier, 'league', $handler, $country, $role);
+
+        // Seed teams (creates new European teams, links existing Spanish teams)
+        $teamIdMap = $this->seedSwissFormatTeams($teamsData['clubs'], $code, $season);
+
+        // Generate players for European teams that don't have inline player data
+        $this->seedGeneratedPlayers($teamsData['clubs'], $teamIdMap);
+
+        // Generate league phase fixtures using the Swiss draw algorithm
+        $this->seedSwissFormatFixtures($teamsData['clubs'], $code, $season, $teamIdMap);
+
+        // Seed knockout round templates
+        $this->seedCupRoundTemplates($code, $season, $roundsData, $matchdaysData);
+
+        $this->line("  Swiss format competition seeded successfully");
+    }
+
+    /**
+     * Seed teams for Swiss format competitions.
+     * Reuses existing teams (Spanish teams from ESP1) and creates new European teams.
+     */
+    private function seedSwissFormatTeams(array $clubs, string $competitionId, string $season): array
+    {
+        $teamIdMap = [];
+        $count = 0;
+
+        foreach ($clubs as $club) {
+            $transfermarktId = $club['transfermarktId'] ?? null;
+            if (!$transfermarktId) {
+                continue;
+            }
+
+            $clubCountry = $club['country'] ?? 'XX';
+
+            // Check if team already exists (Spanish teams from ESP1/ESP2)
+            $existingTeam = DB::table('teams')
+                ->where('transfermarkt_id', $transfermarktId)
+                ->first();
+
+            if ($existingTeam) {
+                $teamId = $existingTeam->id;
+            } else {
+                $teamId = Str::uuid()->toString();
+
+                $stadiumSeats = isset($club['stadiumSeats'])
+                    ? (int) str_replace(['.', ','], '', $club['stadiumSeats'])
+                    : 0;
+
+                DB::table('teams')->insert([
+                    'id' => $teamId,
+                    'transfermarkt_id' => $transfermarktId,
+                    'name' => $club['name'],
+                    'country' => $clubCountry,
+                    'image' => $club['image'] ?? "https://tmssl.akamaized.net/images/wappen/big/{$transfermarktId}.png",
+                    'stadium_name' => $club['stadiumName'] ?? null,
+                    'stadium_seats' => $stadiumSeats,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+
+            $teamIdMap[$transfermarktId] = $teamId;
+
+            // Link team to competition
+            DB::table('competition_teams')->updateOrInsert(
+                [
+                    'competition_id' => $competitionId,
+                    'team_id' => $teamId,
+                    'season' => $season,
+                ],
+                [
+                    'entry_round' => 1,
+                ]
+            );
+
+            $count++;
+        }
+
+        $this->line("  Teams: {$count}");
+
+        return $teamIdMap;
+    }
+
+    /**
+     * Generate synthetic players for teams that use the 'strength' field
+     * instead of inline player data.
+     */
+    private function seedGeneratedPlayers(array $clubs, array $teamIdMap): void
+    {
+        $count = 0;
+
+        $positions = [
+            'Goalkeeper', 'Goalkeeper',
+            'Centre-Back', 'Centre-Back', 'Centre-Back', 'Centre-Back',
+            'Left-Back', 'Right-Back',
+            'Defensive Midfield', 'Central Midfield', 'Central Midfield', 'Central Midfield',
+            'Attacking Midfield', 'Left Winger', 'Right Winger',
+            'Centre-Forward', 'Centre-Forward', 'Centre-Forward',
+        ];
+
+        foreach ($clubs as $club) {
+            $transfermarktId = $club['transfermarktId'] ?? null;
+            if (!$transfermarktId || !isset($teamIdMap[$transfermarktId])) {
+                continue;
+            }
+
+            // Skip teams that already have inline player data
+            if (!empty($club['players'])) {
+                // Use existing seedPlayersFromTeams logic
+                continue;
+            }
+
+            // Skip teams that already have players seeded (e.g., Spanish teams from ESP1)
+            $existingPlayers = DB::table('players')
+                ->join('game_players', 'players.id', '=', 'game_players.player_id')
+                ->where('game_players.team_id', $teamIdMap[$transfermarktId])
+                ->exists();
+
+            // Check if reference players exist for this team
+            $hasReferencePlayers = DB::table('players')
+                ->where('transfermarkt_id', 'like', "gen_{$transfermarktId}_%")
+                ->exists();
+
+            if ($hasReferencePlayers) {
+                continue;
+            }
+
+            $strength = $club['strength'] ?? 70;
+            $country = $club['country'] ?? 'XX';
+            $nationality = $this->countryToNationality($country);
+
+            foreach ($positions as $i => $position) {
+                $playerId = "gen_{$transfermarktId}_{$i}";
+
+                // Calculate market value from team strength
+                $marketValueCents = $this->strengthToMarketValue($strength, $position, $i);
+
+                // Calculate abilities
+                $age = rand(20, 33);
+                [$technical, $physical] = $this->calculateAbilities($marketValueCents, $position, $age);
+
+                // Create reference player
+                DB::table('players')->updateOrInsert(
+                    ['transfermarkt_id' => $playerId],
+                    [
+                        'id' => Str::uuid()->toString(),
+                        'name' => $this->generatePlayerName($country, $i),
+                        'date_of_birth' => Carbon::now()->subYears($age)->subDays(rand(0, 365))->toDateString(),
+                        'nationality' => json_encode([$nationality]),
+                        'height' => (1.70 + rand(0, 25) / 100) . 'm',
+                        'foot' => ['right', 'right', 'right', 'left', 'both'][rand(0, 4)],
+                        'technical_ability' => $technical,
+                        'physical_ability' => $physical,
+                        'updated_at' => now(),
+                    ]
+                );
+
+                $count++;
+            }
+        }
+
+        $this->line("  Generated players: {$count}");
+    }
+
+    /**
+     * Generate Swiss format league phase fixtures using the draw algorithm.
+     */
+    private function seedSwissFormatFixtures(array $clubs, string $competitionId, string $season, array $teamIdMap): void
+    {
+        // Build team data for the draw service
+        $drawTeams = [];
+        foreach ($clubs as $club) {
+            $transfermarktId = $club['transfermarktId'] ?? null;
+            if (!$transfermarktId || !isset($teamIdMap[$transfermarktId])) {
+                continue;
+            }
+
+            $drawTeams[] = [
+                'id' => $teamIdMap[$transfermarktId],
+                'pot' => $club['pot'] ?? 4,
+                'country' => $club['country'] ?? 'XX',
+            ];
+        }
+
+        // Generate fixtures
+        $drawService = new SwissDrawService();
+        $startDate = Carbon::parse("{$season}-09-17"); // UCL league phase starts mid-September
+        $fixtures = $drawService->generateFixtures($drawTeams, $startDate);
+
+        // Group by matchday for seeding
+        $matchdays = [];
+        foreach ($fixtures as $fixture) {
+            $md = $fixture['matchday'];
+            if (!isset($matchdays[$md])) {
+                $matchdays[$md] = ['matchday' => $md, 'date' => $fixture['date'], 'matches' => []];
+            }
+            $matchdays[$md]['matches'][] = [
+                'homeTeamId' => $fixture['homeTeamId'],
+                'awayTeamId' => $fixture['awayTeamId'],
+            ];
+        }
+
+        // Seed as fixture templates (using team UUIDs directly)
+        $count = 0;
+        foreach ($matchdays as $matchday) {
+            $roundNumber = (int) $matchday['matchday'];
+            $scheduledDate = Carbon::createFromFormat('d/m/y', $matchday['date']);
+
+            $matchNumber = 1;
+            foreach ($matchday['matches'] as $match) {
+                DB::table('fixture_templates')->updateOrInsert(
+                    [
+                        'competition_id' => $competitionId,
+                        'season' => $season,
+                        'round_number' => $roundNumber,
+                        'home_team_id' => $match['homeTeamId'],
+                        'away_team_id' => $match['awayTeamId'],
+                    ],
+                    [
+                        'id' => Str::uuid()->toString(),
+                        'match_number' => $matchNumber,
+                        'scheduled_date' => $scheduledDate,
+                        'location' => null,
+                    ]
+                );
+
+                $matchNumber++;
+                $count++;
+            }
+        }
+
+        $this->line("  League phase fixtures: {$count}");
+    }
+
+    /**
+     * Convert team strength rating to market value in cents.
+     */
+    private function strengthToMarketValue(int $strength, string $position, int $playerIndex): int
+    {
+        // Base value from strength (in euros)
+        $baseEuros = match (true) {
+            $strength >= 90 => rand(30_000_000, 80_000_000),
+            $strength >= 85 => rand(15_000_000, 50_000_000),
+            $strength >= 80 => rand(8_000_000, 30_000_000),
+            $strength >= 75 => rand(4_000_000, 15_000_000),
+            $strength >= 70 => rand(2_000_000, 8_000_000),
+            $strength >= 65 => rand(1_000_000, 4_000_000),
+            default => rand(500_000, 2_000_000),
+        };
+
+        // Star players get higher values (first 3-4 in the list)
+        if ($playerIndex < 2) {
+            $baseEuros = (int) ($baseEuros * 1.5);
+        } elseif ($playerIndex < 5) {
+            $baseEuros = (int) ($baseEuros * 1.2);
+        }
+
+        return $baseEuros * 100; // Convert to cents
+    }
+
+    /**
+     * Generate a player name based on country.
+     */
+    private function generatePlayerName(string $country, int $index): string
+    {
+        $names = match ($country) {
+            'DE' => ['Müller', 'Schmidt', 'Weber', 'Fischer', 'Meyer', 'Wagner', 'Becker', 'Hoffmann', 'Schulz', 'Koch', 'Richter', 'Klein', 'Wolf', 'Schröder', 'Neumann', 'Schwarz', 'Braun', 'Zimmermann'],
+            'EN' => ['Smith', 'Jones', 'Williams', 'Brown', 'Taylor', 'Davies', 'Wilson', 'Evans', 'Thomas', 'Johnson', 'Roberts', 'Walker', 'Wright', 'Robinson', 'Thompson', 'White', 'Hughes', 'Edwards'],
+            'FR' => ['Martin', 'Bernard', 'Dubois', 'Thomas', 'Robert', 'Richard', 'Petit', 'Durand', 'Leroy', 'Moreau', 'Simon', 'Laurent', 'Lefebvre', 'Michel', 'Garcia', 'David', 'Bertrand', 'Roux'],
+            'IT' => ['Rossi', 'Russo', 'Ferrari', 'Esposito', 'Bianchi', 'Romano', 'Colombo', 'Ricci', 'Marino', 'Greco', 'Bruno', 'Gallo', 'Conti', 'De Luca', 'Mancini', 'Costa', 'Giordano', 'Rizzo'],
+            'PT' => ['Silva', 'Santos', 'Ferreira', 'Pereira', 'Oliveira', 'Costa', 'Rodrigues', 'Martins', 'Sousa', 'Fernandes', 'Gonçalves', 'Gomes', 'Lopes', 'Marques', 'Almeida', 'Alves', 'Ribeiro', 'Pinto'],
+            'NL' => ['de Jong', 'de Vries', 'van den Berg', 'Bakker', 'Visser', 'Smit', 'Meijer', 'de Boer', 'Mulder', 'de Groot', 'Bos', 'Vos', 'Peters', 'Hendriks', 'van Dijk', 'Dekker', 'Brouwer', 'Jansen'],
+            'BE' => ['Peeters', 'Janssens', 'Maes', 'Jacobs', 'Willems', 'Claes', 'Goossens', 'Wouters', 'De Smedt', 'Leclercq', 'Dupont', 'Lambert', 'Leemans', 'Stevens', 'Hermans', 'Mertens', 'Cools', 'Aerts'],
+            'AT' => ['Gruber', 'Huber', 'Bauer', 'Wagner', 'Müller', 'Pichler', 'Steiner', 'Moser', 'Mayer', 'Hofer', 'Leitner', 'Berger', 'Fuchs', 'Eder', 'Fischer', 'Schmid', 'Winkler', 'Schwarz'],
+            'CH' => ['Müller', 'Meier', 'Schmid', 'Keller', 'Weber', 'Huber', 'Schneider', 'Meyer', 'Steiner', 'Fischer', 'Gerber', 'Brunner', 'Baumann', 'Frei', 'Zimmermann', 'Moser', 'Widmer', 'Wyss'],
+            'HR' => ['Horvat', 'Kovačević', 'Babić', 'Marić', 'Jurić', 'Novak', 'Knežević', 'Vuković', 'Matić', 'Tomić', 'Perić', 'Pavlović', 'Blažević', 'Šarić', 'Đurić', 'Vidović', 'Radić', 'Filipović'],
+            'RS' => ['Jovanović', 'Petrović', 'Nikolić', 'Marković', 'Đorđević', 'Stojanović', 'Ilić', 'Stanković', 'Pavlović', 'Milić', 'Tomić', 'Radović', 'Kostić', 'Kovačević', 'Popović', 'Simić', 'Lazić', 'Savić'],
+            'CZ' => ['Novák', 'Svoboda', 'Novotný', 'Dvořák', 'Černý', 'Procházka', 'Kučera', 'Veselý', 'Horák', 'Němec', 'Pokorný', 'Marek', 'Pospíšil', 'Hájek', 'Jelínek', 'Král', 'Růžička', 'Beneš'],
+            'SK' => ['Horváth', 'Kováč', 'Varga', 'Tóth', 'Nagy', 'Baláž', 'Molnár', 'Szabó', 'Novák', 'Černák', 'Kočiš', 'Krajčí', 'Sedlák', 'Pavlík', 'Lukáč', 'Hudák', 'Hrušovský', 'Mak'],
+            'UA' => ['Shevchenko', 'Kovalenko', 'Bondarenko', 'Tkachenko', 'Kravchenko', 'Oleksenko', 'Marchenko', 'Savchenko', 'Rudenko', 'Melnyk', 'Lysenko', 'Moroz', 'Polishchuk', 'Hrytsenko', 'Bilous', 'Kozak', 'Sydorenko', 'Ponomarenko'],
+            'SC' => ['Campbell', 'Stewart', 'Robertson', 'Murray', 'MacDonald', 'Scott', 'Reid', 'Ross', 'Fraser', 'Anderson', 'Hamilton', 'Morrison', 'Henderson', 'Burns', 'McGregor', 'Kerr', 'Ferguson', 'Crawford'],
+            default => ['Player A', 'Player B', 'Player C', 'Player D', 'Player E', 'Player F', 'Player G', 'Player H', 'Player I', 'Player J', 'Player K', 'Player L', 'Player M', 'Player N', 'Player O', 'Player P', 'Player Q', 'Player R'],
+        };
+
+        $firstNames = match ($country) {
+            'DE' => ['Leon', 'Lukas', 'Finn', 'Paul', 'Jonas', 'Elias', 'Noah', 'Felix', 'Luis', 'Maximilian', 'Ben', 'Tim', 'Julian', 'Niklas', 'Moritz', 'David', 'Alexander', 'Fabian'],
+            'EN' => ['James', 'Oliver', 'Harry', 'Jack', 'George', 'Charlie', 'Thomas', 'William', 'Henry', 'Oscar', 'Daniel', 'Samuel', 'Joseph', 'Lewis', 'Ryan', 'Nathan', 'Luke', 'Adam'],
+            'FR' => ['Lucas', 'Hugo', 'Léo', 'Louis', 'Gabriel', 'Raphaël', 'Arthur', 'Jules', 'Ethan', 'Adam', 'Nathan', 'Théo', 'Noah', 'Mathis', 'Antoine', 'Maxime', 'Alexandre', 'Valentin'],
+            'IT' => ['Marco', 'Andrea', 'Francesco', 'Alessandro', 'Lorenzo', 'Matteo', 'Gabriele', 'Leonardo', 'Davide', 'Luca', 'Riccardo', 'Federico', 'Simone', 'Nicola', 'Stefano', 'Filippo', 'Giacomo', 'Pietro'],
+            'PT' => ['João', 'Pedro', 'Miguel', 'Diogo', 'Rafael', 'Tiago', 'André', 'Bruno', 'Hugo', 'Rui', 'Daniel', 'Nuno', 'Francisco', 'Gonçalo', 'Ricardo', 'Bernardo', 'Tomás', 'Filipe'],
+            default => ['A.', 'B.', 'C.', 'D.', 'E.', 'F.', 'G.', 'H.', 'I.', 'J.', 'K.', 'L.', 'M.', 'N.', 'O.', 'P.', 'Q.', 'R.'],
+        };
+
+        $nameIdx = $index % count($names);
+        $firstIdx = $index % count($firstNames);
+
+        return $firstNames[$firstIdx] . ' ' . $names[$nameIdx];
+    }
+
+    /**
+     * Map country code to nationality name.
+     */
+    private function countryToNationality(string $country): string
+    {
+        return match ($country) {
+            'DE' => 'Germany', 'EN' => 'England', 'FR' => 'France', 'IT' => 'Italy',
+            'PT' => 'Portugal', 'NL' => 'Netherlands', 'BE' => 'Belgium', 'AT' => 'Austria',
+            'CH' => 'Switzerland', 'HR' => 'Croatia', 'RS' => 'Serbia', 'CZ' => 'Czech Republic',
+            'SK' => 'Slovakia', 'UA' => 'Ukraine', 'SC' => 'Scotland', 'ES' => 'Spain',
+            default => 'Unknown',
+        };
     }
 
     private function seedCompetitionRecord(string $code, array $data, int $tier, string $type, string $handler, string $country, string $role = 'foreign'): void

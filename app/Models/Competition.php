@@ -2,7 +2,10 @@
 
 namespace App\Models;
 
+use App\Game\Competitions\ChampionsLeagueConfig;
+use App\Game\Competitions\ConferenceLeagueConfig;
 use App\Game\Competitions\DefaultLeagueConfig;
+use App\Game\Competitions\EuropaLeagueConfig;
 use App\Game\Competitions\LaLiga2Config;
 use App\Game\Competitions\LaLigaConfig;
 use App\Game\Contracts\CompetitionConfig;
@@ -44,6 +47,9 @@ class Competition extends Model
     private const CONFIG_MAP = [
         'ESP1' => LaLigaConfig::class,
         'ESP2' => LaLiga2Config::class,
+        'UCL' => ChampionsLeagueConfig::class,
+        'UEL' => EuropaLeagueConfig::class,
+        'UECL' => ConferenceLeagueConfig::class,
     ];
 
     public function teams(): BelongsToMany

@@ -101,6 +101,9 @@ class GameProjector extends Projector
 
         // Conduct first round cup draws for all cup competitions
         $this->conductInitialCupDraws($gameId, $season);
+
+        // Initialize Swiss format competitions (UCL, UEL, UECL)
+        $this->initializeSwissFormatCompetitions($gameId, $teamId, $season);
     }
 
     public function onMatchdayAdvanced(MatchdayAdvanced $event): void
@@ -140,9 +143,10 @@ class GameProjector extends Projector
         // Update goalkeeper stats (goals conceded, clean sheets)
         $this->updateGoalkeeperStats($match, $event->homeScore, $event->awayScore);
 
-        // Only update standings for league competitions (not cups)
+        // Only update standings for league phase matches (not cups or knockout ties)
         $competition = \App\Models\Competition::find($event->competitionId);
-        if ($competition?->isLeague()) {
+        $isCupTie = $match?->cup_tie_id !== null;
+        if ($competition?->isLeague() && !$isCupTie) {
             $this->standingsCalculator->updateAfterMatch(
                 gameId: $gameId,
                 competitionId: $event->competitionId,
@@ -577,6 +581,85 @@ class GameProjector extends Projector
         // Set initial cup round to 1 if any draws were conducted
         if ($hasDraws) {
             Game::where('id', $gameId)->update(['cup_round' => 1]);
+        }
+    }
+
+    /**
+     * Initialize Swiss format competitions (UCL, UEL, UECL).
+     * Copies fixtures, initializes standings, and initializes players for European teams.
+     */
+    private function initializeSwissFormatCompetitions(string $gameId, string $teamId, string $season): void
+    {
+        $swissCompetitions = Competition::where('handler_type', 'swiss_format')->get();
+
+        foreach ($swissCompetitions as $competition) {
+            // Check if the player's team participates in this competition
+            $participates = CompetitionTeam::where('competition_id', $competition->id)
+                ->where('team_id', $teamId)
+                ->where('season', $season)
+                ->exists();
+
+            if (!$participates) {
+                continue;
+            }
+
+            // Copy fixture templates to game matches
+            $this->copyFixturesToGame($gameId, $competition->id, $season);
+
+            // Initialize standings
+            $this->initializeStandings($gameId, $competition->id, $season);
+
+            // Initialize game players for European teams (skip teams already initialized from ESP1/ESP2)
+            $this->initializeSwissFormatPlayers($gameId, $competition->id, $season);
+        }
+    }
+
+    /**
+     * Initialize game players for Swiss format competitions.
+     * Only creates players for teams that don't already have game players.
+     */
+    private function initializeSwissFormatPlayers(string $gameId, string $competitionId, string $season): void
+    {
+        $teamsFilePath = base_path("data/{$season}/{$competitionId}/teams.json");
+        if (!file_exists($teamsFilePath)) {
+            return;
+        }
+
+        $minimumWage = $this->contractService->getMinimumWageForCompetition($competitionId);
+        $data = json_decode(file_get_contents($teamsFilePath), true);
+        $clubs = $data['clubs'] ?? [];
+
+        foreach ($clubs as $club) {
+            $transfermarktId = $club['transfermarktId'] ?? null;
+            if (!$transfermarktId) {
+                continue;
+            }
+
+            $team = Team::where('transfermarkt_id', $transfermarktId)->first();
+            if (!$team) {
+                continue;
+            }
+
+            // Skip teams that already have game players (e.g., Spanish teams from ESP1)
+            $hasPlayers = GamePlayer::where('game_id', $gameId)
+                ->where('team_id', $team->id)
+                ->exists();
+
+            if ($hasPlayers) {
+                continue;
+            }
+
+            $playersData = $club['players'] ?? [];
+            $playerRows = [];
+            foreach ($playersData as $playerData) {
+                $row = $this->prepareGamePlayerRow($gameId, $team, $playerData, $minimumWage);
+                if ($row) {
+                    $playerRows[] = $row;
+                }
+            }
+            foreach (array_chunk($playerRows, 100) as $chunk) {
+                GamePlayer::insert($chunk);
+            }
         }
     }
 

@@ -160,4 +160,41 @@ return [
     'goal_promotion' => 'Ascenso directo',
     'goal_playoff' => 'Clasificarse para el playoff de ascenso',
     'board_expects_position' => 'La directiva espera que alcances la posición :position',
+
+    // UEFA Swiss Format - League Phase
+    'league_phase' => 'Fase de Liga',
+    'completed' => 'Completada',
+    'knockout_phase' => 'Fase Eliminatoria',
+
+    // UEFA Swiss Format - Knockout Round Names
+    'ucl_knockout_playoff' => 'Playoff de Eliminación',
+    'ucl_round_of_16' => 'Octavos de Final',
+    'ucl_quarter_finals' => 'Cuartos de Final',
+    'ucl_semi_finals' => 'Semifinales',
+    'ucl_final' => 'Final',
+
+    // UEFA Swiss Format - Standings Zones (UCL)
+    'ucl_direct_knockout' => 'Clasificación directa a octavos',
+    'ucl_eliminated' => 'Eliminado',
+
+    // UEFA Swiss Format - Standings Zones (UEL)
+    'uel_direct_knockout' => 'Clasificación directa a octavos',
+    'uel_knockout_playoff' => 'Playoff de eliminación',
+    'uel_eliminated' => 'Eliminado',
+
+    // UEFA Swiss Format - Standings Zones (UECL)
+    'uecl_direct_knockout' => 'Clasificación directa a octavos',
+    'uecl_knockout_playoff' => 'Playoff de eliminación',
+    'uecl_eliminated' => 'Eliminado',
+
+    // UEFA Swiss Format - Match Resolution
+    'won_on_penalties' => 'Ganó en penaltis',
+    'won_after_extra_time' => 'Ganó en prórroga',
+    'won_on_away_goals' => 'Ganó por goles de visitante',
+
+    // UEFA Swiss Format - Season Goals
+    'goal_ucl_title' => 'Ganar la Champions League',
+    'goal_ucl_knockout' => 'Pasar a fase eliminatoria',
+    'goal_uel_knockout' => 'Pasar a fase eliminatoria',
+    'goal_uecl_knockout' => 'Pasar a fase eliminatoria',
 ];
