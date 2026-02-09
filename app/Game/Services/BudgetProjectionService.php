@@ -2,6 +2,7 @@
 
 namespace App\Game\Services;
 
+use App\Models\ClubProfile;
 use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GameFinances;
@@ -41,7 +42,7 @@ class BudgetProjectionService
         $projectedTvRevenue = $this->calculateTvRevenue($projectedPosition, $league);
         $projectedMatchdayRevenue = $this->calculateMatchdayRevenue($team, $projectedPosition, $game);
         $projectedPrizeRevenue = self::PROJECTED_PRIZE_MONEY;
-        $projectedCommercialRevenue = $team->clubProfile?->commercial_revenue ?? 0;
+        $projectedCommercialRevenue = $this->getBaseCommercialRevenue($game, $team, $league);
 
         $projectedTotalRevenue = $projectedTvRevenue
             + $projectedMatchdayRevenue
@@ -51,15 +52,12 @@ class BudgetProjectionService
         // Calculate projected wages
         $projectedWages = $this->calculateProjectedWages($game);
 
-        // Calculate taxes (employer social security contributions)
-        $projectedTaxes = (int) ($projectedWages * config('finances.taxes_rate'));
-
         // Calculate operating expenses based on club reputation
-        $reputation = $team->clubProfile?->reputation_level ?? 'modest';
+        $reputation = $team->clubProfile?->reputation_level ?? ClubProfile::REPUTATION_MODEST;
         $projectedOperatingExpenses = config('finances.operating_expenses.' . $reputation, 700_000_000);
 
         // Calculate projected surplus
-        $projectedSurplus = $projectedTotalRevenue - $projectedWages - $projectedTaxes - $projectedOperatingExpenses;
+        $projectedSurplus = $projectedTotalRevenue - $projectedWages - $projectedOperatingExpenses;
 
         // Get carried debt from previous season
         $carriedDebt = $this->getCarriedDebt($game);
@@ -79,7 +77,6 @@ class BudgetProjectionService
                 'projected_total_revenue' => $projectedTotalRevenue,
                 'projected_wages' => $projectedWages,
                 'projected_operating_expenses' => $projectedOperatingExpenses,
-                'projected_taxes' => $projectedTaxes,
                 'projected_surplus' => $projectedSurplus,
                 'carried_debt' => $carriedDebt,
             ]
@@ -163,17 +160,19 @@ class BudgetProjectionService
 
     /**
      * Calculate matchday revenue.
-     * Formula: Base × Facilities Multiplier × Position Factor
+     * Formula: Base (stadium_seats × revenue_per_seat) × Facilities Multiplier × Position Factor
      */
     public function calculateMatchdayRevenue(Team $team, int $position, Game $game): int
     {
-        $clubProfile = $team->clubProfile;
-        if (!$clubProfile) {
+        $reputation = $team->clubProfile?->reputation_level ?? ClubProfile::REPUTATION_MODEST;
+
+        // Base matchday revenue from stadium size and competition config rates
+        $league = $team->competitions()->where('type', 'league')->first();
+        if (!$league) {
             return 0;
         }
 
-        // Base matchday revenue from club profile
-        $base = $clubProfile->calculateBaseMatchdayRevenue();
+        $base = $team->stadium_seats * $league->getConfig()->getRevenuePerSeat($reputation);
 
         // Get facilities multiplier from current investment (default to Tier 1 = 1.0)
         $investment = $game->currentInvestment;
@@ -182,9 +181,8 @@ class BudgetProjectionService
             : 1.0;
 
         // Position factor from competition config
-        $league = $team->competitions()->where('type', 'league')->first();
-        $config = $league?->getConfig();
-        $positionFactor = $config?->getPositionFactor($position) ?? 1.0;
+        $config = $league->getConfig();
+        $positionFactor = $config->getPositionFactor($position) ?? 1.0;
 
         return (int) ($base * $facilitiesMultiplier * $positionFactor);
     }
@@ -233,34 +231,25 @@ class BudgetProjectionService
     }
 
     /**
-     * Calculate projected position for display (from strength comparison).
+     * Get base commercial revenue for budget projections.
+     * Season 2+: uses previous season's actual commercial revenue.
+     * Season 1: calculates from stadium_seats × config rate.
      */
-    public function getLeagueProjections(Game $game): array
+    private function getBaseCommercialRevenue(Game $game, Team $team, Competition $league): int
     {
-        $team = $game->team;
-        $league = $team->competitions()->where('type', 'league')->first();
+        // Check for prior season actual commercial revenue
+        $previousSeason = (int) $game->season - 1;
+        $previousFinances = GameFinances::where('game_id', $game->id)
+            ->where('season', $previousSeason)
+            ->first();
 
-        if (!$league) {
-            return [];
+        if ($previousFinances && $previousFinances->actual_commercial_revenue > 0) {
+            return $previousFinances->actual_commercial_revenue;
         }
 
-        $teamStrengths = $this->calculateLeagueStrengths($game, $league);
+        // First season: calculate from stadium seats × config rate
+        $reputation = $team->clubProfile?->reputation_level ?? ClubProfile::REPUTATION_MODEST;
 
-        $projections = [];
-        $position = 1;
-
-        foreach ($teamStrengths as $teamId => $strength) {
-            $t = Team::find($teamId);
-            $projections[] = [
-                'team_id' => $teamId,
-                'team_name' => $t->name,
-                'strength' => $strength,
-                'position' => $position,
-                'is_user_team' => $teamId === $team->id,
-            ];
-            $position++;
-        }
-
-        return $projections;
+        return $team->stadium_seats * $league->getConfig()->getCommercialPerSeat($reputation);
     }
 }

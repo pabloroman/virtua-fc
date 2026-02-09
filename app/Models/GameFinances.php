@@ -128,11 +128,6 @@ class GameFinances extends Model
         return Money::format($this->projected_operating_expenses);
     }
 
-    public function getFormattedProjectedTaxesAttribute(): string
-    {
-        return Money::format($this->projected_taxes);
-    }
-
     public function getFormattedProjectedSurplusAttribute(): string
     {
         return Money::format($this->projected_surplus);
@@ -177,11 +172,6 @@ class GameFinances extends Model
     public function getFormattedActualOperatingExpensesAttribute(): string
     {
         return Money::format($this->actual_operating_expenses);
-    }
-
-    public function getFormattedActualTaxesAttribute(): string
-    {
-        return Money::format($this->actual_taxes);
     }
 
     public function getFormattedActualSurplusAttribute(): string

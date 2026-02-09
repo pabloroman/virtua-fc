@@ -66,4 +66,14 @@ interface CompetitionConfig
      * @return array<array{minPosition: int, maxPosition: int, borderColor: string, bgColor: string, label: string}>
      */
     public function getStandingsZones(): array;
+
+    /**
+     * Get commercial revenue per seat for a given reputation level (in cents).
+     */
+    public function getCommercialPerSeat(string $reputation): int;
+
+    /**
+     * Get matchday revenue per seat for a given reputation level (in cents).
+     */
+    public function getRevenuePerSeat(string $reputation): int;
 }

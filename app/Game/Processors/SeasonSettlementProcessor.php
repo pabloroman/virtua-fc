@@ -4,6 +4,7 @@ namespace App\Game\Processors;
 
 use App\Game\Contracts\SeasonEndProcessor;
 use App\Game\DTO\SeasonTransitionData;
+use App\Models\ClubProfile;
 use App\Models\Competition;
 use App\Models\FinancialTransaction;
 use App\Models\Game;
@@ -44,7 +45,9 @@ class SeasonSettlementProcessor implements SeasonEndProcessor
         $actualTvRevenue = $this->calculateTvRevenue($actualPosition, $game);
         $actualMatchdayRevenue = $this->calculateMatchdayRevenue($game, $actualPosition);
         $actualPrizeRevenue = $this->calculatePrizeRevenue($game);
-        $actualCommercialRevenue = $finances->projected_commercial_revenue; // Same as projected
+        $actualCommercialRevenue = $this->calculateCommercialRevenue(
+            $finances->projected_commercial_revenue, $actualPosition
+        );
         $actualTransferIncome = $this->calculateTransferIncome($game);
 
         $actualTotalRevenue = $actualTvRevenue
@@ -56,14 +59,11 @@ class SeasonSettlementProcessor implements SeasonEndProcessor
         // Calculate actual wages (pro-rated for all players)
         $actualWages = $this->calculateActualWages($game);
 
-        // Calculate actual taxes (employer social security contributions)
-        $actualTaxes = (int) ($actualWages * config('finances.taxes_rate'));
-
         // Operating expenses are fixed costs — same as projected
         $actualOperatingExpenses = $finances->projected_operating_expenses;
 
         // Calculate actual surplus
-        $actualSurplus = $actualTotalRevenue - $actualWages - $actualTaxes - $actualOperatingExpenses;
+        $actualSurplus = $actualTotalRevenue - $actualWages - $actualOperatingExpenses;
 
         // Calculate variance (difference between actual and projected surplus)
         $variance = $actualSurplus - $finances->projected_surplus;
@@ -78,7 +78,6 @@ class SeasonSettlementProcessor implements SeasonEndProcessor
             'actual_total_revenue' => $actualTotalRevenue,
             'actual_wages' => $actualWages,
             'actual_operating_expenses' => $actualOperatingExpenses,
-            'actual_taxes' => $actualTaxes,
             'actual_surplus' => $actualSurplus,
             'variance' => $variance,
         ]);
@@ -111,12 +110,15 @@ class SeasonSettlementProcessor implements SeasonEndProcessor
 
     private function calculateMatchdayRevenue(Game $game, int $position): int
     {
-        $clubProfile = $game->team->clubProfile;
-        if (!$clubProfile) {
+        $team = $game->team;
+        $reputation = $team->clubProfile?->reputation_level ?? ClubProfile::REPUTATION_MODEST;
+
+        $league = $team->competitions()->where('type', 'league')->first();
+        if (!$league) {
             return 0;
         }
 
-        $base = $clubProfile->calculateBaseMatchdayRevenue();
+        $base = $team->stadium_seats * $league->getConfig()->getRevenuePerSeat($reputation);
 
         // Get facilities multiplier
         $investment = $game->currentInvestment;
@@ -125,11 +127,28 @@ class SeasonSettlementProcessor implements SeasonEndProcessor
             : 1.0;
 
         // Position factor from competition config
-        $league = $game->team->competitions()->where('type', 'league')->first();
-        $config = $league?->getConfig();
-        $positionFactor = $config?->getPositionFactor($position) ?? 1.0;
+        $config = $league->getConfig();
+        $positionFactor = $config->getPositionFactor($position) ?? 1.0;
 
         return (int) ($base * $facilitiesMultiplier * $positionFactor);
+    }
+
+    /**
+     * Apply position-based growth multiplier to projected commercial revenue.
+     */
+    private function calculateCommercialRevenue(int $projected, int $position): int
+    {
+        $thresholds = config('finances.commercial_growth', []);
+        $multiplier = 1.0;
+
+        foreach ($thresholds as $maxPosition => $factor) {
+            if ($position <= $maxPosition) {
+                $multiplier = $factor;
+                break;
+            }
+        }
+
+        return (int) ($projected * $multiplier);
     }
 
     private function calculatePrizeRevenue(Game $game): int
