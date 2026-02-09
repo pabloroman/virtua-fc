@@ -21,15 +21,14 @@ class SeedReferenceData extends Command
 
     private array $profiles = [
         'production' => [
-            // Spanish leagues (playable)
+            // Spanish leagues (selectable)
             [
                 'code' => 'ESP1',
                 'path' => 'data/2025/ESP1',
                 'tier' => 1,
                 'handler' => 'league',
                 'country' => 'ES',
-                'minimum_annual_wage' => 20_000_000,
-                'is_playable' => true,
+                'role' => 'primary',
             ],
             [
                 'code' => 'ESP2',
@@ -37,17 +36,16 @@ class SeedReferenceData extends Command
                 'tier' => 2,
                 'handler' => 'league_with_playoff',
                 'country' => 'ES',
-                'minimum_annual_wage' => 10_000_000,
-                'is_playable' => true,
+                'role' => 'primary',
             ],
+            // Spanish cups (auto-entered)
             [
                 'code' => 'ESPSUP',
                 'path' => 'data/2025/ESPSUP',
                 'tier' => 0,
                 'handler' => 'knockout_cup',
                 'country' => 'ES',
-                'minimum_annual_wage' => null,
-                'is_playable' => false,
+                'role' => 'domestic_cup',
             ],
             [
                 'code' => 'ESPCUP',
@@ -55,8 +53,7 @@ class SeedReferenceData extends Command
                 'tier' => 0,
                 'handler' => 'knockout_cup',
                 'country' => 'ES',
-                'minimum_annual_wage' => null,
-                'is_playable' => false,
+                'role' => 'domestic_cup',
             ],
             // Foreign leagues (scouting/transfers only)
             [
@@ -66,8 +63,7 @@ class SeedReferenceData extends Command
                 'tier' => 1,
                 'handler' => 'league',
                 'country' => 'GB',
-                'minimum_annual_wage' => 25_000_000,
-                'is_playable' => false,
+                'role' => 'foreign',
             ],
             [
                 'code' => 'DEU1',
@@ -76,8 +72,7 @@ class SeedReferenceData extends Command
                 'tier' => 1,
                 'handler' => 'league',
                 'country' => 'DE',
-                'minimum_annual_wage' => 15_000_000,
-                'is_playable' => false,
+                'role' => 'foreign',
             ],
             [
                 'code' => 'FRA1',
@@ -86,8 +81,7 @@ class SeedReferenceData extends Command
                 'tier' => 1,
                 'handler' => 'league',
                 'country' => 'FR',
-                'minimum_annual_wage' => 12_000_000,
-                'is_playable' => false,
+                'role' => 'foreign',
             ],
             [
                 'code' => 'ITA1',
@@ -96,8 +90,7 @@ class SeedReferenceData extends Command
                 'tier' => 1,
                 'handler' => 'league',
                 'country' => 'IT',
-                'minimum_annual_wage' => 15_000_000,
-                'is_playable' => false,
+                'role' => 'foreign',
             ],
             [
                 'code' => 'NLD1',
@@ -106,8 +99,7 @@ class SeedReferenceData extends Command
                 'tier' => 1,
                 'handler' => 'league',
                 'country' => 'NL',
-                'minimum_annual_wage' => 8_000_000,
-                'is_playable' => false,
+                'role' => 'foreign',
             ],
             [
                 'code' => 'POR1',
@@ -116,8 +108,7 @@ class SeedReferenceData extends Command
                 'tier' => 1,
                 'handler' => 'league',
                 'country' => 'PT',
-                'minimum_annual_wage' => 8_000_000,
-                'is_playable' => false,
+                'role' => 'foreign',
             ],
         ],
         'test' => [
@@ -127,7 +118,7 @@ class SeedReferenceData extends Command
                 'tier' => 1,
                 'handler' => 'league',
                 'country' => 'XX',
-                'minimum_annual_wage' => 20_000_000,
+                'role' => 'primary',
             ],
             [
                 'code' => 'TESTCUP',
@@ -135,7 +126,7 @@ class SeedReferenceData extends Command
                 'tier' => 0,
                 'handler' => 'knockout_cup',
                 'country' => 'XX',
-                'minimum_annual_wage' => null,
+                'role' => 'domestic_cup',
             ],
         ],
     ];
@@ -215,8 +206,7 @@ class SeedReferenceData extends Command
         $tier = $config['tier'];
         $handler = $config['handler'] ?? 'league';
         $country = $config['country'] ?? 'ES';
-        $minimumAnnualWage = $config['minimum_annual_wage'] ?? null;
-        $isPlayable = $config['is_playable'] ?? true;
+        $role = $config['role'] ?? 'foreign';
         $configName = $config['name'] ?? null;
 
         $isCup = in_array($handler, ['knockout_cup', 'group_stage_cup']);
@@ -224,13 +214,13 @@ class SeedReferenceData extends Command
         $this->info("Seeding {$code}...");
 
         if ($isCup) {
-            $this->seedCupCompetition($basePath, $code, $tier, $handler, $country, $minimumAnnualWage);
+            $this->seedCupCompetition($basePath, $code, $tier, $handler, $country, $role);
         } else {
-            $this->seedLeagueCompetition($basePath, $code, $tier, $handler, $country, $minimumAnnualWage, $isPlayable, $configName);
+            $this->seedLeagueCompetition($basePath, $code, $tier, $handler, $country, $role, $configName);
         }
     }
 
-    private function seedLeagueCompetition(string $basePath, string $code, int $tier, string $handler, string $country, ?int $minimumAnnualWage, bool $isPlayable = true, ?string $configName = null): void
+    private function seedLeagueCompetition(string $basePath, string $code, int $tier, string $handler, string $country, string $role = 'foreign', ?string $configName = null): void
     {
         $teamsData = $this->loadJson("{$basePath}/teams.json");
 
@@ -245,7 +235,7 @@ class SeedReferenceData extends Command
         ];
 
         // Seed competition record
-        $this->seedCompetitionRecord($code, $normalizedData, $tier, 'league', $handler, $country, $minimumAnnualWage);
+        $this->seedCompetitionRecord($code, $normalizedData, $tier, 'league', $handler, $country, $role);
 
         // Build team ID mapping (transfermarktId -> UUID)
         $teamIdMap = $this->seedTeams($teamsData['clubs'], $code, $seasonId, $country);
@@ -253,18 +243,18 @@ class SeedReferenceData extends Command
         // Seed players (embedded in teams data)
         $this->seedPlayersFromTeams($teamsData['clubs'], $teamIdMap);
 
-        // Seed fixtures only for playable leagues
-        if ($isPlayable) {
+        // Seed fixtures only for primary leagues
+        if ($role === 'primary') {
             $fixturesData = $this->loadJson("{$basePath}/fixtures.json");
             if (!empty($fixturesData['matchdays'])) {
                 $this->seedFixtures($fixturesData['matchdays'], $code, $seasonId, $teamIdMap);
             }
         } else {
-            $this->line("  Fixtures: skipped (non-playable league)");
+            $this->line("  Fixtures: skipped (foreign league)");
         }
     }
 
-    private function seedCupCompetition(string $basePath, string $code, int $tier, string $handler, string $country, ?int $minimumAnnualWage): void
+    private function seedCupCompetition(string $basePath, string $code, int $tier, string $handler, string $country, string $role = 'domestic_cup'): void
     {
         $teamsData = $this->loadJson("{$basePath}/teams.json");
         $roundsData = $this->loadJson("{$basePath}/rounds.json");
@@ -273,7 +263,7 @@ class SeedReferenceData extends Command
         $season = '2025';
 
         // Seed competition record
-        $this->seedCompetitionRecord($code, $teamsData, $tier, 'cup', $handler, $country, $minimumAnnualWage);
+        $this->seedCompetitionRecord($code, $teamsData, $tier, 'cup', $handler, $country, $role);
 
         // Seed cup round templates
         $this->seedCupRoundTemplates($code, $season, $roundsData, $matchdaysData);
@@ -282,7 +272,7 @@ class SeedReferenceData extends Command
         $this->seedCupTeams($teamsData['clubs'], $code, $season, $country);
     }
 
-    private function seedCompetitionRecord(string $code, array $data, int $tier, string $type, string $handler, string $country, ?int $minimumAnnualWage): void
+    private function seedCompetitionRecord(string $code, array $data, int $tier, string $type, string $handler, string $country, string $role = 'foreign'): void
     {
         $season = $data['seasonID'] ?? '2025';
 
@@ -293,16 +283,13 @@ class SeedReferenceData extends Command
                 'country' => $country,
                 'tier' => $tier,
                 'type' => $type,
+                'role' => $role,
                 'handler_type' => $handler,
                 'season' => $season,
-                'minimum_annual_wage' => $minimumAnnualWage,
             ]
         );
 
-        $wageDisplay = $minimumAnnualWage
-            ? '€' . number_format($minimumAnnualWage / 100, 0, ',', '.') . '/year min'
-            : 'no minimum (cup)';
-        $this->line("  Competition: {$data['name']} ({$wageDisplay})");
+        $this->line("  Competition: {$data['name']} ({$role})");
     }
 
     /**

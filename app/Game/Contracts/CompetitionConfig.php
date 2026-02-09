@@ -49,6 +49,11 @@ interface CompetitionConfig
     public function getAvailableGoals(): array;
 
     /**
+     * Get the minimum annual wage for this competition (in cents).
+     */
+    public function getMinimumAnnualWage(): int;
+
+    /**
      * Get the standings zones for this competition (UCL, UEL, relegation, promotion, etc.).
      *
      * Each zone has:

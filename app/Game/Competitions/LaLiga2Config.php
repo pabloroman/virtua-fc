@@ -65,6 +65,11 @@ class LaLiga2Config implements CompetitionConfig
         ClubProfile::REPUTATION_LOCAL => Game::GOAL_SURVIVAL,
     ];
 
+    public function getMinimumAnnualWage(): int
+    {
+        return 10_000_000; // €100K
+    }
+
     public function getTvRevenue(int $position): int
     {
         return self::TV_REVENUE[$position] ?? self::TV_REVENUE[22];

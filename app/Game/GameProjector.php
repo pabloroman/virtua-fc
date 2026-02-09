@@ -715,8 +715,6 @@ class GameProjector extends Projector
             'potential_low' => $potentialData['low'],
             'potential_high' => $potentialData['high'],
             'season_appearances' => 0,
-            'created_at' => now(),
-            'updated_at' => now(),
         ];
     }
 

@@ -33,6 +33,11 @@ class DefaultLeagueConfig implements CompetitionConfig
         $this->baseTvRevenue = $baseTvRevenue; // €50M default base
     }
 
+    public function getMinimumAnnualWage(): int
+    {
+        return 10_000_000; // €100K default
+    }
+
     public function getTvRevenue(int $position): int
     {
         // Linear scale: 1st place gets 2x base, last place gets 0.8x base

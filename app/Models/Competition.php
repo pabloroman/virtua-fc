@@ -18,20 +18,24 @@ class Competition extends Model
     protected $keyType = 'string';
     public $timestamps = false;
 
+    public const ROLE_PRIMARY = 'primary';
+    public const ROLE_DOMESTIC_CUP = 'domestic_cup';
+    public const ROLE_CONTINENTAL = 'continental';
+    public const ROLE_FOREIGN = 'foreign';
+
     protected $fillable = [
         'id',
         'name',
         'country',
         'tier',
         'type',
+        'role',
         'season',
         'handler_type',
-        'minimum_annual_wage',
     ];
 
     protected $casts = [
         'tier' => 'integer',
-        'minimum_annual_wage' => 'integer',
     ];
 
     /**
@@ -41,19 +45,6 @@ class Competition extends Model
         'ESP1' => LaLigaConfig::class,
         'ESP2' => LaLiga2Config::class,
     ];
-
-    /**
-     * Get the minimum annual wage for this competition.
-     * Returns null for cups (they don't have their own minimum).
-     */
-    public function getMinimumAnnualWageEurosAttribute(): ?int
-    {
-        if ($this->minimum_annual_wage === null) {
-            return null;
-        }
-
-        return (int) ($this->minimum_annual_wage / 100);
-    }
 
     public function teams(): BelongsToMany
     {

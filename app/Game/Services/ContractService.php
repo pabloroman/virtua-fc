@@ -12,7 +12,7 @@ use Illuminate\Support\Collection;
 class ContractService
 {
     /**
-     * Default minimum wage if no competition found (€100K in cents).
+     * Default minimum wage if no competition config found (€100K in cents).
      */
     private const DEFAULT_MINIMUM_WAGE = 10_000_000;
 
@@ -147,14 +147,13 @@ class ContractService
      */
     public function getMinimumWageForTeam(Team $team): int
     {
-        // Find the team's primary league competition
         $league = Competition::whereHas('teams', function ($query) use ($team) {
             $query->where('teams.id', $team->id);
         })
-            ->where('type', 'league')
+            ->where('role', Competition::ROLE_PRIMARY)
             ->first();
 
-        return $league?->minimum_annual_wage ?? self::DEFAULT_MINIMUM_WAGE;
+        return $league?->getConfig()->getMinimumAnnualWage() ?? self::DEFAULT_MINIMUM_WAGE;
     }
 
     /**
@@ -167,7 +166,7 @@ class ContractService
     {
         $competition = Competition::find($competitionId);
 
-        return $competition?->minimum_annual_wage ?? self::DEFAULT_MINIMUM_WAGE;
+        return $competition?->getConfig()->getMinimumAnnualWage() ?? self::DEFAULT_MINIMUM_WAGE;
     }
 
     /**

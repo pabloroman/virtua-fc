@@ -10,7 +10,7 @@ final class SelectTeam
     public function __invoke(Request $request)
     {
         $competitions = Competition::with('teams')
-            ->where('type', 'league')
+            ->where('role', Competition::ROLE_PRIMARY)
             ->orderBy('tier')
             ->get();
 
