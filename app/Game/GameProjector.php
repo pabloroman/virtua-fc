@@ -651,16 +651,90 @@ class GameProjector extends Projector
 
             $playersData = $club['players'] ?? [];
             $playerRows = [];
-            foreach ($playersData as $playerData) {
-                $row = $this->prepareGamePlayerRow($gameId, $team, $playerData, $minimumWage);
-                if ($row) {
-                    $playerRows[] = $row;
+
+            if (!empty($playersData)) {
+                // Real squad data from JSON
+                foreach ($playersData as $playerData) {
+                    $row = $this->prepareGamePlayerRow($gameId, $team, $playerData, $minimumWage);
+                    if ($row) {
+                        $playerRows[] = $row;
+                    }
                 }
+            } else {
+                // Fallback: use generated reference players (seeded from team strength)
+                $playerRows = $this->prepareGeneratedPlayerRows($gameId, $team, $transfermarktId, $minimumWage);
             }
+
             foreach (array_chunk($playerRows, 100) as $chunk) {
                 GamePlayer::insert($chunk);
             }
         }
+    }
+
+    /**
+     * Prepare game player rows from generated reference players.
+     * Used for European teams without embedded squad data in JSON.
+     */
+    private function prepareGeneratedPlayerRows(string $gameId, Team $team, string $transfermarktId, int $minimumWage): array
+    {
+        $generatedPlayers = Player::where('transfermarkt_id', 'like', "gen_{$transfermarktId}_%")->get();
+        $rows = [];
+
+        foreach ($generatedPlayers as $player) {
+            $marketValueCents = (int) round(
+                ($player->technical_ability + $player->physical_ability) / 2 * 100_000_00
+            );
+
+            $annualWage = $this->contractService->calculateAnnualWage($marketValueCents, $minimumWage, $player->age);
+
+            $currentAbility = (int) round(
+                ($player->technical_ability + $player->physical_ability) / 2
+            );
+            $potentialData = $this->developmentService->generatePotential($player->age, $currentAbility);
+
+            // Extract position from the generated player index
+            $positions = [
+                'Goalkeeper', 'Goalkeeper',
+                'Centre-Back', 'Centre-Back', 'Centre-Back', 'Centre-Back',
+                'Left-Back', 'Right-Back',
+                'Defensive Midfield', 'Central Midfield', 'Central Midfield', 'Central Midfield',
+                'Attacking Midfield', 'Left Winger', 'Right Winger',
+                'Centre-Forward', 'Centre-Forward', 'Centre-Forward',
+            ];
+
+            // Parse index from transfermarkt_id like "gen_418_5"
+            $parts = explode('_', $player->transfermarkt_id);
+            $index = (int) ($parts[2] ?? 0);
+            $position = $positions[$index] ?? 'Central Midfield';
+
+            $contractYear = now()->addYears(rand(1, 4))->year;
+            $contractUntil = "{$contractYear}-06-30";
+
+            $rows[] = [
+                'id' => Str::uuid()->toString(),
+                'game_id' => $gameId,
+                'player_id' => $player->id,
+                'team_id' => $team->id,
+                'position' => $position,
+                'market_value' => null,
+                'market_value_cents' => $marketValueCents,
+                'contract_until' => $contractUntil,
+                'annual_wage' => $annualWage,
+                'signed_from' => null,
+                'joined_on' => null,
+                'fitness' => rand(90, 100),
+                'morale' => rand(65, 80),
+                'durability' => InjuryService::generateDurability(),
+                'game_technical_ability' => $player->technical_ability,
+                'game_physical_ability' => $player->physical_ability,
+                'potential' => $potentialData['potential'],
+                'potential_low' => $potentialData['low'],
+                'potential_high' => $potentialData['high'],
+                'season_appearances' => 0,
+            ];
+        }
+
+        return $rows;
     }
 
     /**
