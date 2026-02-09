@@ -49,6 +49,7 @@ class PlayerGeneratorService
         // Create the reference Player record
         $player = Player::create([
             'id' => Str::uuid()->toString(),
+            'transfermarkt_id' => 'gen-' . Str::uuid()->toString(),
             'name' => $name,
             'nationality' => $nationality,
             'date_of_birth' => $data->dateOfBirth,

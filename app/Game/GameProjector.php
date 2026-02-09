@@ -128,14 +128,16 @@ class GameProjector extends Projector
             'played_at' => now(),
         ]);
 
+        // Serve suspensions for players who missed this match due to suspension
+        // Must run BEFORE processMatchEvents so that new suspensions from this
+        // match's cards aren't immediately served (they should apply from the next match)
+        $this->serveSuspensions($gameId, $match, $event->competitionId);
+
         // Store match events and update player stats
         $this->processMatchEvents($gameId, $event->matchId, $event->events, $event->competitionId, $match->scheduled_date);
 
         // Update appearances for players in the lineup
         $this->updateAppearances($match);
-
-        // Serve suspensions for players who missed this match due to suspension
-        $this->serveSuspensions($gameId, $match, $event->competitionId);
 
         // Update fitness and morale for players
         $this->updatePlayerCondition($match, $event->events);
