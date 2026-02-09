@@ -67,12 +67,13 @@ End-of-season processing uses ordered processors implementing `App\Game\Contract
 
 ```php
 // Processors run in priority order (lower = earlier)
+SeasonArchiveProcessor (5)
+SeasonSettlementProcessor (15)
 FixtureGenerationProcessor (10)
 StandingsResetProcessor (20)
 LoanReturnProcessor (30)
 ContractExpirationProcessor (50)
 PlayerDevelopmentProcessor (60)
-SeasonArchiveProcessor (70)
 ```
 
 New processors can be added to `SeasonEndPipeline` without modifying existing code.
@@ -85,6 +86,8 @@ Uses projection-based budgeting (not running balance):
 - `GameInvestment` - budget allocation (transfer budget, infrastructure tiers)
 - `FinancialTransaction` - records income/expense for season-end reconciliation
 
+Revenue rates (commercial per seat, matchday per seat) are defined per competition config (`CompetitionConfig::getCommercialPerSeat()`, `getRevenuePerSeat()`), not on `ClubProfile`. Commercial revenue grows over seasons via position-based multipliers in `config/finances.php`.
+
 **Important:** `currentFinances` and `currentInvestment` relationships use `$this->season` in their queries. Always use lazy loading (access after model load), not eager loading with `with()`.
 
 ## Key Files
@@ -96,6 +99,7 @@ Uses projection-based budgeting (not running balance):
 | Match simulator | `app/Game/Services/MatchSimulator.php` |
 | Simulation config | `config/match_simulation.php` |
 | Season end pipeline | `app/Game/Services/SeasonEndPipeline.php` |
+| Financial config | `config/finances.php` |
 | Routes | `routes/web.php` |
 
 ## Directory Structure
