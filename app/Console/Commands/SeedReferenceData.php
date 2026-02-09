@@ -112,6 +112,15 @@ class SeedReferenceData extends Command
                 'role' => 'foreign',
             ],
             [
+                'code' => 'EUR',
+                'name' => 'Europa',
+                'path' => 'data/2025/EUR',
+                'tier' => 1,
+                'handler' => 'league',
+                'country' => 'EU',
+                'role' => 'foreign',
+            ],
+            [
                 'code' => 'UCL',
                 'path' => 'data/2025/UCL',
                 'tier' => 0,
