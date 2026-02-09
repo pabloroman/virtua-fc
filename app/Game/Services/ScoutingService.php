@@ -72,7 +72,7 @@ class ScoutingService
     {
         return ScoutReport::where('game_id', $game->id)
             ->whereIn('status', [ScoutReport::STATUS_SEARCHING, ScoutReport::STATUS_COMPLETED])
-            ->latest()
+            ->orderByDesc('game_date')
             ->first();
     }
 
@@ -89,6 +89,7 @@ class ScoutingService
             'filters' => $filters,
             'weeks_total' => $weeks,
             'weeks_remaining' => $weeks,
+            'game_date' => $game->current_date,
         ]);
     }
 

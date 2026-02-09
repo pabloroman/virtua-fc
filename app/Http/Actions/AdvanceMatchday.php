@@ -267,7 +267,7 @@ class AdvanceMatchday
                 $game->id,
                 GameNotification::TYPE_TRANSFER_OFFER_EXPIRING,
                 ['offer_id' => $offer->id],
-                24
+                1
             )) {
                 $this->notificationService->notifyExpiringOffer($game, $offer);
             }
@@ -289,7 +289,7 @@ class AdvanceMatchday
                     $game->id,
                     GameNotification::TYPE_PLAYER_RECOVERED,
                     ['player_id' => $player->id],
-                    168 // 7 days
+                    7
                 )) {
                     $this->notificationService->notifyRecovery($game, $player);
                 }
@@ -317,7 +317,7 @@ class AdvanceMatchday
                     $game->id,
                     GameNotification::TYPE_LOW_FITNESS,
                     ['player_id' => $player->id],
-                    168 // 7 days
+                    7
                 )) {
                     $this->notificationService->notifyLowFitness($game, $player);
                 }

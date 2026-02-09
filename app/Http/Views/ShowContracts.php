@@ -40,7 +40,7 @@ class ShowContracts
                 $query->where('team_id', $game->team_id);
             })
             ->where('expires_at', '>=', $game->current_date)
-            ->orderByDesc('created_at')
+            ->orderByDesc('game_date')
             ->get();
 
         // Agreed pre-contracts (players leaving at end of season)

@@ -10,6 +10,8 @@ class ScoutReport extends Model
 {
     use HasUuids;
 
+    public $timestamps = false;
+
     protected $fillable = [
         'game_id',
         'status',
@@ -17,6 +19,7 @@ class ScoutReport extends Model
         'weeks_total',
         'weeks_remaining',
         'player_ids',
+        'game_date',
     ];
 
     protected $casts = [
@@ -24,6 +27,7 @@ class ScoutReport extends Model
         'player_ids' => 'array',
         'weeks_total' => 'integer',
         'weeks_remaining' => 'integer',
+        'game_date' => 'date',
     ];
 
     public const STATUS_SEARCHING = 'searching';

@@ -10,6 +10,8 @@ class ClubProfile extends Model
 {
     use HasUuids;
 
+    public $timestamps = false;
+
     protected $fillable = [
         'team_id',
         'reputation_level',

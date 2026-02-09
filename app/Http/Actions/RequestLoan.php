@@ -53,6 +53,8 @@ class RequestLoan
                 'transfer_fee' => 0,
                 'status' => TransferOffer::STATUS_COMPLETED,
                 'expires_at' => $game->current_date->addDays(30),
+                'game_date' => $game->current_date,
+                'resolved_at' => $game->current_date,
             ]);
 
             $this->loanService->processLoanIn($game, $player);
@@ -72,6 +74,8 @@ class RequestLoan
             'transfer_fee' => 0,
             'status' => TransferOffer::STATUS_AGREED,
             'expires_at' => $game->current_date->addDays(30),
+            'game_date' => $game->current_date,
+            'resolved_at' => $game->current_date,
         ]);
 
         $nextWindow = $game->getNextWindowName();

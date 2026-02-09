@@ -145,7 +145,7 @@ class Game extends Model
     {
         return $this->hasOne(ScoutReport::class)
             ->whereIn('status', [ScoutReport::STATUS_SEARCHING, ScoutReport::STATUS_COMPLETED])
-            ->latest();
+            ->orderByDesc('game_date');
     }
 
     /**

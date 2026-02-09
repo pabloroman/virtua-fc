@@ -11,6 +11,8 @@ class TransferOffer extends Model
 {
     use HasUuids;
 
+    public $timestamps = false;
+
     protected $fillable = [
         'game_id',
         'game_player_id',
@@ -23,6 +25,8 @@ class TransferOffer extends Model
         'selling_team_id',
         'asking_price',
         'offered_wage',
+        'game_date',
+        'resolved_at',
     ];
 
     protected $casts = [
@@ -30,6 +34,8 @@ class TransferOffer extends Model
         'asking_price' => 'integer',
         'offered_wage' => 'integer',
         'expires_at' => 'date',
+        'game_date' => 'date',
+        'resolved_at' => 'date',
     ];
 
     // Offer types
@@ -202,12 +208,4 @@ class TransferOffer extends Model
         return $query->where('status', self::STATUS_AGREED);
     }
 
-    /**
-     * Scope for non-expired offers.
-     */
-    public function scopeActive($query)
-    {
-        return $query->where('status', self::STATUS_PENDING)
-            ->where('expires_at', '>=', now());
-    }
 }

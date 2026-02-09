@@ -12,6 +12,8 @@ class Team extends Model
 {
     use HasFactory, HasUuids;
 
+    public $timestamps = false;
+
     protected $fillable = [
         'transfermarkt_id',
         'name',

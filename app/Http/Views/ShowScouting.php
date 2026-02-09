@@ -32,7 +32,7 @@ class ShowScouting
                     ->where('game_player_id', $player->id)
                     ->where('direction', TransferOffer::DIRECTION_INCOMING)
                     ->whereIn('status', [TransferOffer::STATUS_PENDING, TransferOffer::STATUS_AGREED])
-                    ->latest()
+                    ->orderByDesc('game_date')
                     ->first();
             }
         }

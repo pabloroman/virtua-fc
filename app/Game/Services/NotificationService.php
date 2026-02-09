@@ -85,7 +85,7 @@ class NotificationService
     public function getNotifications(string $gameId, bool $unreadOnly = false, int $limit = 10): Collection
     {
         $query = GameNotification::where('game_id', $gameId)
-            ->orderByDesc('created_at')
+            ->orderByDesc('game_date')
             ->limit($limit);
 
         if ($unreadOnly) {
@@ -416,11 +416,14 @@ class NotificationService
     /**
      * Check if a similar notification already exists (to avoid duplicates).
      */
-    public function hasRecentNotification(string $gameId, string $type, array $metadata, int $hours = 24): bool
+    public function hasRecentNotification(string $gameId, string $type, array $metadata, int $days = 1): bool
     {
+        $game = Game::find($gameId);
+        $cutoff = $game->current_date->subDays($days);
+
         $query = GameNotification::where('game_id', $gameId)
             ->where('type', $type)
-            ->where('created_at', '>', now()->subHours($hours));
+            ->where('game_date', '>', $cutoff);
 
         // Check for matching metadata key (e.g., player_id for injury notifications)
         if (isset($metadata['player_id'])) {

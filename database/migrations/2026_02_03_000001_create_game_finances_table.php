@@ -33,8 +33,6 @@ return new class extends Migration
 
             // Net result for the season
             $table->bigInteger('season_profit_loss')->default(0);
-
-            $table->timestamps();
         });
     }
 

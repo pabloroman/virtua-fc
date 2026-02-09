@@ -39,7 +39,6 @@ class ShowFinances
         $transactions = FinancialTransaction::with('relatedPlayer.player')
             ->where('game_id', $gameId)
             ->orderByDesc('transaction_date')
-            ->orderByDesc('created_at')
             ->limit(20)
             ->get();
 

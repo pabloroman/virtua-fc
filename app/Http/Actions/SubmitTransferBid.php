@@ -52,6 +52,7 @@ class SubmitTransferBid
                 'offered_wage' => $wageDemand,
                 'status' => TransferOffer::STATUS_PENDING, // Will be updated by acceptIncomingOffer
                 'expires_at' => $game->current_date->addDays(30),
+                'game_date' => $game->current_date,
             ]);
 
             // Complete immediately if window open, otherwise mark as agreed
@@ -81,6 +82,7 @@ class SubmitTransferBid
                 'offered_wage' => $wageDemand,
                 'status' => TransferOffer::STATUS_PENDING,
                 'expires_at' => $game->current_date->addDays(14),
+                'game_date' => $game->current_date,
             ]);
 
             return redirect()->route('game.scouting', $gameId)

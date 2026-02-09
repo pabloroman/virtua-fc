@@ -88,7 +88,10 @@ class TransferService
         // Expire any pending offers
         $player->transferOffers()
             ->where('status', TransferOffer::STATUS_PENDING)
-            ->update(['status' => TransferOffer::STATUS_EXPIRED]);
+            ->update([
+                'status' => TransferOffer::STATUS_EXPIRED,
+                'resolved_at' => $player->game->current_date,
+            ]);
     }
 
     /**
@@ -362,6 +365,7 @@ class TransferService
             'transfer_fee' => 0, // Free transfer
             'status' => TransferOffer::STATUS_PENDING,
             'expires_at' => Carbon::parse($player->game->current_date)->addDays(self::PRE_CONTRACT_OFFER_EXPIRY_DAYS),
+            'game_date' => $player->game->current_date,
         ]);
     }
 
@@ -421,7 +425,7 @@ class TransferService
         );
 
         // Mark offer as completed
-        $offer->update(['status' => TransferOffer::STATUS_COMPLETED]);
+        $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
     }
 
     /**
@@ -458,7 +462,7 @@ class TransferService
         TransferOffer::where('game_player_id', $player->id)
             ->where('id', '!=', $offer->id)
             ->where('status', TransferOffer::STATUS_PENDING)
-            ->update(['status' => TransferOffer::STATUS_REJECTED]);
+            ->update(['status' => TransferOffer::STATUS_REJECTED, 'resolved_at' => $game->current_date]);
 
         // If transfer window is open, complete immediately
         if ($game->isTransferWindowOpen()) {
@@ -467,7 +471,7 @@ class TransferService
         }
 
         // Otherwise, mark as agreed (waiting for next transfer window)
-        $offer->update(['status' => TransferOffer::STATUS_AGREED]);
+        $offer->update(['status' => TransferOffer::STATUS_AGREED, 'resolved_at' => $game->current_date]);
         return false;
     }
 
@@ -530,7 +534,7 @@ class TransferService
         }
 
         // Mark offer as completed
-        $offer->update(['status' => TransferOffer::STATUS_COMPLETED]);
+        $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
     }
 
     /**
@@ -538,7 +542,10 @@ class TransferService
      */
     public function rejectOffer(TransferOffer $offer): void
     {
-        $offer->update(['status' => TransferOffer::STATUS_REJECTED]);
+        $offer->update([
+            'status' => TransferOffer::STATUS_REJECTED,
+            'resolved_at' => $offer->game->current_date,
+        ]);
     }
 
     /**
@@ -549,7 +556,7 @@ class TransferService
         return TransferOffer::where('game_id', $game->id)
             ->where('status', TransferOffer::STATUS_PENDING)
             ->where('expires_at', '<', $game->current_date)
-            ->update(['status' => TransferOffer::STATUS_EXPIRED]);
+            ->update(['status' => TransferOffer::STATUS_EXPIRED, 'resolved_at' => $game->current_date]);
     }
 
     /**
@@ -571,6 +578,7 @@ class TransferService
             'transfer_fee' => $transferFee,
             'status' => TransferOffer::STATUS_PENDING,
             'expires_at' => Carbon::parse($player->game->current_date)->addDays($expiryDays),
+            'game_date' => $player->game->current_date,
         ]);
     }
 
@@ -852,7 +860,7 @@ class TransferService
         }
 
         // Otherwise, mark as agreed (waiting for next transfer window)
-        $offer->update(['status' => TransferOffer::STATUS_AGREED]);
+        $offer->update(['status' => TransferOffer::STATUS_AGREED, 'resolved_at' => $game->current_date]);
         return false;
     }
 
@@ -897,7 +905,7 @@ class TransferService
             );
         }
 
-        $offer->update(['status' => TransferOffer::STATUS_COMPLETED]);
+        $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
     }
 
     /**
@@ -923,7 +931,7 @@ class TransferService
             'team_id' => $game->team_id,
             'joined_on' => $game->current_date,
         ]);
-        $offer->update(['status' => TransferOffer::STATUS_COMPLETED]);
+        $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
     }
 
     /**
@@ -950,6 +958,6 @@ class TransferService
             'transfer_status' => null,
             'transfer_listed_at' => null,
         ]);
-        $offer->update(['status' => TransferOffer::STATUS_COMPLETED]);
+        $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
     }
 }

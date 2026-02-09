@@ -60,6 +60,8 @@ class LoanService
                             'transfer_fee' => 0,
                             'status' => TransferOffer::STATUS_COMPLETED,
                             'expires_at' => $game->current_date->addDays(30),
+                            'game_date' => $game->current_date,
+                            'resolved_at' => $game->current_date,
                         ]);
 
                         $this->processLoanOut($game, $player, $destination);
@@ -74,6 +76,8 @@ class LoanService
                             'transfer_fee' => 0,
                             'status' => TransferOffer::STATUS_AGREED,
                             'expires_at' => $game->current_date->addDays(30),
+                            'game_date' => $game->current_date,
+                            'resolved_at' => $game->current_date,
                         ]);
 
                         $player->update([

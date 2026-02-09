@@ -365,8 +365,6 @@ class SeedReferenceData extends Command
                     'stadium_seats' => isset($data['stadiumSeats'])
                         ? (int) str_replace(['.', ','], '', $data['stadiumSeats'])
                         : 0,
-                    'created_at' => now(),
-                    'updated_at' => now(),
                 ]);
                 $teamsByTransfermarktId[$transfermarktId] = $teamId;
             }
@@ -573,8 +571,6 @@ class SeedReferenceData extends Command
                     'image' => $club['image'] ?? null,
                     'stadium_name' => $club['stadiumName'] ?? null,
                     'stadium_seats' => $stadiumSeats,
-                    'created_at' => now(),
-                    'updated_at' => now(),
                 ]);
             }
 
@@ -652,7 +648,6 @@ class SeedReferenceData extends Command
                         'foot' => $foot,
                         'technical_ability' => $technical,
                         'physical_ability' => $physical,
-                        'updated_at' => now(),
                     ]
                 );
 
@@ -760,8 +755,6 @@ class SeedReferenceData extends Command
                     'name' => $club['name'],
                     'country' => $country,
                     'image' => "https://tmssl.akamaized.net/images/wappen/big/{$cupTeamId}.png",
-                    'created_at' => now(),
-                    'updated_at' => now(),
                 ]);
                 $teamsByTransfermarktId[$cupTeamId] = $teamId;
             }

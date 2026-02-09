@@ -17,8 +17,7 @@ return new class extends Migration
             $table->tinyInteger('weeks_total');
             $table->tinyInteger('weeks_remaining');
             $table->json('player_ids')->nullable(); // Array of game_player_id results
-
-            $table->timestamps();
+            $table->date('game_date'); // In-game date when search was started
 
             $table->foreign('game_id')
                 ->references('id')

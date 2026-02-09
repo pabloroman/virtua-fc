@@ -64,7 +64,7 @@ class ShowTransfers
             ->where('game_id', $gameId)
             ->where('status', TransferOffer::STATUS_COMPLETED)
             ->where('direction', '!=', TransferOffer::DIRECTION_INCOMING)
-            ->orderByDesc('updated_at')
+            ->orderByDesc('resolved_at')
             ->limit(10)
             ->get();
 
@@ -73,7 +73,7 @@ class ShowTransfers
             ->where('game_id', $gameId)
             ->where('status', TransferOffer::STATUS_AGREED)
             ->where('direction', TransferOffer::DIRECTION_INCOMING)
-            ->orderByDesc('created_at')
+            ->orderByDesc('game_date')
             ->get();
 
         // Get pending bids (user's offers awaiting response)
@@ -81,7 +81,7 @@ class ShowTransfers
             ->where('game_id', $gameId)
             ->where('status', TransferOffer::STATUS_PENDING)
             ->where('direction', TransferOffer::DIRECTION_INCOMING)
-            ->orderByDesc('created_at')
+            ->orderByDesc('game_date')
             ->get();
 
         // Get rejected bids (user's offers that were declined - show for 7 days)
@@ -89,8 +89,8 @@ class ShowTransfers
             ->where('game_id', $gameId)
             ->where('status', TransferOffer::STATUS_REJECTED)
             ->where('direction', TransferOffer::DIRECTION_INCOMING)
-            ->where('updated_at', '>=', $game->current_date->subDays(7))
-            ->orderByDesc('updated_at')
+            ->where('resolved_at', '>=', $game->current_date->subDays(7))
+            ->orderByDesc('resolved_at')
             ->get();
 
         // Get transfer window info from Game model

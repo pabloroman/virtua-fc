@@ -11,6 +11,8 @@ class GameInvestment extends Model
 {
     use HasUuids;
 
+    public $timestamps = false;
+
     protected $fillable = [
         'game_id',
         'season',

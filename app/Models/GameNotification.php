@@ -11,6 +11,8 @@ class GameNotification extends Model
 {
     use HasUuids;
 
+    public $timestamps = false;
+
     // Notification types
     public const TYPE_PLAYER_INJURED = 'player_injured';
     public const TYPE_PLAYER_SUSPENDED = 'player_suspended';
@@ -61,8 +63,6 @@ class GameNotification extends Model
         'metadata' => 'array',
         'game_date' => 'date',
         'read_at' => 'datetime',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
     ];
 
     // ==========================================
@@ -110,16 +110,6 @@ class GameNotification extends Model
     public function scopeByPriority(Builder $query, string $priority): Builder
     {
         return $query->where('priority', $priority);
-    }
-
-    public function scopeRecent(Builder $query, int $limit = 10): Builder
-    {
-        return $query->orderByDesc('created_at')->limit($limit);
-    }
-
-    public function scopeOlderThan(Builder $query, int $days): Builder
-    {
-        return $query->where('created_at', '<', now()->subDays($days));
     }
 
     // ==========================================
@@ -200,15 +190,4 @@ class GameNotification extends Model
         };
     }
 
-    /**
-     * Get formatted game date for display.
-     */
-    public function getFormattedGameDate(): string
-    {
-        if ($this->game_date) {
-            return $this->game_date->format('j M Y');
-        }
-
-        return $this->created_at->format('j M Y');
-    }
 }
