@@ -3,7 +3,7 @@
 namespace App\Http\Views;
 
 use App\Game\Services\ContractService;
-use App\Game\Services\FinancialService;
+use App\Game\Services\BudgetProjectionService;
 use App\Game\Services\TransferService;
 use App\Models\Game;
 use App\Models\GamePlayer;
@@ -13,7 +13,7 @@ class ShowContracts
 {
     public function __construct(
         private readonly ContractService $contractService,
-        private readonly FinancialService $financialService,
+        private readonly BudgetProjectionService $budgetProjectionService,
         private readonly TransferService $transferService,
     ) {}
 
@@ -68,8 +68,8 @@ class ShowContracts
             ->get();
 
         // Squad totals
-        $squadValue = $this->financialService->calculateSquadValue($game);
-        $wageBill = $this->financialService->calculateAnnualWageBill($game);
+        $squadValue = $this->budgetProjectionService->calculateSquadValue($game);
+        $wageBill = $this->budgetProjectionService->calculateProjectedWages($game);
 
         return view('contracts', [
             'game' => $game,

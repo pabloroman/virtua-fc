@@ -200,6 +200,16 @@ class BudgetProjectionService
     }
 
     /**
+     * Calculate total squad market value.
+     */
+    public function calculateSquadValue(Game $game): int
+    {
+        return GamePlayer::where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->sum('market_value_cents');
+    }
+
+    /**
      * Get carried debt from previous season.
      */
     public function getCarriedDebt(Game $game): int
