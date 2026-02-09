@@ -21,6 +21,8 @@ return [
     'surplus_calculation' => 'Cálculo del Superávit',
     'projected_wages' => 'Salarios Proyectados',
     'projected_surplus' => 'Superávit Proyectado',
+    'operating_expenses' => 'Gastos Operativos',
+    'taxes' => 'Impuestos y Cargas Sociales',
     'carried_debt' => 'Deuda Arrastrada',
     'available_surplus' => 'Superávit Disponible',
 

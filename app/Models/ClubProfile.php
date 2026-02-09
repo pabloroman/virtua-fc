@@ -22,6 +22,7 @@ class ClubProfile extends Model
     public const REPUTATION_CONTINENTAL = 'continental';
     public const REPUTATION_ESTABLISHED = 'established';
     public const REPUTATION_MODEST = 'modest';
+    public const REPUTATION_PROFESSIONAL = 'professional';
     public const REPUTATION_LOCAL = 'local';
 
     /**
@@ -35,7 +36,8 @@ class ClubProfile extends Model
         self::REPUTATION_CONTINENTAL => 80_000, // €800/seat
         self::REPUTATION_ESTABLISHED => 50_000, // €500/seat
         self::REPUTATION_MODEST => 35_000, // €350/seat
-        self::REPUTATION_LOCAL => 20_000, // €200/seat
+        self::REPUTATION_PROFESSIONAL => 20_000, // €200/seat
+        self::REPUTATION_LOCAL => 10_000, // €100/seat
     ];
 
     protected $casts = [

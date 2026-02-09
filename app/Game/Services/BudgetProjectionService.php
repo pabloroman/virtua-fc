@@ -51,8 +51,15 @@ class BudgetProjectionService
         // Calculate projected wages
         $projectedWages = $this->calculateProjectedWages($game);
 
+        // Calculate taxes (employer social security contributions)
+        $projectedTaxes = (int) ($projectedWages * config('finances.taxes_rate'));
+
+        // Calculate operating expenses based on club reputation
+        $reputation = $team->clubProfile?->reputation_level ?? 'modest';
+        $projectedOperatingExpenses = config('finances.operating_expenses.' . $reputation, 700_000_000);
+
         // Calculate projected surplus
-        $projectedSurplus = $projectedTotalRevenue - $projectedWages;
+        $projectedSurplus = $projectedTotalRevenue - $projectedWages - $projectedTaxes - $projectedOperatingExpenses;
 
         // Get carried debt from previous season
         $carriedDebt = $this->getCarriedDebt($game);
@@ -71,6 +78,8 @@ class BudgetProjectionService
                 'projected_commercial_revenue' => $projectedCommercialRevenue,
                 'projected_total_revenue' => $projectedTotalRevenue,
                 'projected_wages' => $projectedWages,
+                'projected_operating_expenses' => $projectedOperatingExpenses,
+                'projected_taxes' => $projectedTaxes,
                 'projected_surplus' => $projectedSurplus,
                 'carried_debt' => $carriedDebt,
             ]

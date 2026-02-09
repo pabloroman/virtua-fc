@@ -56,8 +56,14 @@ class SeasonSettlementProcessor implements SeasonEndProcessor
         // Calculate actual wages (pro-rated for all players)
         $actualWages = $this->calculateActualWages($game);
 
+        // Calculate actual taxes (employer social security contributions)
+        $actualTaxes = (int) ($actualWages * config('finances.taxes_rate'));
+
+        // Operating expenses are fixed costs — same as projected
+        $actualOperatingExpenses = $finances->projected_operating_expenses;
+
         // Calculate actual surplus
-        $actualSurplus = $actualTotalRevenue - $actualWages;
+        $actualSurplus = $actualTotalRevenue - $actualWages - $actualTaxes - $actualOperatingExpenses;
 
         // Calculate variance (difference between actual and projected surplus)
         $variance = $actualSurplus - $finances->projected_surplus;
@@ -71,6 +77,8 @@ class SeasonSettlementProcessor implements SeasonEndProcessor
             'actual_transfer_income' => $actualTransferIncome,
             'actual_total_revenue' => $actualTotalRevenue,
             'actual_wages' => $actualWages,
+            'actual_operating_expenses' => $actualOperatingExpenses,
+            'actual_taxes' => $actualTaxes,
             'actual_surplus' => $actualSurplus,
             'variance' => $variance,
         ]);

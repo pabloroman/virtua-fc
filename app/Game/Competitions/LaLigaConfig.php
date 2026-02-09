@@ -12,25 +12,25 @@ class LaLigaConfig implements CompetitionConfig
      * La Liga TV revenue by position (in cents).
      */
     private const TV_REVENUE = [
-        1 => 10_000_000_000,   // €100M
-        2 => 9_000_000_000,    // €90M
-        3 => 8_500_000_000,    // €85M
-        4 => 8_000_000_000,    // €80M
-        5 => 7_500_000_000,    // €75M
-        6 => 7_000_000_000,    // €70M
-        7 => 6_500_000_000,    // €65M
-        8 => 6_000_000_000,    // €60M
-        9 => 5_800_000_000,    // €58M
-        10 => 5_600_000_000,   // €56M
-        11 => 5_400_000_000,   // €54M
-        12 => 5_200_000_000,   // €52M
-        13 => 5_000_000_000,   // €50M
-        14 => 5_000_000_000,   // €50M
-        15 => 4_800_000_000,   // €48M
-        16 => 4_600_000_000,   // €46M
-        17 => 4_400_000_000,   // €44M
+        1 => 15_500_000_000,   // €155M
+        2 => 14_000_000_000,   // €140M
+        3 => 10_500_000_000,   // €105M
+        4 => 7_200_000_000,    // €72M
+        5 => 6_800_000_000,    // €68M
+        6 => 6_500_000_000,    // €65M
+        7 => 6_200_000_000,    // €62M
+        8 => 5_800_000_000,    // €58M
+        9 => 5_500_000_000,    // €55M
+        10 => 5_200_000_000,   // €52M
+        11 => 4_800_000_000,   // €48M
+        12 => 4_600_000_000,   // €46M
+        13 => 4_500_000_000,   // €45M
+        14 => 4_400_000_000,   // €44M
+        15 => 4_300_000_000,   // €43M
+        16 => 4_300_000_000,   // €43M
+        17 => 4_200_000_000,   // €42M
         18 => 4_200_000_000,   // €42M
-        19 => 4_000_000_000,   // €40M
+        19 => 4_100_000_000,   // €41M
         20 => 4_000_000_000,   // €40M
     ];
 
@@ -61,6 +61,8 @@ class LaLigaConfig implements CompetitionConfig
         ClubProfile::REPUTATION_CONTINENTAL => Game::GOAL_EUROPA_LEAGUE,
         ClubProfile::REPUTATION_ESTABLISHED => Game::GOAL_TOP_HALF,
         ClubProfile::REPUTATION_MODEST => Game::GOAL_SURVIVAL,
+        ClubProfile::REPUTATION_PROFESSIONAL => Game::GOAL_SURVIVAL,
+        ClubProfile::REPUTATION_LOCAL => Game::GOAL_SURVIVAL,
     ];
 
     public function getMinimumAnnualWage(): int

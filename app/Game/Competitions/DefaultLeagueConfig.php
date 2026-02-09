@@ -24,6 +24,7 @@ class DefaultLeagueConfig implements CompetitionConfig
         ClubProfile::REPUTATION_CONTINENTAL => Game::GOAL_TOP_HALF,
         ClubProfile::REPUTATION_ESTABLISHED => Game::GOAL_TOP_HALF,
         ClubProfile::REPUTATION_MODEST => Game::GOAL_TOP_HALF,
+        ClubProfile::REPUTATION_PROFESSIONAL => Game::GOAL_SURVIVAL,
         ClubProfile::REPUTATION_LOCAL => Game::GOAL_SURVIVAL,
     ];
 

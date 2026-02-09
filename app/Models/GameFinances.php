@@ -21,6 +21,8 @@ class GameFinances extends Model
         'projected_commercial_revenue',
         'projected_total_revenue',
         'projected_wages',
+        'projected_operating_expenses',
+        'projected_taxes',
         'projected_surplus',
         'actual_tv_revenue',
         'actual_prize_revenue',
@@ -29,6 +31,8 @@ class GameFinances extends Model
         'actual_transfer_income',
         'actual_total_revenue',
         'actual_wages',
+        'actual_operating_expenses',
+        'actual_taxes',
         'actual_surplus',
         'variance',
         'carried_debt',
@@ -44,6 +48,8 @@ class GameFinances extends Model
         'projected_commercial_revenue' => 'integer',
         'projected_total_revenue' => 'integer',
         'projected_wages' => 'integer',
+        'projected_operating_expenses' => 'integer',
+        'projected_taxes' => 'integer',
         'projected_surplus' => 'integer',
         // Actuals
         'actual_tv_revenue' => 'integer',
@@ -53,6 +59,8 @@ class GameFinances extends Model
         'actual_transfer_income' => 'integer',
         'actual_total_revenue' => 'integer',
         'actual_wages' => 'integer',
+        'actual_operating_expenses' => 'integer',
+        'actual_taxes' => 'integer',
         'actual_surplus' => 'integer',
         // Settlement
         'variance' => 'integer',
@@ -115,6 +123,16 @@ class GameFinances extends Model
         return Money::format($this->projected_wages);
     }
 
+    public function getFormattedProjectedOperatingExpensesAttribute(): string
+    {
+        return Money::format($this->projected_operating_expenses);
+    }
+
+    public function getFormattedProjectedTaxesAttribute(): string
+    {
+        return Money::format($this->projected_taxes);
+    }
+
     public function getFormattedProjectedSurplusAttribute(): string
     {
         return Money::format($this->projected_surplus);
@@ -154,6 +172,16 @@ class GameFinances extends Model
     public function getFormattedActualWagesAttribute(): string
     {
         return Money::format($this->actual_wages);
+    }
+
+    public function getFormattedActualOperatingExpensesAttribute(): string
+    {
+        return Money::format($this->actual_operating_expenses);
+    }
+
+    public function getFormattedActualTaxesAttribute(): string
+    {
+        return Money::format($this->actual_taxes);
     }
 
     public function getFormattedActualSurplusAttribute(): string

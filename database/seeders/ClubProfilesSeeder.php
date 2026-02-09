@@ -63,13 +63,13 @@ class ClubProfilesSeeder extends Seeder
         'SD Eibar' => ['reputation' => ClubProfile::REPUTATION_MODEST, 'commercial' => 900_000_000],
         'CD Leganés' => ['reputation' => ClubProfile::REPUTATION_MODEST, 'commercial' => 850_000_000],
 
-        // La Liga 2 - Local
-        'Burgos CF' => ['reputation' => ClubProfile::REPUTATION_LOCAL, 'commercial' => 600_000_000],
-        'Cultural Leonesa' => ['reputation' => ClubProfile::REPUTATION_LOCAL, 'commercial' => 500_000_000],
-        'CD Mirandés' => ['reputation' => ClubProfile::REPUTATION_LOCAL, 'commercial' => 450_000_000],
-        'AD Ceuta FC' => ['reputation' => ClubProfile::REPUTATION_LOCAL, 'commercial' => 400_000_000],
-        'FC Andorra' => ['reputation' => ClubProfile::REPUTATION_LOCAL, 'commercial' => 700_000_000],
-        'Real Sociedad B' => ['reputation' => ClubProfile::REPUTATION_LOCAL, 'commercial' => 300_000_000],
+        // La Liga 2 - Professional
+        'Burgos CF' => ['reputation' => ClubProfile::REPUTATION_PROFESSIONAL, 'commercial' => 600_000_000],
+        'Cultural Leonesa' => ['reputation' => ClubProfile::REPUTATION_PROFESSIONAL, 'commercial' => 500_000_000],
+        'CD Mirandés' => ['reputation' => ClubProfile::REPUTATION_PROFESSIONAL, 'commercial' => 450_000_000],
+        'AD Ceuta FC' => ['reputation' => ClubProfile::REPUTATION_PROFESSIONAL, 'commercial' => 400_000_000],
+        'FC Andorra' => ['reputation' => ClubProfile::REPUTATION_PROFESSIONAL, 'commercial' => 700_000_000],
+        'Real Sociedad B' => ['reputation' => ClubProfile::REPUTATION_PROFESSIONAL, 'commercial' => 300_000_000],
     ];
 
     public function run(): void
@@ -85,7 +85,7 @@ class ClubProfilesSeeder extends Seeder
                 // Default for unknown teams
                 $data = [
                     'reputation' => ClubProfile::REPUTATION_LOCAL,
-                    'commercial' => 300_000_000, // €3M default
+                    'commercial' => 200_000_000, // €2M default
                 ];
             }
 

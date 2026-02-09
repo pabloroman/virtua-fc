@@ -98,6 +98,14 @@
                                     <span class="text-slate-600">{{ __('finances.projected_wages') }}</span>
                                     <span class="font-semibold text-red-600">-{{ $finances->formatted_projected_wages }}</span>
                                 </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-slate-600">{{ __('finances.operating_expenses') }}</span>
+                                    <span class="font-semibold text-red-600">-{{ $finances->formatted_projected_operating_expenses }}</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-slate-600">{{ __('finances.taxes') }}</span>
+                                    <span class="font-semibold text-red-600">-{{ $finances->formatted_projected_taxes }}</span>
+                                </div>
                                 @if($finances->carried_debt > 0)
                                 <div class="flex justify-between items-center text-red-600">
                                     <span>{{ __('finances.carried_debt') }}</span>
