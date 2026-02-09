@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Game\Handlers\KnockoutCupHandler;
 use App\Game\Handlers\LeagueHandler;
 use App\Game\Handlers\LeagueWithPlayoffHandler;
+use App\Game\Handlers\SwissFormatHandler;
 use App\Game\Services\CompetitionHandlerResolver;
 use Illuminate\Support\ServiceProvider;
 
@@ -28,6 +29,7 @@ class AppServiceProvider extends ServiceProvider
             $resolver->register($app->make(LeagueHandler::class));
             $resolver->register($app->make(LeagueWithPlayoffHandler::class));
             $resolver->register($app->make(KnockoutCupHandler::class));
+            $resolver->register($app->make(SwissFormatHandler::class));
 
             return $resolver;
         });

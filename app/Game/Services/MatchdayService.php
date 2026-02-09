@@ -4,6 +4,7 @@ namespace App\Game\Services;
 
 use App\Game\Handlers\KnockoutCupHandler;
 use App\Game\Handlers\LeagueWithPlayoffHandler;
+use App\Game\Handlers\SwissFormatHandler;
 use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GameMatch;
@@ -23,13 +24,10 @@ class MatchdayService
      */
     public function getNextMatchBatch(Game $game): ?array
     {
-        $nextMatch = $this->findNextMatch($game->id);
+        // Generate any pending knockout/playoff matches for hybrid competitions
+        $this->generatePendingMatches($game);
 
-        // If no match found, check if playoffs need to be generated
-        if (!$nextMatch) {
-            $this->checkForPendingPlayoffs($game);
-            $nextMatch = $this->findNextMatch($game->id);
-        }
+        $nextMatch = $this->findNextMatch($game->id);
 
         if (!$nextMatch) {
             return null;
@@ -90,16 +88,16 @@ class MatchdayService
     }
 
     /**
-     * Check if any competition needs playoff matches generated.
-     * This handles the case where regular season is complete but playoffs haven't started.
+     * Generate any pending knockout/playoff matches for hybrid competitions.
+     * Checks both league_with_playoff and swiss_format competitions.
      */
-    private function checkForPendingPlayoffs(Game $game): void
+    private function generatePendingMatches(Game $game): void
     {
-        // Find competitions that use the league_with_playoff handler
-        $playoffCompetitions = Competition::where('handler_type', 'league_with_playoff')->get();
+        $competitions = Competition::whereIn('handler_type', ['league_with_playoff', 'swiss_format'])->get();
 
-        foreach ($playoffCompetitions as $competition) {
-            // Check if this game has matches in this competition
+        $targetDate = $game->current_date?->toDateString() ?? now()->toDateString();
+
+        foreach ($competitions as $competition) {
             $hasMatches = GameMatch::where('game_id', $game->id)
                 ->where('competition_id', $competition->id)
                 ->exists();
@@ -108,14 +106,8 @@ class MatchdayService
                 continue;
             }
 
-            // Get the handler and trigger beforeMatches to generate playoffs if needed
             $handler = $this->handlerResolver->resolve($competition);
-
-            if ($handler instanceof LeagueWithPlayoffHandler) {
-                // Use current date or a future date for playoff scheduling
-                $targetDate = $game->current_date?->toDateString() ?? now()->toDateString();
-                $handler->beforeMatches($game, $targetDate);
-            }
+            $handler->beforeMatches($game, $targetDate);
         }
     }
 }
