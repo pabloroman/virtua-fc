@@ -118,7 +118,7 @@ class SeasonSettlementProcessor implements SeasonEndProcessor
             return 0;
         }
 
-        $base = $team->stadium_seats * $league->getConfig()->getRevenuePerSeat($reputation);
+        $base = $team->stadium_seats * config("finances.revenue_per_seat.{$reputation}", 15_000);
 
         // Get facilities multiplier
         $investment = $game->currentInvestment;

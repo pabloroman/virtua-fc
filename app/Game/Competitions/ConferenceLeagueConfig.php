@@ -72,4 +72,5 @@ class ConferenceLeagueConfig implements CompetitionConfig
             ],
         ];
     }
+
 }

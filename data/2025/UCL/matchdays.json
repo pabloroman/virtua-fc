@@ -1,11 +1,11 @@
 [
-    {"matchday": "Playoff de eliminación (Ida)", "date": "2026-02-11", "round": 1},
-    {"matchday": "Playoff de eliminación (Vuelta)", "date": "2026-02-18", "round": 1},
-    {"matchday": "Octavos de final (Ida)", "date": "2026-03-04", "round": 2},
-    {"matchday": "Octavos de final (Vuelta)", "date": "2026-03-11", "round": 2},
-    {"matchday": "Cuartos de final (Ida)", "date": "2026-04-08", "round": 3},
-    {"matchday": "Cuartos de final (Vuelta)", "date": "2026-04-15", "round": 3},
-    {"matchday": "Semifinal (Ida)", "date": "2026-04-29", "round": 4},
+    {"matchday": "Playoff de eliminación (Ida)", "date": "2026-02-17", "round": 1},
+    {"matchday": "Playoff de eliminación (Vuelta)", "date": "2026-02-24", "round": 1},
+    {"matchday": "Octavos de final (Ida)", "date": "2026-03-10", "round": 2},
+    {"matchday": "Octavos de final (Vuelta)", "date": "2026-03-17", "round": 2},
+    {"matchday": "Cuartos de final (Ida)", "date": "2026-04-07", "round": 3},
+    {"matchday": "Cuartos de final (Vuelta)", "date": "2026-04-14", "round": 3},
+    {"matchday": "Semifinal (Ida)", "date": "2026-04-28", "round": 4},
     {"matchday": "Semifinal (Vuelta)", "date": "2026-05-06", "round": 4},
-    {"matchday": "Final", "date": "2026-05-31", "round": 5}
+    {"matchday": "Final", "date": "2026-05-30", "round": 5}
 ]

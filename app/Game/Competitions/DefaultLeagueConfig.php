@@ -16,32 +16,6 @@ class DefaultLeagueConfig implements CompetitionConfig
     private int $baseTvRevenue;
 
     /**
-     * Commercial revenue per seat per season by reputation level (in cents).
-     */
-    private const COMMERCIAL_PER_SEAT = [
-        ClubProfile::REPUTATION_ELITE => 350_000,
-        ClubProfile::REPUTATION_CONTENDERS => 140_000,
-        ClubProfile::REPUTATION_CONTINENTAL => 150_000,
-        ClubProfile::REPUTATION_ESTABLISHED => 100_000,
-        ClubProfile::REPUTATION_MODEST => 80_000,
-        ClubProfile::REPUTATION_PROFESSIONAL => 50_000,
-        ClubProfile::REPUTATION_LOCAL => 20_000,
-    ];
-
-    /**
-     * Matchday revenue per seat per season by reputation level (in cents).
-     */
-    private const REVENUE_PER_SEAT = [
-        ClubProfile::REPUTATION_ELITE => 130_000,
-        ClubProfile::REPUTATION_CONTENDERS => 80_000,
-        ClubProfile::REPUTATION_CONTINENTAL => 50_000,
-        ClubProfile::REPUTATION_ESTABLISHED => 25_000,
-        ClubProfile::REPUTATION_MODEST => 15_000,
-        ClubProfile::REPUTATION_PROFESSIONAL => 8_000,
-        ClubProfile::REPUTATION_LOCAL => 4_000,
-    ];
-
-    /**
      * Default reputation to goal mapping.
      */
     private const REPUTATION_TO_GOAL = [
@@ -146,13 +120,4 @@ class DefaultLeagueConfig implements CompetitionConfig
         ];
     }
 
-    public function getCommercialPerSeat(string $reputation): int
-    {
-        return self::COMMERCIAL_PER_SEAT[$reputation] ?? self::COMMERCIAL_PER_SEAT[ClubProfile::REPUTATION_MODEST];
-    }
-
-    public function getRevenuePerSeat(string $reputation): int
-    {
-        return self::REVENUE_PER_SEAT[$reputation] ?? self::REVENUE_PER_SEAT[ClubProfile::REPUTATION_MODEST];
-    }
 }

@@ -72,4 +72,5 @@ class EuropaLeagueConfig implements CompetitionConfig
             ],
         ];
     }
+
 }

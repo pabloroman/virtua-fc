@@ -34,32 +34,6 @@ class LaLigaConfig implements CompetitionConfig
         20 => 4_000_000_000,   // €40M
     ];
 
-    /**
-     * Commercial revenue per seat per season by reputation level (in cents).
-     */
-    private const COMMERCIAL_PER_SEAT = [
-        ClubProfile::REPUTATION_ELITE => 350_000,        // €3,500/seat
-        ClubProfile::REPUTATION_CONTENDERS => 140_000,    // €1,400/seat
-        ClubProfile::REPUTATION_CONTINENTAL => 150_000,   // €1,500/seat
-        ClubProfile::REPUTATION_ESTABLISHED => 100_000,   // €1,000/seat
-        ClubProfile::REPUTATION_MODEST => 80_000,         // €800/seat
-        ClubProfile::REPUTATION_PROFESSIONAL => 50_000,   // €500/seat
-        ClubProfile::REPUTATION_LOCAL => 20_000,          // €200/seat
-    ];
-
-    /**
-     * Matchday revenue per seat per season by reputation level (in cents).
-     */
-    private const REVENUE_PER_SEAT = [
-        ClubProfile::REPUTATION_ELITE => 130_000,       // €1,300/seat
-        ClubProfile::REPUTATION_CONTENDERS => 80_000,    // €800/seat
-        ClubProfile::REPUTATION_CONTINENTAL => 50_000,   // €500/seat
-        ClubProfile::REPUTATION_ESTABLISHED => 25_000,   // €250/seat
-        ClubProfile::REPUTATION_MODEST => 15_000,        // €150/seat
-        ClubProfile::REPUTATION_PROFESSIONAL => 8_000,   // €80/seat
-        ClubProfile::REPUTATION_LOCAL => 4_000,          // €40/seat
-    ];
-
     private const POSITION_FACTORS = [
         'top' => 1.10,        // 1st-4th
         'mid_high' => 1.0,    // 5th-10th
@@ -152,13 +126,4 @@ class LaLigaConfig implements CompetitionConfig
         ];
     }
 
-    public function getCommercialPerSeat(string $reputation): int
-    {
-        return self::COMMERCIAL_PER_SEAT[$reputation] ?? self::COMMERCIAL_PER_SEAT[ClubProfile::REPUTATION_MODEST];
-    }
-
-    public function getRevenuePerSeat(string $reputation): int
-    {
-        return self::REVENUE_PER_SEAT[$reputation] ?? self::REVENUE_PER_SEAT[ClubProfile::REPUTATION_MODEST];
-    }
 }

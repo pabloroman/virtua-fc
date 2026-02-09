@@ -172,7 +172,7 @@ class BudgetProjectionService
             return 0;
         }
 
-        $base = $team->stadium_seats * $league->getConfig()->getRevenuePerSeat($reputation);
+        $base = $team->stadium_seats * config("finances.revenue_per_seat.{$reputation}", 15_000);
 
         // Get facilities multiplier from current investment (default to Tier 1 = 1.0)
         $investment = $game->currentInvestment;
@@ -250,6 +250,6 @@ class BudgetProjectionService
         // First season: calculate from stadium seats × config rate
         $reputation = $team->clubProfile?->reputation_level ?? ClubProfile::REPUTATION_MODEST;
 
-        return $team->stadium_seats * $league->getConfig()->getCommercialPerSeat($reputation);
+        return $team->stadium_seats * config("finances.commercial_per_seat.{$reputation}", 80_000);
     }
 }

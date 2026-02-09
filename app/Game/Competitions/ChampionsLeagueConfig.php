@@ -122,4 +122,5 @@ class ChampionsLeagueConfig implements CompetitionConfig
             ],
         ];
     }
+
 }
