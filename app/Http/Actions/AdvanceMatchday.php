@@ -52,9 +52,16 @@ class AdvanceMatchday
         $matchday = $batch['matchday'];
         $currentDate = $batch['currentDate'];
 
-        // Load ALL players once with needed relationships (avoids N+1)
+        // Load players only for teams in this match batch (avoids loading entire game)
+        $teamIds = $matches->pluck('home_team_id')
+            ->merge($matches->pluck('away_team_id'))
+            ->push($game->team_id)
+            ->unique()
+            ->values();
+
         $allPlayers = GamePlayer::with(['player', 'transferOffers', 'activeLoan'])
             ->where('game_id', $game->id)
+            ->whereIn('team_id', $teamIds)
             ->get()
             ->groupBy('team_id');
 
