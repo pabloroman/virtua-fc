@@ -1,0 +1,228 @@
+{
+  "name": "Europa",
+  "seasonID": "2025",
+  "clubs": [
+    {
+      "image": "https://tmssl.akamaized.net/images/wappen/big/161.png",
+      "name": "Olympiacos Piraeus",
+      "players": [
+        {
+          "id": "182283",
+          "name": "Konstantinos Tzolakis",
+          "position": "Goalkeeper",
+          "dateOfBirth": "Mar 27, 2001",
+          "nationality": ["Greece"],
+          "height": "1,90m",
+          "foot": "right",
+          "marketValue": "€2.00m",
+          "contract": "Jun 30, 2028",
+          "number": "31"
+        },
+        {
+          "id": "329718",
+          "name": "Alexandros Paschalakis",
+          "position": "Goalkeeper",
+          "dateOfBirth": "Apr 24, 1989",
+          "nationality": ["Greece"],
+          "height": "1,85m",
+          "foot": "right",
+          "marketValue": "€300k",
+          "contract": "Jun 30, 2026",
+          "number": "88"
+        },
+        {
+          "id": "493073",
+          "name": "Rodinei",
+          "position": "Right-Back",
+          "dateOfBirth": "Jan 23, 1992",
+          "nationality": ["Brazil"],
+          "height": "1,79m",
+          "foot": "right",
+          "marketValue": "€1.50m",
+          "contract": "Jun 30, 2026",
+          "number": "2"
+        },
+        {
+          "id": "465831",
+          "name": "Panagiotis Retsos",
+          "position": "Centre-Back",
+          "dateOfBirth": "Aug 9, 1998",
+          "nationality": ["Greece"],
+          "height": "1,85m",
+          "foot": "left",
+          "marketValue": "€2.50m",
+          "contract": "Jun 30, 2027",
+          "number": "3"
+        },
+        {
+          "id": "399626",
+          "name": "Santiago Hezze",
+          "position": "Defensive Midfield",
+          "dateOfBirth": "Feb 14, 2002",
+          "nationality": ["Argentina"],
+          "height": "1,81m",
+          "foot": "right",
+          "marketValue": "€8.00m",
+          "contract": "Jun 30, 2029",
+          "number": "6"
+        },
+        {
+          "id": "415695",
+          "name": "Sotiris Alexandropoulos",
+          "position": "Central Midfield",
+          "dateOfBirth": "Nov 1, 2001",
+          "nationality": ["Greece"],
+          "height": "1,80m",
+          "foot": "right",
+          "marketValue": "€4.00m",
+          "contract": "Jun 30, 2028",
+          "number": "8"
+        },
+        {
+          "id": "326029",
+          "name": "Ayoub El Kaabi",
+          "position": "Centre-Forward",
+          "dateOfBirth": "Jun 25, 1993",
+          "nationality": ["Morocco"],
+          "height": "1,82m",
+          "foot": "right",
+          "marketValue": "€5.00m",
+          "contract": "Jun 30, 2027",
+          "number": "9"
+        },
+        {
+          "id": "684953",
+          "name": "Román Yaremchuk",
+          "position": "Centre-Forward",
+          "dateOfBirth": "Nov 27, 1995",
+          "nationality": ["Ukraine"],
+          "height": "1,91m",
+          "foot": "right",
+          "marketValue": "€3.00m",
+          "contract": "Jun 30, 2027",
+          "number": "11"
+        },
+        {
+          "id": "461032",
+          "name": "Gelson Martins",
+          "position": "Right Winger",
+          "dateOfBirth": "May 11, 1995",
+          "nationality": ["Portugal"],
+          "height": "1,72m",
+          "foot": "right",
+          "marketValue": "€2.50m",
+          "contract": "Jun 30, 2026",
+          "number": "12"
+        },
+        {
+          "id": "367107",
+          "name": "David Carmo",
+          "position": "Centre-Back",
+          "dateOfBirth": "Jul 19, 1999",
+          "nationality": ["Portugal"],
+          "height": "1,96m",
+          "foot": "left",
+          "marketValue": "€6.00m",
+          "contract": "Jun 30, 2028",
+          "number": "14"
+        },
+        {
+          "id": "335614",
+          "name": "Oleg Reabciuk",
+          "position": "Left-Back",
+          "dateOfBirth": "Nov 9, 1998",
+          "nationality": ["Moldova", "Portugal"],
+          "height": "1,82m",
+          "foot": "left",
+          "marketValue": "€3.00m",
+          "contract": "Jun 30, 2027",
+          "number": "16"
+        },
+        {
+          "id": "501773",
+          "name": "Kostas Fortounis",
+          "position": "Attacking Midfield",
+          "dateOfBirth": "Oct 16, 1992",
+          "nationality": ["Greece"],
+          "height": "1,76m",
+          "foot": "left",
+          "marketValue": "€1.50m",
+          "contract": "Jun 30, 2026",
+          "number": "17"
+        },
+        {
+          "id": "611879",
+          "name": "Willian",
+          "position": "Left Winger",
+          "dateOfBirth": "Apr 24, 2001",
+          "nationality": ["Brazil"],
+          "height": "1,77m",
+          "foot": "right",
+          "marketValue": "€4.00m",
+          "contract": "Jun 30, 2028",
+          "number": "20"
+        },
+        {
+          "id": "658723",
+          "name": "Pedrinho",
+          "position": "Right Winger",
+          "dateOfBirth": "Feb 22, 2003",
+          "nationality": ["Brazil"],
+          "height": "1,73m",
+          "foot": "left",
+          "marketValue": "€3.50m",
+          "contract": "Jun 30, 2028",
+          "number": "21"
+        },
+        {
+          "id": "368956",
+          "name": "Djamel Badjie",
+          "position": "Centre-Back",
+          "dateOfBirth": "Dec 17, 2000",
+          "nationality": ["Senegal"],
+          "height": "1,92m",
+          "foot": "right",
+          "marketValue": "€2.00m",
+          "contract": "Jun 30, 2027",
+          "number": "23"
+        },
+        {
+          "id": "594133",
+          "name": "Charalampos Kostoulas",
+          "position": "Attacking Midfield",
+          "dateOfBirth": "Jun 3, 2005",
+          "nationality": ["Greece"],
+          "height": "1,77m",
+          "foot": "right",
+          "marketValue": "€3.00m",
+          "contract": "Jun 30, 2029",
+          "number": "30"
+        },
+        {
+          "id": "410456",
+          "name": "Sergio Oliveira",
+          "position": "Central Midfield",
+          "dateOfBirth": "Jun 2, 1992",
+          "nationality": ["Portugal"],
+          "height": "1,78m",
+          "foot": "right",
+          "marketValue": "€2.50m",
+          "contract": "Jun 30, 2026",
+          "number": "27"
+        },
+        {
+          "id": "477032",
+          "name": "Kosta Nedeljkovic",
+          "position": "Right-Back",
+          "dateOfBirth": "Apr 11, 2005",
+          "nationality": ["Serbia"],
+          "height": "1,81m",
+          "foot": "right",
+          "marketValue": "€5.00m",
+          "contract": "Jun 30, 2029",
+          "number": "33"
+        }
+      ]
+    }
+  ]
+}
