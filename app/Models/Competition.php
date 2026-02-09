@@ -66,12 +66,12 @@ class Competition extends Model
 
     public function isLeague(): bool
     {
-        return $this->type === 'league';
+        return in_array($this->handler_type, ['league', 'league_with_playoff']);
     }
 
     public function isCup(): bool
     {
-        return $this->type === 'cup';
+        return !$this->isLeague();
     }
 
     /**

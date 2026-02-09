@@ -99,7 +99,7 @@ class SeasonSettlementProcessor implements SeasonEndProcessor
 
     private function calculateTvRevenue(int $position, Game $game): int
     {
-        $league = $game->team->competitions()->where('type', 'league')->first();
+        $league = $game->team->competitions()->where('role', Competition::ROLE_PRIMARY)->first();
         if (!$league) {
             return 0;
         }
@@ -113,7 +113,7 @@ class SeasonSettlementProcessor implements SeasonEndProcessor
         $team = $game->team;
         $reputation = $team->clubProfile?->reputation_level ?? ClubProfile::REPUTATION_MODEST;
 
-        $league = $team->competitions()->where('type', 'league')->first();
+        $league = $team->competitions()->where('role', Competition::ROLE_PRIMARY)->first();
         if (!$league) {
             return 0;
         }

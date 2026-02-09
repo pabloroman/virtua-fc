@@ -56,7 +56,7 @@ class GameProjector extends Projector
 
         // Find competition for the selected team (prefer tier 1 league)
         $competitionTeam = CompetitionTeam::where('team_id', $teamId)
-            ->whereHas('competition', fn($q) => $q->where('type', 'league')->where('tier', 1))
+            ->whereHas('competition', fn($q) => $q->where('role', Competition::ROLE_PRIMARY)->where('tier', 1))
             ->first()
             ?? CompetitionTeam::where('team_id', $teamId)->first();
 
@@ -674,7 +674,7 @@ class GameProjector extends Projector
     private function initializeGamePlayers(string $gameId, string $competitionId, string $season): void
     {
         // Get all league competitions (excluding cups)
-        $leagues = Competition::where('type', 'league')->pluck('id')->toArray();
+        $leagues = Competition::whereIn('role', [Competition::ROLE_PRIMARY, Competition::ROLE_FOREIGN])->pluck('id')->toArray();
 
         foreach ($leagues as $leagueId) {
             $this->initializeGamePlayersForCompetition($gameId, $leagueId, $season);

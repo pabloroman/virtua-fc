@@ -2,6 +2,7 @@
 
 namespace App\Game\Services;
 
+use App\Models\Competition;
 use App\Models\FinancialTransaction;
 use App\Models\Game;
 use App\Models\GamePlayer;
@@ -635,7 +636,7 @@ class TransferService
 
         // Get all teams in the same league(s) as the player's team, excluding player's team
         $leagueTeamIds = Team::whereHas('competitions', function ($query) use ($game) {
-            $query->where('type', 'league');
+            $query->whereIn('role', [Competition::ROLE_PRIMARY, Competition::ROLE_FOREIGN]);
         })->where('id', '!=', $playerTeamId)->pluck('id')->toArray();
 
         $squadValues = $this->getSquadValues($game, $leagueTeamIds);

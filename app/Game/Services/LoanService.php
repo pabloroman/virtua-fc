@@ -3,6 +3,7 @@
 namespace App\Game\Services;
 
 use App\Models\ClubProfile;
+use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\Loan;
@@ -116,7 +117,7 @@ class LoanService
     {
         $teams = Team::with(['clubProfile', 'competitions'])
             ->whereHas('competitions', function ($q) {
-                $q->where('type', 'league');
+                $q->whereIn('role', [Competition::ROLE_PRIMARY, Competition::ROLE_FOREIGN]);
             })
             ->where('id', '!=', $game->team_id)
             ->get();

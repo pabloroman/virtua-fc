@@ -60,7 +60,7 @@ class MatchdayService
 
         // Determine matchday number
         $matchCompetition = $matches->first()?->competition;
-        $isLeagueMatch = $matchCompetition?->type === 'league';
+        $isLeagueMatch = $matchCompetition?->isLeague();
         $matchday = $isLeagueMatch
             ? ($matches->first()->round_number ?? $game->current_matchday)
             : $game->current_matchday;
