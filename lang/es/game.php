@@ -119,11 +119,31 @@ return [
     'available' => 'Disponible',
     'begin_season' => 'Comenzar Temporada',
 
+    // Live match
+    'live_pre_match' => 'Previo al partido',
+    'live_half_time' => 'Descanso',
+    'live_full_time' => 'Final',
+    'live_kick_off' => 'Comienza el partido',
+    'live_about_to_start' => 'El partido está a punto de comenzar...',
+    'live_goal' => 'Gol',
+    'live_yellow_card' => 'Tarjeta amarilla',
+    'live_red_card' => 'Tarjeta roja',
+    'live_second_yellow' => 'Doble amarilla',
+    'live_injury' => 'Lesión',
+    'live_assist' => 'Asist.',
+    'live_speed' => 'Velocidad',
+    'live_skip' => 'Saltar',
+    'live_skip_match' => 'Ir a resultados',
+    'live_other_results' => 'Otros',
+    'live_continue_results' => 'Ver Resultados Completos',
+    'live_continue_dashboard' => 'Continuar',
+    'live_injuries_report' => 'Parte de Lesiones',
+    'live_weeks_out' => ':count semana de baja|:count semanas de baja',
+
     // Results page
     'results' => 'Resultados',
     'matchday_results' => 'Resultados :name',
     'back_to_dashboard' => 'Volver al Inicio',
-    'all_results' => 'Todos los Resultados',
     'og' => 'PP',
 
     // Dashboard
@@ -140,4 +160,41 @@ return [
     'goal_promotion' => 'Ascenso directo',
     'goal_playoff' => 'Clasificarse para el playoff de ascenso',
     'board_expects_position' => 'La directiva espera que alcances la posición :position',
+
+    // UEFA Swiss Format - League Phase
+    'league_phase' => 'Fase de Liga',
+    'completed' => 'Completada',
+    'knockout_phase' => 'Fase Eliminatoria',
+
+    // UEFA Swiss Format - Knockout Round Names
+    'ucl_knockout_playoff' => 'Playoff de Eliminación',
+    'ucl_round_of_16' => 'Octavos de Final',
+    'ucl_quarter_finals' => 'Cuartos de Final',
+    'ucl_semi_finals' => 'Semifinales',
+    'ucl_final' => 'Final',
+
+    // UEFA Swiss Format - Standings Zones (UCL)
+    'ucl_direct_knockout' => 'Clasificación directa a octavos',
+    'ucl_eliminated' => 'Eliminado',
+
+    // UEFA Swiss Format - Standings Zones (UEL)
+    'uel_direct_knockout' => 'Clasificación directa a octavos',
+    'uel_knockout_playoff' => 'Playoff de eliminación',
+    'uel_eliminated' => 'Eliminado',
+
+    // UEFA Swiss Format - Standings Zones (UECL)
+    'uecl_direct_knockout' => 'Clasificación directa a octavos',
+    'uecl_knockout_playoff' => 'Playoff de eliminación',
+    'uecl_eliminated' => 'Eliminado',
+
+    // UEFA Swiss Format - Match Resolution
+    'won_on_penalties' => 'Ganó en penaltis',
+    'won_after_extra_time' => 'Ganó en prórroga',
+    'won_on_away_goals' => 'Ganó por goles de visitante',
+
+    // UEFA Swiss Format - Season Goals
+    'goal_ucl_title' => 'Ganar la Champions League',
+    'goal_ucl_knockout' => 'Pasar a fase eliminatoria',
+    'goal_uel_knockout' => 'Pasar a fase eliminatoria',
+    'goal_uecl_knockout' => 'Pasar a fase eliminatoria',
 ];

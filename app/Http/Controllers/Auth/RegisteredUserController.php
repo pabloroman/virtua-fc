@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\InviteCode;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -17,9 +18,12 @@ class RegisteredUserController extends Controller
     /**
      * Display the registration view.
      */
-    public function create(): View
+    public function create(Request $request): View
     {
-        return view('auth.register');
+        return view('auth.register', [
+            'inviteCode' => $request->query('invite'),
+            'betaMode' => config('beta.enabled'),
+        ]);
     }
 
     /**
@@ -29,17 +33,36 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
+        $rules = [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+        ];
+
+        if (config('beta.enabled')) {
+            $rules['invite_code'] = ['required', 'string'];
+        }
+
+        $request->validate($rules);
+
+        $invite = null;
+        if (config('beta.enabled')) {
+            $invite = InviteCode::findByCode($request->input('invite_code'));
+
+            if (! $invite || ! $invite->isValidForEmail($request->input('email'))) {
+                return back()->withErrors([
+                    'invite_code' => __('beta.invalid_invite'),
+                ])->withInput();
+            }
+        }
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+
+        $invite?->consume();
 
         event(new Registered($user));
 

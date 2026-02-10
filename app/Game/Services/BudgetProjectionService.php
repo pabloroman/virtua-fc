@@ -2,6 +2,7 @@
 
 namespace App\Game\Services;
 
+use App\Models\ClubProfile;
 use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GameFinances;
@@ -12,10 +13,14 @@ use App\Models\Team;
 class BudgetProjectionService
 {
     /**
-     * Conservative prize money estimate (Round of 16 cup exit).
-     * Includes: Round of 64 (€100K) + Round of 32 (€250K) + Round of 16 (€500K)
+     * UEFA and RFEF solidarity funds (€250K)
      */
-    private const PROJECTED_PRIZE_MONEY = 85_000_000; // €850K in cents
+    private const SOLIDARITY_FUNDS = 25_000_000; // €250K in cents
+
+    /**
+     * Minimum transfer budget guaranteed after mandatory infrastructure.
+     */
+    private const MINIMUM_TRANSFER_BUDGET = 20_000_000; // €200K in cents
 
     /**
      * Generate season projections for a game.
@@ -25,7 +30,7 @@ class BudgetProjectionService
     {
         // Get user's team and league
         $team = $game->team;
-        $league = $team->competitions()->where('type', 'league')->first();
+        $league = $game->competition;
 
         if (!$league) {
             throw new \RuntimeException('Team has no league competition');
@@ -39,23 +44,34 @@ class BudgetProjectionService
 
         // Calculate projected revenues
         $projectedTvRevenue = $this->calculateTvRevenue($projectedPosition, $league);
-        $projectedMatchdayRevenue = $this->calculateMatchdayRevenue($team, $projectedPosition, $game);
-        $projectedPrizeRevenue = self::PROJECTED_PRIZE_MONEY;
-        $projectedCommercialRevenue = $team->clubProfile?->commercial_revenue ?? 0;
+        $projectedMatchdayRevenue = $this->calculateMatchdayRevenue($team, $game);
+        $projectedSolidarityFundsRevenue = ($game->competition->tier > 1) ? self::SOLIDARITY_FUNDS : 0;
+        $projectedCommercialRevenue = $this->getBaseCommercialRevenue($game, $team, $league);
 
         $projectedTotalRevenue = $projectedTvRevenue
             + $projectedMatchdayRevenue
-            + $projectedPrizeRevenue
+            + $projectedSolidarityFundsRevenue
             + $projectedCommercialRevenue;
 
         // Calculate projected wages
         $projectedWages = $this->calculateProjectedWages($game);
 
+        // Calculate operating expenses based on club reputation
+        $reputation = $team->clubProfile?->reputation_level ?? ClubProfile::REPUTATION_MODEST;
+        $projectedOperatingExpenses = config('finances.operating_expenses.' . $reputation, 700_000_000);
+
         // Calculate projected surplus
-        $projectedSurplus = $projectedTotalRevenue - $projectedWages;
+        $projectedSurplus = $projectedTotalRevenue - $projectedWages - $projectedOperatingExpenses;
 
         // Get carried debt from previous season
         $carriedDebt = $this->getCarriedDebt($game);
+
+        // Calculate public subsidy if needed to guarantee minimum viable budget
+        $projectedSubsidyRevenue = $this->calculateSubsidy($projectedSurplus, $carriedDebt);
+        if ($projectedSubsidyRevenue > 0) {
+            $projectedTotalRevenue += $projectedSubsidyRevenue;
+            $projectedSurplus += $projectedSubsidyRevenue;
+        }
 
         // Create or update finances record
         $finances = GameFinances::updateOrCreate(
@@ -66,11 +82,13 @@ class BudgetProjectionService
             [
                 'projected_position' => $projectedPosition,
                 'projected_tv_revenue' => $projectedTvRevenue,
-                'projected_prize_revenue' => $projectedPrizeRevenue,
+                'projected_solidarity_funds_revenue' => $projectedSolidarityFundsRevenue,
                 'projected_matchday_revenue' => $projectedMatchdayRevenue,
                 'projected_commercial_revenue' => $projectedCommercialRevenue,
+                'projected_subsidy_revenue' => $projectedSubsidyRevenue,
                 'projected_total_revenue' => $projectedTotalRevenue,
                 'projected_wages' => $projectedWages,
+                'projected_operating_expenses' => $projectedOperatingExpenses,
                 'projected_surplus' => $projectedSurplus,
                 'carried_debt' => $carriedDebt,
             ]
@@ -154,17 +172,19 @@ class BudgetProjectionService
 
     /**
      * Calculate matchday revenue.
-     * Formula: Base × Facilities Multiplier × Position Factor
+     * Formula: Base (stadium_seats × revenue_per_seat) × Facilities Multiplier
      */
-    public function calculateMatchdayRevenue(Team $team, int $position, Game $game): int
+    public function calculateMatchdayRevenue(Team $team, Game $game): int
     {
-        $clubProfile = $team->clubProfile;
-        if (!$clubProfile) {
+        $reputation = $team->clubProfile?->reputation_level ?? ClubProfile::REPUTATION_MODEST;
+
+        // Base matchday revenue from stadium size and competition config rates
+        $league = $game->competition;
+        if (!$league) {
             return 0;
         }
 
-        // Base matchday revenue from club profile
-        $base = $clubProfile->calculateBaseMatchdayRevenue();
+        $base = $team->stadium_seats * config("finances.revenue_per_seat.{$reputation}", 15_000);
 
         // Get facilities multiplier from current investment (default to Tier 1 = 1.0)
         $investment = $game->currentInvestment;
@@ -172,12 +192,7 @@ class BudgetProjectionService
             ? GameInvestment::FACILITIES_MULTIPLIER[$investment->facilities_tier] ?? 1.0
             : 1.0;
 
-        // Position factor from competition config
-        $league = $team->competitions()->where('type', 'league')->first();
-        $config = $league?->getConfig();
-        $positionFactor = $config?->getPositionFactor($position) ?? 1.0;
-
-        return (int) ($base * $facilitiesMultiplier * $positionFactor);
+        return (int) ($base * $facilitiesMultiplier);
     }
 
     /**
@@ -188,6 +203,16 @@ class BudgetProjectionService
         return GamePlayer::where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->sum('annual_wage');
+    }
+
+    /**
+     * Calculate total squad market value.
+     */
+    public function calculateSquadValue(Game $game): int
+    {
+        return GamePlayer::where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->sum('market_value_cents');
     }
 
     /**
@@ -214,34 +239,48 @@ class BudgetProjectionService
     }
 
     /**
-     * Calculate projected position for display (from strength comparison).
+     * Get base commercial revenue for budget projections.
+     * Season 2+: uses previous season's actual commercial revenue.
+     * Season 1: calculates from stadium_seats × config rate.
      */
-    public function getLeagueProjections(Game $game): array
+    private function getBaseCommercialRevenue(Game $game, Team $team, Competition $league): int
     {
-        $team = $game->team;
-        $league = $team->competitions()->where('type', 'league')->first();
+        // Check for prior season actual commercial revenue
+        $previousSeason = (int) $game->season - 1;
+        $previousFinances = GameFinances::where('game_id', $game->id)
+            ->where('season', $previousSeason)
+            ->first();
 
-        if (!$league) {
-            return [];
+        if ($previousFinances && $previousFinances->actual_commercial_revenue > 0) {
+            return $previousFinances->actual_commercial_revenue;
         }
 
-        $teamStrengths = $this->calculateLeagueStrengths($game, $league);
+        // First season: calculate from stadium seats × config rate
+        $reputation = $team->clubProfile?->reputation_level ?? ClubProfile::REPUTATION_MODEST;
 
-        $projections = [];
-        $position = 1;
+        $base = $team->stadium_seats * config("finances.commercial_per_seat.{$reputation}", 80_000);
 
-        foreach ($teamStrengths as $teamId => $strength) {
-            $t = Team::find($teamId);
-            $projections[] = [
-                'team_id' => $teamId,
-                'team_name' => $t->name,
-                'strength' => $strength,
-                'position' => $position,
-                'is_user_team' => $teamId === $team->id,
-            ];
-            $position++;
+        // Reduce commercial revenue for lower tiers
+        if ($league->tier > 1) {
+            return $base * 0.75;
         }
 
-        return $projections;
+        return $base;
+    }
+
+    /**
+     * Calculate public subsidy (Subvenciones Públicas) to guarantee a minimum viable budget.
+     * Ensures every team can cover mandatory infrastructure + a minimum transfer budget.
+     */
+    private function calculateSubsidy(int $projectedSurplus, int $carriedDebt): int
+    {
+        $minimumAvailable = GameInvestment::MINIMUM_TOTAL_INVESTMENT + self::MINIMUM_TRANSFER_BUDGET;
+        $rawAvailable = $projectedSurplus - $carriedDebt;
+
+        if ($rawAvailable >= $minimumAvailable) {
+            return 0;
+        }
+
+        return $minimumAvailable - $rawAvailable;
     }
 }

@@ -30,11 +30,11 @@ use App\Http\Views\ShowFinances;
 use App\Http\Views\ShowGame;
 use App\Http\Views\ShowOnboarding;
 use App\Http\Views\ShowCompetition;
+use App\Http\Views\ShowLiveMatch;
 use App\Http\Views\ShowMatchResults;
 use App\Http\Views\ShowSquad;
 use App\Http\Views\ShowContracts;
 use App\Http\Views\ShowScouting;
-use App\Http\Views\ShowScoutingPlayer;
 use App\Http\Views\ShowSeasonEnd;
 use App\Http\Views\ShowSquadDevelopment;
 use App\Http\Views\ShowSquadStats;
@@ -68,6 +68,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/game/{gameId}/calendar', ShowCalendar::class)->name('game.calendar');
         Route::get('/game/{gameId}/competition/{competitionId}', ShowCompetition::class)->name('game.competition');
         Route::get('/game/{gameId}/results/{competition}/{matchday}', ShowMatchResults::class)->name('game.results');
+        Route::get('/game/{gameId}/live/{matchId}', ShowLiveMatch::class)->name('game.live-match');
         Route::get('/game/{gameId}/lineup/{matchId}', ShowLineup::class)->name('game.lineup');
 
         // Game Actions
@@ -88,7 +89,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/game/{gameId}/scouting', ShowScouting::class)->name('game.scouting');
         Route::post('/game/{gameId}/scouting/search', SubmitScoutSearch::class)->name('game.scouting.search');
         Route::post('/game/{gameId}/scouting/cancel', CancelScoutSearch::class)->name('game.scouting.cancel');
-        Route::get('/game/{gameId}/scouting/{playerId}', ShowScoutingPlayer::class)->name('game.scouting.player');
         Route::post('/game/{gameId}/scouting/{playerId}/bid', SubmitTransferBid::class)->name('game.scouting.bid');
         Route::post('/game/{gameId}/scouting/{playerId}/loan', RequestLoan::class)->name('game.scouting.loan');
         Route::post('/game/{gameId}/scouting/counter/{offerId}/accept', AcceptCounterOffer::class)->name('game.scouting.counter.accept');

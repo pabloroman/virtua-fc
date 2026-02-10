@@ -11,6 +11,8 @@ class GameInvestment extends Model
 {
     use HasUuids;
 
+    public $timestamps = false;
+
     protected $fillable = [
         'game_id',
         'season',
@@ -150,6 +152,11 @@ class GameInvestment extends Model
     public function getFormattedAvailableSurplusAttribute(): string
     {
         return Money::format($this->available_surplus);
+    }
+
+    public function getFormattedTotalInfrastructureAttribute(): string
+    {
+        return Money::format($this->total_infrastructure);
     }
 
     public function getFormattedTransferBudgetAttribute(): string

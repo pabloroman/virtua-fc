@@ -3,11 +3,31 @@
 /** @var App\Models\Competition $competition */
 /** @var array $standingsZones */
 
+// Map border colors to complete Tailwind classes
+$borderColorMap = [
+    'blue-500' => 'border-l-4 border-l-blue-500',
+    'orange-500' => 'border-l-4 border-l-orange-500',
+    'red-500' => 'border-l-4 border-l-red-500',
+    'green-300' => 'border-l-4 border-l-green-300',
+    'green-500' => 'border-l-4 border-l-green-500',
+    'yellow-500' => 'border-l-4 border-l-yellow-500',
+];
+
+// Map bg colors to complete Tailwind classes
+$bgColorMap = [
+    'bg-blue-500' => 'bg-blue-500',
+    'bg-orange-500' => 'bg-orange-500',
+    'bg-red-500' => 'bg-red-500',
+    'bg-green-300' => 'bg-green-300',
+    'bg-green-500' => 'bg-green-500',
+    'bg-yellow-500' => 'bg-yellow-500',
+];
+
 // Helper function to get zone class for a position
-$getZoneClass = function($position) use ($standingsZones) {
+$getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
     foreach ($standingsZones as $zone) {
         if ($position >= $zone['minPosition'] && $position <= $zone['maxPosition']) {
-            return 'border-l-4 border-l-' . $zone['borderColor'];
+            return $borderColorMap[$zone['borderColor']] ?? '';
         }
     }
     return '';
@@ -97,7 +117,7 @@ $getZoneClass = function($position) use ($standingsZones) {
                         <div class="flex gap-6 text-xs text-slate-500">
                             @foreach($standingsZones as $zone)
                                 <div class="flex items-center gap-2">
-                                    <div class="w-3 h-3 {{ $zone['bgColor'] }} rounded"></div>
+                                    <div class="w-3 h-3 {{ $bgColorMap[$zone['bgColor']] ?? '' }} rounded"></div>
                                     <span>{{ __($zone['label']) }}</span>
                                 </div>
                             @endforeach

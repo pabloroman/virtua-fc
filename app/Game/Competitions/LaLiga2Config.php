@@ -12,28 +12,28 @@ class LaLiga2Config implements CompetitionConfig
      * La Liga 2 TV revenue by position (in cents).
      */
     private const TV_REVENUE = [
-        1 => 2_000_000_000,    // €20M
-        2 => 1_800_000_000,    // €18M
-        3 => 1_500_000_000,    // €15M
-        4 => 1_400_000_000,    // €14M
-        5 => 1_300_000_000,    // €13M
-        6 => 1_200_000_000,    // €12M
-        7 => 1_100_000_000,    // €11M
-        8 => 1_050_000_000,    // €10.5M
-        9 => 1_000_000_000,    // €10M
-        10 => 950_000_000,     // €9.5M
-        11 => 900_000_000,     // €9M
-        12 => 850_000_000,     // €8.5M
-        13 => 800_000_000,     // €8M
-        14 => 800_000_000,     // €8M
-        15 => 750_000_000,     // €7.5M
-        16 => 700_000_000,     // €7M
-        17 => 650_000_000,     // €6.5M
-        18 => 650_000_000,     // €6.5M
-        19 => 600_000_000,     // €6M
-        20 => 600_000_000,     // €6M
-        21 => 600_000_000,     // €6M
-        22 => 600_000_000,     // €6M
+        1 => 900_000_000,      // €9M
+        2 => 850_000_000,      // €8.5M
+        3 => 800_000_000,      // €8M
+        4 => 750_000_000,      // €7.5M
+        5 => 700_000_000,      // €7M
+        6 => 700_000_000,      // €7M
+        7 => 650_000_000,      // €6.5M
+        8 => 650_000_000,      // €6.5M
+        9 => 650_000_000,      // €6.5M
+        10 => 600_000_000,     // €6M
+        11 => 600_000_000,     // €6M
+        12 => 600_000_000,     // €6M
+        13 => 600_000_000,     // €6M
+        14 => 600_000_000,     // €6M
+        15 => 550_000_000,     // €5.5M
+        16 => 550_000_000,     // €5.5M
+        17 => 550_000_000,     // €5.5M
+        18 => 550_000_000,     // €5.5M
+        19 => 500_000_000,     // €5M
+        20 => 500_000_000,     // €5M
+        21 => 500_000_000,     // €5M
+        22 => 500_000_000,     // €5M
     ];
 
     private const POSITION_FACTORS = [
@@ -58,9 +58,11 @@ class LaLiga2Config implements CompetitionConfig
      */
     private const REPUTATION_TO_GOAL = [
         ClubProfile::REPUTATION_ELITE => Game::GOAL_PROMOTION,
+        ClubProfile::REPUTATION_CONTENDERS => Game::GOAL_PROMOTION,
         ClubProfile::REPUTATION_CONTINENTAL => Game::GOAL_PROMOTION,
         ClubProfile::REPUTATION_ESTABLISHED => Game::GOAL_PLAYOFF,
         ClubProfile::REPUTATION_MODEST => Game::GOAL_TOP_HALF,
+        ClubProfile::REPUTATION_PROFESSIONAL => Game::GOAL_SURVIVAL,
         ClubProfile::REPUTATION_LOCAL => Game::GOAL_SURVIVAL,
     ];
 
@@ -81,11 +83,6 @@ class LaLiga2Config implements CompetitionConfig
             return self::POSITION_FACTORS['mid_low'];
         }
         return self::POSITION_FACTORS['relegation'];
-    }
-
-    public function getMaxPositions(): int
-    {
-        return 22;
     }
 
     public function getSeasonGoal(string $reputation): string
@@ -129,4 +126,5 @@ class LaLiga2Config implements CompetitionConfig
             ],
         ];
     }
+
 }

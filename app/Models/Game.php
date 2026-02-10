@@ -31,6 +31,7 @@ class Game extends Model
         'user_id',
         'player_name',
         'team_id',
+        'competition_id',
         'season',
         'current_date',
         'current_matchday',
@@ -145,7 +146,7 @@ class Game extends Model
     {
         return $this->hasOne(ScoutReport::class)
             ->whereIn('status', [ScoutReport::STATUS_SEARCHING, ScoutReport::STATUS_COMPLETED])
-            ->latest();
+            ->orderByDesc('game_date');
     }
 
     /**
@@ -156,10 +157,14 @@ class Game extends Model
         return $this->players()->where('team_id', $this->team_id);
     }
 
-    public function getCompetitionIdAttribute(): string
+    public function competition(): BelongsTo
     {
-        // Determine competition based on team
-        return $this->team?->competitions()->first()?->id ?? 'ESP1';
+        return $this->belongsTo(Competition::class);
+    }
+
+    public function competitionEntries(): HasMany
+    {
+        return $this->hasMany(CompetitionEntry::class);
     }
 
     public function getNextMatchAttribute(): ?GameMatch

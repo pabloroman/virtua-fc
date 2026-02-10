@@ -50,9 +50,12 @@ class KnockoutCupHandlerTest extends TestCase
             'name' => 'Copa del Rey',
         ]);
 
+        Competition::factory()->league()->create(['id' => 'ESP1', 'name' => 'LaLiga']);
+
         $this->game = Game::factory()->create([
             'user_id' => $user->id,
             'team_id' => $this->team1->id,
+            'competition_id' => 'ESP1',
             'season' => '2024',
         ]);
     }
@@ -118,8 +121,7 @@ class KnockoutCupHandlerTest extends TestCase
 
     public function test_get_match_batch_excludes_league_matches(): void
     {
-        // Create a league competition
-        $leagueCompetition = Competition::factory()->league()->create(['id' => 'ESP1']);
+        $leagueCompetition = Competition::find('ESP1');
 
         $cupTie = CupTie::factory()->create([
             'game_id' => $this->game->id,
@@ -238,6 +240,11 @@ class KnockoutCupHandlerTest extends TestCase
             ->once()
             ->andReturn(null);
 
+        // After resolving ties, handler checks if next round needs a draw
+        $this->cupDrawServiceMock
+            ->shouldReceive('getNextRoundNeedingDraw')
+            ->andReturn(null);
+
         $matches = collect([$cupMatch]);
         $allPlayers = collect();
 
@@ -269,6 +276,11 @@ class KnockoutCupHandlerTest extends TestCase
         $this->cupTieResolverMock
             ->shouldNotReceive('resolve');
 
+        // After resolving ties, handler checks if next round needs a draw
+        $this->cupDrawServiceMock
+            ->shouldReceive('getNextRoundNeedingDraw')
+            ->andReturn(null);
+
         $matches = collect([$cupMatch]);
         $allPlayers = collect();
 
@@ -277,26 +289,31 @@ class KnockoutCupHandlerTest extends TestCase
         $this->assertTrue(true);
     }
 
-    public function test_get_redirect_route_returns_cup_page(): void
+    public function test_get_redirect_route_returns_cup_results(): void
     {
         $route = $this->handler->getRedirectRoute($this->game, collect(), 1);
 
         $this->assertStringContainsString('/game/', $route);
-        $this->assertStringContainsString('/cup', $route);
+        $this->assertStringContainsString('/results/ESPCUP/1', $route);
     }
 
-    public function test_get_redirect_route_returns_league_results_when_eliminated(): void
+    public function test_get_redirect_route_uses_match_competition_and_round(): void
     {
-        // Mark the player's team as eliminated
-        $this->game->update([
-            'cup_eliminated' => true,
-            'current_matchday' => 10,
+        $cupTie = CupTie::factory()->create([
+            'game_id' => $this->game->id,
+            'competition_id' => $this->cupCompetition->id,
+            'round_number' => 3,
         ]);
 
-        $route = $this->handler->getRedirectRoute($this->game, collect(), 1);
+        $cupMatch = GameMatch::factory()->create([
+            'game_id' => $this->game->id,
+            'competition_id' => $this->cupCompetition->id,
+            'cup_tie_id' => $cupTie->id,
+            'round_number' => 3,
+        ]);
 
-        $this->assertStringContainsString('/game/', $route);
-        $this->assertStringContainsString('/results/', $route);
-        $this->assertStringContainsString('10', $route);
+        $route = $this->handler->getRedirectRoute($this->game, collect([$cupMatch]), 1);
+
+        $this->assertStringContainsString('/results/ESPCUP/3', $route);
     }
 }

@@ -12,9 +12,15 @@ use Illuminate\Support\Collection;
 class ContractService
 {
     /**
-     * Default minimum wage if no competition found (€100K in cents).
+     * Minimum annual wages by competition tier (in cents).
+     * Based on Spanish labor regulations for professional football.
      */
-    private const DEFAULT_MINIMUM_WAGE = 10_000_000;
+    private const MINIMUM_WAGES = [
+        1 => 20_000_000, // €200K - La Liga
+        2 => 10_000_000, // €100K - La Liga 2
+    ];
+
+    private const DEFAULT_MINIMUM_WAGE = 10_000_000; // €100K
 
     /**
      * Wage percentage tiers based on market value.
@@ -147,14 +153,13 @@ class ContractService
      */
     public function getMinimumWageForTeam(Team $team): int
     {
-        // Find the team's primary league competition
         $league = Competition::whereHas('teams', function ($query) use ($team) {
             $query->where('teams.id', $team->id);
         })
-            ->where('type', 'league')
+            ->where('role', Competition::ROLE_PRIMARY)
             ->first();
 
-        return $league?->minimum_annual_wage ?? self::DEFAULT_MINIMUM_WAGE;
+        return self::MINIMUM_WAGES[$league?->tier] ?? self::DEFAULT_MINIMUM_WAGE;
     }
 
     /**
@@ -167,7 +172,7 @@ class ContractService
     {
         $competition = Competition::find($competitionId);
 
-        return $competition?->minimum_annual_wage ?? self::DEFAULT_MINIMUM_WAGE;
+        return self::MINIMUM_WAGES[$competition?->tier] ?? self::DEFAULT_MINIMUM_WAGE;
     }
 
     /**

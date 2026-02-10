@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Game\DTO\SeasonTransitionData;
 use App\Game\Processors\PlayerRetirementProcessor;
 use App\Game\Services\PlayerRetirementService;
+use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\Player;
@@ -29,10 +30,12 @@ class PlayerRetirementTest extends TestCase
         $this->user = User::factory()->create();
         $this->userTeam = Team::factory()->create(['name' => 'User Team']);
         $this->aiTeam = Team::factory()->create(['name' => 'AI Team']);
+        Competition::factory()->league()->create(['id' => 'ESP1']);
 
         $this->game = Game::factory()->create([
             'user_id' => $this->user->id,
             'team_id' => $this->userTeam->id,
+            'competition_id' => 'ESP1',
             'season' => '2024',
         ]);
     }

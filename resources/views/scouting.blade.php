@@ -47,73 +47,148 @@
 
                     {{-- State: No active search → Show search form --}}
                     @if(!$report)
-                        <div class="mt-6">
-                            <h4 class="font-semibold text-lg text-slate-900 mb-4">{{ __('transfers.scout_search') }}</h4>
+                        <div class="mt-6" x-data="{
+                            ageMin: 16,
+                            ageMax: 45,
+                            abilityMin: 1,
+                            abilityMax: 99,
+                            valueStepMin: 0,
+                            valueStepMax: 9,
+                            valueSteps: [0, 500000, 1000000, 2000000, 5000000, 10000000, 20000000, 50000000, 100000000, 200000000],
+                            valueMin() { return this.valueSteps[this.valueStepMin]; },
+                            valueMax() { return this.valueSteps[this.valueStepMax]; },
+                            enforceValueMin() { if (this.valueStepMin > this.valueStepMax) this.valueStepMax = this.valueStepMin; },
+                            enforceValueMax() { if (this.valueStepMax < this.valueStepMin) this.valueStepMin = this.valueStepMax; },
+                            scopeDomestic: true,
+                            scopeInternational: true,
+                            formatValue(val) {
+                                if (val === 0) return '€0';
+                                if (val >= 1000000) return '€' + (val / 1000000) + 'M';
+                                if (val >= 1000) return '€' + (val / 1000) + 'K';
+                                return '€' + val;
+                            },
+                            ageTrackLeft() { return ((this.ageMin - 16) / (45 - 16)) * 100 + '%'; },
+                            ageTrackWidth() { return ((this.ageMax - this.ageMin) / (45 - 16)) * 100 + '%'; },
+                            abilityTrackLeft() { return ((this.abilityMin - 1) / (99 - 1)) * 100 + '%'; },
+                            abilityTrackWidth() { return ((this.abilityMax - this.abilityMin) / (99 - 1)) * 100 + '%'; },
+                            valueTrackLeft() { return (this.valueStepMin / 9) * 100 + '%'; },
+                            valueTrackWidth() { return ((this.valueStepMax - this.valueStepMin) / 9) * 100 + '%'; },
+                            enforceAgeMin() { if (this.ageMin > this.ageMax) this.ageMax = this.ageMin; },
+                            enforceAgeMax() { if (this.ageMax < this.ageMin) this.ageMin = this.ageMax; },
+                            enforceAbilityMin() { if (this.abilityMin > this.abilityMax) this.abilityMax = this.abilityMin; },
+                            enforceAbilityMax() { if (this.abilityMax < this.abilityMin) this.abilityMin = this.abilityMax; },
+                        }">
                             <p class="text-sm text-slate-600 mb-6">{{ __('transfers.scout_search_desc') }}</p>
 
-                            <form method="post" action="{{ route('game.scouting.search', $game->id) }}" class="max-w-xl space-y-4">
+                            <form method="post" action="{{ route('game.scouting.search', $game->id) }}">
                                 @csrf
 
-                                {{-- Position --}}
-                                <div>
-                                    <label for="position" class="block text-sm font-medium text-slate-700 mb-1">{{ __('transfers.position_required') }}</label>
-                                    <select name="position" id="position" required class="w-full border-slate-300 rounded-lg shadow-sm text-sm focus:ring-sky-500 focus:border-sky-500">
-                                        <option value="">{{ __('transfers.select_position') }}</option>
-                                        <optgroup label="{{ __('transfers.specific_positions') }}">
-                                            <option value="GK">{{ __('transfers.position_gk') }}</option>
-                                            <option value="CB">{{ __('transfers.position_cb') }}</option>
-                                            <option value="LB">{{ __('transfers.position_lb') }}</option>
-                                            <option value="RB">{{ __('transfers.position_rb') }}</option>
-                                            <option value="DM">{{ __('transfers.position_dm') }}</option>
-                                            <option value="CM">{{ __('transfers.position_cm') }}</option>
-                                            <option value="AM">{{ __('transfers.position_am') }}</option>
-                                            <option value="LW">{{ __('transfers.position_lw') }}</option>
-                                            <option value="RW">{{ __('transfers.position_rw') }}</option>
-                                            <option value="CF">{{ __('transfers.position_cf') }}</option>
-                                        </optgroup>
-                                        <optgroup label="{{ __('transfers.position_groups') }}">
-                                            <option value="any_defender">{{ __('transfers.any_defender') }}</option>
-                                            <option value="any_midfielder">{{ __('transfers.any_midfielder') }}</option>
-                                            <option value="any_forward">{{ __('transfers.any_forward') }}</option>
-                                        </optgroup>
-                                    </select>
-                                    @error('position')
-                                        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
-
-                                {{-- League --}}
-                                <div>
-                                    <label for="league" class="block text-sm font-medium text-slate-700 mb-1">{{ __('transfers.league') }}</label>
-                                    <select name="league" id="league" class="w-full border-slate-300 rounded-lg shadow-sm text-sm focus:ring-sky-500 focus:border-sky-500">
-                                        <option value="all">{{ __('transfers.all_leagues') }}</option>
-                                        @foreach($leagues as $league)
-                                            <option value="{{ $league->id }}">{{ $league->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                {{-- Age Range --}}
-                                <div class="grid grid-cols-2 gap-4">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-5">
+                                    {{-- Position --}}
                                     <div>
-                                        <label for="age_min" class="block text-sm font-medium text-slate-700 mb-1">{{ __('transfers.min_age') }}</label>
-                                        <input type="number" name="age_min" id="age_min" min="16" max="45" placeholder="e.g. 18" class="w-full border-slate-300 rounded-lg shadow-sm text-sm focus:ring-sky-500 focus:border-sky-500">
+                                        <label for="position" class="block text-sm font-semibold text-slate-700 mb-1">{{ __('transfers.position_required') }}</label>
+                                        <select name="position" id="position" required class="w-full border-slate-300 rounded-lg shadow-sm text-sm focus:ring-red-500 focus:border-red-500">
+                                            <option value="">{{ __('transfers.select_position') }}</option>
+                                            <optgroup label="{{ __('transfers.specific_positions') }}">
+                                                <option value="GK">{{ __('transfers.position_gk') }}</option>
+                                                <option value="CB">{{ __('transfers.position_cb') }}</option>
+                                                <option value="LB">{{ __('transfers.position_lb') }}</option>
+                                                <option value="RB">{{ __('transfers.position_rb') }}</option>
+                                                <option value="DM">{{ __('transfers.position_dm') }}</option>
+                                                <option value="CM">{{ __('transfers.position_cm') }}</option>
+                                                <option value="AM">{{ __('transfers.position_am') }}</option>
+                                                <option value="LW">{{ __('transfers.position_lw') }}</option>
+                                                <option value="RW">{{ __('transfers.position_rw') }}</option>
+                                                <option value="CF">{{ __('transfers.position_cf') }}</option>
+                                            </optgroup>
+                                            <optgroup label="{{ __('transfers.position_groups') }}">
+                                                <option value="any_defender">{{ __('transfers.any_defender') }}</option>
+                                                <option value="any_midfielder">{{ __('transfers.any_midfielder') }}</option>
+                                                <option value="any_forward">{{ __('transfers.any_forward') }}</option>
+                                            </optgroup>
+                                        </select>
+                                        @error('position')
+                                            <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                                        @enderror
                                     </div>
+
+                                    {{-- Scope --}}
                                     <div>
-                                        <label for="age_max" class="block text-sm font-medium text-slate-700 mb-1">{{ __('transfers.max_age') }}</label>
-                                        <input type="number" name="age_max" id="age_max" min="16" max="45" placeholder="e.g. 28" class="w-full border-slate-300 rounded-lg shadow-sm text-sm focus:ring-sky-500 focus:border-sky-500">
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">{{ __('transfers.scope') }}</label>
+                                        <div class="flex items-center gap-5 mt-2">
+                                            <label class="flex items-center gap-2 cursor-pointer">
+                                                <input type="checkbox" name="scope[]" value="domestic" x-model="scopeDomestic" class="rounded border-slate-300 text-red-600 focus:ring-red-500">
+                                                <span class="text-sm text-slate-700">{{ __('transfers.scope_domestic') }}</span>
+                                            </label>
+                                            <label class="flex items-center gap-2 cursor-pointer">
+                                                <input type="checkbox" name="scope[]" value="international" x-model="scopeInternational" class="rounded border-slate-300 text-red-600 focus:ring-red-500">
+                                                <span class="text-sm text-slate-700">{{ __('transfers.scope_international') }}</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    {{-- Expiring contract --}}
+                                    <div>
+                                        <label class="block text-sm font-semibold text-slate-700 mb-1">{{ __('transfers.contract') }}</label>
+                                        <div class="mt-2">
+                                            <label class="flex items-center gap-2 cursor-pointer">
+                                                <input type="checkbox" name="expiring_contract" value="1" class="rounded border-slate-300 text-red-600 focus:ring-red-500">
+                                                <span class="text-sm text-slate-700">{{ __('transfers.expiring_contract') }}</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    {{-- Age Range Slider --}}
+                                    <div>
+                                        <div class="flex items-center justify-between mb-2">
+                                            <label class="text-sm font-semibold text-slate-700">{{ __('transfers.age_range') }}</label>
+                                            <span class="text-sm font-semibold text-slate-900" x-text="ageMin + ' – ' + ageMax"></span>
+                                        </div>
+                                        <div class="dual-range">
+                                            <div class="track"></div>
+                                            <div class="track-fill" :style="'left:' + ageTrackLeft() + ';width:' + ageTrackWidth()"></div>
+                                            <input type="range" min="16" max="45" step="1" x-model.number="ageMin" @input="enforceAgeMin()">
+                                            <input type="range" min="16" max="45" step="1" x-model.number="ageMax" @input="enforceAgeMax()">
+                                        </div>
+                                        <input type="hidden" name="age_min" :value="ageMin">
+                                        <input type="hidden" name="age_max" :value="ageMax">
+                                    </div>
+
+                                    {{-- Ability Range Slider --}}
+                                    <div>
+                                        <div class="flex items-center justify-between mb-2">
+                                            <label class="text-sm font-semibold text-slate-700">{{ __('transfers.ability_range') }}</label>
+                                            <span class="text-sm font-semibold text-slate-900" x-text="abilityMin + ' – ' + abilityMax"></span>
+                                        </div>
+                                        <div class="dual-range">
+                                            <div class="track"></div>
+                                            <div class="track-fill" :style="'left:' + abilityTrackLeft() + ';width:' + abilityTrackWidth()"></div>
+                                            <input type="range" min="1" max="99" step="1" x-model.number="abilityMin" @input="enforceAbilityMin()">
+                                            <input type="range" min="1" max="99" step="1" x-model.number="abilityMax" @input="enforceAbilityMax()">
+                                        </div>
+                                        <input type="hidden" name="ability_min" :value="abilityMin">
+                                        <input type="hidden" name="ability_max" :value="abilityMax">
+                                    </div>
+
+                                    {{-- Market Value Range Slider --}}
+                                    <div>
+                                        <div class="flex items-center justify-between mb-2">
+                                            <label class="text-sm font-semibold text-slate-700">{{ __('transfers.value_range') }}</label>
+                                            <span class="text-sm font-semibold text-slate-900" x-text="formatValue(valueMin()) + ' – ' + formatValue(valueMax())"></span>
+                                        </div>
+                                        <div class="dual-range">
+                                            <div class="track"></div>
+                                            <div class="track-fill" :style="'left:' + valueTrackLeft() + ';width:' + valueTrackWidth()"></div>
+                                            <input type="range" min="0" max="9" step="1" x-model.number="valueStepMin" @input="enforceValueMin()">
+                                            <input type="range" min="0" max="9" step="1" x-model.number="valueStepMax" @input="enforceValueMax()">
+                                        </div>
+                                        <input type="hidden" name="value_min" :value="valueMin()">
+                                        <input type="hidden" name="value_max" :value="valueMax()">
                                     </div>
                                 </div>
 
-                                {{-- Max Budget --}}
-                                <div>
-                                    <label for="max_budget" class="block text-sm font-medium text-slate-700 mb-1">{{ __('transfers.max_transfer_fee') }}</label>
-                                    <input type="number" name="max_budget" id="max_budget" min="0" step="100000" placeholder="e.g. 20000000" class="w-full border-slate-300 rounded-lg shadow-sm text-sm focus:ring-sky-500 focus:border-sky-500">
-                                    <p class="text-xs text-slate-500 mt-1">{{ __('transfers.leave_empty_no_limit') }}</p>
-                                </div>
-
-                                <div class="pt-2">
-                                    <button type="submit" class="px-6 py-2.5 bg-sky-600 hover:bg-sky-700 text-white text-sm font-semibold rounded-lg transition-colors">
+                                <div class="pt-5">
+                                    <button type="submit" class="w-full uppercase py-3 bg-red-600 text-white font-semibold rounded-lg tracking-wide hover:bg-red-700 focus:bg-red-700 active:bg-red-900 ease-in-out duration-150 transition">
                                         {{ __('transfers.start_scout_search') }}
                                     </button>
                                 </div>
@@ -133,8 +208,8 @@
                                 </p>
                                 <p class="text-sm text-slate-500 mb-6">
                                     {{ __('transfers.looking_for') }}: <span class="font-medium">{{ $report->filters['position'] }}</span>
-                                    @if($report->filters['league'] !== 'all')
-                                        {{ __('transfers.in_league') }} <span class="font-medium">{{ $report->filters['league'] }}</span>
+                                    @if(isset($report->filters['scope']) && count($report->filters['scope']) === 1)
+                                        — <span class="font-medium">{{ in_array('domestic', $report->filters['scope']) ? __('transfers.scope_domestic') : __('transfers.scope_international') }}</span>
                                     @endif
                                 </p>
                                 <div class="w-48 mx-auto bg-slate-200 rounded-full h-2 mb-6">
@@ -152,7 +227,7 @@
 
                     {{-- State: Results ready --}}
                     @elseif($report->isCompleted())
-                        <div class="mt-6">
+                        <div class="mt-6" x-data>
                             <div class="flex items-center justify-between mb-4">
                                 <h4 class="font-semibold text-lg text-slate-900">{{ __('transfers.scout_results') }}</h4>
                                 <form method="post" action="{{ route('game.scouting.cancel', $game->id) }}">
@@ -220,16 +295,200 @@
                                                         <span class="text-slate-700 font-medium">{{ $abilityLow }}-{{ $abilityHigh }}</span>
                                                     </td>
                                                     <td class="py-3 text-right">
-                                                        <a href="{{ route('game.scouting.player', [$game->id, $player->id]) }}"
-                                                           class="px-3 py-1.5 text-xs font-semibold text-sky-600 hover:text-sky-800 hover:bg-sky-50 rounded-lg transition-colors">
+                                                        <button @click="$dispatch('open-modal', 'scout-player-{{ $player->id }}')"
+                                                           class="px-3 py-1.5 text-xs font-semibold text-sky-600 hover:text-sky-800 hover:bg-sky-50 rounded-lg transition-colors cursor-pointer">
                                                             {{ __('transfers.view_report') }}
-                                                        </a>
+                                                        </button>
                                                     </td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
                                     </table>
                                 </div>
+
+                                {{-- Player Detail Modals --}}
+                                @foreach($scoutedPlayers as $scoutPlayer)
+                                    @php
+                                        $detail = $playerDetails[$scoutPlayer->id];
+                                        $existingOffer = $existingOffers[$scoutPlayer->id] ?? null;
+                                    @endphp
+                                    <x-modal name="scout-player-{{ $scoutPlayer->id }}" maxWidth="2xl">
+                                        <div class="p-8">
+                                            {{-- Player Header --}}
+                                            <div class="flex items-start justify-between mb-8">
+                                                <div>
+                                                    <h3 class="font-semibold text-2xl text-slate-900">{{ $scoutPlayer->name }}</h3>
+                                                    <div class="flex items-center gap-3 mt-1 text-sm text-slate-600">
+                                                        <span class="px-2 py-0.5 text-xs font-bold rounded {{ $scoutPlayer->position_display['bg'] }} {{ $scoutPlayer->position_display['text'] }}">
+                                                            {{ $scoutPlayer->position_display['abbreviation'] }}
+                                                        </span>
+                                                        <span>{{ $scoutPlayer->position }}</span>
+                                                        <span>&middot;</span>
+                                                        <span>{{ $scoutPlayer->age }} {{ __('transfers.years') }}</span>
+                                                        @if($scoutPlayer->nationality_flag)
+                                                            <span>&middot;</span>
+                                                            <img src="/flags/{{ $scoutPlayer->nationality_flag['code'] }}.svg" class="w-5 h-4 rounded shadow-sm inline">
+                                                            <span>{{ $scoutPlayer->nationality_flag['name'] }}</span>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                                <div class="flex items-center gap-2">
+                                                    <img src="{{ $scoutPlayer->team->image }}" class="w-10 h-10">
+                                                    <div class="text-right">
+                                                        <div class="font-semibold text-slate-900">{{ $scoutPlayer->team->name }}</div>
+                                                        <div class="text-sm text-slate-500">{{ __('transfers.contract_until') }} {{ $scoutPlayer->contract_expiry_year ?? 'N/A' }}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {{-- Scouting Report --}}
+                                            <div class="grid grid-cols-2 gap-6 mb-8">
+                                                {{-- Abilities --}}
+                                                <div class="border rounded-lg p-4">
+                                                    <h4 class="font-semibold text-sm text-slate-500 uppercase tracking-wide mb-3">{{ __('transfers.scouting_assessment') }}</h4>
+                                                    <div class="space-y-3">
+                                                        <div class="flex items-center justify-between">
+                                                            <span class="text-sm text-slate-600">{{ __('transfers.technical') }}</span>
+                                                            <div class="flex items-center gap-2">
+                                                                <div class="w-24 bg-slate-200 rounded-full h-2">
+                                                                    <div class="bg-sky-500 h-2 rounded-full" style="width: {{ (($detail['tech_range'][0] + $detail['tech_range'][1]) / 2) }}%"></div>
+                                                                </div>
+                                                                <span class="text-sm font-semibold text-slate-700 w-16 text-right">{{ $detail['tech_range'][0] }}-{{ $detail['tech_range'][1] }}</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex items-center justify-between">
+                                                            <span class="text-sm text-slate-600">{{ __('transfers.physical') }}</span>
+                                                            <div class="flex items-center gap-2">
+                                                                <div class="w-24 bg-slate-200 rounded-full h-2">
+                                                                    <div class="bg-emerald-500 h-2 rounded-full" style="width: {{ (($detail['phys_range'][0] + $detail['phys_range'][1]) / 2) }}%"></div>
+                                                                </div>
+                                                                <span class="text-sm font-semibold text-slate-700 w-16 text-right">{{ $detail['phys_range'][0] }}-{{ $detail['phys_range'][1] }}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {{-- Financials --}}
+                                                <div class="border rounded-lg p-4">
+                                                    <h4 class="font-semibold text-sm text-slate-500 uppercase tracking-wide mb-3">{{ __('transfers.financial_details') }}</h4>
+                                                    <div class="space-y-2 text-sm">
+                                                        <div class="flex justify-between">
+                                                            <span class="text-slate-600">{{ __('transfers.market_value') }}</span>
+                                                            <span class="font-semibold text-slate-900">{{ $scoutPlayer->formatted_market_value }}</span>
+                                                        </div>
+                                                        <div class="flex justify-between">
+                                                            <span class="text-slate-600">{{ __('transfers.estimated_asking_price') }}</span>
+                                                            <span class="font-bold text-lg text-slate-900">{{ $detail['formatted_asking_price'] }}</span>
+                                                        </div>
+                                                        <div class="flex justify-between">
+                                                            <span class="text-slate-600">{{ __('transfers.wage_demand') }}</span>
+                                                            <span class="font-semibold text-slate-900">{{ $detail['formatted_wage_demand'] }}/{{ __('transfers.year_abbr') }}</span>
+                                                        </div>
+                                                        <div class="border-t pt-2 mt-2">
+                                                            <div class="flex justify-between">
+                                                                <span class="text-slate-600">{{ __('transfers.your_transfer_budget') }}</span>
+                                                                <span class="font-semibold {{ $detail['can_afford_fee'] ? 'text-green-600' : 'text-red-600' }}">
+                                                                    {{ $detail['formatted_transfer_budget'] }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {{-- Affordability Warnings --}}
+                                            @if(!$detail['can_afford_fee'])
+                                                <div class="mb-6 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+                                                    {{ __('transfers.transfer_fee_exceeds_budget') }}
+                                                </div>
+                                            @endif
+                                            @if(!$detail['can_afford_wage'])
+                                                <div class="mb-6 p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-700">
+                                                    {{ __('transfers.wage_demand_warning') }}
+                                                </div>
+                                            @endif
+
+                                            {{-- Existing Offer Status --}}
+                                            @if($existingOffer)
+                                                <div class="mb-6 p-4 border rounded-lg {{ $existingOffer->isAgreed() ? 'bg-green-50 border-green-200' : 'bg-sky-50 border-sky-200' }}">
+                                                    @if($existingOffer->isAgreed())
+                                                        <div class="flex items-center gap-2 text-green-700 font-semibold">
+                                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                                            {{ __('transfers.deal_agreed') }}!
+                                                        </div>
+                                                        <p class="text-sm text-green-600 mt-1">
+                                                            @if($existingOffer->offer_type === 'loan_in')
+                                                                {{ __('transfers.loan_deal_agreed', ['player' => $scoutPlayer->name]) }}
+                                                                {{ $game->isTransferWindowOpen() ? __('transfers.immediately') : __('transfers.next_transfer_window') }}.
+                                                            @else
+                                                                {{ __('transfers.transfer_fee') }}: {{ $existingOffer->formatted_transfer_fee }}.
+                                                                {{ __('transfers.player_will_join', ['player' => $scoutPlayer->name]) }}
+                                                                {{ $game->isTransferWindowOpen() ? __('transfers.immediately') : __('transfers.next_transfer_window') }}.
+                                                            @endif
+                                                        </p>
+                                                    @elseif($existingOffer->isPending() && $existingOffer->asking_price && $existingOffer->transfer_fee < $existingOffer->asking_price)
+                                                        {{-- Counter-offer --}}
+                                                        <div class="font-semibold text-sky-700">{{ __('transfers.counter_offer_received') }}</div>
+                                                        <p class="text-sm text-sky-600 mt-1">
+                                                            {{ __('transfers.team_counter_with', ['team' => $scoutPlayer->team->name, 'amount' => \App\Support\Money::format($existingOffer->asking_price), 'your_bid' => $existingOffer->formatted_transfer_fee]) }}
+                                                        </p>
+                                                        <div class="flex gap-2 mt-3">
+                                                            <form method="post" action="{{ route('game.scouting.counter.accept', [$game->id, $existingOffer->id]) }}">
+                                                                @csrf
+                                                                <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg transition-colors">
+                                                                    {{ __('transfers.accept_counter') }}
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    @else
+                                                        <div class="font-semibold text-sky-700">{{ __('transfers.bid_pending') }}</div>
+                                                        <p class="text-sm text-sky-600 mt-1">{{ __('transfers.your_bid_being_considered', ['amount' => $existingOffer->formatted_transfer_fee]) }}</p>
+                                                    @endif
+                                                </div>
+                                            @endif
+
+                                            {{-- Action Buttons --}}
+                                            @if(!$existingOffer || (!$existingOffer->isAgreed() && !$existingOffer->isPending()))
+                                                <div class="grid grid-cols-2 gap-6">
+                                                    {{-- Transfer Bid --}}
+                                                    <div class="border rounded-lg p-6">
+                                                        <h4 class="font-semibold text-slate-900 mb-3">{{ __('transfers.make_transfer_offer') }}</h4>
+                                                        <p class="text-sm text-slate-600 mb-4">{{ __('transfers.submit_bid_description') }}</p>
+                                                        @if($detail['can_afford_fee'])
+                                                            <form method="post" action="{{ route('game.scouting.bid', [$game->id, $scoutPlayer->id]) }}">
+                                                                @csrf
+                                                                <div class="mb-4">
+                                                                    <label for="bid_amount_{{ $scoutPlayer->id }}" class="block text-sm font-medium text-slate-700 mb-1">{{ __('transfers.your_bid_euros') }}</label>
+                                                                    <input type="number" name="bid_amount" id="bid_amount_{{ $scoutPlayer->id }}" min="0" step="100000"
+                                                                           value="{{ (int)($detail['asking_price'] / 100) }}"
+                                                                           class="w-full border-slate-300 rounded-lg shadow-sm text-sm focus:ring-sky-500 focus:border-sky-500">
+                                                                    <p class="text-xs text-slate-500 mt-1">{{ __('transfers.asking_price') }}: {{ $detail['formatted_asking_price'] }}</p>
+                                                                </div>
+                                                                <button type="submit" class="w-full px-4 py-2.5 bg-sky-600 hover:bg-sky-700 text-white text-sm font-semibold rounded-lg transition-colors">
+                                                                    {{ __('transfers.submit_bid') }}
+                                                                </button>
+                                                            </form>
+                                                        @else
+                                                            <p class="text-sm text-red-600">{{ __('transfers.insufficient_transfer_budget') }}</p>
+                                                        @endif
+                                                    </div>
+
+                                                    {{-- Loan Request --}}
+                                                    <div class="border rounded-lg p-6">
+                                                        <h4 class="font-semibold text-slate-900 mb-3">{{ __('transfers.request_loan') }}</h4>
+                                                        <p class="text-sm text-slate-600 mb-4">{{ __('transfers.request_loan_description') }}</p>
+                                                        <form method="post" action="{{ route('game.scouting.loan', [$game->id, $scoutPlayer->id]) }}">
+                                                            @csrf
+                                                            <button type="submit" class="w-full px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-lg transition-colors">
+                                                                {{ __('transfers.request_loan') }}
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </x-modal>
+                                @endforeach
                             @endif
                         </div>
                     @endif

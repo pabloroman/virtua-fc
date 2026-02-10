@@ -8,6 +8,7 @@ use App\Game\Enums\Formation;
 use App\Game\Enums\Mentality;
 use App\Game\Game as GameAggregate;
 use App\Game\Services\LineupService;
+use App\Game\Services\LoanService;
 use App\Game\Services\MatchdayService;
 use App\Game\Services\MatchSimulator;
 use App\Game\Services\NotificationService;
@@ -31,6 +32,7 @@ class AdvanceMatchday
         private readonly ScoutingService $scoutingService,
         private readonly StandingsCalculator $standingsCalculator,
         private readonly NotificationService $notificationService,
+        private readonly LoanService $loanService,
     ) {}
 
     public function __invoke(string $gameId)
@@ -50,9 +52,16 @@ class AdvanceMatchday
         $matchday = $batch['matchday'];
         $currentDate = $batch['currentDate'];
 
-        // Load ALL players once with needed relationships (avoids N+1)
+        // Load players only for teams in this match batch (avoids loading entire game)
+        $teamIds = $matches->pluck('home_team_id')
+            ->merge($matches->pluck('away_team_id'))
+            ->push($game->team_id)
+            ->unique()
+            ->values();
+
         $allPlayers = GamePlayer::with(['player', 'transferOffers', 'activeLoan'])
             ->where('game_id', $game->id)
+            ->whereIn('team_id', $teamIds)
             ->get()
             ->groupBy('team_id');
 
@@ -78,6 +87,16 @@ class AdvanceMatchday
         // Process post-match actions
         $game->refresh();
         $this->processPostMatchActions($game, $matches, $handler, $allPlayers);
+
+        // If the player's team played, redirect to the live match view
+        $playerMatch = $matches->first(fn ($m) => $m->involvesTeam($game->team_id));
+
+        if ($playerMatch) {
+            return redirect()->route('game.live-match', [
+                'gameId' => $game->id,
+                'matchId' => $playerMatch->id,
+            ]);
+        }
 
         return redirect()->to($handler->getRedirectRoute($game, $matches, $matchday));
     }
@@ -200,6 +219,20 @@ class AdvanceMatchday
             $this->notificationService->notifyScoutComplete($game, $scoutReport);
         }
 
+        // Process loan searches
+        $loanResults = $this->loanService->processLoanSearches($game);
+        foreach ($loanResults['found'] as $result) {
+            $this->notificationService->notifyLoanDestinationFound(
+                $game,
+                $result['player'],
+                $result['destination'],
+                $result['windowOpen'],
+            );
+        }
+        foreach ($loanResults['expired'] as $result) {
+            $this->notificationService->notifyLoanSearchFailed($game, $result['player']);
+        }
+
         // Check for expiring transfer offers (2 days or less)
         $this->checkExpiringOffers($game);
 
@@ -234,7 +267,7 @@ class AdvanceMatchday
                 $game->id,
                 GameNotification::TYPE_TRANSFER_OFFER_EXPIRING,
                 ['offer_id' => $offer->id],
-                24
+                1
             )) {
                 $this->notificationService->notifyExpiringOffer($game, $offer);
             }
@@ -256,7 +289,7 @@ class AdvanceMatchday
                     $game->id,
                     GameNotification::TYPE_PLAYER_RECOVERED,
                     ['player_id' => $player->id],
-                    168 // 7 days
+                    7
                 )) {
                     $this->notificationService->notifyRecovery($game, $player);
                 }
@@ -284,7 +317,7 @@ class AdvanceMatchday
                     $game->id,
                     GameNotification::TYPE_LOW_FITNESS,
                     ['player_id' => $player->id],
-                    168 // 7 days
+                    7
                 )) {
                     $this->notificationService->notifyLowFitness($game, $player);
                 }

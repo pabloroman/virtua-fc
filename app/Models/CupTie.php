@@ -11,6 +11,8 @@ class CupTie extends Model
 {
     use HasFactory, HasUuids;
 
+    public $timestamps = false;
+
     protected $fillable = [
         'game_id',
         'competition_id',

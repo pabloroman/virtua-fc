@@ -60,8 +60,7 @@ return [
     'recent_sales' => 'Ventas Recientes',
 
     // Scouting
-    'scout_search' => 'Búsqueda de Ojeador',
-    'scout_search_desc' => 'Envía a tu ojeador a buscar jugadores disponibles según tus criterios. Una búsqueda a la vez.',
+    'scout_search_desc' => 'Tu ojeador buscará jugadores y te presentará una lista corta de candidatos que mejor se adapten a tu equipo. Cuanto más específicos sean los criterios, mejores serán los resultados.',
     'position_required' => 'Posición *',
     'select_position' => 'Seleccionar posición...',
     'specific_positions' => 'Posiciones Específicas',
@@ -69,12 +68,14 @@ return [
     'any_defender' => 'Cualquier Defensa (CB, LB, RB)',
     'any_midfielder' => 'Cualquier Centrocampista (DM, CM, AM)',
     'any_forward' => 'Cualquier Delantero (LW, RW, CF)',
-    'league' => 'Liga',
-    'all_leagues' => 'Todas las ligas',
-    'min_age' => 'Edad Mínima',
-    'max_age' => 'Edad Máxima',
-    'max_transfer_fee' => 'Precio Máximo (euros)',
-    'leave_empty_no_limit' => 'Dejar vacío sin límite',
+    'scope' => 'Rango de búsqueda',
+    'scope_domestic' => 'Nacional',
+    'scope_international' => 'Internacional',
+    'age_range' => 'Rango de Edad',
+    'ability_range' => 'Rango de Habilidad',
+    'value_range' => 'Rango de Valor de Mercado',
+    'contract' => 'Contrato',
+    'expiring_contract' => 'Último año de contrato',
     'start_scout_search' => 'Iniciar Búsqueda',
 
     // Scout searching
@@ -84,7 +85,7 @@ return [
     'cancel_search' => 'Cancelar Búsqueda',
 
     // Scout results
-    'scout_results' => 'Resultados del Ojeador',
+    'scout_results' => 'Resultados de búsqueda',
     'new_search' => 'Nueva Búsqueda',
     'no_players_found' => 'No se encontraron jugadores con tus criterios.',
     'try_broadening' => 'Intenta ampliar tu búsqueda.',
@@ -134,6 +135,14 @@ return [
     'request_loan' => 'Solicitar Cesión',
     'request_loan_description' => 'Solicita el préstamo de este jugador hasta el final de la temporada. Sin coste de traspaso.',
 
+    // Bid evaluation responses
+    'bid_accepted' => ':team ha aceptado tu oferta.',
+    'counter_offer_made' => ':team ha hecho una contraoferta de :amount.',
+    'bid_rejected_too_low' => ':team ha rechazado tu oferta. Estaba muy por debajo de su valoración.',
+    'loan_rejected_key_player' => ':team rechazó la solicitud de cesión. :player es un jugador clave para ellos.',
+    'loan_accepted' => ':team ha aceptado ceder a :player a tu club.',
+    'loan_rejected_keep' => ':team ha decidido quedarse con :player por ahora.',
+
     // Loans page
     'loans_title' => 'Cesiones',
     'active_loans_out' => 'Cesiones Activas (Salidas)',
@@ -145,6 +154,8 @@ return [
     'no_active_loans' => 'Sin cesiones activas.',
     'no_loans_in' => 'Ningún jugador cedido a tu club actualmente.',
     'no_loans_out' => 'Ningún jugador cedido desde tu club.',
+    'loan_searches' => 'Buscando Destino',
+    'searching_destination' => 'Buscando club...',
     'loan_player' => 'Ceder Jugador',
     'returns' => 'Regresa',
     'years' => 'años',
@@ -161,4 +172,13 @@ return [
     'position_lw' => 'Extremo Izquierdo (EI)',
     'position_rw' => 'Extremo Derecho (ED)',
     'position_cf' => 'Delantero Centro (DC)',
+
+    // Countries
+    'country_spain' => 'España',
+    'country_england' => 'Inglaterra',
+    'country_germany' => 'Alemania',
+    'country_france' => 'Francia',
+    'country_italy' => 'Italia',
+    'country_netherlands' => 'Países Bajos',
+    'country_portugal' => 'Portugal',
 ];

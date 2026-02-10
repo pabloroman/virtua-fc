@@ -21,11 +21,6 @@ interface CompetitionConfig
     public function getPositionFactor(int $position): float;
 
     /**
-     * Get the maximum number of positions in this competition.
-     */
-    public function getMaxPositions(): int;
-
-    /**
      * Get the season goal for a team based on reputation level.
      *
      * @param string $reputation One of ClubProfile::REPUTATION_* constants

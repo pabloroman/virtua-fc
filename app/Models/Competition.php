@@ -2,14 +2,16 @@
 
 namespace App\Models;
 
+use App\Game\Competitions\ChampionsLeagueConfig;
+use App\Game\Competitions\ConferenceLeagueConfig;
 use App\Game\Competitions\DefaultLeagueConfig;
+use App\Game\Competitions\EuropaLeagueConfig;
 use App\Game\Competitions\LaLiga2Config;
 use App\Game\Competitions\LaLigaConfig;
 use App\Game\Contracts\CompetitionConfig;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Competition extends Model
 {
@@ -18,20 +20,24 @@ class Competition extends Model
     protected $keyType = 'string';
     public $timestamps = false;
 
+    public const ROLE_PRIMARY = 'primary';
+    public const ROLE_DOMESTIC_CUP = 'domestic_cup';
+    public const ROLE_CONTINENTAL = 'continental';
+    public const ROLE_FOREIGN = 'foreign';
+
     protected $fillable = [
         'id',
         'name',
         'country',
         'tier',
         'type',
+        'role',
         'season',
         'handler_type',
-        'minimum_annual_wage',
     ];
 
     protected $casts = [
         'tier' => 'integer',
-        'minimum_annual_wage' => 'integer',
     ];
 
     /**
@@ -40,20 +46,10 @@ class Competition extends Model
     private const CONFIG_MAP = [
         'ESP1' => LaLigaConfig::class,
         'ESP2' => LaLiga2Config::class,
+        'UCL' => ChampionsLeagueConfig::class,
+        'UEL' => EuropaLeagueConfig::class,
+        'UECL' => ConferenceLeagueConfig::class,
     ];
-
-    /**
-     * Get the minimum annual wage for this competition.
-     * Returns null for cups (they don't have their own minimum).
-     */
-    public function getMinimumAnnualWageEurosAttribute(): ?int
-    {
-        if ($this->minimum_annual_wage === null) {
-            return null;
-        }
-
-        return (int) ($this->minimum_annual_wage / 100);
-    }
 
     public function teams(): BelongsToMany
     {
@@ -62,19 +58,14 @@ class Competition extends Model
             ->orderBy('name');
     }
 
-    public function fixtureTemplates(): HasMany
-    {
-        return $this->hasMany(FixtureTemplate::class);
-    }
-
     public function isLeague(): bool
     {
-        return $this->type === 'league';
+        return in_array($this->handler_type, ['league', 'league_with_playoff', 'swiss_format']);
     }
 
     public function isCup(): bool
     {
-        return $this->type === 'cup';
+        return !$this->isLeague();
     }
 
     /**

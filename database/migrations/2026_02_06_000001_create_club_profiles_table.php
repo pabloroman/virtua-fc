@@ -13,7 +13,6 @@ return new class extends Migration
             $table->uuid('team_id')->unique();
             $table->string('reputation_level'); // elite, continental, established, modest, local
             $table->bigInteger('commercial_revenue')->default(0); // cents per season
-            $table->timestamps();
 
             $table->foreign('team_id')->references('id')->on('teams')->onDelete('cascade');
         });

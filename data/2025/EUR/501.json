@@ -1,0 +1,357 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/501.png",
+  "name": "FK Bodø/Glimt",
+  "players": [
+    {
+      "contract": "Jul 31, 2026",
+      "dateOfBirth": "Jul 11, 1995",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "255440",
+      "marketValue": "€2.50m",
+      "name": "Nikita Haikin",
+      "nationality": [
+        "Russia",
+        "United Kingdom"
+      ],
+      "number": "12",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "May 20, 1999",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "358726",
+      "marketValue": "€300k",
+      "name": "Julian Faye Lund",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Jan 8, 2007",
+      "id": "1109643",
+      "marketValue": "€50k",
+      "name": "Isak Sjong",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "45",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Dec 19, 1998",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "502558",
+      "marketValue": "€2.50m",
+      "name": "Odin Bjørtuft",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jul 31, 2028",
+      "dateOfBirth": "Jan 29, 2005",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "953067",
+      "marketValue": "€2.30m",
+      "name": "Villads Nielsen",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "2",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Apr 2, 1996",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "342129",
+      "marketValue": "€1.20m",
+      "name": "Jostein Gundersen",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Jul 31, 1991",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "230166",
+      "marketValue": "€250k",
+      "name": "Haitam Aleesami",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jul 31, 2029",
+      "dateOfBirth": "Aug 21, 1998",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "364938",
+      "marketValue": "€2.50m",
+      "name": "Fredrik Bjørkan",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "15",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Aug 17, 2003",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "912959",
+      "marketValue": "€8.00m",
+      "name": "Fredrik Sjøvold",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "20",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jul 31, 2028",
+      "dateOfBirth": "Nov 24, 1997",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "308439",
+      "marketValue": "€7.00m",
+      "name": "Patrick Berg",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "7",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Feb 14, 2000",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "394688",
+      "marketValue": "€3.50m",
+      "name": "Håkon Evjen",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "26",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jul 31, 2028",
+      "dateOfBirth": "Jun 10, 2003",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "581112",
+      "marketValue": "€2.70m",
+      "name": "Sondre Auklend",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jul 31, 2029",
+      "dateOfBirth": "Nov 4, 2004",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "715508",
+      "marketValue": "€2.50m",
+      "name": "Magnus Riisnæs",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "23",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 14, 2000",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "542762",
+      "marketValue": "€1.00m",
+      "name": "Anders Klynge",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "22",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 17, 1997",
+      "foot": "left",
+      "height": "1,77m",
+      "id": "335298",
+      "marketValue": "€900k",
+      "name": "Sondre Brunstad Fet",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "19",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Nov 10, 1992",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "201865",
+      "marketValue": "€700k",
+      "name": "Ulrik Saltnes",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "14",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Oct 12, 1999",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "422355",
+      "marketValue": "€4.50m",
+      "name": "Jens Petter Hauge",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "10",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Oct 31, 2004",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "1015245",
+      "marketValue": "€1.00m",
+      "name": "Daniel Bassi",
+      "nationality": [
+        "Norway",
+        "England"
+      ],
+      "number": "24",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jul 31, 2028",
+      "dateOfBirth": "Mar 14, 2006",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "1296237",
+      "marketValue": "€75k",
+      "name": "Gift Sunday",
+      "nationality": [
+        "Nigeria"
+      ],
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Jun 12, 2000",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "644607",
+      "marketValue": "€2.00m",
+      "name": "Ole Didrik Blomberg",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "11",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Sep 19, 2001",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "664809",
+      "marketValue": "€1.20m",
+      "name": "Isak Dybvik Määttä",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "25",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Dec 6, 2000",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "542877",
+      "marketValue": "€8.00m",
+      "name": "Kasper Høgh",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Mar 15, 1998",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "333012",
+      "marketValue": "€1.00m",
+      "name": "Andreas Helmersen",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "21",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jul 31, 2027",
+      "dateOfBirth": "Jan 25, 2009",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "1189915",
+      "marketValue": "€800k",
+      "name": "Mikkel Bro Hansen",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "77",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Oct 24, 2000",
+      "foot": "right",
+      "height": "1,67m",
+      "id": "600732",
+      "marketValue": "€650k",
+      "name": "August Mikkelsen",
+      "nationality": [
+        "Norway"
+      ],
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Aspmyra Stadion",
+  "stadiumSeats": "8500",
+  "transfermarktId": "501"
+}

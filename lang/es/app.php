@@ -38,7 +38,6 @@ return [
     'wage' => 'Salario',
     'contract' => 'Contrato',
     'status' => 'Estado',
-    'actions' => 'Acciones',
     'date' => 'Fecha',
     'type' => 'Tipo',
     'description' => 'Descripción',

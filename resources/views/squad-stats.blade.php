@@ -117,7 +117,7 @@
                                     <td class="py-2"></td>
                                     <td class="py-2 font-semibold text-slate-700">{{ __('squad.squad_totals') }}</td>
                                     <td class="py-2"></td>
-                                    <td class="py-2 text-center font-semibold">{{ $totals['appearances'] }}</td>
+                                    <td class="py-2 text-center font-semibold"></td>
                                     <td class="py-2 text-center font-semibold text-green-600">{{ $totals['goals'] }}</td>
                                     <td class="py-2 text-center font-semibold text-sky-600">{{ $totals['assists'] }}</td>
                                     <td class="py-2 text-center font-semibold">{{ $totals['goals'] + $totals['assists'] }}</td>

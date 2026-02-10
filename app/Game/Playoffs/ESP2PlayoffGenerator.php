@@ -108,7 +108,7 @@ class ESP2PlayoffGenerator implements PlayoffGenerator
             ->where('competition_id', $this->getCompetitionId())
             ->where('round_number', 1)
             ->where('completed', true)
-            ->orderBy('created_at')
+            ->orderBy('id')
             ->pluck('winner_id')
             ->toArray();
 

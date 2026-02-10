@@ -21,7 +21,6 @@ return new class extends Migration
 
         Schema::create('teams', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
             $table->string('name');
             $table->char('country', 3);
             $table->unsignedInteger('transfermarkt_id')->nullable();

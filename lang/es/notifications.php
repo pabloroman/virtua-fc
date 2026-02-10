@@ -57,4 +57,11 @@ return [
     // Low fitness
     'low_fitness_title' => ':player con baja forma física',
     'low_fitness_message' => ':player tiene solo :fitness% de forma física y necesita descanso.',
+
+    // Loan search
+    'loan_destination_found_title' => 'Destino encontrado para :player',
+    'loan_destination_found_message' => ':player ha sido cedido a :team.',
+    'loan_destination_found_waiting' => ':player será cedido a :team cuando abra la ventana de fichajes.',
+    'loan_search_failed_title' => 'Búsqueda de cesión fallida',
+    'loan_search_failed_message' => 'No se encontró un club interesado en ceder a :player. El jugador vuelve a estar disponible.',
 ];

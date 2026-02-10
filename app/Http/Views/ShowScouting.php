@@ -3,8 +3,8 @@
 namespace App\Http\Views;
 
 use App\Game\Services\ScoutingService;
-use App\Models\Competition;
 use App\Models\Game;
+use App\Models\TransferOffer;
 
 class ShowScouting
 {
@@ -19,12 +19,23 @@ class ShowScouting
         $report = $this->scoutingService->getActiveReport($game);
 
         $scoutedPlayers = collect();
+        $playerDetails = [];
+        $existingOffers = [];
+
         if ($report && $report->isCompleted()) {
             $scoutedPlayers = $report->players;
-        }
 
-        // Get available leagues for the search form
-        $leagues = Competition::where('type', 'league')->get();
+            foreach ($scoutedPlayers as $player) {
+                $playerDetails[$player->id] = $this->scoutingService->getPlayerScoutingDetail($player, $game);
+
+                $existingOffers[$player->id] = TransferOffer::where('game_id', $gameId)
+                    ->where('game_player_id', $player->id)
+                    ->where('direction', TransferOffer::DIRECTION_INCOMING)
+                    ->whereIn('status', [TransferOffer::STATUS_PENDING, TransferOffer::STATUS_AGREED])
+                    ->orderByDesc('game_date')
+                    ->first();
+            }
+        }
 
         $isTransferWindow = $game->isTransferWindowOpen();
         $currentWindow = $game->getCurrentWindowName();
@@ -33,7 +44,9 @@ class ShowScouting
             'game' => $game,
             'report' => $report,
             'scoutedPlayers' => $scoutedPlayers,
-            'leagues' => $leagues,
+            'playerDetails' => $playerDetails,
+            'existingOffers' => $existingOffers,
+            'teamCountry' => $game->team->country,
             'isTransferWindow' => $isTransferWindow,
             'currentWindow' => $currentWindow,
         ]);

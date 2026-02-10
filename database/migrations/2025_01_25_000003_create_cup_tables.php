@@ -37,7 +37,6 @@ return new class extends Migration
             $table->uuid('winner_id')->nullable();
             $table->boolean('completed')->default(false);
             $table->json('resolution')->nullable();
-            $table->timestamps();
 
             $table->foreign('game_id')->references('id')->on('games')->onDelete('cascade');
             $table->foreign('competition_id')->references('id')->on('competitions');

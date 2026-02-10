@@ -2,6 +2,7 @@
 
 namespace App\Game\Services;
 
+use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\Loan;
@@ -71,7 +72,7 @@ class ScoutingService
     {
         return ScoutReport::where('game_id', $game->id)
             ->whereIn('status', [ScoutReport::STATUS_SEARCHING, ScoutReport::STATUS_COMPLETED])
-            ->latest()
+            ->orderByDesc('game_date')
             ->first();
     }
 
@@ -88,6 +89,7 @@ class ScoutingService
             'filters' => $filters,
             'weeks_total' => $weeks,
             'weeks_remaining' => $weeks,
+            'game_date' => $game->current_date,
         ]);
     }
 
@@ -106,7 +108,7 @@ class ScoutingService
     public function calculateSearchWeeks(array $filters, ?Game $game = null): int
     {
         $position = $filters['position'] ?? '';
-        $league = $filters['league'] ?? null;
+        $scope = $filters['scope'] ?? ['domestic', 'international'];
 
         // Base weeks calculation
         $baseWeeks = 2; // Medium search
@@ -115,8 +117,8 @@ class ScoutingService
         if (str_starts_with($position, 'any_')) {
             $baseWeeks = 3;
         }
-        // Narrow search (specific position + specific league)
-        elseif ($league && $league !== 'all') {
+        // Narrow search (specific position + domestic only)
+        elseif (count($scope) === 1 && in_array('domestic', $scope)) {
             $baseWeeks = 1;
         }
 
@@ -166,31 +168,55 @@ class ScoutingService
             ->where('team_id', '!=', $game->team_id)
             ->whereIn('position', $positions);
 
-        // League filter
-        if (! empty($filters['league']) && $filters['league'] !== 'all') {
-            $leagueTeamIds = Team::whereHas('competitions', function ($q) use ($filters) {
-                $q->where('competitions.id', $filters['league']);
+        // Scope filter (domestic / international)
+        $scope = $filters['scope'] ?? ['domestic', 'international'];
+        if (count($scope) === 1) {
+            $teamCountry = $game->team->country;
+            $scopeCompetitionIds = Competition::where('country', in_array('domestic', $scope) ? '=' : '!=', $teamCountry)
+                ->pluck('id');
+            $scopeTeamIds = Team::whereHas('competitions', function ($q) use ($scopeCompetitionIds) {
+                $q->whereIn('competitions.id', $scopeCompetitionIds);
             })->pluck('id');
-
-            $query->whereIn('team_id', $leagueTeamIds);
+            $query->whereIn('team_id', $scopeTeamIds);
         }
 
-        // Age filter
+        // Age filter (age is computed from players.date_of_birth, not a column)
         if (! empty($filters['age_min']) || ! empty($filters['age_max'])) {
-            $query->whereHas('player', function ($q) use ($filters) {
-                if (! empty($filters['age_min'])) {
-                    $q->where('age', '>=', $filters['age_min']);
+            $ageExpr = "(strftime('%Y', 'now') - strftime('%Y', (SELECT date_of_birth FROM players WHERE players.id = game_players.player_id)))";
+            if (! empty($filters['age_min'])) {
+                $query->whereRaw("($ageExpr) >= ?", [(int) $filters['age_min']]);
+            }
+            if (! empty($filters['age_max'])) {
+                $query->whereRaw("($ageExpr) <= ?", [(int) $filters['age_max']]);
+            }
+        }
+
+        // Ability filter
+        if (! empty($filters['ability_min']) || ! empty($filters['ability_max'])) {
+            $query->where(function ($q) use ($filters) {
+                $abilityExpr = '(COALESCE(game_players.game_technical_ability, (SELECT technical_ability FROM players WHERE players.id = game_players.player_id)) + COALESCE(game_players.game_physical_ability, (SELECT physical_ability FROM players WHERE players.id = game_players.player_id))) / 2';
+                if (! empty($filters['ability_min'])) {
+                    $q->whereRaw("($abilityExpr) >= ?", [(int) $filters['ability_min']]);
                 }
-                if (! empty($filters['age_max'])) {
-                    $q->where('age', '<=', $filters['age_max']);
+                if (! empty($filters['ability_max'])) {
+                    $q->whereRaw("($abilityExpr) <= ?", [(int) $filters['ability_max']]);
                 }
             });
         }
 
-        // Max budget filter
-        if (! empty($filters['max_budget'])) {
-            $budgetCents = $filters['max_budget'] * 100; // Convert euros to cents
-            $query->where('market_value_cents', '<=', $budgetCents);
+        // Market value range filter
+        if (! empty($filters['value_min'])) {
+            $query->where('market_value_cents', '>=', $filters['value_min'] * 100);
+        }
+        if (! empty($filters['value_max'])) {
+            $query->where('market_value_cents', '<=', $filters['value_max'] * 100);
+        }
+
+        // Expiring contract filter (last year of contract)
+        if (! empty($filters['expiring_contract'])) {
+            $seasonEnd = $game->getSeasonEndDate();
+            $query->whereNotNull('contract_until')
+                ->where('contract_until', '<=', $seasonEnd);
         }
 
         // Exclude players already on loan
@@ -396,7 +422,7 @@ class ScoutingService
                 'result' => 'accepted',
                 'counter_amount' => null,
                 'asking_price' => $askingPrice,
-                'message' => $player->team->name.' have accepted your bid.',
+                'message' => __('transfers.bid_accepted', ['team' => $player->team->name]),
             ];
         }
 
@@ -410,7 +436,7 @@ class ScoutingService
                     'result' => 'accepted',
                     'counter_amount' => null,
                     'asking_price' => $askingPrice,
-                    'message' => $player->team->name.' have accepted your bid.',
+                    'message' => __('transfers.bid_accepted', ['team' => $player->team->name]),
                 ];
             }
 
@@ -418,7 +444,7 @@ class ScoutingService
                 'result' => 'counter',
                 'counter_amount' => $counterAmount,
                 'asking_price' => $askingPrice,
-                'message' => $player->team->name.' have made a counter-offer of '.Money::format($counterAmount).'.',
+                'message' => __('transfers.counter_offer_made', ['team' => $player->team->name, 'amount' => Money::format($counterAmount)]),
             ];
         }
 
@@ -426,7 +452,7 @@ class ScoutingService
             'result' => 'rejected',
             'counter_amount' => null,
             'asking_price' => $askingPrice,
-            'message' => $player->team->name.' have rejected your bid. It was too far below their valuation.',
+            'message' => __('transfers.bid_rejected_too_low', ['team' => $player->team->name]),
         ];
     }
 
@@ -456,7 +482,7 @@ class ScoutingService
         if ($importance > 0.7) {
             return [
                 'result' => 'rejected',
-                'message' => $player->team->name.' rejected the loan request. '.$player->name.' is a key player for them.',
+                'message' => __('transfers.loan_rejected_key_player', ['team' => $player->team->name, 'player' => $player->name]),
             ];
         }
 
@@ -465,19 +491,19 @@ class ScoutingService
             if (rand(0, 1) === 1) {
                 return [
                     'result' => 'accepted',
-                    'message' => $player->team->name.' have agreed to loan '.$player->name.' to your club.',
+                    'message' => __('transfers.loan_accepted', ['team' => $player->team->name, 'player' => $player->name]),
                 ];
             }
 
             return [
                 'result' => 'rejected',
-                'message' => $player->team->name.' decided to keep '.$player->name.' for now.',
+                'message' => __('transfers.loan_rejected_keep', ['team' => $player->team->name, 'player' => $player->name]),
             ];
         }
 
         return [
             'result' => 'accepted',
-            'message' => $player->team->name.' have agreed to loan '.$player->name.' to your club.',
+            'message' => __('transfers.loan_accepted', ['team' => $player->team->name, 'player' => $player->name]),
         ];
     }
 
@@ -543,8 +569,8 @@ class ScoutingService
             'importance' => $importance,
             'can_afford_fee' => $canAffordFee,
             'can_afford_wage' => $canAffordWage,
-            'transfer_budget' => $finances?->transfer_budget ?? 0,
-            'formatted_transfer_budget' => $finances ? $finances->formatted_transfer_budget : '€ 0',
+            'transfer_budget' => $investment?->transfer_budget ?? 0,
+            'formatted_transfer_budget' => $investment ? $investment->formatted_transfer_budget : '€ 0',
             'tech_range' => [max(1, $techAbility - $fuzz), min(99, $techAbility + $fuzz)],
             'phys_range' => [max(1, $physAbility - $fuzz), min(99, $physAbility + $fuzz)],
         ];

@@ -1,0 +1,407 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/45457.png",
+  "name": "Pafos FC",
+  "players": [
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "May 30, 2000",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "480453",
+      "marketValue": "€700k",
+      "name": "Jay Gorter",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "May 31, 2026",
+      "dateOfBirth": "Dec 16, 1993",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "416359",
+      "marketValue": "€325k",
+      "name": "Neofytos Michail",
+      "nationality": [
+        "Cyprus"
+      ],
+      "number": "93",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "May 31, 2026",
+      "dateOfBirth": "Sep 6, 2003",
+      "foot": "right",
+      "height": "1,94m",
+      "id": "669477",
+      "marketValue": "€225k",
+      "name": "Athanasios Papadoudis",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "99",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "May 31, 2026",
+      "dateOfBirth": "Jul 3, 1995",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "241457",
+      "marketValue": "€1.00m",
+      "name": "Derrick Luckassen",
+      "nationality": [
+        "Netherlands",
+        "Ghana"
+      ],
+      "number": "23",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Sep 15, 1994",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "278357",
+      "marketValue": "€800k",
+      "name": "David Goldar",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Nov 6, 2004",
+      "foot": "left",
+      "height": "1,92m",
+      "id": "925584",
+      "marketValue": "€300k",
+      "name": "Axel Guessand",
+      "nationality": [
+        "France",
+        "Cote d'Ivoire"
+      ],
+      "number": "19",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Apr 22, 1987",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "46741",
+      "marketValue": "€200k",
+      "name": "David Luiz",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 6, 2004",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "1019701",
+      "marketValue": "€150k",
+      "name": "Pedrão",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "35",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Nov 10, 1995",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "265033",
+      "marketValue": "€700k",
+      "name": "Nikolas Ioannou",
+      "nationality": [
+        "Cyprus",
+        "England"
+      ],
+      "number": "14",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "May 31, 2026",
+      "dateOfBirth": "Dec 11, 1998",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "298642",
+      "marketValue": "€600k",
+      "name": "Kostas Pileas",
+      "nationality": [
+        "Cyprus"
+      ],
+      "number": "2",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Aug 17, 2004",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "851551",
+      "marketValue": "€3.20m",
+      "name": "Ognjen Mimović",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "21",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "May 26, 1994",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "367255",
+      "marketValue": "€750k",
+      "name": "Bruno",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "7",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Oct 9, 1996",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "226097",
+      "marketValue": "€1.80m",
+      "name": "Ivan Sunjic",
+      "nationality": [
+        "Bosnia-Herzegovina",
+        "Croatia"
+      ],
+      "number": "26",
+      "position": "Defensive Midfield"
+    },
+    {
+      "dateOfBirth": "Jul 19, 2005",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "1061568",
+      "marketValue": "€75k",
+      "name": "Alexandre Brito",
+      "nationality": [
+        "Portugal",
+        "Cape Verde"
+      ],
+      "number": "50",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Apr 11, 2000",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "372445",
+      "marketValue": "€2.50m",
+      "name": "Dani Silva",
+      "nationality": [
+        "Portugal"
+      ],
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "May 20, 1997",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "258018",
+      "marketValue": "€2.20m",
+      "name": "Pêpê",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "88",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "May 31, 2026",
+      "dateOfBirth": "Nov 18, 1999",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "391719",
+      "marketValue": "€1.00m",
+      "name": "Domingos Quina",
+      "nationality": [
+        "Portugal",
+        "Guinea-Bissau"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Sep 30, 1993",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "252345",
+      "marketValue": "€1.00m",
+      "name": "Ken Sema",
+      "nationality": [
+        "Sweden",
+        "DR Congo"
+      ],
+      "number": "12",
+      "position": "Left Midfield"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Apr 24, 1999",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "319213",
+      "marketValue": "€2.00m",
+      "name": "Vlad Dragomir",
+      "nationality": [
+        "Romania"
+      ],
+      "number": "30",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Nov 21, 2004",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "959047",
+      "marketValue": "€800k",
+      "name": "Wilmer Odefalk",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "20",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jun 28, 2008",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "1197111",
+      "marketValue": "€50k",
+      "name": "Andreas Mavroudis",
+      "nationality": [
+        "Cyprus"
+      ],
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Aug 16, 2005",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "1504890",
+      "name": "Pedro Caldieraro",
+      "nationality": [
+        "Brazil",
+        "Italy"
+      ],
+      "number": "87",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Apr 15, 2001",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "739477",
+      "marketValue": "€1.20m",
+      "name": "Jajá",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "11",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "May 31, 2026",
+      "dateOfBirth": "Dec 29, 1992",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "119150",
+      "marketValue": "€1.00m",
+      "name": "Mislav Orsic",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "17",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Sep 5, 1996",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "383654",
+      "marketValue": "€1.20m",
+      "name": "João Correia",
+      "nationality": [
+        "Cape Verde",
+        "Portugal"
+      ],
+      "number": "77",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Oct 1, 1997",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "972864",
+      "marketValue": "€1.00m",
+      "name": "Lelê",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "18",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Nov 21, 1997",
+      "foot": "left",
+      "height": "1,86m",
+      "id": "522714",
+      "marketValue": "€1.00m",
+      "name": "Anderson Silva",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "33",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "May 28, 1998",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "391377",
+      "marketValue": "€500k",
+      "name": "Mons Bassouamina",
+      "nationality": [
+        "Congo",
+        "France"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Stelios Kyriakidis Stadio",
+  "stadiumSeats": "9394",
+  "transfermarktId": "45457"
+}

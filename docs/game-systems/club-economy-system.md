@@ -65,13 +65,15 @@ For each team in league:
 
 This projected position is then used to estimate:
 - Projected TV Rights (from position table)
-- Projected Matchday Revenue (base × facilities × position factor)
+- Projected Matchday Revenue (stadium_seats × revenue_per_seat × facilities × position factor)
 - Projected Prize Money (assume Round of 16 cup exit — conservative)
-- Commercial Revenue (known — based on reputation)
+- Commercial Revenue (season 1: stadium_seats × commercial_per_seat; season 2+: prior season's actual)
 
 **Projected Wages** = Current squad's annual wages (known quantity)
 
-**Projected Surplus** = Projected Revenue − Projected Wages
+**Projected Operating Expenses** = Fixed costs by reputation (non-playing staff, admin, travel, etc.)
+
+**Projected Surplus** = Projected Revenue − Projected Wages − Operating Expenses
 
 ### Actual Revenue Calculation
 
@@ -79,12 +81,12 @@ At season end, actual revenue is calculated from real results:
 - Actual TV Rights (from final league position)
 - Actual Matchday Revenue (from final position)
 - Actual Prize Money (from actual cup run)
-- Commercial Revenue (same as projected)
+- Actual Commercial Revenue (projected × position-based growth multiplier)
 - Transfer Sales (actual sales made)
 
 **Actual Wages** = Pro-rated wages for all players
 
-**Actual Surplus** = Actual Revenue − Actual Wages
+**Actual Surplus** = Actual Revenue − Actual Wages − Operating Expenses
 
 ### Variance & Consequences
 
@@ -123,24 +125,25 @@ Next Season's Allocatable Surplus = Projected Surplus − Carried Debt
 
 The predictable baseline. Distributed by league based on final position.
 
-**La Liga:**
+**La Liga** (from `LaLigaConfig::TV_REVENUE`):
 
 | Position | TV Revenue |
 |----------|-----------|
-| 1st | €100M |
-| 2nd-4th | €80-90M |
-| 5th-8th | €60-75M |
-| 9th-14th | €50-60M |
-| 15th-20th | €40-50M |
+| 1st | €155M |
+| 2nd | €140M |
+| 3rd-4th | €72-105M |
+| 5th-8th | €58-68M |
+| 9th-14th | €44-55M |
+| 15th-20th | €40-43M |
 
-**La Liga 2:**
+**La Liga 2** (from `LaLiga2Config::TV_REVENUE`):
 
 | Position | TV Revenue |
 |----------|-----------|
-| 1st-2nd | €18-20M |
-| 3rd-6th | €12-15M |
-| 7th-15th | €8-12M |
-| 16th-22nd | €6-8M |
+| 1st-2nd | €8.5-9M |
+| 3rd-6th | €7-8M |
+| 7th-14th | €6-6.5M |
+| 15th-22nd | €5-5.5M |
 
 *Known at season end, counted as revenue for that season.*
 
@@ -173,17 +176,19 @@ Variable based on cup and European runs.
 
 Driven by: **Stadium Seats × Revenue Per Seat × Facilities Multiplier × Position Factor**
 
-Uses the `stadium_seats` field from the teams table (real stadium capacity data).
+Uses the `stadium_seats` field from the teams table (real stadium capacity data). Revenue per seat rates are defined per competition config (`CompetitionConfig::getRevenuePerSeat()`).
 
-**Revenue Per Seat** (based on club reputation):
+**Revenue Per Seat** (based on club reputation, from competition config):
 
 | Reputation | Revenue/Seat/Season | Rationale |
 |------------|---------------------|-----------|
-| Elite | €1,500 | Premium pricing, corporate hospitality, merchandise |
-| Continental | €800 | Strong pricing power, good hospitality |
-| Established | €500 | Standard La Liga pricing |
-| Modest | €350 | Lower ticket prices, less hospitality |
-| Local | €200 | Budget pricing, minimal extras |
+| Elite | €1,300 | Premium pricing, corporate hospitality, merchandise |
+| Contenders | €800 | Strong pricing power, good hospitality |
+| Continental | €500 | Solid attendance, some hospitality |
+| Established | €250 | Standard La Liga pricing |
+| Modest | €150 | Lower ticket prices, less hospitality |
+| Professional | €80 | Basic pricing |
+| Local | €40 | Budget pricing, minimal extras |
 
 **Facilities Multiplier:**
 
@@ -213,31 +218,44 @@ Matchday Revenue = Base × Facilities Multiplier × Position Factor
 
 | Club | Seats | Reputation | Base | Facilities | Position | Total |
 |------|-------|------------|------|------------|----------|-------|
-| Real Madrid | 83,000 | Elite (€1,500) | €124.5M | ×1.0 | ×1.1 (2nd) | **€137M** |
-| Villarreal | 23,000 | Established (€500) | €11.5M | ×1.15 | ×1.0 (6th) | **€13.2M** |
-| Promoted club | 12,000 | Local (€200) | €2.4M | ×1.0 | ×0.85 (18th) | **€2M** |
+| Real Madrid | 81,000 | Elite (€1,300) | €105M | ×1.0 | ×1.1 (2nd) | **€116M** |
+| Celta de Vigo | 25,000 | Established (€250) | €6.2M | ×1.0 | ×0.95 (11th) | **€5.9M** |
+| Promoted club | 12,000 | Local (€40) | €480K | ×1.0 | ×0.85 (18th) | **€408K** |
 
 **Future Enhancement:** Stadium expansion projects could increase `stadium_seats` over time, allowing clubs to grow their matchday revenue ceiling.
 
 ### 4. Commercial Revenue
 
-The "sticky" income based on **Club Reputation** — changes slowly over seasons.
+Calculated algorithmically from **Stadium Seats × Commercial Per Seat Rate** (from `CompetitionConfig::getCommercialPerSeat()`). Stadium size creates natural per-club variance within reputation tiers.
 
-| Reputation Level | Commercial Revenue | Examples |
-|-----------------|-------------------|----------|
-| Elite | €150-200M | Real Madrid, Barcelona |
-| Continental | €50-80M | Atlético, Sevilla |
-| Established | €20-35M | Villarreal, Betis |
-| Modest | €8-15M | Celta, Osasuna |
-| Local | €3-6M | Promoted clubs |
+**Commercial Per Seat** (based on club reputation):
 
-**Reputation shifts:**
-- Finish top 4 consistently: Reputation slowly increases
-- Win trophy: Reputation boost
-- Get relegated: Reputation drops significantly
-- Consistent mid-table: Stable
+| Reputation | Per Seat | Example (40K stadium) |
+|------------|----------|-----------------------|
+| Elite | €3,500 | €140M |
+| Contenders | €1,400 | €56M |
+| Continental | €1,500 | €60M |
+| Established | €1,000 | €40M |
+| Modest | €800 | €32M |
+| Professional | €500 | €20M |
+| Local | €200 | €8M |
 
-*Takes 3-5 seasons for meaningful shifts.*
+**Season flow:**
+- **Season 1:** `BudgetProjectionService` calculates initial commercial revenue from `stadium_seats × config rate`
+- **Season end:** `SeasonSettlementProcessor` applies position-based growth multiplier to get `actual_commercial_revenue`
+- **Season 2+:** `BudgetProjectionService` reads previous season's `actual_commercial_revenue` as the base
+
+**Position-based growth multipliers** (in `config/finances.php`):
+
+| Positions | Multiplier | Effect |
+|-----------|-----------|--------|
+| 1st-4th | ×1.05 | +5% growth |
+| 5th-8th | ×1.02 | +2% growth |
+| 9th-14th | ×1.00 | Flat |
+| 15th-17th | ×0.98 | -2% decline |
+| 18th-20th | ×0.95 | -5% decline |
+
+This means commercial revenue grows organically based on league performance over seasons.
 
 ### 5. Transfer Sales
 
@@ -278,7 +296,7 @@ This means:
 ### Surplus Calculation
 
 ```
-Surplus = Total Revenue − Total Wages
+Surplus = Total Revenue − Total Wages − Operating Expenses
 ```
 
 This is the money available for allocation.
@@ -390,8 +408,7 @@ No tiers — this is simply your buying power in the transfer market.
 **Club Profile:**
 - Mid-table La Liga club
 - Stadium: Estadio de la Cerámica (23,000 seats)
-- Reputation: Established (€500/seat)
-- Commercial revenue: €28M
+- Reputation: Contenders (€800/seat matchday, €1,400/seat commercial)
 - Current facilities: Tier 2 (×1.15)
 - Carried debt from last season: €0
 
@@ -401,16 +418,19 @@ No tiers — this is simply your buying power in the transfer market.
 
 | Source | Projected |
 |--------|-----------|
-| TV Rights (8th place) | €65M |
-| Copa del Rey (assume R16 exit) | €0.75M |
-| Matchday (23k × €500 × 1.15 × 1.0) | €13.2M |
-| Commercial | €28M |
+| TV Rights (8th place) | €58M |
+| Copa del Rey (assume R16 exit) | €0.85M |
+| Matchday (23k × €800 × 1.15 × 1.0) | €21.2M |
+| Commercial (23k × €1,400) | €32.2M |
 | Transfer Sales | €0 (can't predict) |
-| **Total Projected** | **€107M** |
+| **Total Projected** | **€112M** |
 
 **Projected Wages:** €85M (current squad)
+**Operating Expenses:** €50M (contenders tier)
 
-**Projected Surplus:** €107M − €85M = **€22M**
+**Projected Surplus:** €112M − €85M − €50M = **−€23M**
+
+*Note: A negative surplus is realistic — many La Liga clubs rely on player sales to balance books. The transfer budget comes from expected sales revenue.*
 
 ### Budget Allocation (Player Choice)
 
@@ -439,12 +459,12 @@ The team overperformed! Also sold a player mid-season.
 
 | Source | Projected | Actual | Variance |
 |--------|-----------|--------|----------|
-| TV Rights | €65M | €70M | +€5M |
-| Copa del Rey | €0.75M | €1.75M | +€1M |
-| Matchday | €13.2M | €13.2M | €0 |
-| Commercial | €28M | €28M | €0 |
+| TV Rights | €58M | €65M | +€7M |
+| Copa del Rey | €0.85M | €1.75M | +€0.9M |
+| Matchday | €21.2M | €21.2M | €0 |
+| Commercial | €32.2M | €32.8M | +€0.6M (6th = ×1.02) |
 | Transfer Sales | €0 | €35M | +€35M |
-| **Total** | **€107M** | **€148M** | **+€41M** |
+| **Total** | **€112M** | **€156M** | **+€44M** |
 
 ### Actual Wages:
 
@@ -460,36 +480,37 @@ The team overperformed! Also sold a player mid-season.
 ### Season End Settlement
 
 ```
-Actual Surplus    = €148M − €82.5M = €65.5M
-Projected Surplus = €22M
-Variance          = €65.5M − €22M = +€43.5M (positive!)
+Actual Surplus    = €156M − €82.5M − €50M = €23.5M
+Projected Surplus = −€23M
+Variance          = €23.5M − (−€23M) = +€46.5M (positive!)
 ```
 
-**Result:** The player overperformed AND sold a player. They have a **€43.5M bonus** added to next season's projected surplus.
+**Result:** The player overperformed AND sold a player. They have a **€46.5M bonus** added to next season's projected surplus. The commercial revenue also grew slightly (×1.02 for finishing 6th), which carries forward.
 
 ### Next Season Preview
 
 ```
-Next Season Projected Surplus: €25M (estimated)
-Plus bonus from overperformance: +€43.5M
-Available to Allocate: €68.5M
+Next Season Projected Surplus: −€20M (estimated)
+Plus bonus from overperformance: +€46.5M
+Available to Allocate: €26.5M
 ```
 
-The good season creates more resources for an even more ambitious budget next year.
+The good season (especially transfer income) creates resources for a more ambitious budget next year.
 
 ### What If They Had Underperformed?
 
 If they'd finished 14th with no player sales:
 
 ```
-Actual Revenue: ~€100M (lower TV, lower matchday factor)
+Actual Revenue: ~€107M (lower TV, lower matchday factor, flat commercial)
 Actual Wages: €85M
-Actual Surplus: €15M
+Operating Expenses: €50M
+Actual Surplus: −€28M
 
-Variance = €15M − €22M = -€7M (debt!)
+Variance = −€28M − (−€23M) = −€5M (debt!)
 ```
 
-Next season they'd have €7M less to allocate — painful consequences for a bad year.
+Next season they'd have €5M less to allocate — painful consequences for a bad year.
 
 ---
 
@@ -517,10 +538,9 @@ The system naturally creates different club identities based on consistent choic
 | Field | Type | Description |
 |-------|------|-------------|
 | `team_id` | uuid | FK to teams |
-| `reputation_level` | enum | elite, continental, established, modest, local |
-| `commercial_revenue` | int (cents) | Current commercial earnings |
+| `reputation_level` | enum | elite, contenders, continental, established, modest, professional, local |
 
-*Note: Matchday revenue is calculated from `teams.stadium_seats` × revenue-per-seat (based on reputation). No need to store base matchday separately.*
+*Note: Both matchday and commercial revenue are calculated algorithmically from `teams.stadium_seats` × per-seat rates (defined in competition configs, keyed by reputation). No revenue amounts are stored on the profile itself.*
 
 **Future: Stadium expansion** could be tracked in a `game_stadiums` table that overrides `teams.stadium_seats` for a specific game, allowing players to invest in stadium growth.
 
@@ -535,19 +555,21 @@ The system naturally creates different club identities based on consistent choic
 | `projected_tv_revenue` | int (cents) | Projected TV rights |
 | `projected_prize_revenue` | int (cents) | Conservative cup estimate |
 | `projected_matchday_revenue` | int (cents) | Projected matchday |
-| `projected_commercial_revenue` | int (cents) | Known commercial |
+| `projected_commercial_revenue` | int (cents) | Algorithmic or prior-season commercial |
 | `projected_total_revenue` | int (cents) | Sum of projected |
 | `projected_wages` | int (cents) | Current squad wages |
-| `projected_surplus` | int (cents) | Projected revenue − wages |
+| `projected_operating_expenses` | int (cents) | Fixed costs by reputation |
+| `projected_surplus` | int (cents) | Projected revenue − wages − opex |
 | **Actuals (season end)** | | |
 | `actual_tv_revenue` | int (cents) | Actual TV rights |
 | `actual_prize_revenue` | int (cents) | Actual cup earnings |
 | `actual_matchday_revenue` | int (cents) | Actual matchday |
-| `actual_commercial_revenue` | int (cents) | Actual commercial |
+| `actual_commercial_revenue` | int (cents) | Projected × growth multiplier |
 | `actual_transfer_income` | int (cents) | Player sales |
 | `actual_total_revenue` | int (cents) | Sum of actual |
 | `actual_wages` | int (cents) | Pro-rated wages paid |
-| `actual_surplus` | int (cents) | Actual revenue − wages |
+| `actual_operating_expenses` | int (cents) | Same as projected (fixed) |
+| `actual_surplus` | int (cents) | Actual revenue − wages − opex |
 | **Settlement** | | |
 | `variance` | int (cents) | Actual surplus − Projected surplus |
 | `carried_debt` | int (cents) | Debt from previous season |
@@ -574,8 +596,7 @@ The system naturally creates different club identities based on consistent choic
 ## Implementation Phases
 
 ### Phase 1: Data Model & Club Profiles
-- [x] Create `club_profiles` table with base financial data for all La Liga/La Liga 2 teams
-- [x] Populate base matchday revenue, reputation level, commercial revenue for each team
+- [x] Create `club_profiles` table with reputation level for all La Liga/La Liga 2 teams
 - [x] Modify `game_finances` table for projected vs actual structure
 - [x] Create `game_investments` table
 - [x] Use existing `joined_on` field in `game_players` for wage pro-rating
@@ -584,10 +605,10 @@ The system naturally creates different club identities based on consistent choic
 - [x] Implement squad strength calculation (avg OVR of best 18)
 - [x] Implement projected position calculation (rank teams by strength)
 - [x] Implement projected revenue calculation (TV, matchday, prizes, commercial)
-- [x] Implement projected wages calculation
+- [x] Implement projected wages and operating expenses calculation
 - [x] Implement projected surplus calculation
 - [x] Show projections in pre-season UI
-- [x] Create BudgetProjectionProcessor for season end pipeline
+- [x] Create BudgetProjectionService for generating projections
 - [x] Create SeasonSettlementProcessor for calculating actual revenue/variance
 
 ### Phase 3: Budget Allocation UI
@@ -600,36 +621,31 @@ The system naturally creates different club identities based on consistent choic
 - [x] Add budget allocation banner to pre-season page
 
 ### Phase 4: Actual Revenue & Settlement
-- [ ] Implement actual revenue calculation at season end
-- [ ] Implement pro-rated wage calculation at season end
-- [ ] Calculate variance (actual surplus − projected surplus)
-- [ ] Handle positive variance (bonus for next season)
-- [ ] Handle negative variance (debt carried forward)
+- [x] Implement actual revenue calculation at season end
+- [x] Implement pro-rated wage calculation at season end
+- [x] Calculate variance (actual surplus − projected surplus)
+- [x] Handle positive variance (bonus for next season)
+- [x] Handle negative variance (debt carried forward)
 - [ ] Show season financial summary with projected vs actual comparison
 
 ### Phase 5: Investment Effects
 - [ ] Youth Academy: Modify youth prospect generation based on tier
 - [ ] Medical: Modify injury service for tier multipliers (injury rate, recovery, fitness)
 - [ ] Scouting: Modify scouting service for geographic restrictions + hidden gems
-- [ ] Facilities: Apply matchday multiplier in revenue calculation
+- [x] Facilities: Apply matchday multiplier in revenue calculation
 
 ### Phase 6: Season Flow Integration
-- [ ] Pre-season: Calculate projections → show allocation screen → save investments
-- [ ] During season: Track transfers for wage pro-rating
-- [ ] Season end: Calculate actuals → settlement → carry debt/bonus
-- [ ] Loop back to pre-season with updated finances
+- [x] Pre-season: Calculate projections → show allocation screen → save investments
+- [x] During season: Track transfers for wage pro-rating
+- [x] Season end: Calculate actuals → settlement → carry debt/bonus
+- [x] Loop back to pre-season with updated finances
 
 ---
 
-## Migration from Current System
+## Key Implementation Notes
 
-The current financial system will be replaced:
-
-1. **Keep:** Basic `game_finances` table structure (modified)
-2. **Remove:** TV revenue based on squad value (now based on league position)
-3. **Remove:** Fixed wage budget / transfer budget split
-4. **Add:** Player-controlled budget allocation
-5. **Add:** Investment tiers with gameplay effects
-6. **Add:** Club profiles with base financial characteristics
-
-Existing games will be migrated with sensible defaults based on their current financial state.
+- Revenue per-seat rates (matchday and commercial) are defined in competition configs (`LaLigaConfig`, `LaLiga2Config`, `DefaultLeagueConfig`), not on models.
+- `ClubProfile` only stores `reputation_level` — no revenue amounts.
+- Operating expenses are configured in `config/finances.php` by reputation tier.
+- Commercial growth multipliers are configured in `config/finances.php` under `commercial_growth`.
+- The financial model does not include taxes — operating expenses absorb all non-wage costs (staff, admin, travel, etc.).

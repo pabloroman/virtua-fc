@@ -11,6 +11,8 @@ class GameNotification extends Model
 {
     use HasUuids;
 
+    public $timestamps = false;
+
     // Notification types
     public const TYPE_PLAYER_INJURED = 'player_injured';
     public const TYPE_PLAYER_SUSPENDED = 'player_suspended';
@@ -21,6 +23,8 @@ class GameNotification extends Model
     public const TYPE_SCOUT_REPORT_COMPLETE = 'scout_report_complete';
     public const TYPE_CONTRACT_EXPIRING = 'contract_expiring';
     public const TYPE_LOAN_RETURN = 'loan_return';
+    public const TYPE_LOAN_DESTINATION_FOUND = 'loan_destination_found';
+    public const TYPE_LOAN_SEARCH_FAILED = 'loan_search_failed';
 
     // Priorities
     public const PRIORITY_CRITICAL = 'critical';
@@ -38,6 +42,8 @@ class GameNotification extends Model
         self::TYPE_SCOUT_REPORT_COMPLETE => 'scouting',
         self::TYPE_CONTRACT_EXPIRING => 'contracts',
         self::TYPE_LOAN_RETURN => 'squad',
+        self::TYPE_LOAN_DESTINATION_FOUND => 'loans',
+        self::TYPE_LOAN_SEARCH_FAILED => 'loans',
     ];
 
     protected $fillable = [
@@ -57,8 +63,6 @@ class GameNotification extends Model
         'metadata' => 'array',
         'game_date' => 'date',
         'read_at' => 'datetime',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
     ];
 
     // ==========================================
@@ -108,16 +112,6 @@ class GameNotification extends Model
         return $query->where('priority', $priority);
     }
 
-    public function scopeRecent(Builder $query, int $limit = 10): Builder
-    {
-        return $query->orderByDesc('created_at')->limit($limit);
-    }
-
-    public function scopeOlderThan(Builder $query, int $days): Builder
-    {
-        return $query->where('created_at', '<', now()->subDays($days));
-    }
-
     // ==========================================
     // Methods
     // ==========================================
@@ -161,6 +155,7 @@ class GameNotification extends Model
             'transfers' => 'game.transfers',
             'scouting' => 'game.scouting',
             'contracts' => 'game.squad.contracts',
+            'loans' => 'game.loans',
             default => 'show-game',
         };
     }
@@ -195,15 +190,4 @@ class GameNotification extends Model
         };
     }
 
-    /**
-     * Get formatted game date for display.
-     */
-    public function getFormattedGameDate(): string
-    {
-        if ($this->game_date) {
-            return $this->game_date->format('j M Y');
-        }
-
-        return $this->created_at->format('j M Y');
-    }
 }

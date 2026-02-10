@@ -196,6 +196,12 @@ class MatchSimulator
 
             // Sort events by minute
             $events = $events->sortBy('minute')->values();
+
+            // Post-process: reassign goals/assists from players who were
+            // removed (injury or red card) to available teammates
+            $events = $this->reassignEventsFromUnavailablePlayers(
+                $events, $homePlayers, $awayPlayers
+            );
         }
 
         return new MatchResult($homeScore, $awayScore, $events);
@@ -376,6 +382,67 @@ class MatchSimulator
         }
 
         return $events;
+    }
+
+    /**
+     * Reassign goal/assist events from players who were removed from the match
+     * (via injury or red card) to available teammates.
+     *
+     * Since scores are determined before events are generated, this only changes
+     * WHO scored, not HOW MANY goals were scored.
+     *
+     * @return Collection<MatchEventData>
+     */
+    private function reassignEventsFromUnavailablePlayers(
+        Collection $events,
+        Collection $homePlayers,
+        Collection $awayPlayers,
+    ): Collection {
+        // Build map of player_id => minute they were removed
+        $removedAt = [];
+        foreach ($events as $event) {
+            if (in_array($event->type, ['injury', 'red_card']) && ! isset($removedAt[$event->gamePlayerId])) {
+                $removedAt[$event->gamePlayerId] = $event->minute;
+            }
+        }
+
+        if (empty($removedAt)) {
+            return $events;
+        }
+
+        return $events->map(function (MatchEventData $event) use ($removedAt, $homePlayers, $awayPlayers) {
+            if (! in_array($event->type, ['goal', 'assist'])) {
+                return $event;
+            }
+
+            if (! isset($removedAt[$event->gamePlayerId])) {
+                return $event;
+            }
+
+            if ($event->minute < $removedAt[$event->gamePlayerId]) {
+                return $event;
+            }
+
+            // Find the team's players and exclude anyone removed at or before this minute
+            $teamPlayers = $homePlayers->contains('id', $event->gamePlayerId)
+                ? $homePlayers
+                : $awayPlayers;
+
+            $availablePlayers = $teamPlayers->reject(function ($p) use ($removedAt, $event) {
+                return isset($removedAt[$p->id]) && $removedAt[$p->id] <= $event->minute;
+            });
+
+            $weights = $event->type === 'goal' ? self::SCORING_WEIGHTS : self::ASSIST_WEIGHTS;
+            $replacement = $this->pickPlayerByPosition($availablePlayers, $weights);
+
+            if (! $replacement) {
+                return $event;
+            }
+
+            return $event->type === 'goal'
+                ? MatchEventData::goal($event->teamId, $replacement->id, $event->minute)
+                : MatchEventData::assist($event->teamId, $replacement->id, $event->minute);
+        });
     }
 
     /**

@@ -14,16 +14,18 @@ use App\Game\Services\ContractService;
 use App\Game\Services\CupDrawService;
 use App\Game\Services\EligibilityService;
 use App\Game\Services\InjuryService;
+use App\Game\Services\LeagueFixtureGenerator;
 use App\Game\Services\NotificationService;
 use App\Game\Services\PlayerConditionService;
 use App\Game\Services\PlayerDevelopmentService;
 use App\Game\Services\SeasonGoalService;
 use App\Game\Services\StandingsCalculator;
+use App\Game\Services\SwissDrawService;
 use App\Models\Competition;
 use App\Models\CompetitionTeam;
 use App\Models\CupTie;
 use App\Models\FinancialTransaction;
-use App\Models\FixtureTemplate;
+use App\Models\CompetitionEntry;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
@@ -47,6 +49,7 @@ class GameProjector extends Projector
         private readonly CupDrawService $cupDrawService,
         private readonly SeasonGoalService $seasonGoalService,
         private readonly NotificationService $notificationService,
+        private readonly LeagueFixtureGenerator $leagueFixtureGenerator,
     ) {}
 
     public function onGameCreated(GameCreated $event): void
@@ -56,18 +59,16 @@ class GameProjector extends Projector
 
         // Find competition for the selected team (prefer tier 1 league)
         $competitionTeam = CompetitionTeam::where('team_id', $teamId)
-            ->whereHas('competition', fn($q) => $q->where('type', 'league')->where('tier', 1))
+            ->whereHas('competition', fn($q) => $q->where('role', Competition::ROLE_PRIMARY)->where('tier', 1))
             ->first()
             ?? CompetitionTeam::where('team_id', $teamId)->first();
 
         $competitionId = $competitionTeam?->competition_id ?? 'ESP1';
         $season = $competitionTeam?->season ?? '2024';
 
-        // Get first fixture date for initial current_date
-        $firstFixture = FixtureTemplate::where('competition_id', $competitionId)
-            ->where('season', $season)
-            ->orderBy('scheduled_date')
-            ->first();
+        // Load matchday calendar for initial current_date
+        $matchdays = LeagueFixtureGenerator::loadMatchdays($competitionId, $season);
+        $firstDate = Carbon::createFromFormat('d/m/y', $matchdays[0]['date']);
 
         // Determine initial season goal based on team reputation
         $team = Team::with('clubProfile')->find($teamId);
@@ -80,14 +81,18 @@ class GameProjector extends Projector
             'user_id' => $event->userId,
             'player_name' => $event->playerName,
             'team_id' => $teamId,
+            'competition_id' => $competitionId,
             'season' => $season,
-            'current_date' => $firstFixture?->scheduled_date?->toDateString(),
+            'current_date' => $firstDate->toDateString(),
             'current_matchday' => 0,
             'season_goal' => $seasonGoal,
         ]);
 
-        // Copy fixture templates to game matches
-        $this->copyFixturesToGame($gameId, $competitionId, $season);
+        // Copy competition team rosters into per-game table
+        $this->copyCompetitionTeamsToGame($gameId, $season);
+
+        // Generate league fixtures from team roster and matchday calendar
+        $this->generateLeagueFixtures($gameId, $competitionId, $season, $matchdays);
 
         // Initialize standings for all teams
         $this->initializeStandings($gameId, $competitionId, $season);
@@ -101,6 +106,9 @@ class GameProjector extends Projector
 
         // Conduct first round cup draws for all cup competitions
         $this->conductInitialCupDraws($gameId, $season);
+
+        // Initialize Swiss format competitions (UCL, UEL, UECL)
+        $this->initializeSwissFormatCompetitions($gameId, $teamId, $season);
     }
 
     public function onMatchdayAdvanced(MatchdayAdvanced $event): void
@@ -125,14 +133,16 @@ class GameProjector extends Projector
             'played_at' => now(),
         ]);
 
+        // Serve suspensions for players who missed this match due to suspension
+        // Must run BEFORE processMatchEvents so that new suspensions from this
+        // match's cards aren't immediately served (they should apply from the next match)
+        $this->serveSuspensions($gameId, $match, $event->competitionId);
+
         // Store match events and update player stats
         $this->processMatchEvents($gameId, $event->matchId, $event->events, $event->competitionId, $match->scheduled_date);
 
         // Update appearances for players in the lineup
         $this->updateAppearances($match);
-
-        // Serve suspensions for players who missed this match due to suspension
-        $this->serveSuspensions($gameId, $match, $event->competitionId);
 
         // Update fitness and morale for players
         $this->updatePlayerCondition($match, $event->events);
@@ -140,9 +150,10 @@ class GameProjector extends Projector
         // Update goalkeeper stats (goals conceded, clean sheets)
         $this->updateGoalkeeperStats($match, $event->homeScore, $event->awayScore);
 
-        // Only update standings for league competitions (not cups)
+        // Only update standings for league phase matches (not cups or knockout ties)
         $competition = \App\Models\Competition::find($event->competitionId);
-        if ($competition?->isLeague()) {
+        $isCupTie = $match?->cup_tie_id !== null;
+        if ($competition?->isLeague() && !$isCupTie) {
             $this->standingsCalculator->updateAfterMatch(
                 gameId: $gameId,
                 competitionId: $event->competitionId,
@@ -520,23 +531,77 @@ class GameProjector extends Projector
     }
 
     /**
-     * Copy fixture templates to game-specific matches.
+     * Generate league fixtures using the round-robin algorithm and matchday calendar.
      */
-    private function copyFixturesToGame(string $gameId, string $competitionId, string $season): void
+    private function generateLeagueFixtures(string $gameId, string $competitionId, string $season, array $matchdays): void
     {
-        $fixtures = FixtureTemplate::where('competition_id', $competitionId)
-            ->where('season', $season)
-            ->get();
+        $teamIds = CompetitionEntry::where('game_id', $gameId)
+            ->where('competition_id', $competitionId)
+            ->pluck('team_id')
+            ->toArray();
+
+        $fixtures = $this->leagueFixtureGenerator->generate($teamIds, $matchdays);
 
         foreach ($fixtures as $fixture) {
             GameMatch::create([
                 'id' => Str::uuid()->toString(),
                 'game_id' => $gameId,
                 'competition_id' => $competitionId,
-                'round_number' => $fixture->round_number,
-                'home_team_id' => $fixture->home_team_id,
-                'away_team_id' => $fixture->away_team_id,
-                'scheduled_date' => $fixture->scheduled_date,
+                'round_number' => $fixture['matchday'],
+                'home_team_id' => $fixture['homeTeamId'],
+                'away_team_id' => $fixture['awayTeamId'],
+                'scheduled_date' => Carbon::createFromFormat('d/m/y', $fixture['date']),
+                'home_score' => null,
+                'away_score' => null,
+                'played' => false,
+            ]);
+        }
+    }
+
+    /**
+     * Generate Swiss format league phase fixtures for a competition.
+     * Loads team pot/country data from teams.json and runs the Swiss draw algorithm.
+     */
+    private function generateSwissFixtures(string $gameId, string $competitionId, string $season, array $clubs): void
+    {
+        // Build draw teams from JSON (pot + country) mapped to UUIDs
+        $drawTeams = [];
+        foreach ($clubs as $club) {
+            $transfermarktId = $club['id'] ?? null;
+            if (!$transfermarktId) {
+                continue;
+            }
+
+            $team = Team::where('transfermarkt_id', $transfermarktId)->first();
+            if (!$team) {
+                continue;
+            }
+
+            $drawTeams[] = [
+                'id' => $team->id,
+                'pot' => $club['pot'] ?? 4,
+                'country' => $club['country'] ?? 'XX',
+            ];
+        }
+
+        if (count($drawTeams) < 36) {
+            return;
+        }
+
+        // Generate unique draw for this game
+        $drawService = new SwissDrawService();
+        $startDate = Carbon::parse("{$season}-09-17");
+        $fixtures = $drawService->generateFixtures($drawTeams, $startDate);
+
+        foreach ($fixtures as $fixture) {
+            GameMatch::create([
+                'id' => Str::uuid()->toString(),
+                'game_id' => $gameId,
+                'competition_id' => $competitionId,
+                'round_number' => $fixture['matchday'],
+                'home_team_id' => $fixture['homeTeamId'],
+                'away_team_id' => $fixture['awayTeamId'],
+                'scheduled_date' => Carbon::createFromFormat('d/m/y', $fixture['date']),
                 'home_score' => null,
                 'away_score' => null,
                 'played' => false,
@@ -549,12 +614,33 @@ class GameProjector extends Projector
      */
     private function initializeStandings(string $gameId, string $competitionId, string $season): void
     {
-        $teamIds = CompetitionTeam::where('competition_id', $competitionId)
-            ->where('season', $season)
+        $teamIds = CompetitionEntry::where('game_id', $gameId)
+            ->where('competition_id', $competitionId)
             ->pluck('team_id')
             ->toArray();
 
         $this->standingsCalculator->initializeStandings($gameId, $competitionId, $teamIds);
+    }
+
+    /**
+     * Copy all competition_teams for the season into competition_entries.
+     * This creates a per-game snapshot of the roster so season-end mutations are isolated.
+     */
+    private function copyCompetitionTeamsToGame(string $gameId, string $season): void
+    {
+        $rows = CompetitionTeam::where('season', $season)
+            ->get()
+            ->map(fn ($ct) => [
+                'game_id' => $gameId,
+                'competition_id' => $ct->competition_id,
+                'team_id' => $ct->team_id,
+                'entry_round' => $ct->entry_round ?? 1,
+            ])
+            ->toArray();
+
+        foreach (array_chunk($rows, 100) as $chunk) {
+            CompetitionEntry::insert($chunk);
+        }
     }
 
     /**
@@ -581,22 +667,126 @@ class GameProjector extends Projector
     }
 
     /**
-     * Initialize game players for all teams in the competition.
+     * Initialize Swiss format competitions (UCL, UEL, UECL).
+     * Generates a unique draw, initializes standings, and initializes players for European teams.
+     */
+    private function initializeSwissFormatCompetitions(string $gameId, string $teamId, string $season): void
+    {
+        $swissCompetitions = Competition::where('handler_type', 'swiss_format')->get();
+
+        foreach ($swissCompetitions as $competition) {
+            // Check if the player's team participates in this competition
+            $participates = CompetitionEntry::where('game_id', $gameId)
+                ->where('competition_id', $competition->id)
+                ->where('team_id', $teamId)
+                ->exists();
+
+            if (!$participates) {
+                continue;
+            }
+
+            // Load teams data (used for both draw generation and player initialization)
+            $teamsFilePath = base_path("data/{$season}/{$competition->id}/teams.json");
+            if (!file_exists($teamsFilePath)) {
+                continue;
+            }
+            $teamsData = json_decode(file_get_contents($teamsFilePath), true);
+            $clubs = $teamsData['clubs'] ?? [];
+
+            // Generate Swiss draw fixtures for this game
+            $this->generateSwissFixtures($gameId, $competition->id, $season, $clubs);
+
+            // Initialize standings
+            $this->initializeStandings($gameId, $competition->id, $season);
+
+            // Initialize game players for European teams (skip teams already initialized from ESP1/ESP2)
+            $this->initializeSwissFormatPlayersFromData($gameId, $competition->id, $clubs);
+        }
+    }
+
+    /**
+     * Initialize game players for Swiss format competitions from pre-loaded clubs data.
+     * Only creates players for teams that don't already have game players.
+     */
+    private function initializeSwissFormatPlayersFromData(string $gameId, string $competitionId, array $clubs): void
+    {
+        $minimumWage = $this->contractService->getMinimumWageForCompetition($competitionId);
+
+        foreach ($clubs as $club) {
+            $transfermarktId = $club['id'] ?? null;
+            if (!$transfermarktId) {
+                continue;
+            }
+
+            $team = Team::where('transfermarkt_id', $transfermarktId)->first();
+            if (!$team) {
+                continue;
+            }
+
+            // Skip teams that already have game players (e.g., Spanish teams from ESP1)
+            $hasPlayers = GamePlayer::where('game_id', $gameId)
+                ->where('team_id', $team->id)
+                ->exists();
+
+            if ($hasPlayers) {
+                continue;
+            }
+
+            $playersData = $club['players'] ?? [];
+            $playerRows = [];
+
+            foreach ($playersData as $playerData) {
+                $row = $this->prepareGamePlayerRow($gameId, $team, $playerData, $minimumWage);
+                if ($row) {
+                    $playerRows[] = $row;
+                }
+            }
+
+            foreach (array_chunk($playerRows, 100) as $chunk) {
+                GamePlayer::insert($chunk);
+            }
+        }
+    }
+
+    /**
+     * Initialize game players for all teams across all leagues.
      * Reads from data/{season}/{competitionId}/teams.json with embedded players.
      */
     private function initializeGamePlayers(string $gameId, string $competitionId, string $season): void
     {
-        $teamsFilePath = base_path("data/{$season}/{$competitionId}/teams.json");
-        if (!file_exists($teamsFilePath)) {
+        // Get all league competitions (excluding cups)
+        $leagues = Competition::whereIn('role', [Competition::ROLE_PRIMARY, Competition::ROLE_FOREIGN])->pluck('id')->toArray();
+
+        foreach ($leagues as $leagueId) {
+            $this->initializeGamePlayersForCompetition($gameId, $leagueId, $season);
+        }
+    }
+
+    /**
+     * Initialize game players for a specific competition.
+     */
+    private function initializeGamePlayersForCompetition(string $gameId, string $competitionId, string $season): void
+    {
+        $basePath = base_path("data/{$season}/{$competitionId}");
+        $teamsFilePath = "{$basePath}/teams.json";
+
+        // Try teams.json first, fall back to individual team files (team pool format)
+        if (file_exists($teamsFilePath)) {
+            $clubs = $this->loadClubsFromTeamsJson($teamsFilePath);
+        } else {
+            $clubs = $this->loadClubsFromTeamPoolFiles($basePath);
+        }
+
+        if (empty($clubs)) {
             return;
         }
 
         $minimumWage = $this->contractService->getMinimumWageForCompetition($competitionId);
-        $data = json_decode(file_get_contents($teamsFilePath), true);
-        $clubs = $data['clubs'] ?? [];
+        $playerRows = [];
 
         foreach ($clubs as $club) {
-            $transfermarktId = $club['transfermarktId'] ?? null;
+            // Try transfermarktId or extract from image URL
+            $transfermarktId = $club['transfermarktId'] ?? $this->extractTransfermarktIdFromImage($club['image'] ?? '');
             if (!$transfermarktId) {
                 continue;
             }
@@ -608,20 +798,72 @@ class GameProjector extends Projector
 
             $playersData = $club['players'] ?? [];
             foreach ($playersData as $playerData) {
-                $this->createGamePlayer($gameId, $team, $playerData, $minimumWage);
+                $row = $this->prepareGamePlayerRow($gameId, $team, $playerData, $minimumWage);
+                if ($row) {
+                    $playerRows[] = $row;
+                }
             }
+        }
+
+        // Batch insert for better performance
+        foreach (array_chunk($playerRows, 100) as $chunk) {
+            GamePlayer::insert($chunk);
         }
     }
 
     /**
-     * Create a game player from player data.
+     * Load clubs data from a teams.json file (league format).
      */
-    private function createGamePlayer(string $gameId, Team $team, array $playerData, int $minimumWage): void
+    private function loadClubsFromTeamsJson(string $teamsFilePath): array
+    {
+        $data = json_decode(file_get_contents($teamsFilePath), true);
+        return $data['clubs'] ?? [];
+    }
+
+    /**
+     * Load clubs data from individual team JSON files (team pool format).
+     * Each file is named {transfermarkt_id}.json with {image, name, players}.
+     */
+    private function loadClubsFromTeamPoolFiles(string $basePath): array
+    {
+        $clubs = [];
+
+        foreach (glob("{$basePath}/*.json") as $filePath) {
+            $data = json_decode(file_get_contents($filePath), true);
+            if (!$data) {
+                continue;
+            }
+
+            $clubs[] = [
+                'image' => $data['image'] ?? '',
+                'transfermarktId' => $this->extractTransfermarktIdFromImage($data['image'] ?? ''),
+                'players' => $data['players'] ?? [],
+            ];
+        }
+
+        return $clubs;
+    }
+
+    /**
+     * Extract transfermarkt ID from image URL.
+     */
+    private function extractTransfermarktIdFromImage(string $imageUrl): ?string
+    {
+        if (preg_match('/\/(\d+)\.png$/', $imageUrl, $matches)) {
+            return $matches[1];
+        }
+        return null;
+    }
+
+    /**
+     * Prepare a game player row for batch insertion.
+     */
+    private function prepareGamePlayerRow(string $gameId, Team $team, array $playerData, int $minimumWage): ?array
     {
         // Find the reference player by transfermarkt_id
         $player = Player::where('transfermarkt_id', $playerData['id'])->first();
         if (!$player) {
-            return;
+            return null;
         }
 
         // Parse contract date
@@ -659,8 +901,7 @@ class GameProjector extends Projector
             $currentAbility
         );
 
-        // Create game player with career data snapshot and development fields
-        GamePlayer::create([
+        return [
             'id' => Str::uuid()->toString(),
             'game_id' => $gameId,
             'player_id' => $player->id,
@@ -675,14 +916,13 @@ class GameProjector extends Projector
             'fitness' => rand(90, 100),
             'morale' => rand(65, 80),
             'durability' => InjuryService::generateDurability(),
-            // Development fields
             'game_technical_ability' => $player->technical_ability,
             'game_physical_ability' => $player->physical_ability,
             'potential' => $potentialData['potential'],
             'potential_low' => $potentialData['low'],
             'potential_high' => $potentialData['high'],
             'season_appearances' => 0,
-        ]);
+        ];
     }
 
     /**

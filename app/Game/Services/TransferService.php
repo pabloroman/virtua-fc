@@ -2,6 +2,7 @@
 
 namespace App\Game\Services;
 
+use App\Models\Competition;
 use App\Models\FinancialTransaction;
 use App\Models\Game;
 use App\Models\GamePlayer;
@@ -88,7 +89,10 @@ class TransferService
         // Expire any pending offers
         $player->transferOffers()
             ->where('status', TransferOffer::STATUS_PENDING)
-            ->update(['status' => TransferOffer::STATUS_EXPIRED]);
+            ->update([
+                'status' => TransferOffer::STATUS_EXPIRED,
+                'resolved_at' => $player->game->current_date,
+            ]);
     }
 
     /**
@@ -98,14 +102,14 @@ class TransferService
     {
         $offers = collect();
         $numOffers = rand(1, 3);
-        $buyers = $this->getEligibleBuyers($player);
+        ['buyers' => $buyers, 'squadValues' => $squadValues] = $this->getEligibleBuyersWithSquadValues($player);
 
         if ($buyers->isEmpty()) {
             return $offers;
         }
 
-        // Shuffle and take random buyers
-        $selectedBuyers = $buyers->shuffle()->take($numOffers);
+        // Select buyers weighted by player trajectory and team strength
+        $selectedBuyers = $this->selectWeightedBuyers($buyers, $player, $squadValues, $numOffers);
 
         foreach ($selectedBuyers as $buyer) {
             $offer = $this->createOffer(
@@ -170,7 +174,7 @@ class TransferService
 
             // 40% chance of receiving a new offer each matchday
             if (rand(1, 100) <= 40) {
-                $buyers = $this->getEligibleBuyers($player);
+                ['buyers' => $buyers, 'squadValues' => $squadValues] = $this->getEligibleBuyersWithSquadValues($player);
 
                 // Exclude teams that already made offers
                 $existingOfferTeamIds = $playerOffers
@@ -183,7 +187,7 @@ class TransferService
                 );
 
                 if ($availableBuyers->isNotEmpty()) {
-                    $buyer = $availableBuyers->random();
+                    $buyer = $this->selectWeightedBuyer($availableBuyers, $player, $squadValues);
                     $offer = $this->createOffer(
                         player: $player,
                         offeringTeam: $buyer,
@@ -242,10 +246,10 @@ class TransferService
 
             // Random chance for an offer
             if (rand(1, 100) <= self::UNSOLICITED_OFFER_CHANCE * 100) {
-                $buyers = $this->getEligibleBuyers($player);
+                ['buyers' => $buyers, 'squadValues' => $squadValues] = $this->getEligibleBuyersWithSquadValues($player);
 
                 if ($buyers->isNotEmpty()) {
-                    $buyer = $buyers->random();
+                    $buyer = $this->selectWeightedBuyer($buyers, $player, $squadValues);
                     $offer = $this->createOffer(
                         player: $player,
                         offeringTeam: $buyer,
@@ -335,10 +339,10 @@ class TransferService
 
             // Random chance for an offer
             if (rand(1, 100) <= self::PRE_CONTRACT_OFFER_CHANCE * 100) {
-                $buyers = $this->getEligibleBuyers($player);
+                ['buyers' => $buyers, 'squadValues' => $squadValues] = $this->getEligibleBuyersWithSquadValues($player);
 
                 if ($buyers->isNotEmpty()) {
-                    $buyer = $buyers->random();
+                    $buyer = $this->selectWeightedBuyer($buyers, $player, $squadValues);
                     $offer = $this->createPreContractOffer($player, $buyer);
                     $offers->push($offer);
                 }
@@ -362,6 +366,7 @@ class TransferService
             'transfer_fee' => 0, // Free transfer
             'status' => TransferOffer::STATUS_PENDING,
             'expires_at' => Carbon::parse($player->game->current_date)->addDays(self::PRE_CONTRACT_OFFER_EXPIRY_DAYS),
+            'game_date' => $player->game->current_date,
         ]);
     }
 
@@ -421,7 +426,7 @@ class TransferService
         );
 
         // Mark offer as completed
-        $offer->update(['status' => TransferOffer::STATUS_COMPLETED]);
+        $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
     }
 
     /**
@@ -458,7 +463,7 @@ class TransferService
         TransferOffer::where('game_player_id', $player->id)
             ->where('id', '!=', $offer->id)
             ->where('status', TransferOffer::STATUS_PENDING)
-            ->update(['status' => TransferOffer::STATUS_REJECTED]);
+            ->update(['status' => TransferOffer::STATUS_REJECTED, 'resolved_at' => $game->current_date]);
 
         // If transfer window is open, complete immediately
         if ($game->isTransferWindowOpen()) {
@@ -467,7 +472,7 @@ class TransferService
         }
 
         // Otherwise, mark as agreed (waiting for next transfer window)
-        $offer->update(['status' => TransferOffer::STATUS_AGREED]);
+        $offer->update(['status' => TransferOffer::STATUS_AGREED, 'resolved_at' => $game->current_date]);
         return false;
     }
 
@@ -530,7 +535,7 @@ class TransferService
         }
 
         // Mark offer as completed
-        $offer->update(['status' => TransferOffer::STATUS_COMPLETED]);
+        $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
     }
 
     /**
@@ -538,7 +543,10 @@ class TransferService
      */
     public function rejectOffer(TransferOffer $offer): void
     {
-        $offer->update(['status' => TransferOffer::STATUS_REJECTED]);
+        $offer->update([
+            'status' => TransferOffer::STATUS_REJECTED,
+            'resolved_at' => $offer->game->current_date,
+        ]);
     }
 
     /**
@@ -549,7 +557,7 @@ class TransferService
         return TransferOffer::where('game_id', $game->id)
             ->where('status', TransferOffer::STATUS_PENDING)
             ->where('expires_at', '<', $game->current_date)
-            ->update(['status' => TransferOffer::STATUS_EXPIRED]);
+            ->update(['status' => TransferOffer::STATUS_EXPIRED, 'resolved_at' => $game->current_date]);
     }
 
     /**
@@ -571,6 +579,7 @@ class TransferService
             'transfer_fee' => $transferFee,
             'status' => TransferOffer::STATUS_PENDING,
             'expires_at' => Carbon::parse($player->game->current_date)->addDays($expiryDays),
+            'game_date' => $player->game->current_date,
         ]);
     }
 
@@ -610,21 +619,27 @@ class TransferService
      */
     public function getEligibleBuyers(GamePlayer $player): Collection
     {
+        return $this->getEligibleBuyersWithSquadValues($player)['buyers'];
+    }
+
+    /**
+     * Get eligible AI teams and their squad values in a single pass.
+     * Avoids redundant squad value queries when the caller also needs weights.
+     *
+     * @return array{buyers: Collection, squadValues: Collection}
+     */
+    private function getEligibleBuyersWithSquadValues(GamePlayer $player): array
+    {
         $game = $player->game;
         $playerTeamId = $player->team_id;
         $playerValue = $player->market_value_cents;
 
         // Get all teams in the same league(s) as the player's team, excluding player's team
         $leagueTeamIds = Team::whereHas('competitions', function ($query) use ($game) {
-            $query->where('type', 'league');
+            $query->whereIn('role', [Competition::ROLE_PRIMARY, Competition::ROLE_FOREIGN]);
         })->where('id', '!=', $playerTeamId)->pluck('id')->toArray();
 
-        // Pre-compute squad values for all candidate teams in a single query
-        $squadValues = GamePlayer::where('game_id', $game->id)
-            ->whereIn('team_id', $leagueTeamIds)
-            ->selectRaw('team_id, SUM(market_value_cents) as total_value')
-            ->groupBy('team_id')
-            ->pluck('total_value', 'team_id');
+        $squadValues = $this->getSquadValues($game, $leagueTeamIds);
 
         // Filter to teams that could reasonably afford the player
         $eligibleTeamIds = $squadValues
@@ -632,7 +647,132 @@ class TransferService
             ->keys()
             ->toArray();
 
-        return Team::whereIn('id', $eligibleTeamIds)->get();
+        $buyers = Team::whereIn('id', $eligibleTeamIds)->get();
+
+        return ['buyers' => $buyers, 'squadValues' => $squadValues];
+    }
+
+    /**
+     * Get squad total market values for a set of teams.
+     */
+    private function getSquadValues(Game $game, array $teamIds): Collection
+    {
+        return GamePlayer::where('game_id', $game->id)
+            ->whereIn('team_id', $teamIds)
+            ->selectRaw('team_id, SUM(market_value_cents) as total_value')
+            ->groupBy('team_id')
+            ->pluck('total_value', 'team_id');
+    }
+
+    /**
+     * Select a buyer weighted by player trajectory and team strength.
+     *
+     * Growing players (≤23) attract offers from stronger teams.
+     * Declining players (≥29) attract offers from weaker teams.
+     * Peak players (24-28) attract offers uniformly.
+     */
+    private function selectWeightedBuyer(Collection $buyers, GamePlayer $player, Collection $squadValues): Team
+    {
+        if ($buyers->count() === 1) {
+            return $buyers->first();
+        }
+
+        $weights = $this->calculateBuyerWeights($buyers, $player, $squadValues);
+
+        return $this->weightedRandom($buyers, $weights);
+    }
+
+    /**
+     * Select multiple buyers weighted by player trajectory and team strength.
+     * Returns up to $count unique teams, selected without replacement.
+     */
+    private function selectWeightedBuyers(Collection $buyers, GamePlayer $player, Collection $squadValues, int $count): Collection
+    {
+        if ($buyers->count() <= $count) {
+            return $buyers;
+        }
+
+        $remaining = $buyers->values();
+        $selected = collect();
+
+        for ($i = 0; $i < $count; $i++) {
+            $weights = $this->calculateBuyerWeights($remaining, $player, $squadValues);
+            $buyer = $this->weightedRandom($remaining, $weights);
+            $selected->push($buyer);
+            $remaining = $remaining->reject(fn ($t) => $t->id === $buyer->id)->values();
+        }
+
+        return $selected;
+    }
+
+    /**
+     * Calculate buyer weights based on player trajectory and team strength.
+     *
+     * Uses squad total value as a proxy for team reputation/tier.
+     * Normalizes to a 0-1 strength ratio, then applies trajectory-based weighting:
+     * - Declining: weaker teams are up to 3x more likely than the strongest
+     * - Growing: stronger teams are up to 3x more likely than the weakest
+     * - Peak: uniform weights (all teams equally likely)
+     *
+     * @return array<string, float> Team ID => weight
+     */
+    private function calculateBuyerWeights(Collection $buyers, GamePlayer $player, Collection $squadValues): array
+    {
+        $developmentStatus = $player->development_status;
+
+        // Peak players: no weighting needed
+        if ($developmentStatus === 'peak') {
+            return $buyers->mapWithKeys(fn ($team) => [$team->id => 1.0])->all();
+        }
+
+        $values = $buyers->map(fn ($team) => $squadValues->get($team->id, 0));
+        $minValue = $values->min();
+        $maxValue = $values->max();
+        $range = $maxValue - $minValue;
+
+        // If all teams have roughly the same value, use uniform weights
+        if ($range == 0) {
+            return $buyers->mapWithKeys(fn ($team) => [$team->id => 1.0])->all();
+        }
+
+        $weights = [];
+        foreach ($buyers as $team) {
+            $teamValue = $squadValues->get($team->id, 0);
+            // 0 = weakest eligible buyer, 1 = strongest
+            $strengthRatio = ($teamValue - $minValue) / $range;
+
+            $weights[$team->id] = match ($developmentStatus) {
+                // Declining players: weaker teams weighted higher (3:1 ratio)
+                'declining' => 1.0 + 2.0 * (1.0 - $strengthRatio),
+                // Growing players: stronger teams weighted higher (3:1 ratio)
+                'growing' => 1.0 + 2.0 * $strengthRatio,
+                default => 1.0,
+            };
+        }
+
+        return $weights;
+    }
+
+    /**
+     * Pick a random item from a collection using weighted probabilities.
+     *
+     * @param Collection $items Collection of items (must have 'id' property)
+     * @param array<string, float> $weights Item ID => weight
+     */
+    private function weightedRandom(Collection $items, array $weights): mixed
+    {
+        $totalWeight = array_sum($weights);
+        $random = (mt_rand() / mt_getrandmax()) * $totalWeight;
+
+        $cumulative = 0.0;
+        foreach ($items as $item) {
+            $cumulative += $weights[$item->id];
+            if ($random <= $cumulative) {
+                return $item;
+            }
+        }
+
+        return $items->last();
     }
 
     /**
@@ -721,7 +861,7 @@ class TransferService
         }
 
         // Otherwise, mark as agreed (waiting for next transfer window)
-        $offer->update(['status' => TransferOffer::STATUS_AGREED]);
+        $offer->update(['status' => TransferOffer::STATUS_AGREED, 'resolved_at' => $game->current_date]);
         return false;
     }
 
@@ -766,7 +906,7 @@ class TransferService
             );
         }
 
-        $offer->update(['status' => TransferOffer::STATUS_COMPLETED]);
+        $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
     }
 
     /**
@@ -792,7 +932,7 @@ class TransferService
             'team_id' => $game->team_id,
             'joined_on' => $game->current_date,
         ]);
-        $offer->update(['status' => TransferOffer::STATUS_COMPLETED]);
+        $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
     }
 
     /**
@@ -819,6 +959,6 @@ class TransferService
             'transfer_status' => null,
             'transfer_listed_at' => null,
         ]);
-        $offer->update(['status' => TransferOffer::STATUS_COMPLETED]);
+        $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
     }
 }

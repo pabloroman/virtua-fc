@@ -45,6 +45,44 @@
                     {{-- Tab Navigation --}}
                     <x-transfers-nav :game="$game" active="loans" />
 
+                    {{-- Loan Searches --}}
+                    @if($loanSearches->isNotEmpty())
+                    <div class="mt-6 mb-8">
+                        <h4 class="font-semibold text-lg text-slate-900 mb-4 flex items-center gap-2">
+                            <span class="w-2 h-2 bg-sky-500 rounded-full animate-pulse"></span>
+                            {{ __('transfers.loan_searches') }}
+                            <span class="text-sm font-normal text-slate-500">({{ $loanSearches->count() }})</span>
+                        </h4>
+                        <div class="space-y-3">
+                            @foreach($loanSearches as $gamePlayer)
+                            <div class="border border-sky-200 bg-sky-50 rounded-lg p-4">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-4">
+                                        <div class="relative">
+                                            <svg class="w-5 h-5 text-sky-500 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <div class="font-semibold text-slate-900">{{ $gamePlayer->name }}</div>
+                                            <div class="text-sm text-slate-600">
+                                                {{ $gamePlayer->position }} &middot; {{ $gamePlayer->age }} {{ __('transfers.years') }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-sky-100 text-sky-700">
+                                            <span class="w-1.5 h-1.5 bg-sky-500 rounded-full animate-pulse"></span>
+                                            {{ __('transfers.searching_destination') }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
+
                     {{-- Loans In --}}
                     <div class="mt-6 mb-8">
                         <h4 class="font-semibold text-lg text-slate-900 mb-4 flex items-center gap-2">

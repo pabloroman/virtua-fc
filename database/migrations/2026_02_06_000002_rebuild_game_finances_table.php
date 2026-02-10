@@ -40,8 +40,6 @@ return new class extends Migration
             $table->bigInteger('variance')->default(0); // actual_surplus - projected_surplus
             $table->bigInteger('carried_debt')->default(0); // debt from previous season
 
-            $table->timestamps();
-
             $table->foreign('game_id')->references('id')->on('games')->onDelete('cascade');
             $table->unique(['game_id', 'season']);
         });
@@ -66,7 +64,6 @@ return new class extends Migration
             $table->bigInteger('transfer_expense')->default(0);
             $table->bigInteger('total_expense')->default(0);
             $table->bigInteger('season_profit_loss')->default(0);
-            $table->timestamps();
 
             $table->foreign('game_id')->references('id')->on('games')->onDelete('cascade');
         });

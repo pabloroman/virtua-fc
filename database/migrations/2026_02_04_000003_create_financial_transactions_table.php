@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('description');
             $table->foreignUuid('related_player_id')->nullable()->constrained('game_players')->nullOnDelete();
             $table->date('transaction_date');
-            $table->timestamps();
 
             $table->index(['game_id', 'transaction_date']);
             $table->index(['game_id', 'type']);

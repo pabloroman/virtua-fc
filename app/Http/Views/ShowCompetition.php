@@ -3,8 +3,8 @@
 namespace App\Http\Views;
 
 use App\Models\Competition;
-use App\Models\CompetitionTeam;
 use App\Models\CupRoundTemplate;
+use App\Models\CompetitionEntry;
 use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameMatch;
@@ -20,13 +20,17 @@ class ShowCompetition
         $competition = Competition::findOrFail($competitionId);
 
         // Verify the team participates in this competition
-        $participates = CompetitionTeam::where('competition_id', $competitionId)
+        $participates = CompetitionEntry::where('game_id', $game->id)
+            ->where('competition_id', $competitionId)
             ->where('team_id', $game->team_id)
-            ->where('season', $game->season)
             ->exists();
 
         if (!$participates) {
             abort(404, 'Your team does not participate in this competition.');
+        }
+
+        if ($competition->handler_type === 'swiss_format') {
+            return $this->showSwissFormat($game, $competition);
         }
 
         if ($competition->isLeague()) {
@@ -48,8 +52,8 @@ class ShowCompetition
         $teamForms = $this->getTeamForms($game->id, $competition->id, $standings->pluck('team_id'));
 
         // Get team IDs in this competition
-        $competitionTeamIds = CompetitionTeam::where('competition_id', $competition->id)
-            ->where('season', $game->season)
+        $competitionTeamIds = CompetitionEntry::where('game_id', $game->id)
+            ->where('competition_id', $competition->id)
             ->pluck('team_id');
 
         // Top scorers in this competition
@@ -72,6 +76,67 @@ class ShowCompetition
             'topScorers' => $topScorers,
             'teamForms' => $teamForms,
             'standingsZones' => $standingsZones,
+        ]);
+    }
+
+    private function showSwissFormat(Game $game, Competition $competition)
+    {
+        // League phase standings
+        $standings = GameStanding::with('team')
+            ->where('game_id', $game->id)
+            ->where('competition_id', $competition->id)
+            ->orderBy('position')
+            ->get();
+
+        $teamForms = $this->getTeamForms($game->id, $competition->id, $standings->pluck('team_id'));
+
+        $competitionTeamIds = CompetitionEntry::where('game_id', $game->id)
+            ->where('competition_id', $competition->id)
+            ->pluck('team_id');
+
+        $topScorers = GamePlayer::with(['player', 'team'])
+            ->where('game_id', $game->id)
+            ->whereIn('team_id', $competitionTeamIds)
+            ->where('goals', '>', 0)
+            ->orderByDesc('goals')
+            ->orderByDesc('assists')
+            ->limit(10)
+            ->get();
+
+        $standingsZones = $competition->getConfig()->getStandingsZones();
+
+        // Knockout bracket data (if knockout phase has started)
+        $knockoutTies = CupTie::with(['homeTeam', 'awayTeam', 'winner', 'firstLegMatch', 'secondLegMatch'])
+            ->where('game_id', $game->id)
+            ->where('competition_id', $competition->id)
+            ->get()
+            ->groupBy('round_number');
+
+        $knockoutRoundNames = [
+            1 => __('game.ucl_knockout_playoff'),
+            2 => __('game.ucl_round_of_16'),
+            3 => __('game.ucl_quarter_finals'),
+            4 => __('game.ucl_semi_finals'),
+            5 => __('game.ucl_final'),
+        ];
+
+        // Check if league phase is complete
+        $leaguePhaseComplete = !GameMatch::where('game_id', $game->id)
+            ->where('competition_id', $competition->id)
+            ->whereNull('cup_tie_id')
+            ->where('played', false)
+            ->exists() && $standings->first()?->played > 0;
+
+        return view('swiss-standings', [
+            'game' => $game,
+            'competition' => $competition,
+            'standings' => $standings,
+            'topScorers' => $topScorers,
+            'teamForms' => $teamForms,
+            'standingsZones' => $standingsZones,
+            'knockoutTies' => $knockoutTies,
+            'knockoutRoundNames' => $knockoutRoundNames,
+            'leaguePhaseComplete' => $leaguePhaseComplete,
         ]);
     }
 

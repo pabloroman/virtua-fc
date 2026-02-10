@@ -23,7 +23,8 @@ return new class extends Migration
             $table->string('status')->default('pending');
 
             $table->date('expires_at');
-            $table->timestamps();
+            $table->date('game_date');       // In-game date when offer was created
+            $table->date('resolved_at')->nullable(); // In-game date when status was finalized
 
             $table->foreign('game_id')
                 ->references('id')

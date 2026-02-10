@@ -5,11 +5,13 @@ namespace App\Http\Views;
 use App\Game\Services\PlayerDevelopmentService;
 use App\Game\Services\SeasonGoalService;
 use App\Models\Competition;
-use App\Models\CompetitionTeam;
 use App\Models\CupTie;
+use App\Models\CompetitionEntry;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\GameStanding;
+use App\Models\SimulatedSeason;
+use App\Models\Team;
 
 class ShowSeasonEnd
 {
@@ -48,13 +50,13 @@ class ShowSeasonEnd
         $runnerUp = $standings->get(1);
 
         // Get team IDs in this competition
-        $competitionTeamIds = CompetitionTeam::where('competition_id', $game->competition_id)
-            ->where('season', $game->season)
+        $competitionTeamIds = CompetitionEntry::where('game_id', $game->id)
+            ->where('competition_id', $game->competition_id)
             ->pluck('team_id');
 
         // Find the cup competition for this country
         $cupCompetition = Competition::where('country', $competition->country)
-            ->where('type', 'cup')
+            ->where('role', Competition::ROLE_DOMESTIC_CUP)
             ->first();
 
         $cupWinner = null;
@@ -78,18 +80,25 @@ class ShowSeasonEnd
 
         // Find the lower-tier league for promotion display (tier = current tier + 1)
         $lowerTierLeague = Competition::where('country', $competition->country)
-            ->where('type', 'league')
+            ->where('role', Competition::ROLE_PRIMARY)
             ->where('tier', $competition->tier + 1)
             ->first();
 
         // Find the higher-tier league for relegation context (tier = current tier - 1)
         $higherTierLeague = Competition::where('country', $competition->country)
-            ->where('type', 'league')
+            ->where('role', Competition::ROLE_PRIMARY)
             ->where('tier', $competition->tier - 1)
             ->first();
 
+        // Load simulated seasons for the other league(s)
+        $simulatedSeasons = SimulatedSeason::with('competition')
+            ->where('game_id', $gameId)
+            ->where('season', $game->season)
+            ->get();
+
         // Relegated teams (bottom 3 of current league, if tier 1)
         $relegatedTeams = collect();
+        $relegatedToLeague = $lowerTierLeague; // Default: relegated to lower tier
         if ($competition->tier === 1 && $lowerTierLeague) {
             $relegatedTeams = $standings->where('position', '>=', 18)->values();
         }
@@ -113,6 +122,24 @@ class ShowSeasonEnd
                 ->first();
 
             $playoffWinner = $playoffFinal?->winner;
+
+            // Also show relegated teams from the higher tier (from simulated data)
+            $higherTierSimulated = $simulatedSeasons->firstWhere('competition_id', $higherTierLeague->id);
+            if ($higherTierSimulated) {
+                $relegatedTeamIds = $higherTierSimulated->getTeamIdsAtPositions([18, 19, 20]);
+                $relegatedTeamModels = Team::whereIn('id', $relegatedTeamIds)->get()->keyBy('id');
+                $relegatedTeams = collect();
+                $relegatedToLeague = $competition; // They're relegated to our league
+                foreach ([18, 19, 20] as $pos) {
+                    $teamId = $higherTierSimulated->results[$pos - 1] ?? null;
+                    if ($teamId && $relegatedTeamModels->has($teamId)) {
+                        $relegatedTeams->push((object) [
+                            'team' => $relegatedTeamModels[$teamId],
+                            'position' => $pos,
+                        ]);
+                    }
+                }
+            }
         } elseif ($lowerTierLeague) {
             // We're in the top tier, show who got promoted FROM the lower tier
             $lowerTierStandings = GameStanding::with('team')
@@ -121,18 +148,51 @@ class ShowSeasonEnd
                 ->orderBy('position')
                 ->get();
 
-            $directlyPromoted = $lowerTierStandings->where('position', '<=', 2)->values();
-            $promotionTargetLeague = $competition;
+            if ($lowerTierStandings->isNotEmpty()) {
+                // Real standings exist
+                $directlyPromoted = $lowerTierStandings->where('position', '<=', 2)->values();
+                $promotionTargetLeague = $competition;
 
-            // Check for playoff winner in lower tier competition
-            $playoffFinal = CupTie::with('winner')
-                ->where('game_id', $gameId)
-                ->where('competition_id', $lowerTierLeague->id)
-                ->where('completed', true)
-                ->orderByDesc('round_number')
-                ->first();
+                // Check for playoff winner in lower tier competition
+                $playoffFinal = CupTie::with('winner')
+                    ->where('game_id', $gameId)
+                    ->where('competition_id', $lowerTierLeague->id)
+                    ->where('completed', true)
+                    ->orderByDesc('round_number')
+                    ->first();
 
-            $playoffWinner = $playoffFinal?->winner;
+                $playoffWinner = $playoffFinal?->winner;
+            } else {
+                // Fall back to simulated results for the lower tier
+                $lowerTierSimulated = $simulatedSeasons->firstWhere('competition_id', $lowerTierLeague->id);
+                if ($lowerTierSimulated) {
+                    $promotedTeamIds = $lowerTierSimulated->getTeamIdsAtPositions([1, 2, 3]);
+                    $promotedTeamModels = Team::whereIn('id', $promotedTeamIds)->get()->keyBy('id');
+                    $promotionTargetLeague = $competition;
+
+                    foreach ([1, 2, 3] as $pos) {
+                        $teamId = $lowerTierSimulated->results[$pos - 1] ?? null;
+                        if ($teamId && $promotedTeamModels->has($teamId)) {
+                            $directlyPromoted->push((object) [
+                                'team' => $promotedTeamModels[$teamId],
+                                'position' => $pos,
+                            ]);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Get simulated other league champion for display
+        $otherLeagueChampion = null;
+        $otherLeague = null;
+        foreach ($simulatedSeasons as $simulated) {
+            $winnerTeamId = $simulated->getWinnerTeamId();
+            if ($winnerTeamId) {
+                $otherLeagueChampion = Team::find($winnerTeamId);
+                $otherLeague = $simulated->competition;
+                break;
+            }
         }
 
         // Best attack and defense in the league
@@ -240,12 +300,13 @@ class ShowSeasonEnd
             'directlyPromoted' => $directlyPromoted,
             'playoffWinner' => $playoffWinner,
             'promotionTargetLeague' => $promotionTargetLeague,
-            'lowerTierLeague' => $lowerTierLeague,
+            'relegatedToLeague' => $relegatedToLeague,
             'bestAttack' => $bestAttack,
             'bestDefense' => $bestDefense,
             'managerEvaluation' => $managerEvaluation,
             'retiringPlayers' => $retiringPlayers,
+            'otherLeagueChampion' => $otherLeagueChampion,
+            'otherLeague' => $otherLeague,
         ]);
     }
-
 }

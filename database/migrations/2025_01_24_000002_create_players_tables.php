@@ -30,7 +30,6 @@ return new class extends Migration
             $table->enum('foot', ['left', 'right', 'both'])->nullable();
             $table->unsignedTinyInteger('technical_ability')->default(50); // 0-100, slow-changing
             $table->unsignedTinyInteger('physical_ability')->default(50); // 0-100, slow-changing
-            $table->timestamps();
 
             $table->index('name');
         });

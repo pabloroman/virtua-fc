@@ -20,9 +20,11 @@ class DefaultLeagueConfig implements CompetitionConfig
      */
     private const REPUTATION_TO_GOAL = [
         ClubProfile::REPUTATION_ELITE => Game::GOAL_TITLE,
-        ClubProfile::REPUTATION_CONTINENTAL => Game::GOAL_CHAMPIONS_LEAGUE,
+        ClubProfile::REPUTATION_CONTENDERS => Game::GOAL_CHAMPIONS_LEAGUE,
+        ClubProfile::REPUTATION_CONTINENTAL => Game::GOAL_TOP_HALF,
         ClubProfile::REPUTATION_ESTABLISHED => Game::GOAL_TOP_HALF,
         ClubProfile::REPUTATION_MODEST => Game::GOAL_TOP_HALF,
+        ClubProfile::REPUTATION_PROFESSIONAL => Game::GOAL_SURVIVAL,
         ClubProfile::REPUTATION_LOCAL => Game::GOAL_SURVIVAL,
     ];
 
@@ -57,11 +59,6 @@ class DefaultLeagueConfig implements CompetitionConfig
             return 0.95;
         }
         return 0.85;
-    }
-
-    public function getMaxPositions(): int
-    {
-        return $this->numTeams;
     }
 
     public function getSeasonGoal(string $reputation): string
@@ -122,4 +119,5 @@ class DefaultLeagueConfig implements CompetitionConfig
             ],
         ];
     }
+
 }

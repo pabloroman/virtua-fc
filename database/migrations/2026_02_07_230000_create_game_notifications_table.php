@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('priority')->default('info'); // critical, warning, info
             $table->json('metadata')->nullable(); // player_id, offer_id, amounts, etc.
             $table->timestamp('read_at')->nullable();
-            $table->timestamps();
 
             $table->foreign('game_id')
                 ->references('id')
@@ -26,7 +25,6 @@ return new class extends Migration
                 ->cascadeOnDelete();
 
             $table->index(['game_id', 'read_at']);
-            $table->index(['game_id', 'created_at']);
         });
     }
 

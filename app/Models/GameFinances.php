@@ -11,24 +11,33 @@ class GameFinances extends Model
 {
     use HasUuids;
 
+    public $timestamps = false;
+
     protected $fillable = [
         'game_id',
         'season',
         'projected_position',
         'projected_tv_revenue',
-        'projected_prize_revenue',
+        'projected_solidarity_funds_revenue',
         'projected_matchday_revenue',
         'projected_commercial_revenue',
+        'projected_subsidy_revenue',
         'projected_total_revenue',
         'projected_wages',
+        'projected_operating_expenses',
+        'projected_taxes',
         'projected_surplus',
         'actual_tv_revenue',
-        'actual_prize_revenue',
+        'actual_solidarity_funds_revenue',
+        'actual_cup_bonus_revenue',
         'actual_matchday_revenue',
         'actual_commercial_revenue',
+        'actual_subsidy_revenue',
         'actual_transfer_income',
         'actual_total_revenue',
         'actual_wages',
+        'actual_operating_expenses',
+        'actual_taxes',
         'actual_surplus',
         'variance',
         'carried_debt',
@@ -39,20 +48,27 @@ class GameFinances extends Model
         // Projections
         'projected_position' => 'integer',
         'projected_tv_revenue' => 'integer',
-        'projected_prize_revenue' => 'integer',
+        'projected_solidarity_funds_revenue' => 'integer',
         'projected_matchday_revenue' => 'integer',
         'projected_commercial_revenue' => 'integer',
+        'projected_subsidy_revenue' => 'integer',
         'projected_total_revenue' => 'integer',
         'projected_wages' => 'integer',
+        'projected_operating_expenses' => 'integer',
+        'projected_taxes' => 'integer',
         'projected_surplus' => 'integer',
         // Actuals
         'actual_tv_revenue' => 'integer',
-        'actual_prize_revenue' => 'integer',
+        'actual_solidarity_funds_revenue' => 'integer',
+        'actual_cup_bonus_revenue' => 'integer',
         'actual_matchday_revenue' => 'integer',
         'actual_commercial_revenue' => 'integer',
+        'actual_subsidy_revenue' => 'integer',
         'actual_transfer_income' => 'integer',
         'actual_total_revenue' => 'integer',
         'actual_wages' => 'integer',
+        'actual_operating_expenses' => 'integer',
+        'actual_taxes' => 'integer',
         'actual_surplus' => 'integer',
         // Settlement
         'variance' => 'integer',
@@ -105,6 +121,16 @@ class GameFinances extends Model
         return Money::format($this->projected_commercial_revenue);
     }
 
+    public function getFormattedProjectedSubsidyRevenueAttribute(): string
+    {
+        return Money::format($this->projected_subsidy_revenue);
+    }
+
+    public function getFormattedProjectedSolidarityFundsRevenueAttribute(): string
+    {
+        return Money::format($this->projected_solidarity_funds_revenue);
+    }
+
     public function getFormattedProjectedTotalRevenueAttribute(): string
     {
         return Money::format($this->projected_total_revenue);
@@ -113,6 +139,11 @@ class GameFinances extends Model
     public function getFormattedProjectedWagesAttribute(): string
     {
         return Money::format($this->projected_wages);
+    }
+
+    public function getFormattedProjectedOperatingExpensesAttribute(): string
+    {
+        return Money::format($this->projected_operating_expenses);
     }
 
     public function getFormattedProjectedSurplusAttribute(): string
@@ -136,9 +167,14 @@ class GameFinances extends Model
         return Money::format($this->actual_commercial_revenue);
     }
 
-    public function getFormattedActualPrizeRevenueAttribute(): string
+    public function getFormattedActualSolidarityFundsRevenueAttribute(): string
     {
-        return Money::format($this->actual_prize_revenue);
+        return Money::format($this->actual_solidarity_funds_revenue);
+    }
+
+    public function getFormattedActualCupBonusRevenueAttribute(): string
+    {
+        return Money::format($this->actual_cup_bonus_revenue);
     }
 
     public function getFormattedActualTransferIncomeAttribute(): string
@@ -154,6 +190,11 @@ class GameFinances extends Model
     public function getFormattedActualWagesAttribute(): string
     {
         return Money::format($this->actual_wages);
+    }
+
+    public function getFormattedActualOperatingExpensesAttribute(): string
+    {
+        return Money::format($this->actual_operating_expenses);
     }
 
     public function getFormattedActualSurplusAttribute(): string

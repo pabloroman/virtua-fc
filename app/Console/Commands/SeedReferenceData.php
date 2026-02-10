@@ -21,13 +21,14 @@ class SeedReferenceData extends Command
 
     private array $profiles = [
         'production' => [
+            // Spanish leagues (selectable)
             [
                 'code' => 'ESP1',
                 'path' => 'data/2025/ESP1',
                 'tier' => 1,
                 'handler' => 'league',
                 'country' => 'ES',
-                'minimum_annual_wage' => 20_000_000, // €200,000 in cents (La Liga minimum)
+                'role' => 'primary',
             ],
             [
                 'code' => 'ESP2',
@@ -35,15 +36,16 @@ class SeedReferenceData extends Command
                 'tier' => 2,
                 'handler' => 'league_with_playoff',
                 'country' => 'ES',
-                'minimum_annual_wage' => 10_000_000, // €100,000 in cents (La Liga 2 minimum)
+                'role' => 'primary',
             ],
+            // Spanish cups (auto-entered)
             [
                 'code' => 'ESPSUP',
                 'path' => 'data/2025/ESPSUP',
                 'tier' => 0,
                 'handler' => 'knockout_cup',
                 'country' => 'ES',
-                'minimum_annual_wage' => null,
+                'role' => 'domestic_cup',
             ],
             [
                 'code' => 'ESPCUP',
@@ -51,7 +53,79 @@ class SeedReferenceData extends Command
                 'tier' => 0,
                 'handler' => 'knockout_cup',
                 'country' => 'ES',
-                'minimum_annual_wage' => null,
+                'role' => 'domestic_cup',
+            ],
+            // Foreign leagues (scouting/transfers only)
+            [
+                'code' => 'ENG1',
+                'name' => 'Premier League',
+                'path' => 'data/2025/ENG1',
+                'tier' => 1,
+                'handler' => 'league',
+                'country' => 'GB',
+                'role' => 'foreign',
+            ],
+            [
+                'code' => 'DEU1',
+                'name' => 'Bundesliga',
+                'path' => 'data/2025/DEU1',
+                'tier' => 1,
+                'handler' => 'league',
+                'country' => 'DE',
+                'role' => 'foreign',
+            ],
+            [
+                'code' => 'FRA1',
+                'name' => 'Ligue 1',
+                'path' => 'data/2025/FRA1',
+                'tier' => 1,
+                'handler' => 'league',
+                'country' => 'FR',
+                'role' => 'foreign',
+            ],
+            [
+                'code' => 'ITA1',
+                'name' => 'Serie A',
+                'path' => 'data/2025/ITA1',
+                'tier' => 1,
+                'handler' => 'league',
+                'country' => 'IT',
+                'role' => 'foreign',
+            ],
+            [
+                'code' => 'NLD1',
+                'name' => 'Eredivisie',
+                'path' => 'data/2025/NLD1',
+                'tier' => 1,
+                'handler' => 'league',
+                'country' => 'NL',
+                'role' => 'foreign',
+            ],
+            [
+                'code' => 'POR1',
+                'name' => 'Primeira Liga',
+                'path' => 'data/2025/POR1',
+                'tier' => 1,
+                'handler' => 'league',
+                'country' => 'PT',
+                'role' => 'foreign',
+            ],
+            [
+                'code' => 'EUR',
+                'name' => 'Europa',
+                'path' => 'data/2025/EUR',
+                'tier' => 1,
+                'handler' => 'team_pool',
+                'country' => 'EU',
+                'role' => 'foreign',
+            ],
+            [
+                'code' => 'UCL',
+                'path' => 'data/2025/UCL',
+                'tier' => 0,
+                'handler' => 'swiss_format',
+                'country' => 'EU',
+                'role' => 'european',
             ],
         ],
         'test' => [
@@ -61,7 +135,7 @@ class SeedReferenceData extends Command
                 'tier' => 1,
                 'handler' => 'league',
                 'country' => 'XX',
-                'minimum_annual_wage' => 20_000_000,
+                'role' => 'primary',
             ],
             [
                 'code' => 'TESTCUP',
@@ -69,7 +143,7 @@ class SeedReferenceData extends Command
                 'tier' => 0,
                 'handler' => 'knockout_cup',
                 'country' => 'XX',
-                'minimum_annual_wage' => null,
+                'role' => 'domestic_cup',
             ],
         ],
     ];
@@ -133,7 +207,6 @@ class SeedReferenceData extends Command
 
         // Clear reference tables
         DB::table('cup_round_templates')->delete();
-        DB::table('fixture_templates')->delete();
         DB::table('competition_teams')->delete();
         DB::table('players')->delete();
         DB::table('teams')->delete();
@@ -149,38 +222,51 @@ class SeedReferenceData extends Command
         $tier = $config['tier'];
         $handler = $config['handler'] ?? 'league';
         $country = $config['country'] ?? 'ES';
-        $minimumAnnualWage = $config['minimum_annual_wage'] ?? null;
+        $role = $config['role'] ?? 'foreign';
+        $configName = $config['name'] ?? null;
 
         $isCup = in_array($handler, ['knockout_cup', 'group_stage_cup']);
+        $isSwiss = $handler === 'swiss_format';
+        $isTeamPool = $handler === 'team_pool';
 
         $this->info("Seeding {$code}...");
 
-        if ($isCup) {
-            $this->seedCupCompetition($basePath, $code, $tier, $handler, $country, $minimumAnnualWage);
+        if ($isTeamPool) {
+            $this->seedTeamPoolCompetition($basePath, $code, $tier, $handler, $country, $role, $configName);
+        } elseif ($isSwiss) {
+            $this->seedSwissFormatCompetition($basePath, $code, $tier, $handler, $country, $role);
+        } elseif ($isCup) {
+            $this->seedCupCompetition($basePath, $code, $tier, $handler, $country, $role);
         } else {
-            $this->seedLeagueCompetition($basePath, $code, $tier, $handler, $country, $minimumAnnualWage);
+            $this->seedLeagueCompetition($basePath, $code, $tier, $handler, $country, $role, $configName);
         }
     }
 
-    private function seedLeagueCompetition(string $basePath, string $code, int $tier, string $handler, string $country, ?int $minimumAnnualWage): void
+    private function seedLeagueCompetition(string $basePath, string $code, int $tier, string $handler, string $country, string $role = 'foreign', ?string $configName = null): void
     {
         $teamsData = $this->loadJson("{$basePath}/teams.json");
-        $fixturesData = $this->loadJson("{$basePath}/fixtures.json");
+
+        // Handle foreign leagues with simpler JSON structure
+        $seasonId = $teamsData['seasonID'] ?? '2025';
+        $leagueName = $teamsData['name'] ?? $configName ?? $code;
+
+        // Normalize teams data for seedCompetitionRecord
+        $normalizedData = [
+            'name' => $leagueName,
+            'seasonID' => $seasonId,
+        ];
 
         // Seed competition record
-        $this->seedCompetitionRecord($code, $teamsData, $tier, 'league', $handler, $country, $minimumAnnualWage);
+        $this->seedCompetitionRecord($code, $normalizedData, $tier, 'league', $handler, $country, $role);
 
         // Build team ID mapping (transfermarktId -> UUID)
-        $teamIdMap = $this->seedTeams($teamsData['clubs'], $code, $teamsData['seasonID'], $country);
+        $teamIdMap = $this->seedTeams($teamsData['clubs'], $code, $seasonId, $country);
 
         // Seed players (embedded in teams data)
         $this->seedPlayersFromTeams($teamsData['clubs'], $teamIdMap);
-
-        // Seed fixtures
-        $this->seedFixtures($fixturesData['matchdays'], $code, $teamsData['seasonID'], $teamIdMap);
     }
 
-    private function seedCupCompetition(string $basePath, string $code, int $tier, string $handler, string $country, ?int $minimumAnnualWage): void
+    private function seedCupCompetition(string $basePath, string $code, int $tier, string $handler, string $country, string $role = 'domestic_cup'): void
     {
         $teamsData = $this->loadJson("{$basePath}/teams.json");
         $roundsData = $this->loadJson("{$basePath}/rounds.json");
@@ -189,7 +275,7 @@ class SeedReferenceData extends Command
         $season = '2025';
 
         // Seed competition record
-        $this->seedCompetitionRecord($code, $teamsData, $tier, 'cup', $handler, $country, $minimumAnnualWage);
+        $this->seedCompetitionRecord($code, $teamsData, $tier, 'cup', $handler, $country, $role);
 
         // Seed cup round templates
         $this->seedCupRoundTemplates($code, $season, $roundsData, $matchdaysData);
@@ -198,7 +284,152 @@ class SeedReferenceData extends Command
         $this->seedCupTeams($teamsData['clubs'], $code, $season, $country);
     }
 
-    private function seedCompetitionRecord(string $code, array $data, int $tier, string $type, string $handler, string $country, ?int $minimumAnnualWage): void
+    private function seedSwissFormatCompetition(string $basePath, string $code, int $tier, string $handler, string $country, string $role = 'european'): void
+    {
+        $teamsData = $this->loadJson("{$basePath}/teams.json");
+        $roundsData = $this->loadJson("{$basePath}/rounds.json");
+        $matchdaysData = $this->loadJson("{$basePath}/matchdays.json");
+
+        $season = $teamsData['seasonID'] ?? '2025';
+
+        // Swiss format uses 'league' type so standings are updated during league phase
+        $this->seedCompetitionRecord($code, $teamsData, $tier, 'league', $handler, $country, $role);
+
+        // Seed teams (links existing teams by transfermarkt_id, like cups)
+        $teamIdMap = $this->seedSwissFormatTeams($teamsData['clubs'], $code, $season);
+
+        // Seed embedded player data if present (clubs that have a 'players' array)
+        $this->seedPlayersFromTeams($teamsData['clubs'], $teamIdMap);
+
+        // Swiss league phase fixtures are now generated per-game by GameProjector
+
+        // Seed knockout round templates
+        $this->seedCupRoundTemplates($code, $season, $roundsData, $matchdaysData);
+
+        $this->line("  Swiss format competition seeded successfully");
+    }
+
+    /**
+     * Seed a player pool competition from individual team JSON files.
+     * Each file is named {transfermarkt_id}.json and contains {id, players}.
+     * Teams must already exist from their league seeding.
+     */
+    private function seedTeamPoolCompetition(string $basePath, string $code, int $tier, string $handler, string $country, string $role, ?string $configName = null): void
+    {
+        $season = '2025';
+
+        $this->seedCompetitionRecord($code, ['name' => $configName ?? $code, 'seasonID' => $season], $tier, 'league', $handler, $country, $role);
+
+        // Get existing teams by transfermarkt_id
+        $teamsByTransfermarktId = DB::table('teams')
+            ->whereNotNull('transfermarkt_id')
+            ->pluck('id', 'transfermarkt_id')
+            ->toArray();
+
+        $teamIdMap = [];
+        $clubs = [];
+
+        foreach (glob("{$basePath}/*.json") as $filePath) {
+            $data = $this->loadJson($filePath);
+            $transfermarktId = $this->extractTransfermarktIdFromImage($data['image'] ?? '');
+
+            if (!$transfermarktId) {
+                continue;
+            }
+
+            // Find or create team
+            $teamId = $teamsByTransfermarktId[$transfermarktId] ?? null;
+
+            if (!$teamId) {
+                $teamId = Str::uuid()->toString();
+                DB::table('teams')->insert([
+                    'id' => $teamId,
+                    'transfermarkt_id' => $transfermarktId,
+                    'name' => $data['name'] ?? "Unknown ({$transfermarktId})",
+                    'country' => $country,
+                    'image' => $data['image'] ?? null,
+                    'stadium_name' => $data['stadiumName'] ?? null,
+                    'stadium_seats' => isset($data['stadiumSeats'])
+                        ? (int) str_replace(['.', ','], '', $data['stadiumSeats'])
+                        : 0,
+                ]);
+                $teamsByTransfermarktId[$transfermarktId] = $teamId;
+            }
+
+            $teamIdMap[$transfermarktId] = $teamId;
+
+            // Link team to competition
+            DB::table('competition_teams')->updateOrInsert(
+                [
+                    'competition_id' => $code,
+                    'team_id' => $teamId,
+                    'season' => $season,
+                ],
+                []
+            );
+
+            // Normalize to clubs format for seedPlayersFromTeams
+            $clubs[] = [
+                'transfermarktId' => $transfermarktId,
+                'players' => $data['players'] ?? [],
+            ];
+        }
+
+        $this->line("  Teams: " . count($teamIdMap));
+        $this->seedPlayersFromTeams($clubs, $teamIdMap);
+    }
+
+    /**
+     * Seed teams for Swiss format competitions.
+     * Links existing teams by transfermarkt_id (all teams must already exist from their league seeding).
+     */
+    private function seedSwissFormatTeams(array $clubs, string $competitionId, string $season): array
+    {
+        $teamIdMap = [];
+        $count = 0;
+
+        // Get existing teams by transfermarkt_id
+        $teamsByTransfermarktId = DB::table('teams')
+            ->whereNotNull('transfermarkt_id')
+            ->pluck('id', 'transfermarkt_id')
+            ->toArray();
+
+        foreach ($clubs as $club) {
+            $transfermarktId = $club['id'] ?? null;
+            if (!$transfermarktId) {
+                continue;
+            }
+
+            $teamId = $teamsByTransfermarktId[$transfermarktId] ?? null;
+
+            if (!$teamId) {
+                $this->warn("  Team not found for transfermarkt_id {$transfermarktId}: {$club['name']}");
+                continue;
+            }
+
+            $teamIdMap[$transfermarktId] = $teamId;
+
+            // Link team to competition
+            DB::table('competition_teams')->updateOrInsert(
+                [
+                    'competition_id' => $competitionId,
+                    'team_id' => $teamId,
+                    'season' => $season,
+                ],
+                [
+                    'entry_round' => 1,
+                ]
+            );
+
+            $count++;
+        }
+
+        $this->line("  Teams: {$count}");
+
+        return $teamIdMap;
+    }
+
+    private function seedCompetitionRecord(string $code, array $data, int $tier, string $type, string $handler, string $country, string $role = 'foreign'): void
     {
         $season = $data['seasonID'] ?? '2025';
 
@@ -209,16 +440,13 @@ class SeedReferenceData extends Command
                 'country' => $country,
                 'tier' => $tier,
                 'type' => $type,
+                'role' => $role,
                 'handler_type' => $handler,
                 'season' => $season,
-                'minimum_annual_wage' => $minimumAnnualWage,
             ]
         );
 
-        $wageDisplay = $minimumAnnualWage
-            ? '€' . number_format($minimumAnnualWage / 100, 0, ',', '.') . '/year min'
-            : 'no minimum (cup)';
-        $this->line("  Competition: {$data['name']} ({$wageDisplay})");
+        $this->line("  Competition: {$data['name']} ({$role})");
     }
 
     /**
@@ -230,7 +458,8 @@ class SeedReferenceData extends Command
         $count = 0;
 
         foreach ($clubs as $club) {
-            $transfermarktId = $club['transfermarktId'] ?? null;
+            // Try to get transfermarktId from club data, or extract from image URL
+            $transfermarktId = $club['transfermarktId'] ?? $this->extractTransfermarktIdFromImage($club['image'] ?? '');
             if (!$transfermarktId) {
                 $this->warn("  Skipping club without transfermarktId: {$club['name']}");
                 continue;
@@ -259,8 +488,6 @@ class SeedReferenceData extends Command
                     'image' => $club['image'] ?? null,
                     'stadium_name' => $club['stadiumName'] ?? null,
                     'stadium_seats' => $stadiumSeats,
-                    'created_at' => now(),
-                    'updated_at' => now(),
                 ]);
             }
 
@@ -292,7 +519,7 @@ class SeedReferenceData extends Command
         $count = 0;
 
         foreach ($clubs as $club) {
-            $transfermarktId = $club['transfermarktId'] ?? null;
+            $transfermarktId = $club['transfermarktId'] ?? $this->extractTransfermarktIdFromImage($club['image'] ?? '');
             if (!$transfermarktId || !isset($teamIdMap[$transfermarktId])) {
                 continue;
             }
@@ -338,7 +565,6 @@ class SeedReferenceData extends Command
                         'foot' => $foot,
                         'technical_ability' => $technical,
                         'physical_ability' => $physical,
-                        'updated_at' => now(),
                     ]
                 );
 
@@ -446,8 +672,6 @@ class SeedReferenceData extends Command
                     'name' => $club['name'],
                     'country' => $country,
                     'image' => "https://tmssl.akamaized.net/images/wappen/big/{$cupTeamId}.png",
-                    'created_at' => now(),
-                    'updated_at' => now(),
                 ]);
                 $teamsByTransfermarktId[$cupTeamId] = $teamId;
             }
@@ -495,72 +719,6 @@ class SeedReferenceData extends Command
     /**
      * Seed fixtures from the new matchdays format.
      */
-    private function seedFixtures(array $matchdays, string $competitionId, string $season, array $teamIdMap): void
-    {
-        $count = 0;
-
-        foreach ($matchdays as $matchday) {
-            $roundNumber = (int) ($matchday['matchday'] ?? 0);
-
-            if ($roundNumber === 0) {
-                $this->warn("  Skipping matchday with no round number");
-                continue;
-            }
-
-            // Parse date (format: dd/mm/yy)
-            $dateStr = $matchday['date'] ?? null;
-            $scheduledDate = null;
-            if ($dateStr) {
-                try {
-                    $scheduledDate = Carbon::createFromFormat('d/m/y', $dateStr);
-                } catch (\Exception $e) {
-                    $this->warn("  Could not parse date: {$dateStr}");
-                }
-            }
-
-            $matches = $matchday['matches'] ?? [];
-            $matchNumber = 1;
-
-            foreach ($matches as $match) {
-                $homeTransfermarktId = $match['homeTeamId'] ?? null;
-                $awayTransfermarktId = $match['awayTeamId'] ?? null;
-
-                if (!$homeTransfermarktId || !$awayTransfermarktId) {
-                    continue;
-                }
-
-                $homeTeamId = $teamIdMap[$homeTransfermarktId] ?? null;
-                $awayTeamId = $teamIdMap[$awayTransfermarktId] ?? null;
-
-                if (!$homeTeamId || !$awayTeamId) {
-                    $this->warn("  Team not found: home={$homeTransfermarktId}, away={$awayTransfermarktId}");
-                    continue;
-                }
-
-                DB::table('fixture_templates')->updateOrInsert(
-                    [
-                        'competition_id' => $competitionId,
-                        'season' => $season,
-                        'round_number' => $roundNumber,
-                        'home_team_id' => $homeTeamId,
-                        'away_team_id' => $awayTeamId,
-                    ],
-                    [
-                        'id' => Str::uuid()->toString(),
-                        'match_number' => $matchNumber,
-                        'scheduled_date' => $scheduledDate,
-                        'location' => null,
-                    ]
-                );
-
-                $matchNumber++;
-                $count++;
-            }
-        }
-
-        $this->line("  Fixtures: {$count}");
-    }
-
     private function parseMarketValue(?string $value): int
     {
         if (!$value) {
@@ -692,6 +850,19 @@ class SeedReferenceData extends Command
         return json_decode($content, true) ?? [];
     }
 
+    /**
+     * Extract transfermarkt ID from image URL.
+     * URL format: https://tmssl.akamaized.net/images/wappen/big/{id}.png
+     */
+    private function extractTransfermarktIdFromImage(string $imageUrl): ?string
+    {
+        if (preg_match('/\/(\d+)\.png$/', $imageUrl, $matches)) {
+            return $matches[1];
+        }
+
+        return null;
+    }
+
     private function displaySummary(): void
     {
         $this->newLine();
@@ -700,7 +871,6 @@ class SeedReferenceData extends Command
         $this->line('  Teams: ' . DB::table('teams')->count());
         $this->line('  Players: ' . DB::table('players')->count());
         $this->line('  Competition-Team links: ' . DB::table('competition_teams')->count());
-        $this->line('  Fixture templates: ' . DB::table('fixture_templates')->count());
         $this->line('  Cup round templates: ' . DB::table('cup_round_templates')->count());
         $this->newLine();
         $this->info('Reference data seeded successfully!');

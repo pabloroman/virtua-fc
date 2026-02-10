@@ -35,8 +35,6 @@ return new class extends Migration
             // Transfer Budget
             $table->bigInteger('transfer_budget')->default(0);
 
-            $table->timestamps();
-
             $table->foreign('game_id')->references('id')->on('games')->onDelete('cascade');
             $table->unique(['game_id', 'season']);
         });

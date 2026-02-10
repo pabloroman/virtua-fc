@@ -1,0 +1,392 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/190.png",
+  "name": "FC Copenhagen",
+  "players": [
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Feb 10, 2000",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "370997",
+      "marketValue": "€6.00m",
+      "name": "Dominik Kotarski",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 18, 1995",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "205657",
+      "marketValue": "€400k",
+      "name": "Rúnar Alex Rúnarsson",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "31",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Oct 29, 2006",
+      "foot": "right",
+      "height": "1,97m",
+      "id": "1059483",
+      "name": "Oscar Buur",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "61",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "May 7, 2000",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "742095",
+      "marketValue": "€6.50m",
+      "name": "Gabriel Pereira",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 18, 1997",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "144244",
+      "marketValue": "€3.50m",
+      "name": "Pantelis Hatzidiakos",
+      "nationality": [
+        "Greece",
+        "Netherlands"
+      ],
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jul 12, 2003",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "848856",
+      "marketValue": "€2.00m",
+      "name": "Junnosuke Suzuki",
+      "nationality": [
+        "Japan"
+      ],
+      "number": "20",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Nov 20, 1999",
+      "foot": "left",
+      "height": "1,76m",
+      "id": "432175",
+      "marketValue": "€3.50m",
+      "name": "Marcos López",
+      "nationality": [
+        "Peru"
+      ],
+      "number": "15",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Dec 17, 1994",
+      "foot": "left",
+      "height": "1,73m",
+      "id": "282250",
+      "marketValue": "€1.50m",
+      "name": "Birger Meling",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "24",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 18, 2003",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "668529",
+      "marketValue": "€6.00m",
+      "name": "Rodrigo Huescas",
+      "nationality": [
+        "Mexico"
+      ],
+      "number": "13",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Feb 10, 1997",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "258039",
+      "marketValue": "€3.00m",
+      "name": "Aurélio Buta",
+      "nationality": [
+        "Portugal",
+        "Angola"
+      ],
+      "number": "17",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Sep 6, 2006",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "1314350",
+      "marketValue": "€800k",
+      "name": "Kenay Myrie",
+      "nationality": [
+        "Costa Rica"
+      ],
+      "number": "18",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 20, 2004",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "805054",
+      "marketValue": "€3.00m",
+      "name": "William Clem",
+      "nationality": [
+        "Denmark",
+        "Norway"
+      ],
+      "number": "36",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 24, 2002",
+      "foot": "left",
+      "height": "1,97m",
+      "id": "893675",
+      "marketValue": "€4.50m",
+      "name": "Amir Richardson",
+      "nationality": [
+        "Morocco",
+        "France"
+      ],
+      "number": "25",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 25, 1999",
+      "foot": "both",
+      "height": "1,74m",
+      "id": "489929",
+      "marketValue": "€4.00m",
+      "name": "Magnus Mattsson",
+      "nationality": [
+        "Denmark",
+        "Sweden"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 14, 1998",
+      "foot": "left",
+      "height": "1,89m",
+      "id": "422950",
+      "marketValue": "€2.50m",
+      "name": "Mads Emil Madsen",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "21",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Sep 3, 1991",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "91849",
+      "marketValue": "€800k",
+      "name": "Thomas Delaney",
+      "nationality": [
+        "Denmark",
+        "United States"
+      ],
+      "number": "27",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 24, 2007",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "1042884",
+      "marketValue": "€50k",
+      "name": "Oliver Højer",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "38",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Feb 1, 2007",
+      "foot": "left",
+      "id": "1042887",
+      "name": "Jonathan Moalem",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "29",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 10, 1999",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "645589",
+      "marketValue": "€3.50m",
+      "name": "Elias Achouri",
+      "nationality": [
+        "Tunisia",
+        "France"
+      ],
+      "number": "30",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Apr 13, 2005",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "1084714",
+      "marketValue": "€2.20m",
+      "name": "Robert",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "16",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 20, 1997",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "308552",
+      "marketValue": "€3.00m",
+      "name": "Jordan Larsson",
+      "nationality": [
+        "Sweden",
+        "Cape Verde"
+      ],
+      "number": "11",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Dec 16, 2007",
+      "foot": "left",
+      "id": "1068117",
+      "name": "Liam West",
+      "nationality": [
+        "Norway",
+        "United States"
+      ],
+      "number": "49",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 4, 1994",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "186644",
+      "marketValue": "€4.50m",
+      "name": "Mohamed Elyounoussi",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "10",
+      "position": "Second Striker"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Nov 20, 2004",
+      "foot": "left",
+      "height": "1,79m",
+      "id": "467720",
+      "marketValue": "€7.00m",
+      "name": "Youssoufa Moukoko",
+      "nationality": [
+        "Germany",
+        "Cameroon"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 30, 2008",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "1072751",
+      "marketValue": "€3.00m",
+      "name": "Viktor Dadason",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "39",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 2, 1992",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "116598",
+      "marketValue": "€2.00m",
+      "name": "Viktor Claesson",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "7",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 16, 1993",
+      "foot": "left",
+      "height": "1,93m",
+      "id": "203412",
+      "marketValue": "€400k",
+      "name": "Andreas Cornelius",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "14",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Parken - connected by 3",
+  "stadiumSeats": "38065",
+  "transfermarktId": "190"
+}
