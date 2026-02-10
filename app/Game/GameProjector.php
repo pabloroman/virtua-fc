@@ -25,6 +25,7 @@ use App\Models\Competition;
 use App\Models\CompetitionTeam;
 use App\Models\CupTie;
 use App\Models\FinancialTransaction;
+use App\Models\CompetitionEntry;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
@@ -86,6 +87,9 @@ class GameProjector extends Projector
             'current_matchday' => 0,
             'season_goal' => $seasonGoal,
         ]);
+
+        // Copy competition team rosters into per-game table
+        $this->copyCompetitionTeamsToGame($gameId, $season);
 
         // Generate league fixtures from team roster and matchday calendar
         $this->generateLeagueFixtures($gameId, $competitionId, $season, $matchdays);
@@ -531,8 +535,8 @@ class GameProjector extends Projector
      */
     private function generateLeagueFixtures(string $gameId, string $competitionId, string $season, array $matchdays): void
     {
-        $teamIds = CompetitionTeam::where('competition_id', $competitionId)
-            ->where('season', $season)
+        $teamIds = CompetitionEntry::where('game_id', $gameId)
+            ->where('competition_id', $competitionId)
             ->pluck('team_id')
             ->toArray();
 
@@ -610,12 +614,33 @@ class GameProjector extends Projector
      */
     private function initializeStandings(string $gameId, string $competitionId, string $season): void
     {
-        $teamIds = CompetitionTeam::where('competition_id', $competitionId)
-            ->where('season', $season)
+        $teamIds = CompetitionEntry::where('game_id', $gameId)
+            ->where('competition_id', $competitionId)
             ->pluck('team_id')
             ->toArray();
 
         $this->standingsCalculator->initializeStandings($gameId, $competitionId, $teamIds);
+    }
+
+    /**
+     * Copy all competition_teams for the season into competition_entries.
+     * This creates a per-game snapshot of the roster so season-end mutations are isolated.
+     */
+    private function copyCompetitionTeamsToGame(string $gameId, string $season): void
+    {
+        $rows = CompetitionTeam::where('season', $season)
+            ->get()
+            ->map(fn ($ct) => [
+                'game_id' => $gameId,
+                'competition_id' => $ct->competition_id,
+                'team_id' => $ct->team_id,
+                'entry_round' => $ct->entry_round ?? 1,
+            ])
+            ->toArray();
+
+        foreach (array_chunk($rows, 100) as $chunk) {
+            CompetitionEntry::insert($chunk);
+        }
     }
 
     /**
@@ -651,9 +676,9 @@ class GameProjector extends Projector
 
         foreach ($swissCompetitions as $competition) {
             // Check if the player's team participates in this competition
-            $participates = CompetitionTeam::where('competition_id', $competition->id)
+            $participates = CompetitionEntry::where('game_id', $gameId)
+                ->where('competition_id', $competition->id)
                 ->where('team_id', $teamId)
-                ->where('season', $season)
                 ->exists();
 
             if (!$participates) {

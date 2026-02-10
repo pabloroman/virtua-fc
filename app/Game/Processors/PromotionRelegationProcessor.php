@@ -5,8 +5,8 @@ namespace App\Game\Processors;
 use App\Game\Contracts\SeasonEndProcessor;
 use App\Game\DTO\SeasonTransitionData;
 use App\Game\Promotions\PromotionRelegationFactory;
-use App\Models\CompetitionTeam;
 use App\Models\Game;
+use App\Models\CompetitionEntry;
 use App\Models\GameStanding;
 
 /**
@@ -102,17 +102,17 @@ class PromotionRelegationProcessor implements SeasonEndProcessor
         string $gameId,
         string $newSeason,
     ): void {
-        // Update competition_teams
-        CompetitionTeam::where('competition_id', $fromDivision)
+        // Update competition_entries
+        CompetitionEntry::where('game_id', $gameId)
+            ->where('competition_id', $fromDivision)
             ->where('team_id', $teamId)
-            ->where('season', $newSeason)
             ->delete();
 
-        CompetitionTeam::updateOrCreate(
+        CompetitionEntry::updateOrCreate(
             [
+                'game_id' => $gameId,
                 'competition_id' => $toDivision,
                 'team_id' => $teamId,
-                'season' => $newSeason,
             ],
             ['entry_round' => 1]
         );

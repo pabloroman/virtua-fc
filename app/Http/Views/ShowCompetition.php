@@ -3,8 +3,8 @@
 namespace App\Http\Views;
 
 use App\Models\Competition;
-use App\Models\CompetitionTeam;
 use App\Models\CupRoundTemplate;
+use App\Models\CompetitionEntry;
 use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameMatch;
@@ -20,9 +20,9 @@ class ShowCompetition
         $competition = Competition::findOrFail($competitionId);
 
         // Verify the team participates in this competition
-        $participates = CompetitionTeam::where('competition_id', $competitionId)
+        $participates = CompetitionEntry::where('game_id', $game->id)
+            ->where('competition_id', $competitionId)
             ->where('team_id', $game->team_id)
-            ->where('season', $game->season)
             ->exists();
 
         if (!$participates) {
@@ -52,8 +52,8 @@ class ShowCompetition
         $teamForms = $this->getTeamForms($game->id, $competition->id, $standings->pluck('team_id'));
 
         // Get team IDs in this competition
-        $competitionTeamIds = CompetitionTeam::where('competition_id', $competition->id)
-            ->where('season', $game->season)
+        $competitionTeamIds = CompetitionEntry::where('game_id', $game->id)
+            ->where('competition_id', $competition->id)
             ->pluck('team_id');
 
         // Top scorers in this competition
@@ -90,8 +90,8 @@ class ShowCompetition
 
         $teamForms = $this->getTeamForms($game->id, $competition->id, $standings->pluck('team_id'));
 
-        $competitionTeamIds = CompetitionTeam::where('competition_id', $competition->id)
-            ->where('season', $game->season)
+        $competitionTeamIds = CompetitionEntry::where('game_id', $game->id)
+            ->where('competition_id', $competition->id)
             ->pluck('team_id');
 
         $topScorers = GamePlayer::with(['player', 'team'])

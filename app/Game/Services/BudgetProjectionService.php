@@ -26,7 +26,7 @@ class BudgetProjectionService
     {
         // Get user's team and league
         $team = $game->team;
-        $league = $team->competitions()->where('role', Competition::ROLE_PRIMARY)->first();
+        $league = $game->competition;
 
         if (!$league) {
             throw new \RuntimeException('Team has no league competition');
@@ -167,7 +167,7 @@ class BudgetProjectionService
         $reputation = $team->clubProfile?->reputation_level ?? ClubProfile::REPUTATION_MODEST;
 
         // Base matchday revenue from stadium size and competition config rates
-        $league = $team->competitions()->where('role', Competition::ROLE_PRIMARY)->first();
+        $league = $game->competition;
         if (!$league) {
             return 0;
         }

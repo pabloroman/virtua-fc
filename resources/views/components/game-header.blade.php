@@ -1,11 +1,12 @@
 @props(['game', 'nextMatch' => null, 'continueToHome' => false])
 
 @php
-    // Get competitions the team participates in for this season
-    $teamCompetitions = $game->team->competitions()
-        ->wherePivot('season', $game->season)
-        ->orderBy('tier')
-        ->get();
+    // Get competitions the team participates in for this game
+    $teamCompetitions = \App\Models\Competition::whereIn('id',
+        $game->competitionEntries()
+            ->where('team_id', $game->team_id)
+            ->pluck('competition_id')
+    )->orderBy('tier')->get();
 @endphp
 
 <div class="flex justify-between text-slate-400">

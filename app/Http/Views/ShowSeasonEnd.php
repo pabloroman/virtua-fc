@@ -5,8 +5,8 @@ namespace App\Http\Views;
 use App\Game\Services\PlayerDevelopmentService;
 use App\Game\Services\SeasonGoalService;
 use App\Models\Competition;
-use App\Models\CompetitionTeam;
 use App\Models\CupTie;
+use App\Models\CompetitionEntry;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\GameStanding;
@@ -48,8 +48,8 @@ class ShowSeasonEnd
         $runnerUp = $standings->get(1);
 
         // Get team IDs in this competition
-        $competitionTeamIds = CompetitionTeam::where('competition_id', $game->competition_id)
-            ->where('season', $game->season)
+        $competitionTeamIds = CompetitionEntry::where('game_id', $game->id)
+            ->where('competition_id', $game->competition_id)
             ->pluck('team_id');
 
         // Find the cup competition for this country
