@@ -283,6 +283,39 @@
         </a>
     </section>
 
+    <!-- Screenshot Gallery Modal -->
+    <div id="gallery-modal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true" aria-label="Galería de capturas">
+        <!-- Backdrop -->
+        <div id="gallery-backdrop" class="absolute inset-0 bg-black/90 backdrop-blur-sm transition-opacity duration-300 opacity-0"></div>
+
+        <!-- Close button -->
+        <button id="gallery-close" class="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition" aria-label="Cerrar galería">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+
+        <!-- Counter -->
+        <div id="gallery-counter" class="absolute top-5 left-1/2 -translate-x-1/2 text-sm text-slate-400 z-10"></div>
+
+        <!-- Content area -->
+        <div class="absolute inset-0 flex items-center justify-center px-4 sm:px-16">
+            <!-- Prev button -->
+            <button id="gallery-prev" class="absolute left-2 sm:left-4 z-10 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition" aria-label="Anterior">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
+            </button>
+
+            <!-- Image + Caption -->
+            <div class="max-w-5xl w-full transition-opacity duration-200" id="gallery-content">
+                <img id="gallery-img" src="" alt="" class="w-full rounded-lg shadow-2xl">
+                <p id="gallery-caption" class="text-center text-sm text-slate-300 mt-4 font-semibold"></p>
+            </div>
+
+            <!-- Next button -->
+            <button id="gallery-next" class="absolute right-2 sm:right-4 z-10 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition" aria-label="Siguiente">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+            </button>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="max-w-7xl mx-auto px-6 py-12 border-t border-white/10">
         <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -340,6 +373,93 @@
                 submitBtn.textContent = 'Acceso Anticipado';
             }
         });
+    </script>
+
+    <script>
+        const gallery = {
+            modal: document.getElementById('gallery-modal'),
+            backdrop: document.getElementById('gallery-backdrop'),
+            img: document.getElementById('gallery-img'),
+            caption: document.getElementById('gallery-caption'),
+            counter: document.getElementById('gallery-counter'),
+            content: document.getElementById('gallery-content'),
+            current: 0,
+            items: [],
+
+            init() {
+                const buttons = document.querySelectorAll('[data-gallery]');
+                this.items = Array.from(buttons).map(btn => ({
+                    src: btn.querySelector('img').src,
+                    alt: btn.querySelector('img').alt,
+                    caption: btn.querySelector('p').textContent,
+                }));
+
+                buttons.forEach(btn => {
+                    btn.addEventListener('click', () => this.open(parseInt(btn.dataset.gallery)));
+                });
+
+                document.getElementById('gallery-close').addEventListener('click', () => this.close());
+                document.getElementById('gallery-prev').addEventListener('click', () => this.prev());
+                document.getElementById('gallery-next').addEventListener('click', () => this.next());
+                this.backdrop.addEventListener('click', () => this.close());
+                this.content.addEventListener('click', (e) => e.stopPropagation());
+
+                document.addEventListener('keydown', (e) => {
+                    if (this.modal.classList.contains('hidden')) return;
+                    if (e.key === 'Escape') this.close();
+                    if (e.key === 'ArrowLeft') this.prev();
+                    if (e.key === 'ArrowRight') this.next();
+                });
+            },
+
+            open(index) {
+                this.current = index;
+                this.show();
+                this.modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+                requestAnimationFrame(() => {
+                    this.backdrop.classList.remove('opacity-0');
+                    this.content.classList.remove('opacity-0');
+                });
+            },
+
+            close() {
+                this.backdrop.classList.add('opacity-0');
+                this.content.classList.add('opacity-0');
+                setTimeout(() => {
+                    this.modal.classList.add('hidden');
+                    document.body.style.overflow = '';
+                }, 300);
+            },
+
+            prev() {
+                this.current = (this.current - 1 + this.items.length) % this.items.length;
+                this.transition();
+            },
+
+            next() {
+                this.current = (this.current + 1) % this.items.length;
+                this.transition();
+            },
+
+            transition() {
+                this.content.classList.add('opacity-0');
+                setTimeout(() => {
+                    this.show();
+                    this.content.classList.remove('opacity-0');
+                }, 200);
+            },
+
+            show() {
+                const item = this.items[this.current];
+                this.img.src = item.src;
+                this.img.alt = item.alt;
+                this.caption.textContent = item.caption;
+                this.counter.textContent = `${this.current + 1} / ${this.items.length}`;
+            },
+        };
+
+        gallery.init();
     </script>
 
 </body>
