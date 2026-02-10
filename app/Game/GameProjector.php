@@ -741,15 +741,21 @@ class GameProjector extends Projector
      */
     private function initializeGamePlayersForCompetition(string $gameId, string $competitionId, string $season): void
     {
-        $teamsFilePath = base_path("data/{$season}/{$competitionId}/teams.json");
-        if (!file_exists($teamsFilePath)) {
+        $basePath = base_path("data/{$season}/{$competitionId}");
+        $teamsFilePath = "{$basePath}/teams.json";
+
+        // Try teams.json first, fall back to individual team files (team pool format)
+        if (file_exists($teamsFilePath)) {
+            $clubs = $this->loadClubsFromTeamsJson($teamsFilePath);
+        } else {
+            $clubs = $this->loadClubsFromTeamPoolFiles($basePath);
+        }
+
+        if (empty($clubs)) {
             return;
         }
 
         $minimumWage = $this->contractService->getMinimumWageForCompetition($competitionId);
-        $data = json_decode(file_get_contents($teamsFilePath), true);
-        $clubs = $data['clubs'] ?? [];
-
         $playerRows = [];
 
         foreach ($clubs as $club) {
@@ -777,6 +783,39 @@ class GameProjector extends Projector
         foreach (array_chunk($playerRows, 100) as $chunk) {
             GamePlayer::insert($chunk);
         }
+    }
+
+    /**
+     * Load clubs data from a teams.json file (league format).
+     */
+    private function loadClubsFromTeamsJson(string $teamsFilePath): array
+    {
+        $data = json_decode(file_get_contents($teamsFilePath), true);
+        return $data['clubs'] ?? [];
+    }
+
+    /**
+     * Load clubs data from individual team JSON files (team pool format).
+     * Each file is named {transfermarkt_id}.json with {image, name, players}.
+     */
+    private function loadClubsFromTeamPoolFiles(string $basePath): array
+    {
+        $clubs = [];
+
+        foreach (glob("{$basePath}/*.json") as $filePath) {
+            $data = json_decode(file_get_contents($filePath), true);
+            if (!$data) {
+                continue;
+            }
+
+            $clubs[] = [
+                'image' => $data['image'] ?? '',
+                'transfermarktId' => $this->extractTransfermarktIdFromImage($data['image'] ?? ''),
+                'players' => $data['players'] ?? [],
+            ];
+        }
+
+        return $clubs;
     }
 
     /**
