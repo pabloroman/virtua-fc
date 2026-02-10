@@ -3,7 +3,7 @@
 namespace App\Game\Services;
 
 use App\Models\Competition;
-use App\Models\CompetitionTeam;
+use App\Models\CompetitionEntry;
 use App\Models\Game;
 use App\Models\SimulatedSeason;
 use App\Models\Team;
@@ -20,8 +20,8 @@ class SeasonSimulationService
      */
     public function simulateLeague(Game $game, Competition $competition): SimulatedSeason
     {
-        $teamIds = CompetitionTeam::where('competition_id', $competition->id)
-            ->where('season', $game->season)
+        $teamIds = CompetitionEntry::where('game_id', $game->id)
+            ->where('competition_id', $competition->id)
             ->pluck('team_id');
 
         $teams = Team::whereIn('id', $teamIds)->get();
