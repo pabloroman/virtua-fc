@@ -45,7 +45,7 @@ class CompetitionFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'type' => 'cup',
-            'role' => Competition::ROLE_CONTINENTAL,
+            'role' => Competition::ROLE_EUROPEAN,
             'handler_type' => 'group_stage_cup',
         ]);
     }

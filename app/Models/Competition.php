@@ -22,7 +22,7 @@ class Competition extends Model
 
     public const ROLE_PRIMARY = 'primary';
     public const ROLE_DOMESTIC_CUP = 'domestic_cup';
-    public const ROLE_CONTINENTAL = 'continental';
+    public const ROLE_EUROPEAN = 'european';
     public const ROLE_FOREIGN = 'foreign';
 
     protected $fillable = [

@@ -109,7 +109,7 @@ return [
     'your_competitions' => 'Tus Competiciones',
     'competition_role_league' => 'Liga',
     'competition_role_cup' => 'Copa',
-    'competition_role_continental' => 'Europea',
+    'competition_role_continental' => 'Competición Europea',
     'allocate_budget_hint' => 'Asigna fondos entre infraestructura y fichajes',
     'available' => 'Disponible',
     'begin_season' => 'Comenzar Temporada',

@@ -59,7 +59,7 @@
                         @php
                             $compAccent = match($comp->role) {
                                 'domestic_cup' => ['border' => 'border-t-emerald-500', 'label' => __('game.competition_role_cup')],
-                                'continental' => ['border' => 'border-t-blue-600', 'label' => __('game.competition_role_continental')],
+                                'european' => ['border' => 'border-t-blue-600', 'label' => __('game.competition_role_continental')],
                                 default => ['border' => 'border-t-amber-500', 'label' => __('game.competition_role_league')],
                             };
                         @endphp

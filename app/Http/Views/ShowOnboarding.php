@@ -63,7 +63,7 @@ class ShowOnboarding
             ->sortBy(fn ($c) => match ($c->role) {
                 Competition::ROLE_PRIMARY => 0,
                 Competition::ROLE_DOMESTIC_CUP => 1,
-                Competition::ROLE_CONTINENTAL => 2,
+                Competition::ROLE_EUROPEAN => 2,
                 default => 3,
             })
             ->values();
