@@ -32,6 +32,13 @@ class GameFactory extends Factory
         ]);
     }
 
+    public function inCompetition(string $competitionId): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'competition_id' => $competitionId,
+        ]);
+    }
+
     public function atMatchday(int $matchday): static
     {
         return $this->state(fn (array $attributes) => [

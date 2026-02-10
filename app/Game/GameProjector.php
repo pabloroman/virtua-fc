@@ -80,6 +80,7 @@ class GameProjector extends Projector
             'user_id' => $event->userId,
             'player_name' => $event->playerName,
             'team_id' => $teamId,
+            'competition_id' => $competitionId,
             'season' => $season,
             'current_date' => $firstDate->toDateString(),
             'current_matchday' => 0,

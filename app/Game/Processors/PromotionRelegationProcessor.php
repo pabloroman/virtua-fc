@@ -125,6 +125,11 @@ class PromotionRelegationProcessor implements SeasonEndProcessor
                 'competition_id' => $toDivision,
                 'position' => 99, // Will be re-sorted
             ]);
+
+        // Update game's primary competition if the player's team moved
+        Game::where('id', $gameId)
+            ->where('team_id', $teamId)
+            ->update(['competition_id' => $toDivision]);
     }
 
     /**
