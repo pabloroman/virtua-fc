@@ -267,15 +267,8 @@ class SeedReferenceData extends Command
         // Seed players (embedded in teams data)
         $this->seedPlayersFromTeams($teamsData['clubs'], $teamIdMap);
 
-        // Seed fixtures only for primary leagues
-        if ($role === 'primary') {
-            $fixturesData = $this->loadJson("{$basePath}/fixtures.json");
-            if (!empty($fixturesData['matchdays'])) {
-                $this->seedFixtures($fixturesData['matchdays'], $code, $seasonId, $teamIdMap);
-            }
-        } else {
-            $this->line("  Fixtures: skipped (foreign league)");
-        }
+        // League fixtures are now generated per-game by LeagueFixtureGenerator
+        // using matchdays.json + CompetitionTeam roster (no seeding needed)
     }
 
     private function seedCupCompetition(string $basePath, string $code, int $tier, string $handler, string $country, string $role = 'domestic_cup'): void
@@ -802,72 +795,6 @@ class SeedReferenceData extends Command
     /**
      * Seed fixtures from the new matchdays format.
      */
-    private function seedFixtures(array $matchdays, string $competitionId, string $season, array $teamIdMap): void
-    {
-        $count = 0;
-
-        foreach ($matchdays as $matchday) {
-            $roundNumber = (int) ($matchday['matchday'] ?? 0);
-
-            if ($roundNumber === 0) {
-                $this->warn("  Skipping matchday with no round number");
-                continue;
-            }
-
-            // Parse date (format: dd/mm/yy)
-            $dateStr = $matchday['date'] ?? null;
-            $scheduledDate = null;
-            if ($dateStr) {
-                try {
-                    $scheduledDate = Carbon::createFromFormat('d/m/y', $dateStr);
-                } catch (\Exception $e) {
-                    $this->warn("  Could not parse date: {$dateStr}");
-                }
-            }
-
-            $matches = $matchday['matches'] ?? [];
-            $matchNumber = 1;
-
-            foreach ($matches as $match) {
-                $homeTransfermarktId = $match['homeTeamId'] ?? null;
-                $awayTransfermarktId = $match['awayTeamId'] ?? null;
-
-                if (!$homeTransfermarktId || !$awayTransfermarktId) {
-                    continue;
-                }
-
-                $homeTeamId = $teamIdMap[$homeTransfermarktId] ?? null;
-                $awayTeamId = $teamIdMap[$awayTransfermarktId] ?? null;
-
-                if (!$homeTeamId || !$awayTeamId) {
-                    $this->warn("  Team not found: home={$homeTransfermarktId}, away={$awayTransfermarktId}");
-                    continue;
-                }
-
-                DB::table('fixture_templates')->updateOrInsert(
-                    [
-                        'competition_id' => $competitionId,
-                        'season' => $season,
-                        'round_number' => $roundNumber,
-                        'home_team_id' => $homeTeamId,
-                        'away_team_id' => $awayTeamId,
-                    ],
-                    [
-                        'id' => Str::uuid()->toString(),
-                        'match_number' => $matchNumber,
-                        'scheduled_date' => $scheduledDate,
-                        'location' => null,
-                    ]
-                );
-
-                $matchNumber++;
-                $count++;
-            }
-        }
-
-        $this->line("  Fixtures: {$count}");
-    }
-
     private function parseMarketValue(?string $value): int
     {
         if (!$value) {
@@ -1020,7 +947,7 @@ class SeedReferenceData extends Command
         $this->line('  Teams: ' . DB::table('teams')->count());
         $this->line('  Players: ' . DB::table('players')->count());
         $this->line('  Competition-Team links: ' . DB::table('competition_teams')->count());
-        $this->line('  Fixture templates: ' . DB::table('fixture_templates')->count());
+        $this->line('  Swiss fixture templates: ' . DB::table('fixture_templates')->count());
         $this->line('  Cup round templates: ' . DB::table('cup_round_templates')->count());
         $this->newLine();
         $this->info('Reference data seeded successfully!');

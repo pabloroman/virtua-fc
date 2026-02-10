@@ -2,6 +2,8 @@
 
 namespace App\Game\Services;
 
+use Carbon\Carbon;
+
 /**
  * Generates round-robin league fixtures using the circle method.
  *
@@ -13,6 +15,43 @@ namespace App\Game\Services;
  */
 class LeagueFixtureGenerator
 {
+    /**
+     * Load matchday calendar from a competition's matchdays.json file.
+     *
+     * @param  string  $competitionId  e.g. 'ESP1', 'ESP2'
+     * @param  string  $season  e.g. '2025'
+     * @return array<array{round: int, date: string}>
+     */
+    public static function loadMatchdays(string $competitionId, string $season): array
+    {
+        $path = base_path("data/{$season}/{$competitionId}/matchdays.json");
+
+        if (!file_exists($path)) {
+            throw new \RuntimeException("Matchdays file not found: {$path}");
+        }
+
+        return json_decode(file_get_contents($path), true);
+    }
+
+    /**
+     * Adjust matchday dates by a year offset.
+     * Used for generating fixtures in subsequent seasons.
+     *
+     * @param  array<array{round: int, date: string}>  $matchdays
+     * @param  int  $yearOffset  Number of years to add (e.g. 1 for next season)
+     * @return array<array{round: int, date: string}>
+     */
+    public static function adjustMatchdayYears(array $matchdays, int $yearOffset): array
+    {
+        return array_map(function ($md) use ($yearOffset) {
+            $date = Carbon::createFromFormat('d/m/y', $md['date'])->addYears($yearOffset);
+
+            return [
+                'round' => $md['round'],
+                'date' => $date->format('d/m/y'),
+            ];
+        }, $matchdays);
+    }
     /**
      * Generate a full double round-robin schedule.
      *

@@ -14,6 +14,7 @@ use App\Game\Services\ContractService;
 use App\Game\Services\CupDrawService;
 use App\Game\Services\EligibilityService;
 use App\Game\Services\InjuryService;
+use App\Game\Services\LeagueFixtureGenerator;
 use App\Game\Services\NotificationService;
 use App\Game\Services\PlayerConditionService;
 use App\Game\Services\PlayerDevelopmentService;
@@ -47,6 +48,7 @@ class GameProjector extends Projector
         private readonly CupDrawService $cupDrawService,
         private readonly SeasonGoalService $seasonGoalService,
         private readonly NotificationService $notificationService,
+        private readonly LeagueFixtureGenerator $leagueFixtureGenerator,
     ) {}
 
     public function onGameCreated(GameCreated $event): void
@@ -63,11 +65,9 @@ class GameProjector extends Projector
         $competitionId = $competitionTeam?->competition_id ?? 'ESP1';
         $season = $competitionTeam?->season ?? '2024';
 
-        // Get first fixture date for initial current_date
-        $firstFixture = FixtureTemplate::where('competition_id', $competitionId)
-            ->where('season', $season)
-            ->orderBy('scheduled_date')
-            ->first();
+        // Load matchday calendar for initial current_date
+        $matchdays = LeagueFixtureGenerator::loadMatchdays($competitionId, $season);
+        $firstDate = Carbon::createFromFormat('d/m/y', $matchdays[0]['date']);
 
         // Determine initial season goal based on team reputation
         $team = Team::with('clubProfile')->find($teamId);
@@ -81,13 +81,13 @@ class GameProjector extends Projector
             'player_name' => $event->playerName,
             'team_id' => $teamId,
             'season' => $season,
-            'current_date' => $firstFixture?->scheduled_date?->toDateString(),
+            'current_date' => $firstDate->toDateString(),
             'current_matchday' => 0,
             'season_goal' => $seasonGoal,
         ]);
 
-        // Copy fixture templates to game matches
-        $this->copyFixturesToGame($gameId, $competitionId, $season);
+        // Generate league fixtures from team roster and matchday calendar
+        $this->generateLeagueFixtures($gameId, $competitionId, $season, $matchdays);
 
         // Initialize standings for all teams
         $this->initializeStandings($gameId, $competitionId, $season);
@@ -526,9 +526,37 @@ class GameProjector extends Projector
     }
 
     /**
-     * Copy fixture templates to game-specific matches.
+     * Generate league fixtures using the round-robin algorithm and matchday calendar.
      */
-    private function copyFixturesToGame(string $gameId, string $competitionId, string $season): void
+    private function generateLeagueFixtures(string $gameId, string $competitionId, string $season, array $matchdays): void
+    {
+        $teamIds = CompetitionTeam::where('competition_id', $competitionId)
+            ->where('season', $season)
+            ->pluck('team_id')
+            ->toArray();
+
+        $fixtures = $this->leagueFixtureGenerator->generate($teamIds, $matchdays);
+
+        foreach ($fixtures as $fixture) {
+            GameMatch::create([
+                'id' => Str::uuid()->toString(),
+                'game_id' => $gameId,
+                'competition_id' => $competitionId,
+                'round_number' => $fixture['matchday'],
+                'home_team_id' => $fixture['homeTeamId'],
+                'away_team_id' => $fixture['awayTeamId'],
+                'scheduled_date' => Carbon::createFromFormat('d/m/y', $fixture['date']),
+                'home_score' => null,
+                'away_score' => null,
+                'played' => false,
+            ]);
+        }
+    }
+
+    /**
+     * Copy fixture templates to game-specific matches (used for Swiss format competitions).
+     */
+    private function copyFixtureTemplatesToGame(string $gameId, string $competitionId, string $season): void
     {
         $fixtures = FixtureTemplate::where('competition_id', $competitionId)
             ->where('season', $season)
@@ -606,7 +634,7 @@ class GameProjector extends Projector
             }
 
             // Copy fixture templates to game matches
-            $this->copyFixturesToGame($gameId, $competition->id, $season);
+            $this->copyFixtureTemplatesToGame($gameId, $competition->id, $season);
 
             // Initialize standings
             $this->initializeStandings($gameId, $competition->id, $season);
