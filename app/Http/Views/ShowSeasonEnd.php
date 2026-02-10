@@ -24,8 +24,11 @@ class ShowSeasonEnd
     {
         $game = Game::with('team')->findOrFail($gameId);
 
-        // Check if season is actually complete
-        $unplayedMatches = $game->matches()->where('played', false)->count();
+        // Check if season is actually complete (only matches involving the player's team)
+        $unplayedMatches = $game->matches()
+            ->where('played', false)
+            ->where(fn ($q) => $q->where('home_team_id', $game->team_id)->orWhere('away_team_id', $game->team_id))
+            ->count();
         if ($unplayedMatches > 0) {
             return redirect()->route('show-game', $gameId)
                 ->with('error', 'Season is not complete yet.');

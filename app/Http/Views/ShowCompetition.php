@@ -10,6 +10,8 @@ use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\GameStanding;
+use App\Models\MatchEvent;
+use Illuminate\Support\Collection;
 
 class ShowCompetition
 {
@@ -51,20 +53,8 @@ class ShowCompetition
         // Get form (last 5 results) for each team
         $teamForms = $this->getTeamForms($game->id, $competition->id, $standings->pluck('team_id'));
 
-        // Get team IDs in this competition
-        $competitionTeamIds = CompetitionEntry::where('game_id', $game->id)
-            ->where('competition_id', $competition->id)
-            ->pluck('team_id');
-
-        // Top scorers in this competition
-        $topScorers = GamePlayer::with(['player', 'team'])
-            ->where('game_id', $game->id)
-            ->whereIn('team_id', $competitionTeamIds)
-            ->where('goals', '>', 0)
-            ->orderByDesc('goals')
-            ->orderByDesc('assists')
-            ->limit(10)
-            ->get();
+        // Top scorers in this competition (from match events)
+        $topScorers = $this->getCompetitionTopScorers($game->id, $competition->id);
 
         // Get standings zones from competition config
         $standingsZones = $competition->getConfig()->getStandingsZones();
@@ -90,35 +80,21 @@ class ShowCompetition
 
         $teamForms = $this->getTeamForms($game->id, $competition->id, $standings->pluck('team_id'));
 
-        $competitionTeamIds = CompetitionEntry::where('game_id', $game->id)
-            ->where('competition_id', $competition->id)
-            ->pluck('team_id');
-
-        $topScorers = GamePlayer::with(['player', 'team'])
-            ->where('game_id', $game->id)
-            ->whereIn('team_id', $competitionTeamIds)
-            ->where('goals', '>', 0)
-            ->orderByDesc('goals')
-            ->orderByDesc('assists')
-            ->limit(10)
-            ->get();
+        $topScorers = $this->getCompetitionTopScorers($game->id, $competition->id);
 
         $standingsZones = $competition->getConfig()->getStandingsZones();
 
         // Knockout bracket data (if knockout phase has started)
+        $knockoutRounds = CupRoundTemplate::where('competition_id', $competition->id)
+            ->where('season', $game->season)
+            ->orderBy('round_number')
+            ->get();
+
         $knockoutTies = CupTie::with(['homeTeam', 'awayTeam', 'winner', 'firstLegMatch', 'secondLegMatch'])
             ->where('game_id', $game->id)
             ->where('competition_id', $competition->id)
             ->get()
             ->groupBy('round_number');
-
-        $knockoutRoundNames = [
-            1 => __('game.ucl_knockout_playoff'),
-            2 => __('game.ucl_round_of_16'),
-            3 => __('game.ucl_quarter_finals'),
-            4 => __('game.ucl_semi_finals'),
-            5 => __('game.ucl_final'),
-        ];
 
         // Check if league phase is complete
         $leaguePhaseComplete = !GameMatch::where('game_id', $game->id)
@@ -134,8 +110,8 @@ class ShowCompetition
             'topScorers' => $topScorers,
             'teamForms' => $teamForms,
             'standingsZones' => $standingsZones,
+            'knockoutRounds' => $knockoutRounds,
             'knockoutTies' => $knockoutTies,
-            'knockoutRoundNames' => $knockoutRoundNames,
             'leaguePhaseComplete' => $leaguePhaseComplete,
         ]);
     }
@@ -215,5 +191,34 @@ class ShowCompetition
         }
 
         return $forms;
+    }
+
+    /**
+     * Get top scorers for a specific competition using match events.
+     */
+    private function getCompetitionTopScorers(string $gameId, string $competitionId): Collection
+    {
+        $goalCounts = MatchEvent::where('match_events.game_id', $gameId)
+            ->where('match_events.event_type', MatchEvent::TYPE_GOAL)
+            ->join('game_matches', 'game_matches.id', '=', 'match_events.game_match_id')
+            ->where('game_matches.competition_id', $competitionId)
+            ->selectRaw('match_events.game_player_id, COUNT(*) as goals')
+            ->groupBy('match_events.game_player_id')
+            ->orderByDesc('goals')
+            ->limit(10)
+            ->pluck('goals', 'game_player_id');
+
+        if ($goalCounts->isEmpty()) {
+            return collect();
+        }
+
+        $players = GamePlayer::with(['player', 'team'])
+            ->whereIn('id', $goalCounts->keys())
+            ->get()
+            ->each(fn ($p) => $p->goals = $goalCounts[$p->id])
+            ->sortByDesc('goals')
+            ->values();
+
+        return $players;
     }
 }

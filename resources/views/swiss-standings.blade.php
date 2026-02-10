@@ -23,7 +23,7 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
     return '';
 };
 
-$hasKnockout = $knockoutTies->isNotEmpty();
+$hasKnockout = $knockoutTies->isNotEmpty() || $knockoutRounds->isNotEmpty();
 @endphp
 
 <x-app-layout>
@@ -33,6 +33,47 @@ $hasKnockout = $knockoutTies->isNotEmpty();
 
     <div>
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+
+            {{-- Knockout Phase Bracket --}}
+            @if($hasKnockout)
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-12 space-y-6">
+                        <h3 class="font-semibold text-xl text-slate-900">{{ __('game.knockout_phase') }}</h3>
+
+                        <div class="overflow-x-auto">
+                            <div class="flex gap-4" style="min-width: fit-content;">
+                                @foreach($knockoutRounds as $round)
+                                    @php $ties = $knockoutTies->get($round->round_number, collect()); @endphp
+                                    <div class="flex-shrink-0 w-64">
+                                        <div class="text-center mb-4">
+                                            <h4 class="font-semibold text-slate-700">{{ $round->round_name }}</h4>
+                                            <div class="text-xs text-slate-400">
+                                                {{ $round->first_leg_date->format('M d') }}
+                                                @if($round->isTwoLegged())
+                                                    / {{ $round->second_leg_date->format('M d') }}
+                                                @endif
+                                            </div>
+                                        </div>
+
+                                        @if($ties->isEmpty())
+                                            <div class="p-4 text-center border border-dashed rounded-lg">
+                                                <div class="text-slate-400 text-sm">-</div>
+                                            </div>
+                                        @else
+                                            <div class="space-y-2">
+                                                @foreach($ties as $tie)
+                                                    <x-cup-tie-card :tie="$tie" :player-team-id="$game->team_id" />
+                                                @endforeach
+                                            </div>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             {{-- League Phase Standings --}}
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-12 grid grid-cols-3 gap-12">
@@ -145,68 +186,6 @@ $hasKnockout = $knockoutTies->isNotEmpty();
                     </div>
                 </div>
             </div>
-
-            {{-- Knockout Phase Bracket --}}
-            @if($hasKnockout)
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-12 space-y-6">
-                        <h3 class="font-semibold text-xl text-slate-900">{{ __('game.knockout_phase') }}</h3>
-
-                        <div class="flex gap-8 overflow-x-auto">
-                            @foreach($knockoutTies as $roundNumber => $ties)
-                                <div class="min-w-[280px] space-y-3">
-                                    <h4 class="font-semibold text-sm text-slate-600 uppercase tracking-wide">
-                                        {{ $knockoutRoundNames[$roundNumber] ?? "Round $roundNumber" }}
-                                    </h4>
-
-                                    @foreach($ties as $tie)
-                                        @php
-                                            $involvesPlayer = $tie->home_team_id === $game->team_id || $tie->away_team_id === $game->team_id;
-                                            $isComplete = $tie->completed;
-                                        @endphp
-                                        <div class="border rounded-lg p-3 {{ $involvesPlayer ? 'bg-amber-50 border-amber-300' : 'border-slate-200' }}">
-                                            {{-- Home team --}}
-                                            <div class="flex items-center justify-between py-1 {{ $isComplete && $tie->winner_id === $tie->home_team_id ? 'font-semibold' : '' }}">
-                                                <div class="flex items-center gap-2">
-                                                    <img src="{{ $tie->homeTeam->image }}" class="w-5 h-5">
-                                                    <span class="text-sm">{{ $tie->homeTeam->name }}</span>
-                                                </div>
-                                                @if($tie->firstLegMatch?->played)
-                                                    <span class="text-sm text-slate-600">{{ $tie->getScoreDisplay()['home'] ?? '' }}</span>
-                                                @endif
-                                            </div>
-
-                                            {{-- Away team --}}
-                                            <div class="flex items-center justify-between py-1 border-t border-slate-100 {{ $isComplete && $tie->winner_id === $tie->away_team_id ? 'font-semibold' : '' }}">
-                                                <div class="flex items-center gap-2">
-                                                    <img src="{{ $tie->awayTeam->image }}" class="w-5 h-5">
-                                                    <span class="text-sm">{{ $tie->awayTeam->name }}</span>
-                                                </div>
-                                                @if($tie->firstLegMatch?->played)
-                                                    <span class="text-sm text-slate-600">{{ $tie->getScoreDisplay()['away'] ?? '' }}</span>
-                                                @endif
-                                            </div>
-
-                                            {{-- Resolution --}}
-                                            @if($isComplete && isset($tie->resolution['type']))
-                                                <div class="text-xs text-slate-400 mt-1 text-center">
-                                                    @if($tie->resolution['type'] === 'penalties')
-                                                        {{ __('game.won_on_penalties') }}
-                                                    @elseif($tie->resolution['type'] === 'extra_time')
-                                                        {{ __('game.won_after_extra_time') }}
-                                                    @elseif($tie->resolution['type'] === 'away_goals')
-                                                        {{ __('game.won_on_away_goals') }}
-                                                    @endif
-                                                </div>
-                                            @endif
-                                        </div>
-                                    @endforeach
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
-            @endif
         </div>
     </div>
 </x-app-layout>

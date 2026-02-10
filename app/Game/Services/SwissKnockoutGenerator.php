@@ -41,13 +41,14 @@ class SwissKnockoutGenerator
     /**
      * Seeding brackets for the Round of 16.
      * Top 8 teams are matched against playoff winners from specific brackets.
-     * [top_seed_positions, bracket_index (from playoffs)]
+     * [top_seed_positions, playoff_bracket_index]
+     * Each playoff bracket (0-3) maps to exactly one R16 bracket.
      */
     private const R16_BRACKETS = [
-        [[1, 2], [3, 4]],   // 1/2 vs winners from bracket 4 (15/16 vs 17/18)
-        [[3, 4], [2, 3]],   // 3/4 vs winners from bracket 3 (13/14 vs 19/20)
-        [[5, 6], [1, 2]],   // 5/6 vs winners from bracket 2 (11/12 vs 21/22)
-        [[7, 8], [0, 1]],   // 7/8 vs winners from bracket 1 (9/10 vs 23/24)
+        [[1, 2], 3],   // 1/2 vs winners from bracket 3 (15/16 vs 17/18)
+        [[3, 4], 2],   // 3/4 vs winners from bracket 2 (13/14 vs 19/20)
+        [[5, 6], 1],   // 5/6 vs winners from bracket 1 (11/12 vs 21/22)
+        [[7, 8], 0],   // 7/8 vs winners from bracket 0 (9/10 vs 23/24)
     ];
 
     public function getRoundConfig(int $round, int $seasonYear): PlayoffRoundConfig
@@ -159,15 +160,13 @@ class SwissKnockoutGenerator
 
         $matchups = [];
 
-        foreach (self::R16_BRACKETS as [$topPositions, $bracketIndices]) {
+        foreach (self::R16_BRACKETS as [$topPositions, $bracketIndex]) {
             $topTeams = collect($topPositions)
                 ->map(fn ($pos) => $standings[$pos] ?? null)
                 ->filter()
                 ->shuffle();
 
-            $opponents = collect($bracketIndices)
-                ->flatMap(fn ($idx) => $bracketWinners[$idx] ?? [])
-                ->shuffle();
+            $opponents = collect($bracketWinners[$bracketIndex] ?? [])->shuffle();
 
             for ($i = 0; $i < min($topTeams->count(), $opponents->count()); $i++) {
                 // Playoff winner hosts first leg, top seed hosts second leg

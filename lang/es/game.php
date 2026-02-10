@@ -182,10 +182,10 @@ return [
     'uecl_knockout_playoff' => 'Playoff de eliminación',
     'uecl_eliminated' => 'Eliminado',
 
-    // UEFA Swiss Format - Match Resolution
-    'won_on_penalties' => 'Ganó en penaltis',
-    'won_after_extra_time' => 'Ganó en prórroga',
-    'won_on_away_goals' => 'Ganó por goles de visitante',
+    // Knockout tie legs
+    'first_leg' => 'Ida',
+    'second_leg' => 'Vuelta',
+    'aggregate' => 'Global',
 
     // UEFA Swiss Format - Season Goals
     'goal_ucl_title' => 'Ganar la Champions League',
