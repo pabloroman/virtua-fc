@@ -28,14 +28,10 @@ class NotificationServiceTest extends TestCase
         $user = User::factory()->create();
         $team = Team::factory()->create();
 
-        $this->game = Game::create([
-            'id' => fake()->uuid(),
+        $this->game = Game::factory()->create([
             'user_id' => $user->id,
-            'player_name' => 'Test Manager',
             'team_id' => $team->id,
             'season' => '2024',
-            'current_matchday' => 1,
-            'current_date' => now(),
         ]);
     }
 

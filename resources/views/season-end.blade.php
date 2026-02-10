@@ -45,6 +45,18 @@
                         </div>
                     </div>
 
+                    {{-- Other League Champion --}}
+                    @if($otherLeagueChampion && $otherLeague)
+                    <div class="mb-6">
+                        <div class="text-xs text-slate-500 uppercase tracking-wide mb-3 text-center">{{ __('season.other_league_results') }}</div>
+                        <div class="bg-slate-50 rounded-lg p-4 flex items-center justify-center gap-4">
+                            <div class="text-sm text-slate-500 font-medium">{{ __('season.league_champion', ['league' => $otherLeague->name]) }}</div>
+                            <img src="{{ $otherLeagueChampion->image }}" class="w-8 h-8">
+                            <div class="font-semibold text-slate-900">{{ $otherLeagueChampion->name }}</div>
+                        </div>
+                    </div>
+                    @endif
+
                     {{-- League Top 3 --}}
                     <div class="bg-slate-50 rounded-lg p-4 mb-6">
                         <div class="text-xs text-slate-500 uppercase tracking-wide mb-3 text-center">{{ __('season.final_standings') }}</div>
@@ -247,7 +259,7 @@
                             @if($relegatedTeams->isNotEmpty())
                             <div class="bg-red-50 rounded-lg p-4 border border-red-200">
                                 <div class="flex items-center gap-2 text-red-700 font-semibold text-sm mb-3">
-                                    <span>&#9660;</span> {{ __('season.relegated_to', ['league' => $lowerTierLeague?->name ?? 'Lower Division']) }}
+                                    <span>&#9660;</span> {{ __('season.relegated_to', ['league' => $relegatedToLeague?->name ?? 'Lower Division']) }}
                                 </div>
                                 <div class="space-y-2">
                                     @foreach($relegatedTeams as $relegated)

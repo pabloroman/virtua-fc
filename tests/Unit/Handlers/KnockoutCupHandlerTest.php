@@ -50,6 +50,8 @@ class KnockoutCupHandlerTest extends TestCase
             'name' => 'Copa del Rey',
         ]);
 
+        Competition::factory()->league()->create(['id' => 'ESP1', 'name' => 'LaLiga']);
+
         $this->game = Game::factory()->create([
             'user_id' => $user->id,
             'team_id' => $this->team1->id,
@@ -119,8 +121,7 @@ class KnockoutCupHandlerTest extends TestCase
 
     public function test_get_match_batch_excludes_league_matches(): void
     {
-        // Create a league competition
-        $leagueCompetition = Competition::factory()->league()->create(['id' => 'ESP1']);
+        $leagueCompetition = Competition::find('ESP1');
 
         $cupTie = CupTie::factory()->create([
             'game_id' => $this->game->id,

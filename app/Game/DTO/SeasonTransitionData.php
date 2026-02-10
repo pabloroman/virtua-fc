@@ -10,7 +10,7 @@ final class SeasonTransitionData
     public function __construct(
         public readonly string $oldSeason,
         public readonly string $newSeason,
-        public readonly string $competitionId,
+        public string $competitionId,
         public array $playerChanges = [],
         public array $metadata = [],
     ) {}

@@ -56,6 +56,12 @@ class PromotionRelegationProcessor implements SeasonEndProcessor
             $allRelegated = array_merge($allRelegated, $relegated);
         }
 
+        // Update competition in transition data if the player's team moved
+        $game->refresh();
+        if ($game->competition_id !== $data->competitionId) {
+            $data->competitionId = $game->competition_id;
+        }
+
         // Store in metadata for display on season end screen
         $data->setMetadata('promotedTeams', $allPromoted);
         $data->setMetadata('relegatedTeams', $allRelegated);

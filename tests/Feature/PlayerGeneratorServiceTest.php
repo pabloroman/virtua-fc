@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Game\DTO\GeneratedPlayerData;
 use App\Game\Services\PlayerGeneratorService;
+use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\Player;
@@ -26,6 +27,7 @@ class PlayerGeneratorServiceTest extends TestCase
 
         $user = User::factory()->create();
         $this->team = Team::factory()->create();
+        Competition::factory()->league()->create(['id' => 'ESP1']);
 
         $this->game = Game::factory()->create([
             'user_id' => $user->id,

@@ -7,6 +7,7 @@ return [
     'cup_winner' => 'Campeón de Copa',
     'beat' => 'Venció a :team',
     'competition_in_progress' => 'Competición en curso',
+    'other_league_results' => 'Otras Ligas',
 
     // Final standings
     'final_standings' => 'Clasificación Final de Liga',
