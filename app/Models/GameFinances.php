@@ -21,6 +21,7 @@ class GameFinances extends Model
         'projected_prize_revenue',
         'projected_matchday_revenue',
         'projected_commercial_revenue',
+        'projected_subsidy_revenue',
         'projected_total_revenue',
         'projected_wages',
         'projected_operating_expenses',
@@ -30,6 +31,7 @@ class GameFinances extends Model
         'actual_prize_revenue',
         'actual_matchday_revenue',
         'actual_commercial_revenue',
+        'actual_subsidy_revenue',
         'actual_transfer_income',
         'actual_total_revenue',
         'actual_wages',
@@ -48,6 +50,7 @@ class GameFinances extends Model
         'projected_prize_revenue' => 'integer',
         'projected_matchday_revenue' => 'integer',
         'projected_commercial_revenue' => 'integer',
+        'projected_subsidy_revenue' => 'integer',
         'projected_total_revenue' => 'integer',
         'projected_wages' => 'integer',
         'projected_operating_expenses' => 'integer',
@@ -58,6 +61,7 @@ class GameFinances extends Model
         'actual_prize_revenue' => 'integer',
         'actual_matchday_revenue' => 'integer',
         'actual_commercial_revenue' => 'integer',
+        'actual_subsidy_revenue' => 'integer',
         'actual_transfer_income' => 'integer',
         'actual_total_revenue' => 'integer',
         'actual_wages' => 'integer',
@@ -113,6 +117,11 @@ class GameFinances extends Model
     public function getFormattedProjectedCommercialRevenueAttribute(): string
     {
         return Money::format($this->projected_commercial_revenue);
+    }
+
+    public function getFormattedProjectedSubsidyRevenueAttribute(): string
+    {
+        return Money::format($this->projected_subsidy_revenue);
     }
 
     public function getFormattedProjectedTotalRevenueAttribute(): string

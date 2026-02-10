@@ -49,10 +49,14 @@ class SeasonSettlementProcessor implements SeasonEndProcessor
         );
         $actualTransferIncome = $this->calculateTransferIncome($game);
 
+        // Public subsidy is guaranteed income — same amount as projected
+        $actualSubsidyRevenue = $finances->projected_subsidy_revenue;
+
         $actualTotalRevenue = $actualTvRevenue
             + $actualMatchdayRevenue
             + $actualPrizeRevenue
             + $actualCommercialRevenue
+            + $actualSubsidyRevenue
             + $actualTransferIncome;
 
         // Calculate actual wages (pro-rated for all players)
@@ -73,6 +77,7 @@ class SeasonSettlementProcessor implements SeasonEndProcessor
             'actual_prize_revenue' => $actualPrizeRevenue,
             'actual_matchday_revenue' => $actualMatchdayRevenue,
             'actual_commercial_revenue' => $actualCommercialRevenue,
+            'actual_subsidy_revenue' => $actualSubsidyRevenue,
             'actual_transfer_income' => $actualTransferIncome,
             'actual_total_revenue' => $actualTotalRevenue,
             'actual_wages' => $actualWages,

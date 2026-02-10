@@ -19,6 +19,11 @@ class BudgetProjectionService
     private const PROJECTED_PRIZE_MONEY = 85_000_000; // €850K in cents
 
     /**
+     * Minimum transfer budget guaranteed after mandatory infrastructure.
+     */
+    private const MINIMUM_TRANSFER_BUDGET = 20_000_000; // €200K in cents
+
+    /**
      * Generate season projections for a game.
      * Called at the start of each season during pre-season.
      */
@@ -62,6 +67,13 @@ class BudgetProjectionService
         // Get carried debt from previous season
         $carriedDebt = $this->getCarriedDebt($game);
 
+        // Calculate public subsidy if needed to guarantee minimum viable budget
+        $projectedSubsidyRevenue = $this->calculateSubsidy($projectedSurplus, $carriedDebt);
+        if ($projectedSubsidyRevenue > 0) {
+            $projectedTotalRevenue += $projectedSubsidyRevenue;
+            $projectedSurplus += $projectedSubsidyRevenue;
+        }
+
         // Create or update finances record
         $finances = GameFinances::updateOrCreate(
             [
@@ -74,6 +86,7 @@ class BudgetProjectionService
                 'projected_prize_revenue' => $projectedPrizeRevenue,
                 'projected_matchday_revenue' => $projectedMatchdayRevenue,
                 'projected_commercial_revenue' => $projectedCommercialRevenue,
+                'projected_subsidy_revenue' => $projectedSubsidyRevenue,
                 'projected_total_revenue' => $projectedTotalRevenue,
                 'projected_wages' => $projectedWages,
                 'projected_operating_expenses' => $projectedOperatingExpenses,
@@ -251,5 +264,21 @@ class BudgetProjectionService
         $reputation = $team->clubProfile?->reputation_level ?? ClubProfile::REPUTATION_MODEST;
 
         return $team->stadium_seats * config("finances.commercial_per_seat.{$reputation}", 80_000);
+    }
+
+    /**
+     * Calculate public subsidy (Subvenciones Públicas) to guarantee a minimum viable budget.
+     * Ensures every team can cover mandatory infrastructure + a minimum transfer budget.
+     */
+    private function calculateSubsidy(int $projectedSurplus, int $carriedDebt): int
+    {
+        $minimumAvailable = GameInvestment::MINIMUM_TOTAL_INVESTMENT + self::MINIMUM_TRANSFER_BUDGET;
+        $rawAvailable = $projectedSurplus - $carriedDebt;
+
+        if ($rawAvailable >= $minimumAvailable) {
+            return 0;
+        }
+
+        return $minimumAvailable - $rawAvailable;
     }
 }

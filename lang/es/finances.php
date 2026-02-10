@@ -15,6 +15,7 @@ return [
     'tv_rights' => 'Derechos de TV',
     'matchday' => 'Día de Partido',
     'commercial' => 'Comercial',
+    'public_subsidy' => 'Subvenciones Públicas',
     'total_revenue' => 'Ingresos Totales',
 
     // Surplus calculation
