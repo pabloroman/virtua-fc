@@ -7,6 +7,7 @@
 /** @var string|null $seasonGoal */
 /** @var string|null $seasonGoalLabel */
 /** @var int|null $seasonGoalTarget */
+/** @var \Illuminate\Support\Collection<App\Models\Competition> $competitions */
 @endphp
 
 <x-app-layout>
@@ -27,115 +28,46 @@
             </div>
             @endif
 
-            {{-- Club Briefing --}}
+            {{-- Season Preview --}}
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-6">
-                <div class="grid grid-cols-2 gap-8">
-                    {{-- Left Column --}}
-                    <div class="space-y-6">
-                        {{-- Stadium --}}
-                        <div>
-                            <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">{{ __('game.home_ground') }}</h3>
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center">
-                                    <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                                    </svg>
-                                </div>
-                                <div>
-                                    <div class="font-semibold text-slate-900">{{ $game->team->stadium_name ?? __('game.club_stadium') }}</div>
-                                    <div class="text-sm text-slate-500">{{ number_format($game->team->stadium_seats ?? 0) }} {{ __('game.seats') }}</div>
-                                </div>
-                            </div>
-                        </div>
+                <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-6">{{ __('game.season_preview') }}</h2>
 
-                        {{-- Squad Stats --}}
-                        <div>
-                            <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">{{ __('app.squad') }}</h3>
-                            <div class="grid grid-cols-4 gap-4">
-                                <div>
-                                    <div class="text-2xl font-bold text-slate-900">{{ $squadSize }}</div>
-                                    <div class="text-xs text-slate-500">{{ __('app.players') }}</div>
-                                </div>
-                                <div>
-                                    <div class="text-2xl font-bold text-slate-900">{{ $averageAge }}</div>
-                                    <div class="text-xs text-slate-500">{{ __('game.avg_age') }}</div>
-                                </div>
-                                <div class="col-span-2">
-                                    <div class="text-2xl font-bold text-slate-900">{{ \App\Support\Money::format($squadValue) }}</div>
-                                    <div class="text-xs text-slate-500">{{ __('app.value') }}</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {{-- Board Expectations --}}
-                        <div>
-                            <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">{{ __('game.board_expectations') }}</h3>
-                            <div class="bg-amber-50 border border-amber-200 rounded-lg p-3">
-                                <div class="flex items-start gap-3">
-                                    <div class="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                        <svg class="w-4 h-4 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <div class="font-medium text-amber-900">{{ __($seasonGoalLabel ?? 'game.goal_top_half') }}</div>
-                                        <div class="text-xs text-amber-700 mt-0.5">{{ __('game.board_expects_position', ['position' => $seasonGoalTarget ?? 10]) }}</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                {{-- Board Objective --}}
+                <div class="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-6 mb-6">
+                    <div class="flex items-center gap-2 mb-3">
+                        <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                        </svg>
+                        <h3 class="text-xs font-semibold text-amber-700 uppercase tracking-wide">{{ __('game.season_objective') }}</h3>
                     </div>
+                    <div class="text-xl font-bold text-amber-950">{{ __($seasonGoalLabel ?? 'game.goal_top_half') }}</div>
+                    <div class="text-sm text-amber-800 mt-1">{{ __('game.board_expects_position', ['position' => $seasonGoalTarget ?? 10]) }}</div>
+                </div>
 
-                    {{-- Right Column --}}
-                    <div class="space-y-6">
-                        {{-- Key Players --}}
-                        <div>
-                            <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">{{ __('game.key_players') }}</h3>
-                            <div class="space-y-2">
-                                @foreach($keyPlayers as $player)
-                                <div class="flex items-center justify-between py-2 {{ !$loop->last ? 'border-b border-slate-100' : '' }}">
-                                    <div class="flex items-center gap-3">
-                                        <span class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-xs font-semibold {{ $player->position_display['text'] }}">
-                                            {{ $player->position_display['abbreviation'] }}
-                                        </span>
-                                        <div>
-                                            <div class="font-medium text-slate-900">{{ $player->player->name }}</div>
-                                            <div class="text-xs text-slate-500">{{ $player->age }} {{ __('game.years_old') }}</div>
-                                        </div>
-                                    </div>
-                                    <div class="text-right">
-                                        <div class="font-bold text-slate-900">{{ (int) round(($player->game_technical_ability + $player->game_physical_ability) / 2) }}</div>
-                                        <div class="text-xs text-slate-400">{{ __('game.ovr') }}</div>
-                                    </div>
-                                </div>
-                                @endforeach
-                            </div>
+                {{-- Competitions --}}
+                <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">{{ __('game.your_competitions') }}</h3>
+                @php
+                    $gridCols = match(min($competitions->count(), 4)) {
+                        1 => 'grid-cols-1',
+                        2 => 'grid-cols-2',
+                        4 => 'grid-cols-4',
+                        default => 'grid-cols-3',
+                    };
+                @endphp
+                <div class="grid {{ $gridCols }} gap-3">
+                    @foreach($competitions as $comp)
+                        @php
+                            $compAccent = match($comp->role) {
+                                'domestic_cup' => ['border' => 'border-t-emerald-500', 'label' => __('game.competition_role_cup')],
+                                'continental' => ['border' => 'border-t-blue-600', 'label' => __('game.competition_role_continental')],
+                                default => ['border' => 'border-t-amber-500', 'label' => __('game.competition_role_league')],
+                            };
+                        @endphp
+                        <div class="border border-slate-200 rounded-lg p-4 border-t-4 {{ $compAccent['border'] }}">
+                            <div class="font-semibold text-slate-900">{{ $comp->name }}</div>
+                            <div class="text-xs text-slate-500 mt-1">{{ $compAccent['label'] }}</div>
                         </div>
-
-                        {{-- First Match --}}
-                        @if($nextMatch)
-                        <div>
-                            <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">{{ __('game.first_match') }}</h3>
-                            <div class="bg-slate-50 rounded-lg p-3">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-xs font-medium px-2 py-0.5 rounded {{ $isHomeMatch ? 'bg-green-100 text-green-700' : 'bg-slate-200 text-slate-600' }}">
-                                            {{ $isHomeMatch ? mb_strtoupper(__('game.home')) : mb_strtoupper(__('game.away')) }}
-                                        </span>
-                                        <span class="text-sm text-slate-500">{{ __('game.vs') }}</span>
-                                        <img src="{{ $opponent->image }}" alt="{{ $opponent->name }}" class="w-6 h-6">
-                                        <span class="font-medium text-slate-900">{{ $opponent->name }}</span>
-                                    </div>
-                                </div>
-                                <div class="flex items-center gap-4 mt-2 text-xs text-slate-500">
-                                    <span>{{ $nextMatch->scheduled_date->format('D, M j') }}</span>
-                                    <span>&middot;</span>
-                                    <span>{{ $nextMatch->competition->name }}</span>
-                                </div>
-                            </div>
-                        </div>
-                        @endif
-                    </div>
+                    @endforeach
                 </div>
             </div>
 

@@ -5,9 +5,9 @@ namespace App\Http\Views;
 use App\Game\Services\BudgetProjectionService;
 use App\Game\Services\SeasonGoalService;
 use App\Models\Competition;
+use App\Models\CompetitionEntry;
 use App\Models\Game;
 use App\Models\GameInvestment;
-use App\Models\GamePlayer;
 
 class ShowOnboarding
 {
@@ -47,37 +47,26 @@ class ShowOnboarding
             'facilities' => 1,
         ];
 
-        // Get squad
-        $squad = GamePlayer::with('player')
-            ->where('game_id', $gameId)
-            ->where('team_id', $game->team_id)
-            ->get();
-
-        // Key players - top 3 by overall ability
-        $keyPlayers = $squad->sortByDesc(function ($player) {
-            return ($player->game_technical_ability + $player->game_physical_ability) / 2;
-        })->take(3)->values();
-
-        // Squad stats
-        $squadValue = $squad->sum('market_value_cents');
-        $wageBill = $squad->sum('annual_wage');
-        $averageAge = $squad->count() > 0 ? round($squad->avg('age'), 1) : 0;
-
-        // Get next match info
-        $nextMatch = $game->next_match;
-        if ($nextMatch) {
-            $nextMatch->load(['homeTeam', 'awayTeam', 'competition']);
-        }
-
-        // Determine if home or away for first match
-        $isHomeMatch = $nextMatch && $nextMatch->home_team_id === $game->team_id;
-        $opponent = $nextMatch ? ($isHomeMatch ? $nextMatch->awayTeam : $nextMatch->homeTeam) : null;
-
         // Get season goal data
         $competition = Competition::find($game->competition_id);
         $seasonGoal = $game->season_goal;
         $seasonGoalLabel = ($seasonGoal && $competition) ? $this->seasonGoalService->getGoalLabel($seasonGoal, $competition) : null;
         $seasonGoalTarget = ($seasonGoal && $competition) ? $this->seasonGoalService->getTargetPosition($seasonGoal, $competition) : null;
+
+        // Get all competitions the team plays this season
+        $competitionIds = CompetitionEntry::where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->pluck('competition_id');
+
+        $competitions = Competition::whereIn('id', $competitionIds)
+            ->get()
+            ->sortBy(fn ($c) => match ($c->role) {
+                Competition::ROLE_PRIMARY => 0,
+                Competition::ROLE_DOMESTIC_CUP => 1,
+                Competition::ROLE_CONTINENTAL => 2,
+                default => 3,
+            })
+            ->values();
 
         return view('onboarding', [
             'game' => $game,
@@ -86,17 +75,10 @@ class ShowOnboarding
             'availableSurplus' => $availableSurplus,
             'tiers' => $tiers,
             'tierThresholds' => GameInvestment::TIER_THRESHOLDS,
-            'keyPlayers' => $keyPlayers,
-            'squadSize' => $squad->count(),
-            'squadValue' => $squadValue,
-            'wageBill' => $wageBill,
-            'averageAge' => $averageAge,
-            'nextMatch' => $nextMatch,
-            'isHomeMatch' => $isHomeMatch,
-            'opponent' => $opponent,
             'seasonGoal' => $seasonGoal,
             'seasonGoalLabel' => $seasonGoalLabel,
             'seasonGoalTarget' => $seasonGoalTarget,
+            'competitions' => $competitions,
         ]);
     }
 }
