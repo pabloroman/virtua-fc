@@ -14,6 +14,8 @@ return new class extends Migration
                 'colors',
                 'current_market_value',
                 'founded_on',
+                'created_at',
+                'updated_at',
             ]);
         });
     }
@@ -25,6 +27,7 @@ return new class extends Migration
             $table->json('colors')->nullable()->after('stadium_seats');
             $table->string('current_market_value')->nullable()->after('colors');
             $table->date('founded_on')->nullable()->after('current_market_value');
+            $table->timestamps();
         });
     }
 };
