@@ -409,6 +409,7 @@ class TransferService
         // Transfer player to the buying team
         $player->update([
             'team_id' => $offer->offering_team_id,
+            'number' => GamePlayer::nextAvailableNumber($game->id, $offer->offering_team_id),
             'transfer_status' => null,
             'transfer_listed_at' => null,
             // Extend their contract with the new team
@@ -511,6 +512,7 @@ class TransferService
         // Transfer player to the buying team
         $player->update([
             'team_id' => $offer->offering_team_id,
+            'number' => GamePlayer::nextAvailableNumber($game->id, $offer->offering_team_id),
             'transfer_status' => null,
             'transfer_listed_at' => null,
         ]);
@@ -881,6 +883,7 @@ class TransferService
 
         $player->update([
             'team_id' => $game->team_id,
+            'number' => GamePlayer::nextAvailableNumber($game->id, $game->team_id),
             'transfer_status' => null,
             'transfer_listed_at' => null,
             'contract_until' => $newContractEnd,
@@ -930,6 +933,7 @@ class TransferService
 
         $player->update([
             'team_id' => $game->team_id,
+            'number' => GamePlayer::nextAvailableNumber($game->id, $game->team_id),
             'joined_on' => $game->current_date,
         ]);
         $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
@@ -956,6 +960,7 @@ class TransferService
 
         $player->update([
             'team_id' => $destinationTeamId,
+            'number' => GamePlayer::nextAvailableNumber($game->id, $destinationTeamId),
             'transfer_status' => null,
             'transfer_listed_at' => null,
         ]);

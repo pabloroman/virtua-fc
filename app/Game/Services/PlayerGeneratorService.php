@@ -79,7 +79,7 @@ class PlayerGeneratorService
         $seasonYear = (int) $game->season;
         $contractUntil = Carbon::createFromDate($seasonYear + $data->contractYears, 6, 30);
 
-        $number = $this->nextAvailableNumber($game->id, $data->teamId);
+        $number = GamePlayer::nextAvailableNumber($game->id, $data->teamId);
 
         return GamePlayer::create([
             'id' => Str::uuid()->toString(),
@@ -142,26 +142,6 @@ class PlayerGeneratorService
         }
 
         return $this->identityPool;
-    }
-
-    /**
-     * Find the next available squad number for a team (starting from 2).
-     */
-    private function nextAvailableNumber(string $gameId, string $teamId): int
-    {
-        $taken = GamePlayer::where('game_id', $gameId)
-            ->where('team_id', $teamId)
-            ->whereNotNull('number')
-            ->pluck('number')
-            ->toArray();
-
-        for ($n = 2; $n <= 99; $n++) {
-            if (!in_array($n, $taken)) {
-                return $n;
-            }
-        }
-
-        return 99;
     }
 
     /**
