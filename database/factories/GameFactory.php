@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Competition;
 use App\Models\Game;
 use App\Models\Team;
 use App\Models\User;
@@ -16,6 +17,7 @@ class GameFactory extends Factory
         return [
             'user_id' => User::factory(),
             'team_id' => Team::factory(),
+            'competition_id' => Competition::factory()->league(),
             'season' => '2024',
             'player_name' => $this->faker->name(),
             'current_date' => '2024-08-15',
