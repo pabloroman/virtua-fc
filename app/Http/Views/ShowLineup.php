@@ -82,6 +82,7 @@ class ShowLineup
             return [
                 'id' => $p->id,
                 'name' => $p->name,
+                'number' => $p->number,
                 'position' => $p->position,
                 'positionGroup' => $p->position_group,
                 'positionAbbr' => $p->position_abbreviation,

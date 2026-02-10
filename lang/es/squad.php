@@ -14,6 +14,7 @@ return [
     'forwards' => 'Delanteros',
 
     // Columns
+    'number_short' => '#',
     'technical' => 'TEC',
     'physical' => 'FIS',
     'fitness' => 'FOR',

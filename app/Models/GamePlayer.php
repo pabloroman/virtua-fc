@@ -24,6 +24,7 @@ class GamePlayer extends Model
         'game_id',
         'player_id',
         'team_id',
+        'number',
         'position',
         'market_value',
         'market_value_cents',
@@ -58,6 +59,7 @@ class GamePlayer extends Model
     ];
 
     protected $casts = [
+        'number' => 'integer',
         'market_value_cents' => 'integer',
         'contract_until' => 'date',
         'annual_wage' => 'integer',

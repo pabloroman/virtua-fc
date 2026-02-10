@@ -786,6 +786,7 @@ class GameProjector extends Projector
             'game_id' => $gameId,
             'player_id' => $player->id,
             'team_id' => $team->id,
+            'number' => isset($playerData['number']) ? (int) $playerData['number'] : null,
             'position' => $playerData['position'] ?? 'Unknown',
             'market_value' => $playerData['marketValue'] ?? null,
             'market_value_cents' => $marketValueCents,
