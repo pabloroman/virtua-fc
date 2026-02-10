@@ -187,6 +187,7 @@ class LeagueWithPlayoffHandler implements CompetitionHandler
             'game_id' => $game->id,
             'competition_id' => $generator->getCompetitionId(),
             'round_name' => $config->name,
+            'round_number' => $config->round,
             'home_team_id' => $homeTeamId,
             'away_team_id' => $awayTeamId,
             'scheduled_date' => $config->firstLegDate,
@@ -202,6 +203,7 @@ class LeagueWithPlayoffHandler implements CompetitionHandler
                 'game_id' => $game->id,
                 'competition_id' => $generator->getCompetitionId(),
                 'round_name' => $config->name . ' (Vuelta)',
+                'round_number' => $config->round,
                 'home_team_id' => $awayTeamId, // Teams swap for second leg
                 'away_team_id' => $homeTeamId,
                 'scheduled_date' => $config->secondLegDate,
