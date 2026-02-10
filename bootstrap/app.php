@@ -13,6 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'game.owner' => \App\Http\Middleware\EnsureGameOwnership::class,
+            'beta.invite' => \App\Http\Middleware\RequireInviteForRegistration::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
