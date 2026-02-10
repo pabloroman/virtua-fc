@@ -13,10 +13,9 @@ use App\Models\Team;
 class BudgetProjectionService
 {
     /**
-     * Conservative prize money estimate (Round of 16 cup exit).
-     * Includes: Round of 64 (€100K) + Round of 32 (€250K) + Round of 16 (€500K)
+     * UEFA and RFEF solidarity funds (€250K)
      */
-    private const PROJECTED_PRIZE_MONEY = 85_000_000; // €850K in cents
+    private const SOLIDARITY_FUNDS = 25_000_000; // €250K in cents
 
     /**
      * Minimum transfer budget guaranteed after mandatory infrastructure.
@@ -45,13 +44,13 @@ class BudgetProjectionService
 
         // Calculate projected revenues
         $projectedTvRevenue = $this->calculateTvRevenue($projectedPosition, $league);
-        $projectedMatchdayRevenue = $this->calculateMatchdayRevenue($team, $projectedPosition, $game);
-        $projectedPrizeRevenue = self::PROJECTED_PRIZE_MONEY;
+        $projectedMatchdayRevenue = $this->calculateMatchdayRevenue($team, $game);
+        $projectedSolidarityFundsRevenue = ($game->competition->tier > 1) ? self::SOLIDARITY_FUNDS : 0;
         $projectedCommercialRevenue = $this->getBaseCommercialRevenue($game, $team, $league);
 
         $projectedTotalRevenue = $projectedTvRevenue
             + $projectedMatchdayRevenue
-            + $projectedPrizeRevenue
+            + $projectedSolidarityFundsRevenue
             + $projectedCommercialRevenue;
 
         // Calculate projected wages
@@ -83,7 +82,7 @@ class BudgetProjectionService
             [
                 'projected_position' => $projectedPosition,
                 'projected_tv_revenue' => $projectedTvRevenue,
-                'projected_prize_revenue' => $projectedPrizeRevenue,
+                'projected_solidarity_funds_revenue' => $projectedSolidarityFundsRevenue,
                 'projected_matchday_revenue' => $projectedMatchdayRevenue,
                 'projected_commercial_revenue' => $projectedCommercialRevenue,
                 'projected_subsidy_revenue' => $projectedSubsidyRevenue,
@@ -173,9 +172,9 @@ class BudgetProjectionService
 
     /**
      * Calculate matchday revenue.
-     * Formula: Base (stadium_seats × revenue_per_seat) × Facilities Multiplier × Position Factor
+     * Formula: Base (stadium_seats × revenue_per_seat) × Facilities Multiplier
      */
-    public function calculateMatchdayRevenue(Team $team, int $position, Game $game): int
+    public function calculateMatchdayRevenue(Team $team, Game $game): int
     {
         $reputation = $team->clubProfile?->reputation_level ?? ClubProfile::REPUTATION_MODEST;
 
@@ -193,11 +192,7 @@ class BudgetProjectionService
             ? GameInvestment::FACILITIES_MULTIPLIER[$investment->facilities_tier] ?? 1.0
             : 1.0;
 
-        // Position factor from competition config
-        $config = $league->getConfig();
-        $positionFactor = $config->getPositionFactor($position) ?? 1.0;
-
-        return (int) ($base * $facilitiesMultiplier * $positionFactor);
+        return (int) ($base * $facilitiesMultiplier);
     }
 
     /**
@@ -263,7 +258,14 @@ class BudgetProjectionService
         // First season: calculate from stadium seats × config rate
         $reputation = $team->clubProfile?->reputation_level ?? ClubProfile::REPUTATION_MODEST;
 
-        return $team->stadium_seats * config("finances.commercial_per_seat.{$reputation}", 80_000);
+        $base = $team->stadium_seats * config("finances.commercial_per_seat.{$reputation}", 80_000);
+
+        // Reduce commercial revenue for lower tiers
+        if ($league->tier > 1) {
+            return $base * 0.75;
+        }
+
+        return $base;
     }
 
     /**

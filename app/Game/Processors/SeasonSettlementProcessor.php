@@ -43,20 +43,22 @@ class SeasonSettlementProcessor implements SeasonEndProcessor
         // Calculate actual revenues
         $actualTvRevenue = $this->calculateTvRevenue($actualPosition, $game);
         $actualMatchdayRevenue = $this->calculateMatchdayRevenue($game, $actualPosition);
-        $actualPrizeRevenue = $this->calculatePrizeRevenue($game);
         $actualCommercialRevenue = $this->calculateCommercialRevenue(
             $finances->projected_commercial_revenue, $actualPosition
         );
         $actualTransferIncome = $this->calculateTransferIncome($game);
+        $actualCupBonusRevenue = $this->calculateCupBonusRevenue($game);
 
-        // Public subsidy is guaranteed income — same amount as projected
+        // Guaranteed income — same amount as projected
         $actualSubsidyRevenue = $finances->projected_subsidy_revenue;
+        $actualSolidarityFundsRevenue = $finances->projected_solidarity_funds_revenue;
 
         $actualTotalRevenue = $actualTvRevenue
             + $actualMatchdayRevenue
-            + $actualPrizeRevenue
             + $actualCommercialRevenue
             + $actualSubsidyRevenue
+            + $actualSolidarityFundsRevenue
+            + $actualCupBonusRevenue
             + $actualTransferIncome;
 
         // Calculate actual wages (pro-rated for all players)
@@ -74,7 +76,8 @@ class SeasonSettlementProcessor implements SeasonEndProcessor
         // Update finances with actuals
         $finances->update([
             'actual_tv_revenue' => $actualTvRevenue,
-            'actual_prize_revenue' => $actualPrizeRevenue,
+            'actual_solidarity_funds_revenue' => $actualSolidarityFundsRevenue,
+            'actual_cup_bonus_revenue' => $actualCupBonusRevenue,
             'actual_matchday_revenue' => $actualMatchdayRevenue,
             'actual_commercial_revenue' => $actualCommercialRevenue,
             'actual_subsidy_revenue' => $actualSubsidyRevenue,
@@ -155,10 +158,8 @@ class SeasonSettlementProcessor implements SeasonEndProcessor
         return (int) ($projected * $multiplier);
     }
 
-    private function calculatePrizeRevenue(Game $game): int
+    private function calculateCupBonusRevenue(Game $game): int
     {
-        // Prize revenue is calculated via FinancialTransactions during the season
-        // (recorded when cups are won). We sum it up here.
         return FinancialTransaction::where('game_id', $game->id)
             ->where('category', FinancialTransaction::CATEGORY_CUP_BONUS)
             ->where('type', FinancialTransaction::TYPE_INCOME)

@@ -74,6 +74,12 @@
                                     <span class="text-slate-600">{{ __('finances.commercial') }}</span>
                                     <span class="font-semibold">{{ $finances->formatted_projected_commercial_revenue }}</span>
                                 </div>
+                                @if($finances->projected_solidarity_funds_revenue > 0)
+                                <div class="flex justify-between items-center">
+                                    <span class="text-slate-600">{{ __('finances.solidarity_funds') }}</span>
+                                    <span class="font-semibold">{{ $finances->formatted_projected_solidarity_funds_revenue }}</span>
+                                </div>
+                                @endif
                                 @if($finances->projected_subsidy_revenue > 0)
                                 <div class="flex justify-between items-center">
                                     <span class="text-slate-600">{{ __('finances.public_subsidy') }}</span>

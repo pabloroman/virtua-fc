@@ -18,7 +18,7 @@ class GameFinances extends Model
         'season',
         'projected_position',
         'projected_tv_revenue',
-        'projected_prize_revenue',
+        'projected_solidarity_funds_revenue',
         'projected_matchday_revenue',
         'projected_commercial_revenue',
         'projected_subsidy_revenue',
@@ -28,7 +28,8 @@ class GameFinances extends Model
         'projected_taxes',
         'projected_surplus',
         'actual_tv_revenue',
-        'actual_prize_revenue',
+        'actual_solidarity_funds_revenue',
+        'actual_cup_bonus_revenue',
         'actual_matchday_revenue',
         'actual_commercial_revenue',
         'actual_subsidy_revenue',
@@ -47,7 +48,7 @@ class GameFinances extends Model
         // Projections
         'projected_position' => 'integer',
         'projected_tv_revenue' => 'integer',
-        'projected_prize_revenue' => 'integer',
+        'projected_solidarity_funds_revenue' => 'integer',
         'projected_matchday_revenue' => 'integer',
         'projected_commercial_revenue' => 'integer',
         'projected_subsidy_revenue' => 'integer',
@@ -58,7 +59,8 @@ class GameFinances extends Model
         'projected_surplus' => 'integer',
         // Actuals
         'actual_tv_revenue' => 'integer',
-        'actual_prize_revenue' => 'integer',
+        'actual_solidarity_funds_revenue' => 'integer',
+        'actual_cup_bonus_revenue' => 'integer',
         'actual_matchday_revenue' => 'integer',
         'actual_commercial_revenue' => 'integer',
         'actual_subsidy_revenue' => 'integer',
@@ -124,6 +126,11 @@ class GameFinances extends Model
         return Money::format($this->projected_subsidy_revenue);
     }
 
+    public function getFormattedProjectedSolidarityFundsRevenueAttribute(): string
+    {
+        return Money::format($this->projected_solidarity_funds_revenue);
+    }
+
     public function getFormattedProjectedTotalRevenueAttribute(): string
     {
         return Money::format($this->projected_total_revenue);
@@ -160,9 +167,14 @@ class GameFinances extends Model
         return Money::format($this->actual_commercial_revenue);
     }
 
-    public function getFormattedActualPrizeRevenueAttribute(): string
+    public function getFormattedActualSolidarityFundsRevenueAttribute(): string
     {
-        return Money::format($this->actual_prize_revenue);
+        return Money::format($this->actual_solidarity_funds_revenue);
+    }
+
+    public function getFormattedActualCupBonusRevenueAttribute(): string
+    {
+        return Money::format($this->actual_cup_bonus_revenue);
     }
 
     public function getFormattedActualTransferIncomeAttribute(): string

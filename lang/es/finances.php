@@ -15,6 +15,7 @@ return [
     'tv_rights' => 'Derechos de TV',
     'matchday' => 'Día de Partido',
     'commercial' => 'Comercial',
+    'solidarity_funds' => 'Ayudas RFEF/UEFA',
     'public_subsidy' => 'Subvenciones Públicas',
     'total_revenue' => 'Ingresos Totales',
 
@@ -139,6 +140,6 @@ return [
     'category_tv' => 'Derechos TV',
     'category_matchday' => 'Día de Partido',
     'category_commercial' => 'Comercial',
-    'category_prize' => 'Premios',
+    'category_cup_bonus' => 'Bonificación Copa',
     'category_infrastructure' => 'Infraestructura',
 ];
