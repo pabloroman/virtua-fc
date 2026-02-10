@@ -20,11 +20,11 @@ use App\Game\Services\PlayerConditionService;
 use App\Game\Services\PlayerDevelopmentService;
 use App\Game\Services\SeasonGoalService;
 use App\Game\Services\StandingsCalculator;
+use App\Game\Services\SwissDrawService;
 use App\Models\Competition;
 use App\Models\CompetitionTeam;
 use App\Models\CupTie;
 use App\Models\FinancialTransaction;
-use App\Models\FixtureTemplate;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
@@ -554,23 +554,49 @@ class GameProjector extends Projector
     }
 
     /**
-     * Copy fixture templates to game-specific matches (used for Swiss format competitions).
+     * Generate Swiss format league phase fixtures for a competition.
+     * Loads team pot/country data from teams.json and runs the Swiss draw algorithm.
      */
-    private function copyFixtureTemplatesToGame(string $gameId, string $competitionId, string $season): void
+    private function generateSwissFixtures(string $gameId, string $competitionId, string $season, array $clubs): void
     {
-        $fixtures = FixtureTemplate::where('competition_id', $competitionId)
-            ->where('season', $season)
-            ->get();
+        // Build draw teams from JSON (pot + country) mapped to UUIDs
+        $drawTeams = [];
+        foreach ($clubs as $club) {
+            $transfermarktId = $club['id'] ?? null;
+            if (!$transfermarktId) {
+                continue;
+            }
+
+            $team = Team::where('transfermarkt_id', $transfermarktId)->first();
+            if (!$team) {
+                continue;
+            }
+
+            $drawTeams[] = [
+                'id' => $team->id,
+                'pot' => $club['pot'] ?? 4,
+                'country' => $club['country'] ?? 'XX',
+            ];
+        }
+
+        if (count($drawTeams) < 36) {
+            return;
+        }
+
+        // Generate unique draw for this game
+        $drawService = new SwissDrawService();
+        $startDate = Carbon::parse("{$season}-09-17");
+        $fixtures = $drawService->generateFixtures($drawTeams, $startDate);
 
         foreach ($fixtures as $fixture) {
             GameMatch::create([
                 'id' => Str::uuid()->toString(),
                 'game_id' => $gameId,
                 'competition_id' => $competitionId,
-                'round_number' => $fixture->round_number,
-                'home_team_id' => $fixture->home_team_id,
-                'away_team_id' => $fixture->away_team_id,
-                'scheduled_date' => $fixture->scheduled_date,
+                'round_number' => $fixture['matchday'],
+                'home_team_id' => $fixture['homeTeamId'],
+                'away_team_id' => $fixture['awayTeamId'],
+                'scheduled_date' => Carbon::createFromFormat('d/m/y', $fixture['date']),
                 'home_score' => null,
                 'away_score' => null,
                 'played' => false,
@@ -616,7 +642,7 @@ class GameProjector extends Projector
 
     /**
      * Initialize Swiss format competitions (UCL, UEL, UECL).
-     * Copies fixtures, initializes standings, and initializes players for European teams.
+     * Generates a unique draw, initializes standings, and initializes players for European teams.
      */
     private function initializeSwissFormatCompetitions(string $gameId, string $teamId, string $season): void
     {
@@ -633,31 +659,32 @@ class GameProjector extends Projector
                 continue;
             }
 
-            // Copy fixture templates to game matches
-            $this->copyFixtureTemplatesToGame($gameId, $competition->id, $season);
+            // Load teams data (used for both draw generation and player initialization)
+            $teamsFilePath = base_path("data/{$season}/{$competition->id}/teams.json");
+            if (!file_exists($teamsFilePath)) {
+                continue;
+            }
+            $teamsData = json_decode(file_get_contents($teamsFilePath), true);
+            $clubs = $teamsData['clubs'] ?? [];
+
+            // Generate Swiss draw fixtures for this game
+            $this->generateSwissFixtures($gameId, $competition->id, $season, $clubs);
 
             // Initialize standings
             $this->initializeStandings($gameId, $competition->id, $season);
 
             // Initialize game players for European teams (skip teams already initialized from ESP1/ESP2)
-            $this->initializeSwissFormatPlayers($gameId, $competition->id, $season);
+            $this->initializeSwissFormatPlayersFromData($gameId, $competition->id, $clubs);
         }
     }
 
     /**
-     * Initialize game players for Swiss format competitions.
+     * Initialize game players for Swiss format competitions from pre-loaded clubs data.
      * Only creates players for teams that don't already have game players.
      */
-    private function initializeSwissFormatPlayers(string $gameId, string $competitionId, string $season): void
+    private function initializeSwissFormatPlayersFromData(string $gameId, string $competitionId, array $clubs): void
     {
-        $teamsFilePath = base_path("data/{$season}/{$competitionId}/teams.json");
-        if (!file_exists($teamsFilePath)) {
-            return;
-        }
-
         $minimumWage = $this->contractService->getMinimumWageForCompetition($competitionId);
-        $data = json_decode(file_get_contents($teamsFilePath), true);
-        $clubs = $data['clubs'] ?? [];
 
         foreach ($clubs as $club) {
             $transfermarktId = $club['id'] ?? null;

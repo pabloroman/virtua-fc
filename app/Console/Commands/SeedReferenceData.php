@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Game\Services\SwissDrawService;
 use App\Models\User;
 use Carbon\Carbon;
 use Database\Seeders\ClubProfilesSeeder;
@@ -208,7 +207,6 @@ class SeedReferenceData extends Command
 
         // Clear reference tables
         DB::table('cup_round_templates')->delete();
-        DB::table('fixture_templates')->delete();
         DB::table('competition_teams')->delete();
         DB::table('players')->delete();
         DB::table('teams')->delete();
@@ -306,8 +304,7 @@ class SeedReferenceData extends Command
         // Seed embedded player data if present (clubs that have a 'players' array)
         $this->seedPlayersFromTeams($teamsData['clubs'], $teamIdMap);
 
-        // Generate league phase fixtures using the Swiss draw algorithm
-        $this->seedSwissFormatFixtures($teamsData['clubs'], $code, $season, $teamIdMap);
+        // Swiss league phase fixtures are now generated per-game by GameProjector
 
         // Seed knockout round templates
         $this->seedCupRoundTemplates($code, $season, $roundsData, $matchdaysData);
@@ -433,76 +430,6 @@ class SeedReferenceData extends Command
         $this->line("  Teams: {$count}");
 
         return $teamIdMap;
-    }
-
-    /**
-     * Generate Swiss format league phase fixtures using the draw algorithm.
-     */
-    private function seedSwissFormatFixtures(array $clubs, string $competitionId, string $season, array $teamIdMap): void
-    {
-        // Build team data for the draw service
-        $drawTeams = [];
-        foreach ($clubs as $club) {
-            $clubId = $club['id'] ?? null;
-            if (!$clubId || !isset($teamIdMap[$clubId])) {
-                continue;
-            }
-
-            $drawTeams[] = [
-                'id' => $teamIdMap[$clubId],
-                'pot' => $club['pot'] ?? 4,
-                'country' => $club['country'] ?? 'XX',
-            ];
-        }
-
-        // Generate fixtures
-        $drawService = new SwissDrawService();
-        $startDate = Carbon::parse("{$season}-09-17"); // UCL league phase starts mid-September
-        $fixtures = $drawService->generateFixtures($drawTeams, $startDate);
-
-        // Group by matchday for seeding
-        $matchdays = [];
-        foreach ($fixtures as $fixture) {
-            $md = $fixture['matchday'];
-            if (!isset($matchdays[$md])) {
-                $matchdays[$md] = ['matchday' => $md, 'date' => $fixture['date'], 'matches' => []];
-            }
-            $matchdays[$md]['matches'][] = [
-                'homeTeamId' => $fixture['homeTeamId'],
-                'awayTeamId' => $fixture['awayTeamId'],
-            ];
-        }
-
-        // Seed as fixture templates (using team UUIDs directly)
-        $count = 0;
-        foreach ($matchdays as $matchday) {
-            $roundNumber = (int) $matchday['matchday'];
-            $scheduledDate = Carbon::createFromFormat('d/m/y', $matchday['date']);
-
-            $matchNumber = 1;
-            foreach ($matchday['matches'] as $match) {
-                DB::table('fixture_templates')->updateOrInsert(
-                    [
-                        'competition_id' => $competitionId,
-                        'season' => $season,
-                        'round_number' => $roundNumber,
-                        'home_team_id' => $match['homeTeamId'],
-                        'away_team_id' => $match['awayTeamId'],
-                    ],
-                    [
-                        'id' => Str::uuid()->toString(),
-                        'match_number' => $matchNumber,
-                        'scheduled_date' => $scheduledDate,
-                        'location' => null,
-                    ]
-                );
-
-                $matchNumber++;
-                $count++;
-            }
-        }
-
-        $this->line("  League phase fixtures: {$count}");
     }
 
     private function seedCompetitionRecord(string $code, array $data, int $tier, string $type, string $handler, string $country, string $role = 'foreign'): void
@@ -947,7 +874,6 @@ class SeedReferenceData extends Command
         $this->line('  Teams: ' . DB::table('teams')->count());
         $this->line('  Players: ' . DB::table('players')->count());
         $this->line('  Competition-Team links: ' . DB::table('competition_teams')->count());
-        $this->line('  Swiss fixture templates: ' . DB::table('fixture_templates')->count());
         $this->line('  Cup round templates: ' . DB::table('cup_round_templates')->count());
         $this->newLine();
         $this->info('Reference data seeded successfully!');
