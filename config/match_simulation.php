@@ -48,7 +48,7 @@ return [
     |
     */
     'strength_multiplier' => 0.8,
-    'strength_exponent' => 1.3,
+    'strength_exponent' => 1.8,
 
     /*
     |--------------------------------------------------------------------------

@@ -541,8 +541,8 @@ class MatchSimulator
     private function calculateTeamStrength(Collection $lineup): float
     {
         if ($lineup->count() < 11) {
-            // Fallback for incomplete lineup - assume average team
-            return 0.5;
+            // Fallback for incomplete lineup - reflects amateur/semi-pro level
+            return 0.30;
         }
 
         // Calculate effective attributes with match performance modifier
