@@ -7,6 +7,7 @@ use App\Game\Contracts\CompetitionHandler;
 use App\Game\Game as GameAggregate;
 use App\Game\Services\CupDrawService;
 use App\Game\Services\CupTieResolver;
+use App\Models\CupRoundTemplate;
 use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameMatch;
@@ -51,10 +52,13 @@ class KnockoutCupHandler implements CompetitionHandler
      */
     public function afterMatches(Game $game, Collection $matches, Collection $allPlayers): void
     {
-        $this->resolveCupTies($matches, $allPlayers, $game->id);
+        // Retrieve the aggregate once for all cup operations
+        $aggregate = GameAggregate::retrieve($game->id);
+
+        $this->resolveCupTies($matches, $allPlayers, $aggregate);
 
         // After resolving ties, check if next round can be drawn
-        $this->conductNextRoundDrawIfReady($game, $matches);
+        $this->conductNextRoundDrawIfReady($game, $matches, $aggregate);
     }
 
     /**
@@ -76,7 +80,7 @@ class KnockoutCupHandler implements CompetitionHandler
     /**
      * Conduct the next round draw if the previous round is complete.
      */
-    private function conductNextRoundDrawIfReady(Game $game, Collection $matches): void
+    private function conductNextRoundDrawIfReady(Game $game, Collection $matches, GameAggregate $aggregate): void
     {
         // Get competition ID from the matches just played
         $competitionId = $matches->first()?->competition_id;
@@ -101,31 +105,38 @@ class KnockoutCupHandler implements CompetitionHandler
             roundNumber: $nextRound,
         );
 
-        $aggregate = GameAggregate::retrieve($game->id);
         $aggregate->conductCupDraw($command, $ties->pluck('id')->toArray());
     }
 
     /**
      * Resolve cup ties after matches have been played.
      */
-    private function resolveCupTies(Collection $cupMatches, Collection $allPlayers, string $gameId): void
+    private function resolveCupTies(Collection $cupMatches, Collection $allPlayers, GameAggregate $aggregate): void
     {
-        // Get unique tie IDs from the matches
-        $tieIds = $cupMatches->pluck('cup_tie_id')->unique()->filter();
+        // Batch-load all ties with their matches and teams in one query
+        $tieIds = $cupMatches->pluck('cup_tie_id')->unique()->filter()->values();
+        $ties = CupTie::with([
+                'firstLegMatch.homeTeam', 'firstLegMatch.awayTeam',
+                'secondLegMatch.homeTeam', 'secondLegMatch.awayTeam',
+            ])
+            ->whereIn('id', $tieIds)
+            ->where('completed', false)
+            ->get();
 
-        foreach ($tieIds as $tieId) {
-            $tie = CupTie::with(['firstLegMatch', 'secondLegMatch'])->find($tieId);
+        if ($ties->isEmpty()) {
+            return;
+        }
 
-            if (!$tie || $tie->completed) {
-                continue;
-            }
+        // Pre-load the round template once (all ties in a batch share the same round)
+        $firstTie = $ties->first();
+        $roundTemplate = CupRoundTemplate::where('competition_id', $firstTie->competition_id)
+            ->where('round_number', $firstTie->round_number)
+            ->first();
 
-            // Try to resolve the tie
-            $winnerId = $this->cupTieResolver->resolve($tie, $allPlayers);
+        foreach ($ties as $tie) {
+            $winnerId = $this->cupTieResolver->resolve($tie, $allPlayers, $roundTemplate);
 
             if ($winnerId) {
-                // Record the cup tie completion event
-                $aggregate = GameAggregate::retrieve($gameId);
                 $aggregate->completeCupTie(
                     tieId: $tie->id,
                     competitionId: $tie->competition_id,

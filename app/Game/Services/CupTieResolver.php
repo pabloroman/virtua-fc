@@ -20,9 +20,9 @@ class CupTieResolver
      * Attempt to resolve a cup tie and determine the winner.
      * Returns the winner team_id if tie is complete, null if more matches needed.
      */
-    public function resolve(CupTie $tie, Collection $allPlayers): ?string
+    public function resolve(CupTie $tie, Collection $allPlayers, ?CupRoundTemplate $roundTemplate = null): ?string
     {
-        $roundTemplate = CupRoundTemplate::where('competition_id', $tie->competition_id)
+        $roundTemplate ??= CupRoundTemplate::where('competition_id', $tie->competition_id)
             ->where('round_number', $tie->round_number)
             ->first();
 
@@ -59,11 +59,11 @@ class CupTieResolver
             return $winnerId;
         }
 
-        // Draw - need extra time
+        // Draw - need extra time. Use eager-loaded relations or fall back to query.
         $homePlayers = $allPlayers->get($match->home_team_id, collect());
         $awayPlayers = $allPlayers->get($match->away_team_id, collect());
-        $homeTeam = Team::find($match->home_team_id);
-        $awayTeam = Team::find($match->away_team_id);
+        $homeTeam = $match->relationLoaded('homeTeam') ? $match->homeTeam : Team::find($match->home_team_id);
+        $awayTeam = $match->relationLoaded('awayTeam') ? $match->awayTeam : Team::find($match->away_team_id);
 
         $extraTimeResult = $this->matchSimulator->simulateExtraTime(
             $homeTeam,
@@ -153,11 +153,10 @@ class CupTieResolver
         }
 
         // Still tied - extra time in second leg
-        // Second leg: away team (from tie perspective) plays at home
         $homePlayers = $allPlayers->get($secondLeg->home_team_id, collect());
         $awayPlayers = $allPlayers->get($secondLeg->away_team_id, collect());
-        $homeTeam = Team::find($secondLeg->home_team_id);
-        $awayTeam = Team::find($secondLeg->away_team_id);
+        $homeTeam = $secondLeg->relationLoaded('homeTeam') ? $secondLeg->homeTeam : Team::find($secondLeg->home_team_id);
+        $awayTeam = $secondLeg->relationLoaded('awayTeam') ? $secondLeg->awayTeam : Team::find($secondLeg->away_team_id);
 
         $extraTimeResult = $this->matchSimulator->simulateExtraTime(
             $homeTeam,

@@ -157,18 +157,20 @@ class CupDrawService
             return $teamsEntering > 0;
         }
 
-        // For later rounds, we need winners from previous round to be determined
-        $previousRoundTies = CupTie::where('game_id', $gameId)
+        // For later rounds, all previous round ties must be completed
+        $previousRoundQuery = CupTie::where('game_id', $gameId)
             ->where('competition_id', $competitionId)
-            ->where('round_number', $roundNumber - 1)
-            ->get();
+            ->where('round_number', $roundNumber - 1);
 
-        if ($previousRoundTies->isEmpty()) {
+        $totalPreviousTies = $previousRoundQuery->count();
+
+        if ($totalPreviousTies === 0) {
             return false;
         }
 
-        // All previous round ties must be completed
-        return $previousRoundTies->every(fn ($tie) => $tie->completed);
+        $completedPreviousTies = (clone $previousRoundQuery)->where('completed', true)->count();
+
+        return $totalPreviousTies === $completedPreviousTies;
     }
 
     /**
@@ -176,14 +178,25 @@ class CupDrawService
      */
     public function getNextRoundNeedingDraw(string $gameId, string $competitionId): ?int
     {
-        $rounds = CupRoundTemplate::where('competition_id', $competitionId)
-            ->orderBy('round_number')
-            ->get();
+        // Find rounds that already have ties drawn
+        $drawnRounds = CupTie::where('game_id', $gameId)
+            ->where('competition_id', $competitionId)
+            ->distinct()
+            ->pluck('round_number');
 
-        foreach ($rounds as $round) {
-            if ($this->needsDrawForRound($gameId, $competitionId, $round->round_number)) {
-                return $round->round_number;
-            }
+        // Find the first undrawn round
+        $nextUndrawnRound = CupRoundTemplate::where('competition_id', $competitionId)
+            ->whereNotIn('round_number', $drawnRounds)
+            ->orderBy('round_number')
+            ->first();
+
+        if (!$nextUndrawnRound) {
+            return null;
+        }
+
+        // Verify it's actually ready (previous round complete or it's round 1)
+        if ($this->needsDrawForRound($gameId, $competitionId, $nextUndrawnRound->round_number)) {
+            return $nextUndrawnRound->round_number;
         }
 
         return null;
