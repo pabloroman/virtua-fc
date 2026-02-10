@@ -285,6 +285,55 @@ class LeagueFixtureGeneratorTest extends TestCase
     }
 
     // ──────────────────────────────────────────────────────────────
+    // Home/Away alternation
+    // ──────────────────────────────────────────────────────────────
+
+    public function test_no_team_has_more_than_2_consecutive_in_each_half(): void
+    {
+        $teams = $this->makeTeams(20);
+        $matchdays = $this->makeMatchdays(38);
+        $halfSeason = 19;
+
+        // Run multiple times since team order is shuffled
+        for ($run = 0; $run < 10; $run++) {
+            $fixtures = $this->generator->generate($teams, $matchdays);
+
+            // Build home/away sequence per team ordered by matchday
+            $sequences = [];
+            foreach ($fixtures as $fixture) {
+                $md = $fixture['matchday'];
+                $sequences[$fixture['homeTeamId']][$md] = 'H';
+                $sequences[$fixture['awayTeamId']][$md] = 'A';
+            }
+
+            foreach ($sequences as $teamId => $matchdayVenues) {
+                ksort($matchdayVenues);
+                $venues = array_values($matchdayVenues);
+
+                // Check each half separately (max 2 consecutive guaranteed)
+                foreach (['first' => [0, $halfSeason], 'second' => [$halfSeason, $halfSeason]] as $half => [$offset, $length]) {
+                    $halfVenues = array_slice($venues, $offset, $length);
+                    $maxConsecutive = $this->maxConsecutiveRun($halfVenues);
+
+                    $this->assertLessThanOrEqual(
+                        2,
+                        $maxConsecutive,
+                        "Run {$run}: Team {$teamId} has {$maxConsecutive} consecutive same-venue games in {$half} half. Pattern: " . implode('', $halfVenues)
+                    );
+                }
+
+                // Full season: max 3 (boundary between halves can add 1)
+                $maxFull = $this->maxConsecutiveRun($venues);
+                $this->assertLessThanOrEqual(
+                    3,
+                    $maxFull,
+                    "Run {$run}: Team {$teamId} has {$maxFull} consecutive same-venue games. Pattern: " . implode('', $venues)
+                );
+            }
+        }
+    }
+
+    // ──────────────────────────────────────────────────────────────
     // Validation
     // ──────────────────────────────────────────────────────────────
 
@@ -329,5 +378,26 @@ class LeagueFixtureGeneratorTest extends TestCase
         }
 
         return $counts;
+    }
+
+    private function maxConsecutiveRun(array $venues): int
+    {
+        if (empty($venues)) {
+            return 0;
+        }
+
+        $max = 1;
+        $current = 1;
+
+        for ($i = 1; $i < count($venues); $i++) {
+            if ($venues[$i] === $venues[$i - 1]) {
+                $current++;
+                $max = max($max, $current);
+            } else {
+                $current = 1;
+            }
+        }
+
+        return $max;
     }
 }

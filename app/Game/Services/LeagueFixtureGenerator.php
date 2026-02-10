@@ -121,10 +121,14 @@ class LeagueFixtureGenerator
             }
 
             // Remaining pairs: mirror positions from rotation array
+            // Alternate home/away by pair position to minimize consecutive
+            // same-venue games (achieves theoretical minimum of n-2 breaks)
             for ($i = 1; $i < $halfN; $i++) {
-                $home = $rotating[$i];
-                $away = $rotating[$n - 1 - $i];
-                $pairs[] = [$home, $away];
+                if ($i % 2 === 1) {
+                    $pairs[] = [$rotating[$i], $rotating[$n - 1 - $i]];
+                } else {
+                    $pairs[] = [$rotating[$n - 1 - $i], $rotating[$i]];
+                }
             }
 
             $schedule[] = $pairs;

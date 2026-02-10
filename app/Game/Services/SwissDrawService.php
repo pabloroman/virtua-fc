@@ -142,27 +142,80 @@ class SwissDrawService
             }
         }
 
-        // Build matches with balanced home/away
-        $matches = [];
-        $homeCount = [];
-        $pairs = array_keys($paired);
-        shuffle($pairs);
+        // Orient pairings with exactly 4 home, 4 away per team using Euler circuit
+        return $this->orientEdgesBalanced($paired);
+    }
 
-        foreach ($pairs as $key) {
+    /**
+     * Orient undirected pairings into directed matches with exactly 4 home, 4 away per team.
+     *
+     * Uses Hierholzer's Euler circuit algorithm. Each team has even degree (8),
+     * so Euler circuits exist. Orienting edges along the circuit direction gives
+     * each team exactly degree/2 = 4 home and 4 away games.
+     *
+     * @param  array<string, true>  $paired  Canonical pair keys ("idA|idB" where idA < idB)
+     * @return array<array{homeTeamId: string, awayTeamId: string}>
+     */
+    private function orientEdgesBalanced(array $paired): array
+    {
+        $adj = [];
+        $edgeUsed = [];
+
+        foreach (array_keys($paired) as $key) {
             [$a, $b] = explode('|', $key);
+            $adj[$a][] = ['neighbor' => $b, 'key' => $key];
+            $adj[$b][] = ['neighbor' => $a, 'key' => $key];
+            $edgeUsed[$key] = false;
+        }
 
-            if (($homeCount[$a] ?? 0) < ($homeCount[$b] ?? 0)) {
-                $home = $a; $away = $b;
-            } elseif (($homeCount[$b] ?? 0) < ($homeCount[$a] ?? 0)) {
-                $home = $b; $away = $a;
-            } elseif (rand(0, 1) === 0) {
-                $home = $a; $away = $b;
-            } else {
-                $home = $b; $away = $a;
+        $adjPos = array_fill_keys(array_keys($adj), 0);
+        $matches = [];
+
+        // Process each connected component
+        foreach (array_keys($adj) as $start) {
+            $hasUnused = false;
+            for ($i = $adjPos[$start]; $i < count($adj[$start]); $i++) {
+                if (!$edgeUsed[$adj[$start][$i]['key']]) {
+                    $hasUnused = true;
+                    break;
+                }
+            }
+            if (!$hasUnused) {
+                continue;
             }
 
-            $matches[] = ['homeTeamId' => $home, 'awayTeamId' => $away];
-            $homeCount[$home] = ($homeCount[$home] ?? 0) + 1;
+            // Hierholzer's algorithm (stack-based)
+            $stack = [$start];
+            $circuit = [];
+
+            while (!empty($stack)) {
+                $v = end($stack);
+                $found = false;
+
+                while ($adjPos[$v] < count($adj[$v])) {
+                    $edge = $adj[$v][$adjPos[$v]];
+                    $adjPos[$v]++;
+
+                    if (!$edgeUsed[$edge['key']]) {
+                        $edgeUsed[$edge['key']] = true;
+                        $stack[] = $edge['neighbor'];
+                        $found = true;
+                        break;
+                    }
+                }
+
+                if (!$found) {
+                    $circuit[] = array_pop($stack);
+                }
+            }
+
+            // Orient edges along the circuit: consecutive vertices define home→away
+            for ($i = 0; $i < count($circuit) - 1; $i++) {
+                $matches[] = [
+                    'homeTeamId' => $circuit[$i],
+                    'awayTeamId' => $circuit[$i + 1],
+                ];
+            }
         }
 
         return $matches;

@@ -264,9 +264,6 @@ class SeedReferenceData extends Command
 
         // Seed players (embedded in teams data)
         $this->seedPlayersFromTeams($teamsData['clubs'], $teamIdMap);
-
-        // League fixtures are now generated per-game by LeagueFixtureGenerator
-        // using matchdays.json + CompetitionTeam roster (no seeding needed)
     }
 
     private function seedCupCompetition(string $basePath, string $code, int $tier, string $handler, string $country, string $role = 'domestic_cup'): void
