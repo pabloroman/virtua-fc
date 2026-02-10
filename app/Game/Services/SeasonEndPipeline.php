@@ -20,6 +20,7 @@ use App\Game\Processors\StandingsResetProcessor;
 use App\Game\Processors\StatsResetProcessor;
 use App\Game\Processors\SupercopaQualificationProcessor;
 use App\Game\Processors\UefaQualificationProcessor;
+use App\Game\Processors\OnboardingResetProcessor;
 use App\Game\Processors\YouthAcademyProcessor;
 use App\Models\Game;
 
@@ -49,6 +50,7 @@ class SeasonEndPipeline
         StandingsResetProcessor $standingsReset,
         BudgetProjectionProcessor $budgetProjection,
         YouthAcademyProcessor $youthAcademy,
+        OnboardingResetProcessor $onboardingReset,
     ) {
         $this->processors = [
             $seasonArchive,
@@ -68,6 +70,7 @@ class SeasonEndPipeline
             $standingsReset,
             $budgetProjection,
             $youthAcademy,
+            $onboardingReset,
         ];
 
         // Sort by priority (lower numbers first)
