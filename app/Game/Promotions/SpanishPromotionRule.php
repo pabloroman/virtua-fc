@@ -66,6 +66,10 @@ class SpanishPromotionRule implements PromotionRelegationRule
             $playoffWinner = $this->getPlayoffWinner($game);
             if ($playoffWinner) {
                 $promoted[] = $playoffWinner;
+            } else {
+                // No playoff played — promote 3rd place directly
+                $thirdPlace = $this->getTeamsByPosition($game->id, $this->getBottomDivision(), [3]);
+                $promoted = array_merge($promoted, $thirdPlace);
             }
 
             return $promoted;
