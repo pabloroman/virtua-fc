@@ -4,9 +4,9 @@ namespace App\Game\Processors;
 
 use App\Game\Contracts\SeasonEndProcessor;
 use App\Game\DTO\SeasonTransitionData;
-use App\Models\CompetitionTeam;
 use App\Models\Competition;
 use App\Models\Game;
+use App\Models\GameCompetitionTeam;
 use App\Models\GameStanding;
 
 /**
@@ -46,10 +46,10 @@ class UefaQualificationProcessor implements SeasonEndProcessor
         $newSeason = $data->newSeason;
 
         // Qualify Spanish teams for UCL
-        $this->updateSpanishQualifiers('UCL', self::UCL_POSITIONS, $standings, $newSeason);
+        $this->updateSpanishQualifiers($game->id, 'UCL', self::UCL_POSITIONS, $standings);
 
         // Qualify Spanish teams for UEL
-        $this->updateSpanishQualifiers('UEL', self::UEL_POSITIONS, $standings, $newSeason);
+        $this->updateSpanishQualifiers($game->id, 'UEL', self::UEL_POSITIONS, $standings);
 
         return $data;
     }
@@ -59,10 +59,10 @@ class UefaQualificationProcessor implements SeasonEndProcessor
      * Removes old Spanish teams and adds new qualifiers.
      */
     private function updateSpanishQualifiers(
+        string $gameId,
         string $competitionId,
         array $qualifyingPositions,
         array $standings,
-        string $newSeason,
     ): void {
         $competition = Competition::find($competitionId);
         if (!$competition) {
@@ -81,20 +81,20 @@ class UefaQualificationProcessor implements SeasonEndProcessor
             return;
         }
 
-        // Remove old Spanish teams from this competition for the new season
+        // Remove old Spanish teams from this competition for this game
         $spanishTeamIds = \App\Models\Team::where('country', 'ES')->pluck('id')->toArray();
-        CompetitionTeam::where('competition_id', $competitionId)
-            ->where('season', $newSeason)
+        GameCompetitionTeam::where('game_id', $gameId)
+            ->where('competition_id', $competitionId)
             ->whereIn('team_id', $spanishTeamIds)
             ->delete();
 
         // Add new qualifiers
         foreach ($newQualifiers as $teamId) {
-            CompetitionTeam::updateOrCreate(
+            GameCompetitionTeam::updateOrCreate(
                 [
+                    'game_id' => $gameId,
                     'competition_id' => $competitionId,
                     'team_id' => $teamId,
-                    'season' => $newSeason,
                 ],
                 [
                     'entry_round' => 1,

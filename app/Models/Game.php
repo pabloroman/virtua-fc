@@ -162,6 +162,11 @@ class Game extends Model
         return $this->belongsTo(Competition::class);
     }
 
+    public function competitionTeams(): HasMany
+    {
+        return $this->hasMany(GameCompetitionTeam::class);
+    }
+
     public function getNextMatchAttribute(): ?GameMatch
     {
         return $this->matches()

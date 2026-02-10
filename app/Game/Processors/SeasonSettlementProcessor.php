@@ -5,7 +5,6 @@ namespace App\Game\Processors;
 use App\Game\Contracts\SeasonEndProcessor;
 use App\Game\DTO\SeasonTransitionData;
 use App\Models\ClubProfile;
-use App\Models\Competition;
 use App\Models\FinancialTransaction;
 use App\Models\Game;
 use App\Models\GameInvestment;
@@ -99,7 +98,7 @@ class SeasonSettlementProcessor implements SeasonEndProcessor
 
     private function calculateTvRevenue(int $position, Game $game): int
     {
-        $league = $game->team->competitions()->where('role', Competition::ROLE_PRIMARY)->first();
+        $league = $game->competition;
         if (!$league) {
             return 0;
         }
@@ -113,7 +112,7 @@ class SeasonSettlementProcessor implements SeasonEndProcessor
         $team = $game->team;
         $reputation = $team->clubProfile?->reputation_level ?? ClubProfile::REPUTATION_MODEST;
 
-        $league = $team->competitions()->where('role', Competition::ROLE_PRIMARY)->first();
+        $league = $game->competition;
         if (!$league) {
             return 0;
         }

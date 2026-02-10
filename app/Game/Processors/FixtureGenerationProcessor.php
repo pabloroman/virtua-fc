@@ -5,8 +5,8 @@ namespace App\Game\Processors;
 use App\Game\Contracts\SeasonEndProcessor;
 use App\Game\DTO\SeasonTransitionData;
 use App\Game\Services\LeagueFixtureGenerator;
-use App\Models\CompetitionTeam;
 use App\Models\CupTie;
+use App\Models\GameCompetitionTeam;
 use App\Models\Game;
 use App\Models\GameMatch;
 use Carbon\Carbon;
@@ -66,9 +66,9 @@ class FixtureGenerationProcessor implements SeasonEndProcessor
             $matchdays = LeagueFixtureGenerator::adjustMatchdayYears($matchdays, $yearDiff);
         }
 
-        // Get team IDs from the current roster (already updated by PromotionRelegationProcessor)
-        $teamIds = CompetitionTeam::where('competition_id', $competitionId)
-            ->where('season', $newSeason)
+        // Get team IDs from the game roster (already updated by PromotionRelegationProcessor)
+        $teamIds = GameCompetitionTeam::where('game_id', $gameId)
+            ->where('competition_id', $competitionId)
             ->pluck('team_id')
             ->toArray();
 

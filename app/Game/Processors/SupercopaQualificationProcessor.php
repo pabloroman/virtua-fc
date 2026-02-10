@@ -4,9 +4,9 @@ namespace App\Game\Processors;
 
 use App\Game\Contracts\SeasonEndProcessor;
 use App\Game\DTO\SeasonTransitionData;
-use App\Models\CompetitionTeam;
 use App\Models\CupTie;
 use App\Models\Game;
+use App\Models\GameCompetitionTeam;
 use App\Models\GameStanding;
 
 /**
@@ -43,8 +43,8 @@ class SupercopaQualificationProcessor implements SeasonEndProcessor
         // Determine the 4 Supercopa qualifiers
         $qualifiers = $this->determineQualifiers($copaFinalists, $ligaTopTeams);
 
-        // Update Supercopa competition_teams for the new season
-        $this->updateSupercopaTeams($qualifiers, $data->newSeason);
+        // Update Supercopa game_competition_teams for the new season
+        $this->updateSupercopaTeams($game->id, $qualifiers);
 
         // Store qualifiers in metadata for display
         $data->setMetadata('supercopaQualifiers', $qualifiers);
@@ -129,21 +129,21 @@ class SupercopaQualificationProcessor implements SeasonEndProcessor
     }
 
     /**
-     * Update ESPSUP competition_teams for the new season.
+     * Update ESPSUP game_competition_teams for this game.
      */
-    private function updateSupercopaTeams(array $teamIds, string $newSeason): void
+    private function updateSupercopaTeams(string $gameId, array $teamIds): void
     {
-        // Remove old season entries
-        CompetitionTeam::where('competition_id', self::SUPERCOPA_COMPETITION_ID)
-            ->where('season', $newSeason)
+        // Remove old entries
+        GameCompetitionTeam::where('game_id', $gameId)
+            ->where('competition_id', self::SUPERCOPA_COMPETITION_ID)
             ->delete();
 
         // Insert new qualifiers
         foreach ($teamIds as $teamId) {
-            CompetitionTeam::create([
+            GameCompetitionTeam::create([
+                'game_id' => $gameId,
                 'competition_id' => self::SUPERCOPA_COMPETITION_ID,
                 'team_id' => $teamId,
-                'season' => $newSeason,
                 'entry_round' => 1,
             ]);
         }

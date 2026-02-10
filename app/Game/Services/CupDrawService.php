@@ -2,8 +2,8 @@
 
 namespace App\Game\Services;
 
-use App\Models\CompetitionTeam;
 use App\Models\CupRoundTemplate;
+use App\Models\GameCompetitionTeam;
 use App\Models\CupTie;
 use App\Models\GameMatch;
 use Illuminate\Support\Collection;
@@ -101,8 +101,8 @@ class CupDrawService
         $teams = collect();
 
         // Teams entering at this specific round
-        $enteringTeams = CompetitionTeam::where('competition_id', $competitionId)
-            ->where('season', $season)
+        $enteringTeams = GameCompetitionTeam::where('game_id', $gameId)
+            ->where('competition_id', $competitionId)
             ->where('entry_round', $roundNumber)
             ->pluck('team_id');
 
@@ -149,8 +149,8 @@ class CupDrawService
 
         // For round 1, we just need teams entering at round 1
         if ($roundNumber === 1) {
-            $teamsEntering = CompetitionTeam::where('competition_id', $competitionId)
-                ->where('season', $roundTemplate->season)
+            $teamsEntering = GameCompetitionTeam::where('game_id', $gameId)
+                ->where('competition_id', $competitionId)
                 ->where('entry_round', 1)
                 ->count();
 
