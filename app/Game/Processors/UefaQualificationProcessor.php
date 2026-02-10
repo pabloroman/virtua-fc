@@ -6,7 +6,7 @@ use App\Game\Contracts\SeasonEndProcessor;
 use App\Game\DTO\SeasonTransitionData;
 use App\Models\Competition;
 use App\Models\Game;
-use App\Models\GameCompetitionTeam;
+use App\Models\CompetitionEntry;
 use App\Models\GameStanding;
 
 /**
@@ -83,14 +83,14 @@ class UefaQualificationProcessor implements SeasonEndProcessor
 
         // Remove old Spanish teams from this competition for this game
         $spanishTeamIds = \App\Models\Team::where('country', 'ES')->pluck('id')->toArray();
-        GameCompetitionTeam::where('game_id', $gameId)
+        CompetitionEntry::where('game_id', $gameId)
             ->where('competition_id', $competitionId)
             ->whereIn('team_id', $spanishTeamIds)
             ->delete();
 
         // Add new qualifiers
         foreach ($newQualifiers as $teamId) {
-            GameCompetitionTeam::updateOrCreate(
+            CompetitionEntry::updateOrCreate(
                 [
                     'game_id' => $gameId,
                     'competition_id' => $competitionId,

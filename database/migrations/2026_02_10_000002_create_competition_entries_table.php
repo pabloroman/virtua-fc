@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('game_competition_teams', function (Blueprint $table) {
+        Schema::create('competition_entries', function (Blueprint $table) {
             $table->uuid('game_id');
             $table->string('competition_id', 10);
             $table->uuid('team_id');
@@ -27,6 +27,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('game_competition_teams');
+        Schema::dropIfExists('competition_entries');
     }
 };

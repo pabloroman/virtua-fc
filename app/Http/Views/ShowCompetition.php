@@ -4,7 +4,7 @@ namespace App\Http\Views;
 
 use App\Models\Competition;
 use App\Models\CupRoundTemplate;
-use App\Models\GameCompetitionTeam;
+use App\Models\CompetitionEntry;
 use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameMatch;
@@ -20,7 +20,7 @@ class ShowCompetition
         $competition = Competition::findOrFail($competitionId);
 
         // Verify the team participates in this competition
-        $participates = GameCompetitionTeam::where('game_id', $game->id)
+        $participates = CompetitionEntry::where('game_id', $game->id)
             ->where('competition_id', $competitionId)
             ->where('team_id', $game->team_id)
             ->exists();
@@ -52,7 +52,7 @@ class ShowCompetition
         $teamForms = $this->getTeamForms($game->id, $competition->id, $standings->pluck('team_id'));
 
         // Get team IDs in this competition
-        $competitionTeamIds = GameCompetitionTeam::where('game_id', $game->id)
+        $competitionTeamIds = CompetitionEntry::where('game_id', $game->id)
             ->where('competition_id', $competition->id)
             ->pluck('team_id');
 
@@ -90,7 +90,7 @@ class ShowCompetition
 
         $teamForms = $this->getTeamForms($game->id, $competition->id, $standings->pluck('team_id'));
 
-        $competitionTeamIds = GameCompetitionTeam::where('game_id', $game->id)
+        $competitionTeamIds = CompetitionEntry::where('game_id', $game->id)
             ->where('competition_id', $competition->id)
             ->pluck('team_id');
 

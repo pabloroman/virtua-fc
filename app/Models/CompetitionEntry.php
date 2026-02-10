@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class GameCompetitionTeam extends Model
+class CompetitionEntry extends Model
 {
-    protected $table = 'game_competition_teams';
+    protected $table = 'competition_entries';
 
     public $timestamps = false;
 

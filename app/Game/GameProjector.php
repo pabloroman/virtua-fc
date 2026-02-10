@@ -25,7 +25,7 @@ use App\Models\Competition;
 use App\Models\CompetitionTeam;
 use App\Models\CupTie;
 use App\Models\FinancialTransaction;
-use App\Models\GameCompetitionTeam;
+use App\Models\CompetitionEntry;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
@@ -535,7 +535,7 @@ class GameProjector extends Projector
      */
     private function generateLeagueFixtures(string $gameId, string $competitionId, string $season, array $matchdays): void
     {
-        $teamIds = GameCompetitionTeam::where('game_id', $gameId)
+        $teamIds = CompetitionEntry::where('game_id', $gameId)
             ->where('competition_id', $competitionId)
             ->pluck('team_id')
             ->toArray();
@@ -614,7 +614,7 @@ class GameProjector extends Projector
      */
     private function initializeStandings(string $gameId, string $competitionId, string $season): void
     {
-        $teamIds = GameCompetitionTeam::where('game_id', $gameId)
+        $teamIds = CompetitionEntry::where('game_id', $gameId)
             ->where('competition_id', $competitionId)
             ->pluck('team_id')
             ->toArray();
@@ -623,7 +623,7 @@ class GameProjector extends Projector
     }
 
     /**
-     * Copy all competition_teams for the season into game_competition_teams.
+     * Copy all competition_teams for the season into competition_entries.
      * This creates a per-game snapshot of the roster so season-end mutations are isolated.
      */
     private function copyCompetitionTeamsToGame(string $gameId, string $season): void
@@ -639,7 +639,7 @@ class GameProjector extends Projector
             ->toArray();
 
         foreach (array_chunk($rows, 100) as $chunk) {
-            GameCompetitionTeam::insert($chunk);
+            CompetitionEntry::insert($chunk);
         }
     }
 
@@ -676,7 +676,7 @@ class GameProjector extends Projector
 
         foreach ($swissCompetitions as $competition) {
             // Check if the player's team participates in this competition
-            $participates = GameCompetitionTeam::where('game_id', $gameId)
+            $participates = CompetitionEntry::where('game_id', $gameId)
                 ->where('competition_id', $competition->id)
                 ->where('team_id', $teamId)
                 ->exists();

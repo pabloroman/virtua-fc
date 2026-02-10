@@ -3,7 +3,7 @@
 @php
     // Get competitions the team participates in for this game
     $teamCompetitions = \App\Models\Competition::whereIn('id',
-        $game->competitionTeams()
+        $game->competitionEntries()
             ->where('team_id', $game->team_id)
             ->pluck('competition_id')
     )->orderBy('tier')->get();

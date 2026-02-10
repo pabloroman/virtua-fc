@@ -6,7 +6,7 @@ use App\Game\Contracts\SeasonEndProcessor;
 use App\Game\DTO\SeasonTransitionData;
 use App\Models\CupTie;
 use App\Models\Game;
-use App\Models\GameCompetitionTeam;
+use App\Models\CompetitionEntry;
 use App\Models\GameStanding;
 
 /**
@@ -43,7 +43,7 @@ class SupercopaQualificationProcessor implements SeasonEndProcessor
         // Determine the 4 Supercopa qualifiers
         $qualifiers = $this->determineQualifiers($copaFinalists, $ligaTopTeams);
 
-        // Update Supercopa game_competition_teams for the new season
+        // Update Supercopa competition_entries for this game
         $this->updateSupercopaTeams($game->id, $qualifiers);
 
         // Store qualifiers in metadata for display
@@ -129,18 +129,18 @@ class SupercopaQualificationProcessor implements SeasonEndProcessor
     }
 
     /**
-     * Update ESPSUP game_competition_teams for this game.
+     * Update ESPSUP competition_entries for this game.
      */
     private function updateSupercopaTeams(string $gameId, array $teamIds): void
     {
         // Remove old entries
-        GameCompetitionTeam::where('game_id', $gameId)
+        CompetitionEntry::where('game_id', $gameId)
             ->where('competition_id', self::SUPERCOPA_COMPETITION_ID)
             ->delete();
 
         // Insert new qualifiers
         foreach ($teamIds as $teamId) {
-            GameCompetitionTeam::create([
+            CompetitionEntry::create([
                 'game_id' => $gameId,
                 'competition_id' => self::SUPERCOPA_COMPETITION_ID,
                 'team_id' => $teamId,
