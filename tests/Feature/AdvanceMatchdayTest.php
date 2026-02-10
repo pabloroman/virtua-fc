@@ -52,6 +52,7 @@ class AdvanceMatchdayTest extends TestCase
         $this->game = Game::factory()->create([
             'user_id' => $this->user->id,
             'team_id' => $this->playerTeam->id,
+            'competition_id' => $this->leagueCompetition->id,
             'season' => '2024',
             'current_date' => '2024-08-15',
             'current_matchday' => 0,

@@ -30,6 +30,7 @@ class PlayerGeneratorServiceTest extends TestCase
         $this->game = Game::factory()->create([
             'user_id' => $user->id,
             'team_id' => $this->team->id,
+            'competition_id' => 'ESP1',
             'season' => '2024',
         ]);
     }

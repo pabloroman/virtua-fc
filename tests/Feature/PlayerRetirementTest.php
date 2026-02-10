@@ -33,6 +33,7 @@ class PlayerRetirementTest extends TestCase
         $this->game = Game::factory()->create([
             'user_id' => $this->user->id,
             'team_id' => $this->userTeam->id,
+            'competition_id' => 'ESP1',
             'season' => '2024',
         ]);
     }

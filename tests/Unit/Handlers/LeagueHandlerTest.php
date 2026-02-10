@@ -41,6 +41,7 @@ class LeagueHandlerTest extends TestCase
         $this->game = Game::factory()->create([
             'user_id' => $user->id,
             'team_id' => $this->team1->id,
+            'competition_id' => $this->competition->id,
         ]);
     }
 

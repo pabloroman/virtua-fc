@@ -53,6 +53,7 @@ class KnockoutCupHandlerTest extends TestCase
         $this->game = Game::factory()->create([
             'user_id' => $user->id,
             'team_id' => $this->team1->id,
+            'competition_id' => 'ESP1',
             'season' => '2024',
         ]);
     }
