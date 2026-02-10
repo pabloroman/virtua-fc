@@ -12,7 +12,6 @@ use App\Game\Contracts\CompetitionConfig;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Competition extends Model
 {
@@ -59,14 +58,9 @@ class Competition extends Model
             ->orderBy('name');
     }
 
-    public function fixtureTemplates(): HasMany
-    {
-        return $this->hasMany(FixtureTemplate::class);
-    }
-
     public function isLeague(): bool
     {
-        return in_array($this->handler_type, ['league', 'league_with_playoff']);
+        return in_array($this->handler_type, ['league', 'league_with_playoff', 'swiss_format']);
     }
 
     public function isCup(): bool

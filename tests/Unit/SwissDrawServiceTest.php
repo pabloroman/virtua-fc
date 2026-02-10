@@ -132,6 +132,30 @@ class SwissDrawServiceTest extends TestCase
         }
     }
 
+    public function test_each_team_has_4_home_and_4_away_games(): void
+    {
+        $teams = $this->makeTeams();
+
+        for ($i = 0; $i < 10; $i++) {
+            $fixtures = $this->service->generateFixtures($teams, Carbon::now());
+
+            $homeCounts = [];
+            $awayCounts = [];
+            foreach ($fixtures as $fixture) {
+                $homeCounts[$fixture['homeTeamId']] = ($homeCounts[$fixture['homeTeamId']] ?? 0) + 1;
+                $awayCounts[$fixture['awayTeamId']] = ($awayCounts[$fixture['awayTeamId']] ?? 0) + 1;
+            }
+
+            foreach ($homeCounts as $teamId => $count) {
+                $this->assertEquals(4, $count, "Iteration {$i}: Team {$teamId} has {$count} home games instead of 4");
+            }
+
+            foreach ($awayCounts as $teamId => $count) {
+                $this->assertEquals(4, $count, "Iteration {$i}: Team {$teamId} has {$count} away games instead of 4");
+            }
+        }
+    }
+
     /**
      * Run multiple iterations to catch non-deterministic failures.
      */
