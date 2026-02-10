@@ -128,17 +128,27 @@ class MatchSimulator
         $homeAdvantageGoals = config('match_simulation.home_advantage_goals', 0.0);
         $awayDisadvantage = config('match_simulation.away_disadvantage_multiplier', 0.8);
 
+        // Scale base rates by strength ratio so quality gaps affect base scoring rates.
+        // When teams are equal (share=0.5), factor is 1.0 — no change.
+        // When a team is dominant (share=0.7), their base is multiplied by 1.4.
+        // When a team is weak (share=0.3), their base is multiplied by 0.6.
+        // This prevents weak home teams from having higher expected goals than strong away teams.
+        $homeShare = $homeStrength / $totalStrength;
+        $awayShare = $awayStrength / $totalStrength;
+        $scaledBaseHome = $baseHomeGoals * ($homeShare * 2);
+        $scaledBaseAway = $baseAwayGoals * ($awayShare * 2);
+
         // Apply formation and mentality modifiers to expected goals
         // Mentality affects:
         // - ownGoalsModifier: how many goals YOU score
         // - opponentGoalsModifier: how many goals OPPONENT scores against you
-        $homeExpectedGoals = ($baseHomeGoals + $homeAdvantageGoals + ($homeStrength / $totalStrength) * $strengthMultiplier)
+        $homeExpectedGoals = ($scaledBaseHome + $homeAdvantageGoals + $homeShare * $strengthMultiplier)
             * $homeFormation->attackModifier()
             * $awayFormation->defenseModifier()
             * $homeMentality->ownGoalsModifier()        // Home team's offensive mentality
             * $awayMentality->opponentGoalsModifier();  // Away team's defensive vulnerability
 
-        $awayExpectedGoals = ($baseAwayGoals + ($awayStrength / $totalStrength) * $strengthMultiplier * $awayDisadvantage)
+        $awayExpectedGoals = ($scaledBaseAway + $awayShare * $strengthMultiplier * $awayDisadvantage)
             * $awayFormation->attackModifier()
             * $homeFormation->defenseModifier()
             * $awayMentality->ownGoalsModifier()        // Away team's offensive mentality
