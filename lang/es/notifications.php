@@ -13,7 +13,7 @@ return [
     'injury_calf_strain' => 'distensión de gemelo',
     'injury_ankle_sprain' => 'esguince de tobillo',
     'injury_groin_strain' => 'distensión inguinal',
-    'injury_hamstring_tear' => 'desgarro de isquiotibiales',
+    'injury_hamstring_tear' => 'rotura de isquiotibial',
     'injury_knee_contusion' => 'contusión de rodilla',
     'injury_metatarsal_fracture' => 'fractura de metatarso',
     'injury_acl_tear' => 'rotura de ligamento cruzado',

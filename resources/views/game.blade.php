@@ -13,20 +13,27 @@
                     {{-- Left Column (2/3) - Main Content --}}
                     <div class="col-span-2 space-y-8">
                         {{-- Next Match --}}
-                        <div>
-                            {{-- Competition & Date Header --}}
+                        @php
+                            $competitionRole = $nextMatch->competition->role ?? 'primary';
+                            $accent = match($competitionRole) {
+                                'domestic_cup' => ['border' => 'border-l-emerald-500', 'badge' => 'bg-emerald-100 text-emerald-800'],
+                                'european' => ['border' => 'border-l-blue-600', 'badge' => 'bg-blue-100 text-blue-800'],
+                                default => ['border' => 'border-l-amber-500', 'badge' => 'bg-amber-100 text-amber-800'],
+                            };
+                        @endphp
+                        <div class="border-l-4 {{ $accent['border'] }} pl-6">
+                            {{-- Competition & Round Header --}}
                             <div class="flex items-center justify-between mb-6">
                                 <h3 class="font-semibold text-xl text-slate-900">{{ __('game.next_match') }}</h3>
-                                <div class="flex items-center gap-3 text-sm text-slate-500">
-                                    <span>{{ $nextMatch->competition->name ?? 'League' }}</span>
-                                    <span class="text-slate-300">|</span>
+                                <div class="flex items-center gap-3">
+                                    <span class="px-3 py-1 text-xs font-semibold rounded-full {{ $accent['badge'] }}">
+                                        {{ $nextMatch->competition->name ?? 'League' }}
+                                    </span>
                                     @if($nextMatch->round_name)
-                                        <span>{{ $nextMatch->round_name }}</span>
+                                        <span class="text-sm text-slate-500">{{ $nextMatch->round_name }}</span>
                                     @else
-                                        <span>{{ __('game.matchday_n', ['number' => $nextMatch->round_number]) }}</span>
+                                        <span class="text-sm text-slate-500">{{ __('game.matchday_n', ['number' => $nextMatch->round_number]) }}</span>
                                     @endif
-                                    <span class="text-slate-300">|</span>
-                                    <span class="font-medium text-slate-700">{{ $nextMatch->scheduled_date->format('D, M j') }}</span>
                                 </div>
                             </div>
 
@@ -95,9 +102,9 @@
                             </div>
 
                             {{-- Set Lineup Button --}}
-                            <div class="mt-4">
+                            <div class="mt-6 text-center">
                                 <a href="{{ route('game.lineup', [$game->id, $nextMatch->id]) }}"
-                                   class="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg transition-colors">
+                                   class="inline-flex items-center gap-2 px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg transition-colors">
                                     {{ __('game.set_lineup') }}
                                 </a>
                             </div>
