@@ -58,41 +58,36 @@
                                     <h4 class="font-semibold text-sm text-slate-900">{{ __('finances.budget_flow') }}</h4>
                                     <span class="text-xs text-slate-400">{{ __('finances.season_budget', ['season' => $game->season]) }}</span>
                                 </div>
-                                <div class="px-5 py-4 space-y-0 text-sm" x-data="{ revenueOpen: false }">
-                                    {{-- Revenue (collapsible) --}}
-                                    <div>
-                                        <button @click="revenueOpen = !revenueOpen" class="w-full flex items-center justify-between py-2 hover:bg-slate-50 -mx-2 px-2 rounded">
-                                            <div class="flex items-center gap-2">
-                                                <svg class="w-3 h-3 text-slate-400 transition-transform" :class="{ 'rotate-90': revenueOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                                                <span class="font-medium text-slate-700">{{ __('finances.total_revenue') }}</span>
-                                            </div>
+                                <div class="px-5 py-4 space-y-0 text-sm">
+                                    {{-- Revenue line items --}}
+                                    <div class="flex items-center justify-between py-2">
+                                        <span class="text-slate-500 pl-5">{{ __('finances.tv_rights') }}</span>
+                                        <span class="text-green-600">+{{ $finances->formatted_projected_tv_revenue }}</span>
+                                    </div>
+                                    <div class="flex items-center justify-between py-2">
+                                        <span class="text-slate-500 pl-5">{{ __('finances.commercial') }}</span>
+                                        <span class="text-green-600">+{{ $finances->formatted_projected_commercial_revenue }}</span>
+                                    </div>
+                                    <div class="flex items-center justify-between py-2">
+                                        <span class="text-slate-500 pl-5">{{ __('finances.matchday') }}</span>
+                                        <span class="text-green-600">+{{ $finances->formatted_projected_matchday_revenue }}</span>
+                                    </div>
+                                    @if($finances->projected_solidarity_funds_revenue > 0)
+                                    <div class="flex items-center justify-between py-2">
+                                        <span class="text-slate-500 pl-5">{{ __('finances.solidarity_funds') }}</span>
+                                        <span class="text-green-600">+{{ $finances->formatted_projected_solidarity_funds_revenue }}</span>
+                                    </div>
+                                    @endif
+                                    @if($finances->projected_subsidy_revenue > 0)
+                                    <div class="flex items-center justify-between py-2">
+                                        <span class="text-slate-500 pl-5">{{ __('finances.public_subsidy') }}</span>
+                                        <span class="text-green-600">+{{ $finances->formatted_projected_subsidy_revenue }}</span>
+                                    </div>
+                                    @endif
+                                    <div class="border-t pt-2 mt-1">
+                                        <div class="flex items-center justify-between py-1">
+                                            <span class="font-medium text-slate-700 pl-5">{{ __('finances.total_revenue') }}</span>
                                             <span class="font-semibold text-green-600">+{{ $finances->formatted_projected_total_revenue }}</span>
-                                        </button>
-                                        <div x-show="revenueOpen" x-transition class="pl-7 pb-2 space-y-1 text-slate-500">
-                                            <div class="flex justify-between py-0.5">
-                                                <span>{{ __('finances.tv_rights') }}</span>
-                                                <span>{{ $finances->formatted_projected_tv_revenue }}</span>
-                                            </div>
-                                            <div class="flex justify-between py-0.5">
-                                                <span>{{ __('finances.commercial') }}</span>
-                                                <span>{{ $finances->formatted_projected_commercial_revenue }}</span>
-                                            </div>
-                                            <div class="flex justify-between py-0.5">
-                                                <span>{{ __('finances.matchday') }}</span>
-                                                <span>{{ $finances->formatted_projected_matchday_revenue }}</span>
-                                            </div>
-                                            @if($finances->projected_solidarity_funds_revenue > 0)
-                                            <div class="flex justify-between py-0.5">
-                                                <span>{{ __('finances.solidarity_funds') }}</span>
-                                                <span>{{ $finances->formatted_projected_solidarity_funds_revenue }}</span>
-                                            </div>
-                                            @endif
-                                            @if($finances->projected_subsidy_revenue > 0)
-                                            <div class="flex justify-between py-0.5">
-                                                <span>{{ __('finances.public_subsidy') }}</span>
-                                                <span>{{ $finances->formatted_projected_subsidy_revenue }}</span>
-                                            </div>
-                                            @endif
                                         </div>
                                     </div>
 
@@ -228,6 +223,35 @@
                         {{-- RIGHT COLUMN (1/3) --}}
                         <div class="space-y-8">
 
+                            {{-- Club Finances Overview --}}
+                            <div class="rounded-lg overflow-hidden border border-slate-200">
+                                <div class="bg-gradient-to-br from-slate-800 to-slate-900 px-4 py-5">
+                                    <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">{{ __('finances.squad_value') }}</div>
+                                    <div class="text-2xl font-bold text-white">{{ \App\Support\Money::format($squadValue) }}</div>
+                                </div>
+                                <div class="divide-y divide-slate-100">
+                                    <div class="px-4 py-3 flex items-center justify-between">
+                                        <span class="text-sm text-slate-500">{{ __('finances.annual_wage_bill') }}</span>
+                                        <span class="text-sm font-semibold text-slate-900">{{ \App\Support\Money::format($wageBill) }}{{ __('squad.per_year') }}</span>
+                                    </div>
+                                    <div class="px-4 py-3 flex items-center justify-between">
+                                        <span class="text-sm text-slate-500">{{ __('finances.wage_revenue_ratio') }}</span>
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-16 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                                                <div class="h-full rounded-full {{ $wageRevenueRatio > 70 ? 'bg-red-500' : ($wageRevenueRatio > 55 ? 'bg-amber-500' : 'bg-emerald-500') }}" style="width: {{ min($wageRevenueRatio, 100) }}%"></div>
+                                            </div>
+                                            <span class="text-sm font-semibold {{ $wageRevenueRatio > 70 ? 'text-red-600' : ($wageRevenueRatio > 55 ? 'text-amber-600' : 'text-slate-900') }}">{{ $wageRevenueRatio }}%</span>
+                                        </div>
+                                    </div>
+                                    @if($investment)
+                                    <div class="px-4 py-3 flex items-center justify-between">
+                                        <span class="text-sm text-slate-500">{{ __('finances.transfer_budget') }}</span>
+                                        <span class="text-sm font-bold text-slate-900">{{ $investment->formatted_transfer_budget }}</span>
+                                    </div>
+                                    @endif
+                                </div>
+                            </div>
+
                             {{-- Infrastructure --}}
                             @if($investment)
                             <div>
@@ -259,22 +283,6 @@
                                 </div>
                             </div>
                             @endif
-
-                            {{-- Quick Stats --}}
-                            <div class="{{ $investment ? 'border-t pt-6' : '' }} space-y-4">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm text-slate-500">{{ __('finances.annual_wage_bill') }}</span>
-                                    <span class="text-sm font-semibold text-slate-900">{{ \App\Support\Money::format($wageBill) }}{{ __('squad.per_year') }}</span>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm text-slate-500">{{ __('finances.squad_value') }}</span>
-                                    <span class="text-sm font-semibold text-slate-900">{{ \App\Support\Money::format($squadValue) }}</span>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm text-slate-500">{{ __('finances.wage_revenue_ratio') }}</span>
-                                    <span class="text-sm font-semibold {{ $wageRevenueRatio > 70 ? 'text-red-600' : ($wageRevenueRatio > 55 ? 'text-amber-600' : 'text-slate-900') }}">{{ $wageRevenueRatio }}%</span>
-                                </div>
-                            </div>
 
                         </div>
                     </div>
