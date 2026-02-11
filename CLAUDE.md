@@ -336,6 +336,15 @@ lang/es/
 2. Use the key in your blade template or PHP code
 3. Test that the translation displays correctly
 
+## UI/UX Guidelines
+
+When working on UI/UX tasks, implement working code (Blade/Tailwind CSS/Alpine.js) that is:
+
+- **Production-grade and functional** - Code must work correctly, not just look good in a mockup
+- **Visually striking and memorable** - Go beyond defaults; create interfaces that feel polished and intentional
+- **Cohesive with a clear aesthetic point-of-view** - Maintain a consistent design language across all pages
+- **Meticulously refined in every detail** - Pay extra attention to component reusability and ensure visual elements are coherent and uniform across the application
+
 ## Code Quality
 
 ### No Dead Code
