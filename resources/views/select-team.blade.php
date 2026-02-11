@@ -25,7 +25,7 @@
                         <div class="flex space-x-2">
                             @foreach($competitions as $competition)
                                 <a x-on:click="openTab = '{{ $competition->id }}'" :class="{ 'bg-red-600 text-white': openTab === '{{ $competition->id }}' }" class="flex items-center space-x-2 py-2 px-4 rounded-md focus:outline-none text-lg transition-all duration-300 cursor-pointer">
-                                    <img class="w-5 h-4 rounded shadow" src="/flags/{{ $competition->country }}.svg">
+                                    <img class="w-5 h-4 rounded shadow" src="/flags/{{ strtolower($competition->country) }}.svg">
                                     <span>{{ $competition->name }}</span>
                                 </a>
                             @endforeach

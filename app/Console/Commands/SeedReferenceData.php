@@ -6,6 +6,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Database\Seeders\ClubProfilesSeeder;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -163,7 +164,9 @@ class SeedReferenceData extends Command
             $this->clearExistingData();
         }
 
-        $this->createDefaultUser();
+        if (App::environment('local')) {
+            $this->createDefaultUser();
+        }
 
         foreach ($this->profiles[$profile] as $competitionConfig) {
             $this->seedCompetition($competitionConfig);

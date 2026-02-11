@@ -46,9 +46,6 @@ class ShowTransfers
             ->orderByDesc('transfer_fee')
             ->get();
 
-        // Get players with expiring contracts (for notification banner)
-        $expiringContractPlayers = $this->transferService->getExpiringContractPlayers($game);
-
         // Get listed players (even those without offers, excluding those with agreed deals)
         $agreedPlayerIds = $agreedTransfers->pluck('game_player_id')->toArray();
         $listedPlayers = GamePlayer::with(['player', 'activeOffers.offeringTeam'])
@@ -105,7 +102,6 @@ class ShowTransfers
             'incomingAgreedTransfers' => $incomingAgreedTransfers,
             'pendingBids' => $pendingBids,
             'rejectedBids' => $rejectedBids,
-            'expiringContractPlayers' => $expiringContractPlayers,
             'listedPlayers' => $listedPlayers,
             'recentTransfers' => $recentTransfers,
             'currentWindow' => $currentWindow,

@@ -75,7 +75,7 @@ class PlayerGeneratorService
         }
 
         // Calculate wage and contract
-        $annualWage = $this->contractService->calculateAnnualWage($marketValue, 0, $age);
+        $annualWage = $this->contractService->calculateAnnualWage($marketValue, $this->contractService->getMinimumWageForTeam($game->team), $age);
         $seasonYear = (int) $game->season;
         $contractUntil = Carbon::createFromDate($seasonYear + $data->contractYears, 6, 30);
 
@@ -92,7 +92,7 @@ class PlayerGeneratorService
             'contract_until' => $contractUntil,
             'annual_wage' => $annualWage,
             'signed_from' => $data->signedFrom,
-            'joined_on' => Carbon::createFromDate($seasonYear, 7, 1),
+            'joined_on' => $game->current_date ?? Carbon::createFromDate($seasonYear, 7, 1),
             'fitness' => mt_rand($data->fitnessMin, $data->fitnessMax),
             'morale' => mt_rand($data->moraleMin, $data->moraleMax),
             'durability' => InjuryService::generateDurability(),
@@ -124,7 +124,7 @@ class PlayerGeneratorService
     /**
      * Pick a random identity (name + nationality) from the pool.
      */
-    private function pickRandomIdentity(): array
+    public function pickRandomIdentity(): array
     {
         $pool = $this->getIdentityPool();
 

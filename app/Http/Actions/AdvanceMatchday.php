@@ -15,6 +15,7 @@ use App\Game\Services\NotificationService;
 use App\Game\Services\ScoutingService;
 use App\Game\Services\StandingsCalculator;
 use App\Game\Services\TransferService;
+use App\Game\Services\YouthAcademyService;
 use App\Models\Competition;
 use App\Models\CupTie;
 use App\Models\Game;
@@ -36,6 +37,7 @@ class AdvanceMatchday
         private readonly StandingsCalculator $standingsCalculator,
         private readonly NotificationService $notificationService,
         private readonly LoanService $loanService,
+        private readonly YouthAcademyService $youthAcademyService,
     ) {}
 
     public function __invoke(string $gameId)
@@ -261,6 +263,12 @@ class AdvanceMatchday
 
         // Check competition progress (advancement/elimination) after handlers have resolved ties
         $this->checkCompetitionProgress($game, $matches, $handlers);
+
+        // Check for new academy prospect
+        $prospect = $this->youthAcademyService->trySpawnProspect($game);
+        if ($prospect) {
+            $this->notificationService->notifyAcademyProspect($game, $prospect);
+        }
     }
 
     /**

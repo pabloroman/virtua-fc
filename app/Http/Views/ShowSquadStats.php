@@ -2,6 +2,7 @@
 
 namespace App\Http\Views;
 
+use App\Models\AcademyPlayer;
 use App\Models\Game;
 use App\Models\GamePlayer;
 
@@ -38,10 +39,13 @@ class ShowSquadStats
             'clean_sheets' => $players->where('position', 'Goalkeeper')->sum('clean_sheets'),
         ];
 
+        $academyCount = AcademyPlayer::where('game_id', $gameId)->where('team_id', $game->team_id)->count();
+
         return view('squad-stats', [
             'game' => $game,
             'players' => $players,
             'totals' => $totals,
+            'academyCount' => $academyCount,
         ]);
     }
 }
