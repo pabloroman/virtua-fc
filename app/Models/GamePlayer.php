@@ -24,6 +24,7 @@ class GamePlayer extends Model
         'game_id',
         'player_id',
         'team_id',
+        'number',
         'position',
         'market_value',
         'market_value_cents',
@@ -58,6 +59,7 @@ class GamePlayer extends Model
     ];
 
     protected $casts = [
+        'number' => 'integer',
         'market_value_cents' => 'integer',
         'contract_until' => 'date',
         'annual_wage' => 'integer',
@@ -90,6 +92,27 @@ class GamePlayer extends Model
     // Transfer status constants
     public const TRANSFER_STATUS_LISTED = 'listed';
     public const TRANSFER_STATUS_LOAN_SEARCH = 'loan_search';
+
+    /**
+     * Find the next available squad number for a team.
+     * Scans 2–99 and returns the first unused number.
+     */
+    public static function nextAvailableNumber(string $gameId, string $teamId): int
+    {
+        $taken = static::where('game_id', $gameId)
+            ->where('team_id', $teamId)
+            ->whereNotNull('number')
+            ->pluck('number')
+            ->all();
+
+        for ($n = 2; $n <= 99; $n++) {
+            if (!in_array($n, $taken)) {
+                return $n;
+            }
+        }
+
+        return 99;
+    }
 
     /**
      * Check if player has announced retirement.

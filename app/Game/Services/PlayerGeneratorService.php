@@ -79,11 +79,14 @@ class PlayerGeneratorService
         $seasonYear = (int) $game->season;
         $contractUntil = Carbon::createFromDate($seasonYear + $data->contractYears, 6, 30);
 
+        $number = GamePlayer::nextAvailableNumber($game->id, $data->teamId);
+
         return GamePlayer::create([
             'id' => Str::uuid()->toString(),
             'game_id' => $game->id,
             'player_id' => $player->id,
             'team_id' => $data->teamId,
+            'number' => $number,
             'position' => $data->position,
             'market_value_cents' => $marketValue,
             'contract_until' => $contractUntil,

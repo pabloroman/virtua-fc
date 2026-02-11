@@ -324,6 +324,7 @@ class LoanService
         // Move player to user's team
         $player->update([
             'team_id' => $game->team_id,
+            'number' => GamePlayer::nextAvailableNumber($game->id, $game->team_id),
             'joined_on' => $game->current_date,
         ]);
 
@@ -350,6 +351,7 @@ class LoanService
         // Move player to AI team
         $player->update([
             'team_id' => $destinationTeam->id,
+            'number' => GamePlayer::nextAvailableNumber($game->id, $destinationTeam->id),
             'transfer_status' => null,
             'transfer_listed_at' => null,
         ]);
@@ -389,8 +391,10 @@ class LoanService
      */
     private function returnLoan(Loan $loan): void
     {
-        $loan->gamePlayer->update([
+        $gamePlayer = $loan->gamePlayer;
+        $gamePlayer->update([
             'team_id' => $loan->parent_team_id,
+            'number' => GamePlayer::nextAvailableNumber($gamePlayer->game_id, $loan->parent_team_id),
         ]);
 
         $loan->update([

@@ -331,9 +331,9 @@
                                                     class="relative w-11 h-11 rounded-xl bg-gradient-to-br shadow-lg transform transition-all duration-200 hover:scale-110 hover:shadow-xl"
                                                     :class="getPositionGradient(slot.role)"
                                                 >
-                                                    {{-- Initials --}}
+                                                    {{-- Number or Initials --}}
                                                     <div class="absolute inset-0 flex items-center justify-center">
-                                                        <span class="text-white font-semibold text-sm tracking-tight drop-shadow-sm" x-text="getInitials(slot.player?.name)"></span>
+                                                        <span class="text-white font-semibold text-sm tracking-tight drop-shadow-sm" x-text="slot.player?.number || getInitials(slot.player?.name)"></span>
                                                     </div>
                                                     {{-- Compatibility indicator dot --}}
                                                     <div
@@ -508,6 +508,9 @@
                                                         {{-- Name --}}
                                                         <td class="py-2">
                                                             <div class="flex items-center gap-2">
+                                                                @if($player->number)
+                                                                    <span class="text-xs text-slate-400 w-4 text-right">{{ $player->number }}</span>
+                                                                @endif
                                                                 <div class="font-medium @if($isUnavailable) text-slate-400 @else text-slate-900 @endif">
                                                                     {{ $player->name }}
                                                                 </div>

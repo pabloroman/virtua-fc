@@ -40,6 +40,7 @@
                         <thead class="text-left border-b">
                             <tr>
                                 <th class="font-semibold py-2 w-10"></th>
+                                <th class="font-semibold py-2 text-center w-8 text-slate-400">#</th>
                                 <th class="font-semibold py-2">{{ __('app.name') }}</th>
                                 <th class="py-2 w-6"></th>
                                 <th class="font-semibold py-2 text-center w-12">{{ __('app.country') }}</th>
@@ -66,7 +67,7 @@
                             ] as $group)
                                 @if($group['players']->isNotEmpty())
                                     <tr class="bg-slate-200">
-                                        <td colspan="15" class="py-2 px-2 text-xs font-semibold text-slate-600 uppercase tracking-wide">
+                                        <td colspan="16" class="py-2 px-2 text-xs font-semibold text-slate-600 uppercase tracking-wide">
                                             {{ $group['name'] }}
                                         </td>
                                     </tr>
@@ -84,6 +85,8 @@
                                                     {{ $positionDisplay['abbreviation'] }}
                                                 </span>
                                             </td>
+                                            {{-- Number --}}
+                                            <td class="py-2 text-center text-slate-400 text-xs">{{ $gamePlayer->number }}</td>
                                             {{-- Name --}}
                                             <td class="py-2">
                                                 <div class="font-medium text-slate-900 @if($isUnavailable) text-slate-400 @endif">

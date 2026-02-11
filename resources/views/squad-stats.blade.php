@@ -155,7 +155,12 @@
                                         </td>
                                         {{-- Name --}}
                                         <td class="py-2">
-                                            <div class="font-medium text-slate-900">{{ $player->name }}</div>
+                                            <div class="flex items-center gap-2">
+                                                @if($player->number)
+                                                    <span class="text-xs text-slate-400 w-4 text-right">{{ $player->number }}</span>
+                                                @endif
+                                                <span class="font-medium text-slate-900">{{ $player->name }}</span>
+                                            </div>
                                         </td>
                                         {{-- Age --}}
                                         <td class="py-2 text-center text-slate-600">{{ $player->age }}</td>
