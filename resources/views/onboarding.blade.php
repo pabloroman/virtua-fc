@@ -17,7 +17,7 @@
             {{-- Welcome Header --}}
             <div class="text-center mb-8">
                 <img src="{{ $game->team->image }}" alt="{{ $game->team->name }}" class="w-20 h-20 mx-auto mb-4">
-                <h1 class="text-3xl font-bold text-white mb-1">{{ __('game.welcome_to_team', ['team' => $game->team->name]) }}</h1>
+                <h1 class="text-3xl font-bold text-white mb-1">{{ __('game.welcome_to_team', ['team' => $game->team->name]) }}, {{ $game->player_name }}</h1>
                 <p class="text-slate-500">{{ __('game.season_n', ['season' => $game->season]) }}</p>
             </div>
 

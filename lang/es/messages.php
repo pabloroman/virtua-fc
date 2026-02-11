@@ -34,7 +34,7 @@ return [
     'cannot_renew' => 'Este jugador no puede recibir una oferta de renovación.',
 
     // Scout messages
-    'scout_search_started' => 'Búsqueda del ojeador iniciada. Avanza jornadas o semanas de pretemporada para obtener resultados.',
+    'scout_search_started' => 'El ojeador ha iniciado la búsqueda.',
     'scout_already_searching' => 'Ya tienes una búsqueda activa. Cancélala primero o espera los resultados.',
     'scout_search_cancelled' => 'Búsqueda del ojeador cancelada.',
 
