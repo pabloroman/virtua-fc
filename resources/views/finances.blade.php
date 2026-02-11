@@ -61,26 +61,26 @@
                                 <div class="px-5 py-4 space-y-0 text-sm">
                                     {{-- Revenue line items --}}
                                     <div class="flex items-center justify-between py-2">
-                                        <span class="text-slate-500 pl-5">{{ __('finances.tv_rights') }}</span>
+                                        <span class="text-slate-500 pl-5 flex items-center gap-1.5">{{ __('finances.tv_rights') }} <svg x-data="" x-tooltip.raw="{{ __('finances.tooltip_tv_rights') }}" class="w-3.5 h-3.5 text-slate-300 hover:text-slate-500 cursor-help flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></span>
                                         <span class="text-green-600">+{{ $finances->formatted_projected_tv_revenue }}</span>
                                     </div>
                                     <div class="flex items-center justify-between py-2">
-                                        <span class="text-slate-500 pl-5">{{ __('finances.commercial') }}</span>
+                                        <span class="text-slate-500 pl-5 flex items-center gap-1.5">{{ __('finances.commercial') }} <svg x-data="" x-tooltip.raw="{{ __('finances.tooltip_commercial') }}" class="w-3.5 h-3.5 text-slate-300 hover:text-slate-500 cursor-help flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></span>
                                         <span class="text-green-600">+{{ $finances->formatted_projected_commercial_revenue }}</span>
                                     </div>
                                     <div class="flex items-center justify-between py-2">
-                                        <span class="text-slate-500 pl-5">{{ __('finances.matchday') }}</span>
+                                        <span class="text-slate-500 pl-5 flex items-center gap-1.5">{{ __('finances.matchday') }} <svg x-data="" x-tooltip.raw="{{ __('finances.tooltip_matchday') }}" class="w-3.5 h-3.5 text-slate-300 hover:text-slate-500 cursor-help flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></span>
                                         <span class="text-green-600">+{{ $finances->formatted_projected_matchday_revenue }}</span>
                                     </div>
                                     @if($finances->projected_solidarity_funds_revenue > 0)
                                     <div class="flex items-center justify-between py-2">
-                                        <span class="text-slate-500 pl-5">{{ __('finances.solidarity_funds') }}</span>
+                                        <span class="text-slate-500 pl-5 flex items-center gap-1.5">{{ __('finances.solidarity_funds') }} <svg x-data="" x-tooltip.raw="{{ __('finances.tooltip_solidarity_funds') }}" class="w-3.5 h-3.5 text-slate-300 hover:text-slate-500 cursor-help flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></span>
                                         <span class="text-green-600">+{{ $finances->formatted_projected_solidarity_funds_revenue }}</span>
                                     </div>
                                     @endif
                                     @if($finances->projected_subsidy_revenue > 0)
                                     <div class="flex items-center justify-between py-2">
-                                        <span class="text-slate-500 pl-5">{{ __('finances.public_subsidy') }}</span>
+                                        <span class="text-slate-500 pl-5 flex items-center gap-1.5">{{ __('finances.public_subsidy') }} <svg x-data="" x-tooltip.raw="{{ __('finances.tooltip_public_subsidy') }}" class="w-3.5 h-3.5 text-slate-300 hover:text-slate-500 cursor-help flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></span>
                                         <span class="text-green-600">+{{ $finances->formatted_projected_subsidy_revenue }}</span>
                                     </div>
                                     @endif
@@ -93,16 +93,16 @@
 
                                     {{-- Deductions --}}
                                     <div class="flex items-center justify-between py-2">
-                                        <span class="text-slate-500 pl-5">{{ __('finances.projected_wages') }}</span>
+                                        <span class="text-slate-500 pl-5 flex items-center gap-1.5">{{ __('finances.projected_wages') }} <svg x-data="" x-tooltip.raw="{{ __('finances.tooltip_wages') }}" class="w-3.5 h-3.5 text-slate-300 hover:text-slate-500 cursor-help flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></span>
                                         <span class="text-red-600">-{{ $finances->formatted_projected_wages }}</span>
                                     </div>
                                     <div class="flex items-center justify-between py-2">
-                                        <span class="text-slate-500 pl-5">{{ __('finances.operating_expenses') }}</span>
+                                        <span class="text-slate-500 pl-5 flex items-center gap-1.5">{{ __('finances.operating_expenses') }} <svg x-data="" x-tooltip.raw="{{ __('finances.tooltip_operating_expenses') }}" class="w-3.5 h-3.5 text-slate-300 hover:text-slate-500 cursor-help flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></span>
                                         <span class="text-red-600">-{{ $finances->formatted_projected_operating_expenses }}</span>
                                     </div>
                                     @if($finances->projected_taxes > 0)
                                     <div class="flex items-center justify-between py-2">
-                                        <span class="text-slate-500 pl-5">{{ __('finances.taxes') }}</span>
+                                        <span class="text-slate-500 pl-5 flex items-center gap-1.5">{{ __('finances.taxes') }} <svg x-data="" x-tooltip.raw="{{ __('finances.tooltip_taxes') }}" class="w-3.5 h-3.5 text-slate-300 hover:text-slate-500 cursor-help flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></span>
                                         <span class="text-red-600">-{{ \App\Support\Money::format($finances->projected_taxes) }}</span>
                                     </div>
                                     @endif
@@ -110,7 +110,7 @@
                                     {{-- Surplus line --}}
                                     <div class="border-t pt-2 mt-1">
                                         <div class="flex items-center justify-between py-1">
-                                            <span class="font-semibold text-slate-700 pl-5">{{ __('finances.projected_surplus') }}</span>
+                                            <span class="font-semibold text-slate-700 pl-5 flex items-center gap-1.5">{{ __('finances.projected_surplus') }} <svg x-data="" x-tooltip.raw="{{ __('finances.tooltip_surplus') }}" class="w-3.5 h-3.5 text-slate-300 hover:text-slate-500 cursor-help flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></span>
                                             <span class="font-semibold text-slate-700">{{ $finances->formatted_projected_surplus }}</span>
                                         </div>
                                     </div>
@@ -118,21 +118,21 @@
                                     {{-- Carried debt --}}
                                     @if($finances->carried_debt > 0)
                                     <div class="flex items-center justify-between py-2">
-                                        <span class="text-red-600 pl-5">{{ __('finances.carried_debt') }}</span>
+                                        <span class="text-red-600 pl-5 flex items-center gap-1.5">{{ __('finances.carried_debt') }} <svg x-data="" x-tooltip.raw="{{ __('finances.tooltip_carried_debt') }}" class="w-3.5 h-3.5 text-red-300 hover:text-red-500 cursor-help flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></span>
                                         <span class="text-red-600">-{{ $finances->formatted_carried_debt }}</span>
                                     </div>
                                     @endif
 
                                     {{-- Infrastructure deduction --}}
                                     <div class="flex items-center justify-between py-2">
-                                        <span class="text-slate-500 pl-5">{{ __('finances.infrastructure_investment') }}</span>
+                                        <span class="text-slate-500 pl-5 flex items-center gap-1.5">{{ __('finances.infrastructure_investment') }} <svg x-data="" x-tooltip.raw="{{ __('finances.tooltip_infrastructure') }}" class="w-3.5 h-3.5 text-slate-300 hover:text-slate-500 cursor-help flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></span>
                                         <span class="text-red-600">-{{ $investment->formatted_total_infrastructure }}</span>
                                     </div>
 
                                     {{-- Final: Transfer Budget --}}
                                     <div class="border-t-2 border-slate-900 pt-2 mt-1">
                                         <div class="flex items-center justify-between py-1">
-                                            <span class="font-semibold text-lg text-slate-900">= {{ __('finances.transfer_budget') }}</span>
+                                            <span class="font-semibold text-lg text-slate-900 flex items-center gap-1.5">= {{ __('finances.transfer_budget') }} <svg x-data="" x-tooltip.raw="{{ __('finances.tooltip_transfer_budget') }}" class="w-3.5 h-3.5 text-slate-400 hover:text-slate-600 cursor-help flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></span>
                                             <span class="font-semibold text-lg text-slate-900">{{ $investment->formatted_transfer_budget }}</span>
                                         </div>
                                     </div>
