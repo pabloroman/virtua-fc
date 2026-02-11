@@ -199,15 +199,11 @@
                                         <div class="flex gap-2">
                                             <form method="post" action="{{ route('game.transfers.accept', [$game->id, $offer->id]) }}">
                                                 @csrf
-                                                <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg transition-colors">
-                                                    {{ __('app.accept') }}
-                                                </button>
+                                                <x-primary-button color="green">{{ __('app.accept') }}</x-primary-button>
                                             </form>
                                             <form method="post" action="{{ route('game.transfers.reject', [$game->id, $offer->id]) }}">
                                                 @csrf
-                                                <button type="submit" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm font-semibold rounded-lg transition-colors">
-                                                    {{ __('app.reject') }}
-                                                </button>
+                                                <x-secondary-button type="submit">{{ __('app.reject') }}</x-secondary-button>
                                             </form>
                                         </div>
                                     </div>
@@ -249,15 +245,11 @@
                                         <div class="flex gap-2">
                                             <form method="post" action="{{ route('game.transfers.accept', [$game->id, $offer->id]) }}">
                                                 @csrf
-                                                <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg transition-colors">
-                                                    {{ __('app.accept') }}
-                                                </button>
+                                                <x-primary-button color="green">{{ __('app.accept') }}</x-primary-button>
                                             </form>
                                             <form method="post" action="{{ route('game.transfers.reject', [$game->id, $offer->id]) }}">
                                                 @csrf
-                                                <button type="submit" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm font-semibold rounded-lg transition-colors">
-                                                    {{ __('app.reject') }}
-                                                </button>
+                                                <x-secondary-button type="submit">{{ __('app.reject') }}</x-secondary-button>
                                             </form>
                                         </div>
                                     </div>

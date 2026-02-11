@@ -291,10 +291,9 @@
                             @endif
 
                             <div class="text-center">
-                                <a href="{{ route('show-game', $game->id) }}"
-                                   class="inline-flex items-center px-6 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-white uppercase tracking-wide hover:bg-red-700 transition ease-in-out duration-150">
+                                <x-primary-button-link :href="route('show-game', $game->id)" class="px-6">
                                     {{ __('game.live_continue_dashboard') }}
-                                </a>
+                                </x-primary-button-link>
                             </div>
                         </div>
                     </template>

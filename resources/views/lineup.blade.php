@@ -210,28 +210,28 @@
                                 {{-- Formation Selector --}}
                                 <div class="flex items-center gap-2">
                                     <label class="text-sm font-medium text-slate-700">{{ __('squad.formation') }}:</label>
-                                    <select
+                                    <x-select-input
                                         x-model="selectedFormation"
                                         @change="updateAutoLineup()"
-                                        class="text-sm font-semibold border-slate-300 rounded-md focus:border-sky-500 focus:ring-sky-500"
+                                        class="font-semibold"
                                     >
                                         @foreach($formations as $formation)
                                             <option value="{{ $formation->value }}">{{ $formation->label() }}</option>
                                         @endforeach
-                                    </select>
+                                    </x-select-input>
                                 </div>
 
                                 {{-- Mentality Selector --}}
                                 <div class="flex items-center gap-2">
                                     <label class="text-sm font-medium text-slate-700">{{ __('squad.mentality') }}:</label>
-                                    <select
+                                    <x-select-input
                                         x-model="selectedMentality"
-                                        class="text-sm font-semibold border-slate-300 rounded-md focus:border-sky-500 focus:ring-sky-500"
+                                        class="font-semibold"
                                     >
                                         @foreach($mentalities as $mentality)
                                             <option value="{{ $mentality->value }}">{{ $mentality->label() }}</option>
                                         @endforeach
-                                    </select>
+                                    </x-select-input>
                                 </div>
 
 
@@ -271,16 +271,12 @@
                                 <button type="button" @click="clearSelection()" class="px-4 py-2 text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-200 rounded transition-colors">
                                     {{ __('app.clear') }}
                                 </button>
-                                <button type="button" @click="quickSelect()" class="px-4 py-2 text-sm bg-slate-200 text-slate-700 hover:bg-slate-300 rounded transition-colors">
+                                <x-secondary-button type="button" @click="quickSelect()">
                                     {{ __('squad.auto_select') }}
-                                </button>
-                                <button
-                                    type="submit"
-                                    class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-white uppercase tracking-wide hover:bg-red-700 focus:bg-red-700 active:bg-red-900 transition ease-in-out duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    :disabled="selectedCount !== 11"
-                                >
+                                </x-secondary-button>
+                                <x-primary-button :disabled="selectedCount !== 11">
                                     {{ __('app.confirm') }}
-                                </button>
+                                </x-primary-button>
                             </div>
                         </div>
 

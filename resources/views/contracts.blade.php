@@ -60,15 +60,11 @@
                                         <div class="flex gap-2">
                                             <form method="post" action="{{ route('game.transfers.accept', [$game->id, $offer->id]) }}">
                                                 @csrf
-                                                <button type="submit" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-sm font-semibold rounded-lg transition-colors">
-                                                    {{ __('squad.let_go') }}
-                                                </button>
+                                                <x-primary-button color="amber">{{ __('squad.let_go') }}</x-primary-button>
                                             </form>
                                             <form method="post" action="{{ route('game.transfers.reject', [$game->id, $offer->id]) }}">
                                                 @csrf
-                                                <button type="submit" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm font-semibold rounded-lg transition-colors">
-                                                    {{ __('app.reject') }}
-                                                </button>
+                                                <x-secondary-button type="submit">{{ __('app.reject') }}</x-secondary-button>
                                             </form>
                                         </div>
                                     </div>
@@ -190,9 +186,7 @@
                                         @if($demand)
                                         <form method="post" action="{{ route('game.transfers.renew', [$game->id, $player->id]) }}">
                                             @csrf
-                                            <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg transition-colors">
-                                                {{ __('squad.renew') }}
-                                            </button>
+                                            <x-primary-button color="green">{{ __('squad.renew') }}</x-primary-button>
                                         </form>
                                         @endif
                                     </div>

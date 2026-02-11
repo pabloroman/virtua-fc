@@ -127,9 +127,7 @@
                                                 @if($canDraw)
                                                     <form method="POST" action="{{ route('game.cup.draw', [$game->id, $round->round_number]) }}">
                                                         @csrf
-                                                        <button type="submit" class="text-xs px-3 py-1 bg-sky-500 text-white rounded hover:bg-sky-600">
-                                                            {{ __('cup.conduct_draw') }}
-                                                        </button>
+                                                        <x-primary-button color="sky" class="text-xs px-3 py-1">{{ __('cup.conduct_draw') }}</x-primary-button>
                                                     </form>
                                                 @endif
                                             </div>
