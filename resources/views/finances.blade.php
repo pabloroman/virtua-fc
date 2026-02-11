@@ -86,7 +86,7 @@
                                     @endif
                                     <div class="border-t pt-2 mt-1">
                                         <div class="flex items-center justify-between py-1">
-                                            <span class="font-medium text-slate-700 pl-5">{{ __('finances.total_revenue') }}</span>
+                                            <span class="font-semibold text-slate-700 pl-5">{{ __('finances.total_revenue') }}</span>
                                             <span class="font-semibold text-green-600">+{{ $finances->formatted_projected_total_revenue }}</span>
                                         </div>
                                     </div>
@@ -110,8 +110,8 @@
                                     {{-- Surplus line --}}
                                     <div class="border-t pt-2 mt-1">
                                         <div class="flex items-center justify-between py-1">
-                                            <span class="font-medium text-slate-700 pl-5">{{ __('finances.projected_surplus') }}</span>
-                                            <span class="font-semibold text-slate-900">{{ $finances->formatted_projected_surplus }}</span>
+                                            <span class="font-semibold text-slate-700 pl-5">{{ __('finances.projected_surplus') }}</span>
+                                            <span class="font-semibold text-slate-700">{{ $finances->formatted_projected_surplus }}</span>
                                         </div>
                                     </div>
 
@@ -132,8 +132,8 @@
                                     {{-- Final: Transfer Budget --}}
                                     <div class="border-t-2 border-slate-900 pt-2 mt-1">
                                         <div class="flex items-center justify-between py-1">
-                                            <span class="font-bold text-slate-900">= {{ __('finances.transfer_budget') }}</span>
-                                            <span class="font-bold text-lg text-slate-900">{{ $investment->formatted_transfer_budget }}</span>
+                                            <span class="font-semibold text-lg text-slate-900">= {{ __('finances.transfer_budget') }}</span>
+                                            <span class="font-semibold text-lg text-slate-900">{{ $investment->formatted_transfer_budget }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -226,7 +226,7 @@
                             {{-- Club Finances Overview --}}
                             <div class="rounded-lg overflow-hidden border border-slate-200">
                                 <div class="bg-gradient-to-br from-slate-800 to-slate-900 px-4 py-5">
-                                    <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">{{ __('finances.squad_value') }}</div>
+                                    <div class="text-xs text-slate-400 uppercase mb-1">{{ __('finances.squad_value') }}</div>
                                     <div class="text-2xl font-bold text-white">{{ \App\Support\Money::format($squadValue) }}</div>
                                 </div>
                                 <div class="divide-y divide-slate-100">
@@ -246,7 +246,7 @@
                                     @if($investment)
                                     <div class="px-4 py-3 flex items-center justify-between">
                                         <span class="text-sm text-slate-500">{{ __('finances.transfer_budget') }}</span>
-                                        <span class="text-sm font-bold text-slate-900">{{ $investment->formatted_transfer_budget }}</span>
+                                        <span class="text-sm font-semibold text-slate-900">{{ $investment->formatted_transfer_budget }}</span>
                                     </div>
                                     @endif
                                 </div>
@@ -257,7 +257,7 @@
                             <div>
                                 <div class="flex items-center justify-between mb-4">
                                     <h4 class="font-semibold text-sm text-slate-900">{{ __('finances.infrastructure_investment') }}</h4>
-                                    <a href="{{ route('game.budget', $game->id) }}" class="text-xs text-sky-600 hover:text-sky-800 font-medium">{{ __('finances.adjust_allocation') }} &rarr;</a>
+{{--                                    <a href="{{ route('game.budget', $game->id) }}" class="text-xs text-sky-600 hover:text-sky-800 font-medium">{{ __('finances.adjust_allocation') }} &rarr;</a>--}}
                                 </div>
                                 <div class="space-y-4">
                                     @foreach([
