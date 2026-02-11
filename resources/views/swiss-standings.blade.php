@@ -42,11 +42,6 @@ $defaultTab = $knockoutStarted ? 'knockout' : 'league';
                     {{-- Tab Navigation --}}
                     @if($hasKnockout)
                         <div class="flex border-b border-slate-200 mb-0">
-                            <button @click="activeTab = 'knockout'"
-                                    :class="activeTab === 'knockout' ? 'border-sky-500 text-sky-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'"
-                                    class="px-4 py-2.5 text-sm font-medium border-b-2 transition-colors">
-                                {{ __('game.knockout_phase') }}
-                            </button>
                             <button @click="activeTab = 'league'"
                                     :class="activeTab === 'league' ? 'border-sky-500 text-sky-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'"
                                     class="px-4 py-2.5 text-sm font-medium border-b-2 transition-colors">
@@ -54,6 +49,11 @@ $defaultTab = $knockoutStarted ? 'knockout' : 'league';
                                 @if($leaguePhaseComplete)
                                     <span class="ml-1.5 px-1.5 py-0.5 text-[10px] font-bold bg-green-600 text-white rounded-full">{{ __('game.completed') }}</span>
                                 @endif
+                            </button>
+                            <button @click="activeTab = 'knockout'"
+                                    :class="activeTab === 'knockout' ? 'border-sky-500 text-sky-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'"
+                                    class="px-4 py-2.5 text-sm font-medium border-b-2 transition-colors">
+                                {{ __('game.knockout_phase') }}
                             </button>
                         </div>
                     @endif
