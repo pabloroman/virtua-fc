@@ -435,7 +435,7 @@ class NotificationService
                 'position' => $prospect->position,
                 'age' => $prospect->age,
             ]),
-            priority: GameNotification::PRIORITY_INFO,
+            priority: GameNotification::PRIORITY_MILESTONE,
             metadata: [
                 'academy_player_id' => $prospect->id,
             ],

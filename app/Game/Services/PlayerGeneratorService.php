@@ -75,7 +75,7 @@ class PlayerGeneratorService
         }
 
         // Calculate wage and contract
-        $annualWage = $this->contractService->calculateAnnualWage($marketValue, 0, $age);
+        $annualWage = $this->contractService->calculateAnnualWage($marketValue, $this->contractService->getMinimumWageForTeam($game->team), $age);
         $seasonYear = (int) $game->season;
         $contractUntil = Carbon::createFromDate($seasonYear + $data->contractYears, 6, 30);
 

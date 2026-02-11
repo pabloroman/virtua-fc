@@ -132,7 +132,7 @@ class YouthAcademyService
             technical: $academy->technical_ability,
             physical: $academy->physical_ability,
             dateOfBirth: $academy->date_of_birth,
-            contractYears: 3,
+            contractYears: 2,
             signedFrom: 'Youth Academy',
             name: $academy->name,
             nationality: $academy->nationality,
