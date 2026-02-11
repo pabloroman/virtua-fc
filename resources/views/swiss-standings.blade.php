@@ -37,7 +37,7 @@ $hasKnockout = $knockoutTies->isNotEmpty() || $knockoutRounds->isNotEmpty();
             {{-- Knockout Phase Bracket --}}
             @if($hasKnockout)
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-12 space-y-6">
+                    <div class="p-6 sm:p-8 space-y-6">
                         <h3 class="font-semibold text-xl text-slate-900">{{ __('game.knockout_phase') }}</h3>
 
                         <div class="overflow-x-auto">
@@ -76,7 +76,7 @@ $hasKnockout = $knockoutTies->isNotEmpty() || $knockoutRounds->isNotEmpty();
 
             {{-- League Phase Standings --}}
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-12 grid grid-cols-3 gap-12">
+                <div class="p-6 sm:p-8 grid grid-cols-3 gap-8">
                     <div class="col-span-2 space-y-3">
                         <h3 class="font-semibold text-xl text-slate-900">
                             {{ $competition->name }} - {{ __('game.league_phase') }}

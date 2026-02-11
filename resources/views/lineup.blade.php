@@ -182,7 +182,7 @@
     }">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
+                <div class="p-6 sm:p-8">
                     {{-- Errors --}}
                     @if ($errors->any())
                         <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">

@@ -9,7 +9,7 @@
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 py-8">
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-8 space-y-8">
+                <div class="p-6 sm:p-8 space-y-8">
 
                     {{-- Season Honours --}}
                     <div class="text-center text-slate-500 font-semibold text-sm uppercase tracking-wide mb-4">

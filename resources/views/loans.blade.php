@@ -20,7 +20,7 @@
             @endif
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-8">
+                <div class="p-6 sm:p-8">
                     <div class="flex items-center justify-between mb-6">
                         <h3 class="font-semibold text-xl text-slate-900">{{ __('transfers.title') }}</h3>
                         <div class="flex items-center gap-6 text-sm">

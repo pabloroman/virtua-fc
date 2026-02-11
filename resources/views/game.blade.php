@@ -9,7 +9,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             @if($nextMatch)
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-12 grid grid-cols-3 gap-12">
+                <div class="p-6 sm:p-8 grid grid-cols-3 gap-8">
                     {{-- Left Column (2/3) - Main Content --}}
                     <div class="col-span-2 space-y-8">
                         {{-- Next Match --}}
@@ -212,7 +212,7 @@
             @else
             {{-- Season Complete State --}}
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-12 text-center">
+                <div class="p-6 sm:p-8 text-center">
                     <div class="text-6xl mb-4">&#127942;</div>
                     <h2 class="text-3xl font-bold text-slate-900 mb-2">{{ __('game.season_complete') }}</h2>
                     <p class="text-slate-500 mb-8">{{ __('game.season_complete_congrats', ['season' => $game->season]) }}</p>

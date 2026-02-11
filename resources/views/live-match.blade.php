@@ -36,7 +36,7 @@
             </div>
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-8">
+                <div class="p-6 sm:p-8">
 
                     {{-- Scoreboard --}}
                     <div class="flex items-center justify-center gap-6 mb-2">
