@@ -21,6 +21,9 @@ class MarkNotificationRead
         }
 
         // Redirect to the appropriate page based on notification type
-        return redirect()->route($notification->getNavigationRoute(), $gameId);
+        return redirect()->route(
+            $notification->getNavigationRoute(),
+            $notification->getNavigationParams($gameId),
+        );
     }
 }

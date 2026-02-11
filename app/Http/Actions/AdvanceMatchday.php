@@ -15,10 +15,13 @@ use App\Game\Services\NotificationService;
 use App\Game\Services\ScoutingService;
 use App\Game\Services\StandingsCalculator;
 use App\Game\Services\TransferService;
+use App\Models\Competition;
+use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GameNotification;
 use App\Models\GamePlayer;
+use App\Models\GameStanding;
 use App\Models\PlayerSuspension;
 use App\Models\TransferOffer;
 
@@ -255,6 +258,9 @@ class AdvanceMatchday
             $competitionMatches = $matches->filter(fn ($m) => $m->competition_id === $competitionId);
             $handler->afterMatches($game, $competitionMatches, $allPlayers);
         }
+
+        // Check competition progress (advancement/elimination) after handlers have resolved ties
+        $this->checkCompetitionProgress($game, $matches, $handlers);
     }
 
     /**
@@ -329,6 +335,176 @@ class AdvanceMatchday
                 )) {
                     $this->notificationService->notifyLowFitness($game, $player);
                 }
+            }
+        }
+    }
+
+    /**
+     * Check competition progress and notify about advancement or elimination.
+     */
+    private function checkCompetitionProgress(Game $game, $matches, array $handlers): void
+    {
+        $this->checkResolvedKnockoutTies($game, $matches);
+        $this->checkSwissLeaguePhaseCompletion($game, $matches, $handlers);
+        $this->checkLeagueWithPlayoffSeasonEnd($game, $matches, $handlers);
+    }
+
+    /**
+     * Check resolved knockout ties involving the player's team.
+     */
+    private function checkResolvedKnockoutTies(Game $game, $matches): void
+    {
+        $cupTieIds = $matches->pluck('cup_tie_id')->filter()->unique();
+
+        if ($cupTieIds->isEmpty()) {
+            return;
+        }
+
+        $resolvedTies = CupTie::with('competition')
+            ->whereIn('id', $cupTieIds)
+            ->where('completed', true)
+            ->where(function ($query) use ($game) {
+                $query->where('home_team_id', $game->team_id)
+                    ->orWhere('away_team_id', $game->team_id);
+            })
+            ->get();
+
+        foreach ($resolvedTies as $tie) {
+            $competition = $tie->competition;
+            $roundTemplate = $tie->roundTemplate();
+            $roundName = $roundTemplate?->round_name ?? $tie->firstLegMatch?->round_name ?? '';
+
+            if ($tie->winner_id === $game->team_id) {
+                $this->notificationService->notifyCompetitionAdvancement(
+                    $game,
+                    $competition->id,
+                    $competition->name,
+                    __('cup.advanced_past_round', ['round' => $roundName]),
+                );
+            } else {
+                $this->notificationService->notifyCompetitionElimination(
+                    $game,
+                    $competition->id,
+                    $competition->name,
+                    __('cup.eliminated_in_round', ['round' => $roundName]),
+                );
+            }
+        }
+    }
+
+    /**
+     * Check if a swiss format league phase just completed.
+     */
+    private function checkSwissLeaguePhaseCompletion(Game $game, $matches, array $handlers): void
+    {
+        foreach ($handlers as $competitionId => $handler) {
+            if ($handler->getType() !== 'swiss_format') {
+                continue;
+            }
+
+            // Only check if league-phase matches were played (not knockout)
+            $leaguePhaseMatches = $matches->filter(
+                fn ($m) => $m->competition_id === $competitionId && $m->cup_tie_id === null
+            );
+
+            if ($leaguePhaseMatches->isEmpty()) {
+                continue;
+            }
+
+            // Check if any unplayed league-phase matches remain
+            $hasUnplayed = GameMatch::where('game_id', $game->id)
+                ->where('competition_id', $competitionId)
+                ->whereNull('cup_tie_id')
+                ->where('played', false)
+                ->exists();
+
+            if ($hasUnplayed) {
+                continue;
+            }
+
+            // League phase just completed — check player's team position
+            $standing = GameStanding::where('game_id', $game->id)
+                ->where('competition_id', $competitionId)
+                ->where('team_id', $game->team_id)
+                ->first();
+
+            if (!$standing) {
+                continue;
+            }
+
+            $competition = Competition::find($competitionId);
+
+            if ($standing->position <= 8) {
+                $this->notificationService->notifyCompetitionAdvancement(
+                    $game, $competitionId, $competition->name,
+                    __('cup.swiss_direct_r16'),
+                );
+            } elseif ($standing->position <= 24) {
+                $this->notificationService->notifyCompetitionAdvancement(
+                    $game, $competitionId, $competition->name,
+                    __('cup.swiss_knockout_playoff'),
+                );
+            } else {
+                $this->notificationService->notifyCompetitionElimination(
+                    $game, $competitionId, $competition->name,
+                    __('cup.swiss_eliminated'),
+                );
+            }
+        }
+    }
+
+    /**
+     * Check if a league_with_playoff regular season just ended.
+     */
+    private function checkLeagueWithPlayoffSeasonEnd(Game $game, $matches, array $handlers): void
+    {
+        foreach ($handlers as $competitionId => $handler) {
+            if ($handler->getType() !== 'league_with_playoff') {
+                continue;
+            }
+
+            // Only check if league matches were played (not playoff ties)
+            $leagueMatches = $matches->filter(
+                fn ($m) => $m->competition_id === $competitionId && $m->cup_tie_id === null
+            );
+
+            if ($leagueMatches->isEmpty()) {
+                continue;
+            }
+
+            // Check if any unplayed league matches remain
+            $hasUnplayed = GameMatch::where('game_id', $game->id)
+                ->where('competition_id', $competitionId)
+                ->whereNull('cup_tie_id')
+                ->where('played', false)
+                ->exists();
+
+            if ($hasUnplayed) {
+                continue;
+            }
+
+            // Regular season just completed — check player's team position
+            $standing = GameStanding::where('game_id', $game->id)
+                ->where('competition_id', $competitionId)
+                ->where('team_id', $game->team_id)
+                ->first();
+
+            if (!$standing) {
+                continue;
+            }
+
+            $competition = Competition::find($competitionId);
+
+            if ($standing->position <= 2) {
+                $this->notificationService->notifyCompetitionAdvancement(
+                    $game, $competitionId, $competition->name,
+                    __('cup.direct_promotion'),
+                );
+            } elseif ($standing->position <= 6) {
+                $this->notificationService->notifyCompetitionAdvancement(
+                    $game, $competitionId, $competition->name,
+                    __('cup.promotion_playoff'),
+                );
             }
         }
     }

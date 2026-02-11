@@ -14,7 +14,6 @@ use Illuminate\Support\Str;
 class NotificationService
 {
     private const CLEANUP_DAYS = 14;
-    private const MAX_NOTIFICATIONS = 10;
 
     // ==========================================
     // Core Methods
@@ -86,6 +85,12 @@ class NotificationService
     {
         $query = GameNotification::where('game_id', $gameId)
             ->orderByDesc('game_date')
+            ->orderByRaw("CASE priority
+                WHEN 'milestone' THEN 0
+                WHEN 'critical' THEN 1
+                WHEN 'warning' THEN 2
+                ELSE 3
+            END")
             ->limit($limit);
 
         if ($unreadOnly) {
@@ -372,6 +377,46 @@ class NotificationService
     }
 
     // ==========================================
+    // Competition Notifications
+    // ==========================================
+
+    /**
+     * Create a competition advancement notification.
+     */
+    public function notifyCompetitionAdvancement(
+        Game $game, string $competitionId, string $competitionName, string $nextStage
+    ): GameNotification {
+        return $this->create(
+            game: $game,
+            type: GameNotification::TYPE_COMPETITION_ADVANCEMENT,
+            title: __('notifications.competition_advancement_title', ['competition' => $competitionName]),
+            message: __('notifications.competition_advancement_message', ['stage' => $nextStage]),
+            priority: GameNotification::PRIORITY_MILESTONE,
+            metadata: [
+                'competition_id' => $competitionId,
+            ],
+        );
+    }
+
+    /**
+     * Create a competition elimination notification.
+     */
+    public function notifyCompetitionElimination(
+        Game $game, string $competitionId, string $competitionName, string $stage
+    ): GameNotification {
+        return $this->create(
+            game: $game,
+            type: GameNotification::TYPE_COMPETITION_ELIMINATION,
+            title: __('notifications.competition_elimination_title', ['competition' => $competitionName]),
+            message: __('notifications.competition_elimination_message', ['stage' => $stage]),
+            priority: GameNotification::PRIORITY_MILESTONE,
+            metadata: [
+                'competition_id' => $competitionId,
+            ],
+        );
+    }
+
+    // ==========================================
     // Helpers
     // ==========================================
 
@@ -392,6 +437,8 @@ class NotificationService
             GameNotification::TYPE_LOAN_RETURN => 'loan',
             GameNotification::TYPE_LOAN_DESTINATION_FOUND => 'loan',
             GameNotification::TYPE_LOAN_SEARCH_FAILED => 'loan',
+            GameNotification::TYPE_COMPETITION_ADVANCEMENT => 'trophy',
+            GameNotification::TYPE_COMPETITION_ELIMINATION => 'eliminated',
             default => 'bell',
         };
     }

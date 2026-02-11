@@ -64,4 +64,10 @@ return [
     'loan_destination_found_waiting' => ':player será cedido a :team cuando abra la ventana de fichajes.',
     'loan_search_failed_title' => 'Búsqueda de cesión fallida',
     'loan_search_failed_message' => 'No se encontró un club interesado en ceder a :player. El jugador vuelve a estar disponible.',
+
+    // Competition advancement
+    'competition_advancement_title' => 'Clasificación en :competition',
+    'competition_advancement_message' => ':stage',
+    'competition_elimination_title' => 'Eliminación de :competition',
+    'competition_elimination_message' => ':stage',
 ];

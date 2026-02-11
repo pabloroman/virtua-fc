@@ -25,8 +25,11 @@ class GameNotification extends Model
     public const TYPE_LOAN_RETURN = 'loan_return';
     public const TYPE_LOAN_DESTINATION_FOUND = 'loan_destination_found';
     public const TYPE_LOAN_SEARCH_FAILED = 'loan_search_failed';
+    public const TYPE_COMPETITION_ADVANCEMENT = 'competition_advancement';
+    public const TYPE_COMPETITION_ELIMINATION = 'competition_elimination';
 
     // Priorities
+    public const PRIORITY_MILESTONE = 'milestone';
     public const PRIORITY_CRITICAL = 'critical';
     public const PRIORITY_WARNING = 'warning';
     public const PRIORITY_INFO = 'info';
@@ -44,6 +47,8 @@ class GameNotification extends Model
         self::TYPE_LOAN_RETURN => 'squad',
         self::TYPE_LOAN_DESTINATION_FOUND => 'loans',
         self::TYPE_LOAN_SEARCH_FAILED => 'loans',
+        self::TYPE_COMPETITION_ADVANCEMENT => 'competition',
+        self::TYPE_COMPETITION_ELIMINATION => 'competition',
     ];
 
     protected $fillable = [
@@ -156,8 +161,23 @@ class GameNotification extends Model
             'scouting' => 'game.scouting',
             'contracts' => 'game.squad.contracts',
             'loans' => 'game.loans',
+            'competition' => 'game.competition',
             default => 'show-game',
         };
+    }
+
+    /**
+     * Get the route parameters for navigation.
+     */
+    public function getNavigationParams(string $gameId): array
+    {
+        $params = ['gameId' => $gameId];
+
+        if (($this->metadata['competition_id'] ?? null) && $this->getNavigationRoute() === 'game.competition') {
+            $params['competitionId'] = $this->metadata['competition_id'];
+        }
+
+        return $params;
     }
 
     /**
@@ -166,6 +186,13 @@ class GameNotification extends Model
     public function getPriorityClasses(): array
     {
         return match ($this->priority) {
+            self::PRIORITY_MILESTONE => [
+                'bg' => 'bg-emerald-50',
+                'border' => 'border-emerald-200',
+                'text' => 'text-emerald-700',
+                'icon' => 'text-emerald-600',
+                'dot' => 'bg-emerald-500',
+            ],
             self::PRIORITY_CRITICAL => [
                 'bg' => 'bg-red-50',
                 'border' => 'border-red-200',

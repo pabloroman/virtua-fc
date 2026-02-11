@@ -21,7 +21,6 @@
                             @else
                                 <span class="px-3 py-1 text-sm bg-slate-100 text-slate-600 rounded-full">{{ __('cup.not_yet_entered') }}</span>
                             @endif
-                            <a href="{{ route('show-game', $game->id) }}" class="text-sky-600 hover:text-sky-800">{{ __('cup.back_to_dashboard') }}</a>
                         </div>
                     </div>
 

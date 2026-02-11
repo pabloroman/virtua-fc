@@ -138,7 +138,6 @@ return [
     // Results page
     'results' => 'Resultados',
     'matchday_results' => 'Resultados :name',
-    'back_to_dashboard' => 'Volver al Inicio',
     'og' => 'PP',
 
     // Dashboard

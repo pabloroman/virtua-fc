@@ -5,7 +5,6 @@ return [
     'eliminated' => 'Eliminado',
     'round_n' => 'Ronda :round',
     'not_yet_entered' => 'Aún no participa',
-    'back_to_dashboard' => 'Volver al Inicio',
 
     // Data
     'cup_data_not_available' => 'Datos de la copa no disponibles.',
@@ -30,4 +29,13 @@ return [
     // Legend
     'your_matches' => 'Tus partidos',
     'winner' => 'Ganador',
+
+    // Competition progress notifications
+    'advanced_past_round' => 'Superaste la ronda: :round',
+    'eliminated_in_round' => 'Eliminado en :round',
+    'swiss_direct_r16' => 'Clasificado directo a octavos de final',
+    'swiss_knockout_playoff' => 'Clasificado para el playoff de eliminación',
+    'swiss_eliminated' => 'Eliminado en la fase de liga',
+    'direct_promotion' => 'Ascenso directo asegurado',
+    'promotion_playoff' => 'Clasificado para el playoff de ascenso',
 ];
