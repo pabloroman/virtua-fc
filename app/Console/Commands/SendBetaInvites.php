@@ -46,6 +46,9 @@ class SendBetaInvites extends Command
             } else {
                 Mail::to($invite->email)->send(new BetaInvite($invite));
 
+                // Wait a second to avoid rate limiting
+                sleep(1);
+
                 $invite->update([
                     'invite_sent' => true,
                     'invite_sent_at' => now(),
