@@ -9,8 +9,6 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 sm:p-8">
-                    <h3 class="font-semibold text-xl text-slate-900 mb-6">{{ __('squad.title', ['team' => $game->team->name]) }}</h3>
-
                     <x-section-nav :items="[
                         ['href' => route('game.squad', $game->id), 'label' => __('squad.squad'), 'active' => true],
                         ['href' => route('game.squad.development', $game->id), 'label' => __('squad.development'), 'active' => false],
@@ -51,11 +49,11 @@
                                 <th class="font-semibold py-2 text-center w-12">{{ __('app.country') }}</th>
                                 <th class="font-semibold py-2 text-center w-12">{{ __('app.age') }}</th>
 
-                                <th class="font-semibold py-2 pr-4 text-right w-20">{{ __('app.value') }}</th>
-                                <th class="font-semibold py-2 pr-4 text-right w-20">{{ __('app.wage') }}</th>
-                                <th class="font-semibold py-2 pr-4 text-right w-20">{{ __('app.contract') }}</th>
+                                <th class="font-semibold py-2 pl-3 pr-4 text-right border-l border-slate-200 w-24">{{ __('app.value') }}</th>
+                                <th class="font-semibold py-2 pr-4 text-right w-24">{{ __('app.wage') }}</th>
+                                <th class="font-semibold py-2 text-center w-20">{{ __('app.contract') }}</th>
 
-                                <th class="font-semibold py-2 text-center w-10">{{ __('squad.technical') }}</th>
+                                <th class="font-semibold py-2 pl-3 text-center w-10">{{ __('squad.technical') }}</th>
                                 <th class="font-semibold py-2 text-center w-10">{{ __('squad.physical') }}</th>
                                 <th class="font-semibold py-2 text-center w-10">{{ __('squad.fitness') }}</th>
                                 <th class="font-semibold py-2 text-center w-10">{{ __('squad.morale') }}</th>
@@ -147,11 +145,11 @@
                                             <td class="py-2 text-center">{{ $gamePlayer->player->age }}</td>
 
                                             {{-- Market Value --}}
-                                            <td class="border-l border-slate-200 py-2 pr-4 text-right text-slate-600">{{ $gamePlayer->formatted_market_value }}</td>
+                                            <td class="border-l border-slate-200 py-2 pl-3 pr-4 text-right tabular-nums text-slate-600">{{ $gamePlayer->formatted_market_value }}</td>
                                             {{-- Annual Wage --}}
-                                            <td class="py-2 pr-4 text-right text-slate-600">{{ $gamePlayer->formatted_wage }}</td>
+                                            <td class="py-2 pr-4 text-right tabular-nums text-slate-600">{{ $gamePlayer->formatted_wage }}</td>
                                             {{-- Contract --}}
-                                            <td class="py-2 pr-4 text-center text-slate-600">
+                                            <td class="py-2 text-center text-slate-600">
                                                 @if($gamePlayer->contract_until)
                                                     @if($gamePlayer->isContractExpiring())
                                                         <span class="text-red-600 font-medium" title="Contract expiring">
@@ -164,12 +162,12 @@
                                             </td>
 
                                             {{-- Technical --}}
-                                            <td class="border-l border-slate-200 py-2 text-center @if($gamePlayer->technical_ability >= 80) text-green-600 @elseif($gamePlayer->technical_ability >= 70) text-lime-600 @elseif($gamePlayer->technical_ability < 60) text-slate-400 @endif">
-                                                {{ $gamePlayer->technical_ability }}
+                                            <td class="border-l border-slate-200 py-2 pl-3 text-center">
+                                                <x-ability-bar :value="$gamePlayer->technical_ability" size="sm" class="text-xs font-medium justify-center @if($gamePlayer->technical_ability >= 80) text-green-600 @elseif($gamePlayer->technical_ability >= 70) text-lime-600 @elseif($gamePlayer->technical_ability < 60) text-slate-400 @endif" />
                                             </td>
                                             {{-- Physical --}}
-                                            <td class="py-2 text-center @if($gamePlayer->physical_ability >= 80) text-green-600 @elseif($gamePlayer->physical_ability >= 70) text-lime-600 @elseif($gamePlayer->physical_ability < 60) text-slate-400 @endif">
-                                                {{ $gamePlayer->physical_ability }}
+                                            <td class="py-2 text-center">
+                                                <x-ability-bar :value="$gamePlayer->physical_ability" size="sm" class="text-xs font-medium justify-center @if($gamePlayer->physical_ability >= 80) text-green-600 @elseif($gamePlayer->physical_ability >= 70) text-lime-600 @elseif($gamePlayer->physical_ability < 60) text-slate-400 @endif" />
                                             </td>
                                             {{-- Fitness --}}
                                             <td class="py-2 text-center">
@@ -185,29 +183,34 @@
                                             </td>
                                             {{-- Overall --}}
                                             <td class="py-2 text-center">
-                                                <span class="font-bold @if($gamePlayer->overall_score >= 80) text-green-600 @elseif($gamePlayer->overall_score >= 70) text-lime-600 @elseif($gamePlayer->overall_score >= 60) text-yellow-600 @else text-slate-500 @endif">
+                                                <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold
+                                                    @if($gamePlayer->overall_score >= 80) bg-emerald-500 text-white
+                                                    @elseif($gamePlayer->overall_score >= 70) bg-lime-500 text-white
+                                                    @elseif($gamePlayer->overall_score >= 60) bg-amber-500 text-white
+                                                    @else bg-slate-300 text-slate-700
+                                                    @endif">
                                                     {{ $gamePlayer->overall_score }}
                                                 </span>
                                             </td>
                                             {{-- Actions --}}
                                             <td class="py-2 text-right">
                                                 @if($gamePlayer->isTransferListed())
-                                                    <div x-data="{ open: false }" class="relative inline-block">
+                                                    <div x-data="{ open: false }" @click.outside="open = false" class="relative inline-block">
                                                         <button @click="open = !open" class="p-1 text-slate-400 hover:text-slate-600 rounded hover:bg-slate-100">
                                                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="4" r="1.5"/><circle cx="10" cy="10" r="1.5"/><circle cx="10" cy="16" r="1.5"/></svg>
                                                         </button>
-                                                        <div x-show="open" @click.away="open = false" x-transition
-                                                             class="absolute right-0 mt-1 w-36 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-10">
+                                                        <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+                                                             class="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50 py-1" style="display: none;">
                                                             <form method="post" action="{{ route('game.transfers.unlist', [$game->id, $gamePlayer->id]) }}">
                                                                 @csrf
-                                                                <button type="submit" class="w-full text-left px-3 py-1.5 text-xs text-red-600 hover:bg-red-50">
+                                                                <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-slate-100">
                                                                     {{ __('squad.unlist_from_sale') }}
                                                                 </button>
                                                             </form>
                                                             @if($isTransferWindow)
                                                             <form method="post" action="{{ route('game.loans.out', [$game->id, $gamePlayer->id]) }}">
                                                                 @csrf
-                                                                <button type="submit" class="w-full text-left px-3 py-1.5 text-xs text-amber-600 hover:bg-amber-50">
+                                                                <button type="submit" class="w-full text-left px-4 py-2 text-sm text-amber-600 hover:bg-slate-100">
                                                                     {{ __('squad.loan_out') }}
                                                                 </button>
                                                             </form>
@@ -215,22 +218,22 @@
                                                         </div>
                                                     </div>
                                                 @elseif(!$gamePlayer->isRetiring() && !$gamePlayer->isLoanedIn($game->team_id) && !$gamePlayer->hasPreContractAgreement() && !$gamePlayer->hasRenewalAgreed() && !$gamePlayer->hasAgreedTransfer() && !$gamePlayer->hasActiveLoanSearch())
-                                                    <div x-data="{ open: false }" class="relative inline-block">
+                                                    <div x-data="{ open: false }" @click.outside="open = false" class="relative inline-block">
                                                         <button @click="open = !open" class="p-1 text-slate-400 hover:text-slate-600 rounded hover:bg-slate-100">
                                                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="4" r="1.5"/><circle cx="10" cy="10" r="1.5"/><circle cx="10" cy="16" r="1.5"/></svg>
                                                         </button>
-                                                        <div x-show="open" @click.away="open = false" x-transition
-                                                             class="absolute right-0 mt-1 w-36 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-10">
+                                                        <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+                                                             class="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50 py-1" style="display: none;">
                                                             <form method="post" action="{{ route('game.transfers.list', [$game->id, $gamePlayer->id]) }}">
                                                                 @csrf
-                                                                <button type="submit" class="w-full text-left px-3 py-1.5 text-xs text-sky-600 hover:bg-sky-50">
+                                                                <button type="submit" class="w-full text-left px-4 py-2 text-sm text-sky-600 hover:bg-slate-100">
                                                                     {{ __('squad.list_for_sale') }}
                                                                 </button>
                                                             </form>
                                                             @if($isTransferWindow)
                                                             <form method="post" action="{{ route('game.loans.out', [$game->id, $gamePlayer->id]) }}">
                                                                 @csrf
-                                                                <button type="submit" class="w-full text-left px-3 py-1.5 text-xs text-amber-600 hover:bg-amber-50">
+                                                                <button type="submit" class="w-full text-left px-4 py-2 text-sm text-amber-600 hover:bg-slate-100">
                                                                     {{ __('squad.loan_out') }}
                                                                 </button>
                                                             </form>

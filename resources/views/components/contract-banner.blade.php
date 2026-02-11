@@ -9,7 +9,7 @@
 @endphp
 
 @if($hasAnything)
-<div x-data="{ open: {{ $hasPreContractOffers || $hasExpiringContracts ? 'true' : 'false' }} }" class="mb-6">
+<div x-data="{ open: false }" class="mb-6">
     {{-- Summary bar --}}
     <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-3 rounded-lg border transition-colors
         {{ $hasPreContractOffers ? 'bg-amber-50 border-amber-200 hover:bg-amber-100' : ($hasExpiringContracts ? 'bg-slate-50 border-slate-200 hover:bg-slate-100' : 'bg-green-50 border-green-200 hover:bg-green-100') }}">
