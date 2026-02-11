@@ -43,7 +43,11 @@
                     </div>
 
                     {{-- Tab Navigation --}}
-                    <x-transfers-nav :game="$game" active="scouting" />
+                    <x-section-nav :items="[
+                        ['href' => route('game.transfers', $game->id), 'label' => __('transfers.market'), 'active' => false],
+                        ['href' => route('game.scouting', $game->id), 'label' => __('transfers.scouting'), 'active' => true],
+                        ['href' => route('game.loans', $game->id), 'label' => __('transfers.loans'), 'active' => false],
+                    ]" />
 
                     {{-- State: No active search → Show search form --}}
                     @if(!$report)

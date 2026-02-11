@@ -9,32 +9,16 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-12">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="font-semibold text-xl text-slate-900">{{ __('squad.title', ['team' => $game->team->name]) }}</h3>
-                        <div class="flex items-center gap-3">
-                            <a href="{{ route('game.squad.contracts', $game->id) }}" class="inline-flex items-center px-4 py-2 text-sm font-medium {{ $expiringContractsCount > 0 ? 'text-red-600 bg-red-50 hover:bg-red-100' : 'text-slate-600 bg-slate-50 hover:bg-slate-100' }} rounded-lg transition-colors">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
-                                {{ __('squad.contracts') }}
-                                @if($expiringContractsCount > 0)
-                                <span class="ml-1.5 px-1.5 py-0.5 text-xs font-bold bg-red-600 text-white rounded-full">{{ $expiringContractsCount }}</span>
-                                @endif
-                            </a>
-                            <a href="{{ route('game.squad.development', $game->id) }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-sky-600 bg-sky-50 rounded-lg hover:bg-sky-100 transition-colors">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                                </svg>
-                                {{ __('squad.development') }}
-                            </a>
-                            <a href="{{ route('game.squad.stats', $game->id) }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-slate-600 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                </svg>
-                                {{ __('squad.stats') }}
-                            </a>
-                        </div>
-                    </div>
+                    <h3 class="font-semibold text-xl text-slate-900 mb-6">{{ __('squad.title', ['team' => $game->team->name]) }}</h3>
+
+                    <x-section-nav :items="[
+                        ['href' => route('game.squad', $game->id), 'label' => __('squad.squad'), 'active' => true],
+                        ['href' => route('game.squad.contracts', $game->id), 'label' => __('squad.contracts'), 'active' => false, 'badge' => $expiringContractsCount > 0 ? $expiringContractsCount : null],
+                        ['href' => route('game.squad.development', $game->id), 'label' => __('squad.development'), 'active' => false],
+                        ['href' => route('game.squad.stats', $game->id), 'label' => __('squad.stats'), 'active' => false],
+                    ]" />
+
+                    <div class="mt-6"></div>
 
                     <table class="w-full text-sm">
                         <thead class="text-left border-b">

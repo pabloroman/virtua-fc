@@ -21,12 +21,16 @@
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-8">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="font-semibold text-xl text-slate-900">{{ __('squad.contract_management') }}</h3>
-                        <a href="{{ route('game.squad', $game->id) }}" class="text-sm text-sky-600 hover:text-sky-800">
-                            &larr; {{ __('squad.back_to_squad') }}
-                        </a>
-                    </div>
+                    <h3 class="font-semibold text-xl text-slate-900 mb-6">{{ __('squad.contract_management') }}</h3>
+
+                    <x-section-nav :items="[
+                        ['href' => route('game.squad', $game->id), 'label' => __('squad.squad'), 'active' => false],
+                        ['href' => route('game.squad.contracts', $game->id), 'label' => __('squad.contracts'), 'active' => true],
+                        ['href' => route('game.squad.development', $game->id), 'label' => __('squad.development'), 'active' => false],
+                        ['href' => route('game.squad.stats', $game->id), 'label' => __('squad.stats'), 'active' => false],
+                    ]" />
+
+                    <div class="mt-6"></div>
 
                     {{-- Pre-Contract Offers (being poached) --}}
                     @if($preContractOffers->isNotEmpty())

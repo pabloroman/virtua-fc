@@ -38,7 +38,11 @@
                     </div>
 
                     {{-- Tab Navigation --}}
-                    <x-transfers-nav :game="$game" active="market" />
+                    <x-section-nav :items="[
+                        ['href' => route('game.transfers', $game->id), 'label' => __('transfers.market'), 'active' => true],
+                        ['href' => route('game.scouting', $game->id), 'label' => __('transfers.scouting'), 'active' => false],
+                        ['href' => route('game.loans', $game->id), 'label' => __('transfers.loans'), 'active' => false],
+                    ]" />
 
                     <div class="mt-6"></div>
 
