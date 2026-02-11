@@ -53,7 +53,7 @@
 
 <nav class="flex text-white/40 space-x-4 mt-4 items-center text-xl">
     <div><a class="hover:text-slate-300 @if(Route::currentRouteName() == 'show-game') text-white @endif" href="{{ route('show-game', $game->id) }}">{{ __('app.dashboard') }}</a></div>
-    <div><a class="hover:text-slate-300 @if(Route::currentRouteName() == 'game.squad') text-white @endif" href="{{ route('game.squad', $game->id) }}">{{ __('app.squad') }}</a></div>
+    <div><a class="hover:text-slate-300 @if(Str::startsWith(Route::currentRouteName(), 'game.squad')) text-white @endif" href="{{ route('game.squad', $game->id) }}">{{ __('app.squad') }}</a></div>
     @if($nextMatch)
     <div><a class="hover:text-slate-300 @if(Route::currentRouteName() == 'game.lineup') text-white @endif" href="{{ route('game.lineup', [$game->id, $nextMatch->id]) }}">{{ __('app.starting_xi') }}</a></div>
     @endif

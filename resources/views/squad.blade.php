@@ -9,8 +9,6 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 sm:p-8">
-                    <h3 class="font-semibold text-xl text-slate-900 mb-6">{{ __('squad.title', ['team' => $game->team->name]) }}</h3>
-
                     <x-section-nav :items="[
                         ['href' => route('game.squad', $game->id), 'label' => __('squad.squad'), 'active' => true],
                         ['href' => route('game.squad.development', $game->id), 'label' => __('squad.development'), 'active' => false],
