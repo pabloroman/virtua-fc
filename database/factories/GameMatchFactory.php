@@ -27,7 +27,6 @@ class GameMatchFactory extends Factory
             'home_score' => null,
             'away_score' => null,
             'played' => false,
-            'played_at' => null,
             'cup_tie_id' => null,
         ];
     }
@@ -75,7 +74,6 @@ class GameMatchFactory extends Factory
             'home_score' => $homeScore,
             'away_score' => $awayScore,
             'played' => true,
-            'played_at' => now(),
         ]);
     }
 

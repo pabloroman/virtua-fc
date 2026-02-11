@@ -164,7 +164,7 @@ class ShowLineup
                 $query->where('home_team_id', $opponentTeamId)
                     ->orWhere('away_team_id', $opponentTeamId);
             })
-            ->orderByDesc('played_at')
+            ->orderByDesc('scheduled_date')
             ->limit(5)
             ->get();
 

@@ -51,7 +51,7 @@ class CalendarService
                 $query->where('home_team_id', $teamId)
                     ->orWhere('away_team_id', $teamId);
             })
-            ->orderByDesc('played_at')
+            ->orderByDesc('scheduled_date')
             ->limit($limit)
             ->get();
 

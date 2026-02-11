@@ -130,7 +130,6 @@ class GameProjector extends Projector
             'home_score' => $event->homeScore,
             'away_score' => $event->awayScore,
             'played' => true,
-            'played_at' => now(),
         ]);
 
         // Serve suspensions for players who missed this match due to suspension
