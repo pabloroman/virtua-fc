@@ -52,7 +52,7 @@
                                 <th class="font-semibold py-2 pr-4 text-right w-20">{{ __('app.wage') }}</th>
                                 <th class="font-semibold py-2 pr-4 text-right w-20">{{ __('app.contract') }}</th>
 
-                                <th class="font-semibold py-2 text-center w-10">{{ __('squad.technical') }}</th>
+                                <th class="font-semibold py-2 pl-3 text-center w-10">{{ __('squad.technical') }}</th>
                                 <th class="font-semibold py-2 text-center w-10">{{ __('squad.physical') }}</th>
                                 <th class="font-semibold py-2 text-center w-10">{{ __('squad.fitness') }}</th>
                                 <th class="font-semibold py-2 text-center w-10">{{ __('squad.morale') }}</th>
@@ -144,7 +144,7 @@
                                             <td class="py-2 text-center">{{ $gamePlayer->player->age }}</td>
 
                                             {{-- Market Value --}}
-                                            <td class="border-l border-slate-200 py-2 pr-4 text-right text-slate-600">{{ $gamePlayer->formatted_market_value }}</td>
+                                            <td class="border-l border-slate-200 py-2 pl-3 pr-4 text-right text-slate-600">{{ $gamePlayer->formatted_market_value }}</td>
                                             {{-- Annual Wage --}}
                                             <td class="py-2 pr-4 text-right text-slate-600">{{ $gamePlayer->formatted_wage }}</td>
                                             {{-- Contract --}}
@@ -161,7 +161,7 @@
                                             </td>
 
                                             {{-- Technical --}}
-                                            <td class="border-l border-slate-200 py-2 text-center">
+                                            <td class="border-l border-slate-200 py-2 pl-3 text-center">
                                                 <x-ability-bar :value="$gamePlayer->technical_ability" size="sm" class="text-xs font-medium justify-center @if($gamePlayer->technical_ability >= 80) text-green-600 @elseif($gamePlayer->technical_ability >= 70) text-lime-600 @elseif($gamePlayer->technical_ability < 60) text-slate-400 @endif" />
                                             </td>
                                             {{-- Physical --}}
