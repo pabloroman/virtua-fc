@@ -265,7 +265,6 @@
                                                     $avgAbility = (int)(($player->current_technical_ability + $player->current_physical_ability) / 2);
                                                     $abilityLow = max(1, $avgAbility - $fuzz);
                                                     $abilityHigh = min(99, $avgAbility + $fuzz);
-                                                    $positionDisplay = $player->position_display;
                                                 @endphp
                                                 <tr class="border-b border-slate-100 hover:bg-slate-50">
                                                     <td class="py-3">
@@ -278,9 +277,7 @@
                                                         @endif
                                                     </td>
                                                     <td class="py-3">
-                                                        <span class="px-1.5 py-0.5 text-xs font-medium rounded {{ $positionDisplay['bg'] }} {{ $positionDisplay['text'] }}">
-                                                            {{ $positionDisplay['abbreviation'] }}
-                                                        </span>
+                                                        <x-position-badge :position="$player->position" size="lg" />
                                                     </td>
                                                     <td class="py-3 text-center text-slate-600">{{ $player->age }}</td>
                                                     <td class="py-3">
@@ -319,9 +316,7 @@
                                                 <div>
                                                     <h3 class="font-semibold text-2xl text-slate-900">{{ $scoutPlayer->name }}</h3>
                                                     <div class="flex items-center gap-3 mt-1 text-sm text-slate-600">
-                                                        <span class="px-2 py-0.5 text-xs font-bold rounded {{ $scoutPlayer->position_display['bg'] }} {{ $scoutPlayer->position_display['text'] }}">
-                                                            {{ $scoutPlayer->position_display['abbreviation'] }}
-                                                        </span>
+                                                        <x-position-badge :position="$scoutPlayer->position" size="lg" />
                                                         <span>{{ $scoutPlayer->position }}</span>
                                                         <span>&middot;</span>
                                                         <span>{{ $scoutPlayer->age }} {{ __('transfers.years') }}</span>

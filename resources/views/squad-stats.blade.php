@@ -131,7 +131,6 @@
                             <tbody id="stats-body">
                                 @foreach($players->sortByDesc('appearances') as $player)
                                     @php
-                                        $positionDisplay = $player->position_display;
                                         $goalsPerGame = $player->appearances > 0 ? round($player->goals / $player->appearances, 2) : 0;
                                         $contributions = $player->goals + $player->assists;
                                     @endphp
@@ -149,9 +148,7 @@
                                         data-clean_sheets="{{ $player->clean_sheets }}">
                                         {{-- Position --}}
                                         <td class="py-2 text-center">
-                                            <span class="inline-flex items-center justify-center w-8 h-8 rounded text-xs font-bold {{ $positionDisplay['bg'] }} {{ $positionDisplay['text'] }}" title="{{ $player->position }}">
-                                                {{ $positionDisplay['abbreviation'] }}
-                                            </span>
+                                            <x-position-badge :position="$player->position" :tooltip="$player->position" />
                                         </td>
                                         {{-- Name --}}
                                         <td class="py-2">

@@ -83,10 +83,7 @@
                                         {{-- Player name --}}
                                         <td class="py-3">
                                             <div class="flex items-center gap-3">
-                                                @php $positionDisplay = $player->position_display; @endphp
-                                                <span class="inline-flex items-center justify-center w-8 h-8 rounded text-xs font-bold {{ $positionDisplay['bg'] }} {{ $positionDisplay['text'] }}">
-                                                    {{ $positionDisplay['abbreviation'] }}
-                                                </span>
+                                                <x-position-badge :position="$player->position" />
                                                 <div>
                                                     <div class="font-medium text-slate-900">{{ $player->name }}</div>
                                                     <div class="text-xs text-slate-500">{{ $player->position }}</div>

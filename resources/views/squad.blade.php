@@ -76,14 +76,11 @@
                                             $nextMatchday = $game->current_matchday + 1;
                                             $isUnavailable = !$gamePlayer->isAvailable($game->current_date, $nextMatchday);
                                             $unavailabilityReason = $gamePlayer->getUnavailabilityReason($game->current_date, $nextMatchday);
-                                            $positionDisplay = $gamePlayer->position_display;
                                         @endphp
                                         <tr class="border-b border-slate-200 @if($isUnavailable) text-slate-400 @endif hover:bg-slate-50">
                                             {{-- Position --}}
                                             <td class="py-2 text-center">
-                                                <span x-data="" x-tooltip.raw="{{ $gamePlayer->position }}" class="inline-flex items-center justify-center w-8 h-8 rounded text-xs font-bold cursor-help {{ $positionDisplay['bg'] }} {{ $positionDisplay['text'] }}">
-                                                    {{ $positionDisplay['abbreviation'] }}
-                                                </span>
+                                                <x-position-badge :position="$gamePlayer->position" :tooltip="$gamePlayer->position" class="cursor-help" />
                                             </td>
                                             {{-- Number --}}
                                             <td class="py-2 text-center text-slate-400 text-xs">{{ $gamePlayer->number }}</td>
@@ -265,19 +262,19 @@
                                 <span class="font-semibold text-slate-900">{{ $formattedWageBill }}{{ __('squad.per_year') }}</span>
                             </div>
                             <div class="flex items-center gap-1">
-                                <span class="inline-flex items-center justify-center w-5 h-5 rounded text-xs font-bold bg-amber-100 text-amber-700">GK</span>
+                                <x-position-badge abbreviation="GK" size="sm" />
                                 <span class="font-medium">{{ $goalkeepers->count() }}</span>
                             </div>
                             <div class="flex items-center gap-1">
-                                <span class="inline-flex items-center justify-center w-5 h-5 rounded text-xs font-bold bg-blue-100 text-blue-700">DF</span>
+                                <x-position-badge abbreviation="DF" size="sm" />
                                 <span class="font-medium">{{ $defenders->count() }}</span>
                             </div>
                             <div class="flex items-center gap-1">
-                                <span class="inline-flex items-center justify-center w-5 h-5 rounded text-xs font-bold bg-green-100 text-green-700">MF</span>
+                                <x-position-badge abbreviation="MF" size="sm" />
                                 <span class="font-medium">{{ $midfielders->count() }}</span>
                             </div>
                             <div class="flex items-center gap-1">
-                                <span class="inline-flex items-center justify-center w-5 h-5 rounded text-xs font-bold bg-red-100 text-red-700">FW</span>
+                                <x-position-badge abbreviation="FW" size="sm" />
                                 <span class="font-medium">{{ $forwards->count() }}</span>
                             </div>
                             <div class="border-l pl-8 flex items-center gap-1">

@@ -21,28 +21,28 @@ class PositionMapper
     ];
 
     private static array $abbreviationColors = [
-        'GK' => ['bg' => 'bg-amber-100', 'text' => 'text-amber-700'],
+        'GK' => ['bg' => 'bg-amber-500', 'text' => 'text-white'],
 
         // Defenders
-        'CB' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-700'],
-        'LB' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-700'],
-        'RB' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-700'],
-        'DF' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-700'],
+        'CB' => ['bg' => 'bg-blue-600', 'text' => 'text-white'],
+        'LB' => ['bg' => 'bg-blue-600', 'text' => 'text-white'],
+        'RB' => ['bg' => 'bg-blue-600', 'text' => 'text-white'],
+        'DF' => ['bg' => 'bg-blue-600', 'text' => 'text-white'],
 
         // Midfielders
-        'DM' => ['bg' => 'bg-green-100', 'text' => 'text-green-700'],
-        'CM' => ['bg' => 'bg-green-100', 'text' => 'text-green-700'],
-        'AM' => ['bg' => 'bg-green-100', 'text' => 'text-green-700'],
-        'LM' => ['bg' => 'bg-green-100', 'text' => 'text-green-700'],
-        'RM' => ['bg' => 'bg-green-100', 'text' => 'text-green-700'],
-        'MF' => ['bg' => 'bg-green-100', 'text' => 'text-green-700'],
+        'DM' => ['bg' => 'bg-emerald-600', 'text' => 'text-white'],
+        'CM' => ['bg' => 'bg-emerald-600', 'text' => 'text-white'],
+        'AM' => ['bg' => 'bg-emerald-600', 'text' => 'text-white'],
+        'LM' => ['bg' => 'bg-emerald-600', 'text' => 'text-white'],
+        'RM' => ['bg' => 'bg-emerald-600', 'text' => 'text-white'],
+        'MF' => ['bg' => 'bg-emerald-600', 'text' => 'text-white'],
 
         // Forwards
-        'LW' => ['bg' => 'bg-red-100', 'text' => 'text-red-700'],
-        'RW' => ['bg' => 'bg-red-100', 'text' => 'text-red-700'],
-        'CF' => ['bg' => 'bg-red-100', 'text' => 'text-red-700'],
-        'SS' => ['bg' => 'bg-red-100', 'text' => 'text-red-700'],
-        'FW' => ['bg' => 'bg-red-100', 'text' => 'text-red-700'],
+        'LW' => ['bg' => 'bg-red-600', 'text' => 'text-white'],
+        'RW' => ['bg' => 'bg-red-600', 'text' => 'text-white'],
+        'CF' => ['bg' => 'bg-red-600', 'text' => 'text-white'],
+        'SS' => ['bg' => 'bg-red-600', 'text' => 'text-white'],
+        'FW' => ['bg' => 'bg-red-600', 'text' => 'text-white'],
     ];
 
     /**

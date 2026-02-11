@@ -143,9 +143,9 @@
         getPositionColor(role) {
             return {
                 'Goalkeeper': 'bg-amber-500',
-                'Defender': 'bg-blue-500',
-                'Midfielder': 'bg-green-500',
-                'Forward': 'bg-red-500',
+                'Defender': 'bg-blue-600',
+                'Midfielder': 'bg-emerald-600',
+                'Forward': 'bg-red-600',
             }[role] || 'bg-slate-500';
         },
 
@@ -174,9 +174,9 @@
         getPositionGradient(role) {
             return {
                 'Goalkeeper': 'from-amber-400 to-amber-600',
-                'Defender': 'from-blue-400 to-blue-600',
-                'Midfielder': 'from-emerald-400 to-emerald-600',
-                'Forward': 'from-rose-400 to-rose-600',
+                'Defender': 'from-blue-500 to-blue-700',
+                'Midfielder': 'from-emerald-500 to-emerald-700',
+                'Forward': 'from-red-500 to-red-700',
             }[role] || 'from-slate-400 to-slate-600';
         }
     }">
@@ -471,7 +471,6 @@
                                                     @php
                                                         $isUnavailable = !$player->isAvailable($matchDate, $competitionId);
                                                         $unavailabilityReason = $player->getUnavailabilityReason($matchDate, $competitionId);
-                                                        $positionDisplay = $player->position_display;
                                                     @endphp
                                                     <tr
                                                         @click="toggle('{{ $player->id }}', {{ $isUnavailable ? 'true' : 'false' }})"
@@ -501,9 +500,7 @@
                                                         </td>
                                                         {{-- Position --}}
                                                         <td class="py-2 text-center">
-                                                            <span class="inline-flex items-center justify-center w-8 h-8 rounded text-xs font-semibold {{ $positionDisplay['bg'] }} {{ $positionDisplay['text'] }}">
-                                                                {{ $positionDisplay['abbreviation'] }}
-                                                            </span>
+                                                            <x-position-badge :position="$player->position" />
                                                         </td>
                                                         {{-- Name --}}
                                                         <td class="py-2">
