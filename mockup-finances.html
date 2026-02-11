@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finances Page Mockup</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background: #f1f5f9; font-family: system-ui, -apple-system, sans-serif; }
+        .mockup-label {
+            position: absolute; top: -10px; left: 12px;
+            background: #3b82f6; color: white; font-size: 10px;
+            padding: 1px 8px; border-radius: 4px; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.05em;
+        }
+    </style>
+</head>
+<body>
+    <div class="max-w-4xl mx-auto py-8 px-4 space-y-6">
+
+        <!-- Page header (existing pattern) -->
+        <div class="text-sm text-slate-400 uppercase tracking-wide">Mockup — Proposed Finances Redesign</div>
+
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div class="p-6 sm:p-8">
+                <h3 class="font-semibold text-xl text-slate-900 mb-6">Finanzas de Real Betis — Temporada 2025/26</h3>
+
+                <!-- ============================================ -->
+                <!-- SECTION 1: Transfer Budget Hero               -->
+                <!-- ============================================ -->
+                <div class="relative mb-8">
+                    <span class="mockup-label">Section 1 — Hero</span>
+                    <div class="text-center py-6 border rounded-lg bg-slate-50">
+                        <div class="text-sm text-slate-500 uppercase tracking-wide mb-1">Presupuesto de Fichajes</div>
+                        <div class="text-5xl font-bold text-slate-900">€8.6M</div>
+                        <div class="flex items-center justify-center gap-8 mt-4 text-sm">
+                            <div>
+                                <span class="text-slate-400">Masa Salarial</span>
+                                <span class="font-semibold text-slate-700 ml-1">€28.1M/año</span>
+                            </div>
+                            <div class="text-slate-300">|</div>
+                            <div>
+                                <span class="text-slate-400">Valor Plantilla</span>
+                                <span class="font-semibold text-slate-700 ml-1">€187.4M</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============================================ -->
+                <!-- SECTION 1 ALT: Budget not allocated yet       -->
+                <!-- ============================================ -->
+                <div class="relative mb-8">
+                    <span class="mockup-label">Alt — Budget not set</span>
+                    <div class="text-center py-6 border-2 border-dashed border-amber-300 rounded-lg bg-amber-50">
+                        <div class="text-sm text-amber-700 font-medium mb-2">Presupuesto de temporada sin configurar</div>
+                        <div class="text-3xl font-bold text-slate-900 mb-1">€12.1M</div>
+                        <div class="text-sm text-slate-500 mb-4">superávit disponible para asignar</div>
+                        <a href="#" class="inline-flex items-center gap-2 px-5 py-2 bg-slate-900 text-white text-sm font-semibold rounded-lg">
+                            Configurar Presupuesto &rarr;
+                        </a>
+                    </div>
+                </div>
+
+                <!-- ============================================ -->
+                <!-- SECTION 2: Season Budget Flow (waterfall)     -->
+                <!-- ============================================ -->
+                <div class="relative mb-8">
+                    <span class="mockup-label">Section 2 — Budget Flow</span>
+                    <div class="border rounded-lg overflow-hidden">
+                        <div class="px-5 py-3 bg-slate-50 border-b flex items-center justify-between">
+                            <h4 class="font-semibold text-sm text-slate-900">Flujo de Presupuesto</h4>
+                            <span class="text-xs text-slate-400">Temporada 2025/26</span>
+                        </div>
+                        <div class="px-5 py-4 space-y-0 text-sm">
+                            <!-- Revenue (collapsible) -->
+                            <div x-data="{ open: false }">
+                                <button onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.chevron').classList.toggle('rotate-90')" class="w-full flex items-center justify-between py-2 hover:bg-slate-50 -mx-2 px-2 rounded">
+                                    <div class="flex items-center gap-2">
+                                        <svg class="w-3 h-3 text-slate-400 chevron transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                        <span class="font-medium text-slate-700">Ingresos Totales</span>
+                                    </div>
+                                    <span class="font-semibold text-green-600">+€45.2M</span>
+                                </button>
+                                <!-- Revenue detail (collapsed by default) -->
+                                <div class="hidden pl-7 pb-2 space-y-1 text-slate-500">
+                                    <div class="flex justify-between py-0.5">
+                                        <span>Derechos de TV</span><span>€22.0M</span>
+                                    </div>
+                                    <div class="flex justify-between py-0.5">
+                                        <span>Comercial</span><span>€12.8M</span>
+                                    </div>
+                                    <div class="flex justify-between py-0.5">
+                                        <span>Día de Partido</span><span>€8.4M</span>
+                                    </div>
+                                    <div class="flex justify-between py-0.5">
+                                        <span>Ayudas RFEF/UEFA</span><span>€2.0M</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Deductions -->
+                            <div class="flex items-center justify-between py-2">
+                                <span class="text-slate-500 pl-5">Salarios Proyectados</span>
+                                <span class="text-red-600">-€28.1M</span>
+                            </div>
+                            <div class="flex items-center justify-between py-2">
+                                <span class="text-slate-500 pl-5">Gastos Operativos</span>
+                                <span class="text-red-600">-€5.0M</span>
+                            </div>
+                            <div class="flex items-center justify-between py-2">
+                                <span class="text-slate-500 pl-5">Impuestos</span>
+                                <span class="text-red-600">-€3.5M</span>
+                            </div>
+
+                            <!-- Surplus line -->
+                            <div class="border-t pt-2 mt-1">
+                                <div class="flex items-center justify-between py-1">
+                                    <span class="font-medium text-slate-700 pl-5">Superávit Proyectado</span>
+                                    <span class="font-semibold text-slate-900">€12.1M</span>
+                                </div>
+                            </div>
+
+                            <!-- Infrastructure deduction -->
+                            <div class="flex items-center justify-between py-2">
+                                <span class="text-slate-500 pl-5">Infraestructura</span>
+                                <span class="text-red-600">-€3.5M</span>
+                            </div>
+
+                            <!-- Final: Transfer Budget -->
+                            <div class="border-t-2 border-slate-900 pt-2 mt-1">
+                                <div class="flex items-center justify-between py-1">
+                                    <span class="font-bold text-slate-900">= Presupuesto de Fichajes</span>
+                                    <span class="font-bold text-lg text-slate-900">€8.6M</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============================================ -->
+                <!-- SECTION 3: Infrastructure (compact bar)       -->
+                <!-- ============================================ -->
+                <div class="relative mb-8">
+                    <span class="mockup-label">Section 3 — Infrastructure</span>
+                    <div class="border rounded-lg px-5 py-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <h4 class="font-semibold text-sm text-slate-900">Infraestructura</h4>
+                            <a href="#" class="text-xs text-sky-600 hover:text-sky-800 font-medium">Ajustar Asignación &rarr;</a>
+                        </div>
+                        <div class="grid grid-cols-4 gap-4">
+                            <!-- Youth Academy -->
+                            <div class="flex items-center gap-3">
+                                <div>
+                                    <div class="text-xs font-medium text-slate-700">Cantera</div>
+                                    <div class="flex items-center gap-1 mt-1">
+                                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                        <span class="w-2 h-2 rounded-full bg-slate-200"></span>
+                                        <span class="w-2 h-2 rounded-full bg-slate-200"></span>
+                                        <span class="text-xs text-slate-400 ml-1">Nv.2</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Medical -->
+                            <div class="flex items-center gap-3">
+                                <div>
+                                    <div class="text-xs font-medium text-slate-700">Médico</div>
+                                    <div class="flex items-center gap-1 mt-1">
+                                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                        <span class="w-2 h-2 rounded-full bg-slate-200"></span>
+                                        <span class="text-xs text-slate-400 ml-1">Nv.3</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Scouting -->
+                            <div class="flex items-center gap-3">
+                                <div>
+                                    <div class="text-xs font-medium text-slate-700">Ojeadores</div>
+                                    <div class="flex items-center gap-1 mt-1">
+                                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                        <span class="w-2 h-2 rounded-full bg-slate-200"></span>
+                                        <span class="w-2 h-2 rounded-full bg-slate-200"></span>
+                                        <span class="w-2 h-2 rounded-full bg-slate-200"></span>
+                                        <span class="text-xs text-slate-400 ml-1">Nv.1</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Facilities -->
+                            <div class="flex items-center gap-3">
+                                <div>
+                                    <div class="text-xs font-medium text-slate-700">Instalaciones</div>
+                                    <div class="flex items-center gap-1 mt-1">
+                                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                        <span class="w-2 h-2 rounded-full bg-slate-200"></span>
+                                        <span class="w-2 h-2 rounded-full bg-slate-200"></span>
+                                        <span class="text-xs text-slate-400 ml-1">Nv.2</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============================================ -->
+                <!-- SECTION 4: Transaction History                -->
+                <!-- ============================================ -->
+                <div class="relative mb-4">
+                    <span class="mockup-label">Section 4 — Transactions</span>
+                    <div class="border rounded-lg overflow-hidden">
+                        <!-- Header with summary -->
+                        <div class="px-5 py-3 bg-slate-50 border-b flex items-center justify-between">
+                            <h4 class="font-semibold text-sm text-slate-900">Historial de Transacciones</h4>
+                            <div class="flex items-center gap-4 text-xs">
+                                <span class="text-green-600 font-medium">+€4.2M ingresos</span>
+                                <span class="text-red-600 font-medium">-€14.1M gastos</span>
+                            </div>
+                        </div>
+
+                        <!-- Filter tabs -->
+                        <div class="px-5 pt-3 flex gap-2 border-b">
+                            <button class="px-3 py-1.5 text-xs font-medium rounded-t border-b-2 border-sky-500 text-sky-600">Todos</button>
+                            <button class="px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-slate-600">Ingresos</button>
+                            <button class="px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-slate-600">Gastos</button>
+                        </div>
+
+                        <!-- Table -->
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="text-left text-xs text-slate-400 border-b">
+                                    <th class="px-5 py-2 font-medium">Fecha</th>
+                                    <th class="py-2 font-medium">Tipo</th>
+                                    <th class="py-2 font-medium">Descripción</th>
+                                    <th class="py-2 pr-5 font-medium text-right">Importe</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-slate-100">
+                                    <td class="px-5 py-2.5 text-slate-500">15 Ene</td>
+                                    <td class="py-2.5">
+                                        <span class="px-2 py-0.5 text-xs rounded-full bg-green-100 text-green-700">Venta</span>
+                                    </td>
+                                    <td class="py-2.5 text-slate-700">Guido Rodríguez → Napoli</td>
+                                    <td class="py-2.5 pr-5 text-right font-medium text-green-600">+€4.2M</td>
+                                </tr>
+                                <tr class="border-b border-slate-100">
+                                    <td class="px-5 py-2.5 text-slate-500">10 Ene</td>
+                                    <td class="py-2.5">
+                                        <span class="px-2 py-0.5 text-xs rounded-full bg-red-100 text-red-700">Fichaje</span>
+                                    </td>
+                                    <td class="py-2.5 text-slate-700">Iker Losada ← Celta</td>
+                                    <td class="py-2.5 pr-5 text-right font-medium text-red-600">-€6.5M</td>
+                                </tr>
+                                <tr class="border-b border-slate-100">
+                                    <td class="px-5 py-2.5 text-slate-500">1 Ene</td>
+                                    <td class="py-2.5">
+                                        <span class="px-2 py-0.5 text-xs rounded-full bg-slate-100 text-slate-600">Salarios</span>
+                                    </td>
+                                    <td class="py-2.5 text-slate-700">Nómina mensual — Enero</td>
+                                    <td class="py-2.5 pr-5 text-right font-medium text-red-600">-€2.3M</td>
+                                </tr>
+                                <tr class="border-b border-slate-100">
+                                    <td class="px-5 py-2.5 text-slate-500">15 Dic</td>
+                                    <td class="py-2.5">
+                                        <span class="px-2 py-0.5 text-xs rounded-full bg-slate-100 text-slate-600">Día de Partido</span>
+                                    </td>
+                                    <td class="py-2.5 text-slate-700">Jornada 18 — vs Sevilla FC</td>
+                                    <td class="py-2.5 pr-5 text-right font-medium text-green-600">+€0.8M</td>
+                                </tr>
+                                <tr class="border-b border-slate-100">
+                                    <td class="px-5 py-2.5 text-slate-500">1 Dic</td>
+                                    <td class="py-2.5">
+                                        <span class="px-2 py-0.5 text-xs rounded-full bg-slate-100 text-slate-600">Salarios</span>
+                                    </td>
+                                    <td class="py-2.5 text-slate-700">Nómina mensual — Diciembre</td>
+                                    <td class="py-2.5 pr-5 text-right font-medium text-red-600">-€2.3M</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ============================================ -->
+                <!-- BONUS: Season Results Banner (post-season)    -->
+                <!-- ============================================ -->
+                <div class="relative mt-12 mb-4">
+                    <span class="mockup-label">Bonus — Post-season banner</span>
+                    <div class="text-xs text-slate-400 mb-2 italic">This would appear at the top of the page when the season is over:</div>
+                    <div class="border rounded-lg overflow-hidden bg-slate-50">
+                        <div class="px-5 py-4 flex items-center justify-between">
+                            <div class="flex items-center gap-6">
+                                <div>
+                                    <div class="text-xs text-slate-500">Ingresos Proyectados</div>
+                                    <div class="font-semibold text-slate-700">€45.2M</div>
+                                </div>
+                                <div class="text-slate-300">&rarr;</div>
+                                <div>
+                                    <div class="text-xs text-slate-500">Ingresos Reales</div>
+                                    <div class="font-semibold text-slate-700">€47.8M</div>
+                                </div>
+                                <div class="text-slate-300">&rarr;</div>
+                                <div>
+                                    <div class="text-xs text-slate-500">Variación</div>
+                                    <div class="font-semibold text-green-600">+€2.6M</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xs text-slate-500">Superávit Real</div>
+                                <div class="text-xl font-bold text-slate-900">€14.7M</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="text-xs text-slate-400 text-center mt-8 pb-8">
+            This is a static mockup with placeholder data. Click the "Ingresos Totales" row to toggle the revenue detail.
+        </div>
+    </div>
+</body>
+</html>
