@@ -24,7 +24,8 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
 };
 
 $hasKnockout = $knockoutTies->isNotEmpty() || $knockoutRounds->isNotEmpty();
-$defaultTab = $hasKnockout ? 'knockout' : 'league';
+$knockoutStarted = $knockoutTies->isNotEmpty();
+$defaultTab = $knockoutStarted ? 'knockout' : 'league';
 @endphp
 
 <x-app-layout>
