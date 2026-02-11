@@ -27,7 +27,7 @@ class BetaInvite extends Mailable
     public function content(): Content
     {
         return new Content(
-            markdown: 'mail.beta-invite',
+            text: 'mail.beta-invite',
             with: [
                 'registerUrl' => url('/register?invite='.$this->inviteCode->code),
                 'code' => $this->inviteCode->code,

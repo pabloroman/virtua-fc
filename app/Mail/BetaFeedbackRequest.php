@@ -28,7 +28,7 @@ class BetaFeedbackRequest extends Mailable
     public function content(): Content
     {
         return new Content(
-            markdown: 'mail.beta-feedback-request',
+            text: 'mail.beta-feedback-request',
             with: [
                 'userName' => $this->user->name,
                 'feedbackUrl' => config('beta.feedback_url'),
