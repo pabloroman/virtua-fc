@@ -274,7 +274,7 @@
                                 <x-secondary-button type="button" @click="quickSelect()">
                                     {{ __('squad.auto_select') }}
                                 </x-secondary-button>
-                                <x-primary-button :disabled="selectedCount !== 11">
+                                <x-primary-button x-bind:disabled="selectedCount !== 11">
                                     {{ __('app.confirm') }}
                                 </x-primary-button>
                             </div>
@@ -501,9 +501,7 @@
                                                         {{-- Name --}}
                                                         <td class="py-2">
                                                             <div class="flex items-center gap-2">
-                                                                @if($player->number)
-                                                                    <span class="text-xs text-slate-400 w-4 text-right">{{ $player->number }}</span>
-                                                                @endif
+                                                                <span class="text-xs text-slate-400 w-4 text-right">{{ $player->number ?? '-' }}</span>
                                                                 <div class="font-medium @if($isUnavailable) text-slate-400 @else text-slate-900 @endif">
                                                                     {{ $player->name }}
                                                                 </div>

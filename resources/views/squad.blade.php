@@ -67,7 +67,7 @@
                                                 <x-position-badge :position="$gamePlayer->position" :tooltip="$gamePlayer->position" class="cursor-help" />
                                             </td>
                                             {{-- Number --}}
-                                            <td class="py-2 text-center text-slate-400 text-xs">{{ $gamePlayer->number }}</td>
+                                            <td class="py-2 text-center text-slate-400 text-xs">{{ $gamePlayer->number ?? '-' }}</td>
                                             {{-- Name --}}
                                             <td class="py-2">
                                                 <div class="font-medium text-slate-900 @if($isUnavailable) text-slate-400 @endif">
