@@ -44,7 +44,7 @@ return [
     'agreed_transfers' => 'Fichajes Acordados',
 
     // Expiring contracts notice
-    'expiring_contracts_notice' => ':count jugador(es) con contratos por expirar',
+    'expiring_contracts_notice' => ':count jugador(es) en último año de contrato',
     'manage_contracts' => 'Gestionar Contratos',
 
     // Listed players

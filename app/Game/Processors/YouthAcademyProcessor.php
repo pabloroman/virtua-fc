@@ -4,45 +4,29 @@ namespace App\Game\Processors;
 
 use App\Game\Contracts\SeasonEndProcessor;
 use App\Game\DTO\SeasonTransitionData;
-use App\Game\Services\YouthAcademyService;
+use App\Models\AcademyPlayer;
 use App\Models\Game;
 
 /**
- * Generates youth academy prospects at the start of the new season.
- * Runs after budget projection so academy tier is set.
+ * Handles academy players at season end.
+ * Academy prospects now spawn mid-season during matchday advancement,
+ * so this processor just records metadata about existing academy players.
  */
 class YouthAcademyProcessor implements SeasonEndProcessor
 {
-    public function __construct(
-        private readonly YouthAcademyService $youthAcademyService,
-    ) {}
-
     public function priority(): int
     {
-        return 55; // After budget projection (50)
+        return 55;
     }
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData
     {
-        // Refresh to get latest investment after budget projection
-        $game->refresh();
+        $academyCount = AcademyPlayer::where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->count();
 
-        // Generate youth prospects based on academy tier
-        $prospects = $this->youthAcademyService->generateProspects($game);
-
-        if ($prospects->isNotEmpty()) {
-            // Store prospect info in metadata for season start display
-            $data->setMetadata('youth_prospects', $prospects->map(function ($prospect) {
-                return [
-                    'id' => $prospect->id,
-                    'name' => $prospect->player->name,
-                    'position' => $prospect->position,
-                    'age' => $prospect->player->age,
-                    'potential' => $prospect->potential,
-                    'technical' => $prospect->game_technical_ability,
-                    'physical' => $prospect->game_physical_ability,
-                ];
-            })->toArray());
+        if ($academyCount > 0) {
+            $data->setMetadata('academy_players_count', $academyCount);
         }
 
         return $data;

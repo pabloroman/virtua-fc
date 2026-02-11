@@ -66,4 +66,8 @@ return [
     'lineup_confirmed' => 'Alineación confirmada.',
     'lineup_invalid' => 'La alineación debe tener exactamente 11 jugadores.',
     'lineup_unavailable_players' => 'Algunos jugadores seleccionados no están disponibles.',
+
+    // Academy
+    'academy_player_promoted' => ':player ha sido subido al primer equipo.',
+    'academy_player_not_found' => 'Jugador no encontrado en la cantera.',
 ];

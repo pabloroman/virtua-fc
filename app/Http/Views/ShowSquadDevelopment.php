@@ -4,6 +4,7 @@ namespace App\Http\Views;
 
 use App\Game\Services\DevelopmentCurve;
 use App\Game\Services\PlayerDevelopmentService;
+use App\Models\AcademyPlayer;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use Illuminate\Http\Request;
@@ -48,11 +49,14 @@ class ShowSquadDevelopment
             'all' => $players->count(),
         ];
 
+        $academyCount = AcademyPlayer::where('game_id', $gameId)->where('team_id', $game->team_id)->count();
+
         return view('squad-development', [
             'game' => $game,
             'players' => $filteredPlayers,
             'filter' => $filter,
             'stats' => $stats,
+            'academyCount' => $academyCount,
         ]);
     }
 
