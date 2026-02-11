@@ -58,7 +58,9 @@ class BudgetProjectionService
 
         // Calculate operating expenses based on club reputation
         $reputation = $team->clubProfile?->reputation_level ?? ClubProfile::REPUTATION_MODEST;
-        $projectedOperatingExpenses = config('finances.operating_expenses.' . $reputation, 700_000_000);
+        $baseOperatingExpenses = config('finances.operating_expenses.' . $reputation, 700_000_000);
+        $tierMultiplier = config('finances.operating_expense_tier_multiplier.' . $league->tier, 1.0);
+        $projectedOperatingExpenses = (int) ($baseOperatingExpenses * $tierMultiplier);
 
         // Calculate projected surplus
         $projectedSurplus = $projectedTotalRevenue - $projectedWages - $projectedOperatingExpenses;

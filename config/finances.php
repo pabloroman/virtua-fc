@@ -9,8 +9,8 @@ return [
         'continental'  =>  3_500_000_000, // €35M
         'established'  =>  2_500_000_000, // €25M
         'modest'       =>  1_500_000_000, // €15M
-        'professional' =>    800_000_000, // €8M
-        'local'        =>    400_000_000, // €4M
+        'professional' =>  1_000_000_000, // €10M
+        'local'        =>    500_000_000, // €5M
     ],
 
     // Commercial revenue per seat per season by reputation level (in cents).
@@ -33,6 +33,13 @@ return [
         'modest'       => 27_500, // €275/seat
         'professional' => 20_000, // €200/seat
         'local'        => 10_000, // €100/seat
+    ],
+
+    // Operating expense multiplier by competition tier.
+    // Tier 1 (La Liga) = full cost, Tier 2 (Segunda) = reduced.
+    'operating_expense_tier_multiplier' => [
+        1 => 1.0,   // La Liga: full operating expenses
+        2 => 0.70,  // Segunda: 70% of base operating expenses
     ],
 
     // Position-based commercial revenue growth multipliers.
