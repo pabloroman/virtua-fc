@@ -51,7 +51,7 @@ class AdvanceMatchday
         }
 
         $matches = $batch['matches'];
-        $handler = $batch['handler'];
+        $handlers = $batch['handlers'];
         $matchday = $batch['matchday'];
         $currentDate = $batch['currentDate'];
 
@@ -89,7 +89,7 @@ class AdvanceMatchday
 
         // Process post-match actions
         $game->refresh();
-        $this->processPostMatchActions($game, $matches, $handler, $allPlayers);
+        $this->processPostMatchActions($game, $matches, $handlers, $allPlayers);
 
         // If the player's team played, redirect to the live match view
         $playerMatch = $matches->first(fn ($m) => $m->involvesTeam($game->team_id));
@@ -101,7 +101,9 @@ class AdvanceMatchday
             ]);
         }
 
-        return redirect()->to($handler->getRedirectRoute($game, $matches, $matchday));
+        $primaryHandler = reset($handlers);
+
+        return redirect()->to($primaryHandler->getRedirectRoute($game, $matches, $matchday));
     }
 
     private function simulateMatches($matches, Game $game, $allPlayers): array
@@ -188,7 +190,7 @@ class AdvanceMatchday
         }
     }
 
-    private function processPostMatchActions(Game $game, $matches, $handler, $allPlayers): void
+    private function processPostMatchActions(Game $game, $matches, array $handlers, $allPlayers): void
     {
         // Process transfers when window is open
         if ($game->isTransferWindowOpen()) {
@@ -248,8 +250,11 @@ class AdvanceMatchday
         // Clean up old read notifications
         $this->notificationService->cleanupOldNotifications($game);
 
-        // Competition-specific post-match actions
-        $handler->afterMatches($game, $matches, $allPlayers);
+        // Competition-specific post-match actions for each handler
+        foreach ($handlers as $competitionId => $handler) {
+            $competitionMatches = $matches->filter(fn ($m) => $m->competition_id === $competitionId);
+            $handler->afterMatches($game, $competitionMatches, $allPlayers);
+        }
     }
 
     /**
