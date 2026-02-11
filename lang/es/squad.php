@@ -116,6 +116,8 @@ return [
     'injury_achilles_rupture' => 'Rotura del tendón de Aquiles',
 
     // Development page
+    'ability' => 'Habilidad',
+    'playing_time' => 'Minutos',
     'squad_development' => 'Desarrollo de Plantilla',
     'high_potential' => 'Alto Potencial',
     'growing' => 'Creciendo',
@@ -148,6 +150,9 @@ return [
     'appearances' => 'Partidos',
     'click_to_sort' => 'Haz clic en las cabeceras de columna para ordenar',
     'gk_only' => 'solo PO',
+
+    // Stats highlights
+    'top_in_squad' => 'Máximo en plantilla',
 
     // Legend labels
     'legend_apps' => 'Partidos',
