@@ -192,7 +192,15 @@ class ScoutingService
 
         // Age filter (age is computed from players.date_of_birth, not a column)
         if (! empty($filters['age_min']) || ! empty($filters['age_max'])) {
-            $ageExpr = "(strftime('%Y', 'now') - strftime('%Y', (SELECT date_of_birth FROM players WHERE players.id = game_players.player_id)))";
+            $driver = $query->getQuery()->getConnection()->getDriverName();
+            $dobSubquery = '(SELECT date_of_birth FROM players WHERE players.id = game_players.player_id)';
+
+            if ($driver === 'pgsql') {
+                $ageExpr = "EXTRACT(YEAR FROM AGE(CURRENT_DATE, $dobSubquery))";
+            } else {
+                $ageExpr = "(strftime('%Y', 'now') - strftime('%Y', $dobSubquery))";
+            }
+
             if (! empty($filters['age_min'])) {
                 $query->whereRaw("($ageExpr) >= ?", [(int) $filters['age_min']]);
             }
