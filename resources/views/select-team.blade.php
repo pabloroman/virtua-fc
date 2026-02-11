@@ -8,7 +8,7 @@
     <div>
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-12" x-data="{ openTab: '{{ $competitions->first()?->id }}' }">
+                <div class="p-6 sm:p-8" x-data="{ openTab: '{{ $competitions->first()?->id }}' }">
                     <form method="post" action="{{ route('init-game') }}" x-data="{ loading: false }" @submit="loading = true" class="space-y-6">
                         @csrf
                         <label class="block">

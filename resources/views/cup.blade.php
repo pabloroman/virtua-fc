@@ -8,7 +8,7 @@
     <div>
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-12">
+                <div class="p-6 sm:p-8">
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="font-semibold text-xl text-slate-900">{{ $competition->name }}</h3>
                         <div class="flex items-center gap-4">
@@ -127,9 +127,7 @@
                                                 @if($canDraw)
                                                     <form method="POST" action="{{ route('game.cup.draw', [$game->id, $round->round_number]) }}">
                                                         @csrf
-                                                        <button type="submit" class="text-xs px-3 py-1 bg-sky-500 text-white rounded hover:bg-sky-600">
-                                                            {{ __('cup.conduct_draw') }}
-                                                        </button>
+                                                        <x-primary-button color="sky" class="text-xs px-3 py-1">{{ __('cup.conduct_draw') }}</x-primary-button>
                                                     </form>
                                                 @endif
                                             </div>

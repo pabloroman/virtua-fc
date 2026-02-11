@@ -37,7 +37,7 @@
             </div>
             @endif
 
-            <div class="bg-white rounded-lg shadow-sm p-8">
+            <div class="bg-white rounded-lg shadow-sm p-6 sm:p-8">
                 {{-- Available Surplus Header --}}
                 <div class="mb-8 text-center">
                     <div class="text-sm text-slate-500 uppercase tracking-wide mb-1">{{ __('finances.available_surplus') }}</div>

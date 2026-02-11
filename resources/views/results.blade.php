@@ -8,7 +8,7 @@
     <div>
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-12">
+                <div class="p-6 sm:p-8">
 
             {{-- Title bar --}}
             <div class="flex items-center justify-between mb-6">

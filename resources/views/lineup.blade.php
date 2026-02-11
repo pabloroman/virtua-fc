@@ -143,9 +143,9 @@
         getPositionColor(role) {
             return {
                 'Goalkeeper': 'bg-amber-500',
-                'Defender': 'bg-blue-500',
-                'Midfielder': 'bg-green-500',
-                'Forward': 'bg-red-500',
+                'Defender': 'bg-blue-600',
+                'Midfielder': 'bg-emerald-600',
+                'Forward': 'bg-red-600',
             }[role] || 'bg-slate-500';
         },
 
@@ -174,15 +174,15 @@
         getPositionGradient(role) {
             return {
                 'Goalkeeper': 'from-amber-400 to-amber-600',
-                'Defender': 'from-blue-400 to-blue-600',
-                'Midfielder': 'from-emerald-400 to-emerald-600',
-                'Forward': 'from-rose-400 to-rose-600',
+                'Defender': 'from-blue-500 to-blue-700',
+                'Midfielder': 'from-emerald-500 to-emerald-700',
+                'Forward': 'from-red-500 to-red-700',
             }[role] || 'from-slate-400 to-slate-600';
         }
     }">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
+                <div class="p-6 sm:p-8">
                     {{-- Errors --}}
                     @if ($errors->any())
                         <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -210,28 +210,28 @@
                                 {{-- Formation Selector --}}
                                 <div class="flex items-center gap-2">
                                     <label class="text-sm font-medium text-slate-700">{{ __('squad.formation') }}:</label>
-                                    <select
+                                    <x-select-input
                                         x-model="selectedFormation"
                                         @change="updateAutoLineup()"
-                                        class="text-sm font-semibold border-slate-300 rounded-md focus:border-sky-500 focus:ring-sky-500"
+                                        class="font-semibold"
                                     >
                                         @foreach($formations as $formation)
                                             <option value="{{ $formation->value }}">{{ $formation->label() }}</option>
                                         @endforeach
-                                    </select>
+                                    </x-select-input>
                                 </div>
 
                                 {{-- Mentality Selector --}}
                                 <div class="flex items-center gap-2">
                                     <label class="text-sm font-medium text-slate-700">{{ __('squad.mentality') }}:</label>
-                                    <select
+                                    <x-select-input
                                         x-model="selectedMentality"
-                                        class="text-sm font-semibold border-slate-300 rounded-md focus:border-sky-500 focus:ring-sky-500"
+                                        class="font-semibold"
                                     >
                                         @foreach($mentalities as $mentality)
                                             <option value="{{ $mentality->value }}">{{ $mentality->label() }}</option>
                                         @endforeach
-                                    </select>
+                                    </x-select-input>
                                 </div>
 
 
@@ -271,16 +271,12 @@
                                 <button type="button" @click="clearSelection()" class="px-4 py-2 text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-200 rounded transition-colors">
                                     {{ __('app.clear') }}
                                 </button>
-                                <button type="button" @click="quickSelect()" class="px-4 py-2 text-sm bg-slate-200 text-slate-700 hover:bg-slate-300 rounded transition-colors">
+                                <x-secondary-button type="button" @click="quickSelect()">
                                     {{ __('squad.auto_select') }}
-                                </button>
-                                <button
-                                    type="submit"
-                                    class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-white uppercase tracking-wide hover:bg-red-700 focus:bg-red-700 active:bg-red-900 transition ease-in-out duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    :disabled="selectedCount !== 11"
-                                >
+                                </x-secondary-button>
+                                <x-primary-button x-bind:disabled="selectedCount !== 11">
                                     {{ __('app.confirm') }}
-                                </button>
+                                </x-primary-button>
                             </div>
                         </div>
 
@@ -471,7 +467,6 @@
                                                     @php
                                                         $isUnavailable = !$player->isAvailable($matchDate, $competitionId);
                                                         $unavailabilityReason = $player->getUnavailabilityReason($matchDate, $competitionId);
-                                                        $positionDisplay = $player->position_display;
                                                     @endphp
                                                     <tr
                                                         @click="toggle('{{ $player->id }}', {{ $isUnavailable ? 'true' : 'false' }})"
@@ -501,16 +496,12 @@
                                                         </td>
                                                         {{-- Position --}}
                                                         <td class="py-2 text-center">
-                                                            <span class="inline-flex items-center justify-center w-8 h-8 rounded text-xs font-semibold {{ $positionDisplay['bg'] }} {{ $positionDisplay['text'] }}">
-                                                                {{ $positionDisplay['abbreviation'] }}
-                                                            </span>
+                                                            <x-position-badge :position="$player->position" />
                                                         </td>
                                                         {{-- Name --}}
                                                         <td class="py-2">
                                                             <div class="flex items-center gap-2">
-                                                                @if($player->number)
-                                                                    <span class="text-xs text-slate-400 w-4 text-right">{{ $player->number }}</span>
-                                                                @endif
+                                                                <span class="text-xs text-slate-400 w-4 text-right">{{ $player->number ?? '-' }}</span>
                                                                 <div class="font-medium @if($isUnavailable) text-slate-400 @else text-slate-900 @endif">
                                                                     {{ $player->name }}
                                                                 </div>

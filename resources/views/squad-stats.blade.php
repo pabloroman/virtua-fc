@@ -8,13 +8,17 @@
     <div>
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-12">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="font-semibold text-xl text-slate-900">{{ __('squad.squad_statistics') }}</h3>
-                        <a href="{{ route('game.squad', $game->id) }}" class="text-sm text-sky-600 hover:text-sky-800">
-                            &larr; {{ __('squad.back_to_squad') }}
-                        </a>
-                    </div>
+                <div class="p-6 sm:p-8">
+                    <h3 class="font-semibold text-xl text-slate-900 mb-6">{{ __('squad.squad_statistics') }}</h3>
+
+                    <x-section-nav :items="[
+                        ['href' => route('game.squad', $game->id), 'label' => __('squad.squad'), 'active' => false],
+                        ['href' => route('game.squad.contracts', $game->id), 'label' => __('squad.contracts'), 'active' => false],
+                        ['href' => route('game.squad.development', $game->id), 'label' => __('squad.development'), 'active' => false],
+                        ['href' => route('game.squad.stats', $game->id), 'label' => __('squad.stats'), 'active' => true],
+                    ]" />
+
+                    <div class="mt-6"></div>
 
                     <div x-data="{
                         sortColumn: 'appearances',
@@ -131,7 +135,6 @@
                             <tbody id="stats-body">
                                 @foreach($players->sortByDesc('appearances') as $player)
                                     @php
-                                        $positionDisplay = $player->position_display;
                                         $goalsPerGame = $player->appearances > 0 ? round($player->goals / $player->appearances, 2) : 0;
                                         $contributions = $player->goals + $player->assists;
                                     @endphp
@@ -149,9 +152,7 @@
                                         data-clean_sheets="{{ $player->clean_sheets }}">
                                         {{-- Position --}}
                                         <td class="py-2 text-center">
-                                            <span class="inline-flex items-center justify-center w-8 h-8 rounded text-xs font-bold {{ $positionDisplay['bg'] }} {{ $positionDisplay['text'] }}" title="{{ $player->position }}">
-                                                {{ $positionDisplay['abbreviation'] }}
-                                            </span>
+                                            <x-position-badge :position="$player->position" :tooltip="$player->position" />
                                         </td>
                                         {{-- Name --}}
                                         <td class="py-2">

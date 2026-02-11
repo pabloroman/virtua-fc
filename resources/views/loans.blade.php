@@ -20,7 +20,7 @@
             @endif
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-8">
+                <div class="p-6 sm:p-8">
                     <div class="flex items-center justify-between mb-6">
                         <h3 class="font-semibold text-xl text-slate-900">{{ __('transfers.title') }}</h3>
                         <div class="flex items-center gap-6 text-sm">
@@ -43,7 +43,11 @@
                     </div>
 
                     {{-- Tab Navigation --}}
-                    <x-transfers-nav :game="$game" active="loans" />
+                    <x-section-nav :items="[
+                        ['href' => route('game.transfers', $game->id), 'label' => __('transfers.market'), 'active' => false],
+                        ['href' => route('game.scouting', $game->id), 'label' => __('transfers.scouting'), 'active' => false],
+                        ['href' => route('game.loans', $game->id), 'label' => __('transfers.loans'), 'active' => true],
+                    ]" />
 
                     {{-- Loan Searches --}}
                     @if($loanSearches->isNotEmpty())

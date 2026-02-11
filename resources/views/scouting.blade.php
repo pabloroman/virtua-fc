@@ -20,7 +20,7 @@
             @endif
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-8">
+                <div class="p-6 sm:p-8">
                     <div class="flex items-center justify-between mb-6">
                         <h3 class="font-semibold text-xl text-slate-900">{{ __('transfers.title') }}</h3>
                         <div class="flex items-center gap-6 text-sm">
@@ -43,7 +43,11 @@
                     </div>
 
                     {{-- Tab Navigation --}}
-                    <x-transfers-nav :game="$game" active="scouting" />
+                    <x-section-nav :items="[
+                        ['href' => route('game.transfers', $game->id), 'label' => __('transfers.market'), 'active' => false],
+                        ['href' => route('game.scouting', $game->id), 'label' => __('transfers.scouting'), 'active' => true],
+                        ['href' => route('game.loans', $game->id), 'label' => __('transfers.loans'), 'active' => false],
+                    ]" />
 
                     {{-- State: No active search → Show search form --}}
                     @if(!$report)
@@ -87,7 +91,7 @@
                                     {{-- Position --}}
                                     <div>
                                         <label for="position" class="block text-sm font-semibold text-slate-700 mb-1">{{ __('transfers.position_required') }}</label>
-                                        <select name="position" id="position" required class="w-full border-slate-300 rounded-lg shadow-sm text-sm focus:ring-red-500 focus:border-red-500">
+                                        <x-select-input name="position" id="position" required class="w-full">
                                             <option value="">{{ __('transfers.select_position') }}</option>
                                             <optgroup label="{{ __('transfers.specific_positions') }}">
                                                 <option value="GK">{{ __('transfers.position_gk') }}</option>
@@ -106,7 +110,7 @@
                                                 <option value="any_midfielder">{{ __('transfers.any_midfielder') }}</option>
                                                 <option value="any_forward">{{ __('transfers.any_forward') }}</option>
                                             </optgroup>
-                                        </select>
+                                        </x-select-input>
                                         @error('position')
                                             <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
                                         @enderror
@@ -117,11 +121,11 @@
                                         <label class="block text-sm font-semibold text-slate-700 mb-1">{{ __('transfers.scope') }}</label>
                                         <div class="flex items-center gap-5 mt-2">
                                             <label class="flex items-center gap-2 cursor-pointer">
-                                                <input type="checkbox" name="scope[]" value="domestic" x-model="scopeDomestic" class="rounded border-slate-300 text-red-600 focus:ring-red-500">
+                                                <x-checkbox-input name="scope[]" value="domestic" x-model="scopeDomestic" />
                                                 <span class="text-sm text-slate-700">{{ __('transfers.scope_domestic') }}</span>
                                             </label>
                                             <label class="flex items-center gap-2 cursor-pointer">
-                                                <input type="checkbox" name="scope[]" value="international" x-model="scopeInternational" class="rounded border-slate-300 text-red-600 focus:ring-red-500">
+                                                <x-checkbox-input name="scope[]" value="international" x-model="scopeInternational" />
                                                 <span class="text-sm text-slate-700">{{ __('transfers.scope_international') }}</span>
                                             </label>
                                         </div>
@@ -132,7 +136,7 @@
                                         <label class="block text-sm font-semibold text-slate-700 mb-1">{{ __('transfers.contract') }}</label>
                                         <div class="mt-2">
                                             <label class="flex items-center gap-2 cursor-pointer">
-                                                <input type="checkbox" name="expiring_contract" value="1" class="rounded border-slate-300 text-red-600 focus:ring-red-500">
+                                                <x-checkbox-input name="expiring_contract" value="1" />
                                                 <span class="text-sm text-slate-700">{{ __('transfers.expiring_contract') }}</span>
                                             </label>
                                         </div>
@@ -188,9 +192,9 @@
                                 </div>
 
                                 <div class="pt-5">
-                                    <button type="submit" class="w-full uppercase py-3 bg-red-600 text-white font-semibold rounded-lg tracking-wide hover:bg-red-700 focus:bg-red-700 active:bg-red-900 ease-in-out duration-150 transition">
+                                    <x-primary-button class="w-full py-3">
                                         {{ __('transfers.start_scout_search') }}
-                                    </button>
+                                    </x-primary-button>
                                 </div>
                             </form>
                         </div>
@@ -265,7 +269,6 @@
                                                     $avgAbility = (int)(($player->current_technical_ability + $player->current_physical_ability) / 2);
                                                     $abilityLow = max(1, $avgAbility - $fuzz);
                                                     $abilityHigh = min(99, $avgAbility + $fuzz);
-                                                    $positionDisplay = $player->position_display;
                                                 @endphp
                                                 <tr class="border-b border-slate-100 hover:bg-slate-50">
                                                     <td class="py-3">
@@ -278,9 +281,7 @@
                                                         @endif
                                                     </td>
                                                     <td class="py-3">
-                                                        <span class="px-1.5 py-0.5 text-xs font-medium rounded {{ $positionDisplay['bg'] }} {{ $positionDisplay['text'] }}">
-                                                            {{ $positionDisplay['abbreviation'] }}
-                                                        </span>
+                                                        <x-position-badge :position="$player->position" size="lg" />
                                                     </td>
                                                     <td class="py-3 text-center text-slate-600">{{ $player->age }}</td>
                                                     <td class="py-3">
@@ -319,9 +320,7 @@
                                                 <div>
                                                     <h3 class="font-semibold text-2xl text-slate-900">{{ $scoutPlayer->name }}</h3>
                                                     <div class="flex items-center gap-3 mt-1 text-sm text-slate-600">
-                                                        <span class="px-2 py-0.5 text-xs font-bold rounded {{ $scoutPlayer->position_display['bg'] }} {{ $scoutPlayer->position_display['text'] }}">
-                                                            {{ $scoutPlayer->position_display['abbreviation'] }}
-                                                        </span>
+                                                        <x-position-badge :position="$scoutPlayer->position" size="lg" />
                                                         <span>{{ $scoutPlayer->position }}</span>
                                                         <span>&middot;</span>
                                                         <span>{{ $scoutPlayer->age }} {{ __('transfers.years') }}</span>
@@ -435,9 +434,7 @@
                                                         <div class="flex gap-2 mt-3">
                                                             <form method="post" action="{{ route('game.scouting.counter.accept', [$game->id, $existingOffer->id]) }}">
                                                                 @csrf
-                                                                <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg transition-colors">
-                                                                    {{ __('transfers.accept_counter') }}
-                                                                </button>
+                                                                <x-primary-button color="green">{{ __('transfers.accept_counter') }}</x-primary-button>
                                                             </form>
                                                         </div>
                                                     @else
@@ -459,14 +456,12 @@
                                                                 @csrf
                                                                 <div class="mb-4">
                                                                     <label for="bid_amount_{{ $scoutPlayer->id }}" class="block text-sm font-medium text-slate-700 mb-1">{{ __('transfers.your_bid_euros') }}</label>
-                                                                    <input type="number" name="bid_amount" id="bid_amount_{{ $scoutPlayer->id }}" min="0" step="100000"
+                                                                    <x-text-input type="number" name="bid_amount" id="bid_amount_{{ $scoutPlayer->id }}" min="0" step="100000"
                                                                            value="{{ (int)($detail['asking_price'] / 100) }}"
-                                                                           class="w-full border-slate-300 rounded-lg shadow-sm text-sm focus:ring-sky-500 focus:border-sky-500">
+                                                                           class="w-full" />
                                                                     <p class="text-xs text-slate-500 mt-1">{{ __('transfers.asking_price') }}: {{ $detail['formatted_asking_price'] }}</p>
                                                                 </div>
-                                                                <button type="submit" class="w-full px-4 py-2.5 bg-sky-600 hover:bg-sky-700 text-white text-sm font-semibold rounded-lg transition-colors">
-                                                                    {{ __('transfers.submit_bid') }}
-                                                                </button>
+                                                                <x-primary-button color="sky" class="w-full py-2.5">{{ __('transfers.submit_bid') }}</x-primary-button>
                                                             </form>
                                                         @else
                                                             <p class="text-sm text-red-600">{{ __('transfers.insufficient_transfer_budget') }}</p>
@@ -479,9 +474,7 @@
                                                         <p class="text-sm text-slate-600 mb-4">{{ __('transfers.request_loan_description') }}</p>
                                                         <form method="post" action="{{ route('game.scouting.loan', [$game->id, $scoutPlayer->id]) }}">
                                                             @csrf
-                                                            <button type="submit" class="w-full px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-lg transition-colors">
-                                                                {{ __('transfers.request_loan') }}
-                                                            </button>
+                                                            <x-primary-button color="emerald" class="w-full py-2.5">{{ __('transfers.request_loan') }}</x-primary-button>
                                                         </form>
                                                     </div>
                                                 </div>

@@ -8,7 +8,7 @@
     <div>
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-12">
+                <div class="p-6 sm:p-8">
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="font-semibold text-xl text-slate-900">{{ __('game.your_games') }}</h3>
                         <a href="{{ route('select-team') }}" class="text-sky-600 hover:text-sky-800">+ {{ __('app.new_game') }}</a>

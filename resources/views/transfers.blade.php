@@ -15,7 +15,7 @@
             @endif
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-8">
+                <div class="p-6 sm:p-8">
                     <div class="flex items-center justify-between mb-6">
                         <h3 class="font-semibold text-xl text-slate-900">{{ __('transfers.title') }}</h3>
                         <div class="flex items-center gap-6 text-sm">
@@ -38,7 +38,11 @@
                     </div>
 
                     {{-- Tab Navigation --}}
-                    <x-transfers-nav :game="$game" active="market" />
+                    <x-section-nav :items="[
+                        ['href' => route('game.transfers', $game->id), 'label' => __('transfers.market'), 'active' => true],
+                        ['href' => route('game.scouting', $game->id), 'label' => __('transfers.scouting'), 'active' => false],
+                        ['href' => route('game.loans', $game->id), 'label' => __('transfers.loans'), 'active' => false],
+                    ]" />
 
                     <div class="mt-6"></div>
 
@@ -199,15 +203,11 @@
                                         <div class="flex gap-2">
                                             <form method="post" action="{{ route('game.transfers.accept', [$game->id, $offer->id]) }}">
                                                 @csrf
-                                                <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg transition-colors">
-                                                    {{ __('app.accept') }}
-                                                </button>
+                                                <x-primary-button color="green">{{ __('app.accept') }}</x-primary-button>
                                             </form>
                                             <form method="post" action="{{ route('game.transfers.reject', [$game->id, $offer->id]) }}">
                                                 @csrf
-                                                <button type="submit" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm font-semibold rounded-lg transition-colors">
-                                                    {{ __('app.reject') }}
-                                                </button>
+                                                <x-secondary-button type="submit">{{ __('app.reject') }}</x-secondary-button>
                                             </form>
                                         </div>
                                     </div>
@@ -249,15 +249,11 @@
                                         <div class="flex gap-2">
                                             <form method="post" action="{{ route('game.transfers.accept', [$game->id, $offer->id]) }}">
                                                 @csrf
-                                                <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg transition-colors">
-                                                    {{ __('app.accept') }}
-                                                </button>
+                                                <x-primary-button color="green">{{ __('app.accept') }}</x-primary-button>
                                             </form>
                                             <form method="post" action="{{ route('game.transfers.reject', [$game->id, $offer->id]) }}">
                                                 @csrf
-                                                <button type="submit" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm font-semibold rounded-lg transition-colors">
-                                                    {{ __('app.reject') }}
-                                                </button>
+                                                <x-secondary-button type="submit">{{ __('app.reject') }}</x-secondary-button>
                                             </form>
                                         </div>
                                     </div>

@@ -20,13 +20,17 @@
             @endif
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-8">
-                    <div class="flex items-center justify-between mb-6">
-                        <h3 class="font-semibold text-xl text-slate-900">{{ __('squad.contract_management') }}</h3>
-                        <a href="{{ route('game.squad', $game->id) }}" class="text-sm text-sky-600 hover:text-sky-800">
-                            &larr; {{ __('squad.back_to_squad') }}
-                        </a>
-                    </div>
+                <div class="p-6 sm:p-8">
+                    <h3 class="font-semibold text-xl text-slate-900 mb-6">{{ __('squad.contract_management') }}</h3>
+
+                    <x-section-nav :items="[
+                        ['href' => route('game.squad', $game->id), 'label' => __('squad.squad'), 'active' => false],
+                        ['href' => route('game.squad.contracts', $game->id), 'label' => __('squad.contracts'), 'active' => true],
+                        ['href' => route('game.squad.development', $game->id), 'label' => __('squad.development'), 'active' => false],
+                        ['href' => route('game.squad.stats', $game->id), 'label' => __('squad.stats'), 'active' => false],
+                    ]" />
+
+                    <div class="mt-6"></div>
 
                     {{-- Pre-Contract Offers (being poached) --}}
                     @if($preContractOffers->isNotEmpty())
@@ -60,15 +64,11 @@
                                         <div class="flex gap-2">
                                             <form method="post" action="{{ route('game.transfers.accept', [$game->id, $offer->id]) }}">
                                                 @csrf
-                                                <button type="submit" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-sm font-semibold rounded-lg transition-colors">
-                                                    {{ __('squad.let_go') }}
-                                                </button>
+                                                <x-primary-button color="amber">{{ __('squad.let_go') }}</x-primary-button>
                                             </form>
                                             <form method="post" action="{{ route('game.transfers.reject', [$game->id, $offer->id]) }}">
                                                 @csrf
-                                                <button type="submit" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm font-semibold rounded-lg transition-colors">
-                                                    {{ __('app.reject') }}
-                                                </button>
+                                                <x-secondary-button type="submit">{{ __('app.reject') }}</x-secondary-button>
                                             </form>
                                         </div>
                                     </div>
@@ -190,9 +190,7 @@
                                         @if($demand)
                                         <form method="post" action="{{ route('game.transfers.renew', [$game->id, $player->id]) }}">
                                             @csrf
-                                            <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg transition-colors">
-                                                {{ __('squad.renew') }}
-                                            </button>
+                                            <x-primary-button color="green">{{ __('squad.renew') }}</x-primary-button>
                                         </form>
                                         @endif
                                     </div>

@@ -14,7 +14,7 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans text-gray-900 antialiased bg-gradient-to-bl from-slate-900 via-cyan-950 to-teal-950">
+    <body class="font-sans text-slate-900 antialiased bg-gradient-to-bl from-slate-900 via-cyan-950 to-teal-950">
 
     @if(config('beta.enabled'))
         <div class="bg-amber-500 text-amber-950 text-center text-sm py-1.5 px-4">
@@ -30,7 +30,7 @@
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
 
             <div>
-                <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
+                <x-application-logo class="w-20 h-20 fill-current text-slate-500" />
             </div>
 
             <div
