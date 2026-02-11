@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-VirtuaFC is a football manager simulation game built with Laravel 11 and Spatie Event Sourcing. Players manage Spanish football teams (La Liga/Segunda División) through seasons, handling squad selection, transfers, and competitions including the Copa del Rey.
+VirtuaFC is a football manager simulation game built with Laravel 12 and Spatie Event Sourcing. Players manage Spanish football teams (La Liga/Segunda División) through seasons, handling squad selection, transfers, and competitions including the Copa del Rey and European competitions (Champions League, Europa League, Conference League).
+
+The frontend uses Blade templates with Tailwind CSS and Alpine.js. The app defaults to Spanish (`APP_LOCALE=es`).
 
 ## Development Commands
 
@@ -23,11 +25,20 @@ php artisan test tests/Feature/SpecificTest.php
 php artisan app:seed-reference-data
 php artisan app:seed-reference-data --fresh  # Reset and re-seed
 
+# Create a test game for local development
+php artisan app:create-test-game
+
+# Simulate a match (debugging)
+php artisan app:simulate-match
+
+# Simulate a full season
+php artisan app:simulate-season
+
 # Clear config cache after changing config files
 php artisan config:clear
 ```
 
-**Important:** The queue worker must be running for event sourcing to work. `composer dev` handles this automatically.
+**Important:** The queue worker must be running for event sourcing to work. `composer dev` handles this automatically via `php artisan queue:listen --tries=1`.
 
 ## Architecture
 
@@ -46,10 +57,12 @@ HTTP Request → Action → Command → Aggregate → Event → Projector → Re
 
 Uses invokable single-action classes instead of traditional controllers:
 
-- **Actions:** `App\Http\Actions\*` - handle form submissions and game commands
-- **Views:** `App\Http\Views\*` - prepare data for blade templates
+- **Actions:** `App\Http\Actions\*` - handle form submissions and game commands (21 classes)
+- **Views:** `App\Http\Views\*` - prepare data for Blade templates (19 classes)
 
-Example: `ShowGame` → `views/game.blade.php`, `AdvanceMatchday` handles playing matches
+Authentication is handled by Laravel Breeze controllers in `App\Http\Controllers\Auth\`.
+
+Example: `ShowGame` → `views/game.blade.php`, `AdvanceMatchday` handles playing matches.
 
 ### Pluggable Competition Handlers
 
@@ -58,8 +71,13 @@ Different competition types use handlers implementing `App\Game\Contracts\Compet
 - `LeagueHandler` - standard league with standings
 - `KnockoutCupHandler` - Copa del Rey bracket/draws
 - `LeagueWithPlayoffHandler` - league with playoff rounds
+- `SwissFormatHandler` - Champions League Swiss-system format
 
 Resolved via `CompetitionHandlerResolver` based on competition's `handler_type` field.
+
+Competition-specific configuration (revenue rates, commercial per seat, etc.) lives in `App\Game\Competitions\*`:
+- `LaLigaConfig`, `LaLiga2Config`, `DefaultLeagueConfig`
+- `ChampionsLeagueConfig`, `EuropaLeagueConfig`, `ConferenceLeagueConfig`
 
 ### Season End Pipeline
 
@@ -67,13 +85,24 @@ End-of-season processing uses ordered processors implementing `App\Game\Contract
 
 ```php
 // Processors run in priority order (lower = earlier)
+LoanReturnProcessor (3)
 SeasonArchiveProcessor (5)
+ContractExpirationProcessor (5)
+PreContractTransferProcessor (5)
+ContractRenewalProcessor (6)
+PlayerRetirementProcessor (7)
+PlayerDevelopmentProcessor (10)
 SeasonSettlementProcessor (15)
-FixtureGenerationProcessor (10)
-StandingsResetProcessor (20)
-LoanReturnProcessor (30)
-ContractExpirationProcessor (50)
-PlayerDevelopmentProcessor (60)
+StatsResetProcessor (20)
+SeasonSimulationProcessor (24)
+SupercopaQualificationProcessor (25)
+PromotionRelegationProcessor (26)
+FixtureGenerationProcessor (30)
+StandingsResetProcessor (40)
+BudgetProjectionProcessor (50)
+YouthAcademyProcessor (55)
+UefaQualificationProcessor (105)
+OnboardingResetProcessor (110)
 ```
 
 New processors can be added to `SeasonEndPipeline` without modifying existing code.
@@ -90,6 +119,10 @@ Revenue rates (commercial per seat, matchday per seat) are defined per competiti
 
 **Important:** `currentFinances` and `currentInvestment` relationships use `$this->season` in their queries. Always use lazy loading (access after model load), not eager loading with `with()`.
 
+### Notification System
+
+`GameNotification` model with `NotificationService` handles in-game notifications (transfer results, contract events, season milestones). Notifications are per-game and displayed in the UI.
+
 ## Key Files
 
 | Purpose | Location |
@@ -100,28 +133,68 @@ Revenue rates (commercial per seat, matchday per seat) are defined per competiti
 | Simulation config | `config/match_simulation.php` |
 | Season end pipeline | `app/Game/Services/SeasonEndPipeline.php` |
 | Financial config | `config/finances.php` |
+| Transfer service | `app/Game/Services/TransferService.php` |
+| Player development | `app/Game/Services/PlayerDevelopmentService.php` |
+| Scouting service | `app/Game/Services/ScoutingService.php` |
+| Youth academy | `app/Game/Services/YouthAcademyService.php` |
+| Loan service | `app/Game/Services/LoanService.php` |
 | Routes | `routes/web.php` |
 
 ## Directory Structure
 
 ```
 app/
+├── Console/Commands/     # Artisan commands (seed, simulate, beta invites)
 ├── Game/
 │   ├── Commands/         # Aggregate commands
+│   ├── Competitions/     # Per-league config classes (LaLigaConfig, etc.)
+│   ├── Contracts/        # Interfaces (CompetitionHandler, SeasonEndProcessor, etc.)
+│   ├── DTO/              # Data Transfer Objects (MatchResult, SeasonTransitionData, etc.)
+│   ├── Enums/            # PHP enums (Formation, Mentality)
 │   ├── Events/           # Domain events
-│   ├── Services/         # Business logic (MatchSimulator, TransferService, etc.)
 │   ├── Handlers/         # Competition handlers
-│   ├── Processors/       # Season end processors
-│   └── Contracts/        # Interfaces
+│   ├── Playoffs/         # Playoff generation logic
+│   ├── Processors/       # Season end processors (18 classes)
+│   ├── Promotions/       # Promotion/relegation rules
+│   └── Services/         # Business logic (30+ services)
 ├── Http/
-│   ├── Actions/          # Form handlers (invokable)
-│   └── Views/            # View data preparation (invokable)
-├── Models/               # Eloquent models
-└── Support/              # Utilities (Money, PositionMapper)
+│   ├── Actions/          # Form handlers (invokable, 21 classes)
+│   ├── Controllers/Auth/ # Laravel Breeze auth controllers
+│   ├── Middleware/        # EnsureGameOwnership, RequireInviteForRegistration
+│   ├── Requests/         # Form requests (LoginRequest, ProfileUpdateRequest)
+│   └── Views/            # View data preparation (invokable, 19 classes)
+├── Jobs/                 # Background jobs (beta feedback)
+├── Mail/                 # Mailable classes (beta invites)
+├── Models/               # Eloquent models (25 models)
+├── Providers/            # Service providers (App, Horizon, Telescope)
+├── Support/              # Utilities (Money, PositionMapper, PositionSlotMapper, CountryCodeMapper)
+└── View/Components/      # Blade layout components
 
 data/                     # Reference JSON (teams, players, fixtures)
-docs/game-systems/        # Game design documentation
-config/match_simulation.php  # Tunable simulation parameters
+├── 2025/
+│   ├── ESP1/             # La Liga
+│   ├── ESP2/             # Segunda División
+│   ├── ESPCUP/           # Copa del Rey
+│   ├── ESPSUP/           # Supercopa de España
+│   ├── UCL/              # Champions League
+│   └── EUR/              # European club data by country
+├── TEST1/, TESTCUP/      # Test competition data
+└── academy/              # Youth academy player data
+
+docs/game-systems/        # Game design documentation (9 documents)
+landing/                  # Cloudflare Workers landing page (separate project)
+
+resources/
+├── css/app.css           # Tailwind CSS styles
+├── js/                   # Alpine.js app + live-match handler
+└── views/                # Blade templates (56 templates)
+
+config/
+├── match_simulation.php  # Tunable simulation parameters
+├── finances.php          # Financial system config
+├── beta.php              # Beta mode configuration
+├── horizon.php           # Queue monitoring (Laravel Horizon)
+└── telescope.php         # Debugging (Laravel Telescope)
 ```
 
 ## Database
@@ -129,7 +202,40 @@ config/match_simulation.php  # Tunable simulation parameters
 - Uses SQLite by default
 - UUID primary keys throughout
 - Event sourcing tables: `stored_events`, `snapshots`
-- Read models: `games`, `game_players`, `game_matches`, `game_standings`, etc.
+- Read models: `games`, `game_players`, `game_matches`, `game_standings`, `game_finances`, `game_investments`, `game_notifications`, `loans`, `scout_reports`, `transfer_offers`, `season_archives`, `simulated_seasons`, `cup_ties`, `cup_round_templates`, `player_suspensions`, `financial_transactions`, `competition_entries`, `competition_teams`, etc.
+- 52 migrations total
+
+## Models
+
+Key Eloquent models (25 total):
+
+| Model | Purpose |
+|-------|---------|
+| `Game` | Main game instance (read model) |
+| `GamePlayer` | Player within a game |
+| `GameMatch` | Match within a game |
+| `GameStanding` | League standings |
+| `GameFinances` | Season financial projections |
+| `GameInvestment` | Budget allocation |
+| `GameNotification` | In-game notifications |
+| `ClubProfile` | Club-specific data |
+| `Competition` | Competition definitions |
+| `CompetitionEntry` | Team entries in competitions |
+| `CompetitionTeam` | Teams in competitions |
+| `CupTie` | Cup match pairings |
+| `CupRoundTemplate` | Cup round structure |
+| `FinancialTransaction` | Income/expense records |
+| `Loan` | Player loans |
+| `MatchEvent` | In-match events (goals, cards) |
+| `Player` | Reference player data |
+| `PlayerSuspension` | Card suspensions |
+| `ScoutReport` | Scouting results |
+| `SeasonArchive` | Historical season data |
+| `SimulatedSeason` | Simulated AI season results |
+| `Team` | Reference team data |
+| `TransferOffer` | Transfer bids |
+| `InviteCode` | Beta invite codes |
+| `User` | User accounts |
 
 ## Testing
 
@@ -138,6 +244,11 @@ Tests are in `tests/` with standard PHPUnit structure. Run specific tests with `
 ```bash
 php artisan test --filter=MatchSimulatorTest
 ```
+
+**Test structure:**
+- `tests/Feature/` - Integration tests (matchday advancement, notifications, player generation, retirement)
+- `tests/Feature/Auth/` - Authentication flow tests (registration, login, password reset)
+- `tests/Unit/` - Unit tests (competition handlers, fixture generation, Swiss draw)
 
 ## Configuration
 
@@ -148,6 +259,14 @@ Match simulation can be tuned without code changes via `config/match_simulation.
 
 Clear cache after changes: `php artisan config:clear`
 
+## Tech Stack
+
+**Backend:** PHP 8.4, Laravel 12, Spatie Event Sourcing 7.12, Laravel Horizon, Laravel Telescope, Resend (email)
+
+**Frontend:** Vite 5, Tailwind CSS 3, Alpine.js 3, Alpine Tooltip, Axios
+
+**Dev tools:** Laravel Breeze (auth), Laravel Pint (code style), Laravel Pail (log tailing), PHPUnit 11
+
 ## Internationalization (i18n)
 
 The application uses Spanish as the default language. All user-facing strings must be translatable.
@@ -156,13 +275,17 @@ The application uses Spanish as the default language. All user-facing strings mu
 
 ```
 lang/es/
-├── app.php        # General UI (buttons, labels, navigation)
-├── game.php       # Game-specific terms (season, matchday, etc.)
-├── squad.php      # Squad/player related
-├── transfers.php  # Transfers, scouting, contracts
-├── finances.php   # Financial terms
-├── season.php     # Season end, awards, promotions
-└── messages.php   # Flash messages (success, error, info)
+├── app.php            # General UI (buttons, labels, navigation)
+├── auth.php           # Authentication
+├── beta.php           # Beta mode strings
+├── cup.php            # Copa del Rey / cup competition terms
+├── finances.php       # Financial terms
+├── game.php           # Game-specific terms (season, matchday, etc.)
+├── messages.php       # Flash messages (success, error, info)
+├── notifications.php  # In-game notification strings
+├── season.php         # Season end, awards, promotions
+├── squad.php          # Squad/player related
+└── transfers.php      # Transfers, scouting, contracts
 ```
 
 ### Coding Standards
@@ -204,12 +327,32 @@ lang/es/
 | Finance terms | `finances.*` | `finances.transfer_budget` |
 | Flash messages | `messages.*` | `messages.player_listed` |
 | Season end | `season.*` | `season.champion`, `season.relegated` |
+| Cup terms | `cup.*` | `cup.round`, `cup.draw` |
+| Notifications | `notifications.*` | `notifications.transfer_complete` |
 
 ### Adding New Strings
 
 1. Add the key and Spanish translation to the appropriate file in `lang/es/`
 2. Use the key in your blade template or PHP code
 3. Test that the translation displays correctly
+
+## UI/UX Guidelines
+
+When working on UI/UX tasks, implement working code (Blade/Tailwind CSS/Alpine.js) that is:
+
+- **Production-grade and functional** - Code must work correctly, not just look good in a mockup
+- **Visually striking and memorable** - Go beyond defaults; create interfaces that feel polished and intentional
+- **Cohesive with a clear aesthetic point-of-view** - Maintain a consistent design language across all pages
+- **Meticulously refined in every detail** - Pay extra attention to component reusability and ensure visual elements are coherent and uniform across the application
+
+## Backend Performance
+
+When implementing backend code, pay attention to performance and scalability:
+
+- **Prevent slow queries** - Avoid N+1 problems; use eager loading (`with()`) where appropriate (but note the `currentFinances`/`currentInvestment` exception above)
+- **Use database indices correctly** - Ensure queries filter on indexed columns; add indices for new columns used in WHERE/JOIN clauses
+- **Optimize algorithms** - Avoid unnecessary loops, redundant computations, and excessive memory usage
+- **Leverage Laravel features** - Use chunking for large datasets, queue heavy work, and cache expensive computations where appropriate
 
 ## Code Quality
 
