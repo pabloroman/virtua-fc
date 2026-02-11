@@ -18,7 +18,7 @@
             <div class="text-center mb-8">
                 <img src="{{ $game->team->image }}" alt="{{ $game->team->name }}" class="w-20 h-20 mx-auto mb-4">
                 <h1 class="text-3xl font-bold text-white mb-1">{{ __('game.welcome_to_team', ['team' => $game->team->name]) }}, {{ $game->player_name }}</h1>
-                <p class="text-slate-500">{{ __('game.season_n', ['season' => $game->season]) }}</p>
+                <p class="text-slate-500">{{ __('game.season_n', ['season' => $game->formatted_season]) }}</p>
             </div>
 
             {{-- Flash Messages --}}
@@ -75,7 +75,7 @@
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
                 <div class="flex items-center justify-between mb-6">
                     <div>
-                        <h2 class="text-lg font-semibold text-slate-900">{{ __('finances.season_budget', ['season' => $game->season]) }}</h2>
+                        <h2 class="text-lg font-semibold text-slate-900">{{ __('finances.season_budget', ['season' => $game->formatted_season]) }}</h2>
                         <p class="text-sm text-slate-500">{{ __('game.allocate_budget_hint') }}</p>
                     </div>
                     <div class="text-right">

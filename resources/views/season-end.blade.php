@@ -13,7 +13,7 @@
 
                     {{-- Season Honours --}}
                     <div class="text-center text-slate-500 font-semibold text-sm uppercase tracking-wide mb-4">
-                        <span>&#9733;</span> {{ __('season.season_honours', ['season' => $game->season]) }} <span>&#9733;</span>
+                        <span>&#9733;</span> {{ __('season.season_honours', ['season' => $game->formatted_season]) }} <span>&#9733;</span>
                     </div>
 
                     {{-- Major Trophies Grid --}}
@@ -382,7 +382,7 @@
                             <button type="submit"
                                     class="inline-flex items-center gap-2 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white px-8 py-4 rounded-lg text-xl font-bold shadow-lg transition-all transform hover:scale-105"
                                     :disabled="loading">
-                                <span x-show="!loading">{{ __('season.start_new_season', ['season' => (int)$game->season + 1]) }}</span>
+                                <span x-show="!loading">{{ __('season.start_new_season', ['season' => \App\Models\Game::formatSeason((string)((int)$game->season + 1))]) }}</span>
                                 <span x-show="loading" x-cloak>
                                     <svg class="animate-spin h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>

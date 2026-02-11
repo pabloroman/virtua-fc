@@ -14,7 +14,7 @@
                 <img src="{{ $game->team->image }}" alt="{{ $game->team->name }}" class="w-12 h-12">
                 <div>
                     <h2 class="font-semibold text-xl text-slate-800">{{ __('finances.budget_allocation') }}</h2>
-                    <p class="text-sm text-slate-500">{{ __('finances.season_budget', ['season' => $game->season]) }}</p>
+                    <p class="text-sm text-slate-500">{{ __('finances.season_budget', ['season' => $game->formatted_season]) }}</p>
                 </div>
             </div>
             <a href="{{ route('game.finances', $game->id) }}" class="text-sm text-slate-600 hover:text-slate-900">

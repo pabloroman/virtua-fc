@@ -27,7 +27,7 @@
 
                     {{-- Right Column (1/3) - Season Stats --}}
                     <div class="space-y-6">
-                        <h3 class="font-semibold text-xl text-slate-900">{{ __('game.season_n', ['season' => $game->season]) }}</h3>
+                        <h3 class="font-semibold text-xl text-slate-900">{{ __('game.season_n', ['season' => $game->formatted_season]) }}</h3>
 
                         {{-- Record --}}
                         <div>

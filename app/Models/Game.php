@@ -341,6 +341,33 @@ class Game extends Model
     }
 
     // ==========================================
+    // Season Display
+    // ==========================================
+
+    /**
+     * Format a season year for display: "2025" → "2025/26".
+     */
+    public static function formatSeason(string $season): string
+    {
+        if (str_contains($season, '/') || str_contains($season, '-')) {
+            return $season;
+        }
+
+        $year = (int) $season;
+        $nextYear = ($year + 1) % 100;
+
+        return $season.'/'.str_pad((string) $nextYear, 2, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * Get the season formatted for display (e.g. "2025/26").
+     */
+    public function getFormattedSeasonAttribute(): string
+    {
+        return self::formatSeason($this->season);
+    }
+
+    // ==========================================
     // Onboarding
     // ==========================================
 
