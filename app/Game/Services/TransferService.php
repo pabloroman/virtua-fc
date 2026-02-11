@@ -459,24 +459,6 @@ class TransferService
     }
 
     /**
-     * Get players with expiring contracts for display.
-     */
-    public function getExpiringContractPlayers(Game $game): Collection
-    {
-        $seasonEndDate = $game->getSeasonEndDate();
-
-        return GamePlayer::with(['player', 'transferOffers' => function ($query) {
-                $query->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
-                    ->whereIn('status', [TransferOffer::STATUS_PENDING, TransferOffer::STATUS_AGREED]);
-            }])
-            ->where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
-            ->get()
-            ->filter(fn ($player) => $player->isContractExpiring($seasonEndDate))
-            ->sortBy('contract_until');
-    }
-
-    /**
      * Accept a transfer offer.
      * If transfer window is open, completes immediately.
      * If outside window, marks as agreed and completes when next window opens.

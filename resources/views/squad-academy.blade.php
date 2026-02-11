@@ -13,7 +13,6 @@
 
                     <x-section-nav :items="[
                         ['href' => route('game.squad', $game->id), 'label' => __('squad.squad'), 'active' => false],
-                        ['href' => route('game.squad.contracts', $game->id), 'label' => __('squad.contracts'), 'active' => false, 'badge' => $expiringContractsCount > 0 ? $expiringContractsCount : null],
                         ['href' => route('game.squad.development', $game->id), 'label' => __('squad.development'), 'active' => false],
                         ['href' => route('game.squad.stats', $game->id), 'label' => __('squad.stats'), 'active' => false],
                         ['href' => route('game.squad.academy', $game->id), 'label' => __('squad.academy'), 'active' => true, 'badge' => $academyCount > 0 ? $academyCount : null],
@@ -32,9 +31,7 @@
                     @if($academyCount === 0)
                         <div class="text-center py-16">
                             <div class="inline-flex items-center justify-center w-16 h-16 bg-slate-100 rounded-full mb-4">
-                                <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/>
-                                </svg>
+                                <svg class="w-8 h-8 fill-slate-300" stroke="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--!Font Awesome Free v7.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--><path d="M48 195.8l209.2 86.1c9.8 4 20.2 6.1 30.8 6.1s21-2.1 30.8-6.1l242.4-99.8c9-3.7 14.8-12.4 14.8-22.1s-5.8-18.4-14.8-22.1L318.8 38.1C309 34.1 298.6 32 288 32s-21 2.1-30.8 6.1L14.8 137.9C5.8 141.6 0 150.3 0 160L0 456c0 13.3 10.7 24 24 24s24-10.7 24-24l0-260.2zm48 71.7L96 384c0 53 86 96 192 96s192-43 192-96l0-116.6-142.9 58.9c-15.6 6.4-32.2 9.7-49.1 9.7s-33.5-3.3-49.1-9.7L96 267.4z"/></svg>
                             </div>
                             <p class="text-slate-500 text-sm">{{ __('squad.no_academy_prospects') }}</p>
                             <p class="text-slate-400 text-xs mt-2">{{ __('squad.academy_explanation') }}</p>
