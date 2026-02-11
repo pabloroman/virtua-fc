@@ -77,25 +77,22 @@
                                         <td class="py-3 pl-2">
                                             <div class="flex items-center gap-3">
                                                 <x-position-badge :position="$player->position" />
-                                                <div>
-                                                    <div class="flex items-center gap-1.5">
-                                                        <span class="font-medium text-slate-900">{{ $player->name }}</span>
-                                                        {{-- Development arrow --}}
-                                                        @if($player->development_status === 'growing')
-                                                            <svg class="w-3.5 h-3.5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/>
-                                                            </svg>
-                                                        @elseif($player->development_status === 'declining')
-                                                            <svg class="w-3.5 h-3.5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
-                                                            </svg>
-                                                        @else
-                                                            <svg class="w-3.5 h-3.5 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14"/>
-                                                            </svg>
-                                                        @endif
-                                                    </div>
-                                                    <div class="text-xs text-slate-500">{{ $player->position }}</div>
+                                                <div class="flex items-center gap-1.5">
+                                                    <span class="font-medium text-slate-900">{{ $player->name }}</span>
+                                                    {{-- Development arrow --}}
+                                                    @if($player->development_status === 'growing')
+                                                        <svg class="w-3.5 h-3.5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/>
+                                                        </svg>
+                                                    @elseif($player->development_status === 'declining')
+                                                        <svg class="w-3.5 h-3.5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                                                        </svg>
+                                                    @else
+                                                        <svg class="w-3.5 h-3.5 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14"/>
+                                                        </svg>
+                                                    @endif
                                                 </div>
                                             </div>
                                         </td>
