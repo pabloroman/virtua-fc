@@ -141,12 +141,30 @@ class ShowCompetition
             }
         }
 
+        // Determine player's cup status from CupTie data
+        $maxRound = $rounds->max('round_number');
+        $cupStatus = 'not_entered';
+
+        if ($playerTie) {
+            if (!$playerTie->completed) {
+                $cupStatus = 'active';
+            } elseif ($playerTie->winner_id === $game->team_id) {
+                $cupStatus = ($playerTie->round_number === $maxRound) ? 'champion' : 'advanced';
+            } else {
+                $cupStatus = 'eliminated';
+            }
+        }
+
+        $playerRoundName = $playerTie?->roundTemplate()?->round_name;
+
         return view('cup', [
             'game' => $game,
             'competition' => $competition,
             'rounds' => $rounds,
             'tiesByRound' => $tiesByRound,
             'playerTie' => $playerTie,
+            'cupStatus' => $cupStatus,
+            'playerRoundName' => $playerRoundName,
         ]);
     }
 

@@ -23,8 +23,6 @@ final class Game extends AggregateRoot
     private ?Carbon $currentDate = null;
     private int $currentMatchday = 0;
     private string $teamId = '';
-    private int $cupRound = 0;
-    private bool $cupEliminated = false;
 
     public static function create(CreateGame $command): Game
     {
@@ -145,15 +143,12 @@ final class Game extends AggregateRoot
 
     protected function applyCupDrawConducted(CupDrawConducted $event): void
     {
-        $this->cupRound = $event->roundNumber;
+        // Cup status is now derived per-competition from CupTie data
     }
 
     protected function applyCupTieCompleted(CupTieCompleted $event): void
     {
-        // Check if player's team was eliminated
-        if ($event->loserId === $this->teamId) {
-            $this->cupEliminated = true;
-        }
+        // Cup status is now derived per-competition from CupTie data
     }
 
     protected function applySeasonDevelopmentProcessed(SeasonDevelopmentProcessed $event): void
@@ -166,8 +161,6 @@ final class Game extends AggregateRoot
     {
         // Reset aggregate state for new season
         $this->currentMatchday = 0;
-        $this->cupRound = 0;
-        $this->cupEliminated = false;
     }
 
     // Getters for aggregate state
@@ -185,15 +178,5 @@ final class Game extends AggregateRoot
     public function getTeamId(): string
     {
         return $this->teamId;
-    }
-
-    public function getCupRound(): int
-    {
-        return $this->cupRound;
-    }
-
-    public function isCupEliminated(): bool
-    {
-        return $this->cupEliminated;
     }
 }

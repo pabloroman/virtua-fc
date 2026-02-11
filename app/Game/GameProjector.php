@@ -167,22 +167,14 @@ class GameProjector extends Projector
 
     public function onCupDrawConducted(CupDrawConducted $event): void
     {
-        $gameId = $event->aggregateRootUuid();
-
-        // Update game's cup round
-        Game::where('id', $gameId)
-            ->update(['cup_round' => $event->roundNumber]);
+        // Cup draws are recorded via events for audit trail.
+        // Cup status is now derived per-competition from CupTie data.
     }
 
     public function onCupTieCompleted(CupTieCompleted $event): void
     {
         $gameId = $event->aggregateRootUuid();
         $game = Game::find($gameId);
-
-        // Check if the player's team was eliminated
-        if ($event->loserId === $game->team_id) {
-            $game->update(['cup_eliminated' => true]);
-        }
 
         // Award cup prize money if player's team won
         if ($event->winnerId === $game->team_id) {
@@ -651,18 +643,11 @@ class GameProjector extends Projector
         // Get all cup competitions
         $cupCompetitions = \App\Models\Competition::where('handler_type', 'knockout_cup')->get();
 
-        $hasDraws = false;
         foreach ($cupCompetitions as $competition) {
             // Check if first round draw is needed
             if ($this->cupDrawService->needsDrawForRound($gameId, $competition->id, 1)) {
                 $this->cupDrawService->conductDraw($gameId, $competition->id, 1);
-                $hasDraws = true;
             }
-        }
-
-        // Set initial cup round to 1 if any draws were conducted
-        if ($hasDraws) {
-            Game::where('id', $gameId)->update(['cup_round' => 1]);
         }
     }
 

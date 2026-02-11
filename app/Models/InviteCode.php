@@ -58,8 +58,12 @@ class InviteCode extends Model
         $this->increment('times_used');
     }
 
-    public static function findByCode(string $code): ?self
+    public static function findByCode(?string $code): ?self
     {
+        if ($code === null) {
+            return null;
+        }
+
         return static::where('code', $code)->first();
     }
 }

@@ -12,12 +12,14 @@
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="font-semibold text-xl text-slate-900">{{ $competition->name }}</h3>
                         <div class="flex items-center gap-4">
-                            @if($game->cup_eliminated)
+                            @if($cupStatus === 'champion')
+                                <span class="px-3 py-1 text-sm bg-yellow-100 text-yellow-700 rounded-full">{{ __('cup.champion') }}</span>
+                            @elseif($cupStatus === 'eliminated')
                                 <span class="px-3 py-1 text-sm bg-red-100 text-red-700 rounded-full">{{ __('cup.eliminated') }}</span>
-                            @elseif($game->cup_round > 0)
-                                <span class="px-3 py-1 text-sm bg-green-100 text-green-700 rounded-full">
-                                    {{ __('cup.round_n', ['round' => $game->cup_round]) }}
-                                </span>
+                            @elseif($cupStatus === 'active')
+                                <span class="px-3 py-1 text-sm bg-green-100 text-green-700 rounded-full">{{ $playerRoundName }}</span>
+                            @elseif($cupStatus === 'advanced')
+                                <span class="px-3 py-1 text-sm bg-green-100 text-green-700 rounded-full">{{ __('cup.advanced_to_next_round') }}</span>
                             @else
                                 <span class="px-3 py-1 text-sm bg-slate-100 text-slate-600 rounded-full">{{ __('cup.not_yet_entered') }}</span>
                             @endif
@@ -71,7 +73,13 @@
                             @endphp
                             <div class="mb-8 p-6 rounded-xl {{ $won ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200' }} border">
                                 <div class="text-center text-sm {{ $won ? 'text-green-600' : 'text-red-600' }} mb-3">
-                                    {{ $won ? __('cup.advanced_to_next_round') : __('cup.eliminated') }}
+                                    @if($cupStatus === 'champion')
+                                        {{ __('cup.champion_message', ['competition' => $competition->name]) }}
+                                    @elseif($won)
+                                        {{ __('cup.advanced_to_next_round') }}
+                                    @else
+                                        {{ __('cup.eliminated') }}
+                                    @endif
                                 </div>
                                 <div class="flex items-center justify-center gap-6">
                                     <div class="flex items-center gap-3 flex-1 justify-end">
@@ -114,7 +122,7 @@
                                                 <div class="text-slate-400 text-sm mb-2">{{ __('cup.draw_pending') }}</div>
                                                 @php
                                                     $canDraw = app(\App\Game\Services\CupDrawService::class)
-                                                        ->needsDrawForRound($game->id, 'ESPCUP', $round->round_number);
+                                                        ->needsDrawForRound($game->id, $competition->id, $round->round_number);
                                                 @endphp
                                                 @if($canDraw)
                                                     <form method="POST" action="{{ route('game.cup.draw', [$game->id, $round->round_number]) }}">

@@ -38,8 +38,6 @@ class Game extends Model
         'default_formation',
         'default_lineup',
         'default_mentality',
-        'cup_round',
-        'cup_eliminated',
         'season_goal',
         'needs_onboarding',
     ];
@@ -50,8 +48,6 @@ class Game extends Model
         'default_formation' => 'string',
         'default_lineup' => 'array',
         'default_mentality' => 'string',
-        'cup_round' => 'integer',
-        'cup_eliminated' => 'boolean',
         'season_goal' => 'string',
         'needs_onboarding' => 'boolean',
     ];

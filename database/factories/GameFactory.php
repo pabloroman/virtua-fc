@@ -22,8 +22,6 @@ class GameFactory extends Factory
             'player_name' => $this->faker->name(),
             'current_date' => '2024-08-15',
             'current_matchday' => 1,
-            'cup_round' => 0,
-            'cup_eliminated' => false,
         ];
     }
 
@@ -55,17 +53,4 @@ class GameFactory extends Factory
         ]);
     }
 
-    public function inCupRound(int $round): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'cup_round' => $round,
-        ]);
-    }
-
-    public function eliminatedFromCup(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'cup_eliminated' => true,
-        ]);
-    }
 }

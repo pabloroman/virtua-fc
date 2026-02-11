@@ -51,8 +51,6 @@ class StatsResetProcessor implements SeasonEndProcessor
         // Reset game state
         $game->update([
             'current_matchday' => 0,
-            'cup_round' => 0,
-            'cup_eliminated' => false,
             'season' => $data->newSeason,
         ]);
 

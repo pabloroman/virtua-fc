@@ -2,13 +2,6 @@
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
-    @if(config('beta.enabled'))
-        <div class="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-md">
-            <p class="text-sm text-amber-800 font-semibold">{{ __('beta.badge') }}</p>
-            <p class="text-xs text-amber-700 mt-1">{{ __('beta.login_notice') }}</p>
-        </div>
-    @endif
-
     <form method="POST" action="{{ route('login') }}">
         @csrf
 
