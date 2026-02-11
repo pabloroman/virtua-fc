@@ -173,6 +173,20 @@ return [
     'position_rw' => 'Extremo Derecho (ED)',
     'position_cf' => 'Delantero Centro (DC)',
 
+    // Pre-contract
+    'expiring_contract_hint' => 'Los jugadores en su último año de contrato pueden ficharse gratis. Puedes hacer una oferta de precontrato a partir del 1 de enero.',
+    'pre_contract_offer' => 'Oferta de Precontrato',
+    'pre_contract_description' => 'Ficha a este jugador gratis al final de la temporada.',
+    'pre_contract_available_from_jan' => 'Este jugador acaba contrato. Desde enero podrás hacerle una oferta de precontrato (fichaje libre).',
+    'offered_wage_euros' => 'Salario Ofrecido (euros/año)',
+    'submit_pre_contract' => 'Ofrecer Precontrato',
+
+    // Search history
+    'search_history' => 'Historial de Búsquedas',
+    'no_search_history' => 'Sin búsquedas anteriores.',
+    'view_results' => 'Ver',
+    'results_count' => ':count resultado(s)',
+
     // Countries
     'country_spain' => 'España',
     'country_england' => 'Inglaterra',

@@ -66,14 +66,24 @@ class ScoutingService
     ];
 
     /**
-     * Get the active scout report for a game.
+     * Get the currently searching scout report for a game.
      */
     public function getActiveReport(Game $game): ?ScoutReport
     {
         return ScoutReport::where('game_id', $game->id)
-            ->whereIn('status', [ScoutReport::STATUS_SEARCHING, ScoutReport::STATUS_COMPLETED])
-            ->orderByDesc('game_date')
+            ->where('status', ScoutReport::STATUS_SEARCHING)
             ->first();
+    }
+
+    /**
+     * Get all completed search reports for a game, ordered by most recent.
+     */
+    public function getSearchHistory(Game $game): Collection
+    {
+        return ScoutReport::where('game_id', $game->id)
+            ->where('status', ScoutReport::STATUS_COMPLETED)
+            ->orderByDesc('game_date')
+            ->get();
     }
 
     /**
@@ -531,6 +541,39 @@ class ScoutingService
     // =========================================
     // SCOUTING REPORT DATA
     // =========================================
+
+    /**
+     * Evaluate whether a player accepts a pre-contract offer based on offered wage vs demand.
+     *
+     * @return array{accepted: bool, message: string}
+     */
+    public function evaluatePreContractOffer(GamePlayer $player, int $offeredWage): array
+    {
+        $wageDemand = $this->calculateWageDemand($player);
+
+        if ($offeredWage >= $wageDemand) {
+            // Wage meets or exceeds demand → 85% accept
+            $accepted = rand(1, 100) <= 85;
+        } elseif ($offeredWage >= (int) ($wageDemand * 0.85)) {
+            // Wage is 85-99% of demand → 40% accept
+            $accepted = rand(1, 100) <= 40;
+        } else {
+            // Below 85% of demand → reject
+            $accepted = false;
+        }
+
+        if ($accepted) {
+            return [
+                'accepted' => true,
+                'message' => __('messages.pre_contract_accepted', ['player' => $player->name]),
+            ];
+        }
+
+        return [
+            'accepted' => false,
+            'message' => __('messages.pre_contract_rejected', ['player' => $player->name]),
+        ];
+    }
 
     /**
      * Get scouting detail for a specific player.

@@ -16,9 +16,9 @@ class SubmitScoutSearch
     {
         $game = Game::findOrFail($gameId);
 
-        // Check no active search exists
-        $existing = $this->scoutingService->getActiveReport($game);
-        if ($existing) {
+        // Check no search currently in progress
+        $searching = $this->scoutingService->getActiveReport($game);
+        if ($searching) {
             return redirect()->route('game.scouting', $gameId)
                 ->with('error', __('messages.scout_already_searching'));
         }

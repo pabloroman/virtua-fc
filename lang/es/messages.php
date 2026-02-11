@@ -33,6 +33,12 @@ return [
     'renewal_failed' => 'No se pudo procesar la renovación.',
     'cannot_renew' => 'Este jugador no puede recibir una oferta de renovación.',
 
+    // Pre-contract messages
+    'pre_contract_accepted' => '¡:player ha aceptado tu oferta de precontrato! Se unirá a tu equipo al final de la temporada.',
+    'pre_contract_rejected' => ':player ha rechazado tu oferta de precontrato. Intenta mejorar las condiciones salariales.',
+    'pre_contract_not_available' => 'Las ofertas de precontrato solo están disponibles entre enero y mayo.',
+    'player_not_expiring' => 'Este jugador no tiene el contrato en su último año.',
+
     // Scout messages
     'scout_search_started' => 'El ojeador ha iniciado la búsqueda.',
     'scout_already_searching' => 'Ya tienes una búsqueda activa. Cancélala primero o espera los resultados.',

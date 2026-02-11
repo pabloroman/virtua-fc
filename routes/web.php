@@ -18,6 +18,7 @@ use App\Http\Actions\RejectTransferOffer;
 use App\Http\Actions\RequestLoan;
 use App\Http\Actions\SaveLineup;
 use App\Http\Actions\SubmitScoutSearch;
+use App\Http\Actions\SubmitPreContractOffer;
 use App\Http\Actions\SubmitTransferBid;
 use App\Http\Actions\UnlistPlayerFromTransfer;
 use App\Http\Views\ShowLineup;
@@ -91,6 +92,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/game/{gameId}/scouting/cancel', CancelScoutSearch::class)->name('game.scouting.cancel');
         Route::post('/game/{gameId}/scouting/{playerId}/bid', SubmitTransferBid::class)->name('game.scouting.bid');
         Route::post('/game/{gameId}/scouting/{playerId}/loan', RequestLoan::class)->name('game.scouting.loan');
+        Route::post('/game/{gameId}/scouting/{playerId}/pre-contract', SubmitPreContractOffer::class)->name('game.scouting.pre-contract');
         Route::post('/game/{gameId}/scouting/counter/{offerId}/accept', AcceptCounterOffer::class)->name('game.scouting.counter.accept');
 
         // Loans

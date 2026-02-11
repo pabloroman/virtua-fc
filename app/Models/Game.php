@@ -136,13 +136,12 @@ class Game extends Model
     }
 
     /**
-     * Get the active scout report (searching or completed, most recent).
+     * Get the currently searching scout report.
      */
     public function activeScoutReport(): HasOne
     {
         return $this->hasOne(ScoutReport::class)
-            ->whereIn('status', [ScoutReport::STATUS_SEARCHING, ScoutReport::STATUS_COMPLETED])
-            ->orderByDesc('game_date');
+            ->where('status', ScoutReport::STATUS_SEARCHING);
     }
 
     /**
@@ -321,6 +320,24 @@ class Game extends Model
             ->whereNull('cup_tie_id') // League match
             ->orderBy('scheduled_date')
             ->first();
+    }
+
+    // ==========================================
+    // Pre-Contract Period
+    // ==========================================
+
+    /**
+     * Check if we're in the pre-contract offer period (January through May).
+     * Players in their last year of contract can be approached for a free transfer.
+     */
+    public function isPreContractPeriod(): bool
+    {
+        if (!$this->current_date) {
+            return false;
+        }
+
+        $month = $this->current_date->month;
+        return $month >= 1 && $month <= 5;
     }
 
     // ==========================================

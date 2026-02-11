@@ -25,10 +25,10 @@ class PreContractTransferProcessor implements SeasonEndProcessor
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData
     {
-        $completedTransfers = $this->transferService->completePreContractTransfers($game);
+        // Process outgoing pre-contracts (AI clubs taking user's players)
+        $outgoingTransfers = $this->transferService->completePreContractTransfers($game);
 
-        // Store completed transfers in metadata for display
-        $transfersData = $completedTransfers->map(fn ($offer) => [
+        $outgoingData = $outgoingTransfers->map(fn ($offer) => [
             'playerId' => $offer->game_player_id,
             'playerName' => $offer->gamePlayer->name,
             'fromTeamId' => $game->team_id,
@@ -36,6 +36,19 @@ class PreContractTransferProcessor implements SeasonEndProcessor
             'toTeamName' => $offer->offeringTeam->name,
         ])->toArray();
 
-        return $data->setMetadata('preContractTransfers', $transfersData);
+        // Process incoming pre-contracts (user signed players on free transfers)
+        $incomingTransfers = $this->transferService->completeIncomingPreContracts($game);
+
+        $incomingData = $incomingTransfers->map(fn ($offer) => [
+            'playerId' => $offer->game_player_id,
+            'playerName' => $offer->gamePlayer->name,
+            'fromTeamId' => $offer->selling_team_id,
+            'fromTeamName' => $offer->sellingTeam?->name ?? 'Unknown',
+            'toTeamId' => $game->team_id,
+        ])->toArray();
+
+        $allTransfers = array_merge($outgoingData, $incomingData);
+
+        return $data->setMetadata('preContractTransfers', $allTransfers);
     }
 }

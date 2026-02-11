@@ -49,8 +49,8 @@
                         ['href' => route('game.loans', $game->id), 'label' => __('transfers.loans'), 'active' => false],
                     ]" />
 
-                    {{-- State: No active search → Show search form --}}
-                    @if(!$report)
+                    {{-- State: Show search form --}}
+                    @if($showForm)
                         <div class="mt-6" x-data="{
                             ageMin: 16,
                             ageMax: 45,
@@ -139,6 +139,7 @@
                                                 <x-checkbox-input name="expiring_contract" value="1" />
                                                 <span class="text-sm text-slate-700">{{ __('transfers.expiring_contract') }}</span>
                                             </label>
+                                            <p class="text-xs text-slate-500 mt-1.5 ml-6">{{ __('transfers.expiring_contract_hint') }}</p>
                                         </div>
                                     </div>
 
@@ -200,7 +201,7 @@
                         </div>
 
                     {{-- State: Search in progress --}}
-                    @elseif($report->isSearching())
+                    @elseif($searchingReport)
                         <div class="mt-6">
                             <div class="text-center py-12 border rounded-lg bg-slate-50">
                                 <svg class="w-16 h-16 mx-auto mb-4 text-sky-500 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -208,16 +209,16 @@
                                 </svg>
                                 <h4 class="text-lg font-semibold text-slate-900 mb-2">{{ __('transfers.scout_searching') }}</h4>
                                 <p class="text-slate-600 mb-1">
-                                    {{ trans_choice('game.weeks_remaining', $report->weeks_remaining, ['count' => $report->weeks_remaining]) }}
+                                    {{ trans_choice('game.weeks_remaining', $searchingReport->weeks_remaining, ['count' => $searchingReport->weeks_remaining]) }}
                                 </p>
                                 <p class="text-sm text-slate-500 mb-6">
-                                    {{ __('transfers.looking_for') }}: <span class="font-medium">{{ $report->filters['position'] }}</span>
-                                    @if(isset($report->filters['scope']) && count($report->filters['scope']) === 1)
-                                        — <span class="font-medium">{{ in_array('domestic', $report->filters['scope']) ? __('transfers.scope_domestic') : __('transfers.scope_international') }}</span>
+                                    {{ __('transfers.looking_for') }}: <span class="font-medium">{{ $searchingReport->filters['position'] }}</span>
+                                    @if(isset($searchingReport->filters['scope']) && count($searchingReport->filters['scope']) === 1)
+                                        — <span class="font-medium">{{ in_array('domestic', $searchingReport->filters['scope']) ? __('transfers.scope_domestic') : __('transfers.scope_international') }}</span>
                                     @endif
                                 </p>
                                 <div class="w-48 mx-auto bg-slate-200 rounded-full h-2 mb-6">
-                                    @php $progress = (($report->weeks_total - $report->weeks_remaining) / $report->weeks_total) * 100; @endphp
+                                    @php $progress = (($searchingReport->weeks_total - $searchingReport->weeks_remaining) / $searchingReport->weeks_total) * 100; @endphp
                                     <div class="bg-sky-500 h-2 rounded-full transition-all" style="width: {{ $progress }}%"></div>
                                 </div>
                                 <form method="post" action="{{ route('game.scouting.cancel', $game->id) }}">
@@ -229,17 +230,14 @@
                             </div>
                         </div>
 
-                    {{-- State: Results ready --}}
-                    @elseif($report->isCompleted())
+                    {{-- State: Viewing results --}}
+                    @elseif($selectedReport)
                         <div class="mt-6" x-data>
                             <div class="flex items-center justify-between mb-4">
                                 <h4 class="font-semibold text-lg text-slate-900">{{ __('transfers.scout_results') }}</h4>
-                                <form method="post" action="{{ route('game.scouting.cancel', $game->id) }}">
-                                    @csrf
-                                    <button type="submit" class="text-sm text-sky-600 hover:text-sky-800">
-                                        {{ __('transfers.new_search') }}
-                                    </button>
-                                </form>
+                                <a href="{{ route('game.scouting', ['gameId' => $game->id, 'new' => 1]) }}" class="text-sm text-sky-600 hover:text-sky-800">
+                                    {{ __('transfers.new_search') }}
+                                </a>
                             </div>
 
                             @if($scoutedPlayers->isEmpty())
@@ -312,6 +310,7 @@
                                     @php
                                         $detail = $playerDetails[$scoutPlayer->id];
                                         $existingOffer = $existingOffers[$scoutPlayer->id] ?? null;
+                                        $isExpiring = $scoutPlayer->isContractExpiring($seasonEndDate);
                                     @endphp
                                     <x-modal name="scout-player-{{ $scoutPlayer->id }}" maxWidth="2xl">
                                         <div class="p-8">
@@ -407,8 +406,50 @@
                                                 </div>
                                             @endif
 
+                                            {{-- Pre-Contract Section (for expiring contracts) --}}
+                                            @if($isExpiring)
+                                                @if($isPreContractPeriod)
+                                                    @if($existingOffer && $existingOffer->isPreContract() && $existingOffer->isAgreed())
+                                                        {{-- Already have agreed pre-contract --}}
+                                                        <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                                                            <div class="flex items-center gap-2 text-green-700 font-semibold">
+                                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                                                {{ __('transfers.pre_contract_offer') }} — {{ __('transfers.deal_agreed') }}!
+                                                            </div>
+                                                            <p class="text-sm text-green-600 mt-1">
+                                                                {{ __('transfers.player_will_join', ['player' => $scoutPlayer->name]) }} {{ __('transfers.next_transfer_window') }}.
+                                                            </p>
+                                                        </div>
+                                                    @else
+                                                        <div class="mb-6 p-5 bg-sky-50 border border-sky-200 rounded-lg">
+                                                            <h4 class="font-semibold text-sky-900 mb-1">{{ __('transfers.pre_contract_offer') }}</h4>
+                                                            <p class="text-sm text-sky-700 mb-4">{{ __('transfers.pre_contract_description') }}</p>
+                                                            <form method="post" action="{{ route('game.scouting.pre-contract', [$game->id, $scoutPlayer->id]) }}">
+                                                                @csrf
+                                                                <div class="mb-3">
+                                                                    <label for="offered_wage_{{ $scoutPlayer->id }}" class="block text-sm font-medium text-sky-800 mb-1">{{ __('transfers.offered_wage_euros') }}</label>
+                                                                    <x-text-input type="number" name="offered_wage" id="offered_wage_{{ $scoutPlayer->id }}" min="0" step="100000"
+                                                                           value="{{ (int)($detail['wage_demand'] / 100) }}"
+                                                                           class="w-full" />
+                                                                    <p class="text-xs text-sky-600 mt-1">{{ __('transfers.wage_demand') }}: {{ $detail['formatted_wage_demand'] }}/{{ __('transfers.year_abbr') }}</p>
+                                                                </div>
+                                                                <x-primary-button color="sky" class="w-full py-2.5">{{ __('transfers.submit_pre_contract') }}</x-primary-button>
+                                                            </form>
+                                                        </div>
+                                                    @endif
+                                                @else
+                                                    {{-- Not in pre-contract period --}}
+                                                    <div class="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                                                        <div class="flex items-center gap-2">
+                                                            <svg class="w-5 h-5 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                                            <p class="text-sm text-amber-800">{{ __('transfers.pre_contract_available_from_jan') }}</p>
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                            @endif
+
                                             {{-- Existing Offer Status --}}
-                                            @if($existingOffer)
+                                            @if($existingOffer && !($existingOffer->isPreContract()))
                                                 <div class="mb-6 p-4 border rounded-lg {{ $existingOffer->isAgreed() ? 'bg-green-50 border-green-200' : 'bg-sky-50 border-sky-200' }}">
                                                     @if($existingOffer->isAgreed())
                                                         <div class="flex items-center gap-2 text-green-700 font-semibold">
@@ -444,7 +485,7 @@
                                                 </div>
                                             @endif
 
-                                            {{-- Action Buttons --}}
+                                            {{-- Action Buttons (Transfer Bid / Loan) --}}
                                             @if(!$existingOffer || (!$existingOffer->isAgreed() && !$existingOffer->isPending()))
                                                 <div class="grid grid-cols-2 gap-6">
                                                     {{-- Transfer Bid --}}
@@ -483,6 +524,56 @@
                                     </x-modal>
                                 @endforeach
                             @endif
+                        </div>
+                    @endif
+
+                    {{-- Search History --}}
+                    @if($searchHistory->isNotEmpty())
+                        <div class="mt-8 border-t pt-6">
+                            <h4 class="font-semibold text-sm text-slate-500 uppercase tracking-wide mb-3">{{ __('transfers.search_history') }}</h4>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm">
+                                    <thead class="text-left border-b border-slate-200">
+                                        <tr>
+                                            <th class="font-medium text-slate-500 pb-2">{{ __('app.position') }}</th>
+                                            <th class="font-medium text-slate-500 pb-2">{{ __('transfers.scope') }}</th>
+                                            <th class="font-medium text-slate-500 pb-2">{{ __('app.date') }}</th>
+                                            <th class="font-medium text-slate-500 pb-2 text-center">{{ __('transfers.scout_results') }}</th>
+                                            <th class="font-medium text-slate-500 pb-2 text-right"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($searchHistory as $historyReport)
+                                            @php
+                                                $isActive = $selectedReport && $selectedReport->id === $historyReport->id;
+                                                $filters = $historyReport->filters;
+                                                $scopeLabel = isset($filters['scope']) && count($filters['scope']) === 1
+                                                    ? (in_array('domestic', $filters['scope']) ? __('transfers.scope_domestic') : __('transfers.scope_international'))
+                                                    : __('transfers.scope_domestic') . ' + ' . __('transfers.scope_international');
+                                                $resultCount = is_array($historyReport->player_ids) ? count($historyReport->player_ids) : 0;
+                                            @endphp
+                                            <tr class="border-b border-slate-100 {{ $isActive ? 'bg-sky-50' : 'hover:bg-slate-50' }}">
+                                                <td class="py-2.5">
+                                                    <span class="font-medium text-slate-900">{{ $filters['position'] ?? '-' }}</span>
+                                                </td>
+                                                <td class="py-2.5 text-slate-600">{{ $scopeLabel }}</td>
+                                                <td class="py-2.5 text-slate-600">{{ $historyReport->game_date->format('d M') }}</td>
+                                                <td class="py-2.5 text-center text-slate-600">{{ __('transfers.results_count', ['count' => $resultCount]) }}</td>
+                                                <td class="py-2.5 text-right">
+                                                    @if($isActive)
+                                                        <span class="px-3 py-1 text-xs font-semibold text-sky-700 bg-sky-100 rounded-full">{{ __('transfers.view_results') }}</span>
+                                                    @else
+                                                        <a href="{{ route('game.scouting', ['gameId' => $game->id, 'report' => $historyReport->id]) }}"
+                                                           class="px-3 py-1.5 text-xs font-semibold text-sky-600 hover:text-sky-800 hover:bg-sky-50 rounded-lg transition-colors">
+                                                            {{ __('transfers.view_results') }}
+                                                        </a>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     @endif
 

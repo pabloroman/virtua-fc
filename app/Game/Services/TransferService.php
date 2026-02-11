@@ -373,6 +373,7 @@ class TransferService
     /**
      * Complete all pre-contract transfers (called at end of season).
      * Players move to their new team on a free transfer.
+     * This handles outgoing pre-contracts (AI clubs taking user's players).
      */
     public function completePreContractTransfers(Game $game): Collection
     {
@@ -380,6 +381,10 @@ class TransferService
             ->where('game_id', $game->id)
             ->where('status', TransferOffer::STATUS_AGREED)
             ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
+            ->where(function ($query) {
+                $query->whereNull('direction')
+                    ->orWhere('direction', '!=', TransferOffer::DIRECTION_INCOMING);
+            })
             ->whereHas('gamePlayer', function ($query) use ($game) {
                 $query->where('team_id', $game->team_id);
             })
@@ -389,6 +394,29 @@ class TransferService
 
         foreach ($agreedPreContracts as $offer) {
             $this->completePreContractTransfer($offer);
+            $completedTransfers->push($offer);
+        }
+
+        return $completedTransfers;
+    }
+
+    /**
+     * Complete all incoming pre-contract transfers (called at end of season).
+     * Players the user signed on pre-contracts join the team.
+     */
+    public function completeIncomingPreContracts(Game $game): Collection
+    {
+        $agreedIncoming = TransferOffer::with(['gamePlayer.player', 'sellingTeam'])
+            ->where('game_id', $game->id)
+            ->where('status', TransferOffer::STATUS_AGREED)
+            ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
+            ->where('direction', TransferOffer::DIRECTION_INCOMING)
+            ->get();
+
+        $completedTransfers = collect();
+
+        foreach ($agreedIncoming as $offer) {
+            $this->completeIncomingTransfer($offer, $game);
             $completedTransfers->push($offer);
         }
 
@@ -813,6 +841,7 @@ class TransferService
             ->where('game_id', $game->id)
             ->where('status', TransferOffer::STATUS_AGREED)
             ->where('direction', TransferOffer::DIRECTION_INCOMING)
+            ->where('offer_type', '!=', TransferOffer::TYPE_PRE_CONTRACT)
             ->get();
 
         // Also get loan-out agreements
