@@ -48,9 +48,9 @@
                                 <th class="font-semibold py-2 text-center w-12">{{ __('app.country') }}</th>
                                 <th class="font-semibold py-2 text-center w-12">{{ __('app.age') }}</th>
 
-                                <th class="font-semibold py-2 pr-4 text-right w-20">{{ __('app.value') }}</th>
-                                <th class="font-semibold py-2 pr-4 text-right w-20">{{ __('app.wage') }}</th>
-                                <th class="font-semibold py-2 pr-4 text-right w-20">{{ __('app.contract') }}</th>
+                                <th class="font-semibold py-2 pl-3 pr-4 text-right border-l border-slate-200 w-24">{{ __('app.value') }}</th>
+                                <th class="font-semibold py-2 pr-4 text-right w-24">{{ __('app.wage') }}</th>
+                                <th class="font-semibold py-2 text-center w-20">{{ __('app.contract') }}</th>
 
                                 <th class="font-semibold py-2 pl-3 text-center w-10">{{ __('squad.technical') }}</th>
                                 <th class="font-semibold py-2 text-center w-10">{{ __('squad.physical') }}</th>
@@ -144,11 +144,11 @@
                                             <td class="py-2 text-center">{{ $gamePlayer->player->age }}</td>
 
                                             {{-- Market Value --}}
-                                            <td class="border-l border-slate-200 py-2 pl-3 pr-4 text-right text-slate-600">{{ $gamePlayer->formatted_market_value }}</td>
+                                            <td class="border-l border-slate-200 py-2 pl-3 pr-4 text-right tabular-nums text-slate-600">{{ $gamePlayer->formatted_market_value }}</td>
                                             {{-- Annual Wage --}}
-                                            <td class="py-2 pr-4 text-right text-slate-600">{{ $gamePlayer->formatted_wage }}</td>
+                                            <td class="py-2 pr-4 text-right tabular-nums text-slate-600">{{ $gamePlayer->formatted_wage }}</td>
                                             {{-- Contract --}}
-                                            <td class="py-2 pr-4 text-center text-slate-600">
+                                            <td class="py-2 text-center text-slate-600">
                                                 @if($gamePlayer->contract_until)
                                                     @if($gamePlayer->isContractExpiring())
                                                         <span class="text-red-600 font-medium" title="Contract expiring">
