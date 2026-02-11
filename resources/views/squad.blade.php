@@ -40,62 +40,23 @@
                         :renewal-demands="$renewalDemands"
                     />
 
-                    <div x-data="{
-                        sortColumn: 'default',
-                        sortAsc: true,
-                        sortTable(column, asc) {
-                            const tbody = document.getElementById('squad-body');
-                            const rows = Array.from(tbody.querySelectorAll('.player-row'));
-                            rows.sort((a, b) => {
-                                let aVal = a.dataset[column];
-                                let bVal = b.dataset[column];
-                                if (!isNaN(parseFloat(aVal)) && !isNaN(parseFloat(bVal))) {
-                                    aVal = parseFloat(aVal);
-                                    bVal = parseFloat(bVal);
-                                }
-                                if (aVal < bVal) return asc ? -1 : 1;
-                                if (aVal > bVal) return asc ? 1 : -1;
-                                return 0;
-                            });
-                            rows.forEach(row => tbody.appendChild(row));
-                        }
-                    }">
+                    <div>
                         <div class="overflow-x-auto">
                         <table class="w-full text-sm">
                             <thead class="text-left border-b border-slate-300">
                                 <tr>
-                                    <th class="font-semibold py-2 pl-4 cursor-pointer hover:text-sky-600 select-none" @click="sortAsc = sortColumn === 'name' ? !sortAsc : true; sortColumn = 'name'; sortTable('name', sortAsc)">
-                                        <span class="flex items-center gap-1">
-                                            {{ __('app.player') }}
-                                            <span x-show="sortColumn === 'name'" x-text="sortAsc ? '↑' : '↓'" class="text-sky-600"></span>
-                                        </span>
-                                    </th>
-                                    <th class="font-semibold py-2 text-center w-16 cursor-pointer hover:text-sky-600 select-none" @click="sortAsc = sortColumn === 'age' ? !sortAsc : true; sortColumn = 'age'; sortTable('age', sortAsc)">
-                                        <span class="flex items-center justify-center gap-1">
-                                            {{ __('app.age') }}
-                                            <span x-show="sortColumn === 'age'" x-text="sortAsc ? '↑' : '↓'" class="text-sky-600"></span>
-                                        </span>
-                                    </th>
-                                    <th class="font-semibold py-2 pr-3 text-right cursor-pointer hover:text-sky-600 select-none" @click="sortAsc = sortColumn === 'value' ? !sortAsc : false; sortColumn = 'value'; sortTable('value', sortAsc)">
-                                        <span class="flex items-center justify-end gap-1">
-                                            {{ __('app.value') }}
-                                            <span x-show="sortColumn === 'value'" x-text="sortAsc ? '↑' : '↓'" class="text-sky-600"></span>
-                                        </span>
-                                    </th>
+                                    <th class="font-semibold py-2 pl-4">{{ __('app.player') }}</th>
+                                    <th class="font-semibold py-2 text-center w-16">{{ __('app.age') }}</th>
+                                    <th class="font-semibold py-2 pr-3 text-right">{{ __('app.value') }}</th>
                                     <th class="font-semibold py-2 text-center w-16">{{ __('squad.technical') }}</th>
                                     <th class="font-semibold py-2 text-center w-16">{{ __('squad.physical') }}</th>
                                     <th class="font-semibold py-2 text-center w-12">{{ __('squad.fitness') }}</th>
                                     <th class="font-semibold py-2 text-center w-12">{{ __('squad.morale') }}</th>
-                                    <th class="font-semibold py-2 text-center w-14 cursor-pointer hover:text-sky-600 select-none" @click="sortAsc = sortColumn === 'overall' ? !sortAsc : false; sortColumn = 'overall'; sortTable('overall', sortAsc)">
-                                        <span class="flex items-center justify-center gap-1">
-                                            {{ __('squad.overall') }}
-                                            <span x-show="sortColumn === 'overall'" x-text="sortAsc ? '↑' : '↓'" class="text-sky-600"></span>
-                                        </span>
-                                    </th>
+                                    <th class="font-semibold py-2 text-center w-14">{{ __('squad.overall') }}</th>
                                     <th class="py-2 w-8"></th>
                                 </tr>
                             </thead>
-                            <tbody id="squad-body">
+                            <tbody>
                                 @foreach([
                                     ['name' => __('squad.goalkeepers'), 'players' => $goalkeepers, 'border' => 'border-l-amber-500', 'groupKey' => 'gk'],
                                     ['name' => __('squad.defenders'), 'players' => $defenders, 'border' => 'border-l-blue-600', 'groupKey' => 'df'],
@@ -114,12 +75,7 @@
                                                 $isUnavailable = !$gamePlayer->isAvailable($game->current_date, $nextMatchday);
                                                 $unavailabilityReason = $gamePlayer->getUnavailabilityReason($game->current_date, $nextMatchday);
                                             @endphp
-                                            <tr class="border-l-4 {{ $group['border'] }} border-b border-slate-100 hover:bg-slate-50 player-row @if($isUnavailable) opacity-60 @endif"
-                                                data-name="{{ strtolower($gamePlayer->player->name) }}"
-                                                data-age="{{ $gamePlayer->player->age }}"
-                                                data-value="{{ $gamePlayer->market_value_cents }}"
-                                                data-overall="{{ $gamePlayer->overall_score }}"
-                                                data-default="{{ $group['groupKey'] }}{{ str_pad($loop->index, 3, '0', STR_PAD_LEFT) }}">
+                                            <tr class="border-l-4 {{ $group['border'] }} border-b border-slate-100 hover:bg-slate-50 @if($isUnavailable) opacity-60 @endif">
 
                                                 {{-- Player: badge + # + name + status --}}
                                                 <td class="py-2.5 pl-3">
