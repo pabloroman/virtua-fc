@@ -156,4 +156,11 @@ return [
     'legend_contributions' => 'Contribuciones de Gol',
     'legend_own_goals' => 'Goles en Propia',
     'legend_clean_sheets' => 'Porterías a Cero (solo PO)',
+
+    // Academy
+    'academy' => 'Cantera',
+    'promote_to_first_team' => 'Subir al Primer Equipo',
+    'academy_tier' => 'Nivel de Cantera',
+    'no_academy_prospects' => 'No hay canteranos disponibles.',
+    'academy_explanation' => 'Los canteranos aparecen durante la temporada según tu inversión en cantera.',
 ];

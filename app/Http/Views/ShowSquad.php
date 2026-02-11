@@ -4,6 +4,7 @@ namespace App\Http\Views;
 
 use App\Game\Services\ContractService;
 use App\Game\Services\LineupService;
+use App\Models\AcademyPlayer;
 use App\Models\Game;
 use App\Models\TransferOffer;
 
@@ -52,6 +53,8 @@ class ShowSquad
             })
             ->get();
 
+        $academyCount = AcademyPlayer::where('game_id', $gameId)->where('team_id', $game->team_id)->count();
+
         return view('squad', [
             'game' => $game,
             'goalkeepers' => $players['goalkeepers'],
@@ -64,6 +67,7 @@ class ShowSquad
             'preContractOffers' => $preContractOffers,
             'agreedPreContracts' => $agreedPreContracts,
             'isTransferWindow' => $game->isTransferWindowOpen(),
+            'academyCount' => $academyCount,
         ]);
     }
 }

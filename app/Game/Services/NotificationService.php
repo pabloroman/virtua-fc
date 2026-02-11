@@ -2,6 +2,7 @@
 
 namespace App\Game\Services;
 
+use App\Models\AcademyPlayer;
 use App\Models\Game;
 use App\Models\GameNotification;
 use App\Models\GamePlayer;
@@ -417,6 +418,31 @@ class NotificationService
     }
 
     // ==========================================
+    // Academy Notifications
+    // ==========================================
+
+    /**
+     * Create a notification for a new academy prospect.
+     */
+    public function notifyAcademyProspect(Game $game, AcademyPlayer $prospect): GameNotification
+    {
+        return $this->create(
+            game: $game,
+            type: GameNotification::TYPE_ACADEMY_PROSPECT,
+            title: __('notifications.academy_prospect_title', ['player' => $prospect->name]),
+            message: __('notifications.academy_prospect_message', [
+                'player' => $prospect->name,
+                'position' => $prospect->position,
+                'age' => $prospect->age,
+            ]),
+            priority: GameNotification::PRIORITY_INFO,
+            metadata: [
+                'academy_player_id' => $prospect->id,
+            ],
+        );
+    }
+
+    // ==========================================
     // Helpers
     // ==========================================
 
@@ -439,6 +465,7 @@ class NotificationService
             GameNotification::TYPE_LOAN_SEARCH_FAILED => 'loan',
             GameNotification::TYPE_COMPETITION_ADVANCEMENT => 'trophy',
             GameNotification::TYPE_COMPETITION_ELIMINATION => 'eliminated',
+            GameNotification::TYPE_ACADEMY_PROSPECT => 'academy',
             default => 'bell',
         };
     }

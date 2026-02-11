@@ -70,4 +70,8 @@ return [
     'competition_advancement_message' => ':stage',
     'competition_elimination_title' => 'Eliminación de :competition',
     'competition_elimination_message' => ':stage',
+
+    // Academy
+    'academy_prospect_title' => 'Nuevo canterano: :player',
+    'academy_prospect_message' => ':player (:position, :age años) ha surgido de la cantera.',
 ];
