@@ -13,12 +13,32 @@
 
                     <x-section-nav :items="[
                         ['href' => route('game.squad', $game->id), 'label' => __('squad.squad'), 'active' => true],
-                        ['href' => route('game.squad.contracts', $game->id), 'label' => __('squad.contracts'), 'active' => false, 'badge' => $expiringContractsCount > 0 ? $expiringContractsCount : null],
                         ['href' => route('game.squad.development', $game->id), 'label' => __('squad.development'), 'active' => false],
                         ['href' => route('game.squad.stats', $game->id), 'label' => __('squad.stats'), 'active' => false],
                     ]" />
 
                     <div class="mt-6"></div>
+
+                    {{-- Flash Messages --}}
+                    @if(session('success'))
+                    <div class="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700">
+                        {{ session('success') }}
+                    </div>
+                    @endif
+                    @if(session('error'))
+                    <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+                        {{ session('error') }}
+                    </div>
+                    @endif
+
+                    <x-contract-banner
+                        :game="$game"
+                        :pre-contract-offers="$preContractOffers"
+                        :agreed-pre-contracts="$agreedPreContracts"
+                        :pending-renewals="$pendingRenewals"
+                        :renewal-eligible-players="$renewalEligiblePlayers"
+                        :renewal-demands="$renewalDemands"
+                    />
 
                     <table class="w-full text-sm">
                         <thead class="text-left border-b">

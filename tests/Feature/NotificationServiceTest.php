@@ -125,7 +125,7 @@ class NotificationServiceTest extends TestCase
             GameNotification::TYPE_LOW_FITNESS => 'game.squad',
             GameNotification::TYPE_TRANSFER_OFFER_RECEIVED => 'game.transfers',
             GameNotification::TYPE_SCOUT_REPORT_COMPLETE => 'game.scouting',
-            GameNotification::TYPE_CONTRACT_EXPIRING => 'game.squad.contracts',
+            GameNotification::TYPE_CONTRACT_EXPIRING => 'game.squad',
         ];
 
         foreach ($types as $type => $expectedRoute) {

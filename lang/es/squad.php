@@ -76,6 +76,7 @@ return [
     'expires_in_days' => 'Expira en :days días',
     'current_wage' => 'Actual',
     'for_years' => 'por :years año(s)',
+    'pre_contract_offers_count' => 'oferta de precontrato|ofertas de precontrato',
 
     // Lineup
     'formation' => 'Formación',

@@ -13,7 +13,6 @@
 
                     <x-section-nav :items="[
                         ['href' => route('game.squad', $game->id), 'label' => __('squad.squad'), 'active' => false],
-                        ['href' => route('game.squad.contracts', $game->id), 'label' => __('squad.contracts'), 'active' => false],
                         ['href' => route('game.squad.development', $game->id), 'label' => __('squad.development'), 'active' => true],
                         ['href' => route('game.squad.stats', $game->id), 'label' => __('squad.stats'), 'active' => false],
                     ]" />

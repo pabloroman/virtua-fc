@@ -70,6 +70,35 @@ return [
     'facilities_tier_3' => 'Experiencia premium - 1.35x ingresos',
     'facilities_tier_4' => 'Estadio clase mundial - 1.6x ingresos',
 
+    // Budget flow tooltips
+    'tooltip_tv_rights' => 'Distribución televisiva basada en tu posición final en liga. Cuanto más alto termines, mayor será tu reparto.',
+    'tooltip_commercial' => 'Ingresos por patrocinios y merchandising. Dependen del tamaño de tu estadio y la reputación del club.',
+    'tooltip_matchday' => 'Recaudación por venta de entradas. Mejora con la inversión en instalaciones y una buena posición en liga.',
+    'tooltip_solidarity_funds' => 'Ayudas de la RFEF/UEFA destinadas a clubes de divisiones inferiores para fomentar la competitividad.',
+    'tooltip_public_subsidy' => 'Subvención pública que garantiza un presupuesto mínimo viable para infraestructura y fichajes.',
+    'tooltip_wages' => 'Suma de los salarios anuales de toda la plantilla. Los fichajes a mitad de temporada se prorratean.',
+    'tooltip_operating_expenses' => 'Costes fijos del club: personal no deportivo, administración, viajes, seguros y gastos legales.',
+    'tooltip_taxes' => 'Impuestos y cargas sociales sobre los ingresos del club.',
+    'tooltip_surplus' => 'Diferencia entre ingresos y gastos. Este importe se reparte entre infraestructura y fichajes.',
+    'tooltip_carried_debt' => 'Déficit de la temporada anterior. Si los ingresos reales fueron menores a los proyectados, la diferencia se arrastra.',
+    'tooltip_infrastructure' => 'Inversión en cantera, medicina deportiva, ojeadores e instalaciones. Se descuenta antes de calcular el presupuesto de fichajes.',
+    'tooltip_transfer_budget' => 'Lo que queda del superávit tras cubrir deuda e infraestructura. Es tu capacidad para fichar jugadores.',
+
+    // Budget flow
+    'budget_flow' => 'Flujo de Presupuesto',
+    'budget_not_set' => 'Presupuesto de temporada sin configurar',
+    'surplus_to_allocate' => 'superávit disponible para asignar',
+
+    // Quick stats
+    'wage_revenue_ratio' => 'Ratio Salarios/Ingresos',
+    'income' => 'ingresos',
+    'expenses' => 'gastos',
+
+    // Transaction filters
+    'filter_all' => 'Todos',
+    'filter_income' => 'Ingresos',
+    'filter_expenses' => 'Gastos',
+
     // Budget setup
     'setup_season_budget' => 'Configurar Presupuesto de Temporada',
     'allocate_surplus' => 'Asigna tu superávit a infraestructura y fichajes.',

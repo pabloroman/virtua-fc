@@ -306,7 +306,7 @@
                                 <span class="w-2 h-2 bg-red-500 rounded-full"></span>
                                 <span class="font-medium text-slate-900">{{ __('transfers.expiring_contracts_notice', ['count' => $expiringContractPlayers->count()]) }}</span>
                             </div>
-                            <a href="{{ route('game.squad.contracts', $game->id) }}" class="text-sm text-sky-600 hover:text-sky-800 font-medium">
+                            <a href="{{ route('game.squad', $game->id) }}" class="text-sm text-sky-600 hover:text-sky-800 font-medium">
                                 {{ __('transfers.manage_contracts') }} &rarr;
                             </a>
                         </div>
