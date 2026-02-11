@@ -34,7 +34,6 @@ use App\Http\Views\ShowCompetition;
 use App\Http\Views\ShowLiveMatch;
 use App\Http\Views\ShowMatchResults;
 use App\Http\Views\ShowSquad;
-use App\Http\Views\ShowContracts;
 use App\Http\Views\ShowScouting;
 use App\Http\Views\ShowSeasonEnd;
 use App\Http\Views\ShowSquadDevelopment;
@@ -62,7 +61,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/game/{gameId}', ShowGame::class)->name('show-game');
         Route::get('/game/{gameId}/squad', ShowSquad::class)->name('game.squad');
         Route::get('/game/{gameId}/squad/development', ShowSquadDevelopment::class)->name('game.squad.development');
-        Route::get('/game/{gameId}/squad/contracts', ShowContracts::class)->name('game.squad.contracts');
         Route::get('/game/{gameId}/squad/stats', ShowSquadStats::class)->name('game.squad.stats');
         Route::get('/game/{gameId}/finances', ShowFinances::class)->name('game.finances');
         Route::get('/game/{gameId}/transfers', ShowTransfers::class)->name('game.transfers');

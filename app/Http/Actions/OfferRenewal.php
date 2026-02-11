@@ -20,7 +20,7 @@ class OfferRenewal
             ->findOrFail($playerId);
 
         if (!$player->canBeOfferedRenewal()) {
-            return redirect()->route('game.squad.contracts', $gameId)
+            return redirect()->route('game.squad', $gameId)
                 ->with('error', __('messages.cannot_renew'));
         }
 
@@ -35,7 +35,7 @@ class OfferRenewal
         );
 
         if ($success) {
-            return redirect()->route('game.squad.contracts', $gameId)
+            return redirect()->route('game.squad', $gameId)
                 ->with('success', __('messages.renewal_agreed', [
                     'player' => $player->name,
                     'years' => $demand['contractYears'],
@@ -43,7 +43,7 @@ class OfferRenewal
                 ]));
         }
 
-        return redirect()->route('game.squad.contracts', $gameId)
+        return redirect()->route('game.squad', $gameId)
             ->with('error', __('messages.renewal_failed'));
     }
 }

@@ -159,7 +159,7 @@ class GameNotification extends Model
             'squad' => 'game.squad',
             'transfers' => 'game.transfers',
             'scouting' => 'game.scouting',
-            'contracts' => 'game.squad.contracts',
+            'contracts' => 'game.squad',
             'loans' => 'game.loans',
             'competition' => 'game.competition',
             default => 'show-game',
