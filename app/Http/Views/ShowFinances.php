@@ -42,6 +42,15 @@ class ShowFinances
             ->limit(20)
             ->get();
 
+        // Transaction totals for summary bar
+        $totalIncome = $transactions->where('type', FinancialTransaction::TYPE_INCOME)->sum('amount');
+        $totalExpenses = $transactions->where('type', FinancialTransaction::TYPE_EXPENSE)->sum('amount');
+
+        // Wage-to-revenue ratio
+        $wageRevenueRatio = $finances && $finances->projected_total_revenue > 0
+            ? round(($finances->projected_wages / $finances->projected_total_revenue) * 100)
+            : 0;
+
         return view('finances', [
             'game' => $game,
             'finances' => $finances,
@@ -49,6 +58,9 @@ class ShowFinances
             'squadValue' => $squadValue,
             'wageBill' => $wageBill,
             'transactions' => $transactions,
+            'totalIncome' => $totalIncome,
+            'totalExpenses' => $totalExpenses,
+            'wageRevenueRatio' => $wageRevenueRatio,
         ]);
     }
 }

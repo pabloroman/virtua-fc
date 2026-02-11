@@ -70,6 +70,21 @@ return [
     'facilities_tier_3' => 'Experiencia premium - 1.35x ingresos',
     'facilities_tier_4' => 'Estadio clase mundial - 1.6x ingresos',
 
+    // Budget flow
+    'budget_flow' => 'Flujo de Presupuesto',
+    'budget_not_set' => 'Presupuesto de temporada sin configurar',
+    'surplus_to_allocate' => 'superávit disponible para asignar',
+
+    // Quick stats
+    'wage_revenue_ratio' => 'Ratio Salarios/Ingresos',
+    'income' => 'ingresos',
+    'expenses' => 'gastos',
+
+    // Transaction filters
+    'filter_all' => 'Todos',
+    'filter_income' => 'Ingresos',
+    'filter_expenses' => 'Gastos',
+
     // Budget setup
     'setup_season_budget' => 'Configurar Presupuesto de Temporada',
     'allocate_surplus' => 'Asigna tu superávit a infraestructura y fichajes.',
