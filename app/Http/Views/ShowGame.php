@@ -26,7 +26,7 @@ class ShowGame
 
         $nextMatch = $this->loadNextMatch($game);
 
-        $notifications = $this->notificationService->getNotifications($game->id, false, 15);
+        $notifications = $this->notificationService->getNotifications($game->id, true, 15);
         $groupedNotifications = $notifications->groupBy(fn ($n) => $n->game_date?->format('Y-m-d') ?? 'unknown');
 
         return view('game', [

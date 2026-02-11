@@ -16,9 +16,9 @@ class ClubProfilesSeeder extends Seeder
         // La Liga - Elite
         'Real Madrid' => ClubProfile::REPUTATION_ELITE,
         'FC Barcelona' => ClubProfile::REPUTATION_ELITE,
-        'Atlético de Madrid' => ClubProfile::REPUTATION_ELITE,
 
         // La Liga - Contenders
+        'Atlético de Madrid' => ClubProfile::REPUTATION_CONTENDERS,
         'Athletic Bilbao' => ClubProfile::REPUTATION_CONTENDERS,
         'Real Betis Balompié' => ClubProfile::REPUTATION_CONTENDERS,
         'Villarreal CF' => ClubProfile::REPUTATION_CONTENDERS,

@@ -15,11 +15,11 @@ return [
 
     // Commercial revenue per seat per season by reputation level (in cents).
     'commercial_per_seat' => [
-        'elite'        => 170_000, // €1,700/seat
-        'contenders'   => 150_000, // €1,500/seat
-        'continental'  => 120_000, // €1,200/seat
-        'established'  => 100_000, // €1,000/seat
-        'modest'       =>  80_000, // €800/seat
+        'elite'        => 200_000, // €2,000/seat
+        'contenders'   => 125_000, // €1,250/seat
+        'continental'  => 100_000, // €1,000/seat
+        'established'  =>  80_000, // €800/seat
+        'modest'       =>  60_000, // €600/seat
         'professional' =>  50_000, // €500/seat
         'local'        =>  30_000, // €300/seat
     ],

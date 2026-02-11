@@ -20,9 +20,12 @@ class RegisteredUserController extends Controller
      */
     public function create(Request $request): View
     {
+        $invite = InviteCode::findByCode($request->query('invite'));
+
         return view('auth.register', [
             'inviteCode' => $request->query('invite'),
             'betaMode' => config('beta.enabled'),
+            'email' => $invite?->email ?? null,
         ]);
     }
 

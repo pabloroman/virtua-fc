@@ -39,6 +39,9 @@ class AdvanceMatchday
     {
         $game = Game::findOrFail($gameId);
 
+        // Mark all existing notifications as read before processing new matchday
+        $this->notificationService->markAllAsRead($gameId);
+
         // Get next batch of matches to play
         $batch = $this->matchdayService->getNextMatchBatch($game);
 

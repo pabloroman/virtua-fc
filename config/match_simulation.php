@@ -47,7 +47,7 @@ return [
     |   - exponent 1.8: ratio becomes ~65% vs 35%
     |
     */
-    'strength_multiplier' => 0.8,
+    'strength_multiplier' => 0.9,
     'strength_exponent' => 1.8,
 
     /*
