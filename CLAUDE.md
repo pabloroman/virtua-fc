@@ -345,6 +345,15 @@ When working on UI/UX tasks, implement working code (Blade/Tailwind CSS/Alpine.j
 - **Cohesive with a clear aesthetic point-of-view** - Maintain a consistent design language across all pages
 - **Meticulously refined in every detail** - Pay extra attention to component reusability and ensure visual elements are coherent and uniform across the application
 
+## Backend Performance
+
+When implementing backend code, pay attention to performance and scalability:
+
+- **Prevent slow queries** - Avoid N+1 problems; use eager loading (`with()`) where appropriate (but note the `currentFinances`/`currentInvestment` exception above)
+- **Use database indices correctly** - Ensure queries filter on indexed columns; add indices for new columns used in WHERE/JOIN clauses
+- **Optimize algorithms** - Avoid unnecessary loops, redundant computations, and excessive memory usage
+- **Leverage Laravel features** - Use chunking for large datasets, queue heavy work, and cache expensive computations where appropriate
+
 ## Code Quality
 
 ### No Dead Code
