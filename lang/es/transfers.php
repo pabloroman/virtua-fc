@@ -18,6 +18,7 @@ return [
     'awaiting_response' => 'esperando respuesta',
     'loan_request' => 'Solicitud de Cesión',
     'loan_no_fee' => 'Cesión (sin coste)',
+    'free_transfer' => 'Libre (fin de contrato)',
     'response_next_matchday' => 'Respuesta en la próxima jornada',
 
     // Rejected bids
