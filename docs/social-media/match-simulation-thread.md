@@ -90,18 +90,6 @@ La solución fue un paso de postprocesado. Después de generar todos los eventos
 
 ---
 
-Las lesiones son otro mundo. Hay diez tipos, desde fatiga muscular (1 semana) hasta rotura de ligamento cruzado (hasta 36 semanas). Cada tipo tiene afinidad por ciertas posiciones. Los delanteros sufren más desgarros de isquiotibiales. Los defensas, más contusiones de rodilla.
-
----
-
-La probabilidad de lesión depende de cinco factores multiplicativos: durabilidad del jugador (un atributo oculto), edad, forma física, congestión de partidos, y el nivel de servicios médicos del club. Un jugador joven, descansado, con buena durabilidad y servicios médicos de primer nivel tiene muy poca probabilidad de lesionarse. Un veterano agotado sin médicos, mucha.
-
----
-
-Ese atributo oculto de durabilidad se genera con una distribución de curva de campana cuando el jugador se crea. La mayoría son normales. Algunos son de cristal. Otros son de hierro y casi nunca se lesionan. El jugador nunca ve este número, pero lo siente a lo largo de las temporadas.
-
----
-
 Todo el sistema de simulación es configurable sin tocar código. Hay un archivo de configuración con más de quince parámetros: goles base, exponente de fuerza, ventaja de local, varianza de rendimiento, probabilidades de tarjetas, lesiones, autogoles. Puedo ajustar el balance del juego cambiando un número.
 
 ---
