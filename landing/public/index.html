@@ -346,7 +346,7 @@
             formMessage.classList.add('hidden');
 
             try {
-                const res = await fetch('/api/submit', {
+                const res = await fetch('https://app.virtuafc.com/api/waitlist', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name, email }),
