@@ -215,7 +215,7 @@
                 <div class="p-6 sm:p-8 text-center">
                     <div class="text-6xl mb-4">&#127942;</div>
                     <h2 class="text-3xl font-bold text-slate-900 mb-2">{{ __('game.season_complete') }}</h2>
-                    <p class="text-slate-500 mb-8">{{ __('game.season_complete_congrats', ['season' => $game->season]) }}</p>
+                    <p class="text-slate-500 mb-8">{{ __('game.season_complete_congrats', ['season' => $game->formatted_season]) }}</p>
                     <a href="{{ route('game.season-end', $game->id) }}"
                        class="inline-flex items-center px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors">
                         {{ __('game.view_season_summary') }}

@@ -38,6 +38,6 @@ class StartNewSeason
         $aggregate->startNewSeason($command);
 
         return redirect()->route('show-game', $gameId)
-            ->with('message', __('messages.new_season_started', ['season' => $data->newSeason]));
+            ->with('message', __('messages.new_season_started', ['season' => Game::formatSeason($data->newSeason)]));
     }
 }

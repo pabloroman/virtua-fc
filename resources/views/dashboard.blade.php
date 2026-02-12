@@ -20,7 +20,7 @@
                                     <img class="mx-auto h-20 w-20 flex-shrink-0" src="{{ $game->team->image }}" alt="">
                                     <h3 class="text-xl font-semibold leading-tight text-slate-900">{{ $game->team->name }}</h3>
                                     <dl class="flex flex-col justify-between">
-                                        <dd class="text-sm text-slate-500">{{ __('game.season_n', ['season' => $game->season]) }}</dd>
+                                        <dd class="text-sm text-slate-500">{{ __('game.season_n', ['season' => $game->formatted_season]) }}</dd>
                                         @if($game->current_date)
                                             <dd class="mt-2 mb-2">
                                                 <span class="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">

@@ -13,7 +13,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 sm:p-8">
-                    <h3 class="font-semibold text-xl text-slate-900 mb-6">{{ __('finances.title', ['team' => $game->team->name, 'season' => $game->season]) }}</h3>
+                    <h3 class="font-semibold text-xl text-slate-900 mb-6">{{ __('finances.title', ['team' => $game->team->name, 'season' => $game->formatted_season]) }}</h3>
 
                     @if($finances)
 
@@ -56,7 +56,7 @@
                             <div class="border rounded-lg overflow-hidden">
                                 <div class="px-5 py-3 bg-slate-50 border-b flex items-center justify-between">
                                     <h4 class="font-semibold text-sm text-slate-900">{{ __('finances.budget_flow') }}</h4>
-                                    <span class="text-xs text-slate-400">{{ __('finances.season_budget', ['season' => $game->season]) }}</span>
+                                    <span class="text-xs text-slate-400">{{ __('finances.season_budget', ['season' => $game->formatted_season]) }}</span>
                                 </div>
                                 <div class="px-5 py-4 space-y-0 text-sm">
                                     {{-- Revenue line items --}}
