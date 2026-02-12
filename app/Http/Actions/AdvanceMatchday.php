@@ -108,6 +108,20 @@ class AdvanceMatchday
             ]);
         }
 
+        // If the player's team isn't in any of the competitions played, skip results
+        $competitionIds = $matches->pluck('competition_id')->unique();
+        $teamInAnyCompetition = GameMatch::where('game_id', $game->id)
+            ->whereIn('competition_id', $competitionIds)
+            ->where(function ($q) use ($game) {
+                $q->where('home_team_id', $game->team_id)
+                    ->orWhere('away_team_id', $game->team_id);
+            })
+            ->exists();
+
+        if (! $teamInAnyCompetition) {
+            return redirect()->route('show-game', $gameId);
+        }
+
         $primaryHandler = reset($handlers);
 
         return redirect()->to($primaryHandler->getRedirectRoute($game, $matches, $matchday));
