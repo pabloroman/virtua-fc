@@ -325,7 +325,6 @@ class LoanService
         $player->update([
             'team_id' => $game->team_id,
             'number' => GamePlayer::nextAvailableNumber($game->id, $game->team_id),
-            'joined_on' => $game->current_date,
         ]);
 
         return $loan;

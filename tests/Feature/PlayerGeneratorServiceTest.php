@@ -49,7 +49,6 @@ class PlayerGeneratorServiceTest extends TestCase
             physical: 70,
             dateOfBirth: $dateOfBirth,
             contractYears: 3,
-            signedFrom: 'Youth Academy',
         ));
 
         // GamePlayer record exists
@@ -59,8 +58,6 @@ class PlayerGeneratorServiceTest extends TestCase
         $this->assertEquals($this->game->id, $gamePlayer->game_id);
         $this->assertEquals(65, $gamePlayer->game_technical_ability);
         $this->assertEquals(70, $gamePlayer->game_physical_ability);
-        $this->assertEquals('Youth Academy', $gamePlayer->signed_from);
-
         // Player reference record exists
         $this->assertDatabaseHas('players', ['id' => $gamePlayer->player_id]);
         $player = Player::find($gamePlayer->player_id);
@@ -84,7 +81,6 @@ class PlayerGeneratorServiceTest extends TestCase
             physical: 50,
             dateOfBirth: Carbon::createFromDate(2006, 3, 10),
             contractYears: 3,
-            signedFrom: 'Youth Academy',
         ));
 
         $player = $gamePlayer->player;
@@ -104,7 +100,6 @@ class PlayerGeneratorServiceTest extends TestCase
             physical: 65,
             dateOfBirth: Carbon::createFromDate(2000, 1, 1),
             contractYears: 2,
-            signedFrom: 'Transfer',
             name: 'Test Player',
             nationality: ['BRA'],
         ));
@@ -125,7 +120,6 @@ class PlayerGeneratorServiceTest extends TestCase
             physical: 75,
             dateOfBirth: Carbon::createFromDate(1999, 5, 20),
             contractYears: 3,
-            signedFrom: 'Transfer',
         ));
 
         $this->assertGreaterThan(100_000_00, $gamePlayer->market_value_cents);
@@ -143,7 +137,6 @@ class PlayerGeneratorServiceTest extends TestCase
             physical: 55,
             dateOfBirth: Carbon::createFromDate(2005, 8, 12),
             contractYears: 3,
-            signedFrom: 'Youth Academy',
             marketValueCents: 500_000_00,
         ));
 
@@ -161,7 +154,6 @@ class PlayerGeneratorServiceTest extends TestCase
             physical: 50,
             dateOfBirth: Carbon::createFromDate(2007, 2, 14),
             contractYears: 3,
-            signedFrom: 'Youth Academy',
             potential: 85,
             potentialLow: 80,
             potentialHigh: 90,
@@ -183,7 +175,6 @@ class PlayerGeneratorServiceTest extends TestCase
             physical: 65,
             dateOfBirth: Carbon::createFromDate(2001, 9, 5),
             contractYears: 3,
-            signedFrom: 'Transfer',
         ));
 
         $this->assertNotNull($gamePlayer->potential);
@@ -203,7 +194,6 @@ class PlayerGeneratorServiceTest extends TestCase
             physical: 55,
             dateOfBirth: Carbon::createFromDate(2006, 4, 1),
             contractYears: 3,
-            signedFrom: 'Youth Academy',
             fitnessMin: 90,
             fitnessMax: 100,
             moraleMin: 80,
@@ -227,7 +217,6 @@ class PlayerGeneratorServiceTest extends TestCase
             physical: 45,
             dateOfBirth: Carbon::createFromDate(2007, 7, 20),
             contractYears: 3,
-            signedFrom: 'Youth Academy',
         ));
 
         $this->assertNotNull($gamePlayer->durability);

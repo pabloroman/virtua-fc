@@ -860,16 +860,6 @@ class GameProjector extends Projector
             }
         }
 
-        // Parse joined date
-        $joinedOn = null;
-        if (!empty($playerData['joinedOn'])) {
-            try {
-                $joinedOn = Carbon::parse($playerData['joinedOn'])->toDateString();
-            } catch (\Exception $e) {
-                // Ignore invalid dates
-            }
-        }
-
         // Parse market value to cents
         $marketValueCents = $this->parseMarketValue($playerData['marketValue'] ?? null);
 
@@ -896,8 +886,6 @@ class GameProjector extends Projector
             'market_value_cents' => $marketValueCents,
             'contract_until' => $contractUntil,
             'annual_wage' => $annualWage,
-            'signed_from' => $playerData['signedFrom'] ?? null,
-            'joined_on' => $joinedOn,
             'fitness' => rand(90, 100),
             'morale' => rand(65, 80),
             'durability' => InjuryService::generateDurability(),

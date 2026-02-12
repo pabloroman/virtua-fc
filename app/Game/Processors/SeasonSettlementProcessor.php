@@ -10,6 +10,9 @@ use App\Models\Game;
 use App\Models\GameInvestment;
 use App\Models\GamePlayer;
 use App\Models\GameStanding;
+use App\Models\Loan;
+use App\Models\TransferOffer;
+use Carbon\Carbon;
 
 /**
  * Calculates actual season revenue and settles the finances.
@@ -184,35 +187,44 @@ class SeasonSettlementProcessor implements SeasonEndProcessor
 
         // Season runs from July 1 to June 30 (12 months)
         $seasonYear = (int) $game->season;
-        $seasonStart = \Carbon\Carbon::createFromDate($seasonYear, 7, 1);
-        $seasonEnd = \Carbon\Carbon::createFromDate($seasonYear + 1, 6, 30);
+        $seasonStart = Carbon::createFromDate($seasonYear, 7, 1);
+        $seasonEnd = Carbon::createFromDate($seasonYear + 1, 6, 30);
         $totalMonths = 12;
+
+        // Batch-load mid-season join dates from transfers and loans
+        $playerIds = $players->pluck('id');
+
+        $transferDates = TransferOffer::where('game_id', $game->id)
+            ->whereIn('game_player_id', $playerIds)
+            ->where('status', TransferOffer::STATUS_COMPLETED)
+            ->where('direction', TransferOffer::DIRECTION_INCOMING)
+            ->whereBetween('resolved_at', [$seasonStart, $seasonEnd])
+            ->pluck('resolved_at', 'game_player_id');
+
+        $loanDates = Loan::where('game_id', $game->id)
+            ->whereIn('game_player_id', $playerIds)
+            ->where('loan_team_id', $game->team_id)
+            ->whereBetween('started_at', [$seasonStart, $seasonEnd])
+            ->pluck('started_at', 'game_player_id');
 
         $totalWages = 0;
 
         foreach ($players as $player) {
-            // If no joined_on date, assume they were here all season
-            if (!$player->joined_on) {
+            $joinDate = $transferDates[$player->id] ?? $loanDates[$player->id] ?? null;
+
+            // No join date found = player was here all season (initial squad, youth academy, pre-contract)
+            if (!$joinDate || Carbon::parse($joinDate)->lte($seasonStart)) {
                 $totalWages += $player->annual_wage;
                 continue;
             }
 
-            // Calculate months at club during this season
-            $joinDate = $player->joined_on;
-
-            // If joined before season start, they were here all season
-            if ($joinDate->lte($seasonStart)) {
-                $totalWages += $player->annual_wage;
-                continue;
-            }
-
-            // If joined during season, pro-rate
-            if ($joinDate->lt($seasonEnd)) {
-                $monthsAtClub = $joinDate->diffInMonths($seasonEnd);
+            // Joined during season, pro-rate
+            $parsedJoinDate = Carbon::parse($joinDate);
+            if ($parsedJoinDate->lt($seasonEnd)) {
+                $monthsAtClub = $parsedJoinDate->diffInMonths($seasonEnd);
                 $proRatedWage = (int) ($player->annual_wage * ($monthsAtClub / $totalMonths));
                 $totalWages += $proRatedWage;
             }
-            // If joined after season end, no wages for this season (shouldn't happen)
         }
 
         return $totalWages;

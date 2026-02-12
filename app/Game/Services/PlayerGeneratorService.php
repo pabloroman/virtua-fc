@@ -91,8 +91,6 @@ class PlayerGeneratorService
             'market_value_cents' => $marketValue,
             'contract_until' => $contractUntil,
             'annual_wage' => $annualWage,
-            'signed_from' => $data->signedFrom,
-            'joined_on' => $game->current_date ?? Carbon::createFromDate($seasonYear, 7, 1),
             'fitness' => mt_rand($data->fitnessMin, $data->fitnessMax),
             'morale' => mt_rand($data->moraleMin, $data->moraleMax),
             'durability' => InjuryService::generateDurability(),

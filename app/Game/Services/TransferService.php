@@ -899,7 +899,6 @@ class TransferService
             'transfer_listed_at' => null,
             'contract_until' => $newContractEnd,
             'annual_wage' => $offer->offered_wage ?? $player->annual_wage,
-            'joined_on' => $game->current_date,
         ]);
 
         // Deduct from transfer budget and record the transaction
@@ -945,7 +944,6 @@ class TransferService
         $player->update([
             'team_id' => $game->team_id,
             'number' => GamePlayer::nextAvailableNumber($game->id, $game->team_id),
-            'joined_on' => $game->current_date,
         ]);
         $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
     }
