@@ -64,7 +64,7 @@
                             enforceValueMin() { if (this.valueStepMin > this.valueStepMax) this.valueStepMax = this.valueStepMin; },
                             enforceValueMax() { if (this.valueStepMax < this.valueStepMin) this.valueStepMin = this.valueStepMax; },
                             scopeDomestic: true,
-                            scopeInternational: true,
+                            scopeInternational: {{ $canSearchInternationally ? 'true' : 'false' }},
                             formatValue(val) {
                                 if (val === 0) return '€0';
                                 if (val >= 1000000) return '€' + (val / 1000000) + 'M';
@@ -124,11 +124,14 @@
                                                 <x-checkbox-input name="scope[]" value="domestic" x-model="scopeDomestic" />
                                                 <span class="text-sm text-slate-700">{{ __('transfers.scope_domestic') }}</span>
                                             </label>
-                                            <label class="flex items-center gap-2 cursor-pointer">
-                                                <x-checkbox-input name="scope[]" value="international" x-model="scopeInternational" />
+                                            <label class="flex items-center gap-2 {{ $canSearchInternationally ? 'cursor-pointer' : 'opacity-40 cursor-not-allowed' }}">
+                                                <x-checkbox-input name="scope[]" value="international" x-model="scopeInternational" {{ $canSearchInternationally ? '' : 'disabled' }} />
                                                 <span class="text-sm text-slate-700">{{ __('transfers.scope_international') }}</span>
                                             </label>
                                         </div>
+                                        @unless($canSearchInternationally)
+                                            <p class="text-xs text-slate-400 mt-1">{{ __('transfers.scope_international_locked') }}</p>
+                                        @endunless
                                     </div>
 
                                     {{-- Expiring contract --}}

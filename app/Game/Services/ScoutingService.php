@@ -20,15 +20,28 @@ class ScoutingService
      */
     private const SCOUTING_TIER_EFFECTS = [
         0 => [0, 0, 0],   // No scouting department
-        1 => [0, 0, 0],   // Basic - baseline
-        2 => [0, 1, 2],   // Good - 1 extra result, 2 less fuzz
-        3 => [1, 2, 4],   // Excellent - 1 week faster, 2 extra results, 4 less fuzz
-        4 => [1, 3, 6],   // World-class - 1 week faster, 3 extra results, 6 less fuzz
+        1 => [0, 0, 0],   // Basic - domestic only, baseline
+        2 => [0, 1, 2],   // Good - domestic only, 1 extra result, 2 less fuzz
+        3 => [1, 2, 4],   // Excellent - international, 1 week faster, 2 extra results, 4 less fuzz
+        4 => [1, 3, 6],   // World-class - international, 1 week faster, 3 extra results, 6 less fuzz
     ];
+
+    /** Minimum scouting tier required for international searches. */
+    private const INTERNATIONAL_SEARCH_MIN_TIER = 3;
 
     public function __construct(
         private readonly ContractService $contractService,
     ) {}
+
+    /**
+     * Check if a game's scouting tier allows international searches.
+     */
+    public function canSearchInternationally(Game $game): bool
+    {
+        $tier = $game->currentInvestment?->scouting_tier ?? 1;
+
+        return $tier >= self::INTERNATIONAL_SEARCH_MIN_TIER;
+    }
 
     // =========================================
     // SCOUT SEARCH
@@ -91,6 +104,11 @@ class ScoutingService
      */
     public function startSearch(Game $game, array $filters): ScoutReport
     {
+        // Enforce domestic-only scope for low scouting tiers
+        if (!$this->canSearchInternationally($game)) {
+            $filters['scope'] = ['domestic'];
+        }
+
         $weeks = $this->calculateSearchWeeks($filters, $game);
 
         return ScoutReport::create([
@@ -178,8 +196,11 @@ class ScoutingService
             ->where('team_id', '!=', $game->team_id)
             ->whereIn('position', $positions);
 
-        // Scope filter (domestic / international)
+        // Scope filter (domestic / international) — enforce tier restriction
         $scope = $filters['scope'] ?? ['domestic', 'international'];
+        if (!$this->canSearchInternationally($game)) {
+            $scope = ['domestic'];
+        }
         if (count($scope) === 1) {
             $teamCountry = $game->team->country;
             $scopeCompetitionIds = Competition::where('country', in_array('domestic', $scope) ? '=' : '!=', $teamCountry)

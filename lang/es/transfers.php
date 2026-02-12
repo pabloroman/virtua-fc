@@ -71,6 +71,7 @@ return [
     'scope' => 'Rango de búsqueda',
     'scope_domestic' => 'Nacional',
     'scope_international' => 'Internacional',
+    'scope_international_locked' => 'Requiere ojeadores de nivel 3 o superior.',
     'age_range' => 'Rango de Edad',
     'ability_range' => 'Rango de Habilidad',
     'value_range' => 'Rango de Valor de Mercado',
