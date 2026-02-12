@@ -128,15 +128,16 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Impersonation (accessible while impersonating)
-Route::middleware('auth')->group(function () {
-    Route::post('/admin/stop-impersonation', StopImpersonation::class)->name('admin.stop-impersonation');
-});
-
 // Admin routes
-Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
-    Route::get('/users', AdminUsers::class)->name('admin.users');
-    Route::post('/impersonate/{userId}', StartImpersonation::class)->name('admin.impersonate');
+Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
+    // Accessible while impersonating (impersonated user may not be admin)
+    Route::post('/stop-impersonation', StopImpersonation::class)->name('stop-impersonation');
+
+    // Admin-only routes
+    Route::middleware('admin')->group(function () {
+        Route::get('/users', AdminUsers::class)->name('users');
+        Route::post('/impersonate/{userId}', StartImpersonation::class)->name('impersonate');
+    });
 });
 
 require __DIR__.'/auth.php';
