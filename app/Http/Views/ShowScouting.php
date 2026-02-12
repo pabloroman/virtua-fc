@@ -72,6 +72,7 @@ class ShowScouting
         $currentWindow = $game->getCurrentWindowName();
         $isPreContractPeriod = $game->isPreContractPeriod();
         $seasonEndDate = $game->getSeasonEndDate();
+        $canSearchInternationally = $this->scoutingService->canSearchInternationally($game);
 
         return view('scouting', [
             'game' => $game,
@@ -87,6 +88,7 @@ class ShowScouting
             'currentWindow' => $currentWindow,
             'isPreContractPeriod' => $isPreContractPeriod,
             'seasonEndDate' => $seasonEndDate,
+            'canSearchInternationally' => $canSearchInternationally,
         ]);
     }
 }

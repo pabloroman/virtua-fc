@@ -28,6 +28,7 @@ class GameNotification extends Model
     public const TYPE_COMPETITION_ADVANCEMENT = 'competition_advancement';
     public const TYPE_COMPETITION_ELIMINATION = 'competition_elimination';
     public const TYPE_ACADEMY_PROSPECT = 'academy_prospect';
+    public const TYPE_TRANSFER_COMPLETE = 'transfer_complete';
 
     // Priorities
     public const PRIORITY_MILESTONE = 'milestone';
@@ -51,6 +52,7 @@ class GameNotification extends Model
         self::TYPE_COMPETITION_ADVANCEMENT => 'competition',
         self::TYPE_COMPETITION_ELIMINATION => 'competition',
         self::TYPE_ACADEMY_PROSPECT => 'academy',
+        self::TYPE_TRANSFER_COMPLETE => 'squad',
     ];
 
     protected $fillable = [

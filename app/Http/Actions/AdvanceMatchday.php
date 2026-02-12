@@ -201,8 +201,12 @@ class AdvanceMatchday
     {
         // Process transfers when window is open
         if ($game->isTransferWindowOpen()) {
-            $this->transferService->completeAgreedTransfers($game);
-            $this->transferService->completeIncomingTransfers($game);
+            $completedOutgoing = $this->transferService->completeAgreedTransfers($game);
+            $completedIncoming = $this->transferService->completeIncomingTransfers($game);
+
+            foreach ($completedOutgoing->merge($completedIncoming) as $offer) {
+                $this->notificationService->notifyTransferComplete($game, $offer);
+            }
         }
 
         // Generate transfer offers (can happen anytime, but more during windows)

@@ -38,6 +38,12 @@ return [
     'transfer_offer_message' => ':team ha ofrecido :fee por :player.',
     'free_transfer' => 'Traspaso Libre',
 
+    // Transfer complete
+    'transfer_complete_incoming_title' => ':player fichado',
+    'transfer_complete_incoming_message' => ':player se ha unido a tu plantilla procedente de :team por :fee.',
+    'transfer_complete_outgoing_title' => ':player vendido',
+    'transfer_complete_outgoing_message' => ':player ha sido traspasado a :team por :fee.',
+
     // Expiring offers
     'offer_expiring_title' => 'Oferta por :player expira pronto',
     'offer_expiring_message' => 'La oferta de :team por :player expira en :days días.',

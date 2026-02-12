@@ -58,10 +58,10 @@ return [
 
     'scouting' => 'Ojeadores',
     'scouting_tier_0' => 'Sin red de ojeadores',
-    'scouting_tier_1' => 'Ojeadores locales - solo jugadores nacionales',
-    'scouting_tier_2' => 'Red regional - ligas cercanas',
-    'scouting_tier_3' => 'Alcance continental - principales ligas europeas',
-    'scouting_tier_4' => 'Red global - acceso a talento mundial',
+    'scouting_tier_1' => 'Red básica - solo mercado nacional',
+    'scouting_tier_2' => 'Red ampliada - nacional, más resultados y precisión',
+    'scouting_tier_3' => 'Alcance internacional - búsquedas rápidas y precisas',
+    'scouting_tier_4' => 'Red global - máxima velocidad, resultados y precisión',
 
     'facilities' => 'Instalaciones',
     'facilities_tier_0' => 'Sin inversión - ingresos base de partido',
@@ -150,10 +150,10 @@ return [
 
     // Scouting tier descriptions
     'scouting_tier_0' => 'Sin red de ojeadores',
-    'scouting_tier_1' => 'Ojeadores locales - solo jugadores nacionales',
-    'scouting_tier_2' => 'Red regional - ligas cercanas',
-    'scouting_tier_3' => 'Alcance continental - principales ligas europeas',
-    'scouting_tier_4' => 'Red global - acceso a talento mundial',
+    'scouting_tier_1' => 'Red básica - solo mercado nacional',
+    'scouting_tier_2' => 'Red ampliada - nacional, más resultados y precisión',
+    'scouting_tier_3' => 'Alcance internacional - búsquedas rápidas y precisas',
+    'scouting_tier_4' => 'Red global - máxima velocidad, resultados y precisión',
 
     // Facilities tier descriptions
     'facilities_tier_0' => 'Sin inversión - ingresos base de partido',
