@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Actions\StartImpersonation;
+use App\Http\Actions\StopImpersonation;
+use App\Http\Views\AdminUsers;
 use App\Http\Actions\AcceptCounterOffer;
 use App\Http\Actions\CompleteOnboarding;
 use App\Http\Actions\AcceptTransferOffer;
@@ -123,6 +126,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+// Impersonation (accessible while impersonating)
+Route::middleware('auth')->group(function () {
+    Route::post('/admin/stop-impersonation', StopImpersonation::class)->name('admin.stop-impersonation');
+});
+
+// Admin routes
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+    Route::get('/users', AdminUsers::class)->name('admin.users');
+    Route::post('/impersonate/{userId}', StartImpersonation::class)->name('admin.impersonate');
 });
 
 require __DIR__.'/auth.php';
