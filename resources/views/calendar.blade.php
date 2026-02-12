@@ -11,8 +11,6 @@
                 <div class="p-4 sm:p-6 md:p-8 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
                     {{-- Left Column (2/3) - Calendar --}}
                     <div class="md:col-span-2">
-                        <h3 class="font-semibold text-xl text-slate-900 mb-6">{{ __('game.season_calendar') }}</h3>
-
                         @foreach($calendar as $month => $matches)
                             <div class="mb-8">
                                 <h4 class="text-md font-semibold mb-3 border-b pb-2">{{ $month }}</h4>
@@ -27,8 +25,6 @@
 
                     {{-- Right Column (1/3) - Season Stats --}}
                     <div class="space-y-6">
-                        <h3 class="font-semibold text-xl text-slate-900">{{ __('game.season_n', ['season' => $game->formatted_season]) }}</h3>
-
                         {{-- Record --}}
                         <div>
                             <div class="flex items-center justify-between text-2xl font-bold mb-2">

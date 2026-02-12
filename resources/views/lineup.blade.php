@@ -448,7 +448,7 @@
                             {{-- Player List --}}
                             <div class="lg:col-span-2 overflow-x-auto" :class="{ 'hidden lg:block': activeLineupTab !== 'squad' }">
                                 <table class="w-full text-sm">
-                                    <thead class="text-left border-b sticky top-0 bg-white">
+                                    <thead class="text-left text-sm border-b sticky top-0 bg-white">
                                         <tr>
                                             <th class="font-semibold py-2 w-10"></th>
                                             <th class="font-semibold py-2 w-10"></th>
