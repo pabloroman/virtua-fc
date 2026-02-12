@@ -5,7 +5,9 @@ namespace App\Game\Services;
 use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GamePlayer;
+use App\Models\RenewalNegotiation;
 use App\Models\Team;
+use App\Models\TransferOffer;
 use App\Support\Money;
 use Illuminate\Support\Collection;
 
@@ -390,7 +392,7 @@ class ContractService
     {
         $seasonEndDate = $game->getSeasonEndDate();
 
-        return GamePlayer::with('player')
+        return GamePlayer::with(['player', 'latestRenewalNegotiation', 'activeRenewalNegotiation'])
             ->where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->get()
@@ -412,5 +414,346 @@ class ContractService
             ->whereNotNull('pending_annual_wage')
             ->orderByDesc('pending_annual_wage')
             ->get();
+    }
+
+    // =========================================
+    // CONTRACT NEGOTIATION
+    // =========================================
+
+    private const MAX_NEGOTIATION_ROUNDS = 3;
+
+    /**
+     * Calculate a player's disposition score (0.10 – 0.95).
+     * Higher = more willing to accept a lower wage.
+     */
+    public function calculateDisposition(GamePlayer $player, int $round = 1): float
+    {
+        $disposition = 0.50;
+
+        // Morale bonus
+        $morale = $player->morale;
+        if ($morale >= 80) {
+            $disposition += 0.15;
+        } elseif ($morale >= 60) {
+            $disposition += 0.08;
+        } elseif ($morale < 40) {
+            $disposition -= 0.10;
+        }
+
+        // Appearances bonus
+        $appearances = $player->season_appearances ?? $player->appearances ?? 0;
+        if ($appearances >= 25) {
+            $disposition += 0.10;
+        } elseif ($appearances >= 15) {
+            $disposition += 0.05;
+        } elseif ($appearances < 10) {
+            $disposition -= 0.10;
+        }
+
+        // Age factor
+        $age = $player->age;
+        if ($age >= 32) {
+            $disposition += 0.12;
+        } elseif ($age >= 29) {
+            $disposition += 0.05;
+        } elseif ($age <= 23) {
+            $disposition -= 0.08;
+        }
+
+        // Round penalty
+        if ($round === 2) {
+            $disposition -= 0.05;
+        } elseif ($round >= 3) {
+            $disposition -= 0.10;
+        }
+
+        // Pre-contract pressure (Jan-May)
+        $game = $player->game;
+        if ($game) {
+            $month = $game->current_date->month;
+            if ($month >= 1 && $month <= 5) {
+                // Has a concrete pre-contract offer
+                $hasPreContractOffer = $player->transferOffers()
+                    ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
+                    ->where('status', TransferOffer::STATUS_PENDING)
+                    ->exists();
+
+                if ($hasPreContractOffer) {
+                    $disposition -= 0.15;
+                } else {
+                    $disposition -= 0.08;
+                }
+            }
+        }
+
+        return max(0.10, min(0.95, $disposition));
+    }
+
+    /**
+     * Get the mood label and color for a disposition score.
+     *
+     * @return array{label: string, color: string}
+     */
+    public function getMoodIndicator(float $disposition): array
+    {
+        if ($disposition >= 0.65) {
+            return ['label' => __('transfers.mood_willing'), 'color' => 'green'];
+        }
+        if ($disposition >= 0.40) {
+            return ['label' => __('transfers.mood_open'), 'color' => 'amber'];
+        }
+
+        return ['label' => __('transfers.mood_reluctant'), 'color' => 'red'];
+    }
+
+    /**
+     * Calculate the years modifier based on offered vs preferred years.
+     */
+    private function calculateYearsModifier(int $offeredYears, int $preferredYears): float
+    {
+        $diff = $offeredYears - $preferredYears;
+
+        return match ($diff) {
+            0 => 1.00,
+            1 => 1.08,
+            2 => 1.15,
+            -1 => 0.90,
+            -2 => 0.80,
+            default => $diff > 0 ? 1.15 : 0.80,
+        };
+    }
+
+    /**
+     * Initiate a new renewal negotiation.
+     */
+    public function initiateNegotiation(GamePlayer $player, int $offerWage, int $offeredYears): RenewalNegotiation
+    {
+        $demand = $this->calculateRenewalDemand($player);
+
+        // Check for any previous negotiations (for round carry-over)
+        $previousNegotiation = RenewalNegotiation::where('game_player_id', $player->id)
+            ->whereIn('status', [
+                RenewalNegotiation::STATUS_PLAYER_REJECTED,
+                RenewalNegotiation::STATUS_CLUB_DECLINED,
+                RenewalNegotiation::STATUS_CLUB_RECONSIDERED,
+                RenewalNegotiation::STATUS_EXPIRED,
+            ])
+            ->orderByDesc('round')
+            ->first();
+
+        $startRound = $previousNegotiation ? min($previousNegotiation->round + 1, self::MAX_NEGOTIATION_ROUNDS) : 1;
+
+        return RenewalNegotiation::create([
+            'game_id' => $player->game_id,
+            'game_player_id' => $player->id,
+            'status' => RenewalNegotiation::STATUS_OFFER_PENDING,
+            'round' => $startRound,
+            'player_demand' => $demand['wage'],
+            'preferred_years' => $demand['contractYears'],
+            'user_offer' => $offerWage,
+            'offered_years' => $offeredYears,
+        ]);
+    }
+
+    /**
+     * Evaluate a pending negotiation offer. Called during matchday advance.
+     *
+     * @return string 'accepted' | 'countered' | 'rejected'
+     */
+    public function evaluateOffer(RenewalNegotiation $negotiation): string
+    {
+        $player = $negotiation->gamePlayer;
+        $disposition = $this->calculateDisposition($player, $negotiation->round);
+        $negotiation->update(['disposition' => $disposition]);
+
+        // Calculate minimum acceptable wage
+        $flexibility = $disposition * 0.30;
+        $minimumAcceptable = (int) ($negotiation->player_demand * (1.0 - $flexibility));
+
+        // Apply years modifier to effective offer
+        $yearsModifier = $this->calculateYearsModifier($negotiation->offered_years, $negotiation->preferred_years);
+        $effectiveOffer = (int) ($negotiation->user_offer * $yearsModifier);
+
+        if ($effectiveOffer >= $minimumAcceptable) {
+            // Accept
+            $contractYears = $negotiation->offered_years;
+            $negotiation->update([
+                'status' => RenewalNegotiation::STATUS_ACCEPTED,
+                'contract_years' => $contractYears,
+            ]);
+
+            // Process the actual renewal
+            $this->processRenewal($player, $negotiation->user_offer, $contractYears);
+
+            return 'accepted';
+        }
+
+        // Check if close enough for a counter (>= 85% of minimum)
+        $counterThreshold = (int) ($minimumAcceptable * 0.85);
+
+        if ($effectiveOffer >= $counterThreshold && $negotiation->round < self::MAX_NEGOTIATION_ROUNDS) {
+            // Counter — offer midpoint between minimum and demand, using player's preferred years
+            $counterWage = (int) (($minimumAcceptable + $negotiation->player_demand) / 2);
+            // Round to nearest 100K
+            $counterWage = (int) (round($counterWage / 10_000_000) * 10_000_000);
+
+            $negotiation->update([
+                'status' => RenewalNegotiation::STATUS_PLAYER_COUNTERED,
+                'counter_offer' => $counterWage,
+            ]);
+
+            return 'countered';
+        }
+
+        // Reject
+        $negotiation->update(['status' => RenewalNegotiation::STATUS_PLAYER_REJECTED]);
+
+        return 'rejected';
+    }
+
+    /**
+     * Accept a counter-offer from the player (instant resolution).
+     */
+    public function acceptCounterOffer(RenewalNegotiation $negotiation): bool
+    {
+        if (!$negotiation->isCountered()) {
+            return false;
+        }
+
+        $player = $negotiation->gamePlayer;
+        $contractYears = $negotiation->preferred_years;
+
+        $negotiation->update([
+            'status' => RenewalNegotiation::STATUS_ACCEPTED,
+            'contract_years' => $contractYears,
+        ]);
+
+        $this->processRenewal($player, $negotiation->counter_offer, $contractYears);
+
+        return true;
+    }
+
+    /**
+     * Submit a new offer in response to a counter (next round).
+     */
+    public function submitNewOffer(RenewalNegotiation $negotiation, int $newOfferWage, int $offeredYears): RenewalNegotiation
+    {
+        if (!$negotiation->isCountered()) {
+            return $negotiation;
+        }
+
+        $nextRound = $negotiation->round + 1;
+
+        $negotiation->update([
+            'status' => RenewalNegotiation::STATUS_OFFER_PENDING,
+            'round' => $nextRound,
+            'user_offer' => $newOfferWage,
+            'offered_years' => $offeredYears,
+            'counter_offer' => null,
+        ]);
+
+        return $negotiation;
+    }
+
+    /**
+     * Cancel an active negotiation (user walks away).
+     */
+    public function cancelNegotiation(RenewalNegotiation $negotiation): void
+    {
+        $negotiation->update(['status' => RenewalNegotiation::STATUS_CLUB_DECLINED]);
+    }
+
+    /**
+     * Decline renewal without negotiating (user says "No renovar").
+     * Creates a club_declined record so the decision is tracked.
+     */
+    public function declineWithoutNegotiation(GamePlayer $player): RenewalNegotiation
+    {
+        return RenewalNegotiation::create([
+            'game_id' => $player->game_id,
+            'game_player_id' => $player->id,
+            'status' => RenewalNegotiation::STATUS_CLUB_DECLINED,
+            'round' => 0,
+        ]);
+    }
+
+    /**
+     * Reconsider a previously declined/rejected renewal.
+     * Marks the blocking record as club_reconsidered so the player becomes eligible again.
+     */
+    public function reconsiderRenewal(GamePlayer $player): void
+    {
+        $latest = $player->relationLoaded('latestRenewalNegotiation')
+            ? $player->latestRenewalNegotiation
+            : $player->latestRenewalNegotiation()->first();
+
+        if ($latest && $latest->isBlocking()) {
+            $latest->update(['status' => RenewalNegotiation::STATUS_CLUB_RECONSIDERED]);
+        }
+    }
+
+    /**
+     * Resolve all pending negotiations for a game. Called during matchday advance.
+     *
+     * @return Collection<array{negotiation: RenewalNegotiation, result: string}>
+     */
+    public function resolveRenewalNegotiations(Game $game): Collection
+    {
+        $pending = RenewalNegotiation::with(['gamePlayer.player', 'gamePlayer.game'])
+            ->where('game_id', $game->id)
+            ->where('status', RenewalNegotiation::STATUS_OFFER_PENDING)
+            ->get();
+
+        $results = collect();
+
+        foreach ($pending as $negotiation) {
+            $result = $this->evaluateOffer($negotiation);
+            $results->push([
+                'negotiation' => $negotiation->fresh(),
+                'result' => $result,
+            ]);
+        }
+
+        return $results;
+    }
+
+    /**
+     * Get active negotiations for a game (pending or countered).
+     */
+    public function getActiveNegotiations(Game $game): Collection
+    {
+        return RenewalNegotiation::with(['gamePlayer.player'])
+            ->where('game_id', $game->id)
+            ->whereIn('status', [RenewalNegotiation::STATUS_OFFER_PENDING, RenewalNegotiation::STATUS_PLAYER_COUNTERED])
+            ->get()
+            ->keyBy('game_player_id');
+    }
+
+    /**
+     * Get players currently in negotiation (for display in expiring contracts).
+     */
+    public function getPlayersInNegotiation(Game $game): Collection
+    {
+        return GamePlayer::with(['player', 'activeRenewalNegotiation'])
+            ->where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->whereHas('activeRenewalNegotiation')
+            ->get();
+    }
+
+    /**
+     * Clean up stale negotiations (e.g., at season end).
+     */
+    public function expireStaleNegotiations(Game $game): int
+    {
+        $stale = RenewalNegotiation::where('game_id', $game->id)
+            ->whereIn('status', [RenewalNegotiation::STATUS_OFFER_PENDING, RenewalNegotiation::STATUS_PLAYER_COUNTERED])
+            ->get();
+
+        foreach ($stale as $negotiation) {
+            $negotiation->update(['status' => RenewalNegotiation::STATUS_EXPIRED]);
+        }
+
+        return $stale->count();
     }
 }

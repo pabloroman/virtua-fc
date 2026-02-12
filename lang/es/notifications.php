@@ -84,4 +84,12 @@ return [
     // Priority badges
     'priority_urgent' => 'Urgente',
     'priority_attention' => 'Atención',
+
+    // Renewal negotiations
+    'renewal_accepted_title' => ':player acepta renovar',
+    'renewal_accepted_message' => ':player ha aceptado la renovación por :wage/año durante :years años.',
+    'renewal_countered_title' => ':player contraoferta',
+    'renewal_countered_message' => ':player pide :wage/año durante :years años para renovar.',
+    'renewal_rejected_title' => ':player rechaza renovar',
+    'renewal_rejected_message' => ':player ha rechazado tu oferta de renovación. Se marchará al final de la temporada.',
 ];

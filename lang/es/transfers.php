@@ -8,7 +8,27 @@ return [
     'closed' => 'Cerrada',
     'budget' => 'Presupuesto',
 
-    // Navigation
+    // Tab labels
+    'outgoing' => 'Salidas',
+    'incoming' => 'Fichajes',
+
+    // Window countdown
+    'window_closes_in' => ':window cierra en :matchdays jornada(s)',
+    'window_opens_in' => ':window abre en :matchdays jornada(s)',
+
+    // Wage bill
+    'wage_bill' => 'Masa Salarial',
+
+    // Section headers
+    'pre_contract_offers_received' => 'Ofertas de Precontrato Recibidas',
+    'players_leaving_free' => 'Jugadores que Se Van Libres',
+    'expiring_contracts_section' => 'Contratos por Expirar',
+    'pending_renewals_section' => 'Renovaciones Pendientes',
+    'loans_out_section' => 'Cesiones Activas (Salidas)',
+    'loan_searches_section' => 'Buscando Destino de Cesión',
+    'counter_offers_received' => 'Contraoferta(s) Recibida(s)',
+
+    // Legacy keys kept for compatibility
     'market' => 'Mercado',
     'scouting' => 'Ojeadores',
     'loans' => 'Cesiones',
@@ -89,6 +109,11 @@ return [
     // Scout results
     'scout_results' => 'Resultados de búsqueda',
     'new_search' => 'Nueva Búsqueda',
+    'modify_search' => 'Modificar Búsqueda',
+    'expiring_only' => 'Solo expiran',
+    'all_ages' => 'Todas',
+    'all_abilities' => 'Todas',
+    'all_values' => 'Todos',
     'no_players_found' => 'No se encontraron jugadores con tus criterios.',
     'try_broadening' => 'Intenta ampliar tu búsqueda.',
     'ability' => 'Habilidad',
@@ -189,6 +214,27 @@ return [
     'view_results' => 'Ver',
     'results_count' => ':count resultado(s)',
 
+    // Empty states
+    'no_outgoing_activity' => 'No hay actividad de salida',
+
+    // Counter-offer detail
+    'your_bid_amount' => 'Tu oferta: :amount',
+    'they_ask' => 'Piden: :amount',
+
+    // Loan detail
+    'returns_on' => 'Vuelve: :date',
+    'loan_destination' => 'Destino',
+
+    // Renewal detail
+    'new_wage' => 'Nuevo salario: :wage',
+    'new_contract' => 'Nuevo contrato: hasta :year',
+
+    // Decline renewal
+    'decline_renewal' => 'No renovar',
+    'decline_renewal_confirm' => '¿Seguro que no quieres renovar a :player? Se marchará gratis al final de la temporada.',
+    'reconsider_renewal' => 'Reconsiderar',
+    'declined_renewals' => 'No renovados',
+
     // Countries
     'country_spain' => 'España',
     'country_england' => 'Inglaterra',
@@ -197,4 +243,28 @@ return [
     'country_italy' => 'Italia',
     'country_netherlands' => 'Países Bajos',
     'country_portugal' => 'Portugal',
+
+    // Renewal negotiation
+    'negotiate' => 'Negociar',
+    'negotiating' => 'Negociando...',
+    'your_offer' => 'Tu oferta (euros/año)',
+    'duration' => 'Duración',
+    'offer_button' => 'Ofrecer',
+    'cancel' => 'Cancelar',
+    'current_wage' => 'Actual',
+    'player_demand' => 'Pide',
+    'per_year_short' => '/año',
+    'years_short' => 'a',
+    'response_next_matchday' => 'Respuesta en la próxima jornada',
+    'your_offer_label' => 'Tu oferta',
+    'player_asks' => 'Él pide',
+    'round_of' => 'Ronda :round de :max',
+    'accept_counter' => 'Aceptar',
+    'new_offer' => 'Nueva oferta',
+    'preferred_years' => 'preferido',
+    'mood_willing' => 'Dispuesto a renovar',
+    'mood_open' => 'Abierto a negociar',
+    'mood_reluctant' => 'Reticente',
+    'year_singular' => 'año',
+    'years_plural' => 'años',
 ];

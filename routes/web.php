@@ -7,6 +7,8 @@ use App\Http\Actions\DeleteGame;
 use App\Http\Actions\AcceptCounterOffer;
 use App\Http\Actions\CompleteOnboarding;
 use App\Http\Actions\AcceptTransferOffer;
+use App\Http\Actions\DeclineRenewal;
+use App\Http\Actions\ReconsiderRenewal;
 use App\Http\Actions\AdvanceMatchday;
 use App\Http\Actions\CancelScoutSearch;
 use App\Http\Actions\MarkAllNotificationsRead;
@@ -17,7 +19,8 @@ use App\Http\Actions\ConductCupDraw;
 use App\Http\Actions\GetAutoLineup;
 use App\Http\Actions\InitGame;
 use App\Http\Actions\ListPlayerForTransfer;
-use App\Http\Actions\OfferRenewal;
+use App\Http\Actions\AcceptRenewalCounter;
+use App\Http\Actions\SubmitRenewalOffer;
 use App\Http\Actions\RejectTransferOffer;
 use App\Http\Actions\RequestLoan;
 use App\Http\Actions\SaveLineup;
@@ -26,7 +29,6 @@ use App\Http\Actions\SubmitPreContractOffer;
 use App\Http\Actions\SubmitTransferBid;
 use App\Http\Actions\UnlistPlayerFromTransfer;
 use App\Http\Views\ShowLineup;
-use App\Http\Views\ShowLoans;
 use App\Http\Controllers\ProfileController;
 use App\Http\Views\Dashboard;
 use App\Http\Views\SelectTeam;
@@ -93,7 +95,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/game/{gameId}/transfers/unlist/{playerId}', UnlistPlayerFromTransfer::class)->name('game.transfers.unlist');
         Route::post('/game/{gameId}/transfers/accept/{offerId}', AcceptTransferOffer::class)->name('game.transfers.accept');
         Route::post('/game/{gameId}/transfers/reject/{offerId}', RejectTransferOffer::class)->name('game.transfers.reject');
-        Route::post('/game/{gameId}/transfers/renew/{playerId}', OfferRenewal::class)->name('game.transfers.renew');
+        Route::post('/game/{gameId}/transfers/renew/{playerId}', SubmitRenewalOffer::class)->name('game.transfers.renew');
+        Route::post('/game/{gameId}/transfers/accept-counter/{playerId}', AcceptRenewalCounter::class)->name('game.transfers.accept-renewal-counter');
+        Route::post('/game/{gameId}/transfers/decline-renewal/{playerId}', DeclineRenewal::class)->name('game.transfers.decline-renewal');
+        Route::post('/game/{gameId}/transfers/reconsider-renewal/{playerId}', ReconsiderRenewal::class)->name('game.transfers.reconsider-renewal');
 
         // Scouting
         Route::get('/game/{gameId}/scouting', ShowScouting::class)->name('game.scouting');
@@ -104,8 +109,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/game/{gameId}/scouting/{playerId}/pre-contract', SubmitPreContractOffer::class)->name('game.scouting.pre-contract');
         Route::post('/game/{gameId}/scouting/counter/{offerId}/accept', AcceptCounterOffer::class)->name('game.scouting.counter.accept');
 
-        // Loans
-        Route::get('/game/{gameId}/loans', ShowLoans::class)->name('game.loans');
+        // Loans (redirect old URL to transfers)
+        Route::get('/game/{gameId}/loans', function (string $gameId) {
+            return redirect()->route('game.transfers', $gameId);
+        })->name('game.loans');
         Route::post('/game/{gameId}/loans/out/{playerId}', RequestLoan::class)->name('game.loans.out');
 
         // Season End

@@ -7,6 +7,7 @@ use App\Game\DTO\MatchEventData;
 use App\Game\Enums\Formation;
 use App\Game\Enums\Mentality;
 use App\Game\Game as GameAggregate;
+use App\Game\Services\ContractService;
 use App\Game\Services\EligibilityService;
 use App\Game\Services\LineupService;
 use App\Game\Services\LoanService;
@@ -34,6 +35,7 @@ class AdvanceMatchday
         private readonly LineupService $lineupService,
         private readonly MatchSimulator $matchSimulator,
         private readonly TransferService $transferService,
+        private readonly ContractService $contractService,
         private readonly ScoutingService $scoutingService,
         private readonly StandingsCalculator $standingsCalculator,
         private readonly NotificationService $notificationService,
@@ -69,7 +71,7 @@ class AdvanceMatchday
             ->unique()
             ->values();
 
-        $allPlayers = GamePlayer::with(['player', 'transferOffers', 'activeLoan'])
+        $allPlayers = GamePlayer::with(['player', 'transferOffers', 'activeLoan', 'activeRenewalNegotiation'])
             ->where('game_id', $game->id)
             ->whereIn('team_id', $teamIds)
             ->get()
@@ -217,6 +219,12 @@ class AdvanceMatchday
             foreach ($listedOffers->merge($unsolicitedOffers) as $offer) {
                 $this->notificationService->notifyTransferOffer($game, $offer);
             }
+        }
+
+        // Resolve pending renewal negotiations
+        $renewalResults = $this->contractService->resolveRenewalNegotiations($game);
+        foreach ($renewalResults as $result) {
+            $this->notificationService->notifyRenewalResult($game, $result['negotiation'], $result['result']);
         }
 
         // Pre-contract offers (January onwards for expiring contracts)

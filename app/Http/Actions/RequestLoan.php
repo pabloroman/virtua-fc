@@ -87,25 +87,25 @@ class RequestLoan
     {
         // Check player isn't already on loan
         if ($player->isOnLoan()) {
-            return redirect()->route('game.loans', $game->id)
+            return redirect()->route('game.transfers', $game->id)
                 ->with('error', __('messages.already_on_loan', ['player' => $player->name]));
         }
 
         // Check player isn't already searching for a loan
         if ($player->hasActiveLoanSearch()) {
-            return redirect()->route('game.loans', $game->id)
+            return redirect()->route('game.transfers', $game->id)
                 ->with('error', __('messages.loan_search_active', ['player' => $player->name]));
         }
 
         // Check transfer_status isn't already set (e.g. listed for sale)
         if ($player->transfer_status !== null) {
-            return redirect()->route('game.loans', $game->id)
+            return redirect()->route('game.transfers', $game->id)
                 ->with('error', __('messages.already_on_loan', ['player' => $player->name]));
         }
 
         $this->loanService->startLoanSearch($game, $player);
 
-        return redirect()->route('game.loans', $game->id)
+        return redirect()->route('game.transfers', $game->id)
             ->with('success', __('messages.loan_search_started', ['player' => $player->name]));
     }
 }

@@ -295,6 +295,10 @@ class TransferService
                 if (!$player->contract_until || !$player->contract_until->lte($seasonEndDate)) {
                     return false;
                 }
+                // Retiring players won't sign pre-contracts
+                if ($player->isRetiring()) {
+                    return false;
+                }
                 // Check if they have pending_annual_wage (renewal agreed)
                 if ($player->pending_annual_wage !== null) {
                     return false;
@@ -311,10 +315,19 @@ class TransferService
                     ->where('status', TransferOffer::STATUS_AGREED)
                     ->isNotEmpty();
 
-                return !$hasPreContract && !$hasAgreedTransfer;
+                if ($hasPreContract || $hasAgreedTransfer) {
+                    return false;
+                }
+
+                // Active negotiation blocks pre-contract offers
+                if ($player->relationLoaded('activeRenewalNegotiation') && $player->activeRenewalNegotiation) {
+                    return false;
+                }
+
+                return true;
             });
         } else {
-            $expiringPlayers = GamePlayer::with(['game', 'transferOffers'])
+            $expiringPlayers = GamePlayer::with(['game', 'transferOffers', 'latestRenewalNegotiation', 'activeRenewalNegotiation'])
                 ->where('game_id', $game->id)
                 ->where('team_id', $game->team_id)
                 ->get()
