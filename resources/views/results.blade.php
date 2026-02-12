@@ -46,17 +46,17 @@
                 <div class="bg-slate-800 rounded-xl overflow-hidden mb-6">
                     <div class="p-6">
                         {{-- Teams & Score --}}
-                        <div class="flex items-center justify-center gap-6">
-                            <div class="flex items-center gap-3 flex-1 justify-end">
-                                <span class="text-xl font-semibold text-white">{{ $playerMatch->homeTeam->name }}</span>
-                                <img src="{{ $playerMatch->homeTeam->image }}" class="w-14 h-14">
+                        <div class="flex items-center justify-center gap-2 md:gap-6">
+                            <div class="flex items-center gap-2 md:gap-3 flex-1 justify-end">
+                                <span class="text-sm md:text-xl font-semibold text-white truncate">{{ $playerMatch->homeTeam->name }}</span>
+                                <img src="{{ $playerMatch->homeTeam->image }}" class="w-10 h-10 md:w-14 md:h-14 shrink-0">
                             </div>
-                            <div class="text-5xl font-bold text-white tabular-nums px-6">
+                            <div class="text-3xl md:text-5xl font-bold text-white tabular-nums px-2 md:px-6 shrink-0">
                                 {{ $playerMatch->home_score }} <span class="text-slate-500 mx-1">-</span> {{ $playerMatch->away_score }}
                             </div>
-                            <div class="flex items-center gap-3 flex-1">
-                                <img src="{{ $playerMatch->awayTeam->image }}" class="w-14 h-14">
-                                <span class="text-xl font-semibold text-white">{{ $playerMatch->awayTeam->name }}</span>
+                            <div class="flex items-center gap-2 md:gap-3 flex-1">
+                                <img src="{{ $playerMatch->awayTeam->image }}" class="w-10 h-10 md:w-14 md:h-14 shrink-0">
+                                <span class="text-sm md:text-xl font-semibold text-white truncate">{{ $playerMatch->awayTeam->name }}</span>
                             </div>
                         </div>
 

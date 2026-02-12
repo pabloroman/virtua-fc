@@ -42,23 +42,24 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
     <div>
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 sm:p-8 grid grid-cols-3 gap-8">
+                <div class="p-4 sm:p-6 md:p-8 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
                 {{-- Main standings table --}}
-                <div class="col-span-2 space-y-3">
+                <div class="md:col-span-2 space-y-3">
 
                     <h3 class="font-semibold text-xl text-slate-900">{{ $competition->name }} - {{ __('game.standings') }}</h3>
 
+                    <div class="overflow-x-auto">
                     <table class="min-w-full table-fixed text-right divide-y divide-slate-300 border-spacing-2">
                         <thead>
                         <tr>
                             <th class="font-semibold text-left w-8 p-2"></th>
                             <th class="font-semibold text-left p-2"></th>
                             <th class="font-semibold w-8 p-2">{{ __('game.played_abbr') }}</th>
-                            <th class="font-semibold w-8 p-2">{{ __('game.won_abbr') }}</th>
-                            <th class="font-semibold w-8 p-2">{{ __('game.drawn_abbr') }}</th>
-                            <th class="font-semibold w-8 p-2">{{ __('game.lost_abbr') }}</th>
-                            <th class="font-semibold w-8 p-2">{{ __('game.goals_for_abbr') }}</th>
-                            <th class="font-semibold w-8 p-2">{{ __('game.goals_against_abbr') }}</th>
+                            <th class="font-semibold w-8 p-2 hidden md:table-cell">{{ __('game.won_abbr') }}</th>
+                            <th class="font-semibold w-8 p-2 hidden md:table-cell">{{ __('game.drawn_abbr') }}</th>
+                            <th class="font-semibold w-8 p-2 hidden md:table-cell">{{ __('game.lost_abbr') }}</th>
+                            <th class="font-semibold w-8 p-2 hidden md:table-cell">{{ __('game.goals_for_abbr') }}</th>
+                            <th class="font-semibold w-8 p-2 hidden md:table-cell">{{ __('game.goals_against_abbr') }}</th>
                             <th class="font-semibold w-8 p-2">{{ __('game.goal_diff_abbr') }}</th>
                             <th class="font-semibold w-8 p-2">{{ __('game.pts_abbr') }}</th>
                             <th class="font-semibold w-8 p-2 text-center">{{ __('game.last_5') }}</th>
@@ -88,11 +89,11 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
                                     </div>
                                 </td>
                                 <td class="align-middle whitespace-nowrap p-2 text-slate-400">{{ $standing->played }}</td>
-                                <td class="align-middle whitespace-nowrap p-2 text-slate-400">{{ $standing->won }}</td>
-                                <td class="align-middle whitespace-nowrap p-2 text-slate-400">{{ $standing->drawn }}</td>
-                                <td class="align-middle whitespace-nowrap p-2 text-slate-400">{{ $standing->lost }}</td>
-                                <td class="align-middle whitespace-nowrap p-2 text-slate-400">{{ $standing->goals_for }}</td>
-                                <td class="align-middle whitespace-nowrap p-2 text-slate-400">{{ $standing->goals_against }}</td>
+                                <td class="align-middle whitespace-nowrap p-2 text-slate-400 hidden md:table-cell">{{ $standing->won }}</td>
+                                <td class="align-middle whitespace-nowrap p-2 text-slate-400 hidden md:table-cell">{{ $standing->drawn }}</td>
+                                <td class="align-middle whitespace-nowrap p-2 text-slate-400 hidden md:table-cell">{{ $standing->lost }}</td>
+                                <td class="align-middle whitespace-nowrap p-2 text-slate-400 hidden md:table-cell">{{ $standing->goals_for }}</td>
+                                <td class="align-middle whitespace-nowrap p-2 text-slate-400 hidden md:table-cell">{{ $standing->goals_against }}</td>
                                 <td class="align-middle whitespace-nowrap p-2 text-slate-400">{{ $standing->goal_difference }}</td>
                                 <td class="align-middle whitespace-nowrap p-2 font-semibold">{{ $standing->points }}</td>
                                 <td class="align-middle whitespace-nowrap p-2">
@@ -112,6 +113,7 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
                         @endforeach
                         </tbody>
                     </table>
+                    </div>
 
                     @if(count($standingsZones) > 0)
                         <div class="flex gap-6 text-xs text-slate-500">

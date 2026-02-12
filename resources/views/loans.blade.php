@@ -21,9 +21,9 @@
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 sm:p-8">
-                    <div class="flex items-center justify-between mb-6">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-6">
                         <h3 class="font-semibold text-xl text-slate-900">{{ __('transfers.title') }}</h3>
-                        <div class="flex items-center gap-6 text-sm">
+                        <div class="flex flex-wrap items-center gap-3 md:gap-6 text-sm">
                             <div class="text-slate-600">
                                 @if($isTransferWindow)
                                     <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
@@ -60,7 +60,7 @@
                         <div class="space-y-3">
                             @foreach($loanSearches as $gamePlayer)
                             <div class="border border-sky-200 bg-sky-50 rounded-lg p-4">
-                                <div class="flex items-center justify-between">
+                                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                     <div class="flex items-center gap-4">
                                         <div class="relative">
                                             <svg class="w-5 h-5 text-sky-500 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -104,7 +104,7 @@
                             <div class="space-y-3">
                                 @foreach($loansIn as $loan)
                                 <div class="border border-green-200 bg-green-50 rounded-lg p-4">
-                                    <div class="flex items-center justify-between">
+                                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                         <div class="flex items-center gap-4">
                                             <img src="{{ $loan->parentTeam->image }}" class="w-8 h-8">
                                             <div>
@@ -142,7 +142,7 @@
                             <div class="space-y-3">
                                 @foreach($loansOut as $loan)
                                 <div class="border border-amber-200 bg-amber-50 rounded-lg p-4">
-                                    <div class="flex items-center justify-between">
+                                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                         <div class="flex items-center gap-4">
                                             <img src="{{ $loan->loanTeam->image }}" class="w-8 h-8">
                                             <div>

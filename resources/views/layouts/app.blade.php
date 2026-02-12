@@ -4,6 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        <meta name="theme-color" content="#0f172a">
 
         <title>{{ config('app.name', 'Laravel') }}</title>
 
@@ -54,7 +55,7 @@
             </main>
             <footer>
                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                    <div class="flex space-x-4">
+                    <div class="flex flex-col md:flex-row gap-2 md:gap-0 md:space-x-4">
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <a class="text-sm text-slate-400 cursor-pointer hover:text-slate-300" :href="route('logout')"
@@ -69,7 +70,7 @@
                             <a class="text-sm text-slate-400 hover:text-slate-300" href="{{ route('admin.users') }}">Admin</a>
                         @endif
                     </div>
-                    <div class="mt-4 text-xs text-slate-500">
+                    <div class="mt-4 text-xs text-slate-500 text-center md:text-left">
                         © 2026 Pablo Román · Proyecto Open Source · <a href="{{ route('legal') }}" class="hover:text-slate-400">Aviso Legal</a> · <a href="https://github.com/pabloroman/virtua-fc" target="_blank" class="hover:text-slate-400">GitHub</a>
                     </div>
                 </div>

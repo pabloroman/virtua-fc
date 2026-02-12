@@ -9,6 +9,7 @@
     </x-slot>
 
     <div x-data="{
+        activeLineupTab: 'squad',
         selectedPlayers: @js($currentLineup ?? []),
         selectedFormation: @js($currentFormation),
         selectedMentality: @js($currentMentality),
@@ -205,8 +206,8 @@
                         <input type="hidden" name="mentality" :value="selectedMentality">
 
                         {{-- Top Bar: Formation, Stats, Actions --}}
-                        <div class="flex items-center justify-between mb-6 p-4 bg-slate-50 rounded-lg sticky top-0 z-10">
-                            <div class="flex items-center gap-6">
+                        <div class="flex flex-col gap-3 mb-6 p-4 bg-slate-50 rounded-lg sticky top-0 z-10">
+                            <div class="flex flex-wrap items-center gap-3 md:gap-6">
                                 {{-- Formation Selector --}}
                                 <div class="flex items-center gap-2">
                                     <label class="text-sm font-medium text-slate-700">{{ __('squad.formation') }}:</label>
@@ -234,7 +235,6 @@
                                     </x-select-input>
                                 </div>
 
-
                                 {{-- Selection Count --}}
                                 <div class="flex items-center gap-2 px-3 py-1.5 rounded-md" :class="selectedCount === 11 ? 'bg-green-100' : 'bg-slate-200'">
                                     <span class="font-semibold" :class="selectedCount === 11 ? 'text-green-700' : 'text-slate-700'" x-text="selectedCount"></span>
@@ -242,7 +242,7 @@
                                 </div>
 
                                 {{-- Team Average with Opponent Comparison --}}
-                                <div class="flex items-center gap-3 px-3 py-1.5 bg-slate-200 rounded-md">
+                                <div class="hidden md:flex items-center gap-3 px-3 py-1.5 bg-slate-200 rounded-md">
                                     <div class="flex items-center gap-1.5">
                                         <img src="{{ $game->team->image }}" class="w-6 h-6" alt="{{ $game->team->name }}">
                                         <span class="font-semibold text-slate-900" x-text="teamAverage || '-'"></span>
@@ -280,11 +280,25 @@
                             </div>
                         </div>
 
+                        {{-- Mobile Tab Switcher --}}
+                        <div class="flex lg:hidden border-b border-slate-200 mb-4">
+                            <button type="button" @click="activeLineupTab = 'squad'"
+                                class="flex-1 px-4 py-2.5 text-sm font-medium text-center border-b-2 transition-colors"
+                                :class="activeLineupTab === 'squad' ? 'border-sky-500 text-sky-600' : 'border-transparent text-slate-500'">
+                                {{ __('app.squad') }}
+                            </button>
+                            <button type="button" @click="activeLineupTab = 'pitch'"
+                                class="flex-1 px-4 py-2.5 text-sm font-medium text-center border-b-2 transition-colors"
+                                :class="activeLineupTab === 'pitch' ? 'border-sky-500 text-sky-600' : 'border-transparent text-slate-500'">
+                                {{ __('squad.pitch') }}
+                            </button>
+                        </div>
+
                         {{-- Main Content: Pitch + Player List --}}
-                        <div class="grid grid-cols-1 grid-cols-3 gap-6">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                             {{-- Pitch Visualization --}}
 
-                            <div class="col-span-1">
+                            <div class="col-span-1" :class="{ 'hidden lg:block': activeLineupTab !== 'pitch' }">
                                 <div class="bg-emerald-600 rounded-lg p-4 relative" style="aspect-ratio: 3/4;">
                                     {{-- Pitch markings --}}
                                     <div class="absolute inset-4 border-2 border-emerald-400/50 rounded">
@@ -432,7 +446,7 @@
                             </div>
 
                             {{-- Player List --}}
-                            <div class="col-span-2 overflow-x-auto">
+                            <div class="lg:col-span-2 overflow-x-auto" :class="{ 'hidden lg:block': activeLineupTab !== 'squad' }">
                                 <table class="w-full text-sm">
                                     <thead class="text-left border-b sticky top-0 bg-white">
                                         <tr>
@@ -441,10 +455,10 @@
                                             <th class="font-semibold py-2">{{ __('app.name') }}</th>
                                             <th class="font-semibold py-2 w-10"></th>
                                             <th class="font-semibold py-2 text-center w-8">{{ __('squad.overall') }}</th>
-                                            <th class="font-semibold py-2 text-center w-8">{{ __('squad.technical') }}</th>
-                                            <th class="font-semibold py-2 text-center w-8">{{ __('squad.physical') }}</th>
-                                            <th class="font-semibold py-2 text-center w-8">{{ __('squad.fitness') }}</th>
-                                            <th class="font-semibold py-2 text-center w-8">{{ __('squad.morale') }}</th>
+                                            <th class="font-semibold py-2 text-center w-8 hidden md:table-cell">{{ __('squad.technical') }}</th>
+                                            <th class="font-semibold py-2 text-center w-8 hidden md:table-cell">{{ __('squad.physical') }}</th>
+                                            <th class="font-semibold py-2 text-center w-8 hidden md:table-cell">{{ __('squad.fitness') }}</th>
+                                            <th class="font-semibold py-2 text-center w-8 hidden md:table-cell">{{ __('squad.morale') }}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -530,19 +544,19 @@
                                                             </span>
                                                         </td>
                                                         {{-- Technical --}}
-                                                        <td class="py-2 text-center text-slate-400">
+                                                        <td class="py-2 text-center text-slate-400 hidden md:table-cell">
                                                             {{ $player->technical_ability }}
                                                         </td>
                                                         {{-- Physical --}}
-                                                        <td class="py-2 text-center text-slate-400">
+                                                        <td class="py-2 text-center text-slate-400 hidden md:table-cell">
                                                             {{ $player->physical_ability }}
                                                         </td>
                                                         {{-- Fitness --}}
-                                                        <td class="py-2 text-center @if($player->fitness < 70) text-yellow-500 @elseif($player->fitness < 50) text-red-500 @else text-slate-400 @endif">
+                                                        <td class="py-2 text-center hidden md:table-cell @if($player->fitness < 70) text-yellow-500 @elseif($player->fitness < 50) text-red-500 @else text-slate-400 @endif">
                                                             {{ $player->fitness }}
                                                         </td>
                                                         {{-- Morale --}}
-                                                        <td class="py-2 text-center @if($player->morale < 60) text-red-500 @elseif($player->morale < 70) text-yellow-500 @else text-slate-400 @endif">
+                                                        <td class="py-2 text-center hidden md:table-cell @if($player->morale < 60) text-red-500 @elseif($player->morale < 70) text-yellow-500 @else text-slate-400 @endif">
                                                             {{ $player->morale }}
                                                         </td>
                                                     </tr>

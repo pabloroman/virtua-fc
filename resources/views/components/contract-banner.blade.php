@@ -13,7 +13,7 @@
     {{-- Summary bar --}}
     <button @click="open = !open" class="w-full flex items-center justify-between px-4 py-3 rounded-lg border transition-colors
         {{ $hasPreContractOffers ? 'bg-amber-50 border-amber-200 hover:bg-amber-100' : ($hasExpiringContracts ? 'bg-slate-50 border-slate-200 hover:bg-slate-100' : 'bg-green-50 border-green-200 hover:bg-green-100') }}">
-        <div class="flex items-center gap-4 text-sm">
+        <div class="flex flex-wrap items-center gap-2 md:gap-4 text-sm">
             @if($hasPreContractOffers)
                 <span class="flex items-center gap-1.5 font-medium text-amber-700">
                     <span class="w-2 h-2 bg-amber-500 rounded-full"></span>
@@ -50,7 +50,7 @@
 
         {{-- Pre-Contract Offers (being poached) --}}
         @foreach($preContractOffers as $offer)
-        <div class="flex items-center justify-between px-4 py-3 bg-amber-50">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 px-4 py-3 bg-amber-50">
             <div class="flex items-center gap-3">
                 <img src="{{ $offer->offeringTeam->image }}" class="w-8 h-8">
                 <div>
@@ -79,7 +79,7 @@
 
         {{-- Players Leaving (agreed pre-contracts) --}}
         @foreach($agreedPreContracts as $transfer)
-        <div class="flex items-center justify-between px-4 py-3 bg-red-50">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 px-4 py-3 bg-red-50">
             <div class="flex items-center gap-3">
                 <img src="{{ $transfer->offeringTeam->image }}" class="w-8 h-8">
                 <div>
@@ -104,7 +104,7 @@
             $demand = $renewalDemands[$player->id] ?? null;
             $hasPendingOffer = $preContractOffers->where('game_player_id', $player->id)->isNotEmpty();
         @endphp
-        <div class="flex items-center justify-between px-4 py-3 {{ $hasPendingOffer ? 'bg-red-50' : '' }}">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 px-4 py-3 {{ $hasPendingOffer ? 'bg-red-50' : '' }}">
             <div class="flex items-center gap-3">
                 <x-position-badge :position="$player->position" />
                 <div>
@@ -140,7 +140,7 @@
 
         {{-- Pending Renewals --}}
         @foreach($pendingRenewals as $player)
-        <div class="flex items-center justify-between px-4 py-3 bg-green-50">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 px-4 py-3 bg-green-50">
             <div class="flex items-center gap-3">
                 <x-position-badge :position="$player->position" />
                 <div>

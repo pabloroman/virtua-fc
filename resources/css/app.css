@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+    @media (max-width: 767px) {
+        html {
+            font-size: 14px;
+        }
+    }
+}
+
 @layer components {
     .dual-range {
         @apply relative h-6 flex items-center;
@@ -39,5 +47,34 @@
     }
     .tier-range input[type="range"]::-moz-range-thumb {
         @apply pointer-events-auto appearance-none w-4 h-4 rounded-full bg-sky-500 border-2 border-white shadow cursor-pointer;
+    }
+}
+
+/* Hide scrollbar for horizontal-scroll nav tabs */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Mobile: larger touch targets for range slider thumbs */
+@media (max-width: 767px) {
+    .dual-range input[type="range"]::-webkit-slider-thumb {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+    .dual-range input[type="range"]::-moz-range-thumb {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+    .tier-range input[type="range"]::-webkit-slider-thumb {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+    .tier-range input[type="range"]::-moz-range-thumb {
+        width: 1.5rem;
+        height: 1.5rem;
     }
 }

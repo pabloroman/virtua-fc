@@ -11,6 +11,6 @@ $colors = [
 $colorClasses = $colors[$color] ?? $colors['red'];
 @endphp
 
-<a {{ $attributes->merge(['class' => "inline-flex items-center justify-center px-4 py-2 {$colorClasses} border border-transparent rounded-lg font-semibold text-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transition ease-in-out duration-150"]) }}>
+<a {{ $attributes->merge(['class' => "inline-flex items-center justify-center px-4 py-2 min-h-[44px] {$colorClasses} border border-transparent rounded-lg font-semibold text-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transition ease-in-out duration-150"]) }}>
     {{ $slot }}
 </a>

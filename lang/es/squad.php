@@ -93,6 +93,9 @@ return [
     'poor' => 'Malo',
     'unsuitable' => 'Inadecuado',
 
+    // Lineup editor
+    'pitch' => 'Campo',
+
     // Opponent scout
     'team_rating' => 'Rating del Equipo',
     'top_scorer' => 'Máximo goleador',

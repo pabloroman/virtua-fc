@@ -19,7 +19,7 @@
                     <div class="mt-6"></div>
 
                     {{-- Filter tabs --}}
-                    <div class="flex gap-2 mb-6">
+                    <div class="flex gap-2 mb-6 overflow-x-auto scrollbar-hide">
                         <a href="{{ route('game.squad.development', ['gameId' => $game->id, 'filter' => 'high_potential']) }}"
                            class="px-4 py-2 rounded-full text-sm font-medium transition-colors
                                   {{ $filter === 'high_potential' ? 'bg-sky-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' }}">
@@ -59,7 +59,7 @@
                                     <th class="font-semibold py-2 text-center w-14">{{ __('app.age') }}</th>
                                     <th class="font-semibold py-2 pl-2" style="min-width: 180px">{{ __('squad.ability') }}</th>
                                     <th class="font-semibold py-2 text-center w-24">{{ __('app.status') }}</th>
-                                    <th class="font-semibold py-2 text-center w-24">{{ __('squad.playing_time') }}</th>
+                                    <th class="font-semibold py-2 text-center w-24 hidden md:table-cell">{{ __('squad.playing_time') }}</th>
                                     <th class="font-semibold py-2 text-center" style="min-width: 120px">{{ __('squad.projection') }}</th>
                                 </tr>
                             </thead>
@@ -134,7 +134,7 @@
                                         </td>
 
                                         {{-- Playing time: progress bar toward 15 apps --}}
-                                        <td class="py-3 text-center">
+                                        <td class="py-3 text-center hidden md:table-cell">
                                             <div class="flex flex-col items-center gap-1">
                                                 <div class="w-16 h-1.5 bg-slate-200 rounded-full overflow-hidden">
                                                     <div class="h-full rounded-full {{ $hasStarterBonus ? 'bg-green-500' : 'bg-amber-500' }}"
