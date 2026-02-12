@@ -206,7 +206,7 @@
                         <input type="hidden" name="mentality" :value="selectedMentality">
 
                         {{-- Top Bar: Formation, Stats, Actions --}}
-                        <div class="flex flex-col gap-3 mb-6 p-4 bg-slate-50 rounded-lg sticky top-0 z-10">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-6 p-4 bg-slate-50 rounded-lg sticky top-0 z-10">
                             <div class="flex flex-wrap items-center gap-3 md:gap-6">
                                 {{-- Formation Selector --}}
                                 <div class="flex items-center gap-2">
@@ -267,7 +267,7 @@
                                 </div>
                             </div>
 
-                            <div class="flex items-center gap-3">
+                            <div class="flex items-center gap-3 shrink-0">
                                 <button type="button" @click="clearSelection()" class="px-4 py-2 text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-200 rounded transition-colors">
                                     {{ __('app.clear') }}
                                 </button>
