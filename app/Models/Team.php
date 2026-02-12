@@ -47,6 +47,20 @@ class Team extends Model
         return $this->hasOne(ClubProfile::class);
     }
 
+    public function getImageAttribute(): ?string
+    {
+        $originalUrl = $this->attributes['image'] ?? null;
+
+        if ($this->transfermarkt_id) {
+            $localPath = "crests/{$this->transfermarkt_id}.png";
+            if (file_exists(public_path($localPath))) {
+                return "/{$localPath}";
+            }
+        }
+
+        return $originalUrl;
+    }
+
     public function getGoalDifferenceAttribute(): int
     {
         return 0; // Placeholder for team-level stats
