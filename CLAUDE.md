@@ -346,6 +346,60 @@ When working on UI/UX tasks, implement working code (Blade/Tailwind CSS/Alpine.j
 - **Cohesive with a clear aesthetic point-of-view** - Maintain a consistent design language across all pages
 - **Meticulously refined in every detail** - Pay extra attention to component reusability and ensure visual elements are coherent and uniform across the application
 
+## Mobile Responsiveness (Required)
+
+**Every new UI feature or screen must be mobile-friendly from the start.** This is not optional — a significant portion of users play on phones and tablets. Always verify your layouts work at 375px (phone) and 768px (tablet) widths.
+
+### Core Principles
+
+- **Mobile-first Tailwind**: Write base styles for mobile, then add `md:` or `lg:` prefixes for larger screens. Never write desktop-only layouts that require a separate mobile fix later.
+- **Touch targets**: All interactive elements (buttons, links, toggles) must be at least 44px tall. All button components already include `min-h-[44px]`.
+- **No horizontal overflow**: Pages must not scroll horizontally on mobile. Wrap data tables in `overflow-x-auto` and hide non-essential columns with `hidden md:table-cell`.
+
+### Responsive Patterns in Use
+
+Follow these established patterns when building new UI:
+
+| Pattern | Usage | Example |
+|---------|-------|---------|
+| Responsive grid | Multi-column layouts | `grid-cols-1 md:grid-cols-3` (never bare `grid-cols-3`) |
+| Column span | Sidebar/main splits | `md:col-span-2` (never bare `col-span-2`) |
+| Flex stacking | Header bars, card rows | `flex flex-col md:flex-row md:items-center md:justify-between gap-2` |
+| Column hiding | Data tables | `hidden md:table-cell` on non-essential columns |
+| Sticky columns | Wide scrollable tables | `sticky left-0 bg-white z-10` on name/position columns |
+| Scrollable tabs | Horizontal tab navs | `overflow-x-auto scrollbar-hide` on container, `shrink-0` on items |
+| Responsive sizing | Logos, images, scores | `w-10 h-10 md:w-14 md:h-14 shrink-0` |
+| Responsive text | Titles, scores | `text-sm md:text-xl` or `text-3xl md:text-5xl` |
+| Responsive spacing | Gaps, padding | `gap-2 md:gap-6`, `p-4 md:p-8` |
+| Truncated text | Long names on mobile | `truncate` class on team/player names |
+| Mobile tab panels | Complex dual-panel UIs | Alpine.js tabs that show one panel at a time on mobile, both on desktop |
+
+### Navigation
+
+The app uses a **slide-out drawer** on mobile (hamburger menu in `game-header.blade.php`). Desktop navigation is preserved with `hidden md:flex`. When adding new navigation items, add them to **both** the desktop nav and the mobile drawer.
+
+### Data Tables Checklist
+
+When creating or modifying a data table:
+
+1. Wrap the table in `<div class="overflow-x-auto">...</div>`
+2. Identify which columns are essential on mobile (usually 2-4: name, key stat, action)
+3. Add `hidden md:table-cell` to non-essential `<th>` and `<td>` elements
+4. Consider making the first column (name/identifier) sticky if the table is very wide
+5. Ensure touch targets in action columns meet the 44px minimum
+
+### Font Scaling
+
+The app uses a custom root font-size override (`resources/css/app.css`): 14px on mobile vs the default ~20px (`1.25rem` base in Tailwind config). All `rem`-based sizes scale proportionally. Do not use fixed `px` values for font sizes — use Tailwind's `text-*` utilities so they participate in this scaling.
+
+### Things to Avoid
+
+- **Never use bare `grid-cols-N`** (where N > 1) without a mobile-first base like `grid-cols-1`
+- **Never use bare `col-span-N`** without an `md:` or `lg:` prefix
+- **Never set fixed widths** that would cause overflow on 375px screens
+- **Never hide critical game actions on mobile** — the user must be able to play the full game on their phone
+- **Avoid hover-only interactions** — anything behind `:hover` must also be accessible via tap/click
+
 ## Backend Performance
 
 When implementing backend code, pay attention to performance and scalability:
