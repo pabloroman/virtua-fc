@@ -109,7 +109,6 @@ class AdvanceMatchday
         }
 
         $primaryHandler = reset($handlers);
-
         return redirect()->to($primaryHandler->getRedirectRoute($game, $matches, $matchday));
     }
 

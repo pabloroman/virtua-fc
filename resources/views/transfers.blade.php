@@ -79,8 +79,12 @@
                                     <div class="text-right">
                                         @if($bid->transfer_fee > 0)
                                             <div class="text-xl font-bold text-amber-600">{{ $bid->formatted_transfer_fee }}</div>
-                                        @else
+                                        @elseif($bid->isPreContract())
+                                            <div class="text-sm font-semibold text-emerald-600">{{ __('transfers.free_transfer') }}</div>
+                                        @elseif($bid->isLoanIn())
                                             <div class="text-sm font-semibold text-emerald-600">{{ __('transfers.loan_no_fee') }}</div>
+                                        @else
+                                            <div class="text-sm font-semibold text-emerald-600">{{ __('finances.free') }}</div>
                                         @endif
                                         <div class="text-xs text-amber-700">{{ __('transfers.response_next_matchday') }}</div>
                                     </div>
@@ -159,8 +163,12 @@
                                     <div class="text-right">
                                         @if($transfer->transfer_fee > 0)
                                             <div class="text-xl font-bold text-sky-600">{{ $transfer->formatted_transfer_fee }}</div>
-                                        @else
+                                        @elseif($transfer->isPreContract())
+                                            <div class="text-sm font-semibold text-emerald-600">{{ __('transfers.free_transfer') }}</div>
+                                        @elseif($transfer->isLoanIn())
                                             <div class="text-sm font-semibold text-emerald-600">{{ __('transfers.loan_no_fee') }}</div>
+                                        @else
+                                            <div class="text-sm font-semibold text-emerald-600">{{ __('finances.free') }}</div>
                                         @endif
                                         <div class="text-xs text-sky-700">{{ __('transfers.deal_agreed') }}</div>
                                     </div>
