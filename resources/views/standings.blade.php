@@ -46,7 +46,7 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
                 {{-- Main standings table --}}
                 <div class="md:col-span-2 space-y-3">
 
-                    <h3 class="font-semibold text-xl text-slate-900">{{ $competition->name }} - {{ __('game.standings') }}</h3>
+                    <h3 class="font-semibold text-xl text-slate-900">{{ $competition->name }}</h3>
 
                     <div class="overflow-x-auto">
                     <table class="min-w-full table-fixed text-right divide-y divide-slate-300 border-spacing-2">

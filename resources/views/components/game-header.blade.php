@@ -96,11 +96,11 @@
         <div class="flex items-center space-x-2 shrink-0">
             @if($nextMatch)
                 @if($continueToHome)
-                    <x-primary-button-link :href="route('show-game', $game->id)" class="text-xs px-3">{{ __('app.continue') }}</x-primary-button-link>
+                    <x-primary-button-link :href="route('show-game', $game->id)" class="text-xs! px-3">{{ __('app.continue') }}</x-primary-button-link>
                 @else
                     <form method="post" action="{{ route('game.advance', $game->id) }}" x-data="{ loading: false }" @submit="loading = true">
                         @csrf
-                        <x-primary-button-spin class="text-xs px-3">{{ __('app.continue') }}</x-primary-button-spin>
+                        <x-primary-button-spin class="text-xs! px-3">{{ __('app.continue') }}</x-primary-button-spin>
                     </form>
                 @endif
             @else
