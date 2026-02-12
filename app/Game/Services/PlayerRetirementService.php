@@ -139,7 +139,6 @@ class PlayerRetirementService
             physical: $physical,
             dateOfBirth: $dateOfBirth,
             contractYears: 3,
-            signedFrom: 'Transfer',
         ));
     }
 

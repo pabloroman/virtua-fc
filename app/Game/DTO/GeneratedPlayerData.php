@@ -20,7 +20,6 @@ final class GeneratedPlayerData
         public readonly int $physical,
         public readonly Carbon $dateOfBirth,
         public readonly int $contractYears,
-        public readonly string $signedFrom,
         public readonly ?string $name = null,
         public readonly ?array $nationality = null,
         public readonly ?int $marketValueCents = null,
