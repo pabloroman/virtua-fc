@@ -8,9 +8,9 @@
     <div>
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 sm:p-8 grid grid-cols-3 gap-8">
+                <div class="p-4 sm:p-6 md:p-8 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
                     {{-- Left Column (2/3) - Calendar --}}
-                    <div class="col-span-2">
+                    <div class="md:col-span-2">
                         <h3 class="font-semibold text-xl text-slate-900 mb-6">{{ __('game.season_calendar') }}</h3>
 
                         @foreach($calendar as $month => $matches)

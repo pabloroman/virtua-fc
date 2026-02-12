@@ -22,7 +22,7 @@
     }
 @endphp
 
-<div class="flex items-center px-3 py-1 gap-6 rounded-lg @if($isNextMatch) bg-yellow-50 ring-2 ring-yellow-400 @elseif($match->played) bg-slate-50 @else bg-white border border-slate-200 @endif">
+<div class="flex items-center px-3 py-1 gap-2 md:gap-6 rounded-lg @if($isNextMatch) bg-yellow-50 ring-2 ring-yellow-400 @elseif($match->played) bg-slate-50 @else bg-white border border-slate-200 @endif">
     {{-- Date & Competition --}}
     <div class="w-16">
         <div class="text-xs text-slate-700">{{ $match->scheduled_date->format('D d M') }}</div>

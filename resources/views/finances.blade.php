@@ -20,24 +20,24 @@
                     {{-- Post-season results banner --}}
                     @if($finances->actual_total_revenue > 0)
                     <div class="border rounded-lg overflow-hidden bg-slate-50 mb-6">
-                        <div class="px-5 py-4 flex items-center justify-between">
-                            <div class="flex items-center gap-6">
+                        <div class="px-5 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                            <div class="flex flex-wrap items-center gap-4 md:gap-6">
                                 <div>
                                     <div class="text-xs text-slate-500">{{ __('finances.projected_revenue') }}</div>
                                     <div class="font-semibold text-slate-700">{{ $finances->formatted_projected_total_revenue }}</div>
                                 </div>
-                                <div class="text-slate-300">&rarr;</div>
+                                <div class="text-slate-300 hidden md:block">&rarr;</div>
                                 <div>
                                     <div class="text-xs text-slate-500">{{ __('finances.actual_revenue') }}</div>
                                     <div class="font-semibold text-slate-700">{{ $finances->formatted_actual_total_revenue }}</div>
                                 </div>
-                                <div class="text-slate-300">&rarr;</div>
+                                <div class="text-slate-300 hidden md:block">&rarr;</div>
                                 <div>
                                     <div class="text-xs text-slate-500">{{ __('finances.variance') }}</div>
                                     <div class="font-semibold {{ $finances->variance >= 0 ? 'text-green-600' : 'text-red-600' }}">{{ $finances->formatted_variance }}</div>
                                 </div>
                             </div>
-                            <div class="text-right">
+                            <div class="md:text-right">
                                 <div class="text-xs text-slate-500">{{ __('finances.actual_surplus') }}</div>
                                 <div class="text-xl font-bold text-slate-900">{{ $finances->formatted_actual_surplus }}</div>
                             </div>
@@ -46,10 +46,10 @@
                     @endif
 
                     {{-- 2-Column Layout --}}
-                    <div class="grid grid-cols-3 gap-8">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
 
                         {{-- LEFT COLUMN (2/3) --}}
-                        <div class="col-span-2 space-y-8">
+                        <div class="md:col-span-2 space-y-8">
 
                             {{-- Budget Flow / Budget Not Set --}}
                             @if($investment)

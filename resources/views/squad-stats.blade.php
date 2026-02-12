@@ -84,8 +84,8 @@
                         <table class="w-full text-sm" id="stats-table">
                             <thead class="text-left border-b border-slate-300">
                                 <tr>
-                                    <th class="font-semibold py-2 w-10"></th>
-                                    <th class="font-semibold py-2 cursor-pointer hover:text-sky-600 select-none" @click="sortAsc = sortColumn === 'name' ? !sortAsc : true; sortColumn = 'name'; sortTable('name', sortAsc)">
+                                    <th class="font-semibold py-2 w-10 sticky left-0 bg-white z-10"></th>
+                                    <th class="font-semibold py-2 cursor-pointer hover:text-sky-600 select-none sticky left-10 bg-white z-10" @click="sortAsc = sortColumn === 'name' ? !sortAsc : true; sortColumn = 'name'; sortTable('name', sortAsc)">
                                         <span class="flex items-center gap-1">
                                             {{ __('app.player') }}
                                             <span x-show="sortColumn === 'name'" x-text="sortAsc ? '↑' : '↓'" class="text-sky-600"></span>
@@ -177,11 +177,11 @@
                                         data-red="{{ $player->red_cards }}"
                                         data-clean_sheets="{{ $player->clean_sheets }}">
                                         {{-- Position --}}
-                                        <td class="py-2.5 text-center">
+                                        <td class="py-2.5 text-center sticky left-0 bg-white z-10">
                                             <x-position-badge :position="$player->position" :tooltip="$player->position" />
                                         </td>
                                         {{-- Name --}}
-                                        <td class="py-2.5">
+                                        <td class="py-2.5 sticky left-10 bg-white z-10">
                                             <div class="flex items-center gap-2">
                                                 @if($player->number)
                                                     <span class="text-xs text-slate-400 w-4 text-right">{{ $player->number }}</span>

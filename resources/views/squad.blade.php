@@ -39,24 +39,25 @@
                         :renewal-demands="$renewalDemands"
                     />
 
+                    <div class="overflow-x-auto">
                     <table class="w-full text-sm">
                         <thead class="text-left border-b">
                             <tr>
                                 <th class="font-semibold py-2 w-10"></th>
-                                <th class="font-semibold py-2 text-center w-8 text-slate-400">#</th>
+                                <th class="font-semibold py-2 text-center w-8 text-slate-400 hidden md:table-cell">#</th>
                                 <th class="font-semibold py-2">{{ __('app.name') }}</th>
                                 <th class="py-2 w-6"></th>
-                                <th class="font-semibold py-2 text-center w-12">{{ __('app.country') }}</th>
-                                <th class="font-semibold py-2 text-center w-12">{{ __('app.age') }}</th>
+                                <th class="font-semibold py-2 text-center w-12 hidden md:table-cell">{{ __('app.country') }}</th>
+                                <th class="font-semibold py-2 text-center w-12 hidden md:table-cell">{{ __('app.age') }}</th>
 
-                                <th class="font-semibold py-2 pl-3 pr-4 text-right border-l border-slate-200 w-24">{{ __('app.value') }}</th>
-                                <th class="font-semibold py-2 pr-4 text-right w-24">{{ __('app.wage') }}</th>
-                                <th class="font-semibold py-2 text-center w-20">{{ __('app.contract') }}</th>
+                                <th class="font-semibold py-2 pl-3 pr-4 text-right border-l border-slate-200 w-24 hidden md:table-cell">{{ __('app.value') }}</th>
+                                <th class="font-semibold py-2 pr-4 text-right w-24 hidden md:table-cell">{{ __('app.wage') }}</th>
+                                <th class="font-semibold py-2 text-center w-20 hidden md:table-cell">{{ __('app.contract') }}</th>
 
-                                <th class="font-semibold py-2 pl-3 text-center w-10">{{ __('squad.technical') }}</th>
-                                <th class="font-semibold py-2 text-center w-10">{{ __('squad.physical') }}</th>
-                                <th class="font-semibold py-2 text-center w-10">{{ __('squad.fitness') }}</th>
-                                <th class="font-semibold py-2 text-center w-10">{{ __('squad.morale') }}</th>
+                                <th class="font-semibold py-2 pl-3 text-center w-10 hidden md:table-cell">{{ __('squad.technical') }}</th>
+                                <th class="font-semibold py-2 text-center w-10 hidden md:table-cell">{{ __('squad.physical') }}</th>
+                                <th class="font-semibold py-2 text-center w-10 hidden md:table-cell">{{ __('squad.fitness') }}</th>
+                                <th class="font-semibold py-2 text-center w-10 hidden md:table-cell">{{ __('squad.morale') }}</th>
                                 <th class="font-semibold py-2 text-center w-10">{{ __('squad.overall') }}</th>
                                 <th class="font-semibold py-2 text-right w-8"></th>
                             </tr>
@@ -86,7 +87,7 @@
                                                 <x-position-badge :position="$gamePlayer->position" :tooltip="$gamePlayer->position" class="cursor-help" />
                                             </td>
                                             {{-- Number --}}
-                                            <td class="py-2 text-center text-slate-400 text-xs">{{ $gamePlayer->number ?? '-' }}</td>
+                                            <td class="py-2 text-center text-slate-400 text-xs hidden md:table-cell">{{ $gamePlayer->number ?? '-' }}</td>
                                             {{-- Name --}}
                                             <td class="py-2">
                                                 <div class="font-medium text-slate-900 @if($isUnavailable) text-slate-400 @endif">
@@ -136,20 +137,20 @@
                                                 @endif
                                             </td>
                                             {{-- Nationality --}}
-                                            <td class="py-2 text-center">
+                                            <td class="py-2 text-center hidden md:table-cell">
                                                 @if($gamePlayer->nationality_flag)
                                                     <img src="/flags/{{ $gamePlayer->nationality_flag['code'] }}.svg" class="w-5 h-4 mx-auto rounded shadow-sm" title="{{ $gamePlayer->nationality_flag['name'] }}">
                                                 @endif
                                             </td>
                                             {{-- Age --}}
-                                            <td class="py-2 text-center">{{ $gamePlayer->player->age }}</td>
+                                            <td class="py-2 text-center hidden md:table-cell">{{ $gamePlayer->player->age }}</td>
 
                                             {{-- Market Value --}}
-                                            <td class="border-l border-slate-200 py-2 pl-3 pr-4 text-right tabular-nums text-slate-600">{{ $gamePlayer->formatted_market_value }}</td>
+                                            <td class="border-l border-slate-200 py-2 pl-3 pr-4 text-right tabular-nums text-slate-600 hidden md:table-cell">{{ $gamePlayer->formatted_market_value }}</td>
                                             {{-- Annual Wage --}}
-                                            <td class="py-2 pr-4 text-right tabular-nums text-slate-600">{{ $gamePlayer->formatted_wage }}</td>
+                                            <td class="py-2 pr-4 text-right tabular-nums text-slate-600 hidden md:table-cell">{{ $gamePlayer->formatted_wage }}</td>
                                             {{-- Contract --}}
-                                            <td class="py-2 text-center text-slate-600">
+                                            <td class="py-2 text-center text-slate-600 hidden md:table-cell">
                                                 @if($gamePlayer->contract_until)
                                                     @if($gamePlayer->isContractExpiring())
                                                         <span class="text-red-600 font-medium" title="Contract expiring">
@@ -162,21 +163,21 @@
                                             </td>
 
                                             {{-- Technical --}}
-                                            <td class="border-l border-slate-200 py-2 pl-3 text-center">
+                                            <td class="border-l border-slate-200 py-2 pl-3 text-center hidden md:table-cell">
                                                 <x-ability-bar :value="$gamePlayer->technical_ability" size="sm" class="text-xs font-medium justify-center @if($gamePlayer->technical_ability >= 80) text-green-600 @elseif($gamePlayer->technical_ability >= 70) text-lime-600 @elseif($gamePlayer->technical_ability < 60) text-slate-400 @endif" />
                                             </td>
                                             {{-- Physical --}}
-                                            <td class="py-2 text-center">
+                                            <td class="py-2 text-center hidden md:table-cell">
                                                 <x-ability-bar :value="$gamePlayer->physical_ability" size="sm" class="text-xs font-medium justify-center @if($gamePlayer->physical_ability >= 80) text-green-600 @elseif($gamePlayer->physical_ability >= 70) text-lime-600 @elseif($gamePlayer->physical_ability < 60) text-slate-400 @endif" />
                                             </td>
                                             {{-- Fitness --}}
-                                            <td class="py-2 text-center">
+                                            <td class="py-2 text-center hidden md:table-cell">
                                                 <span class="@if($gamePlayer->fitness >= 90) text-green-600 @elseif($gamePlayer->fitness >= 80) text-lime-600 @elseif($gamePlayer->fitness < 50) text-red-500 font-medium @elseif($gamePlayer->fitness < 70) text-yellow-600 @endif">
                                                     {{ $gamePlayer->fitness }}
                                                 </span>
                                             </td>
                                             {{-- Morale --}}
-                                            <td class="py-2 text-center">
+                                            <td class="py-2 text-center hidden md:table-cell">
                                                 <span class="@if($gamePlayer->morale >= 85) text-green-600 @elseif($gamePlayer->morale >= 75) text-lime-600 @elseif($gamePlayer->morale < 50) text-red-500 font-medium @elseif($gamePlayer->morale < 65) text-yellow-600 @endif">
                                                     {{ $gamePlayer->morale }}
                                                 </span>
@@ -248,6 +249,7 @@
                             @endforeach
                         </tbody>
                     </table>
+                    </div>
 
                     {{-- Squad summary --}}
                     @php

@@ -313,9 +313,9 @@
                                         $isExpiring = $scoutPlayer->isContractExpiring($seasonEndDate);
                                     @endphp
                                     <x-modal name="scout-player-{{ $scoutPlayer->id }}" maxWidth="2xl">
-                                        <div class="p-8">
+                                        <div class="p-4 md:p-8">
                                             {{-- Player Header --}}
-                                            <div class="flex items-start justify-between mb-8">
+                                            <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6 md:mb-8">
                                                 <div>
                                                     <h3 class="font-semibold text-2xl text-slate-900">{{ $scoutPlayer->name }}</h3>
                                                     <div class="flex items-center gap-3 mt-1 text-sm text-slate-600">
@@ -340,7 +340,7 @@
                                             </div>
 
                                             {{-- Scouting Report --}}
-                                            <div class="grid grid-cols-2 gap-6 mb-8">
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
                                                 {{-- Abilities --}}
                                                 <div class="border rounded-lg p-4">
                                                     <h4 class="font-semibold text-sm text-slate-500 uppercase tracking-wide mb-3">{{ __('transfers.scouting_assessment') }}</h4>
@@ -487,7 +487,7 @@
 
                                             {{-- Action Buttons (Transfer Bid / Loan) --}}
                                             @if(!$existingOffer || (!$existingOffer->isAgreed() && !$existingOffer->isPending()))
-                                                <div class="grid grid-cols-2 gap-6">
+                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                                                     {{-- Transfer Bid --}}
                                                     <div class="border rounded-lg p-6">
                                                         <h4 class="font-semibold text-slate-900 mb-3">{{ __('transfers.make_transfer_offer') }}</h4>

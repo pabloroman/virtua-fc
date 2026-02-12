@@ -9,9 +9,9 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             @if($nextMatch)
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 sm:p-8 grid grid-cols-3 gap-8">
+                <div class="p-4 sm:p-6 md:p-8 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
                     {{-- Left Column (2/3) - Main Content --}}
-                    <div class="col-span-2 space-y-8">
+                    <div class="md:col-span-2 space-y-8">
                         {{-- Next Match --}}
                         @php
                             $competitionRole = $nextMatch->competition->role ?? 'primary';
@@ -41,8 +41,8 @@
                             <div class="flex items-center justify-between py-4">
                                 {{-- Home Team --}}
                                 <div class="flex-1">
-                                    <div class="flex items-center gap-4">
-                                        <img src="{{ $nextMatch->homeTeam->image }}" class="w-20 h-20">
+                                    <div class="flex items-center gap-2 md:gap-4">
+                                        <img src="{{ $nextMatch->homeTeam->image }}" class="w-12 h-12 md:w-20 md:h-20">
                                         <div>
                                             <h4 class="text-xl font-bold text-slate-900">{{ $nextMatch->homeTeam->name }}</h4>
                                             @if($homeStanding)
@@ -68,14 +68,14 @@
                                 </div>
 
                                 {{-- VS --}}
-                                <div class="px-8 text-center">
-                                    <div class="text-2xl font-black text-slate-300">vs</div>
+                                <div class="px-2 md:px-8 text-center">
+                                    <div class="text-xl md:text-2xl font-black text-slate-300">vs</div>
                                 </div>
 
                                 {{-- Away Team --}}
                                 <div class="flex-1">
-                                    <div class="flex items-center gap-4 flex-row-reverse">
-                                        <img src="{{ $nextMatch->awayTeam->image }}" class="w-20 h-20">
+                                    <div class="flex items-center gap-2 md:gap-4 flex-row-reverse">
+                                        <img src="{{ $nextMatch->awayTeam->image }}" class="w-12 h-12 md:w-20 md:h-20">
                                         <div class="text-right">
                                             <h4 class="text-xl font-bold text-slate-900">{{ $nextMatch->awayTeam->name }}</h4>
                                             @if($awayStanding)

@@ -16,9 +16,9 @@
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 sm:p-8">
-                    <div class="flex items-center justify-between mb-6">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-6">
                         <h3 class="font-semibold text-xl text-slate-900">{{ __('transfers.title') }}</h3>
-                        <div class="flex items-center gap-6 text-sm">
+                        <div class="flex flex-wrap items-center gap-3 md:gap-6 text-sm">
                             <div class="text-slate-600">
                                 @if($isTransferWindow)
                                     <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
@@ -182,9 +182,9 @@
                         <div class="space-y-3">
                             @foreach($unsolicitedOffers as $offer)
                             <div class="border border-amber-200 bg-amber-50 rounded-lg p-4">
-                                <div class="flex items-center justify-between">
+                                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                     <div class="flex items-center gap-4">
-                                        <img src="{{ $offer->offeringTeam->image }}" class="w-10 h-10">
+                                        <img src="{{ $offer->offeringTeam->image }}" class="w-10 h-10 shrink-0">
                                         <div>
                                             <div class="font-semibold text-slate-900">
                                                 {{ $offer->offeringTeam->name }} {{ __('transfers.wants') }} {{ $offer->gamePlayer->player->name }}
@@ -195,8 +195,8 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="flex items-center gap-4">
-                                        <div class="text-right">
+                                    <div class="flex flex-col md:flex-row md:items-center gap-3 md:gap-4">
+                                        <div class="md:text-right">
                                             <div class="text-xl font-bold text-green-600">{{ $offer->formatted_transfer_fee }}</div>
                                             <div class="text-xs text-slate-500">{{ __('transfers.expires_in_days', ['days' => $offer->days_until_expiry]) }}</div>
                                         </div>
@@ -228,9 +228,9 @@
                         <div class="space-y-3">
                             @foreach($listedOffers as $offer)
                             <div class="border rounded-lg p-4">
-                                <div class="flex items-center justify-between">
+                                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                     <div class="flex items-center gap-4">
-                                        <img src="{{ $offer->offeringTeam->image }}" class="w-10 h-10">
+                                        <img src="{{ $offer->offeringTeam->image }}" class="w-10 h-10 shrink-0">
                                         <div>
                                             <div class="font-semibold text-slate-900">
                                                 {{ $offer->offeringTeam->name }} {{ __('transfers.offers_for') }} {{ $offer->gamePlayer->player->name }}
@@ -241,8 +241,8 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="flex items-center gap-4">
-                                        <div class="text-right">
+                                    <div class="flex flex-col md:flex-row md:items-center gap-3 md:gap-4">
+                                        <div class="md:text-right">
                                             <div class="text-xl font-bold text-green-600">{{ $offer->formatted_transfer_fee }}</div>
                                             <div class="text-xs text-slate-500">{{ __('transfers.expires_in_days', ['days' => $offer->days_until_expiry]) }}</div>
                                         </div>
@@ -325,7 +325,7 @@
                                 $bestOffer = $playerOffers->sortByDesc('transfer_fee')->first();
                             @endphp
                             <div class="border rounded-lg p-4 {{ $playerOffers->isEmpty() ? 'bg-slate-50' : '' }}">
-                                <div class="flex items-center justify-between">
+                                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                     <div class="flex items-center gap-4">
                                         <div>
                                             <div class="font-semibold text-slate-900">{{ $player->player->name }}</div>
@@ -366,7 +366,7 @@
                         <h4 class="font-semibold text-lg text-slate-900 mb-4">{{ __('transfers.recent_sales') }}</h4>
                         <div class="space-y-2">
                             @foreach($recentTransfers as $transfer)
-                            <div class="flex items-center justify-between py-2 text-sm">
+                            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-1 py-2 text-sm">
                                 <div class="flex items-center gap-3">
                                     <img src="{{ $transfer->offeringTeam->image }}" class="w-6 h-6">
                                     <span class="text-slate-600">

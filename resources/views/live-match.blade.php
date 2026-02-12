@@ -39,15 +39,15 @@
                 <div class="p-6 sm:p-8">
 
                     {{-- Scoreboard --}}
-                    <div class="flex items-center justify-center gap-6 mb-2">
-                        <div class="flex items-center gap-3 flex-1 justify-end">
-                            <span class="text-xl font-semibold text-slate-900">{{ $match->homeTeam->name }}</span>
-                            <img src="{{ $match->homeTeam->image }}" class="w-14 h-14" alt="{{ $match->homeTeam->name }}">
+                    <div class="flex items-center justify-center gap-2 md:gap-6 mb-2">
+                        <div class="flex items-center gap-2 md:gap-3 flex-1 justify-end">
+                            <span class="text-sm md:text-xl font-semibold text-slate-900 truncate">{{ $match->homeTeam->name }}</span>
+                            <img src="{{ $match->homeTeam->image }}" class="w-10 h-10 md:w-14 md:h-14 shrink-0" alt="{{ $match->homeTeam->name }}">
                         </div>
 
-                        <div class="relative px-6">
+                        <div class="relative px-2 md:px-6">
                             {{-- Score --}}
-                            <div class="text-5xl font-bold text-slate-900 tabular-nums transition-transform duration-200"
+                            <div class="text-3xl md:text-5xl font-bold text-slate-900 tabular-nums transition-transform duration-200"
                                  :class="goalFlash ? 'scale-125' : 'scale-100'">
                                 <span x-text="homeScore">0</span>
                                 <span class="text-slate-300 mx-1">-</span>
@@ -55,9 +55,9 @@
                             </div>
                         </div>
 
-                        <div class="flex items-center gap-3 flex-1">
-                            <img src="{{ $match->awayTeam->image }}" class="w-14 h-14" alt="{{ $match->awayTeam->name }}">
-                            <span class="text-xl font-semibold text-slate-900">{{ $match->awayTeam->name }}</span>
+                        <div class="flex items-center gap-2 md:gap-3 flex-1">
+                            <img src="{{ $match->awayTeam->image }}" class="w-10 h-10 md:w-14 md:h-14 shrink-0" alt="{{ $match->awayTeam->name }}">
+                            <span class="text-sm md:text-xl font-semibold text-slate-900 truncate">{{ $match->awayTeam->name }}</span>
                         </div>
                     </div>
 
