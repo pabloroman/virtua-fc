@@ -262,6 +262,49 @@ class NotificationService
         );
     }
 
+    /**
+     * Create a notification when a transfer completes and a player joins or leaves the squad.
+     */
+    public function notifyTransferComplete(Game $game, TransferOffer $offer): GameNotification
+    {
+        $player = $offer->gamePlayer;
+        $isIncoming = $offer->direction === TransferOffer::DIRECTION_INCOMING;
+
+        if ($isIncoming) {
+            $fromTeam = $offer->sellingTeam?->name ?? $player->team?->name ?? '';
+            $fee = $offer->transfer_fee > 0
+                ? $offer->formatted_transfer_fee
+                : __('notifications.free_transfer');
+
+            $title = __('notifications.transfer_complete_incoming_title', ['player' => $player->name]);
+            $message = __('notifications.transfer_complete_incoming_message', [
+                'player' => $player->name,
+                'team' => $fromTeam,
+                'fee' => $fee,
+            ]);
+        } else {
+            $title = __('notifications.transfer_complete_outgoing_title', ['player' => $player->name]);
+            $message = __('notifications.transfer_complete_outgoing_message', [
+                'player' => $player->name,
+                'team' => $offer->offeringTeam->name,
+                'fee' => $offer->formatted_transfer_fee,
+            ]);
+        }
+
+        return $this->create(
+            game: $game,
+            type: GameNotification::TYPE_TRANSFER_COMPLETE,
+            title: $title,
+            message: $message,
+            priority: GameNotification::PRIORITY_INFO,
+            metadata: [
+                'offer_id' => $offer->id,
+                'player_id' => $player->id,
+                'direction' => $offer->direction,
+            ],
+        );
+    }
+
     // ==========================================
     // Scout Notifications
     // ==========================================
@@ -466,6 +509,7 @@ class NotificationService
             GameNotification::TYPE_COMPETITION_ADVANCEMENT => 'trophy',
             GameNotification::TYPE_COMPETITION_ELIMINATION => 'eliminated',
             GameNotification::TYPE_ACADEMY_PROSPECT => 'academy',
+            GameNotification::TYPE_TRANSFER_COMPLETE => 'transfer',
             default => 'bell',
         };
     }
