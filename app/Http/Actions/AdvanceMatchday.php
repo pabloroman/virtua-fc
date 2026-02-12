@@ -7,6 +7,7 @@ use App\Game\DTO\MatchEventData;
 use App\Game\Enums\Formation;
 use App\Game\Enums\Mentality;
 use App\Game\Game as GameAggregate;
+use App\Game\Services\EligibilityService;
 use App\Game\Services\LineupService;
 use App\Game\Services\LoanService;
 use App\Game\Services\MatchdayService;
@@ -38,6 +39,7 @@ class AdvanceMatchday
         private readonly NotificationService $notificationService,
         private readonly LoanService $loanService,
         private readonly YouthAcademyService $youthAcademyService,
+        private readonly EligibilityService $eligibilityService,
     ) {}
 
     public function __invoke(string $gameId)
@@ -306,6 +308,9 @@ class AdvanceMatchday
         foreach ($userTeamPlayers as $player) {
             // Check if player was injured but is now recovered
             if ($player->injury_until && $player->injury_until->lte($game->current_date)) {
+                // Clear the injury fields so this doesn't trigger again on future matchdays
+                $this->eligibilityService->clearInjury($player);
+
                 // Check if we haven't already notified about this recovery
                 if (!$this->notificationService->hasRecentNotification(
                     $game->id,

@@ -42,6 +42,16 @@ class EligibilityService
     }
 
     /**
+     * Clear a player's injury after recovery.
+     */
+    public function clearInjury(GamePlayer $player): void
+    {
+        $player->injury_until = null;
+        $player->injury_type = null;
+        $player->save();
+    }
+
+    /**
      * Check if a player has crossed a yellow card threshold and should be suspended.
      * Returns the number of matches to suspend, or null if no suspension.
      */
