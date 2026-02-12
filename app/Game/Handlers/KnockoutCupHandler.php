@@ -66,14 +66,10 @@ class KnockoutCupHandler implements CompetitionHandler
      */
     public function getRedirectRoute(Game $game, Collection $matches, int $matchday): string
     {
-        $firstMatch = $matches->first();
-        $competitionId = $firstMatch?->competition_id ?? 'ESPCUP';
-        $roundNumber = $firstMatch?->round_number ?? 1;
-
         return route('game.results', [
             'gameId' => $game->id,
-            'competition' => $competitionId,
-            'matchday' => $roundNumber,
+            'competition' => $matches->first()?->competition_id ?? $game->competition_id,
+            'matchday' => $matchday,
         ]);
     }
 

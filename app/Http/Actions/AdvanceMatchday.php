@@ -108,32 +108,8 @@ class AdvanceMatchday
             ]);
         }
 
-        // Find a handler for a competition the player's team participates in
-        $competitionIds = $matches->pluck('competition_id')->unique();
-        $teamCompetitionIds = GameMatch::where('game_id', $game->id)
-            ->whereIn('competition_id', $competitionIds)
-            ->where(function ($q) use ($game) {
-                $q->where('home_team_id', $game->team_id)
-                    ->orWhere('away_team_id', $game->team_id);
-            })
-            ->distinct()
-            ->pluck('competition_id');
-
-        $relevantHandler = null;
-        $relevantMatches = $matches;
-        foreach ($handlers as $competitionId => $handler) {
-            if ($teamCompetitionIds->contains($competitionId)) {
-                $relevantHandler = $handler;
-                $relevantMatches = $matches->where('competition_id', $competitionId);
-                break;
-            }
-        }
-
-        if (! $relevantHandler) {
-            return redirect()->route('show-game', $gameId);
-        }
-
-        return redirect()->to($relevantHandler->getRedirectRoute($game, $relevantMatches, $matchday));
+        $primaryHandler = reset($handlers);
+        return redirect()->to($primaryHandler->getRedirectRoute($game, $matches, $matchday));
     }
 
     private function simulateMatches($matches, Game $game, $allPlayers): array
