@@ -186,39 +186,145 @@ class GameNotification extends Model
     }
 
     /**
-     * Get the CSS classes for priority-based styling.
+     * Get the CSS classes for type-based styling.
+     * Each notification type has its own unique color identity.
      */
-    public function getPriorityClasses(): array
+    public function getTypeClasses(): array
     {
-        return match ($this->priority) {
-            self::PRIORITY_MILESTONE => [
-                'bg' => 'bg-emerald-50',
-                'border' => 'border-emerald-200',
-                'text' => 'text-emerald-700',
-                'icon' => 'text-emerald-600',
-                'dot' => 'bg-emerald-500',
-            ],
-            self::PRIORITY_CRITICAL => [
+        return match ($this->type) {
+            self::TYPE_PLAYER_INJURED => [
                 'bg' => 'bg-red-50',
                 'border' => 'border-red-200',
-                'text' => 'text-red-700',
-                'icon' => 'text-red-600',
-                'dot' => 'bg-red-500',
+                'text' => 'text-red-800',
+                'icon_bg' => 'bg-red-500',
+                'icon_text' => 'text-white',
             ],
-            self::PRIORITY_WARNING => [
+            self::TYPE_PLAYER_SUSPENDED => [
+                'bg' => 'bg-orange-50',
+                'border' => 'border-orange-200',
+                'text' => 'text-orange-800',
+                'icon_bg' => 'bg-orange-500',
+                'icon_text' => 'text-white',
+            ],
+            self::TYPE_PLAYER_RECOVERED => [
+                'bg' => 'bg-green-50',
+                'border' => 'border-green-200',
+                'text' => 'text-green-800',
+                'icon_bg' => 'bg-green-500',
+                'icon_text' => 'text-white',
+            ],
+            self::TYPE_LOW_FITNESS => [
                 'bg' => 'bg-amber-50',
                 'border' => 'border-amber-200',
-                'text' => 'text-amber-700',
-                'icon' => 'text-amber-600',
-                'dot' => 'bg-amber-500',
+                'text' => 'text-amber-800',
+                'icon_bg' => 'bg-amber-500',
+                'icon_text' => 'text-white',
             ],
-            default => [
+            self::TYPE_TRANSFER_OFFER_RECEIVED => [
+                'bg' => 'bg-blue-50',
+                'border' => 'border-blue-200',
+                'text' => 'text-blue-800',
+                'icon_bg' => 'bg-blue-500',
+                'icon_text' => 'text-white',
+            ],
+            self::TYPE_TRANSFER_OFFER_EXPIRING => [
+                'bg' => 'bg-indigo-50',
+                'border' => 'border-indigo-200',
+                'text' => 'text-indigo-800',
+                'icon_bg' => 'bg-indigo-500',
+                'icon_text' => 'text-white',
+            ],
+            self::TYPE_TRANSFER_COMPLETE => [
                 'bg' => 'bg-sky-50',
                 'border' => 'border-sky-200',
-                'text' => 'text-sky-700',
-                'icon' => 'text-sky-600',
-                'dot' => 'bg-sky-500',
+                'text' => 'text-sky-800',
+                'icon_bg' => 'bg-sky-500',
+                'icon_text' => 'text-white',
             ],
+            self::TYPE_SCOUT_REPORT_COMPLETE => [
+                'bg' => 'bg-teal-50',
+                'border' => 'border-teal-200',
+                'text' => 'text-teal-800',
+                'icon_bg' => 'bg-teal-500',
+                'icon_text' => 'text-white',
+            ],
+            self::TYPE_CONTRACT_EXPIRING => [
+                'bg' => 'bg-zinc-100',
+                'border' => 'border-zinc-300',
+                'text' => 'text-zinc-800',
+                'icon_bg' => 'bg-zinc-500',
+                'icon_text' => 'text-white',
+            ],
+            self::TYPE_LOAN_RETURN => [
+                'bg' => 'bg-violet-50',
+                'border' => 'border-violet-200',
+                'text' => 'text-violet-800',
+                'icon_bg' => 'bg-violet-500',
+                'icon_text' => 'text-white',
+            ],
+            self::TYPE_LOAN_DESTINATION_FOUND => [
+                'bg' => 'bg-purple-50',
+                'border' => 'border-purple-200',
+                'text' => 'text-purple-800',
+                'icon_bg' => 'bg-purple-500',
+                'icon_text' => 'text-white',
+            ],
+            self::TYPE_LOAN_SEARCH_FAILED => [
+                'bg' => 'bg-slate-100',
+                'border' => 'border-slate-300',
+                'text' => 'text-slate-800',
+                'icon_bg' => 'bg-slate-500',
+                'icon_text' => 'text-white',
+            ],
+            self::TYPE_COMPETITION_ADVANCEMENT => [
+                'bg' => 'bg-emerald-50',
+                'border' => 'border-emerald-200',
+                'text' => 'text-emerald-800',
+                'icon_bg' => 'bg-emerald-500',
+                'icon_text' => 'text-white',
+            ],
+            self::TYPE_COMPETITION_ELIMINATION => [
+                'bg' => 'bg-rose-50',
+                'border' => 'border-rose-200',
+                'text' => 'text-rose-800',
+                'icon_bg' => 'bg-rose-500',
+                'icon_text' => 'text-white',
+            ],
+            self::TYPE_ACADEMY_PROSPECT => [
+                'bg' => 'bg-lime-50',
+                'border' => 'border-lime-200',
+                'text' => 'text-lime-800',
+                'icon_bg' => 'bg-lime-600',
+                'icon_text' => 'text-white',
+            ],
+            default => [
+                'bg' => 'bg-slate-50',
+                'border' => 'border-slate-200',
+                'text' => 'text-slate-800',
+                'icon_bg' => 'bg-slate-500',
+                'icon_text' => 'text-white',
+            ],
+        };
+    }
+
+    /**
+     * Get priority badge config for secondary urgency indicator.
+     * Returns null for INFO and MILESTONE (no urgency badge needed).
+     */
+    public function getPriorityBadge(): ?array
+    {
+        return match ($this->priority) {
+            self::PRIORITY_CRITICAL => [
+                'bg' => 'bg-red-600',
+                'text' => 'text-white',
+                'label' => __('notifications.priority_urgent'),
+            ],
+            self::PRIORITY_WARNING => [
+                'bg' => 'bg-amber-500',
+                'text' => 'text-white',
+                'label' => __('notifications.priority_attention'),
+            ],
+            default => null,
         };
     }
 

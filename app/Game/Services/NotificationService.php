@@ -504,12 +504,12 @@ class NotificationService
             GameNotification::TYPE_SCOUT_REPORT_COMPLETE => 'scout',
             GameNotification::TYPE_CONTRACT_EXPIRING => 'contract',
             GameNotification::TYPE_LOAN_RETURN => 'loan',
-            GameNotification::TYPE_LOAN_DESTINATION_FOUND => 'loan',
-            GameNotification::TYPE_LOAN_SEARCH_FAILED => 'loan',
+            GameNotification::TYPE_LOAN_DESTINATION_FOUND => 'loan_destination',
+            GameNotification::TYPE_LOAN_SEARCH_FAILED => 'loan_failed',
             GameNotification::TYPE_COMPETITION_ADVANCEMENT => 'trophy',
             GameNotification::TYPE_COMPETITION_ELIMINATION => 'eliminated',
             GameNotification::TYPE_ACADEMY_PROSPECT => 'academy',
-            GameNotification::TYPE_TRANSFER_COMPLETE => 'transfer',
+            GameNotification::TYPE_TRANSFER_COMPLETE => 'transfer_complete',
             default => 'bell',
         };
     }
