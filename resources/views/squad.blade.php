@@ -9,12 +9,17 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 sm:p-8">
-                    <x-section-nav :items="[
-                        ['href' => route('game.squad', $game->id), 'label' => __('squad.squad'), 'active' => true],
-                        ['href' => route('game.squad.development', $game->id), 'label' => __('squad.development'), 'active' => false],
-                        ['href' => route('game.squad.stats', $game->id), 'label' => __('squad.stats'), 'active' => false],
-                        ['href' => route('game.squad.academy', $game->id), 'label' => __('squad.academy'), 'active' => false, 'badge' => $academyCount > 0 ? $academyCount : null],
-                    ]" />
+                    @php
+                        $squadNavItems = [
+                            ['href' => route('game.squad', $game->id), 'label' => __('squad.squad'), 'active' => true],
+                            ['href' => route('game.squad.development', $game->id), 'label' => __('squad.development'), 'active' => false],
+                            ['href' => route('game.squad.stats', $game->id), 'label' => __('squad.stats'), 'active' => false],
+                        ];
+                        if ($game->isCareerMode()) {
+                            $squadNavItems[] = ['href' => route('game.squad.academy', $game->id), 'label' => __('squad.academy'), 'active' => false, 'badge' => $academyCount > 0 ? $academyCount : null];
+                        }
+                    @endphp
+                    <x-section-nav :items="$squadNavItems" />
 
                     <div class="mt-6"></div>
 
@@ -41,9 +46,11 @@
                                 <th class="font-semibold py-2 text-center w-12 hidden md:table-cell">{{ __('app.country') }}</th>
                                 <th class="font-semibold py-2 text-center w-12 hidden md:table-cell">{{ __('app.age') }}</th>
 
+                                @if($game->isCareerMode())
                                 <th class="font-semibold py-2 pl-3 pr-4 text-right border-l border-slate-200 w-24 hidden md:table-cell">{{ __('app.value') }}</th>
                                 <th class="font-semibold py-2 pr-4 text-right w-24 hidden md:table-cell">{{ __('app.wage') }}</th>
                                 <th class="font-semibold py-2 text-center w-20 hidden md:table-cell">{{ __('app.contract') }}</th>
+                                @endif
 
                                 <th class="font-semibold py-2 pl-3 text-center w-10 hidden md:table-cell">{{ __('squad.technical') }}</th>
                                 <th class="font-semibold py-2 text-center w-10 hidden md:table-cell">{{ __('squad.physical') }}</th>
@@ -88,7 +95,8 @@
                                                     <div class="text-xs text-red-500">{{ $unavailabilityReason }}</div>
                                                 @endif
                                             </td>
-                                            {{-- Status icon --}}
+                                            {{-- Status icon (career mode only) --}}
+                                            @if($game->isCareerMode())
                                             <td class="py-2 text-center">
                                                 @if($gamePlayer->isRetiring())
                                                     {{-- Retiring: person walking away --}}
@@ -127,6 +135,9 @@
                                                     </svg>
                                                 @endif
                                             </td>
+                                            @else
+                                            <td class="py-2"></td>
+                                            @endif
                                             {{-- Nationality --}}
                                             <td class="py-2 text-center hidden md:table-cell">
                                                 @if($gamePlayer->nationality_flag)
@@ -136,6 +147,7 @@
                                             {{-- Age --}}
                                             <td class="py-2 text-center hidden md:table-cell">{{ $gamePlayer->player->age }}</td>
 
+                                            @if($game->isCareerMode())
                                             {{-- Market Value --}}
                                             <td class="border-l border-slate-200 py-2 pl-3 pr-4 text-right tabular-nums text-slate-600 hidden md:table-cell">{{ $gamePlayer->formatted_market_value }}</td>
                                             {{-- Annual Wage --}}
@@ -152,6 +164,7 @@
                                                     @endif
                                                 @endif
                                             </td>
+                                            @endif
 
                                             {{-- Technical --}}
                                             <td class="border-l border-slate-200 py-2 pl-3 text-center hidden md:table-cell">
@@ -184,9 +197,9 @@
                                                     {{ $gamePlayer->overall_score }}
                                                 </span>
                                             </td>
-                                            {{-- Actions --}}
+                                            {{-- Actions (career mode only) --}}
                                             <td class="py-2 text-right">
-                                                @if($gamePlayer->isTransferListed())
+                                                @if($game->isCareerMode() && $gamePlayer->isTransferListed())
                                                     <div x-data="{ open: false }" @click.outside="open = false" class="relative inline-block">
                                                         <button @click="open = !open" class="p-1 text-slate-400 hover:text-slate-600 rounded hover:bg-slate-100">
                                                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="4" r="1.5"/><circle cx="10" cy="10" r="1.5"/><circle cx="10" cy="16" r="1.5"/></svg>
@@ -209,7 +222,7 @@
                                                             @endif
                                                         </div>
                                                     </div>
-                                                @elseif(!$gamePlayer->isRetiring() && !$gamePlayer->isLoanedIn($game->team_id) && !$gamePlayer->hasPreContractAgreement() && !$gamePlayer->hasRenewalAgreed() && !$gamePlayer->hasAgreedTransfer() && !$gamePlayer->hasActiveLoanSearch())
+                                                @elseif($game->isCareerMode() && !$gamePlayer->isRetiring() && !$gamePlayer->isLoanedIn($game->team_id) && !$gamePlayer->hasPreContractAgreement() && !$gamePlayer->hasRenewalAgreed() && !$gamePlayer->hasAgreedTransfer() && !$gamePlayer->hasActiveLoanSearch())
                                                     <div x-data="{ open: false }" @click.outside="open = false" class="relative inline-block">
                                                         <button @click="open = !open" class="p-1 text-slate-400 hover:text-slate-600 rounded hover:bg-slate-100">
                                                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="4" r="1.5"/><circle cx="10" cy="10" r="1.5"/><circle cx="10" cy="16" r="1.5"/></svg>
@@ -249,8 +262,6 @@
                         $avgMorale = $allPlayers->avg('morale');
                         $lowFitnessCount = $allPlayers->filter(fn($p) => $p->fitness < 70)->count();
                         $lowMoraleCount = $allPlayers->filter(fn($p) => $p->morale < 65)->count();
-                        $totalWageBill = $allPlayers->sum('annual_wage');
-                        $formattedWageBill = \App\Support\Money::format($totalWageBill);
                     @endphp
                     <div class="pt-6 border-t">
                         <div class="flex flex-wrap gap-8 text-sm text-slate-600">
@@ -258,10 +269,13 @@
                                 <span class="font-semibold text-slate-900">{{ $allPlayers->count() }}</span>
                                 <span class="text-slate-400 ml-1">{{ __('app.players') }}</span>
                             </div>
+                            @if($game->isCareerMode())
+                            @php $formattedWageBill = \App\Support\Money::format($allPlayers->sum('annual_wage')); @endphp
                             <div>
                                 <span class="text-slate-400">{{ __('squad.wage_bill') }}:</span>
                                 <span class="font-semibold text-slate-900">{{ $formattedWageBill }}{{ __('squad.per_year') }}</span>
                             </div>
+                            @endif
                             <div class="flex items-center gap-1">
                                 <x-position-badge abbreviation="GK" size="sm" />
                                 <span class="font-medium">{{ $goalkeepers->count() }}</span>

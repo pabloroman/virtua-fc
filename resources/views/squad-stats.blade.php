@@ -19,12 +19,17 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 sm:p-8">
-                    <x-section-nav :items="[
-                        ['href' => route('game.squad', $game->id), 'label' => __('squad.squad'), 'active' => false],
-                        ['href' => route('game.squad.development', $game->id), 'label' => __('squad.development'), 'active' => false],
-                        ['href' => route('game.squad.stats', $game->id), 'label' => __('squad.stats'), 'active' => true],
-                        ['href' => route('game.squad.academy', $game->id), 'label' => __('squad.academy'), 'active' => false, 'badge' => $academyCount > 0 ? $academyCount : null],
-                    ]" />
+                    @php
+                        $squadNavItems = [
+                            ['href' => route('game.squad', $game->id), 'label' => __('squad.squad'), 'active' => false],
+                            ['href' => route('game.squad.development', $game->id), 'label' => __('squad.development'), 'active' => false],
+                            ['href' => route('game.squad.stats', $game->id), 'label' => __('squad.stats'), 'active' => true],
+                        ];
+                        if ($game->isCareerMode()) {
+                            $squadNavItems[] = ['href' => route('game.squad.academy', $game->id), 'label' => __('squad.academy'), 'active' => false, 'badge' => $academyCount > 0 ? $academyCount : null];
+                        }
+                    @endphp
+                    <x-section-nav :items="$squadNavItems" />
 
                     <div class="mt-6"></div>
 

@@ -22,6 +22,7 @@ class ShowTransfers
     public function __invoke(string $gameId)
     {
         $game = Game::with(['team', 'finances'])->findOrFail($gameId);
+        abort_if($game->isTournamentMode(), 404);
 
         // Expire any old offers first
         $this->transferService->expireOffers($game);

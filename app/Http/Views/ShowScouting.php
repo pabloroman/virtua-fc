@@ -21,6 +21,7 @@ class ShowScouting
     public function __invoke(Request $request, string $gameId)
     {
         $game = Game::with(['team', 'finances'])->findOrFail($gameId);
+        abort_if($game->isTournamentMode(), 404);
 
         $searchingReport = $this->scoutingService->getActiveReport($game);
         $searchHistory = $this->scoutingService->getSearchHistory($game);
