@@ -173,27 +173,31 @@
                                     {{-- Notifications for this date --}}
                                     <div class="space-y-2">
                                         @foreach($notifications as $notification)
-                                        @php $classes = $notification->getPriorityClasses(); @endphp
+                                        @php $classes = $notification->getTypeClasses(); @endphp
                                         <form action="{{ route('game.notifications.read', [$game->id, $notification->id]) }}" method="POST">
                                             @csrf
-                                            <button type="submit" class="w-full text-left block p-3 {{ $classes['bg'] }} border {{ $classes['border'] }} rounded-lg hover:opacity-90 transition-opacity">
+                                            <button type="submit" class="w-full text-left block p-3 {{ $classes['bg'] }} border {{ $classes['border'] }} rounded-lg hover:opacity-90 transition-opacity {{ $notification->isRead() ? 'opacity-60' : '' }}">
                                                 <div class="flex items-start gap-3">
-                                                    {{-- Unread indicator --}}
-                                                    @if($notification->isUnread())
-                                                    <span class="w-2 h-2 mt-2.5 {{ $classes['dot'] }} rounded-full flex-shrink-0"></span>
-                                                    @else
-                                                    <span class="w-2 h-2 mt-2.5 bg-transparent flex-shrink-0"></span>
-                                                    @endif
+                                                    {{-- Type icon with unread indicator --}}
+                                                    <div class="relative flex-shrink-0">
+                                                        <x-notification-icon :icon="$notification->icon" :icon-bg="$classes['icon_bg']" :icon-text="$classes['icon_text']" />
+                                                    </div>
 
                                                     <div class="flex-1 min-w-0">
                                                         <div class="flex items-center justify-between gap-2">
-                                                            <span class="font-medium text-sm {{ $classes['text'] }} truncate">{{ $notification->title }}</span>
-                                                            <svg class="w-4 h-4 {{ $classes['icon'] }} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <span class="font-semibold text-sm {{ $classes['text'] }} truncate">{{ $notification->title }}</span>
+                                                            <svg class="w-4 h-4 {{ $classes['text'] }} opacity-40 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                                                             </svg>
                                                         </div>
                                                         @if($notification->message)
-                                                        <p class="text-xs text-slate-600 mt-1 line-clamp-2">{{ $notification->message }}</p>
+                                                        <p class="text-xs text-slate-600 mt-0.5 line-clamp-2">{{ $notification->message }}</p>
+                                                        @endif
+                                                        @php $badge = $notification->getPriorityBadge(); @endphp
+                                                        @if($badge)
+                                                        <span class="inline-flex items-center mt-1 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide rounded {{ $badge['bg'] }} {{ $badge['text'] }}">
+                                                            {{ $badge['label'] }}
+                                                        </span>
                                                         @endif
                                                     </div>
                                                 </div>

@@ -80,4 +80,8 @@ return [
     // Academy
     'academy_prospect_title' => 'Nuevo canterano: :player',
     'academy_prospect_message' => ':player (:position, :age años) ha surgido de la cantera.',
+
+    // Priority badges
+    'priority_urgent' => 'Urgente',
+    'priority_attention' => 'Atención',
 ];

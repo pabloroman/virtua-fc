@@ -139,7 +139,43 @@ class NotificationServiceTest extends TestCase
         }
     }
 
-    public function test_notification_priority_classes(): void
+    public function test_notification_type_classes(): void
+    {
+        $injury = new GameNotification([
+            'type' => GameNotification::TYPE_PLAYER_INJURED,
+            'title' => 'Test',
+        ]);
+
+        $transfer = new GameNotification([
+            'type' => GameNotification::TYPE_TRANSFER_OFFER_RECEIVED,
+            'title' => 'Test',
+        ]);
+
+        $advancement = new GameNotification([
+            'type' => GameNotification::TYPE_COMPETITION_ADVANCEMENT,
+            'title' => 'Test',
+        ]);
+
+        $elimination = new GameNotification([
+            'type' => GameNotification::TYPE_COMPETITION_ELIMINATION,
+            'title' => 'Test',
+        ]);
+
+        // Each type has its own unique color
+        $this->assertStringContainsString('red', $injury->getTypeClasses()['bg']);
+        $this->assertStringContainsString('blue', $transfer->getTypeClasses()['bg']);
+        $this->assertStringContainsString('emerald', $advancement->getTypeClasses()['bg']);
+        $this->assertStringContainsString('rose', $elimination->getTypeClasses()['bg']);
+
+        // All types return icon classes
+        foreach ([$injury, $transfer, $advancement, $elimination] as $notification) {
+            $classes = $notification->getTypeClasses();
+            $this->assertArrayHasKey('icon_bg', $classes);
+            $this->assertArrayHasKey('icon_text', $classes);
+        }
+    }
+
+    public function test_notification_priority_badge(): void
     {
         $critical = new GameNotification([
             'type' => GameNotification::TYPE_PLAYER_INJURED,
@@ -148,19 +184,24 @@ class NotificationServiceTest extends TestCase
         ]);
 
         $warning = new GameNotification([
-            'type' => GameNotification::TYPE_PLAYER_INJURED,
+            'type' => GameNotification::TYPE_LOW_FITNESS,
             'title' => 'Test',
             'priority' => GameNotification::PRIORITY_WARNING,
         ]);
 
         $info = new GameNotification([
-            'type' => GameNotification::TYPE_PLAYER_INJURED,
+            'type' => GameNotification::TYPE_PLAYER_RECOVERED,
             'title' => 'Test',
             'priority' => GameNotification::PRIORITY_INFO,
         ]);
 
-        $this->assertStringContainsString('red', $critical->getPriorityClasses()['bg']);
-        $this->assertStringContainsString('amber', $warning->getPriorityClasses()['bg']);
-        $this->assertStringContainsString('sky', $info->getPriorityClasses()['bg']);
+        // Critical and warning get urgency badges
+        $this->assertNotNull($critical->getPriorityBadge());
+        $this->assertStringContainsString('red', $critical->getPriorityBadge()['bg']);
+        $this->assertNotNull($warning->getPriorityBadge());
+        $this->assertStringContainsString('amber', $warning->getPriorityBadge()['bg']);
+
+        // Info gets no badge
+        $this->assertNull($info->getPriorityBadge());
     }
 }
