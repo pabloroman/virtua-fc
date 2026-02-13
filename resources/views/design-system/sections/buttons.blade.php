@@ -5,15 +5,14 @@
     {{-- Primary Button --}}
     <div class="mb-12">
         <h3 class="text-lg font-semibold text-slate-900 mb-2">Primary Button</h3>
-        <p class="text-sm text-slate-500 mb-4">The main call-to-action button. Defaults to red. Supports 5 color variants.</p>
+        <p class="text-sm text-slate-500 mb-4">The main call-to-action button. Defaults to red. Four color variants tuned to the cool-toned app palette.</p>
 
         <div class="border border-slate-200 rounded-lg p-6 mb-3">
             <div class="flex flex-wrap gap-3">
                 <x-primary-button color="red">Red (default)</x-primary-button>
-                <x-primary-button color="green">Green</x-primary-button>
+                <button type="button" class="inline-flex items-center justify-center px-4 py-2 min-h-[44px] bg-teal-600 hover:bg-teal-700 focus:ring-teal-500 active:bg-teal-800 border border-transparent rounded-lg font-semibold text-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transition ease-in-out duration-150">Teal</button>
                 <x-primary-button color="sky">Sky</x-primary-button>
-                <x-primary-button color="emerald">Emerald</x-primary-button>
-                <x-primary-button color="amber">Amber</x-primary-button>
+                <button type="button" class="inline-flex items-center justify-center px-4 py-2 min-h-[44px] bg-slate-700 hover:bg-slate-800 focus:ring-slate-500 active:bg-slate-900 border border-transparent rounded-lg font-semibold text-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transition ease-in-out duration-150">Slate</button>
             </div>
         </div>
 
@@ -24,10 +23,9 @@
                 <span x-show="copied" x-cloak class="text-green-400">Copied!</span>
             </button>
             <pre class="bg-slate-800 text-slate-300 rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="code">&lt;x-primary-button&gt;Save&lt;/x-primary-button&gt;
-&lt;x-primary-button color="green"&gt;Confirm&lt;/x-primary-button&gt;
+&lt;x-primary-button color="teal"&gt;Confirm&lt;/x-primary-button&gt;
 &lt;x-primary-button color="sky"&gt;Info&lt;/x-primary-button&gt;
-&lt;x-primary-button color="emerald"&gt;Success&lt;/x-primary-button&gt;
-&lt;x-primary-button color="amber"&gt;Warning&lt;/x-primary-button&gt;</code></pre>
+&lt;x-primary-button color="slate"&gt;Dismiss&lt;/x-primary-button&gt;</code></pre>
         </div>
 
         {{-- Props table --}}
@@ -46,7 +44,52 @@
                         <td class="py-2 pr-4 font-mono text-xs text-sky-600">color</td>
                         <td class="py-2 pr-4 text-slate-500">string</td>
                         <td class="py-2 pr-4 font-mono text-xs">'red'</td>
-                        <td class="py-2 text-slate-500">red | green | sky | emerald | amber</td>
+                        <td class="py-2 text-slate-500">red | teal | sky | slate</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {{-- Semantic Roles --}}
+    <div class="mb-12">
+        <h3 class="text-lg font-semibold text-slate-900 mb-2">Semantic Roles</h3>
+        <p class="text-sm text-slate-500 mb-4">Each button color has a specific semantic purpose. Use the color that matches the action's intent.</p>
+
+        <div class="border border-slate-200 rounded-lg overflow-hidden">
+            <table class="w-full text-sm">
+                <thead class="text-left border-b bg-slate-50">
+                    <tr>
+                        <th class="font-semibold py-2.5 px-4">Color</th>
+                        <th class="font-semibold py-2.5 px-4">Role</th>
+                        <th class="font-semibold py-2.5 px-4 hidden md:table-cell">Usage Examples</th>
+                        <th class="font-semibold py-2.5 px-4">Preview</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b border-slate-200">
+                        <td class="py-2.5 px-4 font-mono text-xs text-sky-600">red</td>
+                        <td class="py-2.5 px-4 text-slate-700">Primary CTA</td>
+                        <td class="py-2.5 px-4 text-slate-500 hidden md:table-cell">Save, Submit, Advance matchday</td>
+                        <td class="py-2.5 px-4"><span class="inline-block w-16 h-6 rounded bg-red-600"></span></td>
+                    </tr>
+                    <tr class="border-b border-slate-200">
+                        <td class="py-2.5 px-4 font-mono text-xs text-sky-600">teal</td>
+                        <td class="py-2.5 px-4 text-slate-700">Success / Confirm</td>
+                        <td class="py-2.5 px-4 text-slate-500 hidden md:table-cell">Accept offer, Renew contract, Request loan</td>
+                        <td class="py-2.5 px-4"><span class="inline-block w-16 h-6 rounded bg-teal-600"></span></td>
+                    </tr>
+                    <tr class="border-b border-slate-200">
+                        <td class="py-2.5 px-4 font-mono text-xs text-sky-600">sky</td>
+                        <td class="py-2.5 px-4 text-slate-700">Informational / Process</td>
+                        <td class="py-2.5 px-4 text-slate-500 hidden md:table-cell">Conduct draw, Submit bid, Pre-contract offer</td>
+                        <td class="py-2.5 px-4"><span class="inline-block w-16 h-6 rounded bg-sky-600"></span></td>
+                    </tr>
+                    <tr>
+                        <td class="py-2.5 px-4 font-mono text-xs text-sky-600">slate</td>
+                        <td class="py-2.5 px-4 text-slate-700">Neutral / Dismiss</td>
+                        <td class="py-2.5 px-4 text-slate-500 hidden md:table-cell">Let go, Decline, Release player</td>
+                        <td class="py-2.5 px-4"><span class="inline-block w-16 h-6 rounded bg-slate-700"></span></td>
                     </tr>
                 </tbody>
             </table>

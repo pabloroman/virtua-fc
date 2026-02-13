@@ -70,17 +70,17 @@
     <h3 class="text-lg font-semibold text-slate-900 mb-3">Semantic Colors</h3>
     <p class="text-sm text-slate-500 mb-4">Status-communicating colors used consistently across the application.</p>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-        {{-- Success --}}
+        {{-- Success / Positive --}}
         <div>
-            <div class="text-sm font-semibold text-slate-700 mb-2">Success</div>
+            <div class="text-sm font-semibold text-slate-700 mb-2">Success / Positive</div>
             <div class="flex flex-wrap gap-3">
                 @foreach([
-                    ['class' => 'bg-green-50', 'name' => 'green-50'],
-                    ['class' => 'bg-green-100', 'name' => 'green-100'],
-                    ['class' => 'bg-green-500', 'name' => 'green-500'],
-                    ['class' => 'bg-green-600', 'name' => 'green-600'],
-                    ['class' => 'bg-emerald-500', 'name' => 'emerald-500'],
-                    ['class' => 'bg-emerald-600', 'name' => 'emerald-600'],
+                    ['class' => 'bg-teal-50', 'name' => 'teal-50'],
+                    ['class' => 'bg-teal-100', 'name' => 'teal-100'],
+                    ['class' => 'bg-teal-500', 'name' => 'teal-500'],
+                    ['class' => 'bg-teal-600', 'name' => 'teal-600'],
+                    ['class' => 'bg-teal-700', 'name' => 'teal-700'],
+                    ['class' => 'bg-teal-800', 'name' => 'teal-800'],
                 ] as $color)
                 <div class="text-center">
                     <div class="w-12 h-12 rounded-lg {{ $color['class'] }} border border-slate-200/50 shadow-sm mb-1"></div>
@@ -146,6 +146,26 @@
                 @endforeach
             </div>
         </div>
+    </div>
+
+    {{-- Button Color Palette --}}
+    <h3 class="text-lg font-semibold text-slate-900 mb-3">Button Color Palette</h3>
+    <p class="text-sm text-slate-500 mb-4">Four button colors tuned to harmonize with the cool-toned app palette. Red is the deliberate warm accent; the rest stay in the cool family.</p>
+    <div class="flex flex-wrap gap-6 mb-10">
+        @foreach([
+            ['class' => 'bg-red-600', 'name' => 'Red', 'role' => 'Primary CTA', 'value' => 'red-600'],
+            ['class' => 'bg-teal-600', 'name' => 'Teal', 'role' => 'Success / Confirm', 'value' => 'teal-600'],
+            ['class' => 'bg-sky-600', 'name' => 'Sky', 'role' => 'Informational', 'value' => 'sky-600'],
+            ['class' => 'bg-slate-700', 'name' => 'Slate', 'role' => 'Neutral / Dismiss', 'value' => 'slate-700'],
+        ] as $btn)
+        <div class="text-center">
+            <div class="w-20 h-10 rounded-lg {{ $btn['class'] }} shadow-sm mb-1.5 flex items-center justify-center">
+                <span class="text-[10px] font-semibold text-white">{{ $btn['name'] }}</span>
+            </div>
+            <div class="text-[10px] font-medium text-slate-700">{{ $btn['role'] }}</div>
+            <div class="text-[10px] text-slate-400">{{ $btn['value'] }}</div>
+        </div>
+        @endforeach
     </div>
 
     {{-- App Background Gradient --}}
