@@ -291,7 +291,20 @@ class KnockoutCupHandlerTest extends TestCase
 
     public function test_get_redirect_route_returns_cup_results(): void
     {
-        $route = $this->handler->getRedirectRoute($this->game, collect(), 1);
+        $cupTie = CupTie::factory()->create([
+            'game_id' => $this->game->id,
+            'competition_id' => $this->cupCompetition->id,
+            'round_number' => 1,
+        ]);
+
+        $cupMatch = GameMatch::factory()->create([
+            'game_id' => $this->game->id,
+            'competition_id' => $this->cupCompetition->id,
+            'cup_tie_id' => $cupTie->id,
+            'round_number' => 1,
+        ]);
+
+        $route = $this->handler->getRedirectRoute($this->game, collect([$cupMatch]), 14);
 
         $this->assertStringContainsString('/game/', $route);
         $this->assertStringContainsString('/results/ESPCUP/1', $route);
