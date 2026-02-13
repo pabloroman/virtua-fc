@@ -22,38 +22,46 @@ class ShowSquad
         // Get all players for the user's team, grouped by position
         $players = $this->lineupService->getPlayersByPositionGroup($gameId, $game->team_id);
 
-        // Contract renewal data
-        $renewalEligiblePlayers = $this->contractService->getPlayersEligibleForRenewal($game);
+        // Career-mode only: contract and transfer data
+        $renewalEligiblePlayers = collect();
         $renewalDemands = [];
-        foreach ($renewalEligiblePlayers as $player) {
-            $renewalDemands[$player->id] = $this->contractService->calculateRenewalDemand($player);
+        $pendingRenewals = collect();
+        $preContractOffers = collect();
+        $agreedPreContracts = collect();
+        $isTransferWindow = false;
+        $academyCount = 0;
+
+        if ($game->isCareerMode()) {
+            $renewalEligiblePlayers = $this->contractService->getPlayersEligibleForRenewal($game);
+            foreach ($renewalEligiblePlayers as $player) {
+                $renewalDemands[$player->id] = $this->contractService->calculateRenewalDemand($player);
+            }
+
+            $pendingRenewals = $this->contractService->getPlayersWithPendingRenewals($game);
+
+            $preContractOffers = TransferOffer::with(['gamePlayer.player', 'offeringTeam'])
+                ->where('game_id', $gameId)
+                ->where('status', TransferOffer::STATUS_PENDING)
+                ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
+                ->whereHas('gamePlayer', function ($query) use ($game) {
+                    $query->where('team_id', $game->team_id);
+                })
+                ->where('expires_at', '>=', $game->current_date)
+                ->orderByDesc('game_date')
+                ->get();
+
+            $agreedPreContracts = TransferOffer::with(['gamePlayer.player', 'offeringTeam'])
+                ->where('game_id', $gameId)
+                ->where('status', TransferOffer::STATUS_AGREED)
+                ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
+                ->whereHas('gamePlayer', function ($query) use ($game) {
+                    $query->where('team_id', $game->team_id);
+                })
+                ->get();
+
+            $isTransferWindow = $game->isTransferWindowOpen();
+            $academyCount = AcademyPlayer::where('game_id', $gameId)->where('team_id', $game->team_id)->count();
         }
-
-        $pendingRenewals = $this->contractService->getPlayersWithPendingRenewals($game);
-
-        // Pre-contract offers (players being poached)
-        $preContractOffers = TransferOffer::with(['gamePlayer.player', 'offeringTeam'])
-            ->where('game_id', $gameId)
-            ->where('status', TransferOffer::STATUS_PENDING)
-            ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
-            ->whereHas('gamePlayer', function ($query) use ($game) {
-                $query->where('team_id', $game->team_id);
-            })
-            ->where('expires_at', '>=', $game->current_date)
-            ->orderByDesc('game_date')
-            ->get();
-
-        // Agreed pre-contracts (players leaving at end of season)
-        $agreedPreContracts = TransferOffer::with(['gamePlayer.player', 'offeringTeam'])
-            ->where('game_id', $gameId)
-            ->where('status', TransferOffer::STATUS_AGREED)
-            ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
-            ->whereHas('gamePlayer', function ($query) use ($game) {
-                $query->where('team_id', $game->team_id);
-            })
-            ->get();
-
-        $academyCount = AcademyPlayer::where('game_id', $gameId)->where('team_id', $game->team_id)->count();
 
         return view('squad', [
             'game' => $game,
@@ -66,7 +74,7 @@ class ShowSquad
             'pendingRenewals' => $pendingRenewals,
             'preContractOffers' => $preContractOffers,
             'agreedPreContracts' => $agreedPreContracts,
-            'isTransferWindow' => $game->isTransferWindowOpen(),
+            'isTransferWindow' => $isTransferWindow,
             'academyCount' => $academyCount,
         ]);
     }

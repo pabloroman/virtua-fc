@@ -15,6 +15,7 @@ class ShowLoans
     public function __invoke(string $gameId)
     {
         $game = Game::with(['team', 'finances'])->findOrFail($gameId);
+        abort_if($game->isTournamentMode(), 404);
 
         $loans = $this->loanService->getActiveLoans($game);
 

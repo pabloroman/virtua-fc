@@ -79,6 +79,7 @@ class GameProjector extends Projector
         Game::create([
             'id' => $gameId,
             'user_id' => $event->userId,
+            'game_mode' => $event->gameMode,
             'player_name' => $event->playerName,
             'team_id' => $teamId,
             'competition_id' => $competitionId,
@@ -100,15 +101,13 @@ class GameProjector extends Projector
         // Initialize game players for all teams in the competition
         $this->initializeGamePlayers($gameId, $competitionId, $season);
 
-        // Initialize club finances with projections
+        // Career-mode only: finances, cup draws, European competitions
         $game = Game::find($gameId);
-        $this->budgetProjectionService->generateProjections($game);
-
-        // Conduct first round cup draws for all cup competitions
-        $this->conductInitialCupDraws($gameId, $season);
-
-        // Initialize Swiss format competitions (UCL, UEL, UECL)
-        $this->initializeSwissFormatCompetitions($gameId, $teamId, $season);
+        if ($game->isCareerMode()) {
+            $this->budgetProjectionService->generateProjections($game);
+            $this->conductInitialCupDraws($gameId, $season);
+            $this->initializeSwissFormatCompetitions($gameId, $teamId, $season);
+        }
     }
 
     public function onMatchdayAdvanced(MatchdayAdvanced $event): void

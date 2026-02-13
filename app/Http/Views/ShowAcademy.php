@@ -16,6 +16,7 @@ class ShowAcademy
     public function __invoke(string $gameId)
     {
         $game = Game::with('team')->findOrFail($gameId);
+        abort_if($game->isTournamentMode(), 404);
 
         $prospects = AcademyPlayer::where('game_id', $gameId)
             ->where('team_id', $game->team_id)
