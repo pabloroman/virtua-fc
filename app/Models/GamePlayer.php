@@ -172,7 +172,7 @@ class GamePlayer extends Model
      */
     public function latestRenewalNegotiation(): HasOne
     {
-        return $this->hasOne(RenewalNegotiation::class)->latestOfMany('created_at');
+        return $this->hasOne(RenewalNegotiation::class)->latest();
     }
 
     /**
