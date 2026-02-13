@@ -142,6 +142,8 @@ return [
 
     // Dashboard
     'your_games' => 'Tus Partidas',
+    'delete_game' => 'Eliminar Partida',
+    'confirm_delete_game' => '¿Estás seguro de que quieres eliminar esta partida? Esta acción no se puede deshacer.',
     'start_game' => 'Iniciar Partida',
     'manager_name' => 'Nombre del mánager',
 

@@ -22,6 +22,7 @@ class Dashboard
         return view('dashboard', [
             'user' => $request->user(),
             'games' => $games,
+            'canCreateGame' => $games->count() < 3,
         ]);
     }
 }

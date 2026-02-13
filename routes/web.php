@@ -3,6 +3,7 @@
 use App\Http\Actions\StartImpersonation;
 use App\Http\Actions\StopImpersonation;
 use App\Http\Views\AdminUsers;
+use App\Http\Actions\DeleteGame;
 use App\Http\Actions\AcceptCounterOffer;
 use App\Http\Actions\CompleteOnboarding;
 use App\Http\Actions\AcceptTransferOffer;
@@ -62,6 +63,8 @@ Route::middleware('auth')->group(function () {
 
     // All game routes require ownership verification
     Route::middleware('game.owner')->group(function () {
+        Route::delete('/game/{gameId}', DeleteGame::class)->name('game.destroy');
+
         // Game Views
         Route::get('/game/{gameId}', ShowGame::class)->name('show-game');
         Route::get('/game/{gameId}/squad', ShowSquad::class)->name('game.squad');

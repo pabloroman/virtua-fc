@@ -70,4 +70,8 @@ return [
     // Academy
     'academy_player_promoted' => ':player ha sido subido al primer equipo.',
     'academy_player_not_found' => 'Jugador no encontrado en la cantera.',
+
+    // Game management
+    'game_deleted' => 'Partida eliminada correctamente.',
+    'game_limit_reached' => 'Has alcanzado el límite máximo de 3 partidas. Elimina una para crear otra nueva.',
 ];
