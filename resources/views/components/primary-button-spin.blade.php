@@ -13,7 +13,7 @@ $colorClasses = $colors[$color] ?? $colors['red'];
 
 <button
     :disabled="loading"
-    {{ $attributes->merge(['type' => 'submit', 'class' => "inline-flex items-center justify-center px-4 py-2 min-h-[44px] {$colorClasses} border border-transparent rounded-lg font-semibold text-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition ease-in-out duration-150"]) }}>
+    {{ $attributes->merge(['type' => 'submit', 'class' => "inline-flex items-center justify-center px-4 py-2 min-h-[44px] sm:min-h-0 {$colorClasses} border border-transparent rounded-lg font-semibold text-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition ease-in-out duration-150"]) }}>
     <span x-show="!loading">{{ $slot }}</span>
     <span x-show="loading" class="p-0.5">
         <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

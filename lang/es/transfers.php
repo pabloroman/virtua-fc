@@ -22,7 +22,7 @@ return [
     // Section headers
     'pre_contract_offers_received' => 'Ofertas de Precontrato Recibidas',
     'players_leaving_free' => 'Jugadores que Se Van Libres',
-    'expiring_contracts_section' => 'Contratos por Expirar',
+    'expiring_contracts_section' => 'Jugadores en Último Año de Contrato',
     'pending_renewals_section' => 'Renovaciones Pendientes',
     'loans_out_section' => 'Cesiones Activas (Salidas)',
     'loan_searches_section' => 'Buscando Destino de Cesión',

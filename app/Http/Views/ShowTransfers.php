@@ -129,6 +129,22 @@ class ShowTransfers
             }
         }
 
+        // Pre-compute renewal offer midpoints (rounded up to nearest 10K)
+        $renewalMidpoints = [];
+        foreach ($negotiatingPlayers as $player) {
+            $demand = $renewalDemands[$player->id] ?? null;
+            $negotiation = $activeNegotiations->get($player->id);
+            $renewalMidpoints[$player->id] = $demand
+                ? (int) (ceil(($player->annual_wage + $demand['wage']) / 2 / 100 / 10000) * 10000)
+                : (int) (ceil($negotiation->counter_offer / 100 / 10000) * 10000);
+        }
+        foreach ($renewalEligiblePlayers as $player) {
+            $demand = $renewalDemands[$player->id] ?? null;
+            $renewalMidpoints[$player->id] = $demand
+                ? (int) (ceil(($player->annual_wage + $demand['wage']) / 2 / 100 / 10000) * 10000)
+                : 0;
+        }
+
         // Declined renewals
         $declinedRenewals = GamePlayer::with(['player', 'latestRenewalNegotiation'])
             ->where('game_id', $gameId)
@@ -176,6 +192,7 @@ class ShowTransfers
             'declinedRenewals' => $declinedRenewals,
             'activeNegotiations' => $activeNegotiations,
             'negotiatingPlayers' => $negotiatingPlayers,
+            'renewalMidpoints' => $renewalMidpoints,
             'currentWindow' => $currentWindow,
             'isTransferWindow' => $isTransferWindow,
             'windowCountdown' => $windowCountdown,

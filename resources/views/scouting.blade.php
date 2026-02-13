@@ -201,9 +201,9 @@
                                 </div>
                                 <form method="post" action="{{ route('game.scouting.cancel', $game->id) }}">
                                     @csrf
-                                    <button type="submit" class="px-4 py-2 text-sm text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors min-h-[44px]">
+                                    <x-ghost-button type="submit" color="red" class="text-sm px-4 py-2 rounded-lg">
                                         {{ __('transfers.cancel_search') }}
-                                    </button>
+                                    </x-ghost-button>
                                 </form>
                             </div>
                         </div>
@@ -373,7 +373,7 @@
                                 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
                                     <h4 class="font-semibold text-lg text-slate-900">{{ __('transfers.scout_results') }}</h4>
                                     <a href="{{ route('game.scouting', ['gameId' => $game->id, 'new' => 1]) }}"
-                                       class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-sky-600 hover:text-sky-800 hover:bg-sky-50 border border-sky-200 rounded-lg transition-colors min-h-[44px]">
+                                       class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-sky-600 hover:text-sky-800 hover:bg-sky-50 border border-sky-200 rounded-lg transition-colors min-h-[44px] sm:min-h-0">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                                         {{ __('transfers.new_search') }}
                                     </a>
@@ -411,7 +411,7 @@
                                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">{{ __('transfers.expiring_only') }}</span>
                                     @endif
                                     <a href="{{ route('game.scouting', ['gameId' => $game->id, 'new' => 1]) }}"
-                                       class="ml-auto text-xs font-semibold text-sky-600 hover:text-sky-800 transition-colors min-h-[44px] inline-flex items-center">
+                                       class="ml-auto text-xs font-semibold text-sky-600 hover:text-sky-800 transition-colors min-h-[44px] sm:min-h-0 inline-flex items-center">
                                         {{ __('transfers.modify_search') }}
                                     </a>
                                 </div>
@@ -469,10 +469,9 @@
                                                             <span class="text-slate-700 font-medium tabular-nums">{{ $abilityLow }}-{{ $abilityHigh }}</span>
                                                         </td>
                                                         <td class="py-2 text-right">
-                                                            <button @click="$dispatch('open-modal', 'scout-player-{{ $player->id }}')"
-                                                               class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-white bg-sky-500 hover:bg-sky-600 rounded-lg transition-colors cursor-pointer min-h-[44px]">
+                                                            <x-ghost-button color="blue" @click="$dispatch('open-modal', 'scout-player-{{ $player->id }}')">
                                                                 {{ __('transfers.view_report') }}
-                                                            </button>
+                                                            </x-ghost-button>
                                                         </td>
                                                     </tr>
                                                 @endforeach
@@ -601,10 +600,8 @@
                                                                 <form method="post" action="{{ route('game.scouting.pre-contract', [$game->id, $scoutPlayer->id]) }}">
                                                                     @csrf
                                                                     <div class="mb-3">
-                                                                        <label for="offered_wage_{{ $scoutPlayer->id }}" class="block text-sm font-medium text-sky-800 mb-1">{{ __('transfers.offered_wage_euros') }}</label>
-                                                                        <x-text-input type="number" name="offered_wage" id="offered_wage_{{ $scoutPlayer->id }}" min="0" step="100000"
-                                                                               value="{{ (int)($detail['wage_demand'] / 100) }}"
-                                                                               class="w-full" />
+                                                                        <label class="block text-sm font-medium text-sky-800 mb-1">{{ __('transfers.offered_wage_euros') }}</label>
+                                                                        <x-money-input name="offered_wage" :value="(int)($detail['wage_demand'] / 100)" />
                                                                         <p class="text-xs text-sky-600 mt-1">{{ __('transfers.wage_demand') }}: {{ $detail['formatted_wage_demand'] }}/{{ __('transfers.year_abbr') }}</p>
                                                                     </div>
                                                                     <x-primary-button color="sky" class="w-full py-2.5">{{ __('transfers.submit_pre_contract') }}</x-primary-button>
@@ -668,10 +665,8 @@
                                                                 <form method="post" action="{{ route('game.scouting.bid', [$game->id, $scoutPlayer->id]) }}">
                                                                     @csrf
                                                                     <div class="mb-4">
-                                                                        <label for="bid_amount_{{ $scoutPlayer->id }}" class="block text-sm font-medium text-slate-700 mb-1">{{ __('transfers.your_bid_euros') }}</label>
-                                                                        <x-text-input type="number" name="bid_amount" id="bid_amount_{{ $scoutPlayer->id }}" min="0" step="100000"
-                                                                               value="{{ (int)($detail['asking_price'] / 100) }}"
-                                                                               class="w-full" />
+                                                                        <label class="block text-sm font-medium text-slate-700 mb-1">{{ __('transfers.your_bid_euros') }}</label>
+                                                                        <x-money-input name="bid_amount" :value="(int)($detail['asking_price'] / 100)" />
                                                                         <p class="text-xs text-slate-500 mt-1">{{ __('transfers.asking_price') }}: {{ $detail['formatted_asking_price'] }}</p>
                                                                     </div>
                                                                     <x-primary-button color="sky" class="w-full py-2.5">{{ __('transfers.submit_bid') }}</x-primary-button>
@@ -704,7 +699,7 @@
                         {{-- ============================================= --}}
                         @if($loansIn->isNotEmpty())
                         <div class="border rounded-lg overflow-hidden">
-                            <div class="px-4 py-3 bg-slate-50 border-b">
+                            <div class="px-5 py-3 bg-slate-50 border-b">
                                 <h4 class="font-semibold text-sm text-slate-900 flex items-center gap-2">
                                     {{ __('transfers.active_loans_in') }}
                                     <span class="text-xs font-normal text-slate-400">({{ $loansIn->count() }})</span>
@@ -804,10 +799,10 @@
                                                     <td class="py-2 text-center text-slate-600 tabular-nums">{{ __('transfers.results_count', ['count' => $resultCount]) }}</td>
                                                     <td class="py-2 text-right">
                                                         @if($isActive)
-                                                            <span class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-white bg-sky-500 rounded-lg min-h-[44px]">{{ __('transfers.view_results') }}</span>
+                                                            <span class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-white bg-sky-500 rounded-lg min-h-[44px] sm:min-h-0">{{ __('transfers.view_results') }}</span>
                                                         @else
                                                             <a href="{{ route('game.scouting', ['gameId' => $game->id, 'report' => $historyReport->id]) }}"
-                                                               class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-sky-600 hover:text-sky-800 border border-sky-200 hover:bg-sky-50 rounded-lg transition-colors min-h-[44px]">
+                                                               class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-sky-600 hover:text-sky-800 border border-sky-200 hover:bg-sky-50 rounded-lg transition-colors min-h-[44px] sm:min-h-0">
                                                                 {{ __('transfers.view_results') }}
                                                             </a>
                                                         @endif

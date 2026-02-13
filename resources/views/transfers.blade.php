@@ -305,7 +305,7 @@
                             {{-- EXPIRING CONTRACTS + ACTIVE NEGOTIATIONS --}}
                             @if($renewalEligiblePlayers->isNotEmpty() || $negotiatingPlayers->isNotEmpty())
                             <div class="border rounded-lg overflow-hidden">
-                                <div class="px-4 py-3 bg-slate-50 border-b">
+                                <div class="px-5 py-3 bg-slate-50 border-b">
                                     <h4 class="font-semibold text-sm text-slate-900 flex items-center gap-2">
                                         {{ __('transfers.expiring_contracts_section') }}
                                         <span class="text-xs font-normal text-slate-400">({{ $renewalEligiblePlayers->count() + $negotiatingPlayers->count() }})</span>
@@ -320,19 +320,31 @@
                                     @endphp
                                     @if($negotiation)
                                     <div class="px-4 py-3" x-data="{ showForm: false }">
+                                        <div class="flex justify-between">
                                         <div class="flex items-center gap-2 mb-1">
                                             <x-position-badge :position="$player->position" size="sm" />
                                             <span class="font-medium text-sm text-slate-900 truncate">{{ $player->player->name }}</span>
                                         </div>
 
                                         @if($negotiation->isPending())
-                                            {{-- PENDING STATE — waiting for matchday --}}
-                                            <div class="flex items-center gap-1.5 mb-1.5">
-                                                <svg class="w-3.5 h-3.5 text-amber-500 animate-pulse shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
-                                                </svg>
-                                                <span class="text-xs font-medium text-amber-600">{{ __('transfers.negotiating') }}</span>
-                                            </div>
+                                        {{-- PENDING STATE — waiting for matchday --}}
+                                        <div class="flex items-center gap-1.5 mb-1.5">
+                                            <svg class="w-3.5 h-3.5 text-amber-500 animate-pulse shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                                            </svg>
+                                            <span class="text-xs font-medium text-amber-600">{{ __('transfers.negotiating') }}</span>
+                                        </div>
+                                        @elseif($negotiation->isCountered())
+                                            @if($mood)
+                                                <div class="flex items-center gap-1.5 mb-1.5">
+                                                    <span class="w-2 h-2 rounded-full shrink-0 {{ $mood['color'] === 'green' ? 'bg-green-500' : ($mood['color'] === 'amber' ? 'bg-amber-500' : 'bg-red-500') }}"></span>
+                                                    <span class="text-xs text-slate-500">{{ __('transfers.round_of', ['round' => $negotiation->round, 'max' => 3]) }}</span>
+                                                </div>
+                                            @endif
+                                        @endif
+                                        </div>
+
+                                        @if($negotiation->isPending())
                                             <div class="text-xs text-slate-500 mb-1">
                                                 {{ __('transfers.your_offer_label') }}: {{ $negotiation->formatted_user_offer }}{{ __('transfers.per_year_short') }} &middot; {{ $negotiation->offered_years }} {{ $negotiation->offered_years === 1 ? __('transfers.year_singular') : __('transfers.years_plural') }}
                                             </div>
@@ -340,12 +352,7 @@
 
                                         @elseif($negotiation->isCountered())
                                             {{-- COUNTERED STATE — player responded with counter --}}
-                                            @if($mood)
-                                            <div class="flex items-center gap-1.5 mb-1.5">
-                                                <span class="w-2 h-2 rounded-full shrink-0 {{ $mood['color'] === 'green' ? 'bg-green-500' : ($mood['color'] === 'amber' ? 'bg-amber-500' : 'bg-red-500') }}"></span>
-                                                <span class="text-xs text-slate-500">{{ __('transfers.round_of', ['round' => $negotiation->round, 'max' => 3]) }}</span>
-                                            </div>
-                                            @endif
+
                                             <div class="text-xs text-slate-500 mb-1">
                                                 {{ __('transfers.your_offer_label') }}: {{ $negotiation->formatted_user_offer }} &middot; {{ $negotiation->offered_years }}{{ __('transfers.years_short') }}
                                             </div>
@@ -362,32 +369,27 @@
                                                 </form>
 
                                                 @if($negotiation->round < 3)
-                                                <button @click="showForm = !showForm" class="px-2 py-1.5 text-xs text-sky-600 hover:text-sky-800 hover:bg-sky-50 rounded transition-colors whitespace-nowrap min-h-[44px]">
+                                                <x-ghost-button @click="showForm = !showForm">
                                                     {{ __('transfers.new_offer') }}
-                                                </button>
+                                                </x-ghost-button>
                                                 @endif
 
                                                 <form method="post" action="{{ route('game.transfers.decline-renewal', [$game->id, $player->id]) }}"
                                                       onsubmit="return confirm('{{ __('transfers.decline_renewal_confirm', ['player' => $player->player->name]) }}')">
                                                     @csrf
-                                                    <button type="submit" class="px-2 py-1.5 text-xs text-red-600 hover:text-red-800 hover:bg-red-50 rounded transition-colors whitespace-nowrap min-h-[44px]">
+                                                    <x-ghost-button type="submit" color="red">
                                                         {{ __('transfers.decline_renewal') }}
-                                                    </button>
+                                                    </x-ghost-button>
                                                 </form>
                                             </div>
 
                                             {{-- New offer form (inline, toggled) --}}
                                             <div x-show="showForm" x-cloak class="mt-3 pt-3 border-t border-slate-100">
-                                                @php
-                                                    $demand = $renewalDemands[$player->id] ?? null;
-                                                    $midpoint = $demand ? (int)(($player->annual_wage + $demand['wage']) / 2 / 100) : (int)($negotiation->counter_offer / 100);
-                                                @endphp
                                                 <form method="post" action="{{ route('game.transfers.renew', [$game->id, $player->id]) }}">
                                                     @csrf
                                                     <div class="mb-2">
                                                         <label class="text-xs text-slate-500 block mb-1">{{ __('transfers.your_offer') }}</label>
-                                                        <input type="number" name="offer_wage" value="{{ $midpoint }}" min="1"
-                                                               class="w-full px-3 py-2 text-sm border border-slate-300 rounded-md focus:ring-red-500 focus:border-red-500">
+                                                        <x-money-input name="offer_wage" :value="$renewalMidpoints[$player->id]" />
                                                     </div>
                                                     <div class="mb-3">
                                                         <label class="text-xs text-slate-500 block mb-1">{{ __('transfers.duration') }}</label>
@@ -397,13 +399,10 @@
                                                                 <input type="radio" name="offered_years" value="{{ $y }}" class="peer sr-only"
                                                                        {{ $y === $negotiation->preferred_years ? 'checked' : '' }}>
                                                                 <div class="text-center py-1.5 px-2 text-xs border rounded cursor-pointer transition-colors
-                                                                    peer-checked:bg-red-600 peer-checked:text-white peer-checked:border-red-600
+                                                                    peer-checked:bg-sky-600 peer-checked:text-white peer-checked:border-sky-600
                                                                     hover:border-slate-400
-                                                                    {{ $y === $negotiation->preferred_years ? 'ring-1 ring-red-300' : '' }}">
+                                                                    {{ $y === $negotiation->preferred_years ? 'ring-1 ring-sky-300' : '' }}">
                                                                     {{ $y }} {{ $y === 1 ? __('transfers.year_singular') : __('transfers.years_plural') }}
-                                                                    @if($y === $negotiation->preferred_years)
-                                                                        <span class="text-[10px] opacity-75 block">{{ __('transfers.preferred_years') }}</span>
-                                                                    @endif
                                                                 </div>
                                                             </label>
                                                             @endfor
@@ -426,42 +425,36 @@
                                         $demand = $renewalDemands[$player->id] ?? null;
                                         $mood = $renewalMoods[$player->id] ?? null;
                                         $hasPendingOffer = $preContractOffers->where('game_player_id', $player->id)->isNotEmpty();
-                                        $midpoint = $demand ? (int)(($player->annual_wage + $demand['wage']) / 2 / 100) : 0;
                                     @endphp
                                     <div class="px-4 py-3 {{ $hasPendingOffer ? 'bg-red-50' : '' }}" x-data="{ showForm: false }">
+                                        <div class="flex justify-between">
                                         <div class="flex items-center gap-2 mb-1">
                                             <x-position-badge :position="$player->position" size="sm" />
                                             <span class="font-medium text-sm text-slate-900 truncate">{{ $player->player->name }}</span>
                                         </div>
-                                        <div class="text-xs text-slate-500 mb-1">
-                                            {{ $player->formatted_wage }}{{ __('squad.per_year') }}
-                                        </div>
                                         @if($mood)
-                                        <div class="flex items-center gap-1.5 mb-1.5">
-                                            <span class="w-2 h-2 rounded-full shrink-0 {{ $mood['color'] === 'green' ? 'bg-green-500' : ($mood['color'] === 'amber' ? 'bg-amber-500' : 'bg-red-500') }}"></span>
-                                            <span class="text-xs {{ $mood['color'] === 'green' ? 'text-green-600' : ($mood['color'] === 'amber' ? 'text-amber-600' : 'text-red-600') }}">{{ $mood['label'] }}</span>
-                                        </div>
+                                            <div class="flex items-center gap-1.5 mb-1.5">
+                                                <span class="w-2 h-2 rounded-full shrink-0 {{ $mood['color'] === 'green' ? 'bg-green-500' : ($mood['color'] === 'amber' ? 'bg-amber-500' : 'bg-red-500') }}"></span>
+                                                <span class="text-xs {{ $mood['color'] === 'green' ? 'text-green-600' : ($mood['color'] === 'amber' ? 'text-amber-600' : 'text-red-600') }}">{{ $mood['label'] }}</span>
+                                            </div>
                                         @endif
+                                        </div>
                                         @if($hasPendingOffer)
                                             <div class="text-xs text-amber-600 mb-2">{{ __('squad.has_pre_contract_offers') }}</div>
-                                        @elseif($demand)
-                                            <div class="text-xs text-slate-400 mb-2">
-                                                {{ __('transfers.player_demand') }}: {{ $demand['formattedWage'] }}{{ __('transfers.per_year_short') }} &middot; {{ $demand['contractYears'] }} {{ $demand['contractYears'] === 1 ? __('transfers.year_singular') : __('transfers.years_plural') }}
-                                            </div>
                                         @endif
 
                                         {{-- Default state: Negotiate / Decline buttons --}}
                                         @if($demand)
                                         <div x-show="!showForm" class="flex items-center gap-2">
-                                            <button @click="showForm = true" class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors min-h-[44px]">
+                                            <x-ghost-button color="sky" type="button" @click="showForm = true" class="text-xs !px-3 !py-1.5">
                                                 {{ __('transfers.negotiate') }}
-                                            </button>
+                                            </x-ghost-button>
                                             <form method="post" action="{{ route('game.transfers.decline-renewal', [$game->id, $player->id]) }}"
                                                   onsubmit="return confirm('{{ __('transfers.decline_renewal_confirm', ['player' => $player->player->name]) }}')">
                                                 @csrf
-                                                <button type="submit" class="px-2 py-1.5 text-xs text-red-600 hover:text-red-800 hover:bg-red-50 rounded transition-colors whitespace-nowrap min-h-[44px]">
+                                                <x-ghost-button type="submit" color="red">
                                                     {{ __('transfers.decline_renewal') }}
-                                                </button>
+                                                </x-ghost-button>
                                             </form>
                                         </div>
 
@@ -474,8 +467,7 @@
                                                 @csrf
                                                 <div class="mb-2">
                                                     <label class="text-xs text-slate-500 block mb-1">{{ __('transfers.your_offer') }}</label>
-                                                    <input type="number" name="offer_wage" value="{{ $midpoint }}" min="1"
-                                                           class="w-full px-3 py-2 text-sm border border-slate-300 rounded-md focus:ring-red-500 focus:border-red-500">
+                                                    <x-money-input name="offer_wage" :value="$renewalMidpoints[$player->id]" />
                                                 </div>
                                                 <div class="mb-3">
                                                     <label class="text-xs text-slate-500 block mb-1">{{ __('transfers.duration') }}</label>
@@ -485,13 +477,10 @@
                                                             <input type="radio" name="offered_years" value="{{ $y }}" class="peer sr-only"
                                                                    {{ $y === $demand['contractYears'] ? 'checked' : '' }}>
                                                             <div class="text-center py-1.5 px-2 text-xs border rounded cursor-pointer transition-colors
-                                                                peer-checked:bg-red-600 peer-checked:text-white peer-checked:border-red-600
+                                                                peer-checked:bg-sky-600 peer-checked:text-white peer-checked:border-sky-600
                                                                 hover:border-slate-400
-                                                                {{ $y === $demand['contractYears'] ? 'ring-1 ring-red-300' : '' }}">
+                                                                {{ $y === $demand['contractYears'] ? 'ring-1 ring-sky-300' : '' }}">
                                                                 {{ $y }} {{ $y === 1 ? __('transfers.year_singular') : __('transfers.years_plural') }}
-                                                                @if($y === $demand['contractYears'])
-                                                                    <span class="text-[10px] opacity-75 block">{{ __('transfers.preferred_years') }}</span>
-                                                                @endif
                                                             </div>
                                                         </label>
                                                         @endfor
@@ -513,7 +502,7 @@
                             {{-- DECLINED RENEWALS --}}
                             @if($declinedRenewals->isNotEmpty())
                             <div class="border rounded-lg overflow-hidden opacity-60">
-                                <div class="px-4 py-3 bg-slate-50 border-b">
+                                <div class="px-5 py-3 bg-slate-50 border-b">
                                     <h4 class="font-semibold text-sm text-slate-500 flex items-center gap-2">
                                         {{ __('transfers.declined_renewals') }}
                                         <span class="text-xs font-normal text-slate-400">({{ $declinedRenewals->count() }})</span>
@@ -529,7 +518,7 @@
                                             </div>
                                             <form method="post" action="{{ route('game.transfers.reconsider-renewal', [$game->id, $player->id]) }}">
                                                 @csrf
-                                                <button type="submit" class="text-xs text-sky-600 hover:text-sky-800 hover:underline whitespace-nowrap min-h-[44px]">
+                                                <button type="submit" class="text-xs text-sky-600 hover:text-sky-800 hover:underline whitespace-nowrap min-h-[44px] sm:min-h-0 rounded focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-1">
                                                     {{ __('transfers.reconsider_renewal') }}
                                                 </button>
                                             </form>
@@ -543,7 +532,7 @@
                             {{-- PENDING RENEWALS --}}
                             @if($pendingRenewals->isNotEmpty())
                             <div class="border rounded-lg overflow-hidden">
-                                <div class="px-4 py-3 bg-slate-50 border-b">
+                                <div class="px-5 py-3 bg-slate-50 border-b">
                                     <h4 class="font-semibold text-sm text-slate-900">{{ __('transfers.pending_renewals_section') }}</h4>
                                 </div>
                                 <div class="divide-y divide-slate-100">
@@ -568,7 +557,7 @@
 
                             {{-- LISTED PLAYERS --}}
                             <div class="border rounded-lg overflow-hidden">
-                                <div class="px-4 py-3 bg-slate-50 border-b flex items-center justify-between">
+                                <div class="px-5 py-3 bg-slate-50 border-b flex items-center justify-between">
                                     <h4 class="font-semibold text-sm text-slate-900">{{ __('transfers.listed_players') }}</h4>
                                     <a href="{{ route('game.squad', $game->id) }}" class="text-xs text-sky-600 hover:text-sky-800">
                                         + {{ __('transfers.list_more_from_squad') }}
@@ -603,9 +592,9 @@
                                             </div>
                                             <form method="post" action="{{ route('game.transfers.unlist', [$game->id, $player->id]) }}">
                                                 @csrf
-                                                <button type="submit" class="px-2 py-1 text-xs text-red-600 hover:text-red-800 hover:bg-red-50 rounded transition-colors whitespace-nowrap min-h-[44px]">
+                                                <x-ghost-button type="submit" color="red">
                                                     {{ __('app.remove') }}
-                                                </button>
+                                                </x-ghost-button>
                                             </form>
                                         </div>
                                     </div>
@@ -617,7 +606,7 @@
                             {{-- LOANS OUT --}}
                             @if($loansOut->isNotEmpty())
                             <div class="border rounded-lg overflow-hidden">
-                                <div class="px-4 py-3 bg-slate-50 border-b">
+                                <div class="px-5 py-3 bg-slate-50 border-b">
                                     <h4 class="font-semibold text-sm text-slate-900 flex items-center gap-2">
                                         {{ __('transfers.loans_out_section') }}
                                         <span class="text-xs font-normal text-slate-400">({{ $loansOut->count() }})</span>

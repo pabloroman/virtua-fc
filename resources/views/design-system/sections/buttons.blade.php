@@ -10,9 +10,9 @@
         <div class="border border-slate-200 rounded-lg p-6 mb-3">
             <div class="flex flex-wrap gap-3">
                 <x-primary-button color="red">Red (default)</x-primary-button>
-                <button type="button" class="inline-flex items-center justify-center px-4 py-2 min-h-[44px] bg-teal-600 hover:bg-teal-700 focus:ring-teal-500 active:bg-teal-800 border border-transparent rounded-lg font-semibold text-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transition ease-in-out duration-150">Teal</button>
+                <button type="button" class="inline-flex items-center justify-center px-4 py-2 min-h-[44px] sm:min-h-0 bg-teal-600 hover:bg-teal-700 focus:ring-teal-500 active:bg-teal-800 border border-transparent rounded-lg font-semibold text-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transition ease-in-out duration-150">Teal</button>
                 <x-primary-button color="sky">Sky</x-primary-button>
-                <button type="button" class="inline-flex items-center justify-center px-4 py-2 min-h-[44px] bg-slate-700 hover:bg-slate-800 focus:ring-slate-500 active:bg-slate-900 border border-transparent rounded-lg font-semibold text-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transition ease-in-out duration-150">Slate</button>
+                <button type="button" class="inline-flex items-center justify-center px-4 py-2 min-h-[44px] sm:min-h-0 bg-slate-700 hover:bg-slate-800 focus:ring-slate-500 active:bg-slate-900 border border-transparent rounded-lg font-semibold text-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transition ease-in-out duration-150">Slate</button>
             </div>
         </div>
 
@@ -165,7 +165,7 @@
         <div class="border border-slate-200 rounded-lg p-6 mb-3" x-data="{ loading: false }">
             <div class="flex items-center gap-4">
                 <button @click="loading = !loading"
-                        class="inline-flex items-center justify-center px-4 py-2 min-h-[44px] bg-red-600 hover:bg-red-700 border border-transparent rounded-lg font-semibold text-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition ease-in-out duration-150"
+                        class="inline-flex items-center justify-center px-4 py-2 min-h-[44px] sm:min-h-0 bg-red-600 hover:bg-red-700 border border-transparent rounded-lg font-semibold text-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition ease-in-out duration-150"
                         :disabled="loading">
                     <svg x-show="loading" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -220,16 +220,16 @@
         <div class="border border-slate-200 rounded-lg p-6">
             <div class="flex flex-wrap items-end gap-4">
                 <div class="text-center">
-                    <button class="inline-flex items-center justify-center px-3 py-1 min-h-[44px] bg-red-600 hover:bg-red-700 rounded-lg text-xs font-semibold text-white transition">Small (px-3 py-1)</button>
+                    <button class="inline-flex items-center justify-center px-3 py-1 min-h-[44px] sm:min-h-0 bg-red-600 hover:bg-red-700 rounded-lg text-xs font-semibold text-white transition">Small (px-3 py-1)</button>
                 </div>
                 <div class="text-center">
                     <x-primary-button>Standard (px-4 py-2)</x-primary-button>
                 </div>
                 <div class="text-center">
-                    <button class="inline-flex items-center justify-center px-6 py-3 min-h-[44px] bg-red-600 hover:bg-red-700 rounded-lg text-sm font-semibold text-white transition">Large (px-6 py-3)</button>
+                    <button class="inline-flex items-center justify-center px-6 py-3 min-h-[44px] sm:min-h-0 bg-red-600 hover:bg-red-700 rounded-lg text-sm font-semibold text-white transition">Large (px-6 py-3)</button>
                 </div>
                 <div class="text-center">
-                    <button class="w-full inline-flex items-center justify-center px-4 py-2 min-h-[44px] bg-red-600 hover:bg-red-700 rounded-lg text-sm font-semibold text-white transition">Full Width (w-full)</button>
+                    <button class="w-full inline-flex items-center justify-center px-4 py-2 min-h-[44px] sm:min-h-0 bg-red-600 hover:bg-red-700 rounded-lg text-sm font-semibold text-white transition">Full Width (w-full)</button>
                 </div>
             </div>
         </div>

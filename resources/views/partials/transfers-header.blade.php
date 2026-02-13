@@ -6,7 +6,7 @@
         @if($game->currentInvestment)
         <div class="flex items-center gap-2">
             <span class="text-sm text-slate-500">{{ __('transfers.budget') }}</span>
-            <span class="text-sm font-bold text-slate-900">{{ $game->currentInvestment->formatted_transfer_budget }}</span>
+            <span class="text-sm font-semibold text-slate-900">{{ $game->currentInvestment->formatted_transfer_budget }}</span>
         </div>
         @endif
 

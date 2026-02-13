@@ -51,7 +51,7 @@
                                         <button
                                             type="button"
                                             @click="confirmDelete = true"
-                                            class="inline-flex items-center justify-center w-9 h-9 min-h-[44px] min-w-[44px] rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                                            class="inline-flex items-center justify-center w-9 h-9 min-h-[44px] sm:min-h-0 min-w-[44px] rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
                                             title="{{ __('game.delete_game') }}"
                                         >
                                             <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -71,7 +71,7 @@
                                         <button
                                             type="button"
                                             @click="confirmDelete = false"
-                                            class="inline-flex items-center px-3 py-2 min-h-[44px] bg-white border border-slate-300 rounded-lg font-semibold text-xs text-slate-700 uppercase tracking-widest shadow-sm hover:bg-slate-50"
+                                            class="inline-flex items-center px-3 py-2 min-h-[44px] sm:min-h-0 bg-white border border-slate-300 rounded-lg font-semibold text-xs text-slate-700 uppercase tracking-widest shadow-sm hover:bg-slate-50"
                                         >
                                             {{ __('app.cancel') }}
                                         </button>
@@ -80,7 +80,7 @@
                                             @method('DELETE')
                                             <button
                                                 type="submit"
-                                                class="inline-flex items-center px-3 py-2 min-h-[44px] bg-red-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700"
+                                                class="inline-flex items-center px-3 py-2 min-h-[44px] sm:min-h-0 bg-red-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700"
                                             >
                                                 {{ __('game.delete_game') }}
                                             </button>
