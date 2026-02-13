@@ -147,6 +147,17 @@ class SeedReferenceData extends Command
                 'role' => 'domestic_cup',
             ],
         ],
+        'world_cup' => [
+            [
+                'code' => 'WC',
+                'name' => 'Copa del Mundo',
+                'path' => 'data/2025/WC',
+                'tier' => 0,
+                'handler' => 'world_cup',
+                'country' => 'INT',
+                'role' => 'tournament',
+            ],
+        ],
     ];
 
     public function handle(): int
@@ -231,11 +242,21 @@ class SeedReferenceData extends Command
         $isCup = in_array($handler, ['knockout_cup', 'group_stage_cup']);
         $isSwiss = $handler === 'swiss_format';
         $isTeamPool = $handler === 'team_pool';
+        $isWorldCup = $handler === 'world_cup';
 
         $this->info("Seeding {$code}...");
 
-        if ($isTeamPool) {
+        if ($isTeamPool || $isWorldCup) {
             $this->seedTeamPoolCompetition($basePath, $code, $tier, $handler, $country, $role, $configName);
+
+            // World Cup also needs knockout round templates
+            if ($isWorldCup) {
+                $roundsData = $this->loadJson("{$basePath}/rounds.json");
+                $matchdaysData = $this->loadJson("{$basePath}/matchdays.json");
+                if (!empty($roundsData)) {
+                    $this->seedCupRoundTemplates($code, '2025', $roundsData, $matchdaysData);
+                }
+            }
         } elseif ($isSwiss) {
             $this->seedSwissFormatCompetition($basePath, $code, $tier, $handler, $country, $role);
         } elseif ($isCup) {
@@ -314,8 +335,12 @@ class SeedReferenceData extends Command
 
     /**
      * Seed a player pool competition from individual team JSON files.
-     * Each file is named {transfermarkt_id}.json and contains {id, players}.
-     * Teams must already exist from their league seeding.
+     * Each file is named {transfermarkt_id}.json and contains {image, name, players}.
+     * Teams are created if they don't already exist from league seeding.
+     *
+     * Optional per-file fields:
+     * - 'country' (2-letter ISO) overrides the competition-level country
+     * - 'pot' (1-4) stored as competition_teams.entry_round for draw seeding
      */
     private function seedTeamPoolCompetition(string $basePath, string $code, int $tier, string $handler, string $country, string $role, ?string $configName = null): void
     {
@@ -333,6 +358,12 @@ class SeedReferenceData extends Command
         $clubs = [];
 
         foreach (glob("{$basePath}/*.json") as $filePath) {
+            // Skip non-team files (matchdays.json, rounds.json)
+            $filename = basename($filePath, '.json');
+            if (!is_numeric($filename)) {
+                continue;
+            }
+
             $data = $this->loadJson($filePath);
             $transfermarktId = $this->extractTransfermarktIdFromImage($data['image'] ?? '');
 
@@ -349,7 +380,7 @@ class SeedReferenceData extends Command
                     'id' => $teamId,
                     'transfermarkt_id' => $transfermarktId,
                     'name' => $data['name'] ?? "Unknown ({$transfermarktId})",
-                    'country' => $country,
+                    'country' => $data['country'] ?? $country,
                     'image' => $data['image'] ?? null,
                     'stadium_name' => $data['stadiumName'] ?? null,
                     'stadium_seats' => isset($data['stadiumSeats'])
@@ -361,14 +392,15 @@ class SeedReferenceData extends Command
 
             $teamIdMap[$transfermarktId] = $teamId;
 
-            // Link team to competition
+            // Link team to competition (store pot as entry_round if provided)
+            $updateData = isset($data['pot']) ? ['entry_round' => $data['pot']] : [];
             DB::table('competition_teams')->updateOrInsert(
                 [
                     'competition_id' => $code,
                     'team_id' => $teamId,
                     'season' => $season,
                 ],
-                []
+                $updateData
             );
 
             // Normalize to clubs format for seedPlayersFromTeams

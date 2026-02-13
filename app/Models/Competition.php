@@ -24,6 +24,7 @@ class Competition extends Model
     public const ROLE_DOMESTIC_CUP = 'domestic_cup';
     public const ROLE_EUROPEAN = 'european';
     public const ROLE_FOREIGN = 'foreign';
+    public const ROLE_TOURNAMENT = 'tournament';
 
     protected $fillable = [
         'id',
