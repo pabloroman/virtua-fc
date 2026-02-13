@@ -19,8 +19,8 @@ class ShowGame
     {
         $game = Game::with('team')->findOrFail($gameId);
 
-        // Redirect to onboarding if not completed
-        if ($game->needsOnboarding()) {
+        // Redirect to onboarding if setup or onboarding not completed
+        if (!$game->isSetupComplete() || $game->needsOnboarding()) {
             return redirect()->route('game.onboarding', $gameId);
         }
 

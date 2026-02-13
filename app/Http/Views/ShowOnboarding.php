@@ -4,6 +4,7 @@ namespace App\Http\Views;
 
 use App\Game\Services\BudgetProjectionService;
 use App\Game\Services\SeasonGoalService;
+use App\Jobs\SetupNewGame;
 use App\Models\Competition;
 use App\Models\CompetitionEntry;
 use App\Models\Game;
@@ -19,6 +20,21 @@ class ShowOnboarding
     public function __invoke(string $gameId)
     {
         $game = Game::with('team')->findOrFail($gameId);
+
+        // Wait for background setup to finish
+        if (!$game->isSetupComplete()) {
+            // If stuck for > 2 minutes, re-dispatch the setup job
+            if ($game->created_at->lt(now()->subMinutes(2))) {
+                SetupNewGame::dispatch(
+                    gameId: $game->id,
+                    teamId: $game->team_id,
+                    competitionId: $game->competition_id,
+                    season: $game->season,
+                    gameMode: $game->game_mode ?? Game::MODE_CAREER,
+                );
+            }
+            return view('game-setup-loading', ['game' => $game]);
+        }
 
         // If onboarding is complete, redirect to main game
         if (!$game->needsOnboarding()) {

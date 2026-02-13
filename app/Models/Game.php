@@ -45,6 +45,7 @@ class Game extends Model
         'default_mentality',
         'season_goal',
         'needs_onboarding',
+        'setup_completed_at',
     ];
 
     protected $casts = [
@@ -55,6 +56,7 @@ class Game extends Model
         'default_mentality' => 'string',
         'season_goal' => 'string',
         'needs_onboarding' => 'boolean',
+        'setup_completed_at' => 'datetime',
     ];
 
     // ==========================================
@@ -69,6 +71,11 @@ class Game extends Model
     public function isTournamentMode(): bool
     {
         return $this->game_mode === self::MODE_TOURNAMENT;
+    }
+
+    public function isSetupComplete(): bool
+    {
+        return $this->setup_completed_at !== null;
     }
 
     // ==========================================

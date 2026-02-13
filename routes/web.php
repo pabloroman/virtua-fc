@@ -44,6 +44,7 @@ use App\Http\Views\ShowScouting;
 use App\Http\Views\ShowSeasonEnd;
 use App\Http\Views\ShowSquadDevelopment;
 use App\Http\Views\ShowAcademy;
+use App\Http\Views\GameSetupStatus;
 use App\Http\Views\ShowSquadStats;
 use App\Http\Views\ShowTransfers;
 use App\Http\Actions\PromoteAcademyPlayer;
@@ -126,6 +127,9 @@ Route::middleware('auth')->group(function () {
         // Onboarding
         Route::get('/game/{gameId}/onboarding', ShowOnboarding::class)->name('game.onboarding');
         Route::post('/game/{gameId}/onboarding', CompleteOnboarding::class)->name('game.onboarding.complete');
+
+        // Game Setup Status (polling endpoint)
+        Route::get('/game/{gameId}/setup-status', GameSetupStatus::class)->name('game.setup-status');
 
         // Notifications
         Route::post('/game/{gameId}/notifications/{notificationId}/read', MarkNotificationRead::class)->name('game.notifications.read');

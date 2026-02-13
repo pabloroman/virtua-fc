@@ -114,6 +114,10 @@ return [
     'available' => 'Disponible',
     'begin_season' => 'Comenzar Temporada',
 
+    // Setup loading
+    'preparing_season' => 'Preparando tu temporada...',
+    'setup_loading_message' => 'Estamos configurando los equipos, jugadores y competiciones. Esto solo tomará unos segundos.',
+
     // Live match
     'live_pre_match' => 'Previo al partido',
     'live_half_time' => 'Descanso',

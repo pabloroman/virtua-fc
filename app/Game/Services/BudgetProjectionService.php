@@ -126,6 +126,7 @@ class BudgetProjectionService
     {
         $players = GamePlayer::where('game_id', $game->id)
             ->where('team_id', $team->id)
+            ->with('player')
             ->get()
             ->map(function ($player) {
                 // Calculate overall as average of technical + physical + fitness + morale

@@ -110,9 +110,10 @@ class StandingsCalculator
      */
     public function initializeStandings(string $gameId, string $competitionId, array $teamIds): void
     {
+        $rows = [];
         $position = 1;
         foreach ($teamIds as $teamId) {
-            GameStanding::create([
+            $rows[] = [
                 'game_id' => $gameId,
                 'competition_id' => $competitionId,
                 'team_id' => $teamId,
@@ -125,8 +126,12 @@ class StandingsCalculator
                 'goals_for' => 0,
                 'goals_against' => 0,
                 'points' => 0,
-            ]);
+            ];
             $position++;
+        }
+
+        foreach (array_chunk($rows, 100) as $chunk) {
+            GameStanding::insert($chunk);
         }
     }
 }
