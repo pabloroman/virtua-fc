@@ -47,7 +47,7 @@ return [
     |   - exponent 1.8: ratio becomes ~65% vs 35%
     |
     */
-    'strength_multiplier' => 0.9,
+    'strength_multiplier' => 1.0,
     'strength_exponent' => 1.8,
 
     /*
@@ -70,7 +70,7 @@ return [
     |
     */
     'home_advantage_goals' => 0.2,
-    'away_disadvantage_multiplier' => 0.85,
+    'away_disadvantage_multiplier' => 0.9,
 
     /*
     |--------------------------------------------------------------------------
