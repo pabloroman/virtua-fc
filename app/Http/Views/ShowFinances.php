@@ -16,6 +16,7 @@ class ShowFinances
     public function __invoke(string $gameId)
     {
         $game = Game::with('team')->findOrFail($gameId);
+        abort_if($game->isTournamentMode(), 404);
 
         // Access relationships after model is loaded (lazy loading works correctly)
         $finances = $game->currentFinances;

@@ -15,6 +15,10 @@ class Game extends Model
 {
     use HasFactory, HasUuids;
 
+    // Game modes
+    public const MODE_CAREER = 'career';
+    public const MODE_TOURNAMENT = 'tournament';
+
     // La Liga season goals
     public const GOAL_TITLE = 'title';
     public const GOAL_CHAMPIONS_LEAGUE = 'champions_league';
@@ -29,6 +33,7 @@ class Game extends Model
     protected $fillable = [
         'id',
         'user_id',
+        'game_mode',
         'player_name',
         'team_id',
         'competition_id',
@@ -51,6 +56,24 @@ class Game extends Model
         'season_goal' => 'string',
         'needs_onboarding' => 'boolean',
     ];
+
+    // ==========================================
+    // Game Mode
+    // ==========================================
+
+    public function isCareerMode(): bool
+    {
+        return ($this->game_mode ?? self::MODE_CAREER) === self::MODE_CAREER;
+    }
+
+    public function isTournamentMode(): bool
+    {
+        return $this->game_mode === self::MODE_TOURNAMENT;
+    }
+
+    // ==========================================
+    // Relationships
+    // ==========================================
 
     public function user(): BelongsTo
     {

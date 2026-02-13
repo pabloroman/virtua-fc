@@ -23,6 +23,7 @@ class ShowSeasonEnd
     public function __invoke(string $gameId)
     {
         $game = Game::with('team')->findOrFail($gameId);
+        abort_if($game->isTournamentMode(), 404);
 
         // Check if season is actually complete (only matches involving the player's team)
         $unplayedMatches = $game->matches()

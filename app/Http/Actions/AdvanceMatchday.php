@@ -200,6 +200,32 @@ class AdvanceMatchday
 
     private function processPostMatchActions(Game $game, $matches, array $handlers, $allPlayers): void
     {
+        // Career-mode only: transfers, scouting, loans, academy
+        if ($game->isCareerMode()) {
+            $this->processCareerModeActions($game, $matches, $allPlayers);
+        }
+
+        // Check for recovered players
+        $this->checkRecoveredPlayers($game, $allPlayers);
+
+        // Check for low fitness players
+        $this->checkLowFitnessPlayers($game, $allPlayers);
+
+        // Clean up old read notifications
+        $this->notificationService->cleanupOldNotifications($game);
+
+        // Competition-specific post-match actions for each handler
+        foreach ($handlers as $competitionId => $handler) {
+            $competitionMatches = $matches->filter(fn ($m) => $m->competition_id === $competitionId);
+            $handler->afterMatches($game, $competitionMatches, $allPlayers);
+        }
+
+        // Check competition progress (advancement/elimination) after handlers have resolved ties
+        $this->checkCompetitionProgress($game, $matches, $handlers);
+    }
+
+    private function processCareerModeActions(Game $game, $matches, $allPlayers): void
+    {
         // Process transfers when window is open
         if ($game->isTransferWindowOpen()) {
             $completedOutgoing = $this->transferService->completeAgreedTransfers($game);
@@ -238,7 +264,6 @@ class AdvanceMatchday
         // Tick scout search progress
         $scoutReport = $this->scoutingService->tickSearch($game);
         if ($scoutReport?->isCompleted()) {
-            // Create notification instead of session flash
             $this->notificationService->notifyScoutComplete($game, $scoutReport);
         }
 
@@ -258,24 +283,6 @@ class AdvanceMatchday
 
         // Check for expiring transfer offers (2 days or less)
         $this->checkExpiringOffers($game);
-
-        // Check for recovered players
-        $this->checkRecoveredPlayers($game, $allPlayers);
-
-        // Check for low fitness players
-        $this->checkLowFitnessPlayers($game, $allPlayers);
-
-        // Clean up old read notifications
-        $this->notificationService->cleanupOldNotifications($game);
-
-        // Competition-specific post-match actions for each handler
-        foreach ($handlers as $competitionId => $handler) {
-            $competitionMatches = $matches->filter(fn ($m) => $m->competition_id === $competitionId);
-            $handler->afterMatches($game, $competitionMatches, $allPlayers);
-        }
-
-        // Check competition progress (advancement/elimination) after handlers have resolved ties
-        $this->checkCompetitionProgress($game, $matches, $handlers);
 
         // Check for new academy prospect
         $prospect = $this->youthAcademyService->trySpawnProspect($game);

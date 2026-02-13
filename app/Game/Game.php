@@ -32,7 +32,8 @@ final class Game extends AggregateRoot
         $game->recordThat(new GameCreated(
             $command->userId,
             $command->teamId,
-            $command->playerName
+            $command->playerName,
+            $command->gameMode,
         ));
 
         $game->persist();
