@@ -166,7 +166,7 @@
                 <span x-show="copied" x-cloak class="text-green-400">Copied!</span>
             </button>
             <pre class="bg-slate-800 text-slate-300 rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="code">&lt;div class="flex items-center gap-1.5"&gt;
-    @for($i = 1; $i &lt;= 4; $i++)
+    @for($i = 1; $i <= 4; $i++)
         &lt;span class="w-2.5 h-2.5 rounded-full &#123;&#123; $i &lt;= $tier ? 'bg-emerald-500' : 'bg-slate-200' &#125;&#125;"&gt;&lt;/span&gt;
     @endfor
     &lt;span class="text-xs text-slate-500 ml-1"&gt;Tier &#123;&#123; $tier &#125;&#125;&lt;/span&gt;
