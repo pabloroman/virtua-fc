@@ -38,7 +38,8 @@
                             || $listedOffers->isNotEmpty()
                             || $agreedTransfers->isNotEmpty()
                             || $agreedPreContracts->isNotEmpty()
-                            || $loanSearches->isNotEmpty();
+                            || $loanSearches->isNotEmpty()
+                            || $recentTransfers->isNotEmpty();
                         $hasRightContent = $renewalEligiblePlayers->isNotEmpty()
                             || $negotiatingPlayers->isNotEmpty()
                             || $pendingRenewals->isNotEmpty()
@@ -293,6 +294,28 @@
                                     @endforeach
                                 </div>
                             </div>
+                            @endif
+
+                            {{-- ============================== --}}
+                            {{-- FULL-WIDTH: Recent Sales --}}
+                            {{-- ============================== --}}
+                            @if($recentTransfers->isNotEmpty())
+                                <div class="mt-8 pt-6">
+                                    <h4 class="font-semibold text-sm text-slate-500 uppercase tracking-wide mb-3">{{ __('transfers.recent_sales') }}</h4>
+                                    <div class="space-y-1">
+                                        @foreach($recentTransfers as $transfer)
+                                            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-1 py-2 text-sm">
+                                                <div class="flex items-center gap-3">
+                                                    <img src="{{ $transfer->offeringTeam->image }}" class="w-6 h-6 shrink-0">
+                                                    <span class="text-slate-600">
+                                    {{ $transfer->gamePlayer->player->name }} &rarr; {{ $transfer->offeringTeam->name }}
+                                </span>
+                                                </div>
+                                                <span class="font-semibold text-green-600">{{ $transfer->formatted_transfer_fee }}</span>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
                             @endif
 
                         </div>
@@ -636,28 +659,6 @@
 
                         </div>
                     </div>
-
-                    {{-- ============================== --}}
-                    {{-- FULL-WIDTH: Recent Sales --}}
-                    {{-- ============================== --}}
-                    @if($recentTransfers->isNotEmpty())
-                    <div class="mt-8 border-t pt-6">
-                        <h4 class="font-semibold text-sm text-slate-500 uppercase tracking-wide mb-3">{{ __('transfers.recent_sales') }}</h4>
-                        <div class="space-y-1">
-                            @foreach($recentTransfers as $transfer)
-                            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-1 py-2 text-sm">
-                                <div class="flex items-center gap-3">
-                                    <img src="{{ $transfer->offeringTeam->image }}" class="w-6 h-6 shrink-0">
-                                    <span class="text-slate-600">
-                                        {{ $transfer->gamePlayer->player->name }} &rarr; {{ $transfer->offeringTeam->name }}
-                                    </span>
-                                </div>
-                                <span class="font-semibold text-green-600">{{ $transfer->formatted_transfer_fee }}</span>
-                            </div>
-                            @endforeach
-                        </div>
-                    </div>
-                    @endif
 
                 </div>
             </div>
