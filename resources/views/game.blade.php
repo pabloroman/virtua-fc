@@ -181,14 +181,11 @@
                                                     {{-- Type icon with unread indicator --}}
                                                     <div class="relative flex-shrink-0">
                                                         <x-notification-icon :icon="$notification->icon" :icon-bg="$classes['icon_bg']" :icon-text="$classes['icon_text']" />
-                                                        @if($notification->isUnread())
-                                                        <span class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
-                                                        @endif
                                                     </div>
 
                                                     <div class="flex-1 min-w-0">
                                                         <div class="flex items-center justify-between gap-2">
-                                                            <span class="{{ $notification->isUnread() ? 'font-semibold' : 'font-normal' }} text-sm {{ $classes['text'] }} truncate">{{ $notification->title }}</span>
+                                                            <span class="font-semibold text-sm {{ $classes['text'] }} truncate">{{ $notification->title }}</span>
                                                             <svg class="w-4 h-4 {{ $classes['text'] }} opacity-40 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                                                             </svg>
