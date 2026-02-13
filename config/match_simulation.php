@@ -118,8 +118,8 @@ return [
     */
     'own_goal_chance' => 2.0,           // % chance per goal is an own goal
     'assist_chance' => 60.0,            // % chance a goal has an assist
-    'yellow_cards_per_team' => 1.7,     // Average yellow cards per team per match
-    'direct_red_chance' => 1.5,         // % chance of direct red card per team
-    'injury_chance' => 5.0,             // % chance of injury per team per match
+    'yellow_cards_per_team' => 1.5,     // Average yellow cards per team per match
+    'direct_red_chance' => 1,           // % chance of direct red card per team
+    'injury_chance' => 4.0,             // % chance of injury per team per match
 
 ];

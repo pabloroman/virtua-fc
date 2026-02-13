@@ -342,7 +342,7 @@ class MatchSimulator
 
         // Chance of direct red card - higher for losing teams (desperate last-man challenges)
         $baseRedChance = config('match_simulation.direct_red_chance', 1.5);
-        $redChanceModifier = $goalDifference < 0 ? abs($goalDifference) * 1.0 : 0;
+        $redChanceModifier = $goalDifference < 0 ? abs($goalDifference) * 0.5 : 0;
         $directRedChance = $baseRedChance + $redChanceModifier;
 
         if ($this->percentChance($directRedChance)) {
