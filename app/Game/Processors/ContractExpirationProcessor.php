@@ -4,6 +4,7 @@ namespace App\Game\Processors;
 
 use App\Game\Contracts\SeasonEndProcessor;
 use App\Game\DTO\SeasonTransitionData;
+use App\Game\Services\ContractService;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use Carbon\Carbon;
@@ -25,6 +26,9 @@ class ContractExpirationProcessor implements SeasonEndProcessor
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData
     {
+        // Clean up any stale renewal negotiations
+        app(ContractService::class)->expireStaleNegotiations($game);
+
         // Season ends on June 30 of the season year
         // e.g., season "2024" ends June 30, 2025; season "2025" ends June 30, 2026
         $seasonYear = (int) $data->oldSeason;

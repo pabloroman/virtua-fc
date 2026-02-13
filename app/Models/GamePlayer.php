@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class GamePlayer extends Model
+
 {
     use HasFactory, HasUuids;
 
@@ -155,6 +156,49 @@ class GamePlayer extends Model
     public function activeLoan(): HasOne
     {
         return $this->hasOne(Loan::class)->where('status', Loan::STATUS_ACTIVE);
+    }
+
+    /**
+     * Get the active renewal negotiation for this player (if any).
+     */
+    public function activeRenewalNegotiation(): HasOne
+    {
+        return $this->hasOne(RenewalNegotiation::class)
+            ->whereIn('status', [RenewalNegotiation::STATUS_OFFER_PENDING, RenewalNegotiation::STATUS_PLAYER_COUNTERED]);
+    }
+
+    /**
+     * Get the latest renewal negotiation (by creation date).
+     */
+    public function latestRenewalNegotiation(): HasOne
+    {
+        return $this->hasOne(RenewalNegotiation::class)->latestOfMany();
+    }
+
+    /**
+     * Check if player has an active renewal negotiation in progress.
+     */
+    public function hasActiveNegotiation(): bool
+    {
+        if ($this->relationLoaded('activeRenewalNegotiation')) {
+            return $this->activeRenewalNegotiation !== null;
+        }
+
+        return $this->activeRenewalNegotiation()->exists();
+    }
+
+    /**
+     * Check if player has a declined/rejected renewal (blocking further offers).
+     */
+    public function hasDeclinedRenewal(): bool
+    {
+        if ($this->relationLoaded('latestRenewalNegotiation')) {
+            $latest = $this->latestRenewalNegotiation;
+            return $latest !== null && $latest->isBlocking();
+        }
+
+        $latest = $this->latestRenewalNegotiation()->first();
+        return $latest !== null && $latest->isBlocking();
     }
 
     /**
@@ -301,6 +345,16 @@ class GamePlayer extends Model
             return false;
         }
 
+        // Renewal explicitly declined or rejected — contract situation is settled
+        if ($this->hasDeclinedRenewal()) {
+            return false;
+        }
+
+        // Active negotiation blocks pre-contract offers
+        if ($this->hasActiveNegotiation()) {
+            return false;
+        }
+
         return true;
     }
 
@@ -336,6 +390,16 @@ class GamePlayer extends Model
 
         // Already has a renewal agreed
         if ($this->hasRenewalAgreed()) {
+            return false;
+        }
+
+        // Renewal explicitly declined or rejected
+        if ($this->hasDeclinedRenewal()) {
+            return false;
+        }
+
+        // Already in active negotiation
+        if ($this->hasActiveNegotiation()) {
             return false;
         }
 

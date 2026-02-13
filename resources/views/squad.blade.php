@@ -30,15 +30,6 @@
                     </div>
                     @endif
 
-                    <x-contract-banner
-                        :game="$game"
-                        :pre-contract-offers="$preContractOffers"
-                        :agreed-pre-contracts="$agreedPreContracts"
-                        :pending-renewals="$pendingRenewals"
-                        :renewal-eligible-players="$renewalEligiblePlayers"
-                        :renewal-demands="$renewalDemands"
-                    />
-
                     <div class="overflow-x-auto">
                     <table class="w-full text-sm">
                         <thead class="text-left border-b">

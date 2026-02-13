@@ -412,6 +412,92 @@ class Game extends Model
     }
 
     // ==========================================
+    // Window Countdown
+    // ==========================================
+
+    /**
+     * Get a countdown to the next window boundary (opening or closing).
+     * Returns null when no boundary is within 10 matchdays.
+     *
+     * @return array{action: string, window: string, matchdays: int}|null
+     */
+    public function getWindowCountdown(): ?array
+    {
+        if (!$this->current_date) {
+            return null;
+        }
+
+        $month = $this->current_date->month;
+
+        // Determine the next interesting boundary date
+        $year = $this->current_date->year;
+        $boundaries = [];
+
+        if ($this->isTransferWindowOpen()) {
+            // Window is open — countdown to closing
+            if ($this->isSummerWindowOpen()) {
+                $boundaries[] = [
+                    'date' => Carbon::createFromDate($year, 9, 1),
+                    'action' => 'closes',
+                    'window' => __('app.summer_window'),
+                ];
+            }
+            if ($this->isWinterWindowOpen()) {
+                $closeYear = $month === 12 ? $year + 1 : $year;
+                $boundaries[] = [
+                    'date' => Carbon::createFromDate($closeYear, 2, 1),
+                    'action' => 'closes',
+                    'window' => __('app.winter_window'),
+                ];
+            }
+        } else {
+            // Window is closed — countdown to opening
+            if ($month >= 2 && $month <= 6) {
+                $boundaries[] = [
+                    'date' => Carbon::createFromDate($year, 7, 1),
+                    'action' => 'opens',
+                    'window' => __('app.summer_window'),
+                ];
+            }
+            if ($month >= 9 && $month <= 12) {
+                $boundaries[] = [
+                    'date' => Carbon::createFromDate($year + 1, 1, 1),
+                    'action' => 'opens',
+                    'window' => __('app.winter_window'),
+                ];
+            }
+        }
+
+        if (empty($boundaries)) {
+            return null;
+        }
+
+        // Pick the nearest boundary
+        $nearest = collect($boundaries)->sortBy('date')->first();
+
+        // Count unplayed matches between now and the boundary
+        $matchdays = $this->matches()
+            ->where('played', false)
+            ->where(function ($query) {
+                $query->where('home_team_id', $this->team_id)
+                    ->orWhere('away_team_id', $this->team_id);
+            })
+            ->where('scheduled_date', '<', $nearest['date'])
+            ->where('scheduled_date', '>=', $this->current_date)
+            ->count();
+
+        if ($matchdays > 10) {
+            return null;
+        }
+
+        return [
+            'action' => $nearest['action'],
+            'window' => $nearest['window'],
+            'matchdays' => $matchdays,
+        ];
+    }
+
+    // ==========================================
     // Onboarding
     // ==========================================
 

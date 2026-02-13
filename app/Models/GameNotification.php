@@ -29,6 +29,9 @@ class GameNotification extends Model
     public const TYPE_COMPETITION_ELIMINATION = 'competition_elimination';
     public const TYPE_ACADEMY_PROSPECT = 'academy_prospect';
     public const TYPE_TRANSFER_COMPLETE = 'transfer_complete';
+    public const TYPE_RENEWAL_ACCEPTED = 'renewal_accepted';
+    public const TYPE_RENEWAL_COUNTERED = 'renewal_countered';
+    public const TYPE_RENEWAL_REJECTED = 'renewal_rejected';
 
     // Priorities
     public const PRIORITY_MILESTONE = 'milestone';
@@ -45,14 +48,17 @@ class GameNotification extends Model
         self::TYPE_TRANSFER_OFFER_RECEIVED => 'transfers',
         self::TYPE_TRANSFER_OFFER_EXPIRING => 'transfers',
         self::TYPE_SCOUT_REPORT_COMPLETE => 'scouting',
-        self::TYPE_CONTRACT_EXPIRING => 'contracts',
+        self::TYPE_CONTRACT_EXPIRING => 'transfers',
         self::TYPE_LOAN_RETURN => 'squad',
-        self::TYPE_LOAN_DESTINATION_FOUND => 'loans',
-        self::TYPE_LOAN_SEARCH_FAILED => 'loans',
+        self::TYPE_LOAN_DESTINATION_FOUND => 'transfers',
+        self::TYPE_LOAN_SEARCH_FAILED => 'transfers',
         self::TYPE_COMPETITION_ADVANCEMENT => 'competition',
         self::TYPE_COMPETITION_ELIMINATION => 'competition',
         self::TYPE_ACADEMY_PROSPECT => 'academy',
         self::TYPE_TRANSFER_COMPLETE => 'squad',
+        self::TYPE_RENEWAL_ACCEPTED => 'transfers',
+        self::TYPE_RENEWAL_COUNTERED => 'transfers',
+        self::TYPE_RENEWAL_REJECTED => 'transfers',
     ];
 
     protected $fillable = [
@@ -163,8 +169,6 @@ class GameNotification extends Model
             'squad' => 'game.squad',
             'transfers' => 'game.transfers',
             'scouting' => 'game.scouting',
-            'contracts' => 'game.squad',
-            'loans' => 'game.loans',
             'competition' => 'game.competition',
             'academy' => 'game.squad.academy',
             default => 'show-game',

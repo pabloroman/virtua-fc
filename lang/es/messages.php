@@ -31,7 +31,12 @@ return [
     // Contract messages
     'renewal_agreed' => ':player ha aceptado una extensión de :years años a :wage/año (efectivo desde la próxima temporada).',
     'renewal_failed' => 'No se pudo procesar la renovación.',
+    'renewal_declined' => 'Has decidido no renovar a :player. Se marchará al final de la temporada.',
+    'renewal_reconsidered' => 'Has reconsiderado la renovación de :player.',
     'cannot_renew' => 'Este jugador no puede recibir una oferta de renovación.',
+    'renewal_offer_submitted' => 'Oferta de renovación enviada a :player por :wage/año. Respuesta en la próxima jornada.',
+    'renewal_invalid_offer' => 'La oferta debe ser mayor que cero.',
+    'renewal_counter_accepted' => ':player ha aceptado la contraoferta.',
 
     // Pre-contract messages
     'pre_contract_accepted' => '¡:player ha aceptado tu oferta de precontrato! Se unirá a tu equipo al final de la temporada.',

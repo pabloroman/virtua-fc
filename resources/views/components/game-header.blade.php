@@ -61,7 +61,7 @@
         <div><a class="hover:text-slate-300 @if(Route::currentRouteName() == 'game.lineup') text-white @endif" href="{{ route('game.lineup', [$game->id, $nextMatch->id]) }}">{{ __('app.starting_xi') }}</a></div>
         @endif
         <div><a class="hover:text-slate-300 @if(Route::currentRouteName() == 'game.finances') text-white @endif" href="{{ route('game.finances', $game->id) }}">{{ __('app.finances') }}</a></div>
-        <div><a class="hover:text-slate-300 @if(Route::currentRouteName() == 'game.transfers') text-white @endif" href="{{ route('game.transfers', $game->id) }}">{{ __('app.transfers') }}</a></div>
+        <div><a class="hover:text-slate-300 @if(in_array(Route::currentRouteName(), ['game.transfers', 'game.scouting'])) text-white @endif" href="{{ route('game.transfers', $game->id) }}">{{ __('app.transfers') }}</a></div>
         <div><a class="hover:text-slate-300 @if(Route::currentRouteName() == 'game.calendar') text-white @endif" href="{{ route('game.calendar', $game->id) }}">{{ __('app.calendar') }}</a></div>
         <div class="relative" x-data="{ open: false }" @click.outside="open = false">
             <button @click="open = !open" class="hover:text-slate-300 flex items-center gap-1 @if(Route::currentRouteName() == 'game.competition') text-white @endif">
@@ -186,7 +186,7 @@
                 <x-responsive-nav-link :href="route('game.finances', $game->id)" :active="Route::currentRouteName() == 'game.finances'">
                     {{ __('app.finances') }}
                 </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('game.transfers', $game->id)" :active="Route::currentRouteName() == 'game.transfers'">
+                <x-responsive-nav-link :href="route('game.transfers', $game->id)" :active="in_array(Route::currentRouteName(), ['game.transfers', 'game.scouting'])">
                     {{ __('app.transfers') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('game.calendar', $game->id)" :active="Route::currentRouteName() == 'game.calendar'">
