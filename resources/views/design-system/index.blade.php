@@ -1,0 +1,16 @@
+<x-design-system.layout>
+    @include('design-system.sections.overview')
+    @include('design-system.sections.colors')
+    @include('design-system.sections.typography')
+    @include('design-system.sections.buttons')
+    @include('design-system.sections.forms')
+    @include('design-system.sections.navigation')
+    @include('design-system.sections.cards')
+    @include('design-system.sections.tables')
+    @include('design-system.sections.badges')
+    @include('design-system.sections.alerts')
+    @include('design-system.sections.modals')
+    @include('design-system.sections.data-viz')
+    @include('design-system.sections.game-components')
+    @include('design-system.sections.layout-patterns')
+</x-design-system.layout>

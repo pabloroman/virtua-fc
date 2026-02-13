@@ -8,6 +8,10 @@
             font-size: 14px;
         }
     }
+
+    [x-cloak] {
+        display: none !important;
+    }
 }
 
 @layer components {
