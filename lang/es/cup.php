@@ -20,7 +20,6 @@ return [
 
     // Draw
     'draw_pending' => 'Sorteo pendiente',
-    'conduct_draw' => 'Realizar Sorteo',
 
     // Resolution types
     'pens' => 'Pen:',

@@ -119,17 +119,7 @@
 
                                         @if($ties->isEmpty())
                                             <div class="p-4 text-center border border-dashed rounded-lg">
-                                                <div class="text-slate-400 text-sm mb-2">{{ __('cup.draw_pending') }}</div>
-                                                @php
-                                                    $canDraw = app(\App\Game\Services\CupDrawService::class)
-                                                        ->needsDrawForRound($game->id, $competition->id, $round->round_number);
-                                                @endphp
-                                                @if($canDraw)
-                                                    <form method="POST" action="{{ route('game.cup.draw', [$game->id, $round->round_number]) }}">
-                                                        @csrf
-                                                        <x-primary-button color="sky" class="text-xs px-3 py-1">{{ __('cup.conduct_draw') }}</x-primary-button>
-                                                    </form>
-                                                @endif
+                                                <div class="text-slate-400 text-sm">{{ __('cup.draw_pending') }}</div>
                                             </div>
                                         @else
                                             <div class="space-y-2">

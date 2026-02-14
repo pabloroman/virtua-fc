@@ -64,9 +64,6 @@ return [
     // Season
     'season_not_complete' => 'No se puede iniciar una nueva temporada - la temporada actual no ha terminado.',
 
-    // Cup
-    'draw_not_needed' => 'Sorteo no necesario para esta ronda.',
-
     // Lineup
     'lineup_confirmed' => 'Alineación confirmada.',
     'lineup_invalid' => 'La alineación debe tener exactamente 11 jugadores.',

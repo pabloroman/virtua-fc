@@ -15,7 +15,6 @@ use App\Http\Actions\MarkAllNotificationsRead;
 use App\Http\Actions\MarkNotificationRead;
 use App\Http\Actions\SaveBudgetAllocation;
 use App\Http\Views\ShowBudgetAllocation;
-use App\Http\Actions\ConductCupDraw;
 use App\Http\Actions\GetAutoLineup;
 use App\Http\Actions\InitGame;
 use App\Http\Actions\ListPlayerForTransfer;
@@ -90,7 +89,6 @@ Route::middleware('auth')->group(function () {
         Route::post('/game/{gameId}/lineup/{matchId}', SaveLineup::class)->name('game.lineup.save');
         Route::get('/game/{gameId}/lineup/{matchId}/auto', GetAutoLineup::class)->name('game.lineup.auto');
         Route::post('/game/{gameId}/match/{matchId}/substitute', ProcessSubstitution::class)->name('game.match.substitute');
-        Route::post('/game/{gameId}/cup/draw/{round}', ConductCupDraw::class)->name('game.cup.draw');
         Route::post('/game/{gameId}/development/process', ProcessSeasonDevelopment::class)->name('game.development.process');
 
         // Transfers
