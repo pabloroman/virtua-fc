@@ -25,6 +25,7 @@ class ShowGame
         }
 
         $nextMatch = $this->loadNextMatch($game);
+        $hasRemainingMatches = !$nextMatch && $game->matches()->where('played', false)->exists();
 
         $notifications = $this->notificationService->getNotifications($game->id, true, 15);
         $groupedNotifications = $notifications->groupBy(fn ($n) => $n->game_date?->format('Y-m-d') ?? 'unknown');
@@ -32,6 +33,7 @@ class ShowGame
         return view('game', [
             'game' => $game,
             'nextMatch' => $nextMatch,
+            'hasRemainingMatches' => $hasRemainingMatches,
             'homeStanding' => $nextMatch ? $this->getTeamStanding($game, $nextMatch->home_team_id, $nextMatch->competition_id) : null,
             'awayStanding' => $nextMatch ? $this->getTeamStanding($game, $nextMatch->away_team_id, $nextMatch->competition_id) : null,
             'playerForm' => $this->calendarService->getTeamForm($game->id, $game->team_id),

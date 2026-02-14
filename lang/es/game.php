@@ -9,6 +9,9 @@ return [
     'season_complete' => '¡Temporada Completada!',
     'season_complete_congrats' => 'Felicidades por completar la temporada :season.',
     'view_season_summary' => 'Ver Resumen de Temporada',
+    'other_competitions_in_progress' => 'Otras competiciones en curso',
+    'other_competitions_desc' => 'Tu equipo ha terminado la temporada, pero aún quedan partidos en otras competiciones.',
+    'advance_other_matches' => 'Simular Partidos Restantes',
     'start_season' => 'Comenzar Temporada :season',
 
     // Match
