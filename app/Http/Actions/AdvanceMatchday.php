@@ -2,16 +2,15 @@
 
 namespace App\Http\Actions;
 
-use App\Game\Commands\AdvanceMatchday as AdvanceMatchdayCommand;
 use App\Game\DTO\MatchEventData;
 use App\Game\Enums\Formation;
 use App\Game\Enums\Mentality;
-use App\Game\Game as GameAggregate;
 use App\Game\Services\ContractService;
 use App\Game\Services\EligibilityService;
 use App\Game\Services\LineupService;
 use App\Game\Services\LoanService;
 use App\Game\Services\MatchdayService;
+use App\Game\Services\MatchResultProcessor;
 use App\Game\Services\MatchSimulator;
 use App\Game\Services\NotificationService;
 use App\Game\Services\ScoutingService;
@@ -34,6 +33,7 @@ class AdvanceMatchday
         private readonly MatchdayService $matchdayService,
         private readonly LineupService $lineupService,
         private readonly MatchSimulator $matchSimulator,
+        private readonly MatchResultProcessor $matchResultProcessor,
         private readonly TransferService $transferService,
         private readonly ContractService $contractService,
         private readonly ScoutingService $scoutingService,
@@ -90,8 +90,8 @@ class AdvanceMatchday
         // Simulate all matches (pass game for medical tier effects on injuries)
         $matchResults = $this->simulateMatches($matches, $game, $allPlayers);
 
-        // Record results via event sourcing
-        $this->recordMatchResults($gameId, $matchday, $currentDate, $matchResults);
+        // Process all match results in one batched call
+        $this->matchResultProcessor->processAll($gameId, $matchday, $currentDate, $matchResults);
 
         // Recalculate standings positions once per league competition (not per match)
         $this->recalculateLeaguePositions($gameId, $matches);
@@ -170,18 +170,6 @@ class AdvanceMatchday
         }
 
         return $teamPlayers->filter(fn ($p) => in_array($p->id, $lineupIds));
-    }
-
-    private function recordMatchResults(string $gameId, int $matchday, string $currentDate, array $matchResults): void
-    {
-        $command = new AdvanceMatchdayCommand(
-            matchday: $matchday,
-            currentDate: $currentDate,
-            matchResults: $matchResults,
-        );
-
-        $aggregate = GameAggregate::retrieve($gameId);
-        $aggregate->advanceMatchday($command);
     }
 
     private function recalculateLeaguePositions(string $gameId, $matches): void
