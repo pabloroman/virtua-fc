@@ -9,6 +9,7 @@ export default function liveMatch(config) {
         otherMatches: config.otherMatches || [],
         homeTeamImage: config.homeTeamImage,
         awayTeamImage: config.awayTeamImage,
+        userTeamId: config.userTeamId,
 
         // Substitution config
         lineupPlayers: config.lineupPlayers || [],
@@ -136,6 +137,16 @@ export default function liveMatch(config) {
                 this.triggerGoalFlash();
                 this.pauseForDrama(1500);
             }
+
+            // Auto-open substitution panel when user's player gets injured
+            if (event.type === 'injury' && event.teamId === this.userTeamId && this.substitutionsMade.length < this.maxSubstitutions) {
+                this.openSubPanel();
+                // Pre-select the injured player as "player out"
+                const injured = this.availableLineupPlayers.find(p => p.id === event.gamePlayerId);
+                if (injured) {
+                    this.selectedPlayerOut = injured;
+                }
+            }
         },
 
         updateScore(event) {
@@ -250,13 +261,13 @@ export default function liveMatch(config) {
             // Players who came on as subs and are still on pitch
             const subsOnPitch = this.benchPlayers.filter(p => subbedInIds.includes(p.id) && !subbedOutIds.includes(p.id));
 
-            return [...onPitch, ...subsOnPitch];
+            return [...onPitch, ...subsOnPitch].sort((a, b) => a.positionSort - b.positionSort);
         },
 
         get availableBenchPlayers() {
             // Bench players minus those already subbed in
             const subbedInIds = this.substitutionsMade.map(s => s.playerInId);
-            return this.benchPlayers.filter(p => !subbedInIds.includes(p.id));
+            return this.benchPlayers.filter(p => !subbedInIds.includes(p.id)).sort((a, b) => a.positionSort - b.positionSort);
         },
 
         async confirmSubstitution() {
@@ -409,6 +420,16 @@ export default function liveMatch(config) {
 
         isGoalEvent(event) {
             return event.type === 'goal' || event.type === 'own_goal';
+        },
+
+        getPositionBadgeColor(abbr) {
+            const colors = {
+                GK: 'bg-amber-500',
+                CB: 'bg-blue-600', LB: 'bg-blue-600', RB: 'bg-blue-600', DF: 'bg-blue-600',
+                DM: 'bg-emerald-600', CM: 'bg-emerald-600', AM: 'bg-emerald-600', LM: 'bg-emerald-600', RM: 'bg-emerald-600', MF: 'bg-emerald-600',
+                LW: 'bg-red-600', RW: 'bg-red-600', CF: 'bg-red-600', SS: 'bg-red-600', FW: 'bg-red-600',
+            };
+            return colors[abbr] || 'bg-emerald-600';
         },
 
         get secondHalfEvents() {

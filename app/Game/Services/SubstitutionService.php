@@ -69,6 +69,20 @@ class SubstitutionService
         $homeMentality = Mentality::tryFrom($match->home_mentality ?? '') ?? Mentality::BALANCED;
         $awayMentality = Mentality::tryFrom($match->away_mentality ?? '') ?? Mentality::BALANCED;
 
+        $existingInjuryTeamIds = MatchEvent::where('game_match_id', $match->id)
+            ->where('minute', '<=', $minute)
+            ->where('event_type', 'injury')
+            ->pluck('team_id')
+            ->unique()
+            ->all();
+
+        $existingYellowPlayerIds = MatchEvent::where('game_match_id', $match->id)
+            ->where('minute', '<=', $minute)
+            ->where('event_type', 'yellow_card')
+            ->pluck('game_player_id')
+            ->unique()
+            ->all();
+
         $remainderResult = $this->matchSimulator->simulateRemainder(
             $match->homeTeam,
             $match->awayTeam,
@@ -80,6 +94,8 @@ class SubstitutionService
             $awayMentality,
             $minute,
             $game,
+            $existingInjuryTeamIds,
+            $existingYellowPlayerIds,
         );
 
         // 6. Calculate new final score

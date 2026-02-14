@@ -5,6 +5,7 @@ namespace App\Http\Views;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
+use App\Support\PositionMapper;
 
 class ShowLiveMatch
 {
@@ -27,6 +28,7 @@ class ShowLiveMatch
                 'type' => $e->event_type,
                 'playerName' => $e->gamePlayer->player->name ?? '',
                 'teamId' => $e->team_id,
+                'gamePlayerId' => $e->game_player_id,
                 'metadata' => $e->metadata,
             ])
             ->sortBy('minute')
@@ -94,9 +96,10 @@ class ShowLiveMatch
                 'id' => $p->id,
                 'name' => $p->player->name ?? '',
                 'position' => $p->position,
-                'overallScore' => $p->overall_score,
+                'positionAbbr' => PositionMapper::toAbbreviation($p->position),
+                'positionSort' => self::positionSortOrder($p->position),
             ])
-            ->sortBy('position')
+            ->sortBy('positionSort')
             ->values()
             ->all();
 
@@ -111,9 +114,10 @@ class ShowLiveMatch
                 'id' => $p->id,
                 'name' => $p->player->name ?? '',
                 'position' => $p->position,
-                'overallScore' => $p->overall_score,
+                'positionAbbr' => PositionMapper::toAbbreviation($p->position),
+                'positionSort' => self::positionSortOrder($p->position),
             ])
-            ->sortBy('position')
+            ->sortBy('positionSort')
             ->values()
             ->all();
 
@@ -131,5 +135,25 @@ class ShowLiveMatch
             'existingSubstitutions' => $existingSubstitutions,
             'substituteUrl' => route('game.match.substitute', ['gameId' => $game->id, 'matchId' => $playerMatch->id]),
         ]);
+    }
+
+    private static function positionSortOrder(string $position): int
+    {
+        return match ($position) {
+            'Goalkeeper' => 1,
+            'Centre-Back' => 10,
+            'Left-Back' => 11,
+            'Right-Back' => 12,
+            'Defensive Midfield' => 20,
+            'Central Midfield' => 21,
+            'Left Midfield' => 22,
+            'Right Midfield' => 23,
+            'Attacking Midfield' => 24,
+            'Left Winger' => 30,
+            'Right Winger' => 31,
+            'Second Striker' => 32,
+            'Centre-Forward' => 33,
+            default => 99,
+        };
     }
 }

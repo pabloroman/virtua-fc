@@ -755,6 +755,8 @@ class MatchSimulator
         ?Mentality $awayMentality = null,
         int $fromMinute = 45,
         ?Game $game = null,
+        array $existingInjuryTeamIds = [],
+        array $existingYellowPlayerIds = [],
     ): MatchResult {
         $this->resetMatchPerformance();
 
@@ -830,13 +832,18 @@ class MatchSimulator
             $events = $events->merge($homeGoalEvents)->merge($awayGoalEvents);
 
             $goalDifference = $homeScore - $awayScore;
-            $homeCardEvents = $this->generateCardEventsInRange($homeTeam->id, $homePlayers, -$goalDifference, $fromMinute + 1, 93, $matchFraction);
-            $awayCardEvents = $this->generateCardEventsInRange($awayTeam->id, $awayPlayers, $goalDifference, $fromMinute + 1, 93, $matchFraction);
+            $homeCardEvents = $this->generateCardEventsInRange($homeTeam->id, $homePlayers, -$goalDifference, $fromMinute + 1, 93, $matchFraction, $existingYellowPlayerIds);
+            $awayCardEvents = $this->generateCardEventsInRange($awayTeam->id, $awayPlayers, $goalDifference, $fromMinute + 1, 93, $matchFraction, $existingYellowPlayerIds);
             $events = $events->merge($homeCardEvents)->merge($awayCardEvents);
 
-            $homeInjuryEvents = $this->generateInjuryEventsInRange($homeTeam->id, $homePlayers, $fromMinute + 1, 93, $game);
-            $awayInjuryEvents = $this->generateInjuryEventsInRange($awayTeam->id, $awayPlayers, $fromMinute + 1, 93, $game);
-            $events = $events->merge($homeInjuryEvents)->merge($awayInjuryEvents);
+            if (! in_array($homeTeam->id, $existingInjuryTeamIds)) {
+                $homeInjuryEvents = $this->generateInjuryEventsInRange($homeTeam->id, $homePlayers, $fromMinute + 1, 93, $game);
+                $events = $events->merge($homeInjuryEvents);
+            }
+            if (! in_array($awayTeam->id, $existingInjuryTeamIds)) {
+                $awayInjuryEvents = $this->generateInjuryEventsInRange($awayTeam->id, $awayPlayers, $fromMinute + 1, 93, $game);
+                $events = $events->merge($awayInjuryEvents);
+            }
 
             $events = $events->sortBy('minute')->values();
 
@@ -916,6 +923,7 @@ class MatchSimulator
         int $minMinute,
         int $maxMinute,
         float $matchFraction,
+        array $existingYellowPlayerIds = [],
     ): Collection {
         $events = collect();
 
@@ -933,7 +941,11 @@ class MatchSimulator
         $yellowCount = $this->poissonRandom($yellowCardsPerTeam);
 
         $usedMinutes = [];
+        // Seed with players who already have a yellow earlier in this match
         $playersWithYellow = collect();
+        foreach ($existingYellowPlayerIds as $playerId) {
+            $playersWithYellow->put($playerId, $minMinute - 1);
+        }
 
         for ($i = 0; $i < $yellowCount; $i++) {
             $player = $this->pickPlayerByPosition($players, self::CARD_WEIGHTS);
