@@ -27,4 +27,15 @@ return [
 
     'feedback_url' => env('BETA_FEEDBACK_URL', 'https://github.com/pabloroman/virtua-fc/issues'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Daily Invites
+    |--------------------------------------------------------------------------
+    |
+    | Number of waitlist entries to invite each day when the scheduler runs.
+    |
+    */
+
+    'daily_invites' => (int) env('BETA_DAILY_INVITES', 20),
+
 ];

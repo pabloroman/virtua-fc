@@ -159,7 +159,33 @@ Beyond the scoreline, the simulation generates:
 ### Goals & Assists
 - Goals assigned by position weight (strikers most likely)
 - 60% chance of assist per goal
-- Higher-rated players more likely to score/assist
+- Higher-rated players more likely to score/assist (dampened multiplier)
+
+#### Goal Scorer Distribution
+
+Goal scorer selection uses `pickGoalScorer()` with two mechanisms to prevent unrealistic concentration:
+
+1. **Dampened quality multiplier**: `pow(effectiveScore / 70, 0.5)` instead of linear. A 90-rated CF gets only ~13% advantage over a 70-rated player (vs 29% with linear scaling).
+
+2. **Within-match diminishing returns**: A player's weight is halved for each prior goal in the same match. This makes hat-tricks rare (~1-3 per season league-wide), matching real La Liga data.
+
+| Position | Weight |
+|----------|--------|
+| Centre-Forward | 25 |
+| Second Striker | 22 |
+| Left/Right Winger | 15 |
+| Attacking Midfield | 12 |
+| Central Midfield | 8 |
+| Left/Right Midfield | 6 |
+| Defensive Midfield | 4 |
+| Left/Right-Back | 3 |
+| Centre-Back | 2 |
+| Goalkeeper | 0 |
+
+Expected season outcomes:
+- Top scorer accounts for ~28-33% of team goals (vs real La Liga ~25-35%)
+- Top scorer: 18-23 goals in 38 games
+- 3-5 players per team with 8+ goals
 
 ### Cards
 - ~1.7 yellow cards per team per match
@@ -217,7 +243,9 @@ Low base goals (0.5, 0.3) make strength contribution the dominant factor. This e
 
 With these parameters, a 38-game La Liga season should show:
 - ~2.5-2.8 average goals per match
-- Top scorer: 25-30 goals
+- Top scorer: 18-23 goals (28-33% of team goals)
+- 3-5 players per team with 8+ goals
 - Top teams (90+ rated) finishing top 4
 - Clear separation between quality tiers
 - Occasional upsets, but not chaos
+- Hat-tricks: 1-3 per season league-wide (realistic)

@@ -26,10 +26,10 @@ class MatchSimulator
      */
     private array $matchPerformance = [];
 
-    // Position weights for goal scoring (higher = more likely to score)
-    private const SCORING_WEIGHTS = [
-        'Centre-Forward' => 30,
-        'Second Striker' => 25,
+    // Position weights for goal scoring (used by pickGoalScorer with dampened quality)
+    private const GOAL_SCORING_WEIGHTS = [
+        'Centre-Forward' => 25,
+        'Second Striker' => 22,
         'Left Winger' => 15,
         'Right Winger' => 15,
         'Attacking Midfield' => 12,
@@ -157,8 +157,9 @@ class MatchSimulator
                 return isset($removedAt[$p->id]) && $removedAt[$p->id] <= $event->minute;
             });
 
-            $weights = $event->type === 'goal' ? self::SCORING_WEIGHTS : self::ASSIST_WEIGHTS;
-            $replacement = $this->pickPlayerByPosition($availablePlayers, $weights);
+            $replacement = $event->type === 'goal'
+                ? $this->pickGoalScorer($availablePlayers)
+                : $this->pickPlayerByPosition($availablePlayers, self::ASSIST_WEIGHTS);
 
             if (! $replacement) {
                 return $event;
@@ -199,6 +200,57 @@ class MatchSimulator
             // Now includes the hidden performance modifier for randomness
             $qualityMultiplier = $effectiveScore / 70;
             $weight = (int) max(1, round($positionWeight * $qualityMultiplier));
+
+            for ($i = 0; $i < $weight; $i++) {
+                $weighted[] = $player;
+            }
+        }
+
+        if (empty($weighted)) {
+            return $players->random();
+        }
+
+        return $weighted[array_rand($weighted)];
+    }
+
+    /**
+     * Pick a goal scorer with dampened quality weighting and diminishing returns.
+     *
+     * Differs from pickPlayerByPosition() in two ways:
+     * 1. Uses sqrt-dampened quality multiplier (pow(score/70, 0.5)) instead of linear,
+     *    reducing the advantage of high-rated players from 29% to 13%.
+     * 2. Halves weight for each prior goal in the same match, making hat-tricks rare.
+     *
+     * @param  array<string, int>  $goalCounts  Map of player ID to goals scored so far this match
+     */
+    private function pickGoalScorer(Collection $players, array $goalCounts = []): ?GamePlayer
+    {
+        if ($players->isEmpty()) {
+            return null;
+        }
+
+        $weighted = [];
+        foreach ($players as $player) {
+            $positionWeight = self::GOAL_SCORING_WEIGHTS[$player->position] ?? 5;
+
+            if ($positionWeight === 0) {
+                continue;
+            }
+
+            $effectiveScore = $this->getEffectiveScore($player);
+
+            // Dampened quality multiplier: sqrt reduces the gap between high and low rated players
+            $qualityMultiplier = pow($effectiveScore / 70, 0.5);
+
+            $weight = $positionWeight * $qualityMultiplier;
+
+            // Diminishing returns: halve weight for each prior goal in this match
+            $priorGoals = $goalCounts[$player->id] ?? 0;
+            if ($priorGoals > 0) {
+                $weight /= pow(2, $priorGoals);
+            }
+
+            $weight = (int) max(1, round($weight));
 
             for ($i = 0; $i < $weight; $i++) {
                 $weighted[] = $player;
@@ -549,6 +601,7 @@ class MatchSimulator
     ): Collection {
         $events = collect();
         $usedMinutes = [];
+        $goalCounts = [];
 
         for ($i = 0; $i < $goalCount; $i++) {
             $minute = $this->generateUniqueMinuteInRange($usedMinutes, $minMinute, $maxMinute);
@@ -570,12 +623,13 @@ class MatchSimulator
                 }
             }
 
-            $scorer = $this->pickPlayerByPosition($scoringTeamPlayers, self::SCORING_WEIGHTS);
+            $scorer = $this->pickGoalScorer($scoringTeamPlayers, $goalCounts);
             if (! $scorer) {
                 continue;
             }
 
             $events->push(MatchEventData::goal($scoringTeamId, $scorer->id, $minute));
+            $goalCounts[$scorer->id] = ($goalCounts[$scorer->id] ?? 0) + 1;
 
             $assistChance = config('match_simulation.assist_chance', 60.0);
             if ($this->percentChance($assistChance)) {
@@ -739,7 +793,7 @@ class MatchSimulator
         if ($homePlayers->isNotEmpty() && $awayPlayers->isNotEmpty()) {
             for ($i = 0; $i < $homeScore; $i++) {
                 $minute = rand(91, 120);
-                $scorer = $this->pickPlayerByPosition($homePlayers, self::SCORING_WEIGHTS);
+                $scorer = $this->pickPlayerByPosition($homePlayers, self::GOAL_SCORING_WEIGHTS);
                 if ($scorer) {
                     $events->push(MatchEventData::goal($homeTeam->id, $scorer->id, $minute));
                 }
@@ -747,7 +801,7 @@ class MatchSimulator
 
             for ($i = 0; $i < $awayScore; $i++) {
                 $minute = rand(91, 120);
-                $scorer = $this->pickPlayerByPosition($awayPlayers, self::SCORING_WEIGHTS);
+                $scorer = $this->pickPlayerByPosition($awayPlayers, self::GOAL_SCORING_WEIGHTS);
                 if ($scorer) {
                     $events->push(MatchEventData::goal($awayTeam->id, $scorer->id, $minute));
                 }
