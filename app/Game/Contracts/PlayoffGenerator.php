@@ -24,9 +24,9 @@ interface PlayoffGenerator
 
     /**
      * Get configuration for a specific round.
-     * Season year is needed to calculate proper fixture dates.
+     * Reads dates from cup_round_templates in the database.
      */
-    public function getRoundConfig(int $round, int $seasonYear): PlayoffRoundConfig;
+    public function getRoundConfig(int $round): PlayoffRoundConfig;
 
     /**
      * Get total number of playoff rounds

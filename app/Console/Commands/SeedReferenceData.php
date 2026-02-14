@@ -267,6 +267,12 @@ class SeedReferenceData extends Command
 
         // Seed players (embedded in teams data)
         $this->seedPlayersFromTeams($teamsData['clubs'], $teamIdMap);
+
+        // Seed knockout round templates if schedule.json has a knockout section (e.g., ESP2 playoffs)
+        $scheduleData = $this->loadJson("{$basePath}/schedule.json");
+        if (!empty($scheduleData['knockout'])) {
+            $this->seedKnockoutRoundTemplates($code, $seasonId, $scheduleData['knockout']);
+        }
     }
 
     private function seedCupCompetition(string $basePath, string $code, int $tier, string $handler, string $country, string $role = 'domestic_cup'): void

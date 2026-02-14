@@ -4,10 +4,10 @@ namespace App\Game\Playoffs;
 
 use App\Game\Contracts\PlayoffGenerator;
 use App\Game\DTO\PlayoffRoundConfig;
+use App\Models\CupRoundTemplate;
 use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameStanding;
-use Carbon\Carbon;
 
 /**
  * Playoff generator for Spanish Segunda División (La Liga 2).
@@ -45,29 +45,19 @@ class ESP2PlayoffGenerator implements PlayoffGenerator
         return 2; // Semifinal + Final
     }
 
-    public function getRoundConfig(int $round, int $seasonYear): PlayoffRoundConfig
+    public function getRoundConfig(int $round): PlayoffRoundConfig
     {
-        // Playoffs happen in June of the year after the season starts
-        // (e.g., 2024-25 season playoffs are in June 2025)
-        $playoffYear = $seasonYear + 1;
+        $template = CupRoundTemplate::where('competition_id', $this->getCompetitionId())
+            ->where('round_number', $round)
+            ->firstOrFail();
 
-        return match ($round) {
-            1 => new PlayoffRoundConfig(
-                round: 1,
-                name: 'Playoff Semifinal',
-                twoLegged: true,
-                firstLegDate: Carbon::parse("first Sunday of June {$playoffYear}"),
-                secondLegDate: Carbon::parse("first Sunday of June {$playoffYear}")->addDays(7),
-            ),
-            2 => new PlayoffRoundConfig(
-                round: 2,
-                name: 'Playoff Final',
-                twoLegged: true,
-                firstLegDate: Carbon::parse("third Sunday of June {$playoffYear}"),
-                secondLegDate: Carbon::parse("third Sunday of June {$playoffYear}")->addDays(7),
-            ),
-            default => throw new \InvalidArgumentException("Invalid playoff round: {$round}"),
-        };
+        return new PlayoffRoundConfig(
+            round: $round,
+            name: $template->round_name,
+            twoLegged: $template->isTwoLegged(),
+            firstLegDate: $template->first_leg_date,
+            secondLegDate: $template->second_leg_date,
+        );
     }
 
     public function generateMatchups(Game $game, int $round): array

@@ -314,10 +314,14 @@ class SetupNewGame implements ShouldQueue
 
         $schedulePath = base_path("data/{$this->season}/{$competitionId}/schedule.json");
         $scheduleData = json_decode(file_get_contents($schedulePath), true);
-        $startDate = Carbon::parse($scheduleData['league'][0]['date']);
+
+        $matchdayDates = [];
+        foreach ($scheduleData['league'] as $md) {
+            $matchdayDates[$md['round']] = $md['date'];
+        }
 
         $drawService = new SwissDrawService();
-        $fixtures = $drawService->generateFixtures($drawTeams, $startDate);
+        $fixtures = $drawService->generateFixtures($drawTeams, $matchdayDates);
 
         $rows = [];
         foreach ($fixtures as $fixture) {
