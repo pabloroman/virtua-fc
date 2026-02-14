@@ -66,7 +66,7 @@ class LineupService
         $allPlayers = $this->getAllPlayers($gameId, $teamId);
 
         $grouped = $allPlayers
-            ->sortBy(fn ($p) => $this->positionSortOrder($p->position))
+            ->sortBy(fn ($p) => self::positionSortOrder($p->position))
             ->groupBy(fn ($p) => $p->position_group);
 
         return [
@@ -81,7 +81,7 @@ class LineupService
     /**
      * Get sort order for positions within their group.
      */
-    private function positionSortOrder(string $position): int
+    public static function positionSortOrder(string $position): int
     {
         return match ($position) {
             'Goalkeeper' => 1,

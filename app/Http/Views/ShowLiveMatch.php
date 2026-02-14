@@ -2,6 +2,7 @@
 
 namespace App\Http\Views;
 
+use App\Game\Services\LineupService;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
@@ -97,7 +98,7 @@ class ShowLiveMatch
                 'name' => $p->player->name ?? '',
                 'position' => $p->position,
                 'positionAbbr' => PositionMapper::toAbbreviation($p->position),
-                'positionSort' => self::positionSortOrder($p->position),
+                'positionSort' => LineupService::positionSortOrder($p->position),
             ])
             ->sortBy('positionSort')
             ->values()
@@ -115,7 +116,7 @@ class ShowLiveMatch
                 'name' => $p->player->name ?? '',
                 'position' => $p->position,
                 'positionAbbr' => PositionMapper::toAbbreviation($p->position),
-                'positionSort' => self::positionSortOrder($p->position),
+                'positionSort' => LineupService::positionSortOrder($p->position),
             ])
             ->sortBy('positionSort')
             ->values()
@@ -137,23 +138,4 @@ class ShowLiveMatch
         ]);
     }
 
-    private static function positionSortOrder(string $position): int
-    {
-        return match ($position) {
-            'Goalkeeper' => 1,
-            'Centre-Back' => 10,
-            'Left-Back' => 11,
-            'Right-Back' => 12,
-            'Defensive Midfield' => 20,
-            'Central Midfield' => 21,
-            'Left Midfield' => 22,
-            'Right Midfield' => 23,
-            'Attacking Midfield' => 24,
-            'Left Winger' => 30,
-            'Right Winger' => 31,
-            'Second Striker' => 32,
-            'Centre-Forward' => 33,
-            default => 99,
-        };
-    }
 }
