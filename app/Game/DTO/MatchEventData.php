@@ -60,6 +60,16 @@ readonly class MatchEventData
     /**
      * Create an injury event.
      */
+    /**
+     * Create a substitution event.
+     */
+    public static function substitution(string $teamId, string $playerOutId, string $playerInId, int $minute): self
+    {
+        return new self($teamId, $playerOutId, $minute, 'substitution', [
+            'player_in_id' => $playerInId,
+        ]);
+    }
+
     public static function injury(string $teamId, string $gamePlayerId, int $minute, string $injuryType, int $weeksOut): self
     {
         return new self($teamId, $gamePlayerId, $minute, 'injury', [

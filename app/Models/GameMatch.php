@@ -37,6 +37,7 @@ class GameMatch extends Model
         'away_score_et',
         'home_score_penalties',
         'away_score_penalties',
+        'substitutions',
     ];
 
     protected $casts = [
@@ -56,6 +57,7 @@ class GameMatch extends Model
         'away_score_et' => 'integer',
         'home_score_penalties' => 'integer',
         'away_score_penalties' => 'integer',
+        'substitutions' => 'array',
     ];
 
     public function game(): BelongsTo

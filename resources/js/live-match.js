@@ -9,6 +9,14 @@ export default function liveMatch(config) {
         otherMatches: config.otherMatches || [],
         homeTeamImage: config.homeTeamImage,
         awayTeamImage: config.awayTeamImage,
+        userTeamId: config.userTeamId,
+
+        // Substitution config
+        lineupPlayers: config.lineupPlayers || [],
+        benchPlayers: config.benchPlayers || [],
+        substituteUrl: config.substituteUrl || '',
+        csrfToken: config.csrfToken || '',
+        maxSubstitutions: config.maxSubstitutions || 5,
 
         // Clock state
         currentMinute: 0,
@@ -24,6 +32,21 @@ export default function liveMatch(config) {
         lastRevealedIndex: -1,
         goalFlash: false,
         latestEvent: null,
+
+        // Substitution state
+        subPanelOpen: false,
+        selectedPlayerOut: null,
+        selectedPlayerIn: null,
+        subProcessing: false,
+        substitutionsMade: config.existingSubstitutions
+            ? config.existingSubstitutions.map(s => ({
+                playerOutId: s.player_out_id,
+                playerInId: s.player_in_id,
+                minute: s.minute,
+                playerOutName: '',
+                playerInName: '',
+            }))
+            : [],
 
         // Ticker state for other matches
         otherMatchScores: [],
@@ -58,7 +81,7 @@ export default function liveMatch(config) {
                 return;
             }
 
-            if (this.isPaused) {
+            if (this.isPaused || this.subPanelOpen) {
                 this._lastTick = now;
                 this._animFrame = requestAnimationFrame(this.tick.bind(this));
                 return;
@@ -113,6 +136,16 @@ export default function liveMatch(config) {
                 this.updateScore(event);
                 this.triggerGoalFlash();
                 this.pauseForDrama(1500);
+            }
+
+            // Auto-open substitution panel when user's player gets injured
+            if (event.type === 'injury' && event.teamId === this.userTeamId && this.substitutionsMade.length < this.maxSubstitutions) {
+                this.openSubPanel();
+                // Pre-select the injured player as "player out"
+                const injured = this.availableLineupPlayers.find(p => p.id === event.gamePlayerId);
+                if (injured) {
+                    this.selectedPlayerOut = injured;
+                }
             }
         },
 
@@ -199,6 +232,155 @@ export default function liveMatch(config) {
             this.enterFullTime();
         },
 
+        // =====================
+        // Substitution methods
+        // =====================
+
+        openSubPanel() {
+            if (this.substitutionsMade.length >= this.maxSubstitutions) return;
+            this.subPanelOpen = true;
+            this.selectedPlayerOut = null;
+            this.selectedPlayerIn = null;
+            // Pause the match clock while the sub panel is open
+        },
+
+        closeSubPanel() {
+            this.subPanelOpen = false;
+            this.selectedPlayerOut = null;
+            this.selectedPlayerIn = null;
+        },
+
+        get availableLineupPlayers() {
+            // Start with original lineup, apply substitutions
+            const subbedOutIds = this.substitutionsMade.map(s => s.playerOutId);
+            const subbedInIds = this.substitutionsMade.map(s => s.playerInId);
+
+            // Original lineup players still on pitch (not subbed out)
+            const onPitch = this.lineupPlayers.filter(p => !subbedOutIds.includes(p.id));
+
+            // Players who came on as subs and are still on pitch
+            const subsOnPitch = this.benchPlayers.filter(p => subbedInIds.includes(p.id) && !subbedOutIds.includes(p.id));
+
+            return [...onPitch, ...subsOnPitch].sort((a, b) => a.positionSort - b.positionSort);
+        },
+
+        get availableBenchPlayers() {
+            // Bench players minus those already subbed in
+            const subbedInIds = this.substitutionsMade.map(s => s.playerInId);
+            return this.benchPlayers.filter(p => !subbedInIds.includes(p.id)).sort((a, b) => a.positionSort - b.positionSort);
+        },
+
+        async confirmSubstitution() {
+            if (!this.selectedPlayerOut || !this.selectedPlayerIn || this.subProcessing) return;
+
+            this.subProcessing = true;
+
+            const subMinute = Math.floor(this.currentMinute);
+
+            try {
+                const response = await fetch(this.substituteUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': this.csrfToken,
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        playerOutId: this.selectedPlayerOut.id,
+                        playerInId: this.selectedPlayerIn.id,
+                        minute: subMinute,
+                        previousSubstitutions: this.substitutionsMade.map(s => ({
+                            playerOutId: s.playerOutId,
+                            playerInId: s.playerInId,
+                            minute: s.minute,
+                        })),
+                    }),
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    console.error('Substitution failed:', error);
+                    this.subProcessing = false;
+                    return;
+                }
+
+                const result = await response.json();
+
+                // Record the substitution
+                this.substitutionsMade.push({
+                    playerOutId: this.selectedPlayerOut.id,
+                    playerInId: this.selectedPlayerIn.id,
+                    playerOutName: this.selectedPlayerOut.name,
+                    playerInName: this.selectedPlayerIn.name,
+                    minute: subMinute,
+                });
+
+                // Remove future unrevealed events from the array
+                this.events = this.events.filter(e => e.minute <= subMinute);
+
+                // Remove future events from revealedEvents too
+                this.revealedEvents = this.revealedEvents.filter(e => e.minute <= subMinute);
+
+                // Add the substitution event to the revealed events feed
+                const subEvent = {
+                    minute: subMinute,
+                    type: 'substitution',
+                    playerName: this.selectedPlayerOut.name,
+                    playerInName: this.selectedPlayerIn.name,
+                    teamId: result.substitution.teamId,
+                };
+                this.revealedEvents.unshift(subEvent);
+
+                // Append new events from the server (they'll be revealed as the clock advances)
+                if (result.newEvents && result.newEvents.length > 0) {
+                    this.events.push(...result.newEvents);
+                    // Re-sort all events by minute
+                    this.events.sort((a, b) => a.minute - b.minute);
+                }
+
+                // Reset lastRevealedIndex to account for the modified events array
+                // Find the last event that's <= current minute
+                this.lastRevealedIndex = -1;
+                for (let i = 0; i < this.events.length; i++) {
+                    if (this.events[i].minute <= this.currentMinute) {
+                        this.lastRevealedIndex = i;
+                    } else {
+                        break;
+                    }
+                }
+
+                // Update the final score
+                this.finalHomeScore = result.newScore.home;
+                this.finalAwayScore = result.newScore.away;
+
+                // Recalculate current displayed score from revealed goal events
+                this.recalculateScore();
+
+                // Close the panel and resume
+                this.closeSubPanel();
+            } catch (err) {
+                console.error('Substitution request failed:', err);
+            } finally {
+                this.subProcessing = false;
+            }
+        },
+
+        recalculateScore() {
+            let home = 0;
+            let away = 0;
+            for (const event of this.revealedEvents) {
+                if (event.type === 'goal') {
+                    if (event.teamId === this.homeTeamId) home++;
+                    else away++;
+                } else if (event.type === 'own_goal') {
+                    if (event.teamId === this.homeTeamId) away++;
+                    else home++;
+                }
+            }
+            this.homeScore = home;
+            this.awayScore = away;
+        },
+
         // Display helpers
         get displayMinute() {
             const m = Math.floor(this.currentMinute);
@@ -213,17 +395,18 @@ export default function liveMatch(config) {
         },
 
         get isRunning() {
-            return this.phase === 'first_half' || this.phase === 'second_half';
+            return (this.phase === 'first_half' || this.phase === 'second_half') && !this.subPanelOpen;
         },
 
         getEventIcon(type) {
             switch (type) {
-                case 'goal': return '⚽';
-                case 'own_goal': return '⚽';
-                case 'yellow_card': return '🟨';
-                case 'red_card': return '🟥';
-                case 'injury': return '🏥';
-                default: return '•';
+                case 'goal': return '\u26BD';
+                case 'own_goal': return '\u26BD';
+                case 'yellow_card': return '\uD83D\uDFE8';
+                case 'red_card': return '\uD83D\uDFE5';
+                case 'injury': return '\uD83C\uDFE5';
+                case 'substitution': return '\uD83D\uDD04';
+                default: return '\u2022';
             }
         },
 
@@ -237,6 +420,16 @@ export default function liveMatch(config) {
 
         isGoalEvent(event) {
             return event.type === 'goal' || event.type === 'own_goal';
+        },
+
+        getPositionBadgeColor(abbr) {
+            const colors = {
+                GK: 'bg-amber-500',
+                CB: 'bg-blue-600', LB: 'bg-blue-600', RB: 'bg-blue-600', DF: 'bg-blue-600',
+                DM: 'bg-emerald-600', CM: 'bg-emerald-600', AM: 'bg-emerald-600', LM: 'bg-emerald-600', RM: 'bg-emerald-600', MF: 'bg-emerald-600',
+                LW: 'bg-red-600', RW: 'bg-red-600', CF: 'bg-red-600', SS: 'bg-red-600', FW: 'bg-red-600',
+            };
+            return colors[abbr] || 'bg-emerald-600';
         },
 
         get secondHalfEvents() {

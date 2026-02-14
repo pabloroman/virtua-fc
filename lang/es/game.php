@@ -139,6 +139,23 @@ return [
     'live_injuries_report' => 'Parte de Lesiones',
     'live_weeks_out' => ':count semana de baja|:count semanas de baja',
 
+    // Substitutions
+    'sub_title' => 'Sustituciones',
+    'sub_count' => ':used/:max',
+    'sub_pause_and_substitute' => 'Pausar y Sustituir',
+    'sub_player_out' => 'Sale',
+    'sub_player_in' => 'Entra',
+    'sub_confirm' => 'Confirmar',
+    'sub_cancel' => 'Cancelar',
+    'sub_processing' => 'Procesando...',
+    'sub_limit_reached' => 'Límite de sustituciones alcanzado',
+    'sub_error_not_your_match' => 'No puedes hacer sustituciones en este partido',
+    'sub_error_limit_reached' => 'Has alcanzado el límite de sustituciones',
+    'sub_error_player_not_on_pitch' => 'El jugador no está en el campo',
+    'sub_error_invalid_player' => 'Jugador no válido',
+    'sub_error_already_on_pitch' => 'El jugador ya está en el campo',
+    'sub_event' => 'Sustitución',
+
     // Results page
     'results' => 'Resultados',
     'matchday_results' => 'Resultados :name',

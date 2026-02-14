@@ -81,6 +81,79 @@ class StandingsCalculator
     }
 
     /**
+     * Reverse a previously recorded match result from standings.
+     * Used when a substitution changes the match outcome.
+     */
+    public function reverseMatchResult(
+        string $gameId,
+        string $competitionId,
+        string $homeTeamId,
+        string $awayTeamId,
+        int $homeScore,
+        int $awayScore,
+    ): void {
+        $homeWin = $homeScore > $awayScore;
+        $awayWin = $awayScore > $homeScore;
+        $draw = $homeScore === $awayScore;
+
+        // Reverse home team standing
+        $this->reverseTeamStanding(
+            gameId: $gameId,
+            competitionId: $competitionId,
+            teamId: $homeTeamId,
+            goalsFor: $homeScore,
+            goalsAgainst: $awayScore,
+            won: $homeWin,
+            drawn: $draw,
+            lost: $awayWin,
+        );
+
+        // Reverse away team standing
+        $this->reverseTeamStanding(
+            gameId: $gameId,
+            competitionId: $competitionId,
+            teamId: $awayTeamId,
+            goalsFor: $awayScore,
+            goalsAgainst: $homeScore,
+            won: $awayWin,
+            drawn: $draw,
+            lost: $homeWin,
+        );
+    }
+
+    /**
+     * Reverse a single team's standing record (undo a match result).
+     */
+    private function reverseTeamStanding(
+        string $gameId,
+        string $competitionId,
+        string $teamId,
+        int $goalsFor,
+        int $goalsAgainst,
+        bool $won,
+        bool $drawn,
+        bool $lost,
+    ): void {
+        $standing = GameStanding::where('game_id', $gameId)
+            ->where('competition_id', $competitionId)
+            ->where('team_id', $teamId)
+            ->first();
+
+        if (! $standing) {
+            return;
+        }
+
+        $standing->played -= 1;
+        $standing->won -= $won ? 1 : 0;
+        $standing->drawn -= $drawn ? 1 : 0;
+        $standing->lost -= $lost ? 1 : 0;
+        $standing->goals_for -= $goalsFor;
+        $standing->goals_against -= $goalsAgainst;
+        $standing->points -= $won ? 3 : ($drawn ? 1 : 0);
+        $standing->save();
+    }
+
+    /**
      * Recalculate positions for all teams in a competition.
      * Order by: points DESC, goal difference DESC, goals for DESC
      */

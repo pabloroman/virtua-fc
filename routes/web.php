@@ -47,6 +47,7 @@ use App\Http\Views\ShowAcademy;
 use App\Http\Views\GameSetupStatus;
 use App\Http\Views\ShowSquadStats;
 use App\Http\Views\ShowTransfers;
+use App\Http\Actions\ProcessSubstitution;
 use App\Http\Actions\PromoteAcademyPlayer;
 use App\Http\Actions\ProcessSeasonDevelopment;
 use App\Http\Actions\StartNewSeason;
@@ -88,6 +89,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/game/{gameId}/advance', AdvanceMatchday::class)->name('game.advance');
         Route::post('/game/{gameId}/lineup/{matchId}', SaveLineup::class)->name('game.lineup.save');
         Route::get('/game/{gameId}/lineup/{matchId}/auto', GetAutoLineup::class)->name('game.lineup.auto');
+        Route::post('/game/{gameId}/match/{matchId}/substitute', ProcessSubstitution::class)->name('game.match.substitute');
         Route::post('/game/{gameId}/cup/draw/{round}', ConductCupDraw::class)->name('game.cup.draw');
         Route::post('/game/{gameId}/development/process', ProcessSeasonDevelopment::class)->name('game.development.process');
 

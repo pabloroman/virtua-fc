@@ -35,6 +35,7 @@ class MatchEvent extends Model
     public const TYPE_YELLOW_CARD = 'yellow_card';
     public const TYPE_RED_CARD = 'red_card';
     public const TYPE_INJURY = 'injury';
+    public const TYPE_SUBSTITUTION = 'substitution';
 
     public function game(): BelongsTo
     {

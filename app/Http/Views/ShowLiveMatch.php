@@ -2,8 +2,11 @@
 
 namespace App\Http\Views;
 
+use App\Game\Services\LineupService;
 use App\Models\Game;
 use App\Models\GameMatch;
+use App\Models\GamePlayer;
+use App\Support\PositionMapper;
 
 class ShowLiveMatch
 {
@@ -26,6 +29,7 @@ class ShowLiveMatch
                 'type' => $e->event_type,
                 'playerName' => $e->gamePlayer->player->name ?? '',
                 'teamId' => $e->team_id,
+                'gamePlayerId' => $e->game_player_id,
                 'metadata' => $e->metadata,
             ])
             ->sortBy('minute')
@@ -79,12 +83,59 @@ class ShowLiveMatch
             'matchday' => $playerMatch->round_number,
         ]);
 
+        // Load bench players for substitutions (user's team only)
+        $isUserHome = $playerMatch->isHomeTeam($game->team_id);
+        $userLineupIds = $isUserHome
+            ? ($playerMatch->home_lineup ?? [])
+            : ($playerMatch->away_lineup ?? []);
+
+        // Starting lineup players (for the "sub out" picker)
+        $lineupPlayers = GamePlayer::with('player')
+            ->whereIn('id', $userLineupIds)
+            ->get()
+            ->map(fn ($p) => [
+                'id' => $p->id,
+                'name' => $p->player->name ?? '',
+                'position' => $p->position,
+                'positionAbbr' => PositionMapper::toAbbreviation($p->position),
+                'positionSort' => LineupService::positionSortOrder($p->position),
+            ])
+            ->sortBy('positionSort')
+            ->values()
+            ->all();
+
+        // Bench players (all squad players NOT in the starting lineup)
+        $benchPlayers = GamePlayer::with('player')
+            ->where('game_id', $gameId)
+            ->where('team_id', $game->team_id)
+            ->whereNotIn('id', $userLineupIds)
+            ->whereNull('injury_until')
+            ->get()
+            ->map(fn ($p) => [
+                'id' => $p->id,
+                'name' => $p->player->name ?? '',
+                'position' => $p->position,
+                'positionAbbr' => PositionMapper::toAbbreviation($p->position),
+                'positionSort' => LineupService::positionSortOrder($p->position),
+            ])
+            ->sortBy('positionSort')
+            ->values()
+            ->all();
+
+        // Existing substitutions already made on this match (for page reload scenario)
+        $existingSubstitutions = $playerMatch->substitutions ?? [];
+
         return view('live-match', [
             'game' => $game,
             'match' => $playerMatch,
             'events' => $events,
             'otherMatches' => $otherMatches,
             'resultsUrl' => $resultsUrl,
+            'lineupPlayers' => $lineupPlayers,
+            'benchPlayers' => $benchPlayers,
+            'existingSubstitutions' => $existingSubstitutions,
+            'substituteUrl' => route('game.match.substitute', ['gameId' => $game->id, 'matchId' => $playerMatch->id]),
         ]);
     }
+
 }
