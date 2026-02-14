@@ -20,6 +20,12 @@ class InviteFromWaitlist extends Command
 
     public function handle(): int
     {
+        if (! config('beta.enabled')) {
+            $this->info('Beta mode is disabled, skipping.');
+
+            return self::SUCCESS;
+        }
+
         $count = (int) $this->argument('count');
 
         if ($count <= 0) {
