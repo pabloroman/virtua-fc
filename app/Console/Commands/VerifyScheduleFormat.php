@@ -65,6 +65,11 @@ class VerifyScheduleFormat extends Command
         $this->info('Verifying UCL knockout dates (schedule.json vs matchdays.json)...');
         $this->verifyUclKnockout(base_path('data/2025/UCL'));
 
+        // UCL: verify league phase dates match the hard-coded SetupNewGame values
+        $this->newLine();
+        $this->info('Verifying UCL league phase dates (schedule.json vs SetupNewGame hard-coded)...');
+        $this->verifyUclLeaguePhase(base_path('data/2025/UCL'));
+
         $this->newLine();
         if ($allPassed) {
             $this->info('All verifications passed!');
@@ -302,6 +307,42 @@ class VerifyScheduleFormat extends Command
                 } else {
                     $this->error("  UCL round {$round}: Date mismatch — old: " . implode(', ', $oldDates) . " vs new: {$entry['date']}");
                 }
+            }
+        }
+    }
+
+    /**
+     * Verify UCL league phase dates in schedule.json match the hard-coded
+     * start date and interval in SetupNewGame (2025-09-17, 14-day intervals).
+     */
+    private function verifyUclLeaguePhase(string $basePath): void
+    {
+        $newData = json_decode(file_get_contents("{$basePath}/schedule.json"), true);
+        $league = $newData['league'] ?? [];
+
+        if (empty($league)) {
+            $this->error('  UCL: No league section in schedule.json');
+            return;
+        }
+
+        // These match the hard-coded values in SetupNewGame.php:316
+        $startDate = Carbon::parse('2025-09-17');
+        $intervalDays = 14;
+        $expectedRounds = 8;
+
+        if (count($league) !== $expectedRounds) {
+            $this->error("  UCL: Expected {$expectedRounds} league rounds, got " . count($league));
+            return;
+        }
+
+        foreach ($league as $entry) {
+            $round = $entry['round'];
+            $expectedDate = $startDate->copy()->addDays(($round - 1) * $intervalDays)->format('Y-m-d');
+
+            if ($entry['date'] === $expectedDate) {
+                $this->line("  UCL league round {$round}: OK — {$entry['date']}");
+            } else {
+                $this->error("  UCL league round {$round}: MISMATCH — expected {$expectedDate}, got {$entry['date']}");
             }
         }
     }
