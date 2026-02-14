@@ -2,8 +2,8 @@
 
 namespace App\Http\Views;
 
+use App\Game\Services\LeagueFixtureGenerator;
 use App\Models\Competition;
-use App\Models\CupRoundTemplate;
 use App\Models\CompetitionEntry;
 use App\Models\CupTie;
 use App\Models\Game;
@@ -84,11 +84,8 @@ class ShowCompetition
 
         $standingsZones = $competition->getConfig()->getStandingsZones();
 
-        // Knockout bracket data (if knockout phase has started)
-        $knockoutRounds = CupRoundTemplate::where('competition_id', $competition->id)
-            ->where('season', $game->season)
-            ->orderBy('round_number')
-            ->get();
+        // Knockout bracket data from schedule.json
+        $knockoutRounds = collect(LeagueFixtureGenerator::loadKnockoutRounds($competition->id, $competition->season));
 
         $knockoutTies = CupTie::with(['homeTeam', 'awayTeam', 'winner', 'firstLegMatch', 'secondLegMatch'])
             ->where('game_id', $game->id)
@@ -118,11 +115,8 @@ class ShowCompetition
 
     private function showCup(Game $game, Competition $competition)
     {
-        // Get all round templates
-        $rounds = CupRoundTemplate::where('competition_id', $competition->id)
-            ->where('season', $game->season)
-            ->orderBy('round_number')
-            ->get();
+        // Get all round configs from schedule.json
+        $rounds = collect(LeagueFixtureGenerator::loadKnockoutRounds($competition->id, $competition->season));
 
         // Get all ties for this game, grouped by round
         $tiesByRound = CupTie::with(['homeTeam', 'awayTeam', 'winner', 'firstLegMatch', 'secondLegMatch'])
@@ -155,7 +149,7 @@ class ShowCompetition
             }
         }
 
-        $playerRoundName = $playerTie?->roundTemplate()?->round_name;
+        $playerRoundName = $playerTie?->getRoundConfig()?->name;
 
         return view('cup', [
             'game' => $game,

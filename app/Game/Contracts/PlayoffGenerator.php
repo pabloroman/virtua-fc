@@ -24,7 +24,7 @@ interface PlayoffGenerator
 
     /**
      * Get configuration for a specific round.
-     * Reads dates from cup_round_templates in the database.
+     * Reads dates from schedule.json.
      */
     public function getRoundConfig(int $round): PlayoffRoundConfig;
 

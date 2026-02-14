@@ -4,7 +4,8 @@ namespace App\Game\Playoffs;
 
 use App\Game\Contracts\PlayoffGenerator;
 use App\Game\DTO\PlayoffRoundConfig;
-use App\Models\CupRoundTemplate;
+use App\Game\Services\LeagueFixtureGenerator;
+use App\Models\Competition;
 use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameStanding;
@@ -47,17 +48,16 @@ class ESP2PlayoffGenerator implements PlayoffGenerator
 
     public function getRoundConfig(int $round): PlayoffRoundConfig
     {
-        $template = CupRoundTemplate::where('competition_id', $this->getCompetitionId())
-            ->where('round_number', $round)
-            ->firstOrFail();
+        $competition = Competition::find($this->getCompetitionId());
+        $rounds = LeagueFixtureGenerator::loadKnockoutRounds($this->getCompetitionId(), $competition->season);
 
-        return new PlayoffRoundConfig(
-            round: $round,
-            name: $template->round_name,
-            twoLegged: $template->isTwoLegged(),
-            firstLegDate: $template->first_leg_date,
-            secondLegDate: $template->second_leg_date,
-        );
+        foreach ($rounds as $config) {
+            if ($config->round === $round) {
+                return $config;
+            }
+        }
+
+        throw new \RuntimeException("No knockout round config found for {$this->getCompetitionId()} round {$round}");
     }
 
     public function generateMatchups(Game $game, int $round): array

@@ -2,7 +2,8 @@
 
 namespace App\Game\Services;
 
-use App\Models\CupRoundTemplate;
+use App\Game\DTO\PlayoffRoundConfig;
+use App\Models\Competition;
 use App\Models\CompetitionEntry;
 use App\Models\CupTie;
 use App\Models\GameMatch;
@@ -18,11 +19,14 @@ class CupDrawService
      */
     public function conductDraw(string $gameId, string $competitionId, int $roundNumber): Collection
     {
-        $roundTemplate = CupRoundTemplate::where('competition_id', $competitionId)
-            ->where('round_number', $roundNumber)
-            ->firstOrFail();
+        $roundConfig = $this->getRoundConfig($competitionId, $roundNumber);
 
-        $season = $roundTemplate->season;
+        if (!$roundConfig) {
+            throw new \RuntimeException("No knockout round config found for {$competitionId} round {$roundNumber}");
+        }
+
+        $competition = Competition::find($competitionId);
+        $season = $competition?->season ?? '2025';
 
         // Get all teams eligible for this round
         $teams = $this->getTeamsForRound($gameId, $competitionId, $season, $roundNumber);
@@ -59,26 +63,26 @@ class CupDrawService
                 'game_id' => $gameId,
                 'competition_id' => $competitionId,
                 'round_number' => $roundNumber,
-                'round_name' => $roundTemplate->round_name,
+                'round_name' => $roundConfig->name,
                 'home_team_id' => $homeTeamId,
                 'away_team_id' => $awayTeamId,
-                'scheduled_date' => $roundTemplate->first_leg_date,
+                'scheduled_date' => $roundConfig->firstLegDate,
                 'cup_tie_id' => $tie->id,
             ]);
 
             $tie->update(['first_leg_match_id' => $firstLegMatch->id]);
 
             // Create second leg match if two-legged
-            if ($roundTemplate->isTwoLegged()) {
+            if ($roundConfig->twoLegged) {
                 $secondLegMatch = GameMatch::create([
                     'id' => Str::uuid()->toString(),
                     'game_id' => $gameId,
                     'competition_id' => $competitionId,
                     'round_number' => $roundNumber,
-                    'round_name' => $roundTemplate->round_name . ' (Vuelta)',
+                    'round_name' => $roundConfig->name . ' (Vuelta)',
                     'home_team_id' => $awayTeamId, // Teams swap for second leg
                     'away_team_id' => $homeTeamId,
-                    'scheduled_date' => $roundTemplate->second_leg_date,
+                    'scheduled_date' => $roundConfig->secondLegDate,
                     'cup_tie_id' => $tie->id,
                 ]);
 
@@ -138,12 +142,10 @@ class CupDrawService
             return false;
         }
 
-        // Check if we have enough teams for this round
-        $roundTemplate = CupRoundTemplate::where('competition_id', $competitionId)
-            ->where('round_number', $roundNumber)
-            ->first();
+        // Check if round config exists in schedule.json
+        $roundConfig = $this->getRoundConfig($competitionId, $roundNumber);
 
-        if (!$roundTemplate) {
+        if (!$roundConfig) {
             return false;
         }
 
@@ -184,21 +186,57 @@ class CupDrawService
             ->distinct()
             ->pluck('round_number');
 
-        // Find the first undrawn round
-        $nextUndrawnRound = CupRoundTemplate::where('competition_id', $competitionId)
-            ->whereNotIn('round_number', $drawnRounds)
-            ->orderBy('round_number')
-            ->first();
+        // Load all knockout rounds from schedule.json and find the first undrawn
+        $allRounds = $this->getAllRoundConfigs($competitionId);
 
-        if (!$nextUndrawnRound) {
+        $nextUndrawnRound = null;
+        foreach ($allRounds as $round) {
+            if (!$drawnRounds->contains($round->round)) {
+                $nextUndrawnRound = $round->round;
+                break;
+            }
+        }
+
+        if ($nextUndrawnRound === null) {
             return null;
         }
 
         // Verify it's actually ready (previous round complete or it's round 1)
-        if ($this->needsDrawForRound($gameId, $competitionId, $nextUndrawnRound->round_number)) {
-            return $nextUndrawnRound->round_number;
+        if ($this->needsDrawForRound($gameId, $competitionId, $nextUndrawnRound)) {
+            return $nextUndrawnRound;
         }
 
         return null;
+    }
+
+    /**
+     * Get round config from schedule.json for a specific round.
+     */
+    private function getRoundConfig(string $competitionId, int $roundNumber): ?PlayoffRoundConfig
+    {
+        $rounds = $this->getAllRoundConfigs($competitionId);
+
+        foreach ($rounds as $round) {
+            if ($round->round === $roundNumber) {
+                return $round;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Get all knockout round configs for a competition from schedule.json.
+     *
+     * @return PlayoffRoundConfig[]
+     */
+    private function getAllRoundConfigs(string $competitionId): array
+    {
+        $competition = Competition::find($competitionId);
+        if (!$competition) {
+            return [];
+        }
+
+        return LeagueFixtureGenerator::loadKnockoutRounds($competitionId, $competition->season);
     }
 }

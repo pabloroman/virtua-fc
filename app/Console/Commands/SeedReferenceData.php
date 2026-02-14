@@ -209,7 +209,6 @@ class SeedReferenceData extends Command
         DB::table('games')->delete();
 
         // Clear reference tables
-        DB::table('cup_round_templates')->delete();
         DB::table('competition_teams')->delete();
         DB::table('players')->delete();
         DB::table('teams')->delete();
@@ -268,25 +267,16 @@ class SeedReferenceData extends Command
         // Seed players (embedded in teams data)
         $this->seedPlayersFromTeams($teamsData['clubs'], $teamIdMap);
 
-        // Seed knockout round templates if schedule.json has a knockout section (e.g., ESP2 playoffs)
-        $scheduleData = $this->loadJson("{$basePath}/schedule.json");
-        if (!empty($scheduleData['knockout'])) {
-            $this->seedKnockoutRoundTemplates($code, $seasonId, $scheduleData['knockout']);
-        }
     }
 
     private function seedCupCompetition(string $basePath, string $code, int $tier, string $handler, string $country, string $role = 'domestic_cup'): void
     {
         $teamsData = $this->loadJson("{$basePath}/teams.json");
-        $scheduleData = $this->loadJson("{$basePath}/schedule.json");
 
         $season = '2025';
 
         // Seed competition record
         $this->seedCompetitionRecord($code, $teamsData, $tier, 'cup', $handler, $country, $role);
-
-        // Seed cup round templates from schedule.json knockout section
-        $this->seedKnockoutRoundTemplates($code, $season, $scheduleData['knockout'] ?? []);
 
         // Seed cup teams (link existing teams to cup)
         $this->seedCupTeams($teamsData['clubs'], $code, $season, $country);
@@ -295,7 +285,6 @@ class SeedReferenceData extends Command
     private function seedSwissFormatCompetition(string $basePath, string $code, int $tier, string $handler, string $country, string $role = 'european'): void
     {
         $teamsData = $this->loadJson("{$basePath}/teams.json");
-        $scheduleData = $this->loadJson("{$basePath}/schedule.json");
 
         $season = $teamsData['seasonID'] ?? '2025';
 
@@ -309,9 +298,6 @@ class SeedReferenceData extends Command
         $this->seedPlayersFromTeams($teamsData['clubs'], $teamIdMap);
 
         // Swiss league phase fixtures are generated per-game by SetupNewGame
-
-        // Seed knockout round templates from schedule.json knockout section
-        $this->seedKnockoutRoundTemplates($code, $season, $scheduleData['knockout'] ?? []);
 
         $this->line("  Swiss format competition seeded successfully");
     }
@@ -582,35 +568,6 @@ class SeedReferenceData extends Command
         $this->line("  Players: {$count}");
     }
 
-    private function seedKnockoutRoundTemplates(string $competitionId, string $season, array $knockoutRounds): void
-    {
-        $count = 0;
-
-        foreach ($knockoutRounds as $round) {
-            $roundNumber = $round['round'];
-            $hasTwoLegs = isset($round['second_leg_date']);
-
-            DB::table('cup_round_templates')->updateOrInsert(
-                [
-                    'competition_id' => $competitionId,
-                    'season' => $season,
-                    'round_number' => $roundNumber,
-                ],
-                [
-                    'round_name' => $round['name'],
-                    'type' => $hasTwoLegs ? 'two_leg' : 'one_leg',
-                    'first_leg_date' => $hasTwoLegs ? $round['first_leg_date'] : ($round['date'] ?? null),
-                    'second_leg_date' => $hasTwoLegs ? $round['second_leg_date'] : null,
-                    'teams_entering' => 0,
-                ]
-            );
-
-            $count++;
-        }
-
-        $this->line("  Round templates: {$count}");
-    }
-
     private function seedCupTeams(array $clubs, string $competitionId, string $season, string $country = 'ES'): void
     {
         $count = 0;
@@ -670,29 +627,7 @@ class SeedReferenceData extends Command
             $count++;
         }
 
-        // Update teams_entering counts
-        $this->updateTeamsEnteringCounts($competitionId, $season);
-
         $this->line("  Cup teams: {$count}");
-    }
-
-    private function updateTeamsEnteringCounts(string $competitionId, string $season): void
-    {
-        $entryCounts = DB::table('competition_teams')
-            ->where('competition_id', $competitionId)
-            ->where('season', $season)
-            ->selectRaw('entry_round, COUNT(*) as count')
-            ->groupBy('entry_round')
-            ->pluck('count', 'entry_round')
-            ->toArray();
-
-        foreach ($entryCounts as $round => $count) {
-            DB::table('cup_round_templates')
-                ->where('competition_id', $competitionId)
-                ->where('season', $season)
-                ->where('round_number', $round)
-                ->update(['teams_entering' => $count]);
-        }
     }
 
     private function parseMarketValue(?string $value): int
@@ -847,7 +782,6 @@ class SeedReferenceData extends Command
         $this->line('  Teams: ' . DB::table('teams')->count());
         $this->line('  Players: ' . DB::table('players')->count());
         $this->line('  Competition-Team links: ' . DB::table('competition_teams')->count());
-        $this->line('  Cup round templates: ' . DB::table('cup_round_templates')->count());
         $this->newLine();
         $this->info('Reference data seeded successfully!');
     }

@@ -7,7 +7,8 @@ use App\Game\Contracts\CompetitionHandler;
 use App\Game\Game as GameAggregate;
 use App\Game\Services\CupDrawService;
 use App\Game\Services\CupTieResolver;
-use App\Models\CupRoundTemplate;
+use App\Game\Services\LeagueFixtureGenerator;
+use App\Models\Competition;
 use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameMatch;
@@ -125,14 +126,12 @@ class KnockoutCupHandler implements CompetitionHandler
             return;
         }
 
-        // Pre-load the round template once (all ties in a batch share the same round)
+        // Pre-load the round config once (all ties in a batch share the same round)
         $firstTie = $ties->first();
-        $roundTemplate = CupRoundTemplate::where('competition_id', $firstTie->competition_id)
-            ->where('round_number', $firstTie->round_number)
-            ->first();
+        $roundConfig = $firstTie->getRoundConfig();
 
         foreach ($ties as $tie) {
-            $winnerId = $this->cupTieResolver->resolve($tie, $allPlayers, $roundTemplate);
+            $winnerId = $this->cupTieResolver->resolve($tie, $allPlayers, $roundConfig);
 
             if ($winnerId) {
                 $aggregate->completeCupTie(

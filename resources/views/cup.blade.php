@@ -36,10 +36,10 @@
                             @php
                                 $isHome = $playerTie->home_team_id === $game->team_id;
                                 $opponent = $isHome ? $playerTie->awayTeam : $playerTie->homeTeam;
-                                $round = $rounds->firstWhere('round_number', $playerTie->round_number);
+                                $round = $rounds->firstWhere('round', $playerTie->round_number);
                             @endphp
                             <div class="mb-8 p-6 rounded-xl bg-gradient-to-r from-sky-50 to-sky-100 border border-sky-200">
-                                <div class="text-center text-sm text-sky-600 mb-3">{{ __('cup.your_current_cup_tie', ['round' => $round?->round_name]) }}</div>
+                                <div class="text-center text-sm text-sky-600 mb-3">{{ __('cup.your_current_cup_tie', ['round' => $round?->name]) }}</div>
                                 <div class="flex items-center justify-center gap-6">
                                     <div class="flex items-center gap-3 flex-1 justify-end">
                                         <span class="text-xl font-semibold @if($playerTie->home_team_id === $game->team_id) text-sky-700 @endif">
@@ -63,7 +63,7 @@
                                         </span>
                                     </div>
                                 </div>
-                                @if($round?->isTwoLegged())
+                                @if($round?->twoLegged)
                                     <div class="text-center text-sm text-slate-500 mt-2">{{ __('cup.two_legged_tie') }}</div>
                                 @endif
                             </div>
@@ -105,14 +105,14 @@
                         <div class="overflow-x-auto">
                             <div class="flex gap-4" style="min-width: fit-content;">
                                 @foreach($rounds as $round)
-                                    @php $ties = $tiesByRound->get($round->round_number, collect()); @endphp
+                                    @php $ties = $tiesByRound->get($round->round, collect()); @endphp
                                     <div class="flex-shrink-0 w-64">
                                         <div class="text-center mb-4">
-                                            <h4 class="font-semibold text-slate-700">{{ $round->round_name }}</h4>
+                                            <h4 class="font-semibold text-slate-700">{{ $round->name }}</h4>
                                             <div class="text-xs text-slate-400">
-                                                {{ $round->first_leg_date->format('M d') }}
-                                                @if($round->isTwoLegged())
-                                                    / {{ $round->second_leg_date->format('M d') }}
+                                                {{ $round->firstLegDate->format('M d') }}
+                                                @if($round->twoLegged)
+                                                    / {{ $round->secondLegDate->format('M d') }}
                                                 @endif
                                             </div>
                                         </div>

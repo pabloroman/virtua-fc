@@ -7,7 +7,6 @@ use App\Game\DTO\SeasonTransitionData;
 use App\Game\Services\LeagueFixtureGenerator;
 use App\Models\Competition;
 use App\Models\CompetitionEntry;
-use App\Models\CupRoundTemplate;
 use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameMatch;
@@ -19,7 +18,7 @@ use Illuminate\Support\Str;
  *
  * Loads the matchday calendar from schedule.json (always from the base season data),
  * adjusts dates for the new season, and generates fixtures from the current
- * competition team roster. Also regenerates cup_round_templates with adjusted dates.
+ * competition team roster.
  *
  * Priority: 30 (runs after promotion/relegation at 26)
  */
@@ -44,9 +43,6 @@ class FixtureGenerationProcessor implements SeasonEndProcessor
 
         // Generate new league fixtures
         $this->generateLeagueFixtures($game->id, $data->competitionId, $data->newSeason);
-
-        // Regenerate cup round templates with dates adjusted for the new season
-        $this->regenerateCupRoundTemplates($data->newSeason);
 
         // Update current date to first fixture
         $firstMatch = GameMatch::where('game_id', $game->id)
@@ -96,58 +92,6 @@ class FixtureGenerationProcessor implements SeasonEndProcessor
                 'away_score' => null,
                 'played' => false,
             ]);
-        }
-    }
-
-    /**
-     * Regenerate cup_round_templates for all competitions with knockout rounds.
-     *
-     * Reads the knockout section from each competition's base season schedule.json,
-     * adjusts dates by the year difference, and replaces existing templates.
-     */
-    private function regenerateCupRoundTemplates(string $newSeason): void
-    {
-        CupRoundTemplate::query()->delete();
-
-        $competitions = Competition::all();
-
-        foreach ($competitions as $competition) {
-            $schedulePath = base_path("data/{$competition->season}/{$competition->id}/schedule.json");
-            if (!file_exists($schedulePath)) {
-                continue;
-            }
-
-            $scheduleData = json_decode(file_get_contents($schedulePath), true);
-            $knockoutRounds = $scheduleData['knockout'] ?? [];
-            if (empty($knockoutRounds)) {
-                continue;
-            }
-
-            $yearDiff = $this->calculateYearDifference($competition->season, $newSeason);
-
-            foreach ($knockoutRounds as $round) {
-                $hasTwoLegs = isset($round['second_leg_date']);
-                $firstLegDate = $hasTwoLegs ? $round['first_leg_date'] : ($round['date'] ?? null);
-                $secondLegDate = $hasTwoLegs ? $round['second_leg_date'] : null;
-
-                if ($firstLegDate && $yearDiff !== 0) {
-                    $firstLegDate = Carbon::parse($firstLegDate)->addYears($yearDiff)->format('Y-m-d');
-                }
-                if ($secondLegDate && $yearDiff !== 0) {
-                    $secondLegDate = Carbon::parse($secondLegDate)->addYears($yearDiff)->format('Y-m-d');
-                }
-
-                CupRoundTemplate::create([
-                    'competition_id' => $competition->id,
-                    'season' => $newSeason,
-                    'round_number' => $round['round'],
-                    'round_name' => $round['name'],
-                    'type' => $hasTwoLegs ? 'two_leg' : 'one_leg',
-                    'first_leg_date' => $firstLegDate,
-                    'second_leg_date' => $secondLegDate,
-                    'teams_entering' => 0,
-                ]);
-            }
         }
     }
 

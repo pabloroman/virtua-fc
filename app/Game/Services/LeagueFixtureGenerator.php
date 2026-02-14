@@ -2,6 +2,7 @@
 
 namespace App\Game\Services;
 
+use App\Game\DTO\PlayoffRoundConfig;
 use Carbon\Carbon;
 
 /**
@@ -54,6 +55,58 @@ class LeagueFixtureGenerator
             ];
         }, $matchdays);
     }
+    /**
+     * Load knockout rounds from a competition's schedule.json file.
+     *
+     * @param  string  $competitionId  e.g. 'ESPCUP', 'UCL', 'ESP2'
+     * @param  string  $season  e.g. '2025' (base season from Competition::season)
+     * @return PlayoffRoundConfig[]
+     */
+    public static function loadKnockoutRounds(string $competitionId, string $season): array
+    {
+        $path = base_path("data/{$season}/{$competitionId}/schedule.json");
+
+        if (!file_exists($path)) {
+            return [];
+        }
+
+        $data = json_decode(file_get_contents($path), true);
+        $rounds = $data['knockout'] ?? [];
+
+        return array_map(function ($round) {
+            $hasTwoLegs = isset($round['second_leg_date']);
+            $firstLegDate = $hasTwoLegs ? $round['first_leg_date'] : ($round['date'] ?? null);
+
+            return new PlayoffRoundConfig(
+                round: $round['round'],
+                name: $round['name'],
+                twoLegged: $hasTwoLegs,
+                firstLegDate: Carbon::parse($firstLegDate),
+                secondLegDate: $hasTwoLegs ? Carbon::parse($round['second_leg_date']) : null,
+            );
+        }, $rounds);
+    }
+
+    /**
+     * Adjust knockout round dates by a year offset.
+     *
+     * @param  PlayoffRoundConfig[]  $rounds
+     * @param  int  $yearOffset
+     * @return PlayoffRoundConfig[]
+     */
+    public static function adjustKnockoutYears(array $rounds, int $yearOffset): array
+    {
+        return array_map(function (PlayoffRoundConfig $round) use ($yearOffset) {
+            return new PlayoffRoundConfig(
+                round: $round->round,
+                name: $round->name,
+                twoLegged: $round->twoLegged,
+                firstLegDate: $round->firstLegDate->copy()->addYears($yearOffset),
+                secondLegDate: $round->secondLegDate?->copy()->addYears($yearOffset),
+            );
+        }, $rounds);
+    }
+
     /**
      * Generate a full double round-robin schedule.
      *

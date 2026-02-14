@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Http\Actions\AdvanceMatchday;
 use App\Models\Competition;
-use App\Models\CupRoundTemplate;
 use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameMatch;
@@ -43,6 +42,7 @@ class AdvanceMatchdayTest extends TestCase
         $this->cupCompetition = Competition::factory()->knockoutCup()->create([
             'id' => 'ESPCUP',
             'name' => 'Copa del Rey',
+            'season' => '2025',
         ]);
 
         // Link teams to competitions
@@ -186,16 +186,6 @@ class AdvanceMatchdayTest extends TestCase
 
     public function test_cup_matches_are_advanced_by_date(): void
     {
-        // Create cup round template
-        CupRoundTemplate::create([
-            'competition_id' => $this->cupCompetition->id,
-            'season' => '2024',
-            'round_number' => 1,
-            'round_name' => 'Round 1',
-            'type' => 'one_leg',
-            'first_leg_date' => Carbon::parse('2024-11-01'),
-        ]);
-
         // Create a cup tie
         $cupTie = CupTie::factory()->create([
             'game_id' => $this->game->id,
@@ -235,16 +225,6 @@ class AdvanceMatchdayTest extends TestCase
 
     public function test_resolves_single_leg_cup_tie(): void
     {
-        // Create cup round template
-        CupRoundTemplate::create([
-            'competition_id' => $this->cupCompetition->id,
-            'season' => '2024',
-            'round_number' => 1,
-            'round_name' => 'Round 1',
-            'type' => 'one_leg',
-            'first_leg_date' => Carbon::parse('2024-11-01'),
-        ]);
-
         // Create a cup tie
         $cupTie = CupTie::factory()->create([
             'game_id' => $this->game->id,
@@ -283,16 +263,6 @@ class AdvanceMatchdayTest extends TestCase
 
     public function test_does_not_update_standings_for_cup_matches(): void
     {
-        // Create cup round template
-        CupRoundTemplate::create([
-            'competition_id' => $this->cupCompetition->id,
-            'season' => '2024',
-            'round_number' => 1,
-            'round_name' => 'Round 1',
-            'type' => 'one_leg',
-            'first_leg_date' => Carbon::parse('2024-11-01'),
-        ]);
-
         // Create league standings (these should NOT be updated by cup match)
         foreach ([$this->playerTeam, $this->opponentTeam] as $team) {
             GameStanding::create([
