@@ -260,7 +260,7 @@ class SeasonArchiveProcessor implements SeasonEndProcessor
             return null;
         }
 
-        return gzcompress(json_encode($events), 9);
+        return base64_encode(gzcompress(json_encode($events), 9));
     }
 
     /**

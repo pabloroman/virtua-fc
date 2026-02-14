@@ -41,7 +41,13 @@ class SeasonArchive extends Model
             return [];
         }
 
-        $decompressed = @gzuncompress($this->match_events_archive);
+        $decoded = @base64_decode($this->match_events_archive, true);
+
+        if ($decoded === false) {
+            return [];
+        }
+
+        $decompressed = @gzuncompress($decoded);
 
         if ($decompressed === false) {
             return [];
