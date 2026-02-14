@@ -44,7 +44,7 @@ class GameProjector extends Projector
 
         // Load matchday calendar for initial current_date
         $matchdays = LeagueFixtureGenerator::loadMatchdays($competitionId, $season);
-        $firstDate = Carbon::createFromFormat('d/m/y', $matchdays[0]['date']);
+        $firstDate = Carbon::parse($matchdays[0]['date']);
 
         // Determine initial season goal based on team reputation
         $team = Team::with('clubProfile')->find($teamId);

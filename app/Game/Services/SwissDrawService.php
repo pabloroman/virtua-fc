@@ -359,7 +359,7 @@ class SwissDrawService
             foreach ($mdMatches as $match) {
                 $result[] = [
                     'matchday' => $md,
-                    'date' => $date->format('d/m/y'),
+                    'date' => $date->format('Y-m-d'),
                     'homeTeamId' => $match['homeTeamId'],
                     'awayTeamId' => $match['awayTeamId'],
                 ];

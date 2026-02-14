@@ -130,7 +130,7 @@ class SetupNewGame implements ShouldQueue
                 'round_number' => $fixture['matchday'],
                 'home_team_id' => $fixture['homeTeamId'],
                 'away_team_id' => $fixture['awayTeamId'],
-                'scheduled_date' => Carbon::createFromFormat('d/m/y', $fixture['date']),
+                'scheduled_date' => Carbon::parse($fixture['date']),
                 'home_score' => null,
                 'away_score' => null,
                 'played' => false,
@@ -312,8 +312,11 @@ class SetupNewGame implements ShouldQueue
             return;
         }
 
+        $schedulePath = base_path("data/{$this->season}/{$competitionId}/schedule.json");
+        $scheduleData = json_decode(file_get_contents($schedulePath), true);
+        $startDate = Carbon::parse($scheduleData['league'][0]['date']);
+
         $drawService = new SwissDrawService();
-        $startDate = Carbon::parse("{$this->season}-09-17");
         $fixtures = $drawService->generateFixtures($drawTeams, $startDate);
 
         $rows = [];
@@ -325,7 +328,7 @@ class SetupNewGame implements ShouldQueue
                 'round_number' => $fixture['matchday'],
                 'home_team_id' => $fixture['homeTeamId'],
                 'away_team_id' => $fixture['awayTeamId'],
-                'scheduled_date' => Carbon::createFromFormat('d/m/y', $fixture['date']),
+                'scheduled_date' => Carbon::parse($fixture['date']),
                 'home_score' => null,
                 'away_score' => null,
                 'played' => false,

@@ -15,7 +15,7 @@ use Illuminate\Support\Str;
 /**
  * Generates fixtures for the new season using the round-robin algorithm.
  *
- * Loads the matchday calendar from matchdays.json, adjusts dates for the new season,
+ * Loads the matchday calendar from schedule.json, adjusts dates for the new season,
  * and generates fixtures from the current competition team roster.
  *
  * Priority: 30 (runs after promotion/relegation at 26)
@@ -82,7 +82,7 @@ class FixtureGenerationProcessor implements SeasonEndProcessor
                 'round_number' => $fixture['matchday'],
                 'home_team_id' => $fixture['homeTeamId'],
                 'away_team_id' => $fixture['awayTeamId'],
-                'scheduled_date' => Carbon::createFromFormat('d/m/y', $fixture['date']),
+                'scheduled_date' => Carbon::parse($fixture['date']),
                 'home_score' => null,
                 'away_score' => null,
                 'played' => false,

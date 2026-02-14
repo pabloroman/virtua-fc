@@ -272,16 +272,15 @@ class SeedReferenceData extends Command
     private function seedCupCompetition(string $basePath, string $code, int $tier, string $handler, string $country, string $role = 'domestic_cup'): void
     {
         $teamsData = $this->loadJson("{$basePath}/teams.json");
-        $roundsData = $this->loadJson("{$basePath}/rounds.json");
-        $matchdaysData = $this->loadJson("{$basePath}/matchdays.json");
+        $scheduleData = $this->loadJson("{$basePath}/schedule.json");
 
         $season = '2025';
 
         // Seed competition record
         $this->seedCompetitionRecord($code, $teamsData, $tier, 'cup', $handler, $country, $role);
 
-        // Seed cup round templates
-        $this->seedCupRoundTemplates($code, $season, $roundsData, $matchdaysData);
+        // Seed cup round templates from schedule.json knockout section
+        $this->seedKnockoutRoundTemplates($code, $season, $scheduleData['knockout'] ?? []);
 
         // Seed cup teams (link existing teams to cup)
         $this->seedCupTeams($teamsData['clubs'], $code, $season, $country);
@@ -290,8 +289,7 @@ class SeedReferenceData extends Command
     private function seedSwissFormatCompetition(string $basePath, string $code, int $tier, string $handler, string $country, string $role = 'european'): void
     {
         $teamsData = $this->loadJson("{$basePath}/teams.json");
-        $roundsData = $this->loadJson("{$basePath}/rounds.json");
-        $matchdaysData = $this->loadJson("{$basePath}/matchdays.json");
+        $scheduleData = $this->loadJson("{$basePath}/schedule.json");
 
         $season = $teamsData['seasonID'] ?? '2025';
 
@@ -304,10 +302,10 @@ class SeedReferenceData extends Command
         // Seed embedded player data if present (clubs that have a 'players' array)
         $this->seedPlayersFromTeams($teamsData['clubs'], $teamIdMap);
 
-        // Swiss league phase fixtures are now generated per-game by GameProjector
+        // Swiss league phase fixtures are generated per-game by SetupNewGame
 
-        // Seed knockout round templates
-        $this->seedCupRoundTemplates($code, $season, $roundsData, $matchdaysData);
+        // Seed knockout round templates from schedule.json knockout section
+        $this->seedKnockoutRoundTemplates($code, $season, $scheduleData['knockout'] ?? []);
 
         $this->line("  Swiss format competition seeded successfully");
     }
@@ -578,41 +576,13 @@ class SeedReferenceData extends Command
         $this->line("  Players: {$count}");
     }
 
-    private function seedCupRoundTemplates(string $competitionId, string $season, array $rounds, array $matchdays): void
+    private function seedKnockoutRoundTemplates(string $competitionId, string $season, array $knockoutRounds): void
     {
         $count = 0;
 
-        // Build date lookup from matchdays
-        $dateLookup = [];
-        foreach ($matchdays as $md) {
-            $roundNum = $md['round'] ?? 0;
-            $date = $md['date'] ?? null;
-            $matchdayName = $md['matchday'] ?? '';
-
-            if (!isset($dateLookup[$roundNum])) {
-                $dateLookup[$roundNum] = ['first' => null, 'second' => null, 'name' => $matchdayName];
-            }
-
-            // Check if this is a second leg
-            if (str_contains($matchdayName, 'Vuelta')) {
-                $dateLookup[$roundNum]['second'] = $date;
-            } elseif ($dateLookup[$roundNum]['first'] === null) {
-                $dateLookup[$roundNum]['first'] = $date;
-                $dateLookup[$roundNum]['name'] = $matchdayName;
-            } else {
-                $dateLookup[$roundNum]['second'] = $date;
-            }
-        }
-
-        foreach ($rounds as $round) {
+        foreach ($knockoutRounds as $round) {
             $roundNumber = $round['round'];
-            $type = $round['type'] === 'two_legged_knockout' ? 'two_leg' : 'one_leg';
-
-            $dates = $dateLookup[$roundNumber] ?? ['first' => null, 'second' => null, 'name' => "Round {$roundNumber}"];
-            $roundName = $dates['name'];
-
-            // Clean up round name
-            $roundName = preg_replace('/\s*\(Ida\)$/', '', $roundName);
+            $hasTwoLegs = isset($round['second_leg_date']);
 
             DB::table('cup_round_templates')->updateOrInsert(
                 [
@@ -621,10 +591,10 @@ class SeedReferenceData extends Command
                     'round_number' => $roundNumber,
                 ],
                 [
-                    'round_name' => $roundName,
-                    'type' => $type,
-                    'first_leg_date' => $dates['first'] ? Carbon::parse($dates['first']) : null,
-                    'second_leg_date' => $dates['second'] ? Carbon::parse($dates['second']) : null,
+                    'round_name' => $round['name'],
+                    'type' => $hasTwoLegs ? 'two_leg' : 'one_leg',
+                    'first_leg_date' => $hasTwoLegs ? $round['first_leg_date'] : ($round['date'] ?? null),
+                    'second_leg_date' => $hasTwoLegs ? $round['second_leg_date'] : null,
                     'teams_entering' => 0,
                 ]
             );
@@ -719,9 +689,6 @@ class SeedReferenceData extends Command
         }
     }
 
-    /**
-     * Seed fixtures from the new matchdays format.
-     */
     private function parseMarketValue(?string $value): int
     {
         if (!$value) {
