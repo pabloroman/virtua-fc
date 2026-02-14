@@ -740,6 +740,286 @@ class MatchSimulator
     }
 
     /**
+     * Simulate the remainder of a match from a given minute.
+     * Used when a substitution changes the lineup mid-match.
+     * Only generates events for the period [fromMinute+1, 93].
+     */
+    public function simulateRemainder(
+        Team $homeTeam,
+        Team $awayTeam,
+        Collection $homePlayers,
+        Collection $awayPlayers,
+        ?Formation $homeFormation = null,
+        ?Formation $awayFormation = null,
+        ?Mentality $homeMentality = null,
+        ?Mentality $awayMentality = null,
+        int $fromMinute = 45,
+        ?Game $game = null,
+    ): MatchResult {
+        $this->resetMatchPerformance();
+
+        $homeFormation = $homeFormation ?? Formation::F_4_4_2;
+        $awayFormation = $awayFormation ?? Formation::F_4_4_2;
+        $homeMentality = $homeMentality ?? Mentality::BALANCED;
+        $awayMentality = $awayMentality ?? Mentality::BALANCED;
+
+        // Scale everything by the fraction of match remaining
+        $matchFraction = max(0, (93 - $fromMinute)) / 93;
+
+        $events = collect();
+
+        $homeStrength = $this->calculateTeamStrength($homePlayers);
+        $awayStrength = $this->calculateTeamStrength($awayPlayers);
+
+        $strengthExponent = config('match_simulation.strength_exponent', 1.0);
+        $homeStrength = pow($homeStrength, $strengthExponent);
+        $awayStrength = pow($awayStrength, $strengthExponent);
+
+        $totalStrength = $homeStrength + $awayStrength;
+
+        $baseHomeGoals = config('match_simulation.base_home_goals', 1.4);
+        $baseAwayGoals = config('match_simulation.base_away_goals', 0.9);
+        $strengthMultiplier = config('match_simulation.strength_multiplier', 1.0);
+        $homeAdvantageGoals = config('match_simulation.home_advantage_goals', 0.0);
+        $awayDisadvantage = config('match_simulation.away_disadvantage_multiplier', 0.8);
+
+        $homeShare = $homeStrength / $totalStrength;
+        $awayShare = $awayStrength / $totalStrength;
+        $scaledBaseHome = $baseHomeGoals * ($homeShare * 2);
+        $scaledBaseAway = $baseAwayGoals * ($awayShare * 2);
+
+        $homeExpectedGoals = ($scaledBaseHome + $homeAdvantageGoals + $homeShare * $strengthMultiplier)
+            * $homeFormation->attackModifier()
+            * $awayFormation->defenseModifier()
+            * $homeMentality->ownGoalsModifier()
+            * $awayMentality->opponentGoalsModifier()
+            * $matchFraction;
+
+        $awayExpectedGoals = ($scaledBaseAway + $awayShare * $strengthMultiplier * $awayDisadvantage)
+            * $awayFormation->attackModifier()
+            * $homeFormation->defenseModifier()
+            * $awayMentality->ownGoalsModifier()
+            * $homeMentality->opponentGoalsModifier()
+            * $matchFraction;
+
+        $homeStrikerBonus = $this->calculateStrikerBonus($homePlayers) * $matchFraction;
+        $awayStrikerBonus = $this->calculateStrikerBonus($awayPlayers) * $matchFraction;
+        $homeExpectedGoals += $homeStrikerBonus;
+        $awayExpectedGoals += $awayStrikerBonus;
+
+        $homeScore = $this->poissonRandom($homeExpectedGoals);
+        $awayScore = $this->poissonRandom($awayExpectedGoals);
+
+        $maxGoalsCap = config('match_simulation.max_goals_cap', 0);
+        if ($maxGoalsCap > 0) {
+            $homeScore = min($homeScore, $maxGoalsCap);
+            $awayScore = min($awayScore, $maxGoalsCap);
+        }
+
+        if ($homePlayers->isNotEmpty() && $awayPlayers->isNotEmpty()) {
+            $homeGoalEvents = $this->generateGoalEventsInRange(
+                $homeScore, $homeTeam->id, $awayTeam->id,
+                $homePlayers, $awayPlayers, $fromMinute + 1, 93
+            );
+
+            $awayGoalEvents = $this->generateGoalEventsInRange(
+                $awayScore, $awayTeam->id, $homeTeam->id,
+                $awayPlayers, $homePlayers, $fromMinute + 1, 93
+            );
+
+            $events = $events->merge($homeGoalEvents)->merge($awayGoalEvents);
+
+            $goalDifference = $homeScore - $awayScore;
+            $homeCardEvents = $this->generateCardEventsInRange($homeTeam->id, $homePlayers, -$goalDifference, $fromMinute + 1, 93, $matchFraction);
+            $awayCardEvents = $this->generateCardEventsInRange($awayTeam->id, $awayPlayers, $goalDifference, $fromMinute + 1, 93, $matchFraction);
+            $events = $events->merge($homeCardEvents)->merge($awayCardEvents);
+
+            $homeInjuryEvents = $this->generateInjuryEventsInRange($homeTeam->id, $homePlayers, $fromMinute + 1, 93, $game);
+            $awayInjuryEvents = $this->generateInjuryEventsInRange($awayTeam->id, $awayPlayers, $fromMinute + 1, 93, $game);
+            $events = $events->merge($homeInjuryEvents)->merge($awayInjuryEvents);
+
+            $events = $events->sortBy('minute')->values();
+
+            $events = $this->reassignEventsFromUnavailablePlayers(
+                $events, $homePlayers, $awayPlayers
+            );
+        }
+
+        return new MatchResult($homeScore, $awayScore, $events);
+    }
+
+    /**
+     * Generate goal events with minutes constrained to a range.
+     */
+    private function generateGoalEventsInRange(
+        int $goalCount,
+        string $scoringTeamId,
+        string $concedingTeamId,
+        Collection $scoringTeamPlayers,
+        Collection $concedingTeamPlayers,
+        int $minMinute,
+        int $maxMinute,
+    ): Collection {
+        $events = collect();
+        $usedMinutes = [];
+
+        for ($i = 0; $i < $goalCount; $i++) {
+            $minute = $this->generateUniqueMinuteInRange($usedMinutes, $minMinute, $maxMinute);
+            $usedMinutes[] = $minute;
+
+            $ownGoalChance = config('match_simulation.own_goal_chance', 2.0);
+            if ($this->percentChance($ownGoalChance) && $concedingTeamPlayers->isNotEmpty()) {
+                $ownGoalScorer = $this->pickPlayerByPosition($concedingTeamPlayers, [
+                    'Centre-Back' => 40,
+                    'Left-Back' => 20,
+                    'Right-Back' => 20,
+                    'Defensive Midfield' => 15,
+                    'Goalkeeper' => 5,
+                ]);
+
+                if ($ownGoalScorer) {
+                    $events->push(MatchEventData::ownGoal($concedingTeamId, $ownGoalScorer->id, $minute));
+                    continue;
+                }
+            }
+
+            $scorer = $this->pickPlayerByPosition($scoringTeamPlayers, self::SCORING_WEIGHTS);
+            if (! $scorer) {
+                continue;
+            }
+
+            $events->push(MatchEventData::goal($scoringTeamId, $scorer->id, $minute));
+
+            $assistChance = config('match_simulation.assist_chance', 60.0);
+            if ($this->percentChance($assistChance)) {
+                $assister = $this->pickPlayerByPosition(
+                    $scoringTeamPlayers->reject(fn ($p) => $p->id === $scorer->id),
+                    self::ASSIST_WEIGHTS
+                );
+
+                if ($assister) {
+                    $events->push(MatchEventData::assist($scoringTeamId, $assister->id, $minute));
+                }
+            }
+        }
+
+        return $events;
+    }
+
+    /**
+     * Generate card events with minutes constrained to a range.
+     */
+    private function generateCardEventsInRange(
+        string $teamId,
+        Collection $players,
+        int $goalDifference,
+        int $minMinute,
+        int $maxMinute,
+        float $matchFraction,
+    ): Collection {
+        $events = collect();
+
+        $baseYellowCards = config('match_simulation.yellow_cards_per_team', 1.7);
+
+        $yellowModifier = 0;
+        if ($goalDifference < 0) {
+            $yellowModifier = abs($goalDifference) * 0.3;
+        } elseif ($goalDifference > 0) {
+            $yellowModifier = -$goalDifference * 0.15;
+        }
+
+        // Scale by match fraction
+        $yellowCardsPerTeam = max(0.1, ($baseYellowCards + $yellowModifier) * $matchFraction);
+        $yellowCount = $this->poissonRandom($yellowCardsPerTeam);
+
+        $usedMinutes = [];
+        $playersWithYellow = collect();
+
+        for ($i = 0; $i < $yellowCount; $i++) {
+            $player = $this->pickPlayerByPosition($players, self::CARD_WEIGHTS);
+            if (! $player) {
+                continue;
+            }
+
+            if ($playersWithYellow->has($player->id)) {
+                $firstYellowMinute = (int) $playersWithYellow->get($player->id);
+                $minute = $this->generateUniqueMinuteInRange($usedMinutes, max($minMinute, $firstYellowMinute + 1), $maxMinute);
+                $usedMinutes[] = $minute;
+                $events->push(MatchEventData::redCard($teamId, $player->id, $minute, true));
+                $players = $players->reject(fn ($p) => $p->id === $player->id);
+            } else {
+                $minute = $this->generateUniqueMinuteInRange($usedMinutes, $minMinute, $maxMinute);
+                $usedMinutes[] = $minute;
+                $events->push(MatchEventData::yellowCard($teamId, $player->id, $minute));
+                $playersWithYellow->put($player->id, $minute);
+            }
+        }
+
+        $baseRedChance = config('match_simulation.direct_red_chance', 1.5);
+        $redChanceModifier = $goalDifference < 0 ? abs($goalDifference) * 0.5 : 0;
+        $directRedChance = ($baseRedChance + $redChanceModifier) * $matchFraction;
+
+        if ($this->percentChance($directRedChance)) {
+            $player = $this->pickPlayerByPosition($players, self::CARD_WEIGHTS);
+            if ($player && ! $playersWithYellow->has($player->id)) {
+                $minute = $this->generateUniqueMinuteInRange($usedMinutes, $minMinute, $maxMinute);
+                $events->push(MatchEventData::redCard($teamId, $player->id, $minute, false));
+            }
+        }
+
+        return $events;
+    }
+
+    /**
+     * Generate injury events with minutes constrained to a range.
+     */
+    private function generateInjuryEventsInRange(
+        string $teamId,
+        Collection $players,
+        int $minMinute,
+        int $maxMinute,
+        ?Game $game = null,
+    ): Collection {
+        $events = collect();
+
+        foreach ($players as $player) {
+            if ($this->injuryService->rollForInjury($player, null, null, $game)) {
+                $injury = $this->injuryService->generateInjury($player, $game);
+
+                $minute = rand($minMinute, $maxMinute);
+                $events->push(MatchEventData::injury(
+                    $teamId,
+                    $player->id,
+                    $minute,
+                    $injury['type'],
+                    $injury['weeks'],
+                ));
+
+                break;
+            }
+        }
+
+        return $events;
+    }
+
+    /**
+     * Generate a unique minute within a specific range.
+     */
+    private function generateUniqueMinuteInRange(array $usedMinutes, int $minMinute, int $maxMinute): int
+    {
+        $minMinute = max(1, min($minMinute, $maxMinute));
+        $maxMinute = max($minMinute, $maxMinute);
+
+        $attempts = 0;
+        do {
+            $minute = rand($minMinute, $maxMinute);
+            $attempts++;
+        } while (in_array($minute, $usedMinutes) && $attempts < 20);
+
+        return $minute;
+    }
+
+    /**
      * Simulate extra time (30 minutes of play).
      * Lower expected goals than normal time.
      */

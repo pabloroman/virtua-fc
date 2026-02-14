@@ -25,6 +25,12 @@
                 otherMatches: {{ Js::from($otherMatches) }},
                 homeTeamImage: '{{ $match->homeTeam->image }}',
                 awayTeamImage: '{{ $match->awayTeam->image }}',
+                lineupPlayers: {{ Js::from($lineupPlayers) }},
+                benchPlayers: {{ Js::from($benchPlayers) }},
+                existingSubstitutions: {{ Js::from($existingSubstitutions) }},
+                substituteUrl: '{{ $substituteUrl }}',
+                csrfToken: '{{ csrf_token() }}',
+                maxSubstitutions: 5,
              })"
              x-on:keydown.escape.window="skipToEnd()"
         >
@@ -108,6 +114,7 @@
                                      'bg-yellow-400': marker.type === 'yellow_card',
                                      'bg-red-600': marker.type === 'red_card',
                                      'bg-orange-400': marker.type === 'injury',
+                                     'bg-teal-500': marker.type === 'substitution',
                                  }"
                                  x-transition:enter="transition ease-out duration-300"
                                  x-transition:enter-start="scale-0 opacity-0"
@@ -134,6 +141,109 @@
                             class="px-3 py-1 text-xs font-semibold rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors ml-2">
                             {{ __('game.live_skip') }} ▸▸
                         </button>
+                    </div>
+
+                    {{-- Substitution Panel --}}
+                    <div class="mb-4" x-show="phase !== 'full_time' && phase !== 'pre_match'">
+                        {{-- Substitution button & counter --}}
+                        <div class="flex items-center justify-between px-3 py-2" x-show="!subPanelOpen">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-semibold text-slate-500 uppercase">{{ __('game.sub_title') }}</span>
+                                <span class="text-xs text-slate-400" x-text="'(' + substitutionsMade.length + '/' + maxSubstitutions + ')'"></span>
+                            </div>
+                            <button
+                                @click="openSubPanel()"
+                                :disabled="substitutionsMade.length >= maxSubstitutions || subProcessing"
+                                class="px-3 py-1.5 text-xs font-semibold rounded-md transition-colors min-h-[44px]"
+                                :class="substitutionsMade.length >= maxSubstitutions
+                                    ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                                    : 'bg-teal-600 text-white hover:bg-teal-700'"
+                            >
+                                <span x-show="substitutionsMade.length < maxSubstitutions">{{ __('game.sub_pause_and_substitute') }}</span>
+                                <span x-show="substitutionsMade.length >= maxSubstitutions">{{ __('game.sub_limit_reached') }}</span>
+                            </button>
+                        </div>
+
+                        {{-- Sub selection panel (shown when open) --}}
+                        <div x-show="subPanelOpen" x-transition class="border border-teal-200 rounded-lg bg-teal-50/50 p-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {{-- Player Out --}}
+                                <div>
+                                    <h4 class="text-xs font-semibold text-slate-500 uppercase mb-2">{{ __('game.sub_player_out') }}</h4>
+                                    <div class="space-y-1 max-h-48 overflow-y-auto">
+                                        <template x-for="player in availableLineupPlayers" :key="player.id">
+                                            <button
+                                                @click="selectedPlayerOut = player"
+                                                class="w-full flex items-center gap-2 px-3 py-2 rounded-md text-left text-sm transition-colors min-h-[44px]"
+                                                :class="selectedPlayerOut?.id === player.id
+                                                    ? 'bg-red-100 border border-red-300 text-red-800'
+                                                    : 'bg-white border border-slate-200 hover:border-slate-300 text-slate-700'"
+                                            >
+                                                <span class="text-xs text-slate-400 w-8 shrink-0" x-text="player.position.substring(0, 3).toUpperCase()"></span>
+                                                <span class="flex-1 truncate font-medium" x-text="player.name"></span>
+                                                <span class="text-xs tabular-nums text-slate-500" x-text="player.overallScore"></span>
+                                            </button>
+                                        </template>
+                                    </div>
+                                </div>
+
+                                {{-- Player In --}}
+                                <div>
+                                    <h4 class="text-xs font-semibold text-slate-500 uppercase mb-2">{{ __('game.sub_player_in') }}</h4>
+                                    <div class="space-y-1 max-h-48 overflow-y-auto">
+                                        <template x-for="player in availableBenchPlayers" :key="player.id">
+                                            <button
+                                                @click="selectedPlayerIn = player"
+                                                class="w-full flex items-center gap-2 px-3 py-2 rounded-md text-left text-sm transition-colors min-h-[44px]"
+                                                :class="selectedPlayerIn?.id === player.id
+                                                    ? 'bg-green-100 border border-green-300 text-green-800'
+                                                    : 'bg-white border border-slate-200 hover:border-slate-300 text-slate-700'"
+                                            >
+                                                <span class="text-xs text-slate-400 w-8 shrink-0" x-text="player.position.substring(0, 3).toUpperCase()"></span>
+                                                <span class="flex-1 truncate font-medium" x-text="player.name"></span>
+                                                <span class="text-xs tabular-nums text-slate-500" x-text="player.overallScore"></span>
+                                            </button>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Confirm/Cancel --}}
+                            <div class="flex items-center justify-end gap-2 mt-4">
+                                <button
+                                    @click="closeSubPanel()"
+                                    class="px-4 py-2 text-xs font-semibold rounded-md bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors min-h-[44px]"
+                                >
+                                    {{ __('game.sub_cancel') }}
+                                </button>
+                                <button
+                                    @click="confirmSubstitution()"
+                                    :disabled="!selectedPlayerOut || !selectedPlayerIn || subProcessing"
+                                    class="px-4 py-2 text-xs font-semibold rounded-md transition-colors min-h-[44px]"
+                                    :class="selectedPlayerOut && selectedPlayerIn && !subProcessing
+                                        ? 'bg-teal-600 text-white hover:bg-teal-700'
+                                        : 'bg-slate-200 text-slate-400 cursor-not-allowed'"
+                                >
+                                    <span x-show="!subProcessing">{{ __('game.sub_confirm') }}</span>
+                                    <span x-show="subProcessing">{{ __('game.sub_processing') }}</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        {{-- Made substitutions list --}}
+                        <template x-if="substitutionsMade.length > 0 && !subPanelOpen">
+                            <div class="px-3 space-y-1 mt-1">
+                                <template x-for="(sub, idx) in substitutionsMade" :key="idx">
+                                    <div class="flex items-center gap-2 text-xs text-slate-500 py-0.5">
+                                        <span class="font-mono w-6 text-right" x-text="sub.minute + '\''"></span>
+                                        <span class="text-red-500">&#8617;</span>
+                                        <span class="truncate" x-text="sub.playerOutName"></span>
+                                        <span class="text-green-500">&#8618;</span>
+                                        <span class="truncate" x-text="sub.playerInName"></span>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
                     </div>
 
                     {{-- Events Feed --}}
@@ -170,6 +280,9 @@
                                         </template>
                                         <template x-if="event.type === 'injury'">
                                             <span class="text-xs text-orange-600 ml-1">{{ __('game.live_injury') }}</span>
+                                        </template>
+                                        <template x-if="event.type === 'substitution'">
+                                            <span class="text-xs text-teal-600 ml-1" x-text="'&#8618; ' + event.playerInName"></span>
                                         </template>
                                         <template x-if="event.assistPlayerName">
                                             <div class="text-xs text-slate-400" x-text="'{{ __('game.live_assist') }} ' + event.assistPlayerName"></div>
@@ -217,6 +330,9 @@
                                         </template>
                                         <template x-if="event.type === 'injury'">
                                             <span class="text-xs text-orange-600 ml-1">{{ __('game.live_injury') }}</span>
+                                        </template>
+                                        <template x-if="event.type === 'substitution'">
+                                            <span class="text-xs text-teal-600 ml-1" x-text="'&#8618; ' + event.playerInName"></span>
                                         </template>
                                         <template x-if="event.assistPlayerName">
                                             <div class="text-xs text-slate-400" x-text="'{{ __('game.live_assist') }} ' + event.assistPlayerName"></div>
