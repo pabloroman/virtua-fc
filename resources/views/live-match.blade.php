@@ -264,7 +264,7 @@
                                          class="w-6 h-6 shrink-0 object-contain"
                                          :alt="getEventSide(event) === 'home' ? 'Home' : 'Away'">
                                     <div class="flex-1 min-w-0">
-                                        <span class="font-semibold text-sm text-slate-800" x-text="event.playerName"></span>
+                                        <span class="font-semibold text-sm text-slate-800" x-text="event.type === 'substitution' ? event.playerInName : event.playerName"></span>
                                         <template x-if="event.type === 'goal'">
                                             <span class="text-xs text-slate-500 ml-1">{{ __('game.live_goal') }}</span>
                                         </template>
@@ -281,7 +281,7 @@
                                             <span class="text-xs text-orange-600 ml-1">{{ __('game.live_injury') }}</span>
                                         </template>
                                         <template x-if="event.type === 'substitution'">
-                                            <span class="text-xs text-sky-600 ml-1" x-text="'&#8618; ' + event.playerInName"></span>
+                                            <div class="text-xs text-slate-400" x-text="'&#8617; ' + event.playerName"></div>
                                         </template>
                                         <template x-if="event.assistPlayerName">
                                             <div class="text-xs text-slate-400" x-text="'{{ __('game.live_assist') }} ' + event.assistPlayerName"></div>
@@ -314,7 +314,7 @@
                                          class="w-6 h-6 shrink-0 object-contain"
                                          :alt="getEventSide(event) === 'home' ? 'Home' : 'Away'">
                                     <div class="flex-1 min-w-0">
-                                        <span class="font-semibold text-sm text-slate-800" x-text="event.playerName"></span>
+                                        <span class="font-semibold text-sm text-slate-800" x-text="event.type === 'substitution' ? event.playerInName : event.playerName"></span>
                                         <template x-if="event.type === 'goal'">
                                             <span class="text-xs text-slate-500 ml-1">{{ __('game.live_goal') }}</span>
                                         </template>
@@ -331,7 +331,7 @@
                                             <span class="text-xs text-orange-600 ml-1">{{ __('game.live_injury') }}</span>
                                         </template>
                                         <template x-if="event.type === 'substitution'">
-                                            <span class="text-xs text-sky-600 ml-1" x-text="'&#8618; ' + event.playerInName"></span>
+                                            <div class="text-xs text-slate-400" x-text="'&#8617; ' + event.playerName"></div>
                                         </template>
                                         <template x-if="event.assistPlayerName">
                                             <div class="text-xs text-slate-400" x-text="'{{ __('game.live_assist') }} ' + event.assistPlayerName"></div>
