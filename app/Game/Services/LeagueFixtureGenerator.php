@@ -58,7 +58,7 @@ class LeagueFixtureGenerator
      * Generate a full double round-robin schedule.
      *
      * @param  array<string>  $teamIds  Team IDs (must be even count, minimum 4)
-     * @param  array<array{round: int, date: string}>  $matchdays  Schedule with round numbers and dates (dd/mm/yy)
+     * @param  array<array{round: int, date: string}>  $matchdays  Schedule with round numbers and dates (YYYY-MM-DD)
      * @return array<array{matchday: int, date: string, homeTeamId: string, awayTeamId: string}>
      */
     public function generate(array $teamIds, array $matchdays): array
