@@ -128,7 +128,7 @@ class ShowCompetition
         // Find player's tie in current/latest round
         $playerTie = null;
         foreach ($rounds->reverse() as $round) {
-            $ties = $tiesByRound->get($round->round_number, collect());
+            $ties = $tiesByRound->get($round->round, collect());
             $playerTie = $ties->first(fn ($tie) => $tie->involvesTeam($game->team_id));
             if ($playerTie) {
                 break;
@@ -136,7 +136,7 @@ class ShowCompetition
         }
 
         // Determine player's cup status from CupTie data
-        $maxRound = $rounds->max('round_number');
+        $maxRound = $rounds->max('round');
         $cupStatus = 'not_entered';
 
         if ($playerTie) {
