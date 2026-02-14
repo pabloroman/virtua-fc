@@ -47,7 +47,7 @@ return [
     |   - exponent 1.8: ratio becomes ~65% vs 35%
     |
     */
-    'strength_multiplier' => 1.0,
+    'strength_multiplier' => 1.2,
     'strength_exponent' => 1.8,
 
     /*
@@ -116,7 +116,7 @@ return [
     | Probabilities for various match events.
     |
     */
-    'own_goal_chance' => 2.0,           // % chance per goal is an own goal
+    'own_goal_chance' => 1.0,           // % chance per goal is an own goal
     'assist_chance' => 60.0,            // % chance a goal has an assist
     'yellow_cards_per_team' => 1.5,     // Average yellow cards per team per match
     'direct_red_chance' => 1,           // % chance of direct red card per team

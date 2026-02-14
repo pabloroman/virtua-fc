@@ -661,17 +661,10 @@ class MatchSimulator
     ): Collection {
         $events = collect();
 
-        $baseYellowCards = config('match_simulation.yellow_cards_per_team', 1.7);
-
-        $yellowModifier = 0;
-        if ($goalDifference < 0) {
-            $yellowModifier = abs($goalDifference) * 0.3;
-        } elseif ($goalDifference > 0) {
-            $yellowModifier = -$goalDifference * 0.15;
-        }
+        $baseYellowCards = config('match_simulation.yellow_cards_per_team', 1.5);
 
         // Scale by match fraction
-        $yellowCardsPerTeam = max(0.1, ($baseYellowCards + $yellowModifier) * $matchFraction);
+        $yellowCardsPerTeam = max(0.1, $baseYellowCards * $matchFraction);
         $yellowCount = $this->poissonRandom($yellowCardsPerTeam);
 
         $usedMinutes = [];
