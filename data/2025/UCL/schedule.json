@@ -1,0 +1,33 @@
+{
+    "knockout": [
+        {
+            "round": 1,
+            "name": "Playoff de eliminación",
+            "first_leg_date": "2026-02-17",
+            "second_leg_date": "2026-02-24"
+        },
+        {
+            "round": 2,
+            "name": "Octavos de final",
+            "first_leg_date": "2026-03-10",
+            "second_leg_date": "2026-03-17"
+        },
+        {
+            "round": 3,
+            "name": "Cuartos de final",
+            "first_leg_date": "2026-04-07",
+            "second_leg_date": "2026-04-14"
+        },
+        {
+            "round": 4,
+            "name": "Semifinal",
+            "first_leg_date": "2026-04-28",
+            "second_leg_date": "2026-05-06"
+        },
+        {
+            "round": 5,
+            "name": "Final",
+            "date": "2026-05-30"
+        }
+    ]
+}

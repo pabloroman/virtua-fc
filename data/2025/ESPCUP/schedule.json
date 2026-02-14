@@ -1,0 +1,40 @@
+{
+    "knockout": [
+        {
+            "round": 1,
+            "name": "Primera ronda",
+            "date": "2025-10-29"
+        },
+        {
+            "round": 2,
+            "name": "Segunda ronda",
+            "date": "2025-12-03"
+        },
+        {
+            "round": 3,
+            "name": "Dieciseisavos de final",
+            "date": "2025-12-17"
+        },
+        {
+            "round": 4,
+            "name": "Octavos de final",
+            "date": "2026-01-14"
+        },
+        {
+            "round": 5,
+            "name": "Cuartos de final",
+            "date": "2026-02-04"
+        },
+        {
+            "round": 6,
+            "name": "Semifinal",
+            "first_leg_date": "2026-02-10",
+            "second_leg_date": "2026-03-03"
+        },
+        {
+            "round": 7,
+            "name": "Final",
+            "date": "2026-04-25"
+        }
+    ]
+}
