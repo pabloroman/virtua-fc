@@ -105,13 +105,12 @@ class SimulateMatch extends Command
         $this->table(
             ['Parameter', 'Value'],
             [
-                ['base_home_goals', config('match_simulation.base_home_goals', 1.4)],
-                ['base_away_goals', config('match_simulation.base_away_goals', 0.9)],
-                ['strength_multiplier', config('match_simulation.strength_multiplier', 1.0)],
-                ['strength_exponent', config('match_simulation.strength_exponent', 1.0)],
-                ['home_advantage_goals', config('match_simulation.home_advantage_goals', 0.2)],
-                ['away_disadvantage_multiplier', config('match_simulation.away_disadvantage_multiplier', 1.0)],
-                ['performance_std_dev', config('match_simulation.performance_std_dev', 0.12)],
+                ['base_goals', config('match_simulation.base_goals', 1.3)],
+                ['ratio_exponent', config('match_simulation.ratio_exponent', 2.0)],
+                ['home_advantage_goals', config('match_simulation.home_advantage_goals', 0.15)],
+                ['performance_std_dev', config('match_simulation.performance_std_dev', 0.05)],
+                ['performance_min', config('match_simulation.performance_min', 0.90)],
+                ['performance_max', config('match_simulation.performance_max', 1.10)],
             ]
         );
 
