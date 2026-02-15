@@ -23,86 +23,40 @@ class SeedReferenceData extends Command
     protected $description = 'Seed teams, competitions, fixtures, and players from 2025 season JSON data files';
 
     /**
-     * Support teams not yet managed by country config.
-     * These will be moved to country config in a future phase.
+     * Build support competition entries from country config's `support` section.
      */
-    private array $supportCompetitions = [
-        'production' => [
-            // Foreign leagues (scouting/transfers only)
-            [
-                'code' => 'ENG1',
-                'name' => 'Premier League',
-                'path' => 'data/2025/ENG1',
+    private function buildSupportCompetitions(string $countryCode): array
+    {
+        $countryConfig = app(CountryConfig::class);
+        $support = $countryConfig->support($countryCode);
+        $competitions = [];
+
+        // Transfer pool competitions (foreign leagues + EUR pool)
+        foreach ($support['transfer_pool'] ?? [] as $code => $poolConfig) {
+            $competitions[] = [
+                'code' => $code,
+                'path' => "data/2025/{$code}",
                 'tier' => 1,
-                'handler' => 'league',
-                'country' => 'GB',
-                'role' => 'foreign',
-            ],
-            [
-                'code' => 'DEU1',
-                'name' => 'Bundesliga',
-                'path' => 'data/2025/DEU1',
-                'tier' => 1,
-                'handler' => 'league',
-                'country' => 'DE',
-                'role' => 'foreign',
-            ],
-            [
-                'code' => 'FRA1',
-                'name' => 'Ligue 1',
-                'path' => 'data/2025/FRA1',
-                'tier' => 1,
-                'handler' => 'league',
-                'country' => 'FR',
-                'role' => 'foreign',
-            ],
-            [
-                'code' => 'ITA1',
-                'name' => 'Serie A',
-                'path' => 'data/2025/ITA1',
-                'tier' => 1,
-                'handler' => 'league',
-                'country' => 'IT',
-                'role' => 'foreign',
-            ],
-            [
-                'code' => 'NLD1',
-                'name' => 'Eredivisie',
-                'path' => 'data/2025/NLD1',
-                'tier' => 1,
-                'handler' => 'league',
-                'country' => 'NL',
-                'role' => 'foreign',
-            ],
-            [
-                'code' => 'POR1',
-                'name' => 'Primeira Liga',
-                'path' => 'data/2025/POR1',
-                'tier' => 1,
-                'handler' => 'league',
-                'country' => 'PT',
-                'role' => 'foreign',
-            ],
-            [
-                'code' => 'EUR',
-                'name' => 'Europa',
-                'path' => 'data/2025/EUR',
-                'tier' => 1,
-                'handler' => 'team_pool',
-                'country' => 'EU',
-                'role' => 'foreign',
-            ],
-            [
-                'code' => 'UCL',
-                'path' => 'data/2025/UCL',
+                'handler' => $poolConfig['handler'] ?? 'league',
+                'country' => $poolConfig['country'] ?? 'EU',
+                'role' => $poolConfig['role'] ?? 'foreign',
+            ];
+        }
+
+        // Continental competitions (UCL, etc.)
+        foreach ($support['continental'] ?? [] as $code => $continentalConfig) {
+            $competitions[] = [
+                'code' => $code,
+                'path' => "data/2025/{$code}",
                 'tier' => 0,
-                'handler' => 'swiss_format',
-                'country' => 'EU',
+                'handler' => $continentalConfig['handler'] ?? 'swiss_format',
+                'country' => $continentalConfig['country'] ?? 'EU',
                 'role' => 'european',
-            ],
-        ],
-        'test' => [],
-    ];
+            ];
+        }
+
+        return $competitions;
+    }
 
     /**
      * Build the full competition list for a profile by combining
@@ -151,8 +105,10 @@ class SeedReferenceData extends Command
             }
         }
 
-        // Add support competitions (foreign leagues, continental, etc.)
-        $competitions = array_merge($competitions, $this->supportCompetitions[$profile] ?? []);
+        // Add support competitions (transfer pool, continental, etc.)
+        foreach ($countryCodes as $countryCode) {
+            $competitions = array_merge($competitions, $this->buildSupportCompetitions($countryCode));
+        }
 
         return $competitions;
     }

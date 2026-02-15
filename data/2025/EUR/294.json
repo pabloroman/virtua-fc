@@ -1,0 +1,395 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/294.png",
+  "name": "SL Benfica",
+  "stadiumName": "Est\u00e1dio da Luz",
+  "stadiumSeats": "68100",
+  "transfermarktId": "294",
+  "players": [
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 1, 2001",
+      "foot": "right",
+      "height": "1,99m",
+      "id": "537844",
+      "marketValue": "\u20ac28.00m",
+      "name": "Anatoliy Trubin",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 15, 2002",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "504072",
+      "marketValue": "\u20ac4.00m",
+      "name": "Samuel Soares",
+      "nationality": [
+        "Portugal",
+        "Guinea-Bissau"
+      ],
+      "number": "24",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Oct 30, 2003",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "650568",
+      "marketValue": "\u20ac30.00m",
+      "name": "Ant\u00f3nio Silva",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "May 16, 2002",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "504087",
+      "marketValue": "\u20ac28.00m",
+      "name": "Tom\u00e1s Ara\u00fajo",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "44",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Feb 12, 1988",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "54781",
+      "marketValue": "\u20ac1.00m",
+      "name": "Nicol\u00e1s Otamendi",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "30",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 4, 2003",
+      "foot": "left",
+      "height": "1,74m",
+      "id": "605396",
+      "marketValue": "\u20ac9.00m",
+      "name": "Samuel Dahl",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "26",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 19, 2008",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "1233701",
+      "marketValue": "\u20ac3.00m",
+      "name": "Jos\u00e9 Neto",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "62",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Aug 18, 2002",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "519184",
+      "marketValue": "\u20ac15.00m",
+      "name": "Amar Dedi\u0107",
+      "nationality": [
+        "Bosnia-Herzegovina"
+      ],
+      "number": "17",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Dec 9, 1997",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "452607",
+      "marketValue": "\u20ac9.00m",
+      "name": "Alexander Bah",
+      "nationality": [
+        "Denmark",
+        "The Gambia"
+      ],
+      "number": "6",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Sep 18, 2002",
+      "foot": "both",
+      "height": "1,76m",
+      "id": "611855",
+      "marketValue": "\u20ac2.00m",
+      "name": "Sidny Lopes Cabral",
+      "nationality": [
+        "Cape Verde",
+        "Netherlands"
+      ],
+      "number": "15",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 24, 2008",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "1134199",
+      "marketValue": "\u20ac1.00m",
+      "name": "Daniel Banjaqui",
+      "nationality": [
+        "Portugal",
+        "Guinea-Bissau"
+      ],
+      "number": "58",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jun 2, 2000",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "735573",
+      "marketValue": "\u20ac22.00m",
+      "name": "Richard R\u00edos",
+      "nationality": [
+        "Colombia"
+      ],
+      "number": "20",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "May 22, 2001",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "671915",
+      "marketValue": "\u20ac15.00m",
+      "name": "Enzo Barrenechea",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "5",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jun 12, 2001",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "699592",
+      "marketValue": "\u20ac10.00m",
+      "name": "Manu Silva",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "16",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Dec 10, 1995",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "223367",
+      "marketValue": "\u20ac17.00m",
+      "name": "Fredrik Aursnes",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 3, 2000",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "357233",
+      "marketValue": "\u20ac15.00m",
+      "name": "Leandro Barreiro",
+      "nationality": [
+        "Luxembourg",
+        "Portugal"
+      ],
+      "number": "18",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 26, 2005",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "637792",
+      "marketValue": "\u20ac1.50m",
+      "name": "Jo\u00e3o Veloso",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "68",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Sep 1, 2002",
+      "foot": "both",
+      "height": "1,77m",
+      "id": "623325",
+      "marketValue": "\u20ac30.00m",
+      "name": "Georgiy Sudakov",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "10",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 20, 2005",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "931415",
+      "marketValue": "\u20ac3.00m",
+      "name": "Jo\u00e3o Rego",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "84",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 1, 2004",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "670103",
+      "marketValue": "\u20ac14.00m",
+      "name": "Andreas Schjelderup",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "21",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 24, 1994",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "139396",
+      "marketValue": "\u20ac5.00m",
+      "name": "Bruma",
+      "nationality": [
+        "Portugal",
+        "Guinea-Bissau"
+      ],
+      "number": "7",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Sep 24, 1997",
+      "foot": "left",
+      "height": "1,87m",
+      "id": "303259",
+      "marketValue": "\u20ac20.00m",
+      "name": "Dodi Luk\u00e9bakio",
+      "nationality": [
+        "Belgium",
+        "DR Congo"
+      ],
+      "number": "11",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 31, 2006",
+      "foot": "right",
+      "height": "1,66m",
+      "id": "1000674",
+      "marketValue": "\u20ac12.00m",
+      "name": "Gianluca Prestianni",
+      "nationality": [
+        "Argentina",
+        "Italy"
+      ],
+      "number": "25",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 17, 1993",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "238055",
+      "marketValue": "\u20ac5.00m",
+      "name": "Rafa Silva",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "27",
+      "position": "Second Striker"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Nov 21, 1998",
+      "foot": "both",
+      "height": "1,86m",
+      "id": "324503",
+      "marketValue": "\u20ac35.00m",
+      "name": "Vangelis Pavlidis",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "14",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Oct 1, 2003",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "548028",
+      "marketValue": "\u20ac20.00m",
+      "name": "Franjo Ivanovi\u0107",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 19, 2002",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "617267",
+      "marketValue": "\u20ac2.00m",
+      "name": "Henrique Ara\u00fajo",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "39",
+      "position": "Centre-Forward"
+    }
+  ]
+}

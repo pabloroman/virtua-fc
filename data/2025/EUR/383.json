@@ -1,0 +1,373 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/383.png",
+  "name": "PSV Eindhoven",
+  "stadiumName": "Philips Stadion",
+  "stadiumSeats": "35000",
+  "transfermarktId": "383",
+  "players": [
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "May 17, 2000",
+      "foot": "right",
+      "height": "1,96m",
+      "id": "550829",
+      "marketValue": "\u20ac7.00m",
+      "name": "Matej Kovar",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "32",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 1, 1995",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "215094",
+      "marketValue": "\u20ac3.00m",
+      "name": "Nick Olij",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 3, 2004",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "723005",
+      "marketValue": "\u20ac300k",
+      "name": "Niek Schiks",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "24",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Dec 31, 2002",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "586429",
+      "marketValue": "\u20ac17.00m",
+      "name": "Ryan Flamingo",
+      "nationality": [
+        "Netherlands",
+        "Suriname"
+      ],
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jan 12, 2005",
+      "foot": "left",
+      "height": "1,91m",
+      "id": "895334",
+      "marketValue": "\u20ac16.00m",
+      "name": "Yarek Gasiorowski",
+      "nationality": [
+        "Spain",
+        "Poland"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 5, 1999",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "339337",
+      "marketValue": "\u20ac3.00m",
+      "name": "Armando Obispo",
+      "nationality": [
+        "Curacao",
+        "Netherlands"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "May 6, 1999",
+      "foot": "left",
+      "height": "1,71m",
+      "id": "323910",
+      "marketValue": "\u20ac17.00m",
+      "name": "Mauro J\u00fanior",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "17",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 18, 2002",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "485584",
+      "marketValue": "\u20ac12.00m",
+      "name": "Anass Salah-Eddine",
+      "nationality": [
+        "Morocco",
+        "Netherlands"
+      ],
+      "number": "2",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Nov 3, 2000",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "361104",
+      "marketValue": "\u20ac18.00m",
+      "name": "Sergi\u00f1o Dest",
+      "nationality": [
+        "United States",
+        "Netherlands"
+      ],
+      "number": "8",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "May 16, 2002",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "548348",
+      "marketValue": "\u20ac7.00m",
+      "name": "Kiliann Sildillia",
+      "nationality": [
+        "France",
+        "Guadeloupe"
+      ],
+      "number": "25",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jan 12, 1997",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "347900",
+      "marketValue": "\u20ac22.00m",
+      "name": "Jerdy Schouten",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "22",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 28, 2001",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "702869",
+      "marketValue": "\u20ac32.00m",
+      "name": "Ismael Saibari",
+      "nationality": [
+        "Morocco",
+        "Belgium"
+      ],
+      "number": "34",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Nov 19, 1998",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "408574",
+      "marketValue": "\u20ac27.00m",
+      "name": "Joey Veerman",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "23",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 11, 2007",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "987376",
+      "marketValue": "\u20ac600k",
+      "name": "Jo\u00ebl van den Berg",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "35",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 22, 1997",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "372267",
+      "marketValue": "\u20ac15.00m",
+      "name": "Guus Til",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "20",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Dec 23, 2005",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "900909",
+      "marketValue": "\u20ac14.00m",
+      "name": "Paul Wanner",
+      "nationality": [
+        "Germany",
+        "Austria"
+      ],
+      "number": "10",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 9, 2008",
+      "foot": "left",
+      "height": "1,70m",
+      "id": "1095107",
+      "marketValue": "\u20ac800k",
+      "name": "Noah Fernandez",
+      "nationality": [
+        "Belgium",
+        "Jamaica"
+      ],
+      "number": "31",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Aug 3, 2004",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "735701",
+      "marketValue": "\u20ac12.00m",
+      "name": "Ruben van Bommel",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "7",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Apr 17, 2002",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "593837",
+      "marketValue": "\u20ac6.00m",
+      "name": "Couhaib Driouech",
+      "nationality": [
+        "Morocco",
+        "Netherlands"
+      ],
+      "number": "11",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 2, 1989",
+      "foot": "both",
+      "height": "1,86m",
+      "id": "42460",
+      "marketValue": "\u20ac1.30m",
+      "name": "Ivan Peri\u0161i\u0107",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "5",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 26, 1998",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "397486",
+      "marketValue": "\u20ac13.00m",
+      "name": "Dennis Man",
+      "nationality": [
+        "Romania"
+      ],
+      "number": "27",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 10, 2005",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "925862",
+      "marketValue": "\u20ac5.00m",
+      "name": "Esmir Bajraktarevic",
+      "nationality": [
+        "Bosnia-Herzegovina",
+        "United States"
+      ],
+      "number": "19",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jan 9, 2003",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "627207",
+      "marketValue": "\u20ac15.00m",
+      "name": "Ricardo Pepi",
+      "nationality": [
+        "United States",
+        "Mexico"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 14, 2001",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "412932",
+      "marketValue": "\u20ac5.00m",
+      "name": "Myron Boadu",
+      "nationality": [
+        "Netherlands",
+        "Ghana"
+      ],
+      "number": "21",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 10, 1993",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "167329",
+      "marketValue": "\u20ac3.00m",
+      "name": "Alassane Pl\u00e9a",
+      "nationality": [
+        "France",
+        "Mali"
+      ],
+      "number": "14",
+      "position": "Centre-Forward"
+    }
+  ]
+}

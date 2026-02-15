@@ -1,0 +1,406 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/8024.png",
+  "name": "FC Arouca",
+  "stadiumName": "Est\u00e1dio Municipal de Arouca",
+  "stadiumSeats": "5600",
+  "transfermarktId": "8024",
+  "players": [
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 16, 1997",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "367651",
+      "marketValue": "\u20ac1.00m",
+      "name": "Ignacio de Arruabarrena",
+      "nationality": [
+        "Uruguay",
+        "Spain"
+      ],
+      "number": "12",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 3, 2000",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "532900",
+      "marketValue": "\u20ac500k",
+      "name": "Jo\u00e3o Valido",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 11, 2005",
+      "foot": "right",
+      "height": "2,02m",
+      "id": "912688",
+      "marketValue": "\u20ac300k",
+      "name": "Jakub Vinar\u010d\u00edk",
+      "nationality": [
+        "Slovakia"
+      ],
+      "number": "30",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 26, 2000",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "470796",
+      "marketValue": "\u20ac1.20m",
+      "name": "Boris Popovi\u0107",
+      "nationality": [
+        "Serbia",
+        "France"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 11, 2000",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "609361",
+      "marketValue": "\u20ac1.00m",
+      "name": "Jos\u00e9 Font\u00e1n",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jul 4, 2003",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "1036405",
+      "marketValue": "\u20ac1.00m",
+      "name": "Omar Fayed",
+      "nationality": [
+        "Egypt"
+      ],
+      "number": "66",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Mar 14, 1997",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "340853",
+      "marketValue": "\u20ac800k",
+      "name": "Javi S\u00e1nchez",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "15",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 13, 2001",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "821824",
+      "marketValue": "\u20ac400k",
+      "name": "Mat\u00edas Rocha",
+      "nationality": [
+        "Uruguay"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 28, 2005",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "670713",
+      "marketValue": "\u20ac300k",
+      "name": "Diogo Monteiro",
+      "nationality": [
+        "Portugal",
+        "Switzerland"
+      ],
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 7, 2000",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "649087",
+      "marketValue": "\u20ac1.50m",
+      "name": "Amadou Dante",
+      "nationality": [
+        "Mali"
+      ],
+      "number": "44",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Aug 17, 1994",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "187188",
+      "marketValue": "\u20ac800k",
+      "name": "Bas Kuipers",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "25",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 1, 1995",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "581121",
+      "marketValue": "\u20ac900k",
+      "name": "Tiago Esgaio",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "28",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Aug 20, 2005",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "1102159",
+      "marketValue": "\u20ac550k",
+      "name": "Jos\u00e9 Silva",
+      "nationality": [
+        "Portugal"
+      ],
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 15, 2004",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "868622",
+      "marketValue": "\u20ac2.00m",
+      "name": "Taichi Fukui",
+      "nationality": [
+        "Japan"
+      ],
+      "number": "21",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jul 5, 2003",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "607144",
+      "marketValue": "\u20ac1.00m",
+      "name": "Espen van Ee",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "22",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Apr 7, 2004",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "1061283",
+      "marketValue": "\u20ac1.00m",
+      "name": "Mateo Flores",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "46",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "May 25, 2004",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "941869",
+      "marketValue": "\u20ac900k",
+      "name": "Yellu Santiago",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "20",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 12, 2000",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "657435",
+      "marketValue": "\u20ac800k",
+      "name": "Pedro Santos",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "89",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "May 15, 1990",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "70359",
+      "marketValue": "\u20ac100k",
+      "name": "David Sim\u00e3o",
+      "nationality": [
+        "Portugal",
+        "France"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 7, 2003",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "709166",
+      "marketValue": "\u20ac1.50m",
+      "name": "Hyun-ju Lee",
+      "nationality": [
+        "Korea, South"
+      ],
+      "number": "14",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 30, 2001",
+      "foot": "right",
+      "height": "1,71m",
+      "id": "622992",
+      "marketValue": "\u20ac500k",
+      "name": "Pablo Goz\u00e1lbez",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "10",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Nov 23, 1999",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "594926",
+      "marketValue": "\u20ac1.50m",
+      "name": "Na\u00efs Djouahra",
+      "nationality": [
+        "France",
+        "Algeria"
+      ],
+      "number": "7",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 14, 2002",
+      "foot": "left",
+      "height": "1,76m",
+      "id": "981058",
+      "marketValue": "\u20ac1.00m",
+      "name": "Brian Mansilla",
+      "nationality": [
+        "Uruguay"
+      ],
+      "number": "24",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 30, 2001",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "632901",
+      "marketValue": "\u20ac400k",
+      "name": "Miguel Puche",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "11",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 22, 1999",
+      "foot": "right",
+      "height": "1,66m",
+      "id": "741517",
+      "marketValue": "\u20ac1.00m",
+      "name": "Alfonso Trezza",
+      "nationality": [
+        "Uruguay",
+        "Italy"
+      ],
+      "number": "19",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jul 15, 2002",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "826719",
+      "marketValue": "\u20ac2.00m",
+      "name": "Fally Mayulu",
+      "nationality": [
+        "France",
+        "DR Congo"
+      ],
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 28, 2002",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "862352",
+      "marketValue": "\u20ac1.00m",
+      "name": "Dylan Nand\u00edn",
+      "nationality": [
+        "Uruguay"
+      ],
+      "number": "23",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 17, 1998",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "514514",
+      "marketValue": "\u20ac500k",
+      "name": "Iv\u00e1n Barbero",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "17",
+      "position": "Centre-Forward"
+    }
+  ]
+}

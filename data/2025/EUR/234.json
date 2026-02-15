@@ -1,0 +1,454 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/234.png",
+  "name": "Feyenoord Rotterdam",
+  "stadiumName": "Stadion Feyenoord \"De Kuip\"",
+  "stadiumSeats": "47500",
+  "transfermarktId": "234",
+  "players": [
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Dec 3, 1995",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "196829",
+      "marketValue": "\u20ac6.00m",
+      "name": "Timon Wellenreuther",
+      "nationality": [
+        "Germany"
+      ],
+      "number": "22",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Oct 1, 1998",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "381469",
+      "marketValue": "\u20ac1.00m",
+      "name": "Steven Benda",
+      "nationality": [
+        "Germany"
+      ],
+      "number": "13",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 15, 1996",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "264176",
+      "marketValue": "\u20ac450k",
+      "name": "Liam Bossin",
+      "nationality": [
+        "Ireland",
+        "Belgium"
+      ],
+      "number": "39",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Oct 15, 2004",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "746973",
+      "marketValue": "\u20ac75k",
+      "name": "Mannou Berger",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "37",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 26, 1999",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "377468",
+      "marketValue": "\u20ac16.00m",
+      "name": "Anel Ahmedhodzic",
+      "nationality": [
+        "Bosnia-Herzegovina",
+        "Sweden"
+      ],
+      "number": "21",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Feb 5, 1997",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "598791",
+      "marketValue": "\u20ac10.00m",
+      "name": "Tsuyoshi Watanabe",
+      "nationality": [
+        "Japan"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 11, 2001",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "593862",
+      "marketValue": "\u20ac7.00m",
+      "name": "Thomas Beelen",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Oct 19, 1996",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "288253",
+      "marketValue": "\u20ac3.00m",
+      "name": "Jeremiah St. Juste",
+      "nationality": [
+        "Netherlands",
+        "St. Kitts & Nevis"
+      ],
+      "number": "8",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Mar 25, 1992",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "59145",
+      "marketValue": "\u20ac2.00m",
+      "name": "Gernot Trauner",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "18",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Mar 9, 2005",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "1126894",
+      "marketValue": "\u20ac2.00m",
+      "name": "Malcolm Jeng",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "31",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 31, 1997",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "374212",
+      "marketValue": "\u20ac6.00m",
+      "name": "Gijs Smal",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "5",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Oct 29, 2002",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "855731",
+      "marketValue": "\u20ac5.00m",
+      "name": "Jordan Bos",
+      "nationality": [
+        "Australia",
+        "Netherlands"
+      ],
+      "number": "15",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 2, 2006",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "997903",
+      "marketValue": "\u20ac25.00m",
+      "name": "Givairo Read",
+      "nationality": [
+        "Netherlands",
+        "Suriname"
+      ],
+      "number": "26",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 29, 1998",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "313094",
+      "marketValue": "\u20ac5.00m",
+      "name": "Jordan Lotomba",
+      "nationality": [
+        "Switzerland",
+        "DR Congo"
+      ],
+      "number": "30",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 7, 1996",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "257987",
+      "marketValue": "\u20ac2.00m",
+      "name": "Bart Nieuwkoop",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "2",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 15, 1997",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "369554",
+      "marketValue": "\u20ac2.00m",
+      "name": "Mats Deijl",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "20",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 20, 1996",
+      "foot": "both",
+      "height": "1,77m",
+      "id": "365394",
+      "marketValue": "\u20ac8.00m",
+      "name": "In-beom Hwang",
+      "nationality": [
+        "Korea, South"
+      ],
+      "number": "6",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 20, 2002",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "667965",
+      "marketValue": "\u20ac8.00m",
+      "name": "Oussama Targhalline",
+      "nationality": [
+        "Morocco"
+      ],
+      "number": "28",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Oct 4, 2003",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "601495",
+      "marketValue": "\u20ac18.00m",
+      "name": "Luciano Valente",
+      "nationality": [
+        "Netherlands",
+        "Italy"
+      ],
+      "number": "10",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 7, 1999",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "384461",
+      "marketValue": "\u20ac10.00m",
+      "name": "Jakub Moder",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "7",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 3, 2007",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "987370",
+      "marketValue": "\u20ac800k",
+      "name": "Thijs Kraaijeveld",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "24",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Nov 12, 2001",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "593519",
+      "marketValue": "\u20ac14.00m",
+      "name": "Sem Steijn",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "14",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 14, 2003",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "595247",
+      "marketValue": "\u20ac600k",
+      "name": "Shiloh 't Zand",
+      "nationality": [
+        "Suriname",
+        "Netherlands"
+      ],
+      "number": "25",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 16, 2005",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "710886",
+      "marketValue": "\u20ac7.00m",
+      "name": "Leo Sauer",
+      "nationality": [
+        "Slovakia"
+      ],
+      "number": "16",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 24, 2006",
+      "foot": "left",
+      "height": "1,79m",
+      "id": "775257",
+      "marketValue": "\u20ac3.00m",
+      "name": "Aymen Sliti",
+      "nationality": [
+        "Netherlands",
+        "Tunisia"
+      ],
+      "number": "32",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Nov 21, 2002",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "1233996",
+      "marketValue": "\u20ac2.00m",
+      "name": "Gaoussou Diarra",
+      "nationality": [
+        "Mali"
+      ],
+      "number": "27",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Feb 11, 2002",
+      "foot": "left",
+      "height": "1,76m",
+      "id": "917911",
+      "marketValue": "\u20ac20.00m",
+      "name": "Anis Hadj Moussa",
+      "nationality": [
+        "Algeria",
+        "France"
+      ],
+      "number": "23",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 29, 2001",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "479649",
+      "marketValue": "\u20ac4.00m",
+      "name": "Gon\u00e7alo Borges",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "11",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 28, 1998",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "589128",
+      "marketValue": "\u20ac15.00m",
+      "name": "Ayase Ueda",
+      "nationality": [
+        "Japan"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 1, 2000",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "464598",
+      "marketValue": "\u20ac4.00m",
+      "name": "Casper Tengstedt",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "17",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Nov 16, 2006",
+      "foot": "left",
+      "height": "1,86m",
+      "id": "517811",
+      "marketValue": "\u20ac800k",
+      "name": "Shaqueel van Persie",
+      "nationality": [
+        "Netherlands",
+        "Morocco"
+      ],
+      "number": "49",
+      "position": "Centre-Forward"
+    }
+  ]
+}

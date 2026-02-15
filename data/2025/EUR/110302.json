@@ -1,0 +1,376 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/110302.png",
+  "name": "Avs Futebol",
+  "stadiumName": "Est\u00e1dio do Clube Desportivo das Aves",
+  "stadiumSeats": "6230",
+  "transfermarktId": "110302",
+  "players": [
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 14, 2001",
+      "foot": "right",
+      "height": "1,95m",
+      "id": "808445",
+      "marketValue": "\u20ac800k",
+      "name": "Adriel",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jul 2, 1993",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "538253",
+      "marketValue": "\u20ac200k",
+      "name": "Sim\u00e3o",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "93",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 4, 1988",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "91949",
+      "marketValue": "\u20ac50k",
+      "name": "Trigueira",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "88",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 25, 2001",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "726697",
+      "marketValue": "\u20ac800k",
+      "name": "Cristian Devenish",
+      "nationality": [
+        "Colombia"
+      ],
+      "number": "42",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Apr 4, 1994",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "197602",
+      "marketValue": "\u20ac700k",
+      "name": "R\u00faben Semedo",
+      "nationality": [
+        "Portugal",
+        "Cape Verde"
+      ],
+      "number": "35",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jul 19, 2001",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "979625",
+      "marketValue": "\u20ac500k",
+      "name": "Paulo Vitor",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Oct 21, 1990",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "341516",
+      "marketValue": "\u20ac200k",
+      "name": "Ponck",
+      "nationality": [
+        "Cape Verde",
+        "Portugal"
+      ],
+      "number": "26",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Apr 9, 1989",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "159142",
+      "marketValue": "\u20ac100k",
+      "name": "Aderllan Santos",
+      "nationality": [
+        "Brazil",
+        "Portugal"
+      ],
+      "number": "33",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Dec 6, 2001",
+      "foot": "left",
+      "height": "1,77m",
+      "id": "690124",
+      "marketValue": "\u20ac500k",
+      "name": "Daniel Rivas",
+      "nationality": [
+        "Paraguay"
+      ],
+      "number": "12",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Dec 10, 1994",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "270055",
+      "marketValue": "\u20ac400k",
+      "name": "Kiki",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "24",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 3, 2000",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "602156",
+      "marketValue": "\u20ac300k",
+      "name": "Guillem Molina",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "5",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Dec 16, 1997",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "978615",
+      "name": "Mateus Piv\u00f4",
+      "nationality": [
+        "Brazil"
+      ],
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 15, 1999",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "725049",
+      "marketValue": "\u20ac1.00m",
+      "name": "Roni",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "70",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 23, 1999",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "638589",
+      "marketValue": "\u20ac600k",
+      "name": "\u00c1ngel Algobia",
+      "nationality": [
+        "Spain",
+        "Portugal"
+      ],
+      "number": "27",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 11, 2002",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "747810",
+      "marketValue": "\u20ac300k",
+      "name": "Tiago Hern\u00e1ndez",
+      "nationality": [
+        "Uruguay",
+        "Spain"
+      ],
+      "number": "19",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "May 5, 1997",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "340864",
+      "marketValue": "\u20ac700k",
+      "name": "Jaume Grau",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "15",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 27, 2003",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "816135",
+      "marketValue": "\u20ac400k",
+      "name": "Pedro Lima",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 11, 2003",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "637788",
+      "marketValue": "\u20ac200k",
+      "name": "Gustavo Mendon\u00e7a",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "23",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Sep 27, 2005",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "1015624",
+      "marketValue": "\u20ac2.00m",
+      "name": "\u00d3scar Perea",
+      "nationality": [
+        "Colombia"
+      ],
+      "number": "14",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 10, 2003",
+      "foot": "both",
+      "height": "1,75m",
+      "id": "924447",
+      "marketValue": "\u20ac800k",
+      "name": "Tunde Akinsola",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "11",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jul 26, 1998",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "309841",
+      "marketValue": "\u20ac400k",
+      "name": "Andre Green",
+      "nationality": [
+        "England"
+      ],
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 15, 2001",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "1065761",
+      "marketValue": "\u20ac200k",
+      "name": "Guilherme Neiva",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "21",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jun 24, 2000",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "463666",
+      "marketValue": "\u20ac600k",
+      "name": "Antoine Baroan",
+      "nationality": [
+        "France",
+        "Cote d'Ivoire"
+      ],
+      "number": "17",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Apr 8, 2002",
+      "foot": "left",
+      "height": "1,76m",
+      "id": "661243",
+      "marketValue": "\u20ac250k",
+      "name": "Diego Duarte",
+      "nationality": [
+        "Paraguay"
+      ],
+      "number": "20",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Oct 23, 1992",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "139393",
+      "marketValue": "\u20ac200k",
+      "name": "Toman\u00e9",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "7",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jul 28, 1983",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "45717",
+      "marketValue": "\u20ac50k",
+      "name": "Nen\u00ea",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "18",
+      "position": "Centre-Forward"
+    }
+  ]
+}

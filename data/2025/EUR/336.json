@@ -1,0 +1,361 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/336.png",
+  "name": "Sporting CP",
+  "stadiumName": "Est\u00e1dio Jos\u00e9 Alvalade",
+  "stadiumSeats": "52095",
+  "transfermarktId": "336",
+  "players": [
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 7, 1994",
+      "foot": "left",
+      "height": "1,91m",
+      "id": "234811",
+      "marketValue": "\u20ac7.00m",
+      "name": "Rui Silva",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 10, 1999",
+      "foot": "left",
+      "height": "1,92m",
+      "id": "329813",
+      "marketValue": "\u20ac1.00m",
+      "name": "Jo\u00e3o Virg\u00ednia",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "12",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Aug 25, 2001",
+      "foot": "left",
+      "height": "1,86m",
+      "id": "549006",
+      "marketValue": "\u20ac45.00m",
+      "name": "Gon\u00e7alo In\u00e1cio",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "25",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Dec 4, 2003",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "974982",
+      "marketValue": "\u20ac45.00m",
+      "name": "Ousmane Diomande",
+      "nationality": [
+        "Cote d'Ivoire"
+      ],
+      "number": "26",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Oct 24, 2003",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "548193",
+      "marketValue": "\u20ac30.00m",
+      "name": "Zeno Debast",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 2, 2002",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "504073",
+      "marketValue": "\u20ac15.00m",
+      "name": "Eduardo Quaresma",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "72",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Feb 15, 2000",
+      "foot": "left",
+      "height": "1,79m",
+      "id": "572675",
+      "marketValue": "\u20ac22.00m",
+      "name": "Maxi Ara\u00fajo",
+      "nationality": [
+        "Uruguay"
+      ],
+      "number": "20",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 13, 1995",
+      "foot": "left",
+      "height": "1,77m",
+      "id": "290391",
+      "marketValue": "\u20ac5.00m",
+      "name": "Nuno Santos",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "11",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Feb 18, 1995",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "379249",
+      "marketValue": "\u20ac4.00m",
+      "name": "Matheus Reis",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "2",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 19, 1998",
+      "foot": "left",
+      "height": "1,79m",
+      "id": "314944",
+      "marketValue": "\u20ac2.50m",
+      "name": "Ricardo Mangas",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "91",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 28, 2004",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "946883",
+      "marketValue": "\u20ac12.00m",
+      "name": "Iv\u00e1n Fresneda",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "22",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Sep 12, 2001",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "546186",
+      "marketValue": "\u20ac11.00m",
+      "name": "Georgios Vagiannidis",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "13",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 25, 1999",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "461496",
+      "marketValue": "\u20ac50.00m",
+      "name": "Morten Hjulmand",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "42",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 27, 1999",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "461943",
+      "marketValue": "\u20ac10.00m",
+      "name": "Daniel Bragan\u00e7a",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "23",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "May 10, 1995",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "524315",
+      "marketValue": "\u20ac9.00m",
+      "name": "Hidemasa Morita",
+      "nationality": [
+        "Japan"
+      ],
+      "number": "5",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jun 29, 1999",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "405564",
+      "marketValue": "\u20ac6.00m",
+      "name": "Giorgi Kochorashvili",
+      "nationality": [
+        "Georgia"
+      ],
+      "number": "14",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 26, 2001",
+      "foot": "left",
+      "height": "1,72m",
+      "id": "701979",
+      "marketValue": "\u20ac15.00m",
+      "name": "Geny Catamo",
+      "nationality": [
+        "Mozambique"
+      ],
+      "number": "10",
+      "position": "Right Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Dec 29, 1999",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "412669",
+      "marketValue": "\u20ac35.00m",
+      "name": "Francisco Trinc\u00e3o",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "17",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jan 6, 2007",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "958937",
+      "marketValue": "\u20ac15.00m",
+      "name": "Jo\u00e3o Sim\u00f5es",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "52",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jun 28, 1998",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "426620",
+      "marketValue": "\u20ac30.00m",
+      "name": "Pedro Gon\u00e7alves",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "8",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 30, 2007",
+      "foot": "left",
+      "height": "1,72m",
+      "id": "1138758",
+      "marketValue": "\u20ac45.00m",
+      "name": "Geovany Quenda",
+      "nationality": [
+        "Portugal",
+        "Guinea-Bissau"
+      ],
+      "number": "7",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Feb 9, 2006",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "991800",
+      "marketValue": "\u20ac10.00m",
+      "name": "Lu\u00eds Guilherme",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "31",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Feb 8, 2003",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "666971",
+      "marketValue": "\u20ac1.50m",
+      "name": "Souleymane Faye",
+      "nationality": [
+        "Senegal"
+      ],
+      "number": "15",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Dec 2, 1997",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "424784",
+      "marketValue": "\u20ac22.00m",
+      "name": "Luis Su\u00e1rez",
+      "nationality": [
+        "Colombia",
+        "Spain"
+      ],
+      "number": "97",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jan 10, 2000",
+      "foot": "both",
+      "height": "1,87m",
+      "id": "532444",
+      "marketValue": "\u20ac20.00m",
+      "name": "Fotis Ioannidis",
+      "nationality": [
+        "Greece"
+      ],
+      "number": "89",
+      "position": "Centre-Forward"
+    }
+  ]
+}

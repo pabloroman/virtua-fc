@@ -1,0 +1,404 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/2423.png",
+  "name": "CD Santa Clara",
+  "stadiumName": "Est\u00e1dio de S\u00e3o Miguel",
+  "stadiumSeats": "12500",
+  "transfermarktId": "2423",
+  "players": [
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 3, 1998",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "401535",
+      "marketValue": "\u20ac4.00m",
+      "name": "Gabriel Batista",
+      "nationality": [
+        "Brazil",
+        "Italy"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Aug 27, 2003",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "983843",
+      "marketValue": "\u20ac400k",
+      "name": "Neneca",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "12",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Feb 25, 2002",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "662335",
+      "marketValue": "\u20ac75k",
+      "name": "Cristian",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "25",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 1, 2001",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "808475",
+      "marketValue": "\u20ac4.50m",
+      "name": "MT",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "32",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 17, 1997",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "657155",
+      "marketValue": "\u20ac3.50m",
+      "name": "Sidney Lima",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "23",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Feb 4, 1993",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "169681",
+      "marketValue": "\u20ac500k",
+      "name": "Frederico Ven\u00e2ncio",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "21",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Dec 26, 2001",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "980463",
+      "marketValue": "\u20ac450k",
+      "name": "Marcos Victor",
+      "nationality": [
+        "Brazil"
+      ],
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 27, 1997",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "290508",
+      "marketValue": "\u20ac400k",
+      "name": "Pedro Pacheco",
+      "nationality": [
+        "Portugal",
+        "Switzerland"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Feb 1, 2007",
+      "foot": "left",
+      "height": "1,86m",
+      "id": "1127822",
+      "name": "Evertow",
+      "nationality": [
+        "Brazil"
+      ],
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Aug 30, 2007",
+      "id": "1383720",
+      "name": "Henzo",
+      "nationality": [
+        "Brazil"
+      ],
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Apr 13, 2001",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "875511",
+      "marketValue": "\u20ac1.00m",
+      "name": "Paulo Victor",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "64",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Oct 7, 1997",
+      "foot": "left",
+      "height": "1,76m",
+      "id": "519879",
+      "marketValue": "\u20ac400k",
+      "name": "Guilherme Rom\u00e3o",
+      "nationality": [
+        "Brazil"
+      ],
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 4, 1998",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "684061",
+      "marketValue": "\u20ac1.50m",
+      "name": "Lucas Soares",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "42",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Oct 10, 1998",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "396429",
+      "marketValue": "\u20ac500k",
+      "name": "Diogo Calila",
+      "nationality": [
+        "Mozambique",
+        "Portugal"
+      ],
+      "number": "2",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 5, 1998",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "337799",
+      "marketValue": "\u20ac2.00m",
+      "name": "Pedro Ferreira",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "8",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Apr 16, 1998",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "570582",
+      "marketValue": "\u20ac700k",
+      "name": "Darlan",
+      "nationality": [
+        "Brazil"
+      ],
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Dec 1, 1999",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "836547",
+      "marketValue": "\u20ac1.50m",
+      "name": "Serginho",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "35",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Nov 23, 1999",
+      "foot": "left",
+      "height": "1,79m",
+      "id": "606719",
+      "marketValue": "\u20ac500k",
+      "name": "Gustavo Klismahn",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "77",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 6, 2002",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "997076",
+      "marketValue": "\u20ac200k",
+      "name": "Andrey",
+      "nationality": [
+        "Brazil"
+      ],
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 22, 2002",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "627224",
+      "marketValue": "\u20ac4.00m",
+      "name": "Gabriel Silva",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "10",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 7, 1999",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "688881",
+      "marketValue": "\u20ac2.50m",
+      "name": "Vin\u00edcius Lopes",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "70",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 2, 2002",
+      "foot": "right",
+      "height": "1,71m",
+      "id": "973703",
+      "marketValue": "\u20ac1.30m",
+      "name": "Brenner",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "11",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 30, 1999",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "687361",
+      "marketValue": "\u20ac350k",
+      "name": "Welinton Torr\u00e3o",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "49",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Mar 25, 2003",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "796742",
+      "marketValue": "\u20ac275k",
+      "name": "Vitinho",
+      "nationality": [
+        "Brazil"
+      ],
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Apr 12, 2005",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "1091608",
+      "name": "Fernando",
+      "nationality": [
+        "Brazil"
+      ],
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 2, 2000",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "589911",
+      "marketValue": "\u20ac2.00m",
+      "name": "Wendel",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "29",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Nov 30, 2001",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "813044",
+      "marketValue": "\u20ac1.50m",
+      "name": "Elias Manoel",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "7",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Aug 1, 1994",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "181547",
+      "marketValue": "\u20ac700k",
+      "name": "Gon\u00e7alo Paci\u00eancia",
+      "nationality": [
+        "Portugal"
+      ],
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 7, 2000",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "856423",
+      "marketValue": "\u20ac400k",
+      "name": "Jo\u00e3o Costa",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "17",
+      "position": "Centre-Forward"
+    }
+  ]
+}
