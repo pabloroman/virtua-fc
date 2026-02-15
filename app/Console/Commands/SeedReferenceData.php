@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\User;
+use App\Support\Money;
 use Carbon\Carbon;
 use Database\Seeders\ClubProfilesSeeder;
 use Illuminate\Console\Command;
@@ -542,7 +543,7 @@ class SeedReferenceData extends Command
                 };
 
                 // Calculate abilities from market value, position, and age
-                $marketValueCents = $this->parseMarketValue($player['marketValue'] ?? null);
+                $marketValueCents = Money::parseMarketValue($player['marketValue'] ?? null);
                 $position = $player['position'] ?? 'Central Midfield';
                 [$technical, $physical] = $this->calculateAbilities($marketValueCents, $position, $age);
 
@@ -628,28 +629,6 @@ class SeedReferenceData extends Command
         }
 
         $this->line("  Cup teams: {$count}");
-    }
-
-    private function parseMarketValue(?string $value): int
-    {
-        if (!$value) {
-            return 0;
-        }
-
-        $value = trim(str_replace(['€', ' '], '', $value));
-
-        if (preg_match('/^([\d.]+)(k|m)?$/i', $value, $matches)) {
-            $number = (float) $matches[1];
-            $multiplier = strtolower($matches[2] ?? '');
-
-            return match ($multiplier) {
-                'm' => (int) ($number * 1_000_000 * 100),
-                'k' => (int) ($number * 1_000 * 100),
-                default => (int) ($number * 100),
-            };
-        }
-
-        return 0;
     }
 
     private function calculateAbilities(int $marketValueCents, string $position, ?int $age): array

@@ -44,4 +44,34 @@ class Money
         }
         return self::format($cents);
     }
+
+    /**
+     * Parse a market value string like "€10M" or "500k" into cents.
+     *
+     * @param string|null $value e.g., "€10M", "€500K", "250000"
+     * @return int Amount in cents
+     */
+    public static function parseMarketValue(?string $value): int
+    {
+        if (!$value) {
+            return 0;
+        }
+
+        $value = preg_replace('/[€$£\s]/', '', $value);
+
+        if (preg_match('/^([\d.]+)(m|k)?$/i', $value, $matches)) {
+            $number = (float) $matches[1];
+            $multiplier = strtolower($matches[2] ?? '');
+
+            $amount = match ($multiplier) {
+                'm' => $number * 1_000_000,
+                'k' => $number * 1_000,
+                default => $number,
+            };
+
+            return (int) ($amount * 100);
+        }
+
+        return 0;
+    }
 }

@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Game\Services\BudgetProjectionService;
+use App\Support\Money;
 use App\Game\Services\ContractService;
 use App\Game\Services\CupDrawService;
 use App\Game\Services\InjuryService;
@@ -413,7 +414,7 @@ class SetupNewGame implements ShouldQueue
             }
         }
 
-        $marketValueCents = $this->parseMarketValue($playerData['marketValue'] ?? null);
+        $marketValueCents = Money::parseMarketValue($playerData['marketValue'] ?? null);
         $annualWage = $contractService->calculateAnnualWage($marketValueCents, $minimumWage, $player->age);
 
         $currentAbility = (int) round(
@@ -481,27 +482,4 @@ class SetupNewGame implements ShouldQueue
         return null;
     }
 
-    private function parseMarketValue(?string $value): int
-    {
-        if (!$value) {
-            return 0;
-        }
-
-        $value = preg_replace('/[€$£\s]/', '', $value);
-
-        if (preg_match('/^([\d.]+)(m|k)?$/i', $value, $matches)) {
-            $number = (float) $matches[1];
-            $multiplier = strtolower($matches[2] ?? '');
-
-            $amount = match ($multiplier) {
-                'm' => $number * 1_000_000,
-                'k' => $number * 1_000,
-                default => $number,
-            };
-
-            return (int) ($amount * 100);
-        }
-
-        return 0;
-    }
 }
