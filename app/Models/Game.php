@@ -34,6 +34,7 @@ class Game extends Model
         'id',
         'user_id',
         'game_mode',
+        'country',
         'player_name',
         'team_id',
         'competition_id',

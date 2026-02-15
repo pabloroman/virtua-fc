@@ -202,7 +202,7 @@ class ScoutingService
             $scope = ['domestic'];
         }
         if (count($scope) === 1) {
-            $teamCountry = $game->team->country;
+            $teamCountry = $game->country;
             $scopeCompetitionIds = Competition::where('country', in_array('domestic', $scope) ? '=' : '!=', $teamCountry)
                 ->pluck('id');
             $scopeTeamIds = Team::whereHas('competitions', function ($q) use ($scopeCompetitionIds) {
