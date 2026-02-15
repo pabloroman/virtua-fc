@@ -6,6 +6,7 @@ use App\Game\Services\SubstitutionService;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
+use App\Models\MatchEvent;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -66,6 +67,17 @@ class ProcessSubstitution
 
         if (! in_array($playerOutId, $activeLineupIds)) {
             return response()->json(['error' => __('game.sub_error_player_not_on_pitch')], 422);
+        }
+
+        // Prevent substituting a player who has been sent off (red card)
+        $wasRedCarded = MatchEvent::where('game_match_id', $match->id)
+            ->where('game_player_id', $playerOutId)
+            ->where('event_type', 'red_card')
+            ->where('minute', '<=', $minute)
+            ->exists();
+
+        if ($wasRedCarded) {
+            return response()->json(['error' => __('game.sub_error_player_sent_off')], 422);
         }
 
         // Validate that playerIn belongs to the user's team and is not already on the pitch

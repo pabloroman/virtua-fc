@@ -703,6 +703,7 @@ class MatchSimulator
             if ($player && ! $playersWithYellow->has($player->id)) {
                 $minute = $this->generateUniqueMinuteInRange($usedMinutes, $minMinute, $maxMinute);
                 $events->push(MatchEventData::redCard($teamId, $player->id, $minute, false));
+                $players = $players->reject(fn ($p) => $p->id === $player->id);
             }
         }
 

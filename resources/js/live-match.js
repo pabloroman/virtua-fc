@@ -250,16 +250,23 @@ export default function liveMatch(config) {
             this.selectedPlayerIn = null;
         },
 
+        get redCardedPlayerIds() {
+            return this.revealedEvents
+                .filter(e => e.type === 'red_card' && e.teamId === this.userTeamId)
+                .map(e => e.gamePlayerId);
+        },
+
         get availableLineupPlayers() {
             // Start with original lineup, apply substitutions
             const subbedOutIds = this.substitutionsMade.map(s => s.playerOutId);
             const subbedInIds = this.substitutionsMade.map(s => s.playerInId);
+            const redCarded = this.redCardedPlayerIds;
 
-            // Original lineup players still on pitch (not subbed out)
-            const onPitch = this.lineupPlayers.filter(p => !subbedOutIds.includes(p.id));
+            // Original lineup players still on pitch (not subbed out, not red-carded)
+            const onPitch = this.lineupPlayers.filter(p => !subbedOutIds.includes(p.id) && !redCarded.includes(p.id));
 
-            // Players who came on as subs and are still on pitch
-            const subsOnPitch = this.benchPlayers.filter(p => subbedInIds.includes(p.id) && !subbedOutIds.includes(p.id));
+            // Players who came on as subs and are still on pitch (not red-carded)
+            const subsOnPitch = this.benchPlayers.filter(p => subbedInIds.includes(p.id) && !subbedOutIds.includes(p.id) && !redCarded.includes(p.id));
 
             return [...onPitch, ...subsOnPitch].sort((a, b) => a.positionSort - b.positionSort);
         },
