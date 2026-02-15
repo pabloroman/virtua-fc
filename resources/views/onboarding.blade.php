@@ -57,9 +57,9 @@
                 <div class="grid {{ $gridCols }} gap-3">
                     @foreach($competitions as $comp)
                         @php
-                            $compAccent = match($comp->role) {
-                                'domestic_cup' => ['border' => 'border-t-emerald-500', 'label' => __('game.competition_role_cup')],
-                                'european' => ['border' => 'border-t-blue-600', 'label' => __('game.competition_role_continental')],
+                            $compAccent = match(true) {
+                                $comp->scope === 'continental' => ['border' => 'border-t-blue-600', 'label' => __('game.competition_role_continental')],
+                                $comp->type === 'cup' => ['border' => 'border-t-emerald-500', 'label' => __('game.competition_role_cup')],
                                 default => ['border' => 'border-t-amber-500', 'label' => __('game.competition_role_league')],
                             };
                         @endphp

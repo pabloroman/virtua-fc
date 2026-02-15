@@ -695,9 +695,10 @@ class TransferService
         $playerTeamId = $player->team_id;
         $playerValue = $player->market_value_cents;
 
-        // Get all teams in the same league(s) as the player's team, excluding player's team
-        $leagueTeamIds = Team::whereHas('competitions', function ($query) use ($game) {
-            $query->whereIn('role', [Competition::ROLE_PRIMARY, Competition::ROLE_FOREIGN]);
+        // Get all teams in domestic leagues (both playable and foreign), excluding player's team
+        $leagueTeamIds = Team::whereHas('competitions', function ($query) {
+            $query->where('scope', Competition::SCOPE_DOMESTIC)
+                ->where('type', 'league');
         })->where('id', '!=', $playerTeamId)->pluck('id')->toArray();
 
         $squadValues = $this->getSquadValues($game, $leagueTeamIds);

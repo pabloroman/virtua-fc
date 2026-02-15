@@ -76,10 +76,10 @@ class ShowOnboarding
 
         $competitions = Competition::whereIn('id', $competitionIds)
             ->get()
-            ->sortBy(fn ($c) => match ($c->role) {
-                Competition::ROLE_PRIMARY => 0,
-                Competition::ROLE_DOMESTIC_CUP => 1,
-                Competition::ROLE_EUROPEAN => 2,
+            ->sortBy(fn ($c) => match (true) {
+                $c->scope === Competition::SCOPE_DOMESTIC && $c->type === 'league' => 0,
+                $c->scope === Competition::SCOPE_DOMESTIC && $c->type === 'cup' => 1,
+                $c->scope === Competition::SCOPE_CONTINENTAL => 2,
                 default => 3,
             })
             ->values();
