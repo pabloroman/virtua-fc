@@ -264,6 +264,10 @@ class GamePlayer extends Model
      */
     public function hasAgreedTransfer(): bool
     {
+        if ($this->relationLoaded('transferOffers')) {
+            return $this->transferOffers->contains('status', TransferOffer::STATUS_AGREED);
+        }
+
         return $this->transferOffers()
             ->where('status', TransferOffer::STATUS_AGREED)
             ->exists();
@@ -284,6 +288,13 @@ class GamePlayer extends Model
      */
     public function hasPreContractAgreement(): bool
     {
+        if ($this->relationLoaded('transferOffers')) {
+            return $this->transferOffers->contains(function ($offer) {
+                return $offer->status === TransferOffer::STATUS_AGREED
+                    && $offer->offer_type === TransferOffer::TYPE_PRE_CONTRACT;
+            });
+        }
+
         return $this->transferOffers()
             ->where('status', TransferOffer::STATUS_AGREED)
             ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)

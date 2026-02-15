@@ -24,6 +24,8 @@ class ContractService
 
     private const DEFAULT_MINIMUM_WAGE = 10_000_000; // €100K
 
+    private array $minimumWageCache = [];
+
     /**
      * Wage percentage tiers based on market value.
      * Higher value players command a larger percentage of their value as wages.
@@ -155,13 +157,17 @@ class ContractService
      */
     public function getMinimumWageForTeam(Team $team): int
     {
+        if (isset($this->minimumWageCache[$team->id])) {
+            return $this->minimumWageCache[$team->id];
+        }
+
         $league = Competition::whereHas('teams', function ($query) use ($team) {
             $query->where('teams.id', $team->id);
         })
             ->where('role', Competition::ROLE_PRIMARY)
             ->first();
 
-        return self::MINIMUM_WAGES[$league?->tier] ?? self::DEFAULT_MINIMUM_WAGE;
+        return $this->minimumWageCache[$team->id] = self::MINIMUM_WAGES[$league?->tier] ?? self::DEFAULT_MINIMUM_WAGE;
     }
 
     /**
@@ -392,7 +398,7 @@ class ContractService
     {
         $seasonEndDate = $game->getSeasonEndDate();
 
-        return GamePlayer::with(['player', 'latestRenewalNegotiation', 'activeRenewalNegotiation'])
+        return GamePlayer::with(['player', 'team', 'game', 'transferOffers', 'latestRenewalNegotiation', 'activeRenewalNegotiation'])
             ->where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->get()
@@ -473,10 +479,17 @@ class ContractService
             $month = $game->current_date->month;
             if ($month >= 1 && $month <= 5) {
                 // Has a concrete pre-contract offer
-                $hasPreContractOffer = $player->transferOffers()
-                    ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
-                    ->where('status', TransferOffer::STATUS_PENDING)
-                    ->exists();
+                if ($player->relationLoaded('transferOffers')) {
+                    $hasPreContractOffer = $player->transferOffers->contains(function ($offer) {
+                        return $offer->offer_type === TransferOffer::TYPE_PRE_CONTRACT
+                            && $offer->status === TransferOffer::STATUS_PENDING;
+                    });
+                } else {
+                    $hasPreContractOffer = $player->transferOffers()
+                        ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
+                        ->where('status', TransferOffer::STATUS_PENDING)
+                        ->exists();
+                }
 
                 if ($hasPreContractOffer) {
                     $disposition -= 0.15;
@@ -734,7 +747,7 @@ class ContractService
      */
     public function getPlayersInNegotiation(Game $game): Collection
     {
-        return GamePlayer::with(['player', 'activeRenewalNegotiation'])
+        return GamePlayer::with(['player', 'game', 'transferOffers', 'activeRenewalNegotiation'])
             ->where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->whereHas('activeRenewalNegotiation')

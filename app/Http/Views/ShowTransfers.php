@@ -147,6 +147,7 @@ class ShowTransfers
         }
 
         // Declined renewals
+        $seasonEndDate = $game->getSeasonEndDate();
         $declinedRenewals = GamePlayer::with(['player', 'latestRenewalNegotiation'])
             ->where('game_id', $gameId)
             ->where('team_id', $game->team_id)
@@ -155,7 +156,7 @@ class ShowTransfers
                 RenewalNegotiation::STATUS_CLUB_DECLINED,
             ]))
             ->get()
-            ->filter(fn (GamePlayer $p) => $p->isContractExpiring() && $p->hasDeclinedRenewal());
+            ->filter(fn (GamePlayer $p) => $p->isContractExpiring($seasonEndDate) && $p->hasDeclinedRenewal());
 
         // Transfer window info
         $isTransferWindow = $game->isTransferWindowOpen();
