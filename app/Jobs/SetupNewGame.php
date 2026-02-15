@@ -5,17 +5,13 @@ namespace App\Jobs;
 use App\Game\Services\BudgetProjectionService;
 use App\Game\Services\ContractService;
 use App\Game\Services\CountryConfig;
-use App\Game\Services\CupDrawService;
 use App\Game\Services\InjuryService;
-use App\Game\Services\LeagueFixtureGenerator;
 use App\Game\Services\PlayerDevelopmentService;
+use App\Game\Services\SeasonInitializationService;
 use App\Game\Services\StandingsCalculator;
-use App\Game\Services\SwissDrawService;
 use App\Support\Money;
-use App\Models\Competition;
 use App\Models\CompetitionEntry;
 use App\Models\CompetitionTeam;
-use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
@@ -46,12 +42,11 @@ class SetupNewGame implements ShouldQueue
     ) {}
 
     public function handle(
-        LeagueFixtureGenerator $leagueFixtureGenerator,
         StandingsCalculator $standingsCalculator,
         ContractService $contractService,
         PlayerDevelopmentService $developmentService,
         BudgetProjectionService $budgetProjectionService,
-        CupDrawService $cupDrawService,
+        SeasonInitializationService $seasonInitService,
     ): void {
         // Idempotency: skip if already set up
         $game = Game::find($this->gameId);
@@ -67,8 +62,9 @@ class SetupNewGame implements ShouldQueue
         $this->copyCompetitionTeamsToGame();
 
         // Step 2: Generate league fixtures
-        $matchdays = LeagueFixtureGenerator::loadMatchdays($this->competitionId, $this->season);
-        $this->generateLeagueFixtures($leagueFixtureGenerator, $matchdays);
+        if (!GameMatch::where('game_id', $this->gameId)->where('competition_id', $this->competitionId)->exists()) {
+            $seasonInitService->generateLeagueFixtures($this->gameId, $this->competitionId, $this->season);
+        }
 
         // Step 3: Initialize standings
         $this->initializeStandings($standingsCalculator);
@@ -80,8 +76,8 @@ class SetupNewGame implements ShouldQueue
         if ($this->gameMode === Game::MODE_CAREER) {
             $game->refresh();
             $budgetProjectionService->generateProjections($game);
-            $this->conductInitialCupDraws($cupDrawService);
-            $this->initializeSwissFormatCompetitions($allTeams, $allPlayers, $contractService, $developmentService, $standingsCalculator);
+            $seasonInitService->conductCupDraws($this->gameId, $game->country ?? 'ES');
+            $this->initializeSwissFormatCompetitions($allTeams, $allPlayers, $contractService, $developmentService, $seasonInitService);
         }
 
         // Mark setup as complete
@@ -107,41 +103,6 @@ class SetupNewGame implements ShouldQueue
 
         foreach (array_chunk($rows, 100) as $chunk) {
             CompetitionEntry::insert($chunk);
-        }
-    }
-
-    private function generateLeagueFixtures(LeagueFixtureGenerator $leagueFixtureGenerator, array $matchdays): void
-    {
-        // Idempotency: skip if fixtures already exist for main competition
-        if (GameMatch::where('game_id', $this->gameId)->where('competition_id', $this->competitionId)->exists()) {
-            return;
-        }
-
-        $teamIds = CompetitionEntry::where('game_id', $this->gameId)
-            ->where('competition_id', $this->competitionId)
-            ->pluck('team_id')
-            ->toArray();
-
-        $fixtures = $leagueFixtureGenerator->generate($teamIds, $matchdays);
-
-        $rows = [];
-        foreach ($fixtures as $fixture) {
-            $rows[] = [
-                'id' => Str::uuid()->toString(),
-                'game_id' => $this->gameId,
-                'competition_id' => $this->competitionId,
-                'round_number' => $fixture['matchday'],
-                'home_team_id' => $fixture['homeTeamId'],
-                'away_team_id' => $fixture['awayTeamId'],
-                'scheduled_date' => Carbon::parse($fixture['date']),
-                'home_score' => null,
-                'away_score' => null,
-                'played' => false,
-            ];
-        }
-
-        foreach (array_chunk($rows, 100) as $chunk) {
-            GameMatch::insert($chunk);
         }
     }
 
@@ -250,75 +211,53 @@ class SetupNewGame implements ShouldQueue
         }
     }
 
-    private function conductInitialCupDraws(CupDrawService $cupDrawService): void
-    {
-        $cupCompetitions = Competition::where('handler_type', 'knockout_cup')->get();
-
-        foreach ($cupCompetitions as $competition) {
-            if ($cupDrawService->needsDrawForRound($this->gameId, $competition->id, 1)) {
-                $cupDrawService->conductDraw($this->gameId, $competition->id, 1);
-            }
-        }
-    }
-
     private function initializeSwissFormatCompetitions(
         Collection $allTeams,
         Collection $allPlayers,
         ContractService $contractService,
         PlayerDevelopmentService $developmentService,
-        StandingsCalculator $standingsCalculator,
+        SeasonInitializationService $seasonInitService,
     ): void {
         $countryConfig = app(CountryConfig::class);
         $game = Game::find($this->gameId);
         $countryCode = $game?->country ?? 'ES';
-        $continentalIds = $countryConfig->continentalSupportIds($countryCode);
 
-        // Also include any swiss_format competitions not in the config (backward compat)
-        $swissIds = Competition::where('handler_type', 'swiss_format')->pluck('id')->toArray();
-        $allIds = array_unique(array_merge($continentalIds, $swissIds));
+        $swissIds = $countryConfig->swissFormatCompetitionIds($countryCode);
 
-        foreach ($allIds as $competitionId) {
-            $competition = Competition::find($competitionId);
-            if (!$competition) {
-                continue;
-            }
-
-            $participates = CompetitionEntry::where('game_id', $this->gameId)
-                ->where('competition_id', $competition->id)
-                ->where('team_id', $this->teamId)
-                ->exists();
-
-            if (!$participates) {
-                continue;
-            }
-
-            $teamsFilePath = base_path("data/{$this->season}/{$competition->id}/teams.json");
+        foreach ($swissIds as $competitionId) {
+            $teamsFilePath = base_path("data/{$this->season}/{$competitionId}/teams.json");
             if (!file_exists($teamsFilePath)) {
                 continue;
             }
             $teamsData = json_decode(file_get_contents($teamsFilePath), true);
             $clubs = $teamsData['clubs'] ?? [];
 
-            $this->generateSwissFixtures($competition->id, $clubs, $allTeams);
+            // Build pot data from JSON for first season
+            $drawTeams = $this->buildDrawTeamsFromJson($clubs, $allTeams);
 
-            // Initialize standings for Swiss competition
-            $teamIds = CompetitionEntry::where('game_id', $this->gameId)
-                ->where('competition_id', $competition->id)
-                ->pluck('team_id')
-                ->toArray();
-            $standingsCalculator->initializeStandings($this->gameId, $competition->id, $teamIds);
+            // Idempotency: skip if fixtures already exist
+            // (participation check is handled inside the service)
+            if (!GameMatch::where('game_id', $this->gameId)->where('competition_id', $competitionId)->exists()) {
+                $seasonInitService->initializeSwissCompetition(
+                    $this->gameId,
+                    $this->teamId,
+                    $competitionId,
+                    $this->season,
+                    $drawTeams,
+                );
+            }
 
-            $this->initializeSwissFormatPlayersFromData($competition->id, $clubs, $allTeams, $allPlayers, $contractService, $developmentService);
+            $this->initializeSwissFormatPlayersFromData($competitionId, $clubs, $allTeams, $allPlayers, $contractService, $developmentService);
         }
     }
 
-    private function generateSwissFixtures(string $competitionId, array $clubs, Collection $allTeams): void
+    /**
+     * Build draw teams array from JSON club data (first season only).
+     *
+     * @return array<array{id: string, pot: int, country: string}>
+     */
+    private function buildDrawTeamsFromJson(array $clubs, Collection $allTeams): array
     {
-        // Idempotency: skip if fixtures already exist
-        if (GameMatch::where('game_id', $this->gameId)->where('competition_id', $competitionId)->exists()) {
-            return;
-        }
-
         $drawTeams = [];
         foreach ($clubs as $club) {
             $transfermarktId = $club['id'] ?? null;
@@ -338,40 +277,7 @@ class SetupNewGame implements ShouldQueue
             ];
         }
 
-        if (count($drawTeams) < 36) {
-            return;
-        }
-
-        $schedulePath = base_path("data/{$this->season}/{$competitionId}/schedule.json");
-        $scheduleData = json_decode(file_get_contents($schedulePath), true);
-
-        $matchdayDates = [];
-        foreach ($scheduleData['league'] as $md) {
-            $matchdayDates[$md['round']] = $md['date'];
-        }
-
-        $drawService = new SwissDrawService();
-        $fixtures = $drawService->generateFixtures($drawTeams, $matchdayDates);
-
-        $rows = [];
-        foreach ($fixtures as $fixture) {
-            $rows[] = [
-                'id' => Str::uuid()->toString(),
-                'game_id' => $this->gameId,
-                'competition_id' => $competitionId,
-                'round_number' => $fixture['matchday'],
-                'home_team_id' => $fixture['homeTeamId'],
-                'away_team_id' => $fixture['awayTeamId'],
-                'scheduled_date' => Carbon::parse($fixture['date']),
-                'home_score' => null,
-                'away_score' => null,
-                'played' => false,
-            ];
-        }
-
-        foreach (array_chunk($rows, 100) as $chunk) {
-            GameMatch::insert($chunk);
-        }
+        return $drawTeams;
     }
 
     private function initializeSwissFormatPlayersFromData(
@@ -509,5 +415,4 @@ class SetupNewGame implements ShouldQueue
         }
         return null;
     }
-
 }
