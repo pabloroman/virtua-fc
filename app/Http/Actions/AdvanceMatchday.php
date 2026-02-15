@@ -59,6 +59,49 @@ class AdvanceMatchday
                 ->with('message', 'Season complete!');
         }
 
+        // Process the current batch
+        $result = $this->processBatch($game, $batch);
+
+        // If the player's team played, check for remaining matches and auto-simulate
+        if ($result['playerMatch']) {
+            $this->autoSimulateRemainingBatches($game);
+
+            return redirect()->route('game.live-match', [
+                'gameId' => $game->id,
+                'matchId' => $result['playerMatch']->id,
+            ]);
+        }
+
+        // AI-only batch mid-season — check if player still has upcoming matches
+        $playerHasMoreMatches = GameMatch::where('game_id', $game->id)
+            ->where('played', false)
+            ->where(fn ($q) => $q->where('home_team_id', $game->team_id)
+                ->orWhere('away_team_id', $game->team_id))
+            ->exists();
+
+        if ($playerHasMoreMatches) {
+            // Mid-season AI-only day — redirect to results
+            $handlers = $batch['handlers'];
+            $primaryHandler = reset($handlers);
+
+            return redirect()->to($primaryHandler->getRedirectRoute(
+                $game, $batch['matches'], $batch['matchday']
+            ));
+        }
+
+        // Player has no more matches — simulate all remaining AI batches
+        $this->autoSimulateRemainingBatches($game);
+
+        return redirect()->route('show-game', $gameId);
+    }
+
+    /**
+     * Process a single batch of matches: load players, simulate, process results.
+     *
+     * @return array{playerMatch: ?GameMatch}
+     */
+    private function processBatch(Game $game, array $batch): array
+    {
         $matches = $batch['matches'];
         $handlers = $batch['handlers'];
         $matchday = $batch['matchday'];
@@ -91,27 +134,40 @@ class AdvanceMatchday
         $matchResults = $this->simulateMatches($matches, $game, $allPlayers);
 
         // Process all match results in one batched call
-        $this->matchResultProcessor->processAll($gameId, $matchday, $currentDate, $matchResults);
+        $this->matchResultProcessor->processAll($game->id, $matchday, $currentDate, $matchResults);
 
         // Recalculate standings positions once per league competition (not per match)
-        $this->recalculateLeaguePositions($gameId, $matches);
+        $this->recalculateLeaguePositions($game->id, $matches);
 
         // Process post-match actions
         $game->refresh();
         $this->processPostMatchActions($game, $matches, $handlers, $allPlayers);
 
-        // If the player's team played, redirect to the live match view
         $playerMatch = $matches->first(fn ($m) => $m->involvesTeam($game->team_id));
 
-        if ($playerMatch) {
-            return redirect()->route('game.live-match', [
-                'gameId' => $game->id,
-                'matchId' => $playerMatch->id,
-            ]);
+        return ['playerMatch' => $playerMatch];
+    }
+
+    /**
+     * Auto-simulate all remaining AI batches when the player has no more matches.
+     */
+    private function autoSimulateRemainingBatches(Game $game): void
+    {
+        $playerHasMoreMatches = GameMatch::where('game_id', $game->id)
+            ->where('played', false)
+            ->where(fn ($q) => $q->where('home_team_id', $game->team_id)
+                ->orWhere('away_team_id', $game->team_id))
+            ->exists();
+
+        if ($playerHasMoreMatches) {
+            return;
         }
 
-        $primaryHandler = reset($handlers);
-        return redirect()->to($primaryHandler->getRedirectRoute($game, $matches, $matchday));
+        // Simulate all remaining AI-only batches
+        while ($nextBatch = $this->matchdayService->getNextMatchBatch($game)) {
+            $this->processBatch($game, $nextBatch);
+            $game->refresh();
+        }
     }
 
     private function simulateMatches($matches, Game $game, $allPlayers): array
