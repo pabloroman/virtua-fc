@@ -7,7 +7,7 @@ use App\Game\DTO\SeasonTransitionData;
 use App\Game\Processors\BudgetProjectionProcessor;
 use App\Game\Processors\ContractExpirationProcessor;
 use App\Game\Processors\ContractRenewalProcessor;
-use App\Game\Processors\FixtureGenerationProcessor;
+use App\Game\Processors\LeagueFixtureProcessor;
 use App\Game\Processors\LoanReturnProcessor;
 use App\Game\Processors\PlayerDevelopmentProcessor;
 use App\Game\Processors\PlayerRetirementProcessor;
@@ -20,6 +20,7 @@ use App\Game\Processors\StandingsResetProcessor;
 use App\Game\Processors\StatsResetProcessor;
 use App\Game\Processors\SupercupQualificationProcessor;
 use App\Game\Processors\UefaQualificationProcessor;
+use App\Game\Processors\ContinentalAndCupInitProcessor;
 use App\Game\Processors\OnboardingResetProcessor;
 use App\Game\Processors\YouthAcademyProcessor;
 use App\Models\Game;
@@ -46,10 +47,11 @@ class SeasonEndPipeline
         UefaQualificationProcessor $uefaQualification,
         SeasonSimulationProcessor $seasonSimulation,
         PromotionRelegationProcessor $promotionRelegation,
-        FixtureGenerationProcessor $fixtureGeneration,
+        LeagueFixtureProcessor $fixtureGeneration,
         StandingsResetProcessor $standingsReset,
         BudgetProjectionProcessor $budgetProjection,
         YouthAcademyProcessor $youthAcademy,
+        ContinentalAndCupInitProcessor $competitionInitialization,
         OnboardingResetProcessor $onboardingReset,
     ) {
         $this->processors = [
@@ -70,6 +72,7 @@ class SeasonEndPipeline
             $standingsReset,
             $budgetProjection,
             $youthAcademy,
+            $competitionInitialization,
             $onboardingReset,
         ];
 

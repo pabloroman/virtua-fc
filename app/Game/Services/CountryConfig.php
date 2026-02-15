@@ -225,6 +225,20 @@ class CountryConfig
     }
 
     /**
+     * Get all Swiss format competition IDs for a country.
+     * Merges continental support IDs with any swiss_format competitions.
+     *
+     * @return string[]
+     */
+    public function swissFormatCompetitionIds(string $countryCode): array
+    {
+        $continentalIds = $this->continentalSupportIds($countryCode);
+        $swissIds = \App\Models\Competition::where('handler_type', 'swiss_format')->pluck('id')->toArray();
+
+        return array_unique(array_merge($continentalIds, $swissIds));
+    }
+
+    /**
      * Get all countries config.
      */
     private function allCountries(): array
