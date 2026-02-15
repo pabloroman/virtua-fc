@@ -97,7 +97,7 @@ return [
         'support' => [
             'transfer_pool' => [
                 // Foreign leagues — full rosters from JSON, eagerly loaded at game setup
-                'ENG1' => ['role' => 'foreign', 'handler' => 'league', 'country' => 'GB'],
+                'ENG1' => ['role' => 'foreign', 'handler' => 'league', 'country' => 'EN'],
                 'DEU1' => ['role' => 'foreign', 'handler' => 'league', 'country' => 'DE'],
                 'FRA1' => ['role' => 'foreign', 'handler' => 'league', 'country' => 'FR'],
                 'ITA1' => ['role' => 'foreign', 'handler' => 'league', 'country' => 'IT'],

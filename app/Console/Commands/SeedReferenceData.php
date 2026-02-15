@@ -302,13 +302,16 @@ class SeedReferenceData extends Command
             // Find or create team
             $teamId = $teamsByTransfermarktId[$transfermarktId] ?? null;
 
+            // Use per-team country from JSON if available, fall back to pool country
+            $teamCountry = $data['country'] ?? $country;
+
             if (!$teamId) {
                 $teamId = Str::uuid()->toString();
                 DB::table('teams')->insert([
                     'id' => $teamId,
                     'transfermarkt_id' => $transfermarktId,
                     'name' => $data['name'] ?? "Unknown ({$transfermarktId})",
-                    'country' => $country,
+                    'country' => $teamCountry,
                     'image' => $data['image'] ?? null,
                     'stadium_name' => $data['stadiumName'] ?? null,
                     'stadium_seats' => isset($data['stadiumSeats'])
