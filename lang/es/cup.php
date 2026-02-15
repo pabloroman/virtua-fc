@@ -24,7 +24,6 @@ return [
     // Resolution types
     'pens' => 'Pen:',
     'aet' => 'Prórroga',
-    'away_goals' => 'Goles fuera',
     'agg' => 'Agg:',
 
     // Legend
