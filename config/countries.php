@@ -49,6 +49,7 @@ return [
             'cup' => 'ESPCUP',
             'league' => 'ESP1',
             'cup_final_round' => 7,
+            'cup_entry_round' => 3,
         ],
 
         'promotions' => [
