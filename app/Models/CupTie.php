@@ -82,7 +82,7 @@ class CupTie extends Model
     /**
      * Get aggregate score for two-legged ties.
      *
-     * @return array{home: int, away: int, home_away_goals: int, away_away_goals: int}
+     * @return array{home: int, away: int}
      */
     public function getAggregateScore(): array
     {
@@ -91,28 +91,21 @@ class CupTie extends Model
 
         $homeTotal = 0;
         $awayTotal = 0;
-        $homeAwayGoals = 0;
-        $awayAwayGoals = 0;
 
         if ($firstLeg?->played) {
-            // First leg: home team plays at home
             $homeTotal += $firstLeg->home_score ?? 0;
             $awayTotal += $firstLeg->away_score ?? 0;
-            $awayAwayGoals = $firstLeg->away_score ?? 0; // Away team's goals at home team's stadium
         }
 
         if ($secondLeg?->played) {
             // Second leg: away team plays at home (teams swap)
             $homeTotal += $secondLeg->away_score ?? 0;
             $awayTotal += $secondLeg->home_score ?? 0;
-            $homeAwayGoals = $secondLeg->away_score ?? 0; // Home team's goals at away team's stadium
         }
 
         return [
             'home' => $homeTotal,
             'away' => $awayTotal,
-            'home_away_goals' => $homeAwayGoals,
-            'away_away_goals' => $awayAwayGoals,
         ];
     }
 

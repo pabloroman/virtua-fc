@@ -137,22 +137,7 @@ class CupTieResolver
             return $winnerId;
         }
 
-        // Tied on aggregate - check away goals (tie's home team = first leg home team)
-        // Away goals rule: if aggregate is tied, team with more away goals wins
-        $homeAwayGoals = $aggregate['home_away_goals']; // Home team's goals scored away
-        $awayAwayGoals = $aggregate['away_away_goals']; // Away team's goals scored away
-
-        if ($homeAwayGoals !== $awayAwayGoals) {
-            $winnerId = $homeAwayGoals > $awayAwayGoals ? $tie->home_team_id : $tie->away_team_id;
-            $this->completeTie($tie, $winnerId, [
-                'type' => 'away_goals',
-                'aggregate' => "{$homeTotal}-{$awayTotal}",
-                'away_goals' => "{$homeAwayGoals}-{$awayAwayGoals}",
-            ]);
-            return $winnerId;
-        }
-
-        // Still tied - extra time in second leg
+        // Tied on aggregate - extra time in second leg
         $homePlayers = $allPlayers->get($secondLeg->home_team_id, collect());
         $awayPlayers = $allPlayers->get($secondLeg->away_team_id, collect());
         $homeTeam = $secondLeg->relationLoaded('homeTeam') ? $secondLeg->homeTeam : Team::find($secondLeg->home_team_id);
