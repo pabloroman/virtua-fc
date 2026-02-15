@@ -15,8 +15,14 @@ use Carbon\Carbon;
  */
 class LeagueFixtureGenerator
 {
+    private const BASE_SEASON = '2025';
+
     /**
      * Load matchday calendar from a competition's matchdays.json file.
+     *
+     * If the requested season's data directory doesn't exist, falls back to the
+     * base 2025 data and adjusts dates by the year difference. This allows
+     * infinite season progression without needing data files for every year.
      *
      * @param  string  $competitionId  e.g. 'ESP1', 'ESP2'
      * @param  string  $season  e.g. '2025'
@@ -26,11 +32,23 @@ class LeagueFixtureGenerator
     {
         $path = base_path("data/{$season}/{$competitionId}/matchdays.json");
 
-        if (!file_exists($path)) {
-            throw new \RuntimeException("Matchdays file not found: {$path}");
+        if (file_exists($path)) {
+            return json_decode(file_get_contents($path), true);
         }
 
-        return json_decode(file_get_contents($path), true);
+        // Fall back to base season data and adjust dates
+        $basePath = base_path("data/" . self::BASE_SEASON . "/{$competitionId}/matchdays.json");
+
+        if (!file_exists($basePath)) {
+            throw new \RuntimeException("Matchdays file not found: {$basePath}");
+        }
+
+        $matchdays = json_decode(file_get_contents($basePath), true);
+        $yearOffset = (int) explode('-', $season)[0] - (int) self::BASE_SEASON;
+
+        return $yearOffset !== 0
+            ? self::adjustMatchdayYears($matchdays, $yearOffset)
+            : $matchdays;
     }
 
     /**
