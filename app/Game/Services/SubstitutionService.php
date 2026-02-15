@@ -111,10 +111,7 @@ class SubstitutionService
             'away_score' => $newAwayScore,
         ]);
 
-        // 9. Update the match lineup to include the sub player
-        $this->updateMatchLineup($match, $game->team_id, $playerOutId, $playerInId);
-
-        // 10. Increment sub player's appearances
+        // 9. Increment sub player's appearances
         GamePlayer::where('id', $playerInId)
             ->increment('appearances');
         GamePlayer::where('id', $playerInId)
@@ -427,25 +424,6 @@ class SubstitutionService
                     break;
             }
         }
-    }
-
-    /**
-     * Update the match lineup to include the substitute player.
-     */
-    private function updateMatchLineup(GameMatch $match, string $userTeamId, string $playerOutId, string $playerInId): void
-    {
-        $isHome = $match->isHomeTeam($userTeamId);
-        $field = $isHome ? 'home_lineup' : 'away_lineup';
-
-        $lineup = $match->{$field} ?? [];
-
-        // Don't remove the original player — they still played part of the match
-        // Just add the sub player so they get tracked
-        if (! in_array($playerInId, $lineup)) {
-            $lineup[] = $playerInId;
-        }
-
-        $match->update([$field => $lineup]);
     }
 
     /**
