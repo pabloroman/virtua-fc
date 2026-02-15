@@ -46,7 +46,7 @@ class LaLigaConfig implements CompetitionConfig
      */
     private const SEASON_GOALS = [
         Game::GOAL_TITLE => ['targetPosition' => 1, 'label' => 'game.goal_title'],
-        Game::GOAL_CHAMPIONS_LEAGUE => ['targetPosition' => 4, 'label' => 'game.goal_champions_league'],
+        Game::GOAL_CHAMPIONS_LEAGUE => ['targetPosition' => 5, 'label' => 'game.goal_champions_league'],
         Game::GOAL_EUROPA_LEAGUE => ['targetPosition' => 6, 'label' => 'game.goal_europa_league'],
         Game::GOAL_TOP_HALF => ['targetPosition' => 10, 'label' => 'game.goal_top_half'],
         Game::GOAL_SURVIVAL => ['targetPosition' => 17, 'label' => 'game.goal_survival'],
@@ -111,29 +111,43 @@ class LaLigaConfig implements CompetitionConfig
 
     public function getStandingsZones(): array
     {
-        return [
-            [
-                'minPosition' => 1,
-                'maxPosition' => 4,
+        $slots = config('countries.ES.continental_slots.ESP1', []);
+        $promotions = config('countries.ES.promotions', []);
+
+        $zones = [];
+
+        if (!empty($slots['UCL'])) {
+            $zones[] = [
+                'minPosition' => min($slots['UCL']),
+                'maxPosition' => max($slots['UCL']),
                 'borderColor' => 'blue-500',
                 'bgColor' => 'bg-blue-500',
                 'label' => 'game.champions_league',
-            ],
-            [
-                'minPosition' => 5,
-                'maxPosition' => 6,
+            ];
+        }
+
+        if (!empty($slots['UEL'])) {
+            $zones[] = [
+                'minPosition' => min($slots['UEL']),
+                'maxPosition' => max($slots['UEL']),
                 'borderColor' => 'orange-500',
                 'bgColor' => 'bg-orange-500',
                 'label' => 'game.europa_league',
-            ],
-            [
-                'minPosition' => 18,
-                'maxPosition' => 20,
+            ];
+        }
+
+        $relegation = collect($promotions)->first(fn ($r) => $r['top_division'] === 'ESP1');
+        if ($relegation && !empty($relegation['relegated_positions'])) {
+            $zones[] = [
+                'minPosition' => min($relegation['relegated_positions']),
+                'maxPosition' => max($relegation['relegated_positions']),
                 'borderColor' => 'red-500',
                 'bgColor' => 'bg-red-500',
                 'label' => 'game.relegation',
-            ],
-        ];
+            ];
+        }
+
+        return $zones;
     }
 
 }
