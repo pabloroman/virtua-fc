@@ -117,7 +117,8 @@ class LoanService
     {
         $teams = Team::with(['clubProfile', 'competitions'])
             ->whereHas('competitions', function ($q) {
-                $q->whereIn('role', [Competition::ROLE_PRIMARY, Competition::ROLE_FOREIGN]);
+                $q->where('scope', Competition::SCOPE_DOMESTIC)
+                    ->where('type', 'league');
             })
             ->where('id', '!=', $game->team_id)
             ->get();
