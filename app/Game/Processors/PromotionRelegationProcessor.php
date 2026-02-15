@@ -5,6 +5,8 @@ namespace App\Game\Processors;
 use App\Game\Contracts\SeasonEndProcessor;
 use App\Game\DTO\SeasonTransitionData;
 use App\Game\Promotions\PromotionRelegationFactory;
+use App\Game\Services\SeasonSimulationService;
+use App\Models\Competition;
 use App\Models\Game;
 use App\Models\CompetitionEntry;
 use App\Models\GameStanding;
@@ -21,6 +23,7 @@ class PromotionRelegationProcessor implements SeasonEndProcessor
 {
     public function __construct(
         private PromotionRelegationFactory $ruleFactory,
+        private SeasonSimulationService $simulationService,
     ) {}
 
     public function priority(): int
@@ -60,6 +63,12 @@ class PromotionRelegationProcessor implements SeasonEndProcessor
         $game->refresh();
         if ($game->competition_id !== $data->competitionId) {
             $data->competitionId = $game->competition_id;
+        }
+
+        // Re-simulate non-played leagues with the post-promotion roster
+        // so SimulatedSeason records are accurate for the rest of the season.
+        if (!empty($allPromoted) || !empty($allRelegated)) {
+            $this->resimulateNonPlayedLeagues($game);
         }
 
         // Store in metadata for display on season end screen
@@ -157,6 +166,33 @@ class PromotionRelegationProcessor implements SeasonEndProcessor
         Game::where('id', $gameId)
             ->where('team_id', $teamId)
             ->update(['competition_id' => $toDivision]);
+    }
+
+    /**
+     * Re-simulate non-played leagues after roster changes.
+     */
+    private function resimulateNonPlayedLeagues(Game $game): void
+    {
+        $userCompetition = Competition::find($game->competition_id);
+        if (!$userCompetition) {
+            return;
+        }
+
+        $leagues = Competition::where('country', $userCompetition->country)
+            ->where('role', Competition::ROLE_PRIMARY)
+            ->where('id', '!=', $userCompetition->id)
+            ->get();
+
+        foreach ($leagues as $league) {
+            $hasRealStandings = GameStanding::where('game_id', $game->id)
+                ->where('competition_id', $league->id)
+                ->where('played', '>', 0)
+                ->exists();
+
+            if (!$hasRealStandings) {
+                $this->simulationService->simulateLeague($game, $league);
+            }
+        }
     }
 
     /**
