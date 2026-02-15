@@ -139,7 +139,7 @@ class ShowScouting
             'scoutedPlayers' => $scoutedPlayers,
             'playerDetails' => $playerDetails,
             'existingOffers' => $existingOffers,
-            'teamCountry' => $game->team->country,
+            'teamCountry' => $game->country,
             'isTransferWindow' => $isTransferWindow,
             'currentWindow' => $currentWindow,
             'isPreContractPeriod' => $isPreContractPeriod,

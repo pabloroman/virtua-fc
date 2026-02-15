@@ -64,6 +64,7 @@ class GameProjector extends Projector
             'id' => $gameId,
             'user_id' => $event->userId,
             'game_mode' => $event->gameMode,
+            'country' => $team->country ?? 'ES',
             'player_name' => $event->playerName,
             'team_id' => $teamId,
             'competition_id' => $competitionId,

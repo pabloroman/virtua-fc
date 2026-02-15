@@ -176,8 +176,8 @@ class SetupNewGame implements ShouldQueue
         }
 
         $countryConfig = app(CountryConfig::class);
-        $team = Team::find($this->teamId);
-        $countryCode = $team?->country ?? 'ES';
+        $game = Game::find($this->gameId);
+        $countryCode = $game?->country ?? 'ES';
 
         // Get competitions in dependency order from country config
         $competitionIds = $countryConfig->playerInitializationOrder($countryCode);
@@ -269,8 +269,8 @@ class SetupNewGame implements ShouldQueue
         StandingsCalculator $standingsCalculator,
     ): void {
         $countryConfig = app(CountryConfig::class);
-        $team = Team::find($this->teamId);
-        $countryCode = $team?->country ?? 'ES';
+        $game = Game::find($this->gameId);
+        $countryCode = $game?->country ?? 'ES';
         $continentalIds = $countryConfig->continentalSupportIds($countryCode);
 
         // Also include any swiss_format competitions not in the config (backward compat)
