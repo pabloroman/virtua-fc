@@ -167,6 +167,64 @@ class CountryConfig
     }
 
     /**
+     * Get support team config for a country.
+     *
+     * @return array{transfer_pool?: array, continental?: array}
+     */
+    public function support(string $countryCode): array
+    {
+        return $this->get($countryCode)['support'] ?? [];
+    }
+
+    /**
+     * Get transfer pool competition IDs for a country.
+     *
+     * @return string[]
+     */
+    public function transferPoolIds(string $countryCode): array
+    {
+        return array_keys($this->support($countryCode)['transfer_pool'] ?? []);
+    }
+
+    /**
+     * Get continental support competition IDs for a country.
+     *
+     * @return string[]
+     */
+    public function continentalSupportIds(string $countryCode): array
+    {
+        return array_keys($this->support($countryCode)['continental'] ?? []);
+    }
+
+    /**
+     * Get all competition IDs that need GamePlayer initialization for a country.
+     * Returns them in dependency order: tiers first, then transfer pool, then continental.
+     *
+     * @return string[]
+     */
+    public function playerInitializationOrder(string $countryCode): array
+    {
+        $ids = [];
+
+        // 1. Playable tier competitions
+        foreach ($this->tiers($countryCode) as $tier) {
+            $ids[] = $tier['competition'];
+        }
+
+        // 2. Transfer pool competitions
+        foreach ($this->transferPoolIds($countryCode) as $poolId) {
+            $ids[] = $poolId;
+        }
+
+        // 3. Continental support competitions
+        foreach ($this->continentalSupportIds($countryCode) as $continentalId) {
+            $ids[] = $continentalId;
+        }
+
+        return $ids;
+    }
+
+    /**
      * Get all countries config.
      */
     private function allCountries(): array

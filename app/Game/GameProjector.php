@@ -7,6 +7,7 @@ use App\Game\Events\CupTieCompleted;
 use App\Game\Events\GameCreated;
 use App\Game\Events\NewSeasonStarted;
 use App\Game\Events\SeasonDevelopmentProcessed;
+use App\Game\Services\CountryConfig;
 use App\Game\Services\LeagueFixtureGenerator;
 use App\Game\Services\PlayerDevelopmentService;
 use App\Game\Services\SeasonGoalService;
@@ -39,7 +40,14 @@ class GameProjector extends Projector
             ->first()
             ?? CompetitionTeam::where('team_id', $teamId)->first();
 
-        $competitionId = $competitionTeam?->competition_id ?? 'ESP1';
+        // Resolve competition ID: use competition_team lookup, fall back to
+        // tier 1 of the team's country from config
+        $competitionId = $competitionTeam?->competition_id;
+        if (!$competitionId) {
+            $team = Team::find($teamId);
+            $countryConfig = app(CountryConfig::class);
+            $competitionId = $countryConfig->competitionForTier($team?->country ?? 'ES', 1);
+        }
         $season = $competitionTeam?->season ?? '2024';
 
         // Load matchday calendar for initial current_date

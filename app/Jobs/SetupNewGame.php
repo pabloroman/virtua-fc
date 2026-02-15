@@ -3,14 +3,15 @@
 namespace App\Jobs;
 
 use App\Game\Services\BudgetProjectionService;
-use App\Support\Money;
 use App\Game\Services\ContractService;
+use App\Game\Services\CountryConfig;
 use App\Game\Services\CupDrawService;
 use App\Game\Services\InjuryService;
 use App\Game\Services\LeagueFixtureGenerator;
 use App\Game\Services\PlayerDevelopmentService;
 use App\Game\Services\StandingsCalculator;
 use App\Game\Services\SwissDrawService;
+use App\Support\Money;
 use App\Models\Competition;
 use App\Models\CompetitionEntry;
 use App\Models\CompetitionTeam;
@@ -160,7 +161,8 @@ class SetupNewGame implements ShouldQueue
     }
 
     /**
-     * Initialize game players for all teams across all leagues.
+     * Initialize game players for all teams, following the config-driven
+     * dependency order: playable tiers → transfer pool → continental.
      */
     private function initializeGamePlayers(
         Collection $allTeams,
@@ -173,11 +175,25 @@ class SetupNewGame implements ShouldQueue
             return;
         }
 
-        $leagues = Competition::whereIn('role', [Competition::ROLE_PRIMARY, Competition::ROLE_FOREIGN])->pluck('id')->toArray();
+        $countryConfig = app(CountryConfig::class);
+        $team = Team::find($this->teamId);
+        $countryCode = $team?->country ?? 'ES';
 
-        foreach ($leagues as $leagueId) {
+        // Get competitions in dependency order from country config
+        $competitionIds = $countryConfig->playerInitializationOrder($countryCode);
+
+        // Continental competitions (e.g., UCL) are handled separately —
+        // they reuse rosters from tiers + transfer pool
+        $continentalIds = $countryConfig->continentalSupportIds($countryCode);
+
+        foreach ($competitionIds as $competitionId) {
+            if (in_array($competitionId, $continentalIds)) {
+                // Continental: skip here, handled in initializeSwissFormatCompetitions
+                continue;
+            }
+
             $this->initializeGamePlayersForCompetition(
-                $leagueId,
+                $competitionId,
                 $allTeams,
                 $allPlayers,
                 $contractService,
@@ -252,9 +268,21 @@ class SetupNewGame implements ShouldQueue
         PlayerDevelopmentService $developmentService,
         StandingsCalculator $standingsCalculator,
     ): void {
-        $swissCompetitions = Competition::where('handler_type', 'swiss_format')->get();
+        $countryConfig = app(CountryConfig::class);
+        $team = Team::find($this->teamId);
+        $countryCode = $team?->country ?? 'ES';
+        $continentalIds = $countryConfig->continentalSupportIds($countryCode);
 
-        foreach ($swissCompetitions as $competition) {
+        // Also include any swiss_format competitions not in the config (backward compat)
+        $swissIds = Competition::where('handler_type', 'swiss_format')->pluck('id')->toArray();
+        $allIds = array_unique(array_merge($continentalIds, $swissIds));
+
+        foreach ($allIds as $competitionId) {
+            $competition = Competition::find($competitionId);
+            if (!$competition) {
+                continue;
+            }
+
             $participates = CompetitionEntry::where('game_id', $this->gameId)
                 ->where('competition_id', $competition->id)
                 ->where('team_id', $this->teamId)

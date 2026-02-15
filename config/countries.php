@@ -80,6 +80,35 @@ return [
                 'config_class' => \App\Game\Competitions\ConferenceLeagueConfig::class,
             ],
         ],
+
+        /*
+        |----------------------------------------------------------------------
+        | Support teams: non-playable teams needed for competition and transfers
+        |----------------------------------------------------------------------
+        |
+        | Categories (initialized in this order during game setup):
+        |   1. transfer_pool — foreign league teams for scouting/transfers/loans
+        |   2. continental   — opponents in UEFA competitions (reuse pool rosters)
+        |
+        | Domestic cup teams (ESPCUP lower-division) are linked at seeding time
+        | but don't need GamePlayer rosters — early rounds are auto-simulated.
+        */
+        'support' => [
+            'transfer_pool' => [
+                // Foreign leagues — full rosters from JSON, eagerly loaded at game setup
+                'ENG1' => ['role' => 'foreign', 'handler' => 'league', 'country' => 'GB'],
+                'DEU1' => ['role' => 'foreign', 'handler' => 'league', 'country' => 'DE'],
+                'FRA1' => ['role' => 'foreign', 'handler' => 'league', 'country' => 'FR'],
+                'ITA1' => ['role' => 'foreign', 'handler' => 'league', 'country' => 'IT'],
+                // EUR club pool — individual team files, includes NLD/POR teams
+                'EUR'  => ['role' => 'foreign', 'handler' => 'team_pool', 'country' => 'EU'],
+            ],
+            'continental' => [
+                // Teams needed for European competitions — rosters reused from
+                // tiers + transfer_pool where possible, gaps filled from EUR pool
+                'UCL' => ['handler' => 'swiss_format', 'country' => 'EU'],
+            ],
+        ],
     ],
 
     /*
