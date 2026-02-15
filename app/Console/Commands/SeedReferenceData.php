@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Game\Services\CountryConfig;
+use App\Game\Services\PlayerValuationService;
 use App\Models\User;
 use App\Support\Money;
 use Carbon\Carbon;
@@ -480,6 +481,7 @@ class SeedReferenceData extends Command
     private function seedPlayersFromTeams(array $clubs, array $teamIdMap): void
     {
         $count = 0;
+        $valuationService = app(PlayerValuationService::class);
 
         foreach ($clubs as $club) {
             $transfermarktId = $club['transfermarktId'] ?? $this->extractTransfermarktIdFromImage($club['image'] ?? '');
@@ -514,7 +516,7 @@ class SeedReferenceData extends Command
                 // Calculate abilities from market value, position, and age
                 $marketValueCents = Money::parseMarketValue($player['marketValue'] ?? null);
                 $position = $player['position'] ?? 'Central Midfield';
-                [$technical, $physical] = $this->calculateAbilities($marketValueCents, $position, $age);
+                [$technical, $physical] = $valuationService->marketValueToAbilities($marketValueCents, $position, $age ?? 25);
 
                 // Insert player
                 DB::table('players')->updateOrInsert(
@@ -603,104 +605,6 @@ class SeedReferenceData extends Command
         }
 
         $this->line("  Cup teams: {$count}");
-    }
-
-    private function calculateAbilities(int $marketValueCents, string $position, ?int $age): array
-    {
-        $age = $age ?? 25;
-
-        $rawAbility = $this->marketValueToRawAbility($marketValueCents);
-        $baseAbility = $this->adjustAbilityForAge($rawAbility, $marketValueCents, $age);
-
-        $technicalRatio = match ($position) {
-            'Goalkeeper' => 0.55,
-            'Centre-Back' => 0.35,
-            'Left-Back', 'Right-Back' => 0.45,
-            'Defensive Midfield' => 0.45,
-            'Central Midfield' => 0.55,
-            'Left Midfield', 'Right Midfield' => 0.55,
-            'Attacking Midfield' => 0.70,
-            'Left Winger', 'Right Winger' => 0.65,
-            'Second Striker' => 0.70,
-            'Centre-Forward' => 0.65,
-            default => 0.50,
-        };
-
-        $variance = rand(2, 5);
-        $technical = (int) round($baseAbility + ($technicalRatio - 0.5) * $variance * 2);
-        $physical = (int) round($baseAbility + (0.5 - $technicalRatio) * $variance * 2);
-
-        if ($age > 33) {
-            $physical = (int) round($physical * 0.92);
-        } elseif ($age > 30) {
-            $physical = (int) round($physical * 0.96);
-        }
-
-        $technical = max(30, min(99, $technical));
-        $physical = max(30, min(99, $physical));
-
-        return [$technical, $physical];
-    }
-
-    private function marketValueToRawAbility(int $marketValueCents): int
-    {
-        return match (true) {
-            $marketValueCents >= 10_000_000_000 => rand(88, 95),
-            $marketValueCents >= 5_000_000_000 => rand(83, 90),
-            $marketValueCents >= 2_000_000_000 => rand(78, 85),
-            $marketValueCents >= 1_000_000_000 => rand(73, 80),
-            $marketValueCents >= 500_000_000 => rand(68, 75),
-            $marketValueCents >= 200_000_000 => rand(63, 70),
-            $marketValueCents >= 100_000_000 => rand(58, 65),
-            $marketValueCents > 0 => rand(50, 60),
-            default => rand(45, 55),
-        };
-    }
-
-    private function adjustAbilityForAge(int $rawAbility, int $marketValueCents, int $age): int
-    {
-        if ($age < 23) {
-            // Base cap increases with age: 17yo = 75, 22yo = 85
-            $ageCap = 75 + ($age - 17) * 2;
-
-            // Exceptional market value raises the cap significantly
-            // A €200M teenager is already world-class, not just "promising"
-            if ($marketValueCents >= 15_000_000_000) { // €150M+ (generational talent)
-                $ageCap += 14;
-            } elseif ($marketValueCents >= 10_000_000_000) { // €100M+
-                $ageCap += 10;
-            } elseif ($marketValueCents >= 5_000_000_000) { // €50M+
-                $ageCap += 6;
-            } elseif ($marketValueCents >= 2_000_000_000) { // €20M+
-                $ageCap += 3;
-            }
-
-            return min($rawAbility, $ageCap);
-        }
-
-        if ($age <= 30) {
-            return $rawAbility;
-        }
-
-        $typicalValueForAge = match (true) {
-            $age <= 32 => 500_000_000,
-            $age <= 34 => 300_000_000,
-            $age <= 36 => 150_000_000,
-            default => 80_000_000,
-        };
-
-        $valueRatio = $marketValueCents / max(1, $typicalValueForAge);
-
-        $abilityBoost = match (true) {
-            $valueRatio >= 10 => 12,
-            $valueRatio >= 5 => 8,
-            $valueRatio >= 3 => 5,
-            $valueRatio >= 2 => 3,
-            $valueRatio >= 1 => 1,
-            default => 0,
-        };
-
-        return min(95, $rawAbility + $abilityBoost);
     }
 
     private function loadJson(string $path): array
