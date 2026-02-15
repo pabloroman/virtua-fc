@@ -393,6 +393,7 @@ class SeedReferenceData extends Command
     private function seedCompetitionRecord(string $code, array $data, int $tier, string $type, string $handler, string $country, string $role = 'foreign'): void
     {
         $season = $data['seasonID'] ?? '2025';
+        $scope = ($role === 'european') ? 'continental' : 'domestic';
 
         DB::table('competitions')->updateOrInsert(
             ['id' => $code],
@@ -402,6 +403,7 @@ class SeedReferenceData extends Command
                 'tier' => $tier,
                 'type' => $type,
                 'role' => $role,
+                'scope' => $scope,
                 'handler_type' => $handler,
                 'season' => $season,
             ]

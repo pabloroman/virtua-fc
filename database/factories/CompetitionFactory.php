@@ -18,6 +18,7 @@ class CompetitionFactory extends Factory
             'tier' => 1,
             'type' => 'league',
             'role' => Competition::ROLE_PRIMARY,
+            'scope' => Competition::SCOPE_DOMESTIC,
             'handler_type' => 'league',
             'season' => '2024',
         ];
@@ -28,6 +29,7 @@ class CompetitionFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'type' => 'league',
             'role' => Competition::ROLE_PRIMARY,
+            'scope' => Competition::SCOPE_DOMESTIC,
             'handler_type' => 'league',
         ]);
     }
@@ -37,6 +39,7 @@ class CompetitionFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'type' => 'cup',
             'role' => Competition::ROLE_DOMESTIC_CUP,
+            'scope' => Competition::SCOPE_DOMESTIC,
             'handler_type' => 'knockout_cup',
         ]);
     }
@@ -46,6 +49,7 @@ class CompetitionFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'type' => 'cup',
             'role' => Competition::ROLE_EUROPEAN,
+            'scope' => Competition::SCOPE_CONTINENTAL,
             'handler_type' => 'group_stage_cup',
         ]);
     }

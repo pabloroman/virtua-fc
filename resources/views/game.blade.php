@@ -14,10 +14,10 @@
                     <div class="md:col-span-2 space-y-8">
                         {{-- Next Match --}}
                         @php
-                            $competitionRole = $nextMatch->competition->role ?? 'primary';
-                            $accent = match($competitionRole) {
-                                'domestic_cup' => ['border' => 'border-l-emerald-500', 'badge' => 'bg-emerald-100 text-emerald-800'],
-                                'european' => ['border' => 'border-l-blue-600', 'badge' => 'bg-blue-100 text-blue-800'],
+                            $comp = $nextMatch->competition;
+                            $accent = match(true) {
+                                ($comp->scope ?? '') === 'continental' => ['border' => 'border-l-blue-600', 'badge' => 'bg-blue-100 text-blue-800'],
+                                ($comp->type ?? '') === 'cup' => ['border' => 'border-l-emerald-500', 'badge' => 'bg-emerald-100 text-emerald-800'],
                                 default => ['border' => 'border-l-amber-500', 'badge' => 'bg-amber-100 text-amber-800'],
                             };
                         @endphp

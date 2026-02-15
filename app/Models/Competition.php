@@ -21,6 +21,9 @@ class Competition extends Model
     public const ROLE_EUROPEAN = 'european';
     public const ROLE_FOREIGN = 'foreign';
 
+    public const SCOPE_DOMESTIC = 'domestic';
+    public const SCOPE_CONTINENTAL = 'continental';
+
     protected $fillable = [
         'id',
         'name',
@@ -28,6 +31,7 @@ class Competition extends Model
         'tier',
         'type',
         'role',
+        'scope',
         'season',
         'handler_type',
     ];
