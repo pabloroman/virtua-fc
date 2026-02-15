@@ -56,8 +56,19 @@ class SubstitutionService
 
         $userLineup = $this->buildActiveLineup($match, $game->team_id, $allSubs);
         $opponentLineupIds = $isUserHome ? ($match->away_lineup ?? []) : ($match->home_lineup ?? []);
+
+        // Exclude red-carded players from both lineups for re-simulation
+        $redCardedPlayerIds = MatchEvent::where('game_match_id', $match->id)
+            ->where('event_type', 'red_card')
+            ->where('minute', '<=', $minute)
+            ->pluck('game_player_id')
+            ->all();
+
+        $userLineup = $userLineup->reject(fn ($p) => in_array($p->id, $redCardedPlayerIds));
+
         $opponentPlayers = GamePlayer::with('player')
             ->whereIn('id', $opponentLineupIds)
+            ->whereNotIn('id', $redCardedPlayerIds)
             ->get();
 
         $homePlayers = $isUserHome ? $userLineup : $opponentPlayers;
@@ -521,6 +532,7 @@ class SubstitutionService
                 'type' => $e->event_type,
                 'playerName' => $e->gamePlayer->player->name ?? '',
                 'teamId' => $e->team_id,
+                'gamePlayerId' => $e->game_player_id,
                 'metadata' => $e->metadata,
             ])
             ->values()
