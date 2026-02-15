@@ -139,14 +139,16 @@ class PromotionRelegationProcessor implements SeasonEndProcessor
             ->where('team_id', $teamId)
             ->delete();
 
-        // Only create in target if that division uses real standings
-        // (i.e. it already has GameStanding rows). Simulated leagues
-        // rely on SimulatedSeason records instead.
         $targetHasStandings = GameStanding::where('game_id', $gameId)
             ->where('competition_id', $toDivision)
             ->exists();
 
+        $isPlayerTeam = Game::where('id', $gameId)
+            ->where('team_id', $teamId)
+            ->exists();
+
         if ($targetHasStandings) {
+            // Target division already has real standings — just add this team
             GameStanding::create([
                 'game_id' => $gameId,
                 'competition_id' => $toDivision,
@@ -160,12 +162,47 @@ class PromotionRelegationProcessor implements SeasonEndProcessor
                 'goals_against' => 0,
                 'points' => 0,
             ]);
+        } elseif ($isPlayerTeam) {
+            // Player's team moving to a previously-simulated division.
+            // Bootstrap standings for ALL teams so the league becomes playable.
+            $this->bootstrapDivisionStandings($gameId, $toDivision);
         }
 
         // Update game's primary competition if the player's team moved
-        Game::where('id', $gameId)
-            ->where('team_id', $teamId)
-            ->update(['competition_id' => $toDivision]);
+        if ($isPlayerTeam) {
+            Game::where('id', $gameId)
+                ->where('team_id', $teamId)
+                ->update(['competition_id' => $toDivision]);
+        }
+    }
+
+    /**
+     * Create standings for all teams in a division that previously had none.
+     * Called when the player's team moves to a simulated division, making it playable.
+     */
+    private function bootstrapDivisionStandings(string $gameId, string $competitionId): void
+    {
+        $teamIds = CompetitionEntry::where('game_id', $gameId)
+            ->where('competition_id', $competitionId)
+            ->pluck('team_id')
+            ->toArray();
+
+        $position = 1;
+        foreach ($teamIds as $teamId) {
+            GameStanding::create([
+                'game_id' => $gameId,
+                'competition_id' => $competitionId,
+                'team_id' => $teamId,
+                'position' => $position++,
+                'played' => 0,
+                'won' => 0,
+                'drawn' => 0,
+                'lost' => 0,
+                'goals_for' => 0,
+                'goals_against' => 0,
+                'points' => 0,
+            ]);
+        }
     }
 
     /**
