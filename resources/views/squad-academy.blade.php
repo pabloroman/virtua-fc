@@ -68,7 +68,7 @@
                                             <tr class="border-b border-slate-200 hover:bg-slate-50">
                                                 {{-- Position --}}
                                                 <td class="py-2 text-center">
-                                                    <x-position-badge :position="$prospect->position" :tooltip="$prospect->position" class="cursor-help" />
+                                                    <x-position-badge :position="$prospect->position" :tooltip="\App\Support\PositionMapper::toDisplayName($prospect->position)" class="cursor-help" />
                                                 </td>
                                                 {{-- Name --}}
                                                 <td class="py-2">

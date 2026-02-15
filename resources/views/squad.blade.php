@@ -82,7 +82,7 @@
                                         <tr class="border-b border-slate-200 @if($isUnavailable) text-slate-400 @endif hover:bg-slate-50">
                                             {{-- Position --}}
                                             <td class="py-2 text-center">
-                                                <x-position-badge :position="$gamePlayer->position" :tooltip="$gamePlayer->position" class="cursor-help" />
+                                                <x-position-badge :position="$gamePlayer->position" :tooltip="\App\Support\PositionMapper::toDisplayName($gamePlayer->position)" class="cursor-help" />
                                             </td>
                                             {{-- Number --}}
                                             <td class="py-2 text-center text-slate-400 text-xs hidden md:table-cell">{{ $gamePlayer->number ?? '-' }}</td>
@@ -277,19 +277,19 @@
                             </div>
                             @endif
                             <div class="flex items-center gap-1">
-                                <x-position-badge abbreviation="GK" size="sm" />
+                                <x-position-badge abbreviation="PO" size="sm" />
                                 <span class="font-medium">{{ $goalkeepers->count() }}</span>
                             </div>
                             <div class="flex items-center gap-1">
-                                <x-position-badge abbreviation="DF" size="sm" />
+                                <x-position-badge abbreviation="DEF" size="sm" />
                                 <span class="font-medium">{{ $defenders->count() }}</span>
                             </div>
                             <div class="flex items-center gap-1">
-                                <x-position-badge abbreviation="MF" size="sm" />
+                                <x-position-badge abbreviation="MED" size="sm" />
                                 <span class="font-medium">{{ $midfielders->count() }}</span>
                             </div>
                             <div class="flex items-center gap-1">
-                                <x-position-badge abbreviation="FW" size="sm" />
+                                <x-position-badge abbreviation="DEL" size="sm" />
                                 <span class="font-medium">{{ $forwards->count() }}</span>
                             </div>
                             <div class="border-l pl-8 flex items-center gap-1">

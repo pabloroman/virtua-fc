@@ -657,11 +657,19 @@ class GamePlayer extends Model
     }
 
     /**
-     * Get 2-letter position abbreviation (GK, DF, MF, FW).
+     * Get Spanish position abbreviation (PO, CT, MC, etc.).
      */
     public function getPositionAbbreviationAttribute(): string
     {
         return PositionMapper::toAbbreviation($this->position);
+    }
+
+    /**
+     * Get Spanish display name for this player's position.
+     */
+    public function getPositionNameAttribute(): string
+    {
+        return PositionMapper::toDisplayName($this->position);
     }
 
     /**

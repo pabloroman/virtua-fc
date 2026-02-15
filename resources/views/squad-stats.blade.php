@@ -183,7 +183,7 @@
                                         data-clean_sheets="{{ $player->clean_sheets }}">
                                         {{-- Position --}}
                                         <td class="py-2.5 text-center sticky left-0 bg-white z-10">
-                                            <x-position-badge :position="$player->position" :tooltip="$player->position" />
+                                            <x-position-badge :position="$player->position" :tooltip="\App\Support\PositionMapper::toDisplayName($player->position)" />
                                         </td>
                                         {{-- Name --}}
                                         <td class="py-2.5 sticky left-10 bg-white z-10">

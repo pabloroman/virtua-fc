@@ -431,10 +431,10 @@ export default function liveMatch(config) {
 
         getPositionBadgeColor(abbr) {
             const colors = {
-                GK: 'bg-amber-500',
-                CB: 'bg-blue-600', LB: 'bg-blue-600', RB: 'bg-blue-600', DF: 'bg-blue-600',
-                DM: 'bg-emerald-600', CM: 'bg-emerald-600', AM: 'bg-emerald-600', LM: 'bg-emerald-600', RM: 'bg-emerald-600', MF: 'bg-emerald-600',
-                LW: 'bg-red-600', RW: 'bg-red-600', CF: 'bg-red-600', SS: 'bg-red-600', FW: 'bg-red-600',
+                PO: 'bg-amber-500',
+                CT: 'bg-blue-600', LI: 'bg-blue-600', LD: 'bg-blue-600', CRI: 'bg-blue-600', CRD: 'bg-blue-600', DEF: 'bg-blue-600',
+                MCD: 'bg-emerald-600', MC: 'bg-emerald-600', MP: 'bg-emerald-600', MI: 'bg-emerald-600', MD: 'bg-emerald-600', MED: 'bg-emerald-600',
+                EI: 'bg-red-600', ED: 'bg-red-600', DC: 'bg-red-600', SD: 'bg-red-600', DEL: 'bg-red-600',
             };
             return colors[abbr] || 'bg-emerald-600';
         },

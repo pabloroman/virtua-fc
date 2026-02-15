@@ -154,10 +154,16 @@
             this.selectedPlayers = this.selectedPlayers.filter(p => p !== playerId);
         },
 
-        // Find which slot a player is assigned to
+        // Find which slot a player is assigned to (internal code for compatibility lookup)
         getPlayerSlot(playerId) {
             const assignment = this.slotAssignments.find(s => s.player?.id === playerId);
             return assignment?.label || null;
+        },
+
+        // Find display label (Spanish abbreviation) for a player's assigned slot
+        getPlayerSlotDisplay(playerId) {
+            const assignment = this.slotAssignments.find(s => s.player?.id === playerId);
+            return assignment?.displayLabel || null;
         },
 
         getInitials(name) {
@@ -327,7 +333,7 @@
                                                 x-show="!slot.player"
                                                 class="w-11 h-11 rounded-full border-2 border-dashed border-white/40 flex items-center justify-center backdrop-blur-sm bg-white/5"
                                             >
-                                                <span class="text-[10px] text-white/60 font-semibold tracking-wide" x-text="slot.label"></span>
+                                                <span class="text-[10px] text-white/60 font-semibold tracking-wide" x-text="slot.displayLabel"></span>
                                             </div>
 
                                             {{-- Filled Slot - Modern card style --}}
@@ -367,7 +373,7 @@
                                                 <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-slate-900/95 backdrop-blur-sm text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-20 shadow-xl">
                                                     <div class="font-semibold" x-text="slot.player?.name"></div>
                                                     <div class="flex items-center gap-2 mt-1 text-slate-300">
-                                                        <span x-text="slot.label"></span>
+                                                        <span x-text="slot.displayLabel"></span>
                                                         <span class="text-slate-500">·</span>
                                                         <span :class="getCompatibilityDisplay(slot.player?.position, slot.label).class" x-text="getCompatibilityDisplay(slot.player?.position, slot.label).label"></span>
                                                     </div>
@@ -533,7 +539,7 @@
                                                                 <span
                                                                     class="text-xs font-medium px-1.5 py-0.5 rounded whitespace-nowrap"
                                                                     :class="getCompatibilityDisplay('{{ $player->position }}', getPlayerSlot('{{ $player->id }}')).class"
-                                                                    x-text="getPlayerSlot('{{ $player->id }}') + (getCompatibilityDisplay('{{ $player->position }}', getPlayerSlot('{{ $player->id }}')).label !== '{{ __('squad.natural') }}' ? ' (' + getCompatibilityDisplay('{{ $player->position }}', getPlayerSlot('{{ $player->id }}')).label + ')' : '')"
+                                                                    x-text="getPlayerSlotDisplay('{{ $player->id }}') + (getCompatibilityDisplay('{{ $player->position }}', getPlayerSlot('{{ $player->id }}')).label !== '{{ __('squad.natural') }}' ? ' (' + getCompatibilityDisplay('{{ $player->position }}', getPlayerSlot('{{ $player->id }}')).label + ')' : '')"
                                                                 ></span>
                                                             </template>
                                                         </td>
