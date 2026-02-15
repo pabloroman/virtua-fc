@@ -70,7 +70,17 @@ class PromotionRelegationFactory
             foreach ($this->countryConfig->promotions($countryCode) as $promotion) {
                 $playoffGenerator = null;
                 if (isset($promotion['playoff_generator'])) {
-                    $playoffGenerator = app($promotion['playoff_generator']);
+                    $tiers = $this->countryConfig->tiers($countryCode);
+                    $competitionId = $promotion['bottom_division'];
+                    $tierConfig = collect($tiers)->first(fn ($t) => $t['competition'] === $competitionId);
+                    $teamCount = $tierConfig['teams'] ?? 22;
+
+                    $playoffGenerator = new ($promotion['playoff_generator'])(
+                        competitionId: $competitionId,
+                        qualifyingPositions: $promotion['playoff_positions'] ?? [],
+                        directPromotionPositions: $promotion['direct_promotion_positions'] ?? [],
+                        triggerMatchday: ($teamCount - 1) * 2,
+                    );
                 }
 
                 $rules[] = new ConfigDrivenPromotionRule(

@@ -99,6 +99,16 @@ class LaLigaConfig implements CompetitionConfig
         return self::SEASON_GOALS;
     }
 
+    public function getTopScorerAwardName(): string
+    {
+        return 'season.pichichi';
+    }
+
+    public function getBestGoalkeeperAwardName(): string
+    {
+        return 'season.zamora';
+    }
+
     public function getStandingsZones(): array
     {
         return [

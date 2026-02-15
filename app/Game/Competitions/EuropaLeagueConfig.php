@@ -46,6 +46,16 @@ class EuropaLeagueConfig implements CompetitionConfig
         ];
     }
 
+    public function getTopScorerAwardName(): string
+    {
+        return 'season.top_scorer';
+    }
+
+    public function getBestGoalkeeperAwardName(): string
+    {
+        return 'season.best_goalkeeper';
+    }
+
     public function getStandingsZones(): array
     {
         return [
