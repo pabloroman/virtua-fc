@@ -38,4 +38,16 @@ return [
 
     'daily_invites' => (int) env('BETA_DAILY_INVITES', 20),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Allow New Season
+    |--------------------------------------------------------------------------
+    |
+    | When disabled, the "Start New Season" button is hidden on the season-end
+    | screen. Useful for gating multi-season play during beta.
+    |
+    */
+
+    'allow_new_season' => (bool) env('ALLOW_NEW_SEASON', false),
+
 ];

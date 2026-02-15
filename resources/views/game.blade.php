@@ -220,7 +220,7 @@
                     <div class="text-6xl mb-4">&#9917;</div>
                     <h2 class="text-3xl font-bold text-slate-900 mb-2">{{ __('game.other_competitions_in_progress') }}</h2>
                     <p class="text-slate-500 mb-8">{{ __('game.other_competitions_desc') }}</p>
-                    <form action="{{ route('game.advance-matchday', $game->id) }}" method="POST">
+                    <form action="{{ route('game.advance', $game->id) }}" method="POST">
                         @csrf
                         <button type="submit"
                                 class="inline-flex items-center px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors min-h-[44px]">

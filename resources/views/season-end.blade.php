@@ -377,6 +377,7 @@
 
                     {{-- Start New Season CTA --}}
                     <div class="border-t pt-8 text-center">
+                        @if(config('beta.allow_new_season'))
                         <form method="post" action="{{ route('game.start-new-season', $game->id) }}" x-data="{ loading: false }" @submit="loading = true">
                             @csrf
                             <button type="submit"
@@ -391,6 +392,9 @@
                                 </span>
                             </button>
                         </form>
+                        @else
+                        <p class="text-slate-500 text-lg">{{ __('season.new_season_coming_soon') }}</p>
+                        @endif
                     </div>
 
                 </div>

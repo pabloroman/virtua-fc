@@ -75,4 +75,5 @@ return [
 
     // Start new season
     'start_new_season' => 'Comenzar Temporada :season',
+    'new_season_coming_soon' => 'La próxima temporada estará disponible próximamente.',
 ];
