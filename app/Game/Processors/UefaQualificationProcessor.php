@@ -14,7 +14,7 @@ use App\Models\GameStanding;
  * Determines which teams qualify for UEFA competitions
  * based on league final standings, driven by country config.
  *
- * Priority: 105 (runs after SupercopaQualificationProcessor)
+ * Priority: 105 (runs after SupercupQualificationProcessor)
  *
  * Qualification slots are defined in config/countries.php under
  * each country's 'continental_slots' key.

@@ -11,17 +11,17 @@ use App\Models\CompetitionEntry;
 use App\Models\GameStanding;
 
 /**
- * Determines supercopa qualifiers for the next season,
+ * Determines supercup qualifiers for the next season,
  * driven by country config.
  *
- * Qualification rules (per country's supercopa config):
+ * Qualification rules (per country's supercup config):
  * - The two domestic cup finalists
  * - League champion and runner-up
  * - If there's overlap, the next highest league team qualifies
  *
  * Priority: 25 (runs after stats reset but before fixture generation)
  */
-class SupercopaQualificationProcessor implements SeasonEndProcessor
+class SupercupQualificationProcessor implements SeasonEndProcessor
 {
     public function __construct(
         private CountryConfig $countryConfig,
@@ -35,22 +35,22 @@ class SupercopaQualificationProcessor implements SeasonEndProcessor
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData
     {
         foreach ($this->countryConfig->allCountryCodes() as $countryCode) {
-            $supercopaConfig = $this->countryConfig->supercopa($countryCode);
-            if (!$supercopaConfig) {
+            $supercupConfig = $this->countryConfig->supercup($countryCode);
+            if (!$supercupConfig) {
                 continue;
             }
 
-            $this->processCountrySupercopa($game, $data, $supercopaConfig);
+            $this->processCountrySupercup($game, $data, $supercupConfig);
         }
 
         return $data;
     }
 
-    private function processCountrySupercopa(Game $game, SeasonTransitionData $data, array $config): void
+    private function processCountrySupercup(Game $game, SeasonTransitionData $data, array $config): void
     {
         $cupId = $config['cup'];
         $leagueId = $config['league'];
-        $supercopaId = $config['competition'];
+        $supercupId = $config['competition'];
         $cupFinalRound = $config['cup_final_round'];
 
         // Get cup finalists
@@ -59,14 +59,14 @@ class SupercopaQualificationProcessor implements SeasonEndProcessor
         // Get league top teams (enough to handle overlaps)
         $leagueTopTeams = $this->getLeagueTopTeams($game->id, $leagueId, 4);
 
-        // Determine the 4 Supercopa qualifiers
+        // Determine the 4 supercup qualifiers
         $qualifiers = $this->determineQualifiers($cupFinalists, $leagueTopTeams);
 
-        // Update supercopa competition_entries for this game
-        $this->updateSupercopaTeams($game->id, $supercopaId, $qualifiers);
+        // Update supercup competition_entries for this game
+        $this->updateSupercupTeams($game->id, $supercupId, $qualifiers);
 
         // Store qualifiers in metadata for display
-        $data->setMetadata('supercopaQualifiers', $qualifiers);
+        $data->setMetadata('supercupQualifiers', $qualifiers);
     }
 
     /**
@@ -108,7 +108,7 @@ class SupercopaQualificationProcessor implements SeasonEndProcessor
     }
 
     /**
-     * Determine the 4 Supercopa qualifiers, handling overlaps.
+     * Determine the 4 supercup qualifiers, handling overlaps.
      *
      * @return array<string> 4 team IDs
      */
@@ -145,20 +145,20 @@ class SupercopaQualificationProcessor implements SeasonEndProcessor
     }
 
     /**
-     * Update supercopa competition_entries for this game.
+     * Update supercup competition_entries for this game.
      */
-    private function updateSupercopaTeams(string $gameId, string $supercopaId, array $teamIds): void
+    private function updateSupercupTeams(string $gameId, string $supercupId, array $teamIds): void
     {
         // Remove old entries
         CompetitionEntry::where('game_id', $gameId)
-            ->where('competition_id', $supercopaId)
+            ->where('competition_id', $supercupId)
             ->delete();
 
         // Insert new qualifiers
         foreach ($teamIds as $teamId) {
             CompetitionEntry::create([
                 'game_id' => $gameId,
-                'competition_id' => $supercopaId,
+                'competition_id' => $supercupId,
                 'team_id' => $teamId,
                 'entry_round' => 1,
             ]);

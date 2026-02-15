@@ -91,8 +91,8 @@ class CountryConfig
                 }
             }
 
-            // Check supercopa
-            if (($config['supercopa']['competition'] ?? null) === $competitionId) {
+            // Check supercup
+            if (($config['supercup']['competition'] ?? null) === $competitionId) {
                 return $code;
             }
         }
@@ -121,13 +121,13 @@ class CountryConfig
     }
 
     /**
-     * Get supercopa config for a country.
+     * Get supercup config for a country.
      *
      * @return array{competition: string, cup: string, league: string, cup_final_round: int}|null
      */
-    public function supercopa(string $countryCode): ?array
+    public function supercup(string $countryCode): ?array
     {
-        return $this->get($countryCode)['supercopa'] ?? null;
+        return $this->get($countryCode)['supercup'] ?? null;
     }
 
     /**

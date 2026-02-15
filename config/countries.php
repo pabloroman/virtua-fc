@@ -44,7 +44,7 @@ return [
             ],
         ],
 
-        'supercopa' => [
+        'supercup' => [
             'competition' => 'ESPSUP',
             'cup' => 'ESPCUP',
             'league' => 'ESP1',

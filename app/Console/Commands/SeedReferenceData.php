@@ -587,10 +587,10 @@ class SeedReferenceData extends Command
             ->pluck('id', 'transfermarkt_id')
             ->toArray();
 
-        // Get Supercopa teams for entry round calculation
-        $supercopaTeamIds = [];
+        // Get supercup teams for entry round calculation
+        $supercupTeamIds = [];
         if ($competitionId === 'ESPCUP') {
-            $supercopaTeamIds = DB::table('competition_teams')
+            $supercupTeamIds = DB::table('competition_teams')
                 ->join('teams', 'competition_teams.team_id', '=', 'teams.id')
                 ->where('competition_teams.competition_id', 'ESPSUP')
                 ->where('competition_teams.season', $season)
@@ -604,7 +604,7 @@ class SeedReferenceData extends Command
             $cupTeamId = $club['id'];
 
             // Determine entry round
-            $entryRound = in_array($cupTeamId, $supercopaTeamIds) ? 3 : 1;
+            $entryRound = in_array($cupTeamId, $supercupTeamIds) ? 3 : 1;
 
             // Find or create team
             $teamId = $teamsByTransfermarktId[$cupTeamId] ?? null;
