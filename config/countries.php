@@ -65,8 +65,8 @@ return [
 
         'continental_slots' => [
             'ESP1' => [
-                'UCL' => [1, 2, 3, 4],
-                'UEL' => [5, 6],
+                'UCL' => [1, 2, 3, 4, 5],
+                'UEL' => [6, 7],
             ],
         ],
 
