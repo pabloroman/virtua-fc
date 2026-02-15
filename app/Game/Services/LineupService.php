@@ -483,8 +483,12 @@ class LineupService
         if ($isPlayerTeam && !empty($playerPreferredLineup)) {
             // Select lineup with preferences using pre-loaded data
             $availableIds = $availablePlayers->pluck('id')->toArray();
+            $allTeamPlayers = $allPlayersGrouped !== null
+                ? $allPlayersGrouped->get($teamId, collect())
+                : GamePlayer::with('player')->where('game_id', $game->id)->where('team_id', $teamId)->get();
             $lineup = $this->selectLineupWithPreferencesFromCollection(
                 $availablePlayers,
+                $allTeamPlayers,
                 $playerFormation,
                 $playerPreferredLineup,
                 $availableIds
@@ -506,9 +510,13 @@ class LineupService
 
     /**
      * Select lineup using preferred players from a pre-loaded collection (no DB queries).
+     *
+     * @param Collection $availablePlayers Players available for selection (not injured/suspended)
+     * @param Collection $allTeamPlayers All team players (including unavailable) for position lookups
      */
     private function selectLineupWithPreferencesFromCollection(
         Collection $availablePlayers,
+        Collection $allTeamPlayers,
         ?Formation $formation,
         array $preferredLineup,
         array $availableIds
@@ -520,14 +528,15 @@ class LineupService
         $availablePreferred = [];
         $unavailablePositionGroups = [];
 
-        $playersById = $availablePlayers->keyBy('id');
+        // Use all team players for lookups so we can find position groups of unavailable players
+        $allPlayersById = $allTeamPlayers->keyBy('id');
 
         foreach ($preferredLineup as $playerId) {
             if (in_array($playerId, $availableIds)) {
                 $availablePreferred[] = $playerId;
             } else {
                 // Find the player to determine their position group for replacement
-                $player = $playersById->get($playerId);
+                $player = $allPlayersById->get($playerId);
                 if ($player) {
                     $unavailablePositionGroups[] = $player->position_group;
                 }
