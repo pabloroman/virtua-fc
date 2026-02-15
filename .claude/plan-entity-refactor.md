@@ -262,7 +262,6 @@ Create `config/countries.php` (or `app/Game/Countries/`) that declares:
 ```php
 'ES' => [
     'name' => 'Spain',
-    'playable' => true,
     'tiers' => [
         1 => ['competition' => 'ESP1', 'teams' => 20],
         2 => ['competition' => 'ESP2', 'teams' => 22],
