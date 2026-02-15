@@ -4,28 +4,28 @@ namespace App\Game\Processors;
 
 use App\Game\Contracts\SeasonEndProcessor;
 use App\Game\DTO\SeasonTransitionData;
+use App\Game\Services\CountryConfig;
 use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\CompetitionEntry;
 use App\Models\GameStanding;
 
 /**
- * Determines Supercopa de España qualifiers for the next season.
+ * Determines supercopa qualifiers for the next season,
+ * driven by country config.
  *
- * Qualification rules:
- * - The two Copa del Rey finalists
- * - La Liga champion and runner-up
- * - If there's overlap (e.g., La Liga winner also in Copa final),
- *   the next highest La Liga team qualifies
+ * Qualification rules (per country's supercopa config):
+ * - The two domestic cup finalists
+ * - League champion and runner-up
+ * - If there's overlap, the next highest league team qualifies
  *
  * Priority: 25 (runs after stats reset but before fixture generation)
  */
 class SupercopaQualificationProcessor implements SeasonEndProcessor
 {
-    private const COPA_COMPETITION_ID = 'ESPCUP';
-    private const LIGA_COMPETITION_ID = 'ESP1';
-    private const SUPERCOPA_COMPETITION_ID = 'ESPSUP';
-    private const COPA_FINAL_ROUND = 7;
+    public function __construct(
+        private CountryConfig $countryConfig,
+    ) {}
 
     public function priority(): int
     {
@@ -34,34 +34,51 @@ class SupercopaQualificationProcessor implements SeasonEndProcessor
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData
     {
-        // Get Copa del Rey finalists
-        $copaFinalists = $this->getCopaFinalists($game->id);
+        foreach ($this->countryConfig->allCountryCodes() as $countryCode) {
+            $supercopaConfig = $this->countryConfig->supercopa($countryCode);
+            if (!$supercopaConfig) {
+                continue;
+            }
 
-        // Get La Liga top teams (enough to handle overlaps)
-        $ligaTopTeams = $this->getLigaTopTeams($game->id, 4);
-
-        // Determine the 4 Supercopa qualifiers
-        $qualifiers = $this->determineQualifiers($copaFinalists, $ligaTopTeams);
-
-        // Update Supercopa competition_entries for this game
-        $this->updateSupercopaTeams($game->id, $qualifiers);
-
-        // Store qualifiers in metadata for display
-        $data->setMetadata('supercopaQualifiers', $qualifiers);
+            $this->processCountrySupercopa($game, $data, $supercopaConfig);
+        }
 
         return $data;
     }
 
+    private function processCountrySupercopa(Game $game, SeasonTransitionData $data, array $config): void
+    {
+        $cupId = $config['cup'];
+        $leagueId = $config['league'];
+        $supercopaId = $config['competition'];
+        $cupFinalRound = $config['cup_final_round'];
+
+        // Get cup finalists
+        $cupFinalists = $this->getCupFinalists($game->id, $cupId, $cupFinalRound);
+
+        // Get league top teams (enough to handle overlaps)
+        $leagueTopTeams = $this->getLeagueTopTeams($game->id, $leagueId, 4);
+
+        // Determine the 4 Supercopa qualifiers
+        $qualifiers = $this->determineQualifiers($cupFinalists, $leagueTopTeams);
+
+        // Update supercopa competition_entries for this game
+        $this->updateSupercopaTeams($game->id, $supercopaId, $qualifiers);
+
+        // Store qualifiers in metadata for display
+        $data->setMetadata('supercopaQualifiers', $qualifiers);
+    }
+
     /**
-     * Get the two Copa del Rey finalists.
+     * Get the two cup finalists.
      *
      * @return array{winner: string|null, runnerUp: string|null}
      */
-    private function getCopaFinalists(string $gameId): array
+    private function getCupFinalists(string $gameId, string $cupId, int $finalRound): array
     {
         $finalTie = CupTie::where('game_id', $gameId)
-            ->where('competition_id', self::COPA_COMPETITION_ID)
-            ->where('round_number', self::COPA_FINAL_ROUND)
+            ->where('competition_id', $cupId)
+            ->where('round_number', $finalRound)
             ->where('completed', true)
             ->first();
 
@@ -76,14 +93,14 @@ class SupercopaQualificationProcessor implements SeasonEndProcessor
     }
 
     /**
-     * Get the top N teams from La Liga standings.
+     * Get the top N teams from league standings.
      *
      * @return array<int, string> Team IDs in order of position
      */
-    private function getLigaTopTeams(string $gameId, int $count): array
+    private function getLeagueTopTeams(string $gameId, string $leagueId, int $count): array
     {
         return GameStanding::where('game_id', $gameId)
-            ->where('competition_id', self::LIGA_COMPETITION_ID)
+            ->where('competition_id', $leagueId)
             ->orderBy('position')
             ->limit($count)
             ->pluck('team_id')
@@ -95,28 +112,27 @@ class SupercopaQualificationProcessor implements SeasonEndProcessor
      *
      * @return array<string> 4 team IDs
      */
-    private function determineQualifiers(array $copaFinalists, array $ligaTopTeams): array
+    private function determineQualifiers(array $cupFinalists, array $leagueTopTeams): array
     {
         $qualifiers = [];
         $usedTeams = [];
 
-        // Add Copa finalists first (if available)
-        if ($copaFinalists['winner']) {
-            $qualifiers[] = $copaFinalists['winner'];
-            $usedTeams[$copaFinalists['winner']] = true;
+        // Add cup finalists first (if available)
+        if ($cupFinalists['winner']) {
+            $qualifiers[] = $cupFinalists['winner'];
+            $usedTeams[$cupFinalists['winner']] = true;
         }
-        if ($copaFinalists['runnerUp']) {
-            $qualifiers[] = $copaFinalists['runnerUp'];
-            $usedTeams[$copaFinalists['runnerUp']] = true;
+        if ($cupFinalists['runnerUp']) {
+            $qualifiers[] = $cupFinalists['runnerUp'];
+            $usedTeams[$cupFinalists['runnerUp']] = true;
         }
 
-        // Add La Liga teams until we have 4 qualifiers
-        foreach ($ligaTopTeams as $teamId) {
+        // Add league teams until we have 4 qualifiers
+        foreach ($leagueTopTeams as $teamId) {
             if (count($qualifiers) >= 4) {
                 break;
             }
 
-            // Skip if team already qualified via Copa
             if (isset($usedTeams[$teamId])) {
                 continue;
             }
@@ -129,20 +145,20 @@ class SupercopaQualificationProcessor implements SeasonEndProcessor
     }
 
     /**
-     * Update ESPSUP competition_entries for this game.
+     * Update supercopa competition_entries for this game.
      */
-    private function updateSupercopaTeams(string $gameId, array $teamIds): void
+    private function updateSupercopaTeams(string $gameId, string $supercopaId, array $teamIds): void
     {
         // Remove old entries
         CompetitionEntry::where('game_id', $gameId)
-            ->where('competition_id', self::SUPERCOPA_COMPETITION_ID)
+            ->where('competition_id', $supercopaId)
             ->delete();
 
         // Insert new qualifiers
         foreach ($teamIds as $teamId) {
             CompetitionEntry::create([
                 'game_id' => $gameId,
-                'competition_id' => self::SUPERCOPA_COMPETITION_ID,
+                'competition_id' => $supercopaId,
                 'team_id' => $teamId,
                 'entry_round' => 1,
             ]);

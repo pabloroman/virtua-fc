@@ -4,26 +4,26 @@ namespace App\Game\Processors;
 
 use App\Game\Contracts\SeasonEndProcessor;
 use App\Game\DTO\SeasonTransitionData;
+use App\Game\Services\CountryConfig;
 use App\Models\Competition;
 use App\Models\Game;
 use App\Models\CompetitionEntry;
 use App\Models\GameStanding;
 
 /**
- * Determines which Spanish teams qualify for UEFA competitions
- * based on La Liga final standings.
+ * Determines which teams qualify for UEFA competitions
+ * based on league final standings, driven by country config.
  *
  * Priority: 105 (runs after SupercopaQualificationProcessor)
  *
- * Qualification rules (simplified):
- * - La Liga 1st-4th → Champions League
- * - La Liga 5th-6th → Europa League
- * - Copa del Rey winner → Conference League (if not already qualified for UCL/UEL)
+ * Qualification slots are defined in config/countries.php under
+ * each country's 'continental_slots' key.
  */
 class UefaQualificationProcessor implements SeasonEndProcessor
 {
-    private const UCL_POSITIONS = [1, 2, 3, 4];
-    private const UEL_POSITIONS = [5, 6];
+    public function __construct(
+        private CountryConfig $countryConfig,
+    ) {}
 
     public function priority(): int
     {
@@ -32,37 +32,45 @@ class UefaQualificationProcessor implements SeasonEndProcessor
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData
     {
-        // Get La Liga final standings
-        $standings = GameStanding::where('game_id', $game->id)
-            ->where('competition_id', 'ESP1')
-            ->orderBy('position')
-            ->pluck('team_id', 'position')
-            ->toArray();
+        foreach ($this->countryConfig->allCountryCodes() as $countryCode) {
+            $slots = $this->countryConfig->continentalSlots($countryCode);
 
-        if (empty($standings)) {
-            return $data;
+            foreach ($slots as $leagueId => $continentalAllocations) {
+                $standings = GameStanding::where('game_id', $game->id)
+                    ->where('competition_id', $leagueId)
+                    ->orderBy('position')
+                    ->pluck('team_id', 'position')
+                    ->toArray();
+
+                if (empty($standings)) {
+                    continue;
+                }
+
+                foreach ($continentalAllocations as $continentalId => $positions) {
+                    $this->updateQualifiers(
+                        $game->id,
+                        $continentalId,
+                        $positions,
+                        $standings,
+                        $countryCode,
+                    );
+                }
+            }
         }
-
-        $newSeason = $data->newSeason;
-
-        // Qualify Spanish teams for UCL
-        $this->updateSpanishQualifiers($game->id, 'UCL', self::UCL_POSITIONS, $standings);
-
-        // Qualify Spanish teams for UEL
-        $this->updateSpanishQualifiers($game->id, 'UEL', self::UEL_POSITIONS, $standings);
 
         return $data;
     }
 
     /**
-     * Update Spanish qualifiers for a UEFA competition.
-     * Removes old Spanish teams and adds new qualifiers.
+     * Update qualifiers for a UEFA competition.
+     * Removes old teams from this country and adds new qualifiers.
      */
-    private function updateSpanishQualifiers(
+    private function updateQualifiers(
         string $gameId,
         string $competitionId,
         array $qualifyingPositions,
         array $standings,
+        string $countryCode,
     ): void {
         $competition = Competition::find($competitionId);
         if (!$competition) {
@@ -81,11 +89,11 @@ class UefaQualificationProcessor implements SeasonEndProcessor
             return;
         }
 
-        // Remove old Spanish teams from this competition for this game
-        $spanishTeamIds = \App\Models\Team::where('country', 'ES')->pluck('id')->toArray();
+        // Remove old teams from this country from the competition
+        $countryTeamIds = \App\Models\Team::where('country', $countryCode)->pluck('id')->toArray();
         CompetitionEntry::where('game_id', $gameId)
             ->where('competition_id', $competitionId)
-            ->whereIn('team_id', $spanishTeamIds)
+            ->whereIn('team_id', $countryTeamIds)
             ->delete();
 
         // Add new qualifiers

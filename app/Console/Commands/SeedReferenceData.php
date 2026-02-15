@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Game\Services\CountryConfig;
 use App\Models\User;
 use App\Support\Money;
 use Carbon\Carbon;
@@ -21,42 +22,12 @@ class SeedReferenceData extends Command
 
     protected $description = 'Seed teams, competitions, fixtures, and players from 2025 season JSON data files';
 
-    private array $profiles = [
+    /**
+     * Support teams not yet managed by country config.
+     * These will be moved to country config in a future phase.
+     */
+    private array $supportCompetitions = [
         'production' => [
-            // Spanish leagues (selectable)
-            [
-                'code' => 'ESP1',
-                'path' => 'data/2025/ESP1',
-                'tier' => 1,
-                'handler' => 'league',
-                'country' => 'ES',
-                'role' => 'primary',
-            ],
-            [
-                'code' => 'ESP2',
-                'path' => 'data/2025/ESP2',
-                'tier' => 2,
-                'handler' => 'league_with_playoff',
-                'country' => 'ES',
-                'role' => 'primary',
-            ],
-            // Spanish cups (auto-entered)
-            [
-                'code' => 'ESPSUP',
-                'path' => 'data/2025/ESPSUP',
-                'tier' => 0,
-                'handler' => 'knockout_cup',
-                'country' => 'ES',
-                'role' => 'domestic_cup',
-            ],
-            [
-                'code' => 'ESPCUP',
-                'path' => 'data/2025/ESPCUP',
-                'tier' => 0,
-                'handler' => 'knockout_cup',
-                'country' => 'ES',
-                'role' => 'domestic_cup',
-            ],
             // Foreign leagues (scouting/transfers only)
             [
                 'code' => 'ENG1',
@@ -130,32 +101,69 @@ class SeedReferenceData extends Command
                 'role' => 'european',
             ],
         ],
-        'test' => [
-            [
-                'code' => 'TEST1',
-                'path' => 'data/2025/TEST1',
-                'tier' => 1,
-                'handler' => 'league',
-                'country' => 'XX',
-                'role' => 'primary',
-            ],
-            [
-                'code' => 'TESTCUP',
-                'path' => 'data/2025/TESTCUP',
-                'tier' => 0,
-                'handler' => 'knockout_cup',
-                'country' => 'XX',
-                'role' => 'domestic_cup',
-            ],
-        ],
+        'test' => [],
     ];
+
+    /**
+     * Build the full competition list for a profile by combining
+     * country-config-driven entries with support competitions.
+     */
+    private function buildProfile(string $profile): array
+    {
+        $countryConfig = app(CountryConfig::class);
+        $competitions = [];
+
+        // Determine which countries to seed based on profile
+        $countryCodes = match ($profile) {
+            'test' => ['XX'],
+            default => $countryConfig->playableCountryCodes(),
+        };
+
+        // Build entries from country config (tiers + cups)
+        foreach ($countryCodes as $countryCode) {
+            $config = $countryConfig->get($countryCode);
+            if (!$config) {
+                continue;
+            }
+
+            // Add tier competitions
+            foreach ($config['tiers'] ?? [] as $tier => $tierConfig) {
+                $competitions[] = [
+                    'code' => $tierConfig['competition'],
+                    'path' => "data/2025/{$tierConfig['competition']}",
+                    'tier' => $tier,
+                    'handler' => $tierConfig['handler'] ?? 'league',
+                    'country' => $countryCode,
+                    'role' => 'primary',
+                ];
+            }
+
+            // Add domestic cup competitions
+            foreach ($config['domestic_cups'] ?? [] as $cupId => $cupConfig) {
+                $competitions[] = [
+                    'code' => $cupId,
+                    'path' => "data/2025/{$cupId}",
+                    'tier' => 0,
+                    'handler' => $cupConfig['handler'] ?? 'knockout_cup',
+                    'country' => $countryCode,
+                    'role' => 'domestic_cup',
+                ];
+            }
+        }
+
+        // Add support competitions (foreign leagues, continental, etc.)
+        $competitions = array_merge($competitions, $this->supportCompetitions[$profile] ?? []);
+
+        return $competitions;
+    }
 
     public function handle(): int
     {
         $profile = $this->option('profile');
 
-        if (!isset($this->profiles[$profile])) {
-            $this->error("Unknown profile: {$profile}. Available: " . implode(', ', array_keys($this->profiles)));
+        $validProfiles = ['production', 'test'];
+        if (!in_array($profile, $validProfiles)) {
+            $this->error("Unknown profile: {$profile}. Available: " . implode(', ', $validProfiles));
             return CommandAlias::FAILURE;
         }
 
@@ -169,7 +177,7 @@ class SeedReferenceData extends Command
             $this->createDefaultUser();
         }
 
-        foreach ($this->profiles[$profile] as $competitionConfig) {
+        foreach ($this->buildProfile($profile) as $competitionConfig) {
             $this->seedCompetition($competitionConfig);
         }
 
