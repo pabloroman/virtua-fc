@@ -67,7 +67,7 @@ Competitions and transfers require teams beyond the ones the user can pick. Thes
 
 #### 1. Transfer pool teams (foreign leagues + EUR pool)
 
-**What they are:** Teams from non-Spanish leagues (ENG1, DEU1, FRA1, ITA1, NLD1, POR1) and the EUR team pool (~40 additional European clubs). They provide the player market for transfers, scouting, and loans.
+**What they are:** Teams from non-Spanish leagues (ENG1, DEU1, FRA1, ITA1) and the EUR team pool (~40 additional European clubs, including Dutch and Portuguese teams). They provide the player market for transfers, scouting, and loans.
 
 **How they're currently handled:**
 - Seeded as `role=foreign` competitions with full rosters in `SeedReferenceData`
@@ -116,11 +116,11 @@ Today, the distinction between these three categories is implicit:
 
 **Problems with the current approach:**
 
-1. **Transfer pool is over-initialized**: Every game creates GamePlayers for ~6 foreign leagues regardless of whether the user's scouting tier allows international search. A Tier 1 scouting setup can only search domestically but pays the cost of loading 2,500+ foreign players.
+1. **Transfer pool is over-sized**: Every game creates GamePlayers for 6 foreign leagues. NLD1 and POR1 can be moved to the EUR team pool (individual team files) to reduce the number of eagerly-loaded players — only teams that appear in European competitions or are relevant to transfers need full rosters.
 
 2. **Continental opponents have fragile dependencies**: UCL initialization assumes foreign league teams already have GamePlayers, and uses EUR pool as a fallback. If a UCL team exists in neither, it silently gets skipped. This ordering dependency is implicit.
 
-3. **Cup opponents lack rosters**: Lower-division cup teams have no players. This works today because early cup rounds are auto-simulated, but would break if the game ever needed to show lineups or detailed match events for these teams.
+3. **Cup opponents lack rosters**: Lower-division cup teams have no players. This is acceptable — early cup rounds are auto-simulated and by the time the user's team enters, they face ESP1/ESP2 teams that have full rosters. No change needed here.
 
 4. **No concept of "why" a team exists**: A team in the `teams` table could be there for any reason — playable, transfer pool, cup filler, continental opponent. There's no field or relationship that captures this intent.
 
@@ -135,7 +135,7 @@ Country (Spain)
 │   └── Tier 2: ESP2 (22 teams, full rosters) — user can pick these
 │
 ├── Domestic Support
-│   ├── Cup pool: ESPCUP lower-division teams (rosters needed for cup matches)
+│   ├── Cup pool: ESPCUP lower-division teams (team records only, no rosters)
 │   └── Supercopa pool: ESPSUP teams (subset of ESP1)
 │
 ├── Continental Support (shared across countries)
@@ -145,21 +145,22 @@ Country (Spain)
 │   (Non-Spanish teams need rosters; Spanish ones reuse league rosters)
 │
 └── Transfer Pool (shared across countries)
-    ├── Foreign leagues: ENG1, DEU1, FRA1, ITA1, NLD1, POR1
-    └── EUR club pool: ~40 additional European clubs
+    ├── Foreign leagues: ENG1, DEU1, FRA1, ITA1 (full league rosters, eagerly loaded)
+    └── EUR club pool: ~60 European clubs including NLD1/POR1 teams (individual team files)
     (All need full rosters for transfers/scouting/loans)
 ```
 
 **Key design decisions for the refactor:**
 
-1. **Lazy initialization**: Transfer pool teams should only get GamePlayers when the user's scouting tier unlocks international access, or when a transfer involves that team. This reduces game setup time significantly.
+1. **Eager initialization, smaller pool**: Transfer pool teams are always fully initialized at game setup (no lazy loading — simplicity over optimization). To keep the pool manageable, NLD1 and POR1 are moved from full-league foreign competitions to the EUR team pool (individual team files). Only their teams that appear in European competitions or are transfer-relevant need data.
 
-2. **Roster requirements by category**: Each support team category should declare what data it needs:
-   - Transfer pool: full roster (market values, contracts, abilities)
-   - Continental opponents: full roster (needed for match simulation)
-   - Domestic cup opponents: at minimum a generated squad (positions + abilities), even if not real players
+2. **Roster requirements by category**: Each support team category declares what data it needs:
+   - Transfer pool (foreign leagues): full roster from JSON (market values, contracts, abilities)
+   - Transfer pool (EUR club pool): full roster from individual team files
+   - Continental opponents: full roster (needed for match simulation) — reused from transfer pool where possible
+   - Domestic cup opponents: team records only, no rosters needed (early rounds are auto-simulated; user faces league teams)
 
-3. **Dependency chain should be explicit**: The country config should declare the initialization order — leagues first, then cups (link existing teams), then continental (link + fill from transfer pool), then transfer pool itself.
+3. **Dependency chain should be explicit**: The country config should declare the initialization order — leagues first, then cups (link existing teams), then transfer pool, then continental (link + fill from transfer pool).
 
 4. **Team provenance**: Each team's "reason for existing" should be traceable — is it playable, a cup filler, a continental opponent, or a transfer pool member? A team can have multiple roles (e.g., Bayern is both a transfer pool team and a UCL opponent).
 
@@ -279,22 +280,21 @@ Create `config/countries.php` (or `app/Game/Countries/`) that declares:
     // Support teams: what non-playable teams this country's ecosystem needs
     'support' => [
         'domestic_cup_pool' => [
-            'ESPCUP' => ['path' => 'data/2025/ESPCUP', 'roster' => 'generated'],
-            // 'generated' = create synthetic squads for lower-division teams
-            // 'reference' = load from JSON (same as league teams)
+            // Team records only — no rosters generated for lower-division teams.
+            // Early cup rounds are auto-simulated; user faces league teams by the time they enter.
+            'ESPCUP' => ['path' => 'data/2025/ESPCUP', 'roster' => 'none'],
         ],
         'transfer_pool' => [
-            // Foreign leagues whose teams are available for transfers/scouting/loans
+            // Foreign leagues (full league rosters, eagerly loaded at game setup)
             'ENG1' => ['path' => 'data/2025/ENG1', 'roster' => 'reference'],
             'DEU1' => ['path' => 'data/2025/DEU1', 'roster' => 'reference'],
             'FRA1' => ['path' => 'data/2025/FRA1', 'roster' => 'reference'],
             'ITA1' => ['path' => 'data/2025/ITA1', 'roster' => 'reference'],
-            'NLD1' => ['path' => 'data/2025/NLD1', 'roster' => 'reference'],
-            'POR1' => ['path' => 'data/2025/POR1', 'roster' => 'reference'],
+            // EUR club pool (individual team files — includes NLD1/POR1 teams)
             'EUR'  => ['path' => 'data/2025/EUR', 'roster' => 'reference', 'format' => 'pool'],
         ],
         'continental' => [
-            // Teams needed for European competitions (rosters loaded from transfer pool or EUR)
+            // Teams needed for European competitions (rosters reused from transfer pool)
             'UCL' => ['path' => 'data/2025/UCL', 'roster' => 'from_pool'],
             // 'from_pool' = reuse GamePlayers from transfer pool; only create if missing
         ],
@@ -319,9 +319,8 @@ Create `config/countries.php` (or `app/Game/Countries/`) that declares:
 **Goal:** Make the initialization of support teams explicit, ordered, and driven by the country config rather than scattered across `SetupNewGame` methods.
 
 **Current problems:**
-- Transfer pool teams are always fully initialized (~2,500+ GamePlayers) even when unnecessary
+- Transfer pool includes NLD1 and POR1 as full foreign leagues, but these can be reduced to EUR pool entries
 - Continental opponent initialization silently depends on transfer pool being loaded first
-- Lower-division cup teams have no rosters at all — matches work only because early rounds are auto-simulated
 - `SetupNewGame` has separate code paths for each team category with no shared abstraction
 
 **Changes:**
@@ -330,19 +329,19 @@ Refactor `SetupNewGame` to follow an explicit initialization pipeline driven by 
 
 ```
 Step 1: Seed playable tiers (ESP1, ESP2) — teams + full rosters from JSON
-Step 2: Seed domestic cup pool (ESPCUP) — link existing teams, generate squads for cup-only teams
-Step 3: Seed transfer pool (ENG1, DEU1, ..., EUR) — teams + full rosters from JSON
+Step 2: Seed domestic cup pool (ESPCUP) — link existing teams (team records only, no rosters)
+Step 3: Seed transfer pool (ENG1, DEU1, FRA1, ITA1 + EUR pool) — teams + full rosters from JSON
 Step 4: Seed continental opponents (UCL, UEL) — link teams, reuse rosters from steps 1+3, fill gaps from EUR
 ```
 
 Specific improvements:
-- **Cup roster generation**: Create a `SquadGenerator` service that produces synthetic GamePlayers for lower-division cup teams (random names, position-appropriate abilities scaled to tier). This ensures cup matches always have valid lineups.
-- **Deferred transfer pool loading**: Consider lazy-loading foreign league GamePlayers — seed only Team records at game setup, create GamePlayers on-demand when the user's scouting tier unlocks international access or when a transfer involves that team. This would cut game setup from ~2,500 unnecessary GamePlayer rows to near zero for new games.
+- **Smaller transfer pool**: Move NLD1 and POR1 from full foreign league competitions to the EUR team pool. Only their teams that appear in European competitions or are transfer-relevant get individual team files. This reduces the number of eagerly-loaded GamePlayers while keeping the transfer market diverse.
 - **Explicit dependency tracking**: Each step in the pipeline knows what it depends on (e.g., continental opponents depend on transfer pool). The country config declares this order.
+- **No cup roster generation**: Lower-division cup teams remain as team records only. Early cup rounds are auto-simulated and by the time the user enters, they face league teams with full rosters. This avoids adding complexity for an edge case.
 
-**What this unlocks:** Game setup becomes faster (fewer unnecessary GamePlayers), cup matches have valid opponents at all rounds, and the initialization order is documented and enforced.
+**What this unlocks:** Game setup creates fewer GamePlayers (no NLD1/POR1 full leagues), the initialization order is documented and enforced, and the pipeline is driven by config rather than hardcoded method calls.
 
-**Risk:** Medium. The deferred loading for transfer pool is the riskiest part — it touches TransferService, ScoutingService, and LoanService queries. An intermediate step could be: still load everything eagerly but restructure the code so deferred loading is possible later.
+**Risk:** Low-medium. The main change is restructuring `SetupNewGame` into a config-driven pipeline. Moving NLD1/POR1 to EUR pool requires creating individual team JSON files for their relevant clubs, but the seeding mechanics already support this format.
 
 ### Phase 3: Make `SeedReferenceData` country-driven
 
@@ -428,7 +427,7 @@ Specific improvements:
 - **Match simulation** — untouched
 - **Financial model** — untouched (career-only)
 - **Player development** — untouched
-- **Transfer system** — queries updated if lazy loading is adopted, but business logic untouched
+- **Transfer system** — untouched (same eager loading, just fewer foreign league teams)
 - **Season end pipeline** — processors refactored to read config, but pipeline itself unchanged
 - **JSON data format** — unchanged (same teams.json, schedule.json structure)
 
@@ -450,19 +449,19 @@ Making these relationships explicit in a declarative config means:
 ### Support teams are the hidden complexity
 
 The biggest insight from this analysis: support teams are where most of the seeding and setup complexity lives. Playable teams are straightforward (load from JSON, create GamePlayers). But the three categories of support teams — transfer pool, continental opponents, and domestic cup opponents — each have different:
-- **Data sources** (league JSON, EUR pool files, cup JSON, generated)
-- **Initialization timing** (always, on qualification, on-demand)
-- **Roster requirements** (full reference data, reused from pool, synthetic)
+- **Data sources** (league JSON, EUR pool files, cup JSON)
+- **Initialization timing** (always, on qualification)
+- **Roster requirements** (full reference data, reused from pool, none)
 - **Dependency chains** (continental needs transfer pool; cups need league teams first)
 
-Making these categories and their requirements explicit in the country config is arguably more impactful than the Country/Tier hierarchy itself — it's what turns "adding a new country" from a multi-day task into a configuration exercise.
+The approach keeps things simple: all transfer pool teams are eagerly loaded (no lazy loading), cup teams don't need generated rosters, and the pool is trimmed by moving NLD1/POR1 to EUR individual team files. Making these categories and their requirements explicit in the country config is arguably more impactful than the Country/Tier hierarchy itself — it's what turns "adding a new country" from a multi-day task into a configuration exercise.
 
 ### Phase summary
 
 | Phase | What | Risk | Schema changes |
 |---|---|---|---|
 | **1** | Create `config/countries.php` with Country → Tiers → Competitions → Support Teams | Low | None |
-| **2** | Formalize support team lifecycle in `SetupNewGame` (explicit pipeline, cup rosters, deferred loading) | Medium | None |
+| **2** | Formalize support team lifecycle in `SetupNewGame` (explicit pipeline, move NLD1/POR1 to EUR pool) | Low-Med | None |
 | **3** | Make `SeedReferenceData` country-driven | Low-Med | None |
 | **4** | Replace hardcoded competition IDs in processors with config lookups | Medium | None |
 | **5** | Add `scope` field to competitions, clean up `role` | Medium | Migration |
