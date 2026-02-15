@@ -291,11 +291,12 @@ class MatchSimulator
             $fitness = $player->fitness;
             $morale = $player->morale;
 
-            // Weighted contribution
-            $playerStrength = ($effectiveTechnical * 0.40) +
-                              ($effectivePhysical * 0.25) +
-                              ($fitness * 0.20) +
-                              ($morale * 0.15);
+            // Weighted contribution — ability-dominant so team quality differences are wide
+            // Fitness/morale still affect matches through getMatchPerformance() modifiers
+            $playerStrength = ($effectiveTechnical * 0.55) +
+                              ($effectivePhysical * 0.35) +
+                              ($fitness * 0.05) +
+                              ($morale * 0.05);
 
             $totalStrength += $playerStrength;
         }
@@ -505,31 +506,21 @@ class MatchSimulator
         $homeStrength = $this->calculateTeamStrength($homePlayers);
         $awayStrength = $this->calculateTeamStrength($awayPlayers);
 
-        $strengthExponent = config('match_simulation.strength_exponent', 1.0);
-        $homeStrength = pow($homeStrength, $strengthExponent);
-        $awayStrength = pow($awayStrength, $strengthExponent);
+        $baseGoals = config('match_simulation.base_goals', 1.3);
+        $ratioExponent = config('match_simulation.ratio_exponent', 2.0);
+        $homeAdvantageGoals = config('match_simulation.home_advantage_goals', 0.15);
 
-        $totalStrength = $homeStrength + $awayStrength;
+        // Ratio-based xG: stronger team is ALWAYS favored regardless of venue
+        $strengthRatio = $awayStrength > 0 ? $homeStrength / $awayStrength : 1.0;
 
-        $baseHomeGoals = config('match_simulation.base_home_goals', 1.4);
-        $baseAwayGoals = config('match_simulation.base_away_goals', 0.9);
-        $strengthMultiplier = config('match_simulation.strength_multiplier', 1.0);
-        $homeAdvantageGoals = config('match_simulation.home_advantage_goals', 0.0);
-        $awayDisadvantage = config('match_simulation.away_disadvantage_multiplier', 0.8);
-
-        $homeShare = $homeStrength / $totalStrength;
-        $awayShare = $awayStrength / $totalStrength;
-        $scaledBaseHome = $baseHomeGoals * ($homeShare * 2);
-        $scaledBaseAway = $baseAwayGoals * ($awayShare * 2);
-
-        $homeExpectedGoals = ($scaledBaseHome + $homeAdvantageGoals + $homeShare * $strengthMultiplier)
+        $homeExpectedGoals = (pow($strengthRatio, $ratioExponent) * $baseGoals + $homeAdvantageGoals)
             * $homeFormation->attackModifier()
             * $awayFormation->defenseModifier()
             * $homeMentality->ownGoalsModifier()
             * $awayMentality->opponentGoalsModifier()
             * $matchFraction;
 
-        $awayExpectedGoals = ($scaledBaseAway + $awayShare * $strengthMultiplier * $awayDisadvantage)
+        $awayExpectedGoals = (pow(1 / $strengthRatio, $ratioExponent) * $baseGoals)
             * $awayFormation->attackModifier()
             * $homeFormation->defenseModifier()
             * $awayMentality->ownGoalsModifier()
@@ -771,14 +762,20 @@ class MatchSimulator
     ): MatchResult {
         $events = collect();
 
-        // Lower expected goals for 30 min extra time (roughly 1/3 of normal match)
+        // Ratio-based xG scaled to 30 minutes with fatigue reduction
         $homeStrength = $this->calculateTeamStrength($homePlayers);
         $awayStrength = $this->calculateTeamStrength($awayPlayers);
-        $totalStrength = $homeStrength + $awayStrength;
 
-        // Much lower expected goals - extra time is usually cagey
-        $homeExpectedGoals = 0.3 + ($homeStrength / $totalStrength) * 0.3;
-        $awayExpectedGoals = 0.2 + ($awayStrength / $totalStrength) * 0.25;
+        $baseGoals = config('match_simulation.base_goals', 1.3);
+        $ratioExponent = config('match_simulation.ratio_exponent', 2.0);
+        $homeAdvantageGoals = config('match_simulation.home_advantage_goals', 0.15);
+
+        $strengthRatio = $awayStrength > 0 ? $homeStrength / $awayStrength : 1.0;
+        $etFraction = 30.0 / 90.0;
+        $etBaseGoals = $baseGoals * 0.8; // 20% fatigue reduction
+
+        $homeExpectedGoals = (pow($strengthRatio, $ratioExponent) * $etBaseGoals + $homeAdvantageGoals) * $etFraction;
+        $awayExpectedGoals = (pow(1 / $strengthRatio, $ratioExponent) * $etBaseGoals) * $etFraction;
 
         $homeScore = $this->poissonRandom($homeExpectedGoals);
         $awayScore = $this->poissonRandom($awayExpectedGoals);
