@@ -6,6 +6,7 @@ use App\Game\DTO\PlayoffRoundConfig;
 use App\Models\Competition;
 use App\Models\CompetitionEntry;
 use App\Models\CupTie;
+use App\Models\Game;
 use App\Models\GameMatch;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -19,7 +20,7 @@ class CupDrawService
      */
     public function conductDraw(string $gameId, string $competitionId, int $roundNumber): Collection
     {
-        $roundConfig = $this->getRoundConfig($competitionId, $roundNumber);
+        $roundConfig = $this->getRoundConfig($gameId, $competitionId, $roundNumber);
 
         if (!$roundConfig) {
             throw new \RuntimeException("No knockout round config found for {$competitionId} round {$roundNumber}");
@@ -143,7 +144,7 @@ class CupDrawService
         }
 
         // Check if round config exists in schedule.json
-        $roundConfig = $this->getRoundConfig($competitionId, $roundNumber);
+        $roundConfig = $this->getRoundConfig($gameId, $competitionId, $roundNumber);
 
         if (!$roundConfig) {
             return false;
@@ -187,7 +188,7 @@ class CupDrawService
             ->pluck('round_number');
 
         // Load all knockout rounds from schedule.json and find the first undrawn
-        $allRounds = $this->getAllRoundConfigs($competitionId);
+        $allRounds = $this->getAllRoundConfigs($gameId, $competitionId);
 
         $nextUndrawnRound = null;
         foreach ($allRounds as $round) {
@@ -212,9 +213,9 @@ class CupDrawService
     /**
      * Get round config from schedule.json for a specific round.
      */
-    private function getRoundConfig(string $competitionId, int $roundNumber): ?PlayoffRoundConfig
+    private function getRoundConfig(string $gameId, string $competitionId, int $roundNumber): ?PlayoffRoundConfig
     {
-        $rounds = $this->getAllRoundConfigs($competitionId);
+        $rounds = $this->getAllRoundConfigs($gameId, $competitionId);
 
         foreach ($rounds as $round) {
             if ($round->round === $roundNumber) {
@@ -227,16 +228,19 @@ class CupDrawService
 
     /**
      * Get all knockout round configs for a competition from schedule.json.
+     * Dates are automatically adjusted for the current game season.
      *
      * @return PlayoffRoundConfig[]
      */
-    private function getAllRoundConfigs(string $competitionId): array
+    private function getAllRoundConfigs(string $gameId, string $competitionId): array
     {
         $competition = Competition::find($competitionId);
         if (!$competition) {
             return [];
         }
 
-        return LeagueFixtureGenerator::loadKnockoutRounds($competitionId, $competition->season);
+        $gameSeason = Game::where('id', $gameId)->value('season');
+
+        return LeagueFixtureGenerator::loadKnockoutRounds($competitionId, $competition->season, $gameSeason);
     }
 }

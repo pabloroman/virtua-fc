@@ -152,7 +152,7 @@ class LeagueWithPlayoffHandler implements CompetitionHandler
      */
     private function generatePlayoffRound(Game $game, PlayoffGenerator $generator, int $round): void
     {
-        $config = $generator->getRoundConfig($round);
+        $config = $generator->getRoundConfig($round, $game->season);
         $matchups = $generator->generateMatchups($game, $round);
 
         foreach ($matchups as [$homeTeamId, $awayTeamId]) {

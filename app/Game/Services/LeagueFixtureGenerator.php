@@ -58,13 +58,17 @@ class LeagueFixtureGenerator
     /**
      * Load knockout rounds from a competition's schedule.json file.
      *
+     * Dates in schedule.json are stored for the base season (e.g. 2025).
+     * Pass $gameSeason to automatically adjust dates for later seasons.
+     *
      * @param  string  $competitionId  e.g. 'ESPCUP', 'UCL', 'ESP2'
-     * @param  string  $season  e.g. '2025' (base season from Competition::season)
+     * @param  string  $baseSeason  e.g. '2025' (base season from Competition::season)
+     * @param  string|null  $gameSeason  e.g. '2027' (current game season, for year adjustment)
      * @return PlayoffRoundConfig[]
      */
-    public static function loadKnockoutRounds(string $competitionId, string $season): array
+    public static function loadKnockoutRounds(string $competitionId, string $baseSeason, ?string $gameSeason = null): array
     {
-        $path = base_path("data/{$season}/{$competitionId}/schedule.json");
+        $path = base_path("data/{$baseSeason}/{$competitionId}/schedule.json");
 
         if (!file_exists($path)) {
             return [];
@@ -73,7 +77,7 @@ class LeagueFixtureGenerator
         $data = json_decode(file_get_contents($path), true);
         $rounds = $data['knockout'] ?? [];
 
-        return array_map(function ($round) {
+        $configs = array_map(function ($round) {
             $hasTwoLegs = isset($round['second_leg_date']);
             $firstLegDate = $hasTwoLegs ? $round['first_leg_date'] : ($round['date'] ?? null);
 
@@ -85,6 +89,15 @@ class LeagueFixtureGenerator
                 secondLegDate: $hasTwoLegs ? Carbon::parse($round['second_leg_date']) : null,
             );
         }, $rounds);
+
+        if ($gameSeason !== null) {
+            $yearDiff = (int) $gameSeason - (int) $baseSeason;
+            if ($yearDiff !== 0) {
+                $configs = self::adjustKnockoutYears($configs, $yearDiff);
+            }
+        }
+
+        return $configs;
     }
 
     /**
