@@ -123,14 +123,35 @@ class PromotionRelegationProcessor implements SeasonEndProcessor
             ['entry_round' => 1]
         );
 
-        // Update game_standings
+        // Update game_standings.
+        // Delete from source (if exists — simulated leagues have no standings).
         GameStanding::where('game_id', $gameId)
             ->where('competition_id', $fromDivision)
             ->where('team_id', $teamId)
-            ->update([
+            ->delete();
+
+        // Only create in target if that division uses real standings
+        // (i.e. it already has GameStanding rows). Simulated leagues
+        // rely on SimulatedSeason records instead.
+        $targetHasStandings = GameStanding::where('game_id', $gameId)
+            ->where('competition_id', $toDivision)
+            ->exists();
+
+        if ($targetHasStandings) {
+            GameStanding::create([
+                'game_id' => $gameId,
                 'competition_id' => $toDivision,
+                'team_id' => $teamId,
                 'position' => 99, // Will be re-sorted
+                'played' => 0,
+                'won' => 0,
+                'drawn' => 0,
+                'lost' => 0,
+                'goals_for' => 0,
+                'goals_against' => 0,
+                'points' => 0,
             ]);
+        }
 
         // Update game's primary competition if the player's team moved
         Game::where('id', $gameId)
