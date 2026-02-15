@@ -251,6 +251,72 @@ Country (Spain)
 
 ---
 
+## UI / Controller Layer Analysis
+
+### Current state: already 90% country-agnostic
+
+The HTTP layer (20 Views, 30 Actions, 56 Blade templates) is remarkably well-abstracted. Almost everything uses dynamic data from models and translation keys rather than hardcoded competition names or country logic. This means the UI changes per phase are smaller than expected.
+
+### What's already generic (no changes needed)
+
+| Component | Why it works |
+|---|---|
+| `game-header.blade.php` (navigation) | Queries `CompetitionEntry` and orders by `tier`. Competition names are dynamic. Both desktop nav and mobile drawer iterate the same data. |
+| `cup.blade.php` (cup bracket) | Fully data-driven — `$rounds`, `$round->twoLegged`, `$round->name` all come from backend. No league-specific logic. |
+| `finances.blade.php` (financial summary) | All categories use translation keys. Revenue rates come from `CompetitionConfig` classes. Conditionally shows items if values > 0. |
+| `budget-allocation.blade.php` (infrastructure tiers) | Generic 0-4 tier system with translation keys. Not league-specific. |
+| `lineup.blade.php` (lineup selection) | Position groups are universal football concepts. Formation/mentality enums are generic. |
+| `squad.blade.php`, `squad-stats.blade.php`, `squad-development.blade.php` | All use player data dynamically. Nationality flags use `$player->nationality_flag['code']`. |
+| `scouting.blade.php` | Scope filter (domestic/international) uses `$teamCountry` from backend. No hardcoded country. |
+| `game.blade.php` (dashboard) | Competition role accent colors (`domestic_cup` → emerald, `european` → blue, default → amber) are generic. |
+| `calendar.blade.php` | Pure fixture data display. |
+| `dashboard.blade.php` | Lists games with dynamic team data. |
+| All 30 Actions | No hardcoded competition codes. All use models, relationships, or service methods. `AdvanceMatchday` delegates to services. |
+
+### What needs changes (by phase)
+
+#### Spain-specific hardcoding in templates
+
+| File | Line(s) | Issue | Phase |
+|---|---|---|---|
+| `season-end.blade.php` | ~138 | `__('season.pichichi')` — Spanish top scorer award name | 4 |
+| `season-end.blade.php` | ~170 | `__('season.zamora')` — Spanish best goalkeeper award name | 4 |
+
+These award names should become per-competition config (e.g., `CompetitionConfig::getTopScorerAwardName()`), or use generic translation keys with the competition name as a parameter.
+
+#### Views that need refactoring
+
+| View | Current behavior | What changes | Phase |
+|---|---|---|---|
+| `SelectTeam.php` | Queries `Competition::where('role', 'primary')`, shows flat list of competitions with teams | Should group by country → tier using `CountryConfig`. Each country becomes a section with its tiers as sub-sections. | 1 |
+| `select-team.blade.php` | Iterates `$competitions` flat, shows country flag via `$competition->country` | Restructure to iterate countries, then tiers within each country. Already loads flags dynamically — that part works. | 1 |
+| `ShowSeasonEnd.php` | Queries higher/lower tier competitions in same country for promotion/relegation display | Should use `CountryConfig::getPromotions()` to determine what to show. Currently works because it queries by `tier` and `country` fields — already semi-generic. | 4 |
+| `ShowOnboarding.php` | Queries `CompetitionEntry` to find team's competitions, styles by `$comp->role` | Role-based styling (3 cases: `domestic_cup`, `european`, default) already works generically. No changes needed unless `role` values change in Phase 5. | 5 |
+| `ShowCompetition.php` | Dispatches to `showLeague()`, `showSwissFormat()`, or `showCup()` based on `handler_type` | Already generic — handler type determines the view. Adding a new handler type (e.g., `group_stage_knockout` for World Cup) just needs a new dispatch case + template. | 7 |
+
+#### Standings zone colors
+
+`standings.blade.php` has hardcoded Tailwind color maps for zone rendering:
+
+```php
+$borderColorMap = ['blue-500', 'orange-500', 'red-500', 'green-300', 'green-500', 'yellow-500'];
+$bgColorMap = ['blue-500/10', 'orange-500/10', 'red-500/10', 'green-300/10', 'green-500/10', 'yellow-500/10'];
+```
+
+The zone **data** (which positions map to which zones) comes from the backend via `CompetitionConfig::getStandingsZones()`. The template just maps zone colors by index. This works for any league as long as it uses the same color palette. If a new league needs a different zone color, a new entry must be added to these maps — but the existing 6 colors cover all standard football zone types (promotion, playoff, relegation, UCL, UEL, UECL qualification).
+
+**Verdict:** No change needed. The color palette is comprehensive enough.
+
+#### Navigation (game-header.blade.php)
+
+The competition dropdown in both desktop and mobile nav queries `CompetitionEntry` for the current game and orders by `tier`. This is already fully dynamic — it shows whatever competitions the team is entered in. Adding a new country's competitions requires no nav changes; they'll appear automatically once `CompetitionEntry` records exist.
+
+#### Route parameter: competition code
+
+`ShowMatchResults` takes a competition code as a route parameter (`/game/{game}/results/{competition}/{matchday}`). This is already generic — it works with any competition code string. No changes needed.
+
+---
+
 ## Incremental Transition Plan
 
 ### Phase 1: Introduce `FootballCountry` configuration (no schema changes)
@@ -301,13 +367,17 @@ Create `config/countries.php` (or `app/Game/Countries/`) that declares:
 ],
 ```
 
-**Changes:**
+**Backend changes:**
 - Create `config/countries.php` with the declarative structure including support teams
 - Create a `CountryConfig` service class that reads this config
 - Refactor `PromotionRelegationFactory` to read from config instead of hardcoded `SpanishPromotionRule`
 - Refactor `UefaQualificationProcessor` to read continental_slots from config
-- Refactor `SelectTeam` view to group teams by country → tier
 - Update `SeedReferenceData::$profiles` to be generated from country config
+
+**UI/controller changes:**
+- `SelectTeam.php`: Refactor to use `CountryConfig` instead of `Competition::where('role', 'primary')`. Group teams by country → tier. Currently queries competitions flat; should iterate configured countries and their tiers.
+- `select-team.blade.php`: Restructure from flat competition list to country → tier hierarchy. Each country is a section with flag + name, tiers as sub-sections within. The template already loads flags dynamically via `$competition->country`, so flag rendering works as-is.
+- No other view/action/template changes needed in this phase.
 
 **What this unlocks:** Adding a new playable country becomes a config change + JSON data, not code changes. Support team requirements are declared alongside the playable ecosystem.
 
@@ -338,6 +408,8 @@ Specific improvements:
 - **Explicit dependency tracking**: Each step in the pipeline knows what it depends on (e.g., continental opponents depend on transfer pool). The country config declares this order.
 - **No cup roster generation**: Lower-division cup teams remain as team records only. Early cup rounds are auto-simulated and by the time the user enters, they face league teams with full rosters. This avoids adding complexity for an edge case.
 
+**UI/controller changes:** None. `SetupNewGame` is a background job — the user sees the onboarding screen after setup completes. The `GameSetupStatus` polling endpoint is unaffected.
+
 **What this unlocks:** Game setup creates fewer GamePlayers (no NLD1/POR1 full leagues), the initialization order is documented and enforced, and the pipeline is driven by config rather than hardcoded method calls.
 
 **Risk:** Low-medium. The main change is restructuring `SetupNewGame` into a config-driven pipeline. Moving NLD1/POR1 to EUR pool requires creating individual team JSON files for their relevant clubs, but the seeding mechanics already support this format.
@@ -354,6 +426,8 @@ Specific improvements:
 - The seeder knows the dependency order from the country config — leagues before cups, domestic before continental, continental before transfer pool
 - Support teams are seeded as part of the country's ecosystem, not as standalone entries in a flat list
 
+**UI/controller changes:** None. Seeding is an artisan command — no user-facing UI involved.
+
 **What this unlocks:** `php artisan app:seed-reference-data --country=ES` seeds everything for Spain in the right order — playable tiers, cups, continental, and transfer pool. Adding England means adding config + JSON, then `--country=GB`.
 
 **Risk:** Low-medium. Changes the seeder structure but the individual seeding operations remain the same.
@@ -362,12 +436,20 @@ Specific improvements:
 
 **Goal:** Processors use `CountryConfig` to resolve competition IDs dynamically.
 
-**Changes:**
+**Backend changes:**
 - `UefaQualificationProcessor`: reads `continental_slots` from `CountryConfig` for the game's country
 - `PromotionRelegationProcessor`: reads `promotions` from `CountryConfig`
 - `SupercopaQualificationProcessor`: reads domestic cup config from `CountryConfig`
 - `Competition::CONFIG_MAP`: replace hardcoded map with a lookup through `CountryConfig` or move to config
 - `GameProjector::onGameCreated`: resolve competition from team's country + tier, no 'ESP1' fallback
+
+**UI/controller changes:**
+- `ShowSeasonEnd.php`: Currently queries higher/lower tier competitions in the same country for promotion/relegation display. Should use `CountryConfig::getPromotions()` to determine what tiers exist and what the promotion/relegation rules are. The view already works semi-generically (queries by `tier` and `country` fields), but the config lookup makes it explicit.
+- `season-end.blade.php`: Replace Spain-specific award names with per-competition config:
+  - `__('season.pichichi')` → use `$competition->getConfig()->getTopScorerAwardName()` or a generic key like `__('season.top_scorer')`
+  - `__('season.zamora')` → use `$competition->getConfig()->getBestGoalkeeperAwardName()` or `__('season.best_goalkeeper')`
+  - Add `getTopScorerAwardName()` and `getBestGoalkeeperAwardName()` to `CompetitionConfig` interface, with Spanish defaults in `LaLigaConfig`.
+- No other view/action/template changes. `AdvanceMatchday.php` delegates entirely to services — processor changes don't affect it.
 
 **What this unlocks:** All season-end processing works for any configured country without code changes.
 
@@ -377,11 +459,17 @@ Specific improvements:
 
 **Goal:** Make the distinction between domestic/continental/reference explicit on the Competition model.
 
-**Changes:**
+**Backend changes:**
 - Add `scope` field to `competitions` table: 'domestic' | 'continental' | 'international'
 - Deprecate the `foreign` value of `role` — foreign leagues are `scope=domestic, active=false` (they belong to another country's domestic setup, just not actively played)
 - Add `active` boolean (or derive from: "is this competition's country the game's country, or is it continental?")
 - Update queries that use `Competition::ROLE_FOREIGN` to use the new fields
+
+**UI/controller changes:**
+- `ShowOnboarding.php`: Uses `$comp->role` for accent color styling (3 cases: `domestic_cup` → emerald, `european` → blue, default → amber). If `role` values change, the match expression needs updating. Consider switching to `$comp->scope` instead.
+- `game.blade.php`: Same role-based accent colors for next match card. Same update as onboarding.
+- `ShowScouting.php` / `SubmitScoutSearch.php`: Scouting scope filter uses "domestic" vs "international" — this maps cleanly to the new `scope` field. Currently derives this from team country; could use `Competition.scope` instead.
+- Templates that check `$game->isCareerMode()` / `$game->isTournamentMode()` are unaffected — those check `game_mode`, not `role`.
 
 **What this unlocks:** Cleaner queries. `Competition::where('scope', 'domestic')->where('country', $gameCountry)` instead of `whereIn('role', ['primary', 'domestic_cup'])`.
 
@@ -391,10 +479,19 @@ Specific improvements:
 
 **Goal:** The Game model knows which country the career is in, enabling all downstream lookups.
 
-**Changes:**
+**Backend changes:**
 - Add `country` field to `games` table (or derive from `team.country`)
 - `SetupNewGame` uses game's country to determine which competitions to set up, including all support teams declared in that country's config
-- Game creation flow: user picks country → tier → team (instead of flat team list from all primary competitions)
+
+**UI/controller changes:**
+- `SelectTeam.php` + `select-team.blade.php`: Rework game creation flow from flat team list to country → tier → team picker. This is the most significant UI change in the entire refactor:
+  - Step 1: User picks a country (show flags + names from `CountryConfig`)
+  - Step 2: User picks a tier within that country (show league names)
+  - Step 3: User picks a team within that tier (show team crests + names)
+  - Could be a single page with progressive disclosure (Alpine.js) or multi-step wizard
+  - `InitGame.php`: May need to accept country code in addition to team ID, or derive it from the selected team
+- `dashboard.blade.php`: Could show country flag next to each game card. Minor enhancement, not required.
+- All other views are unaffected — they already work with whatever competitions exist in `CompetitionEntry` for the game.
 
 **What this unlocks:** Multi-country support. The game knows "I'm a Spain career" and can set up the right ecosystem — playable leagues, cups, continental competitions, and transfer pool — all from one config lookup.
 
@@ -404,7 +501,7 @@ Specific improvements:
 
 **Goal:** Implement the World Cup as a tournament mode.
 
-**Changes:**
+**Backend changes:**
 - New `GroupStageKnockoutHandler` competition handler
 - National team data (48 teams with squads)
 - Tournament-specific `SetupNewGame` flow: no finances, no transfers, no season progression
@@ -412,6 +509,15 @@ Specific improvements:
 - Knockout phase: R32 → R16 → QF → SF → Final
 - Single-season game with no season-end pipeline
 - Support teams: all 47 non-user teams are opponents — all need full rosters (national team squads from reference data)
+
+**UI/controller changes:**
+- `SelectTeam.php` + `select-team.blade.php`: Add game mode selector (Career vs Tournament) before country/team selection. Tournament mode skips country/tier and shows national teams directly.
+- `ShowCompetition.php`: Add `showGroupStageKnockout()` dispatch case for the new handler type. Needs a new `group-stage.blade.php` template showing group tables + knockout bracket.
+- New template: `group-stage.blade.php` — group tables (12 groups of 4) with standings, plus knockout bracket below.
+- `ShowOnboarding.php`: Skip onboarding entirely for tournament mode (no finances/infrastructure). `InitGame.php` should redirect directly to game dashboard.
+- `game-header.blade.php`: Hide career-only nav items (Squad Development, Transfers, Scouting, Finances, Budget) when `$game->isTournamentMode()`. Several templates already check `isCareerMode()` — extend this pattern.
+- `ShowSeasonEnd.php`: Tournament mode has no season end — instead needs a tournament results screen (final standings, golden boot, etc.). New template or conditional within `season-end.blade.php`.
+- `AdvanceMatchday.php`: Skip career-only logic (transfers, scouting, loans, academy, contract processing) when `$game->isTournamentMode()`. The action already has some `isCareerMode()` guards.
 
 **What this unlocks:** The second game mode.
 
