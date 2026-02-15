@@ -277,19 +277,19 @@
                             </div>
                             @endif
                             <div class="flex items-center gap-1">
-                                <x-position-badge abbreviation="PO" size="sm" />
+                                <x-position-badge group="Goalkeeper" size="sm" />
                                 <span class="font-medium">{{ $goalkeepers->count() }}</span>
                             </div>
                             <div class="flex items-center gap-1">
-                                <x-position-badge abbreviation="DEF" size="sm" />
+                                <x-position-badge group="Defender" size="sm" />
                                 <span class="font-medium">{{ $defenders->count() }}</span>
                             </div>
                             <div class="flex items-center gap-1">
-                                <x-position-badge abbreviation="MED" size="sm" />
+                                <x-position-badge group="Midfielder" size="sm" />
                                 <span class="font-medium">{{ $midfielders->count() }}</span>
                             </div>
                             <div class="flex items-center gap-1">
-                                <x-position-badge abbreviation="DEL" size="sm" />
+                                <x-position-badge group="Forward" size="sm" />
                                 <span class="font-medium">{{ $forwards->count() }}</span>
                             </div>
                             <div class="border-l pl-8 flex items-center gap-1">

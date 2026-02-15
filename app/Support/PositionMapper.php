@@ -5,153 +5,158 @@ namespace App\Support;
 class PositionMapper
 {
     /**
-     * Map canonical (English) position names to Spanish abbreviations.
+     * Map canonical (English) position names to translation key prefixes.
      */
-    private static array $positionToAbbreviation = [
-        'Goalkeeper' => 'PO',
-        'Centre-Back' => 'CT',
-        'Left-Back' => 'LI',
-        'Right-Back' => 'LD',
-        'Defensive Midfield' => 'MCD',
-        'Central Midfield' => 'MC',
-        'Attacking Midfield' => 'MP',
-        'Left Midfield' => 'MI',
-        'Right Midfield' => 'MD',
-        'Left Winger' => 'EI',
-        'Right Winger' => 'ED',
-        'Centre-Forward' => 'DC',
-        'Second Striker' => 'SD',
+    private static array $positionToKey = [
+        'Goalkeeper' => 'goalkeeper',
+        'Centre-Back' => 'centre_back',
+        'Left-Back' => 'left_back',
+        'Right-Back' => 'right_back',
+        'Defensive Midfield' => 'defensive_midfield',
+        'Central Midfield' => 'central_midfield',
+        'Attacking Midfield' => 'attacking_midfield',
+        'Left Midfield' => 'left_midfield',
+        'Right Midfield' => 'right_midfield',
+        'Left Winger' => 'left_winger',
+        'Right Winger' => 'right_winger',
+        'Centre-Forward' => 'centre_forward',
+        'Second Striker' => 'second_striker',
     ];
 
     /**
-     * Map canonical (English) position names to Spanish display names.
+     * Map internal slot codes to translation key prefixes.
      */
-    private static array $positionToDisplayName = [
-        'Goalkeeper' => 'Portero',
-        'Centre-Back' => 'Central',
-        'Left-Back' => 'Lateral Izquierdo',
-        'Right-Back' => 'Lateral Derecho',
-        'Defensive Midfield' => 'Mediocentro Defensivo',
-        'Central Midfield' => 'Centrocampista',
-        'Attacking Midfield' => 'Mediapunta',
-        'Left Midfield' => 'Medio Izquierdo',
-        'Right Midfield' => 'Medio Derecho',
-        'Left Winger' => 'Extremo Izquierdo',
-        'Right Winger' => 'Extremo Derecho',
-        'Centre-Forward' => 'Delantero Centro',
-        'Second Striker' => 'Segundo Delantero',
+    private static array $slotToKey = [
+        'GK' => 'goalkeeper',
+        'CB' => 'centre_back',
+        'LB' => 'left_back',
+        'RB' => 'right_back',
+        'LWB' => 'left_wing_back',
+        'RWB' => 'right_wing_back',
+        'DM' => 'defensive_midfield',
+        'CM' => 'central_midfield',
+        'AM' => 'attacking_midfield',
+        'LM' => 'left_midfield',
+        'RM' => 'right_midfield',
+        'LW' => 'left_winger',
+        'RW' => 'right_winger',
+        'CF' => 'centre_forward',
+        'SS' => 'second_striker',
     ];
 
     /**
-     * Map internal slot codes (used in formations/compatibility) to Spanish abbreviations.
+     * Map canonical position names to position groups.
      */
-    private static array $slotToDisplayAbbreviation = [
-        'GK' => 'PO',
-        'CB' => 'CT',
-        'LB' => 'LI',
-        'RB' => 'LD',
-        'LWB' => 'CRI',
-        'RWB' => 'CRD',
-        'DM' => 'MCD',
-        'CM' => 'MC',
-        'AM' => 'MP',
-        'LM' => 'MI',
-        'RM' => 'MD',
-        'LW' => 'EI',
-        'RW' => 'ED',
-        'CF' => 'DC',
-        'SS' => 'SD',
+    private static array $positionToGroup = [
+        'Goalkeeper' => 'Goalkeeper',
+        'Centre-Back' => 'Defender',
+        'Left-Back' => 'Defender',
+        'Right-Back' => 'Defender',
+        'Defensive Midfield' => 'Midfielder',
+        'Central Midfield' => 'Midfielder',
+        'Attacking Midfield' => 'Midfielder',
+        'Left Midfield' => 'Midfielder',
+        'Right Midfield' => 'Midfielder',
+        'Left Winger' => 'Forward',
+        'Right Winger' => 'Forward',
+        'Centre-Forward' => 'Forward',
+        'Second Striker' => 'Forward',
     ];
 
     /**
-     * CSS color classes keyed by Spanish abbreviation.
+     * CSS color classes keyed by position group (structural, not localized).
      */
-    private static array $abbreviationColors = [
-        'PO' => ['bg' => 'bg-amber-500', 'text' => 'text-white'],
-
-        // Defenders
-        'CT' => ['bg' => 'bg-blue-600', 'text' => 'text-white'],
-        'LI' => ['bg' => 'bg-blue-600', 'text' => 'text-white'],
-        'LD' => ['bg' => 'bg-blue-600', 'text' => 'text-white'],
-        'CRI' => ['bg' => 'bg-blue-600', 'text' => 'text-white'],
-        'CRD' => ['bg' => 'bg-blue-600', 'text' => 'text-white'],
-        'DEF' => ['bg' => 'bg-blue-600', 'text' => 'text-white'],
-
-        // Midfielders
-        'MCD' => ['bg' => 'bg-emerald-600', 'text' => 'text-white'],
-        'MC' => ['bg' => 'bg-emerald-600', 'text' => 'text-white'],
-        'MP' => ['bg' => 'bg-emerald-600', 'text' => 'text-white'],
-        'MI' => ['bg' => 'bg-emerald-600', 'text' => 'text-white'],
-        'MD' => ['bg' => 'bg-emerald-600', 'text' => 'text-white'],
-        'MED' => ['bg' => 'bg-emerald-600', 'text' => 'text-white'],
-
-        // Forwards
-        'EI' => ['bg' => 'bg-red-600', 'text' => 'text-white'],
-        'ED' => ['bg' => 'bg-red-600', 'text' => 'text-white'],
-        'DC' => ['bg' => 'bg-red-600', 'text' => 'text-white'],
-        'SD' => ['bg' => 'bg-red-600', 'text' => 'text-white'],
-        'DEL' => ['bg' => 'bg-red-600', 'text' => 'text-white'],
+    private static array $groupColors = [
+        'Goalkeeper' => ['bg' => 'bg-amber-500', 'text' => 'text-white'],
+        'Defender' => ['bg' => 'bg-blue-600', 'text' => 'text-white'],
+        'Midfielder' => ['bg' => 'bg-emerald-600', 'text' => 'text-white'],
+        'Forward' => ['bg' => 'bg-red-600', 'text' => 'text-white'],
     ];
 
     /**
-     * Get Spanish abbreviation for a canonical position name.
+     * Map scout filter values to translation key prefixes.
+     */
+    private static array $filterToKey = [
+        'GK' => 'goalkeeper',
+        'CB' => 'centre_back',
+        'LB' => 'left_back',
+        'RB' => 'right_back',
+        'DM' => 'defensive_midfield',
+        'CM' => 'central_midfield',
+        'AM' => 'attacking_midfield',
+        'LM' => 'left_midfield',
+        'RM' => 'right_midfield',
+        'LW' => 'left_winger',
+        'RW' => 'right_winger',
+        'CF' => 'centre_forward',
+        'SS' => 'second_striker',
+    ];
+
+    /**
+     * Get localized abbreviation for a canonical position name.
      */
     public static function toAbbreviation(string $position): string
     {
-        return self::$positionToAbbreviation[$position] ?? 'MC';
+        $key = self::$positionToKey[$position] ?? null;
+
+        return $key ? __("positions.{$key}_abbr") : __('positions.central_midfield_abbr');
     }
 
     /**
-     * Get Spanish display name for a canonical position name.
+     * Get localized display name for a canonical position name.
      */
     public static function toDisplayName(string $position): string
     {
-        return self::$positionToDisplayName[$position] ?? $position;
+        $key = self::$positionToKey[$position] ?? null;
+
+        return $key ? __("positions.{$key}") : $position;
     }
 
     /**
-     * Get Spanish abbreviation for an internal slot code (GK, CB, LWB, etc.).
+     * Get localized abbreviation for an internal slot code (GK, CB, LWB, etc.).
      */
     public static function slotToDisplayAbbreviation(string $slotCode): string
     {
-        return self::$slotToDisplayAbbreviation[$slotCode] ?? $slotCode;
+        $key = self::$slotToKey[$slotCode] ?? null;
+
+        return $key ? __("positions.{$key}_abbr") : $slotCode;
     }
 
     /**
-     * Get Spanish display name for a scout search filter value (GK, CB, any_defender, etc.).
+     * Get localized display name for a scout search filter value (GK, CB, any_defender, etc.).
      */
     public static function filterToDisplayName(string $filterValue): string
     {
-        $filterMap = [
-            'GK' => 'Portero',
-            'CB' => 'Central',
-            'LB' => 'Lateral Izquierdo',
-            'RB' => 'Lateral Derecho',
-            'DM' => 'Mediocentro Defensivo',
-            'CM' => 'Centrocampista',
-            'AM' => 'Mediapunta',
-            'LM' => 'Medio Izquierdo',
-            'RM' => 'Medio Derecho',
-            'LW' => 'Extremo Izquierdo',
-            'RW' => 'Extremo Derecho',
-            'CF' => 'Delantero Centro',
-            'SS' => 'Segundo Delantero',
-            'any_defender' => 'Cualquier Defensa',
-            'any_midfielder' => 'Cualquier Centrocampista',
-            'any_forward' => 'Cualquier Delantero',
-        ];
+        // Group filters have their own translation keys
+        if (in_array($filterValue, ['any_defender', 'any_midfielder', 'any_forward'])) {
+            return __("positions.{$filterValue}");
+        }
 
-        return $filterMap[$filterValue] ?? $filterValue;
+        $key = self::$filterToKey[$filterValue] ?? null;
+
+        return $key ? __("positions.{$key}") : $filterValue;
     }
 
     /**
-     * Get CSS color classes for a position abbreviation.
+     * Get CSS color classes for a position group.
      *
      * @return array{bg: string, text: string}
      */
-    public static function getColors(string $abbreviation): array
+    public static function getColorsForGroup(string $group): array
     {
-        return self::$abbreviationColors[$abbreviation] ?? self::$abbreviationColors['MC'];
+        return self::$groupColors[$group] ?? self::$groupColors['Midfielder'];
+    }
+
+    /**
+     * Get CSS color classes for a canonical position name.
+     *
+     * @return array{bg: string, text: string}
+     */
+    public static function getColors(string $position): array
+    {
+        $group = self::$positionToGroup[$position] ?? 'Midfielder';
+
+        return self::getColorsForGroup($group);
     }
 
     /**
@@ -162,12 +167,37 @@ class PositionMapper
     public static function getPositionDisplay(string $position): array
     {
         $abbreviation = self::toAbbreviation($position);
-        $colors = self::getColors($abbreviation);
+        $group = self::$positionToGroup[$position] ?? 'Midfielder';
+        $colors = self::getColorsForGroup($group);
 
         return [
             'abbreviation' => $abbreviation,
             'bg' => $colors['bg'],
             'text' => $colors['text'],
         ];
+    }
+
+    /**
+     * Get the position group for a canonical position name.
+     */
+    public static function getPositionGroup(string $position): string
+    {
+        return self::$positionToGroup[$position] ?? 'Midfielder';
+    }
+
+    /**
+     * Get localized group abbreviation for a position group name.
+     */
+    public static function getGroupAbbreviation(string $group): string
+    {
+        $key = match ($group) {
+            'Goalkeeper' => 'group_goalkeeper_abbr',
+            'Defender' => 'group_defender_abbr',
+            'Midfielder' => 'group_midfielder_abbr',
+            'Forward' => 'group_forward_abbr',
+            default => 'group_midfielder_abbr',
+        };
+
+        return __("positions.{$key}");
     }
 }

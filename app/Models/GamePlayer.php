@@ -657,7 +657,7 @@ class GamePlayer extends Model
     }
 
     /**
-     * Get Spanish position abbreviation (PO, CT, MC, etc.).
+     * Get localized position abbreviation (PO, CT, MC, etc.).
      */
     public function getPositionAbbreviationAttribute(): string
     {
@@ -665,7 +665,7 @@ class GamePlayer extends Model
     }
 
     /**
-     * Get Spanish display name for this player's position.
+     * Get localized display name for this player's position.
      */
     public function getPositionNameAttribute(): string
     {

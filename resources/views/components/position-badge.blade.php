@@ -1,13 +1,16 @@
-@props(['position' => null, 'abbreviation' => null, 'size' => 'md', 'tooltip' => null])
+@props(['position' => null, 'group' => null, 'size' => 'md', 'tooltip' => null])
 
 @php
-    if ($abbreviation) {
+    if ($position) {
+        $positionDisplay = \App\Support\PositionMapper::getPositionDisplay($position);
+    } elseif ($group) {
+        $colors = \App\Support\PositionMapper::getColorsForGroup($group);
         $positionDisplay = [
-            'abbreviation' => $abbreviation,
-            ...\App\Support\PositionMapper::getColors($abbreviation),
+            'abbreviation' => \App\Support\PositionMapper::getGroupAbbreviation($group),
+            ...$colors,
         ];
     } else {
-        $positionDisplay = \App\Support\PositionMapper::getPositionDisplay($position);
+        $positionDisplay = ['abbreviation' => '?', 'bg' => 'bg-slate-500', 'text' => 'text-white'];
     }
 
     $sizeClasses = match($size) {

@@ -86,9 +86,7 @@ return [
     'select_position' => 'Seleccionar posición...',
     'specific_positions' => 'Posiciones Específicas',
     'position_groups' => 'Grupos de Posición (búsqueda más amplia)',
-    'any_defender' => 'Cualquier Defensa (CT, LI, LD)',
-    'any_midfielder' => 'Cualquier Centrocampista (MCD, MC, MP)',
-    'any_forward' => 'Cualquier Delantero (EI, ED, DC)',
+    // Position group labels moved to lang/es/positions.php
     'scope' => 'Rango de búsqueda',
     'scope_domestic' => 'Nacional',
     'scope_international' => 'Internacional',
@@ -188,20 +186,7 @@ return [
     'years' => 'años',
     'year_abbr' => 'año',
 
-    // Position names
-    'position_gk' => 'Portero (PO)',
-    'position_cb' => 'Central (CT)',
-    'position_lb' => 'Lateral Izquierdo (LI)',
-    'position_rb' => 'Lateral Derecho (LD)',
-    'position_dm' => 'Mediocentro Defensivo (MCD)',
-    'position_cm' => 'Centrocampista (MC)',
-    'position_am' => 'Mediapunta (MP)',
-    'position_lm' => 'Medio Izquierdo (MI)',
-    'position_rm' => 'Medio Derecho (MD)',
-    'position_lw' => 'Extremo Izquierdo (EI)',
-    'position_rw' => 'Extremo Derecho (ED)',
-    'position_cf' => 'Delantero Centro (DC)',
-    'position_ss' => 'Segundo Delantero (SD)',
+    // Position names moved to lang/es/positions.php
 
     // Pre-contract
     'expiring_contract_hint' => 'Los jugadores en su último año de contrato pueden ficharse gratis. Puedes hacer una oferta de precontrato a partir del 1 de enero.',

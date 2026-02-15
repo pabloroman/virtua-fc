@@ -180,7 +180,7 @@
                                                     : 'bg-white border border-slate-200 hover:border-slate-300 text-slate-700'"
                                             >
                                                 <span class="inline-flex items-center justify-center w-7 h-7 text-xs -skew-x-12 font-semibold text-white shrink-0"
-                                                      :class="getPositionBadgeColor(player.positionAbbr)">
+                                                      :class="getPositionBadgeColor(player.positionGroup)">
                                                     <span class="skew-x-12" x-text="player.positionAbbr"></span>
                                                 </span>
                                                 <span class="flex-1 truncate font-medium" x-text="player.name"></span>
@@ -202,7 +202,7 @@
                                                     : 'bg-white border border-slate-200 hover:border-slate-300 text-slate-700'"
                                             >
                                                 <span class="inline-flex items-center justify-center w-7 h-7 text-xs -skew-x-12 font-semibold text-white shrink-0"
-                                                      :class="getPositionBadgeColor(player.positionAbbr)">
+                                                      :class="getPositionBadgeColor(player.positionGroup)">
                                                     <span class="skew-x-12" x-text="player.positionAbbr"></span>
                                                 </span>
                                                 <span class="flex-1 truncate font-medium" x-text="player.name"></span>
