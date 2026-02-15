@@ -1,0 +1,455 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/1304.png",
+  "name": "Heracles Almelo",
+  "stadiumName": "Asito Stadion",
+  "stadiumSeats": "12242",
+  "transfermarktId": "1304",
+  "players": [
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 10, 2000",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "462285",
+      "marketValue": "\u20ac700k",
+      "name": "Fabian de Keijzer",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 16, 2003",
+      "foot": "right",
+      "height": "2,03m",
+      "id": "703778",
+      "marketValue": "\u20ac300k",
+      "name": "Timo Jansink",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "16",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Nov 8, 1983",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "25520",
+      "marketValue": "\u20ac150k",
+      "name": "Remko Pasveer",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "22",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Nov 15, 2000",
+      "foot": "right",
+      "height": "1,98m",
+      "id": "535741",
+      "marketValue": "\u20ac50k",
+      "name": "Robin Mantel",
+      "nationality": [
+        "Belgium",
+        "Netherlands"
+      ],
+      "number": "30",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 14, 2005",
+      "height": "1,92m",
+      "id": "1161396",
+      "name": "Leco Zeevalkink",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "33",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 1, 2001",
+      "foot": "left",
+      "height": "1,87m",
+      "id": "482838",
+      "marketValue": "\u20ac900k",
+      "name": "Ivan Mesik",
+      "nationality": [
+        "Slovakia"
+      ],
+      "number": "24",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Dec 30, 1998",
+      "foot": "left",
+      "height": "1,87m",
+      "id": "405892",
+      "marketValue": "\u20ac800k",
+      "name": "Alec Van Hoorenbeeck",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "18",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 13, 1996",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "257986",
+      "marketValue": "\u20ac650k",
+      "name": "Damon Mirani",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jun 8, 1992",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "155806",
+      "marketValue": "\u20ac250k",
+      "name": "Mike te Wierik",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "23",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Feb 19, 2001",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "464906",
+      "marketValue": "\u20ac200k",
+      "name": "Sava-Arangel Cestic",
+      "nationality": [
+        "Serbia",
+        "Germany"
+      ],
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 30, 2005",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "936604",
+      "marketValue": "\u20ac50k",
+      "name": "Jop Tijink",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "27",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 30, 2001",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "596148",
+      "marketValue": "\u20ac450k",
+      "name": "Djevencio van der Kust",
+      "nationality": [
+        "Suriname",
+        "Netherlands"
+      ],
+      "number": "15",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Nov 17, 2003",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "591880",
+      "marketValue": "\u20ac700k",
+      "name": "Mimeirhel Benita",
+      "nationality": [
+        "Netherlands",
+        "Curacao"
+      ],
+      "number": "2",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Aug 2, 2000",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "447801",
+      "marketValue": "\u20ac500k",
+      "name": "Jannes Wieckhoff",
+      "nationality": [
+        "Germany"
+      ],
+      "number": "3",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 24, 2002",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "618083",
+      "marketValue": "\u20ac700k",
+      "name": "Sem Scheperman",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "32",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jul 3, 2004",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "916461",
+      "marketValue": "\u20ac400k",
+      "name": "Rhys Bozinovski",
+      "nationality": [
+        "Australia",
+        "Malta"
+      ],
+      "number": "20",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jul 5, 1996",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "265625",
+      "marketValue": "\u20ac700k",
+      "name": "Ajdin Hrustic",
+      "nationality": [
+        "Australia",
+        "Bosnia-Herzegovina"
+      ],
+      "number": "70",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 13, 2001",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "487924",
+      "marketValue": "\u20ac500k",
+      "name": "Jan Zamburek",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "13",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Oct 14, 2001",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "501049",
+      "marketValue": "\u20ac500k",
+      "name": "Erik Ahlstrand",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "14",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 17, 1998",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "326300",
+      "marketValue": "\u20ac700k",
+      "name": "Jeff Reine-Ad\u00e9la\u00efde",
+      "nationality": [
+        "France",
+        "Martinique"
+      ],
+      "number": "11",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Nov 6, 1999",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "597104",
+      "marketValue": "\u20ac650k",
+      "name": "Walid Ould-Chikh",
+      "nationality": [
+        "Netherlands",
+        "Morocco"
+      ],
+      "number": "73",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 7, 1992",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "172202",
+      "marketValue": "\u20ac250k",
+      "name": "Thomas Bruns",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "10",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jun 13, 2003",
+      "foot": "right",
+      "height": "1,68m",
+      "id": "508639",
+      "marketValue": "\u20ac1.50m",
+      "name": "Naci \u00dcn\u00fcvar",
+      "nationality": [
+        "T\u00fcrkiye",
+        "Netherlands"
+      ],
+      "number": "9",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 18, 2003",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "793702",
+      "marketValue": "\u20ac500k",
+      "name": "Tristan van Gilst",
+      "nationality": [
+        "Netherlands",
+        "South Africa"
+      ],
+      "number": "17",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 24, 2004",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "586659",
+      "marketValue": "\u20ac500k",
+      "name": "Yvandro Borges Sanches",
+      "nationality": [
+        "Luxembourg",
+        "Cape Verde"
+      ],
+      "number": "21",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Oct 22, 1993",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "93637",
+      "marketValue": "\u20ac400k",
+      "name": "Mario Engels",
+      "nationality": [
+        "Germany"
+      ],
+      "number": "8",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 28, 2006",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "1025411",
+      "marketValue": "\u20ac50k",
+      "name": "Giandro Sambo",
+      "nationality": [
+        "Curacao",
+        "Netherlands"
+      ],
+      "number": "28",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 14, 2001",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "502288",
+      "marketValue": "\u20ac650k",
+      "name": "Bryan Limbombe",
+      "nationality": [
+        "Belgium",
+        "DR Congo"
+      ],
+      "number": "7",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 18, 2008",
+      "foot": "left",
+      "id": "1476385",
+      "marketValue": "\u20ac50k",
+      "name": "Sil Blokhuis",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "39",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 29, 1999",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "569470",
+      "marketValue": "\u20ac850k",
+      "name": "Luka Kulenovic",
+      "nationality": [
+        "Bosnia-Herzegovina",
+        "Croatia"
+      ],
+      "number": "19",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Nov 26, 2004",
+      "foot": "right",
+      "height": "1,97m",
+      "id": "728864",
+      "marketValue": "\u20ac850k",
+      "name": "Lequincio Zeefuik",
+      "nationality": [
+        "Netherlands",
+        "Suriname"
+      ],
+      "number": "25",
+      "position": "Centre-Forward"
+    }
+  ]
+}

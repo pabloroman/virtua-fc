@@ -1,0 +1,365 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/2420.png",
+  "name": "Vit\u00f3ria Guimar\u00e3es SC",
+  "stadiumName": "Est\u00e1dio D. Afonso Henriques",
+  "stadiumSeats": "30029",
+  "transfermarktId": "2420",
+  "players": [
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 13, 2003",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "662446",
+      "marketValue": "\u20ac1.00m",
+      "name": "Juan Castillo",
+      "nationality": [
+        "Colombia"
+      ],
+      "number": "25",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 4, 1994",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "181773",
+      "marketValue": "\u20ac300k",
+      "name": "Charles",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "27",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 13, 2006",
+      "foot": "left",
+      "height": "1,91m",
+      "id": "1093809",
+      "marketValue": "\u20ac200k",
+      "name": "Gui",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "91",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 27, 2000",
+      "foot": "both",
+      "height": "1,93m",
+      "id": "890557",
+      "marketValue": "\u20ac1.00m",
+      "name": "\u00d3scar Rivas",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 14, 1994",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "367652",
+      "marketValue": "\u20ac600k",
+      "name": "Rodrigo Abascal",
+      "nationality": [
+        "Uruguay",
+        "Spain"
+      ],
+      "number": "26",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Feb 23, 2003",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "984093",
+      "marketValue": "\u20ac500k",
+      "name": "Thiago Balieiro",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "28",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 17, 2000",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "409884",
+      "marketValue": "\u20ac400k",
+      "name": "Miguel N\u00f3brega",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 13, 2000",
+      "foot": "left",
+      "height": "1,79m",
+      "id": "684348",
+      "marketValue": "\u20ac2.50m",
+      "name": "Jo\u00e3o Mendes",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "13",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 23, 1998",
+      "foot": "left",
+      "height": "1,76m",
+      "id": "524964",
+      "marketValue": "\u20ac500k",
+      "name": "Orest Lebedenko",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "17",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Nov 16, 2002",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "729140",
+      "marketValue": "\u20ac2.00m",
+      "name": "Maga",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "2",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 7, 2004",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "1004681",
+      "marketValue": "\u20ac400k",
+      "name": "Tony Strata",
+      "nationality": [
+        "Romania",
+        "France"
+      ],
+      "number": "66",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 20, 2006",
+      "foot": "left",
+      "height": "1,76m",
+      "id": "937729",
+      "marketValue": "\u20ac300k",
+      "name": "Diogo Sousa",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "23",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Dec 12, 2004",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "959979",
+      "marketValue": "\u20ac2.00m",
+      "name": "Matija Mitrovi\u0107",
+      "nationality": [
+        "Serbia",
+        "United States"
+      ],
+      "number": "6",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "May 21, 2002",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "666539",
+      "marketValue": "\u20ac2.00m",
+      "name": "Beni Mukendi",
+      "nationality": [
+        "Angola"
+      ],
+      "number": "16",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 28, 2003",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "877140",
+      "marketValue": "\u20ac600k",
+      "name": "Gon\u00e7alo Nogueira",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "30",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 21, 1996",
+      "foot": "left",
+      "height": "1,70m",
+      "id": "291939",
+      "marketValue": "\u20ac1.50m",
+      "name": "Samu",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "20",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 27, 2005",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "1135545",
+      "marketValue": "\u20ac500k",
+      "name": "Miguel Nogueira",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "88",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "May 11, 2007",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "1053206",
+      "marketValue": "\u20ac1.00m",
+      "name": "Oumar Camara",
+      "nationality": [
+        "France",
+        "Mali"
+      ],
+      "number": "19",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Feb 18, 2004",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "648909",
+      "marketValue": "\u20ac1.00m",
+      "name": "Fabio Blanco",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "22",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 7, 2004",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "671669",
+      "marketValue": "\u20ac600k",
+      "name": "Noah Saviolo",
+      "nationality": [
+        "Belgium",
+        "Portugal"
+      ],
+      "number": "48",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 1, 1999",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "1047860",
+      "marketValue": "\u20ac3.00m",
+      "name": "Gustavo Silva",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "11",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 21, 2001",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "791528",
+      "marketValue": "\u20ac3.00m",
+      "name": "Telmo Arcanjo",
+      "nationality": [
+        "Cape Verde",
+        "Portugal"
+      ],
+      "number": "18",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jul 5, 2005",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "1184662",
+      "marketValue": "\u20ac1.00m",
+      "name": "Ejike Opara",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "33",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Oct 5, 2001",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "807124",
+      "marketValue": "\u20ac700k",
+      "name": "Alioune Ndoye",
+      "nationality": [
+        "Senegal"
+      ],
+      "number": "90",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Aug 8, 1991",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "72768",
+      "marketValue": "\u20ac300k",
+      "name": "N\u00e9lson Oliveira",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "7",
+      "position": "Centre-Forward"
+    }
+  ]
+}

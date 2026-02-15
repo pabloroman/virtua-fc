@@ -1,0 +1,411 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/132.png",
+  "name": "NAC Breda",
+  "stadiumName": "Rat Verlegh Stadion",
+  "stadiumSeats": "20500",
+  "transfermarktId": "132",
+  "players": [
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 30, 1999",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "463233",
+      "marketValue": "\u20ac1.00m",
+      "name": "Daniel Bielica",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "99",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 26, 1992",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "195546",
+      "marketValue": "\u20ac150k",
+      "name": "Roy Kortsmit",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 18, 1991",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "64352",
+      "marketValue": "\u20ac150k",
+      "name": "Kostas Lamprou",
+      "nationality": [
+        "Greece",
+        "Netherlands"
+      ],
+      "number": "31",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jan 1, 2008",
+      "id": "1346738",
+      "marketValue": "\u20ac50k",
+      "name": "Thomas Goos",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "44",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 3, 2001",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "434110",
+      "marketValue": "\u20ac1.80m",
+      "name": "Leo Greiml",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "12",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 5, 2003",
+      "foot": "left",
+      "height": "1,87m",
+      "id": "559334",
+      "marketValue": "\u20ac1.00m",
+      "name": "Rio Hillen",
+      "nationality": [
+        "Netherlands",
+        "Brazil"
+      ],
+      "number": "22",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "May 22, 1997",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "329055",
+      "marketValue": "\u20ac300k",
+      "name": "Enes Mahmutovic",
+      "nationality": [
+        "Luxembourg",
+        "Kosovo"
+      ],
+      "number": "15",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "May 27, 1988",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "59641",
+      "marketValue": "\u20ac200k",
+      "name": "Denis Odoi",
+      "nationality": [
+        "Ghana",
+        "Belgium"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Sep 2, 2007",
+      "foot": "left",
+      "id": "1088672",
+      "name": "Jemuel Erat",
+      "nationality": [
+        "Netherlands",
+        "Suriname"
+      ],
+      "number": "27",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jun 21, 1999",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "428502",
+      "marketValue": "\u20ac850k",
+      "name": "Boy Kemper",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "4",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 2, 2004",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "571150",
+      "marketValue": "\u20ac150k",
+      "name": "Jayden Candelaria",
+      "nationality": [
+        "Curacao",
+        "Netherlands"
+      ],
+      "number": "21",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Dec 18, 2007",
+      "foot": "left",
+      "id": "1149728",
+      "name": "Christian Chiza",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "29",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 22, 2005",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "936581",
+      "marketValue": "\u20ac700k",
+      "name": "Cherrion Valerius",
+      "nationality": [
+        "Curacao",
+        "Netherlands"
+      ],
+      "number": "25",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 1, 1998",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "406091",
+      "marketValue": "\u20ac450k",
+      "name": "Boyd Lucassen",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "2",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Nov 20, 2000",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "849428",
+      "marketValue": "\u20ac1.20m",
+      "name": "Max Balard",
+      "nationality": [
+        "Australia",
+        "France"
+      ],
+      "number": "16",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "May 18, 1993",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "218233",
+      "marketValue": "\u20ac300k",
+      "name": "Fredrik Oldrup Jensen",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "20",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 9, 2000",
+      "foot": "left",
+      "height": "1,79m",
+      "id": "564489",
+      "marketValue": "\u20ac750k",
+      "name": "Kamal Sowah",
+      "nationality": [
+        "Ghana",
+        "Belgium"
+      ],
+      "number": "14",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Sep 15, 1995",
+      "foot": "left",
+      "height": "1,89m",
+      "id": "250464",
+      "marketValue": "\u20ac450k",
+      "name": "Clint Leemans",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 18, 1990",
+      "foot": "left",
+      "height": "1,76m",
+      "id": "55508",
+      "marketValue": "\u20ac400k",
+      "name": "Lewis Holtby",
+      "nationality": [
+        "Germany",
+        "England"
+      ],
+      "number": "90",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 26, 2003",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "640565",
+      "marketValue": "\u20ac850k",
+      "name": "Mohamed Nassoh",
+      "nationality": [
+        "Morocco",
+        "Netherlands"
+      ],
+      "number": "10",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 25, 2004",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "716756",
+      "marketValue": "\u20ac500k",
+      "name": "Raul Paula",
+      "nationality": [
+        "Germany",
+        "Portugal"
+      ],
+      "number": "11",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 31, 2005",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "743390",
+      "marketValue": "\u20ac200k",
+      "name": "Brahim Ghalidi",
+      "nationality": [
+        "Morocco",
+        "Belgium"
+      ],
+      "number": "55",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Mar 25, 2005",
+      "foot": "left",
+      "height": "1,86m",
+      "id": "741587",
+      "marketValue": "\u20ac800k",
+      "name": "Juho Talvitie",
+      "nationality": [
+        "Finland"
+      ],
+      "number": "32",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jul 18, 2000",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "980576",
+      "marketValue": "\u20ac1.50m",
+      "name": "Amine Salama",
+      "nationality": [
+        "France",
+        "Morocco"
+      ],
+      "number": "19",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jul 9, 2005",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "1053240",
+      "marketValue": "\u20ac800k",
+      "name": "Moussa Soumano",
+      "nationality": [
+        "France",
+        "Mali"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 8, 1998",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "595028",
+      "marketValue": "\u20ac450k",
+      "name": "Charles-Andreas Brym",
+      "nationality": [
+        "Canada",
+        "France"
+      ],
+      "number": "7",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Dec 17, 1989",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "45403",
+      "marketValue": "\u20ac400k",
+      "name": "Andr\u00e9 Ayew",
+      "nationality": [
+        "Ghana",
+        "France"
+      ],
+      "number": "24",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 1, 2008",
+      "foot": "right",
+      "id": "1409754",
+      "marketValue": "\u20ac300k",
+      "name": "Pepijn Reulen",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "26",
+      "position": "Centre-Forward"
+    }
+  ]
+}

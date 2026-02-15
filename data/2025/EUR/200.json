@@ -1,0 +1,408 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/200.png",
+  "name": "FC Utrecht",
+  "stadiumName": "Stadion \"Galgenwaard\"",
+  "stadiumSeats": "23750",
+  "transfermarktId": "200",
+  "players": [
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 30, 1994",
+      "foot": "left",
+      "height": "1,96m",
+      "id": "248658",
+      "marketValue": "\u20ac3.50m",
+      "name": "Vasilios Barkas",
+      "nationality": [
+        "Greece",
+        "Netherlands"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 21, 1993",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "231650",
+      "marketValue": "\u20ac300k",
+      "name": "Michael Brouwer",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "25",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 8, 2003",
+      "foot": "right",
+      "height": "2,10m",
+      "id": "607133",
+      "marketValue": "\u20ac250k",
+      "name": "Kevin Gadellaa",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "33",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 8, 2001",
+      "foot": "right",
+      "height": "1,98m",
+      "id": "570597",
+      "marketValue": "\u20ac2.00m",
+      "name": "Matisse Didden",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "40",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jul 13, 2000",
+      "foot": "left",
+      "height": "1,94m",
+      "id": "482141",
+      "marketValue": "\u20ac1.70m",
+      "name": "Mike Eerdhuijzen",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "44",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Oct 15, 1992",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "187105",
+      "marketValue": "\u20ac800k",
+      "name": "Mike van der Hoorn",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Aug 3, 1989",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "93081",
+      "marketValue": "\u20ac350k",
+      "name": "Nick Viergever",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "24",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Oct 19, 2000",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "541134",
+      "marketValue": "\u20ac15.00m",
+      "name": "Souffian El Karouani",
+      "nationality": [
+        "Morocco",
+        "Netherlands"
+      ],
+      "number": "16",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jul 31, 2007",
+      "id": "1112524",
+      "name": "Emeka Adiele",
+      "nationality": [
+        "England",
+        "Nigeria"
+      ],
+      "number": "5",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 2, 1998",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "314915",
+      "marketValue": "\u20ac4.50m",
+      "name": "Siebe Horemans",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "2",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 6, 1999",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "422932",
+      "marketValue": "\u20ac800k",
+      "name": "Niklas Vesterlund",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "23",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 27, 2003",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "565436",
+      "marketValue": "\u20ac7.00m",
+      "name": "Alonzo Engwanda",
+      "nationality": [
+        "Belgium",
+        "DR Congo"
+      ],
+      "number": "27",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 8, 2008",
+      "foot": "right",
+      "id": "1111077",
+      "marketValue": "\u20ac500k",
+      "name": "Jaygo van Ommeren",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "46",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jun 1, 2004",
+      "foot": "right",
+      "height": "1,71m",
+      "id": "571149",
+      "marketValue": "\u20ac7.00m",
+      "name": "Gjivai Zechi\u00ebl",
+      "nationality": [
+        "Netherlands",
+        "Suriname"
+      ],
+      "number": "21",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 27, 2003",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "686845",
+      "marketValue": "\u20ac3.00m",
+      "name": "Zidane Iqbal",
+      "nationality": [
+        "Iraq",
+        "England"
+      ],
+      "number": "14",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Apr 5, 2001",
+      "foot": "left",
+      "height": "1,74m",
+      "id": "406609",
+      "marketValue": "\u20ac2.50m",
+      "name": "Can Bozdogan",
+      "nationality": [
+        "Germany",
+        "T\u00fcrkiye"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 8, 2000",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "400548",
+      "marketValue": "\u20ac2.50m",
+      "name": "Victor Jensen",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "7",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 28, 1998",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "340459",
+      "marketValue": "\u20ac2.50m",
+      "name": "Dani de Wit",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "20",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jul 31, 2005",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "738479",
+      "marketValue": "\u20ac350k",
+      "name": "Rafik El Arguioui",
+      "nationality": [
+        "Morocco",
+        "Netherlands"
+      ],
+      "number": "43",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jul 22, 2002",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "782476",
+      "marketValue": "\u20ac7.00m",
+      "name": "Yoann Cathline",
+      "nationality": [
+        "France"
+      ],
+      "number": "10",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jul 25, 1998",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "367992",
+      "marketValue": "\u20ac4.00m",
+      "name": "Jesper Karlsson",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "11",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 15, 2005",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "875581",
+      "marketValue": "\u20ac3.00m",
+      "name": "Adrian Blake",
+      "nationality": [
+        "England",
+        "Jamaica"
+      ],
+      "number": "15",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "May 15, 2004",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "646739",
+      "marketValue": "\u20ac2.00m",
+      "name": "\u00c1ngel Alarc\u00f3n",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "77",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 20, 2005",
+      "foot": "both",
+      "height": "1,81m",
+      "id": "918445",
+      "marketValue": "\u20ac600k",
+      "name": "Emirhan Demircan",
+      "nationality": [
+        "T\u00fcrkiye",
+        "Germany"
+      ],
+      "number": "17",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 29, 2003",
+      "foot": "left",
+      "height": "1,79m",
+      "id": "634427",
+      "marketValue": "\u20ac6.50m",
+      "name": "Miguel Rodr\u00edguez",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "22",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 23, 1999",
+      "foot": "right",
+      "height": "1,94m",
+      "id": "604813",
+      "marketValue": "\u20ac2.00m",
+      "name": "David Min",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jun 22, 1994",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "181375",
+      "marketValue": "\u20ac2.00m",
+      "name": "S\u00e9bastien Haller",
+      "nationality": [
+        "Cote d'Ivoire",
+        "France"
+      ],
+      "number": "91",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Aug 10, 2007",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "1045344",
+      "marketValue": "\u20ac1.50m",
+      "name": "Artem Stepanov",
+      "nationality": [
+        "Ukraine"
+      ],
+      "number": "18",
+      "position": "Centre-Forward"
+    }
+  ]
+}

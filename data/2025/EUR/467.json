@@ -1,0 +1,383 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/467.png",
+  "name": "NEC Nijmegen",
+  "stadiumName": "Goffertstadion",
+  "stadiumSeats": "12650",
+  "transfermarktId": "467",
+  "players": [
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 28, 2000",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "631049",
+      "marketValue": "\u20ac2.00m",
+      "name": "Gonzalo Crettaz",
+      "nationality": [
+        "Spain",
+        "Argentina"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Apr 22, 1989",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "146227",
+      "marketValue": "\u20ac300k",
+      "name": "Jasper Cillessen",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "22",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Apr 16, 2002",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "593163",
+      "marketValue": "\u20ac25k",
+      "name": "Rijk Janse",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "31",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 16, 2003",
+      "foot": "left",
+      "height": "1,89m",
+      "id": "662131",
+      "marketValue": "\u20ac5.00m",
+      "name": "Ahmetcan Kaplan",
+      "nationality": [
+        "T\u00fcrkiye"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Feb 10, 1997",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "340460",
+      "marketValue": "\u20ac2.00m",
+      "name": "Philippe Sandler",
+      "nationality": [
+        "Netherlands",
+        "United States"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 21, 2003",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "620317",
+      "marketValue": "\u20ac1.00m",
+      "name": "Brayann Pereira",
+      "nationality": [
+        "France",
+        "Congo"
+      ],
+      "number": "2",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Mar 30, 1994",
+      "foot": "left",
+      "height": "1,77m",
+      "id": "146258",
+      "marketValue": "\u20ac300k",
+      "name": "Jetro Willems",
+      "nationality": [
+        "Netherlands",
+        "Curacao"
+      ],
+      "number": "15",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "May 4, 1990",
+      "foot": "left",
+      "height": "1,91m",
+      "id": "104597",
+      "marketValue": "\u20ac250k",
+      "name": "Bram Nuytinck",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "17",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 30, 1996",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "241477",
+      "marketValue": "\u20ac900k",
+      "name": "Thomas Ouwejan",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "5",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "May 16, 2003",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "708989",
+      "marketValue": "\u20ac850k",
+      "name": "Deveron Fonville",
+      "nationality": [
+        "Curacao",
+        "Netherlands"
+      ],
+      "number": "24",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Dec 3, 1992",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "163847",
+      "marketValue": "\u20ac800k",
+      "name": "Eli Dasa",
+      "nationality": [
+        "Israel",
+        "Ethiopia"
+      ],
+      "number": "14",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 24, 2002",
+      "foot": "right",
+      "height": "1,67m",
+      "id": "485587",
+      "marketValue": "\u20ac2.30m",
+      "name": "Dirk Proper",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "71",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 25, 1999",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "526566",
+      "marketValue": "\u20ac2.00m",
+      "name": "Darko Nejasmic",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "6",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 25, 2003",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "957544",
+      "marketValue": "\u20ac6.00m",
+      "name": "Kodai Sano",
+      "nationality": [
+        "Japan"
+      ],
+      "number": "23",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 12, 2006",
+      "id": "1052803",
+      "marketValue": "\u20ac75k",
+      "name": "Sam de Laat",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "35",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 2, 2004",
+      "foot": "left",
+      "height": "1,86m",
+      "id": "747016",
+      "marketValue": "\u20ac2.50m",
+      "name": "Sami Ouaissa",
+      "nationality": [
+        "Netherlands",
+        "Morocco"
+      ],
+      "number": "25",
+      "position": "Right Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 6, 2004",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "864112",
+      "marketValue": "\u20ac1.50m",
+      "name": "Ba\u015far \u00d6nal",
+      "nationality": [
+        "T\u00fcrkiye",
+        "Netherlands"
+      ],
+      "number": "11",
+      "position": "Left Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 23, 1998",
+      "foot": "left",
+      "height": "1,94m",
+      "id": "455127",
+      "marketValue": "\u20ac3.50m",
+      "name": "Willum Th\u00f3r Willumsson",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "19",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Apr 22, 2004",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "926389",
+      "marketValue": "\u20ac1.00m",
+      "name": "No\u00e9 Lebreton",
+      "nationality": [
+        "France",
+        "Senegal"
+      ],
+      "number": "20",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 22, 2004",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "670116",
+      "marketValue": "\u20ac800k",
+      "name": "Isak Hansen-Aar\u00f8en",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "8",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 4, 1988",
+      "foot": "left",
+      "height": "1,71m",
+      "id": "76326",
+      "marketValue": "\u20ac400k",
+      "name": "Tjaronn Chery",
+      "nationality": [
+        "Suriname",
+        "Netherlands"
+      ],
+      "number": "10",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jul 24, 1993",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "214346",
+      "marketValue": "\u20ac600k",
+      "name": "Virgil Misidjan",
+      "nationality": [
+        "Suriname",
+        "Netherlands"
+      ],
+      "number": "7",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 8, 1997",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "351567",
+      "marketValue": "\u20ac2.50m",
+      "name": "Koki Ogawa",
+      "nationality": [
+        "Japan"
+      ],
+      "number": "18",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Apr 7, 1999",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "519731",
+      "marketValue": "\u20ac2.00m",
+      "name": "Danilo",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Nov 9, 1999",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "444380",
+      "marketValue": "\u20ac700k",
+      "name": "Youssef El Kachati",
+      "nationality": [
+        "Morocco",
+        "Netherlands"
+      ],
+      "number": "34",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Oct 8, 1990",
+      "foot": "right",
+      "height": "1,70m",
+      "id": "82410",
+      "marketValue": "\u20ac350k",
+      "name": "Bryan Linssen",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "30",
+      "position": "Centre-Forward"
+    }
+  ]
+}

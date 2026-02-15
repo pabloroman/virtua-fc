@@ -1,0 +1,375 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/202.png",
+  "name": "FC Groningen",
+  "stadiumName": "Euroborg",
+  "stadiumSeats": "22550",
+  "transfermarktId": "202",
+  "players": [
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 26, 1995",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "387197",
+      "marketValue": "\u20ac2.50m",
+      "name": "Etienne Vaessen",
+      "nationality": [
+        "Suriname",
+        "Netherlands"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 9, 2004",
+      "foot": "left",
+      "height": "1,91m",
+      "id": "728516",
+      "marketValue": "\u20ac300k",
+      "name": "Lovro Stubljar",
+      "nationality": [
+        "Slovenia"
+      ],
+      "number": "13",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Feb 9, 1994",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "215551",
+      "marketValue": "\u20ac250k",
+      "name": "Hidde Jurjus",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "21",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Aug 16, 2002",
+      "foot": "right",
+      "height": "1,96m",
+      "id": "747635",
+      "marketValue": "\u20ac25k",
+      "name": "Dirk Baron",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "24",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 25, 2005",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "719209",
+      "marketValue": "\u20ac3.50m",
+      "name": "Thijmen Blokzijl",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 17, 2006",
+      "foot": "left",
+      "height": "1,96m",
+      "id": "765743",
+      "marketValue": "\u20ac3.50m",
+      "name": "Dies Janse",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 22, 2006",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "848755",
+      "marketValue": "\u20ac150k",
+      "name": "Sven Bouland",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "22",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 29, 2008",
+      "foot": "right",
+      "id": "1172424",
+      "marketValue": "\u20ac100k",
+      "name": "Elvis van der Laan",
+      "nationality": [
+        "Sweden",
+        "Netherlands"
+      ],
+      "number": "15",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 25, 2005",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "847451",
+      "name": "Robin Kelder",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "48",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 6, 2004",
+      "foot": "left",
+      "height": "1,73m",
+      "id": "671734",
+      "marketValue": "\u20ac600k",
+      "name": "Wouter Prins",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "2",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Feb 10, 1991",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "125769",
+      "marketValue": "\u20ac300k",
+      "name": "Marvin Peersman",
+      "nationality": [
+        "Belgium",
+        "Ghana"
+      ],
+      "number": "43",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 25, 1997",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "237244",
+      "marketValue": "\u20ac1.00m",
+      "name": "Marco Rente",
+      "nationality": [
+        "Germany"
+      ],
+      "number": "5",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Dec 19, 2003",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "913289",
+      "marketValue": "\u20ac600k",
+      "name": "Tyrique Mercera",
+      "nationality": [
+        "Curacao",
+        "Netherlands"
+      ],
+      "number": "16",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 28, 2003",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "793099",
+      "marketValue": "\u20ac7.00m",
+      "name": "Stije Resink",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "6",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 9, 2004",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "671735",
+      "marketValue": "\u20ac1.50m",
+      "name": "Jorg Schreuders",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "14",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 11, 2006",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "816974",
+      "marketValue": "\u20ac1.50m",
+      "name": "Tygo Land",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "18",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 11, 2003",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "653725",
+      "marketValue": "\u20ac1.30m",
+      "name": "Tika de Jonge",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Nov 4, 2005",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "1053908",
+      "marketValue": "\u20ac250k",
+      "name": "Travis Hernes",
+      "nationality": [
+        "Norway",
+        "Jamaica"
+      ],
+      "number": "7",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 31, 2004",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "671737",
+      "marketValue": "\u20ac900k",
+      "name": "David van der Werff",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "17",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Apr 17, 1992",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "187809",
+      "marketValue": "\u20ac350k",
+      "name": "Mats Seuntjens",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "20",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Nov 27, 2002",
+      "foot": "left",
+      "height": "1,76m",
+      "id": "866328",
+      "marketValue": "\u20ac2.30m",
+      "name": "Younes Taha",
+      "nationality": [
+        "Morocco",
+        "Netherlands"
+      ],
+      "number": "10",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Nov 10, 1999",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "387996",
+      "marketValue": "\u20ac300k",
+      "name": "Rui Mendes",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "27",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 10, 2006",
+      "id": "949874",
+      "marketValue": "\u20ac75k",
+      "name": "Mark Hoekstra",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "69",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 6, 2004",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "671738",
+      "marketValue": "\u20ac2.00m",
+      "name": "Thom van Bergen",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "26",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 12, 2000",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "464444",
+      "marketValue": "\u20ac1.30m",
+      "name": "Brynj\u00f3lfur Willumsson",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 1, 1996",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "232015",
+      "marketValue": "\u20ac650k",
+      "name": "Oskar Zawada",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "19",
+      "position": "Centre-Forward"
+    }
+  ]
+}
