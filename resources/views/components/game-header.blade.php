@@ -18,7 +18,7 @@
                 <h2 class="font-semibold text-xl text-white leading-tight">
                     {{ $game->team->name }}
                 </h2>
-                <p>{{ __('game.season') }} {{ $game->formatted_season }}{{ $game->current_matchday ? ' - ' . __('game.matchday') . ' ' . $game->current_matchday : '' }}</p>
+                <p>{{ __('game.season') }} {{ $game->formatted_season }}</p>
             </div>
         </div>
         <div class="text-right flex items-center space-x-4">
