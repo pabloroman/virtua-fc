@@ -1,6 +1,7 @@
 {
   "image": "https://tmssl.akamaized.net/images/wappen/big/610.png",
   "name": "Ajax Amsterdam",
+  "country": "NL",
   "stadiumName": "Johan Cruijff ArenA",
   "stadiumSeats": "55885",
   "transfermarktId": "610",

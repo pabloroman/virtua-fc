@@ -9,7 +9,7 @@
         { "id": "27", "name": "Bayern Munich", "country": "DE", "pot": 1 },
         { "id": "31", "name": "Liverpool FC", "country": "EN", "pot": 1 },
         { "id": "46", "name": "Inter Milan", "country": "IT", "pot": 1 },
-        { "id": "631", "name": "Chelsea FC", "country": "ES", "pot": 1 },
+        { "id": "631", "name": "Chelsea FC", "country": "EN", "pot": 1 },
         { "id": "16", "name": "Borussia Dortmund", "country": "DE", "pot": 1 },
         { "id": "131", "name": "Barcelona", "country": "ES", "pot": 1 },
 
@@ -33,14 +33,14 @@
         { "id": "501", "name": "FK Bodø/Glimt", "country": "NO", "pot": 3 },
         { "id": "244", "name": "Olympique Marseille", "country": "FR", "pot": 3 },
 
-        { "id": "190", "name": "FC Copenhagen", "country": "DE", "pot": 4 },
+        { "id": "190", "name": "FC Copenhagen", "country": "DK", "pot": 4 },
         { "id": "162", "name": "AS Monaco", "country": "FR", "pot": 4 },
-        { "id": "141", "name": "Galatasaray", "country": "TU", "pot": 4 },
+        { "id": "141", "name": "Galatasaray", "country": "TR", "pot": 4 },
         { "id": "3948", "name": "Union Saint-Gilloise", "country": "BE", "pot": 4 },
         { "id": "10625", "name": "Qarabağ FK", "country": "AZ", "pot": 4 },
         { "id": "621", "name": "Athletic Bilbao", "country": "ES", "pot": 4 },
         { "id": "762", "name": "Newcastle United", "country": "EN", "pot": 4 },
         { "id": "45457", "name": "Pafos FC", "country": "CY", "pot": 4 },
-        { "id": "10482", "name": "Kairat Almaty", "country": "KA", "pot": 4 }
+        { "id": "10482", "name": "Kairat Almaty", "country": "KZ", "pot": 4 }
     ]
 }

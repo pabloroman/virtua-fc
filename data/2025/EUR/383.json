@@ -1,6 +1,7 @@
 {
   "image": "https://tmssl.akamaized.net/images/wappen/big/383.png",
   "name": "PSV Eindhoven",
+  "country": "NL",
   "stadiumName": "Philips Stadion",
   "stadiumSeats": "35000",
   "transfermarktId": "383",
