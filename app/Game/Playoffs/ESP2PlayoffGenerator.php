@@ -4,10 +4,11 @@ namespace App\Game\Playoffs;
 
 use App\Game\Contracts\PlayoffGenerator;
 use App\Game\DTO\PlayoffRoundConfig;
+use App\Game\Services\LeagueFixtureGenerator;
+use App\Models\Competition;
 use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameStanding;
-use Carbon\Carbon;
 
 /**
  * Playoff generator for Spanish Segunda División (La Liga 2).
@@ -45,29 +46,18 @@ class ESP2PlayoffGenerator implements PlayoffGenerator
         return 2; // Semifinal + Final
     }
 
-    public function getRoundConfig(int $round, int $seasonYear): PlayoffRoundConfig
+    public function getRoundConfig(int $round, ?string $gameSeason = null): PlayoffRoundConfig
     {
-        // Playoffs happen in June of the year after the season starts
-        // (e.g., 2024-25 season playoffs are in June 2025)
-        $playoffYear = $seasonYear + 1;
+        $competition = Competition::find($this->getCompetitionId());
+        $rounds = LeagueFixtureGenerator::loadKnockoutRounds($this->getCompetitionId(), $competition->season, $gameSeason);
 
-        return match ($round) {
-            1 => new PlayoffRoundConfig(
-                round: 1,
-                name: 'Playoff Semifinal',
-                twoLegged: true,
-                firstLegDate: Carbon::parse("first Sunday of June {$playoffYear}"),
-                secondLegDate: Carbon::parse("first Sunday of June {$playoffYear}")->addDays(7),
-            ),
-            2 => new PlayoffRoundConfig(
-                round: 2,
-                name: 'Playoff Final',
-                twoLegged: true,
-                firstLegDate: Carbon::parse("third Sunday of June {$playoffYear}"),
-                secondLegDate: Carbon::parse("third Sunday of June {$playoffYear}")->addDays(7),
-            ),
-            default => throw new \InvalidArgumentException("Invalid playoff round: {$round}"),
-        };
+        foreach ($rounds as $config) {
+            if ($config->round === $round) {
+                return $config;
+            }
+        }
+
+        throw new \RuntimeException("No knockout round config found for {$this->getCompetitionId()} round {$round}");
     }
 
     public function generateMatchups(Game $game, int $round): array

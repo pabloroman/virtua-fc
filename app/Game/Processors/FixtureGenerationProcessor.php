@@ -5,8 +5,9 @@ namespace App\Game\Processors;
 use App\Game\Contracts\SeasonEndProcessor;
 use App\Game\DTO\SeasonTransitionData;
 use App\Game\Services\LeagueFixtureGenerator;
-use App\Models\CupTie;
+use App\Models\Competition;
 use App\Models\CompetitionEntry;
+use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameMatch;
 use Carbon\Carbon;
@@ -15,8 +16,9 @@ use Illuminate\Support\Str;
 /**
  * Generates fixtures for the new season using the round-robin algorithm.
  *
- * Loads the matchday calendar from matchdays.json, adjusts dates for the new season,
- * and generates fixtures from the current competition team roster.
+ * Loads the matchday calendar from schedule.json (always from the base season data),
+ * adjusts dates for the new season, and generates fixtures from the current
+ * competition team roster.
  *
  * Priority: 30 (runs after promotion/relegation at 26)
  */
@@ -40,7 +42,7 @@ class FixtureGenerationProcessor implements SeasonEndProcessor
         CupTie::where('game_id', $game->id)->delete();
 
         // Generate new league fixtures
-        $this->generateLeagueFixtures($game->id, $data->competitionId, $data->oldSeason, $data->newSeason);
+        $this->generateLeagueFixtures($game->id, $data->competitionId, $data->newSeason);
 
         // Update current date to first fixture
         $firstMatch = GameMatch::where('game_id', $game->id)
@@ -56,11 +58,14 @@ class FixtureGenerationProcessor implements SeasonEndProcessor
         return $data;
     }
 
-    private function generateLeagueFixtures(string $gameId, string $competitionId, string $oldSeason, string $newSeason): void
+    private function generateLeagueFixtures(string $gameId, string $competitionId, string $newSeason): void
     {
-        // Load matchday calendar and adjust dates for the new season
-        $matchdays = LeagueFixtureGenerator::loadMatchdays($competitionId, $oldSeason);
-        $yearDiff = $this->calculateYearDifference($oldSeason, $newSeason);
+        // Always load from the base season (data/2025/) and adjust dates forward
+        $competition = Competition::find($competitionId);
+        $baseSeason = $competition->season;
+
+        $matchdays = LeagueFixtureGenerator::loadMatchdays($competitionId, $baseSeason);
+        $yearDiff = $this->calculateYearDifference($baseSeason, $newSeason);
 
         if ($yearDiff !== 0) {
             $matchdays = LeagueFixtureGenerator::adjustMatchdayYears($matchdays, $yearDiff);
@@ -82,7 +87,7 @@ class FixtureGenerationProcessor implements SeasonEndProcessor
                 'round_number' => $fixture['matchday'],
                 'home_team_id' => $fixture['homeTeamId'],
                 'away_team_id' => $fixture['awayTeamId'],
-                'scheduled_date' => Carbon::createFromFormat('d/m/y', $fixture['date']),
+                'scheduled_date' => Carbon::parse($fixture['date']),
                 'home_score' => null,
                 'away_score' => null,
                 'played' => false,

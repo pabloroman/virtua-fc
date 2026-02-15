@@ -64,14 +64,14 @@ $defaultTab = $knockoutStarted ? 'knockout' : 'league';
                             <div class="overflow-x-auto">
                                 <div class="flex gap-4" style="min-width: fit-content;">
                                     @foreach($knockoutRounds as $round)
-                                        @php $ties = $knockoutTies->get($round->round_number, collect()); @endphp
+                                        @php $ties = $knockoutTies->get($round->round, collect()); @endphp
                                         <div class="flex-shrink-0 w-64">
                                             <div class="text-center mb-4">
-                                                <h4 class="font-semibold text-slate-700">{{ $round->round_name }}</h4>
+                                                <h4 class="font-semibold text-slate-700">{{ $round->name }}</h4>
                                                 <div class="text-xs text-slate-400">
-                                                    {{ $round->first_leg_date->format('M d') }}
-                                                    @if($round->isTwoLegged())
-                                                        / {{ $round->second_leg_date->format('M d') }}
+                                                    {{ $round->firstLegDate->format('M d') }}
+                                                    @if($round->twoLegged)
+                                                        / {{ $round->secondLegDate->format('M d') }}
                                                     @endif
                                                 </div>
                                             </div>

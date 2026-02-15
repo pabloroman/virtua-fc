@@ -26,6 +26,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 class SetupNewGame implements ShouldQueue
@@ -130,7 +131,7 @@ class SetupNewGame implements ShouldQueue
                 'round_number' => $fixture['matchday'],
                 'home_team_id' => $fixture['homeTeamId'],
                 'away_team_id' => $fixture['awayTeamId'],
-                'scheduled_date' => Carbon::createFromFormat('d/m/y', $fixture['date']),
+                'scheduled_date' => Carbon::parse($fixture['date']),
                 'home_score' => null,
                 'away_score' => null,
                 'played' => false,
@@ -161,8 +162,8 @@ class SetupNewGame implements ShouldQueue
      * Initialize game players for all teams across all leagues.
      */
     private function initializeGamePlayers(
-        \Illuminate\Support\Collection $allTeams,
-        \Illuminate\Support\Collection $allPlayers,
+        Collection $allTeams,
+        Collection $allPlayers,
         ContractService $contractService,
         PlayerDevelopmentService $developmentService,
     ): void {
@@ -186,8 +187,8 @@ class SetupNewGame implements ShouldQueue
 
     private function initializeGamePlayersForCompetition(
         string $competitionId,
-        \Illuminate\Support\Collection $allTeams,
-        \Illuminate\Support\Collection $allPlayers,
+        Collection $allTeams,
+        Collection $allPlayers,
         ContractService $contractService,
         PlayerDevelopmentService $developmentService,
     ): void {
@@ -244,8 +245,8 @@ class SetupNewGame implements ShouldQueue
     }
 
     private function initializeSwissFormatCompetitions(
-        \Illuminate\Support\Collection $allTeams,
-        \Illuminate\Support\Collection $allPlayers,
+        Collection $allTeams,
+        Collection $allPlayers,
         ContractService $contractService,
         PlayerDevelopmentService $developmentService,
         StandingsCalculator $standingsCalculator,
@@ -282,7 +283,7 @@ class SetupNewGame implements ShouldQueue
         }
     }
 
-    private function generateSwissFixtures(string $competitionId, array $clubs, \Illuminate\Support\Collection $allTeams): void
+    private function generateSwissFixtures(string $competitionId, array $clubs, Collection $allTeams): void
     {
         // Idempotency: skip if fixtures already exist
         if (GameMatch::where('game_id', $this->gameId)->where('competition_id', $competitionId)->exists()) {
@@ -312,9 +313,16 @@ class SetupNewGame implements ShouldQueue
             return;
         }
 
+        $schedulePath = base_path("data/{$this->season}/{$competitionId}/schedule.json");
+        $scheduleData = json_decode(file_get_contents($schedulePath), true);
+
+        $matchdayDates = [];
+        foreach ($scheduleData['league'] as $md) {
+            $matchdayDates[$md['round']] = $md['date'];
+        }
+
         $drawService = new SwissDrawService();
-        $startDate = Carbon::parse("{$this->season}-09-17");
-        $fixtures = $drawService->generateFixtures($drawTeams, $startDate);
+        $fixtures = $drawService->generateFixtures($drawTeams, $matchdayDates);
 
         $rows = [];
         foreach ($fixtures as $fixture) {
@@ -325,7 +333,7 @@ class SetupNewGame implements ShouldQueue
                 'round_number' => $fixture['matchday'],
                 'home_team_id' => $fixture['homeTeamId'],
                 'away_team_id' => $fixture['awayTeamId'],
-                'scheduled_date' => Carbon::createFromFormat('d/m/y', $fixture['date']),
+                'scheduled_date' => Carbon::parse($fixture['date']),
                 'home_score' => null,
                 'away_score' => null,
                 'played' => false,
@@ -340,8 +348,8 @@ class SetupNewGame implements ShouldQueue
     private function initializeSwissFormatPlayersFromData(
         string $competitionId,
         array $clubs,
-        \Illuminate\Support\Collection $allTeams,
-        \Illuminate\Support\Collection $allPlayers,
+        Collection $allTeams,
+        Collection $allPlayers,
         ContractService $contractService,
         PlayerDevelopmentService $developmentService,
     ): void {
@@ -387,7 +395,7 @@ class SetupNewGame implements ShouldQueue
         Team $team,
         array $playerData,
         int $minimumWage,
-        \Illuminate\Support\Collection $allPlayers,
+        Collection $allPlayers,
         ContractService $contractService,
         PlayerDevelopmentService $developmentService,
     ): ?array {

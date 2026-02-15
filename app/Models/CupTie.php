@@ -67,16 +67,29 @@ class CupTie extends Model
         return $this->belongsTo(GameMatch::class, 'second_leg_match_id');
     }
 
-    public function roundTemplate(): CupRoundTemplate
+    /**
+     * Get the round config for this tie from schedule.json.
+     */
+    public function getRoundConfig(): ?\App\Game\DTO\PlayoffRoundConfig
     {
-        return CupRoundTemplate::where('competition_id', $this->competition_id)
-            ->where('round_number', $this->round_number)
-            ->first();
+        $competition = $this->competition ?? Competition::find($this->competition_id);
+        $rounds = \App\Game\Services\LeagueFixtureGenerator::loadKnockoutRounds(
+            $this->competition_id,
+            $competition?->season ?? '2025',
+        );
+
+        foreach ($rounds as $round) {
+            if ($round->round === $this->round_number) {
+                return $round;
+            }
+        }
+
+        return null;
     }
 
     public function isTwoLegged(): bool
     {
-        return $this->roundTemplate()?->isTwoLegged() ?? false;
+        return $this->getRoundConfig()?->twoLegged ?? false;
     }
 
     /**

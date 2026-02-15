@@ -17,6 +17,21 @@ class SwissDrawServiceTest extends TestCase
     }
 
     /**
+     * Build matchday dates array for 8 matchdays.
+     *
+     * @return array<int, string>
+     */
+    private function makeMatchdayDates(): array
+    {
+        $dates = [];
+        $start = Carbon::parse('2025-09-17');
+        for ($i = 1; $i <= 8; $i++) {
+            $dates[$i] = $start->copy()->addDays(($i - 1) * 14)->format('Y-m-d');
+        }
+        return $dates;
+    }
+
+    /**
      * Build 36 teams across 4 pots with diverse countries.
      */
     private function makeTeams(): array
@@ -40,7 +55,7 @@ class SwissDrawServiceTest extends TestCase
     public function test_each_team_has_exactly_8_fixtures(): void
     {
         $teams = $this->makeTeams();
-        $fixtures = $this->service->generateFixtures($teams, Carbon::now());
+        $fixtures = $this->service->generateFixtures($teams, $this->makeMatchdayDates());
 
         // Count matches per team
         $matchCounts = [];
@@ -57,7 +72,7 @@ class SwissDrawServiceTest extends TestCase
     public function test_total_match_count_is_144(): void
     {
         $teams = $this->makeTeams();
-        $fixtures = $this->service->generateFixtures($teams, Carbon::now());
+        $fixtures = $this->service->generateFixtures($teams, $this->makeMatchdayDates());
 
         // 36 teams × 8 matches / 2 = 144 unique matches
         $this->assertCount(144, $fixtures);
@@ -66,7 +81,7 @@ class SwissDrawServiceTest extends TestCase
     public function test_no_team_plays_itself(): void
     {
         $teams = $this->makeTeams();
-        $fixtures = $this->service->generateFixtures($teams, Carbon::now());
+        $fixtures = $this->service->generateFixtures($teams, $this->makeMatchdayDates());
 
         foreach ($fixtures as $fixture) {
             $this->assertNotEquals(
@@ -80,7 +95,7 @@ class SwissDrawServiceTest extends TestCase
     public function test_no_duplicate_pairings(): void
     {
         $teams = $this->makeTeams();
-        $fixtures = $this->service->generateFixtures($teams, Carbon::now());
+        $fixtures = $this->service->generateFixtures($teams, $this->makeMatchdayDates());
 
         $pairs = [];
         foreach ($fixtures as $fixture) {
@@ -95,7 +110,7 @@ class SwissDrawServiceTest extends TestCase
     public function test_each_matchday_has_18_matches(): void
     {
         $teams = $this->makeTeams();
-        $fixtures = $this->service->generateFixtures($teams, Carbon::now());
+        $fixtures = $this->service->generateFixtures($teams, $this->makeMatchdayDates());
 
         $matchdayCounts = [];
         foreach ($fixtures as $fixture) {
@@ -113,7 +128,7 @@ class SwissDrawServiceTest extends TestCase
         $teams = $this->makeTeams();
 
         for ($i = 0; $i < 10; $i++) {
-            $fixtures = $this->service->generateFixtures($teams, Carbon::now());
+            $fixtures = $this->service->generateFixtures($teams, $this->makeMatchdayDates());
 
             $roundTeams = [];
             foreach ($fixtures as $fixture) {
@@ -137,7 +152,7 @@ class SwissDrawServiceTest extends TestCase
         $teams = $this->makeTeams();
 
         for ($i = 0; $i < 10; $i++) {
-            $fixtures = $this->service->generateFixtures($teams, Carbon::now());
+            $fixtures = $this->service->generateFixtures($teams, $this->makeMatchdayDates());
 
             $homeCounts = [];
             $awayCounts = [];
@@ -164,7 +179,7 @@ class SwissDrawServiceTest extends TestCase
         $teams = $this->makeTeams();
 
         for ($i = 0; $i < 10; $i++) {
-            $fixtures = $this->service->generateFixtures($teams, Carbon::now());
+            $fixtures = $this->service->generateFixtures($teams, $this->makeMatchdayDates());
 
             $this->assertCount(144, $fixtures, "Iteration {$i}: expected 144 matches");
 
@@ -201,7 +216,7 @@ class SwissDrawServiceTest extends TestCase
             }
         }
 
-        $fixtures = $this->service->generateFixtures($teams, Carbon::now());
+        $fixtures = $this->service->generateFixtures($teams, $this->makeMatchdayDates());
 
         $this->assertCount(144, $fixtures);
 

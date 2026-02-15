@@ -6,7 +6,6 @@ use App\Game\Handlers\KnockoutCupHandler;
 use App\Game\Services\CupDrawService;
 use App\Game\Services\CupTieResolver;
 use App\Models\Competition;
-use App\Models\CupRoundTemplate;
 use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameMatch;
@@ -48,6 +47,7 @@ class KnockoutCupHandlerTest extends TestCase
         $this->cupCompetition = Competition::factory()->knockoutCup()->create([
             'id' => 'ESPCUP',
             'name' => 'Copa del Rey',
+            'season' => '2025',
         ]);
 
         Competition::factory()->league()->create(['id' => 'ESP1', 'name' => 'LaLiga']);
@@ -151,16 +151,6 @@ class KnockoutCupHandlerTest extends TestCase
 
     public function test_before_matches_conducts_draws_when_needed(): void
     {
-        // Create cup round template
-        CupRoundTemplate::create([
-            'competition_id' => $this->cupCompetition->id,
-            'season' => '2024',
-            'round_number' => 1,
-            'round_name' => 'Round 1',
-            'type' => 'one_leg',
-            'first_leg_date' => Carbon::parse('2024-11-01'),
-        ]);
-
         // Mock that draw is needed
         $this->cupDrawServiceMock
             ->shouldReceive('needsDrawForRound')
@@ -185,16 +175,6 @@ class KnockoutCupHandlerTest extends TestCase
 
     public function test_before_matches_skips_draw_when_not_needed(): void
     {
-        // Create cup round template
-        CupRoundTemplate::create([
-            'competition_id' => $this->cupCompetition->id,
-            'season' => '2024',
-            'round_number' => 1,
-            'round_name' => 'Round 1',
-            'type' => 'one_leg',
-            'first_leg_date' => Carbon::parse('2024-11-01'),
-        ]);
-
         // Mock that draw is NOT needed
         $this->cupDrawServiceMock
             ->shouldReceive('needsDrawForRound')

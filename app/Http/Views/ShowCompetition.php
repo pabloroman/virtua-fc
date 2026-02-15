@@ -2,8 +2,8 @@
 
 namespace App\Http\Views;
 
+use App\Game\Services\LeagueFixtureGenerator;
 use App\Models\Competition;
-use App\Models\CupRoundTemplate;
 use App\Models\CompetitionEntry;
 use App\Models\CupTie;
 use App\Models\Game;
@@ -84,11 +84,8 @@ class ShowCompetition
 
         $standingsZones = $competition->getConfig()->getStandingsZones();
 
-        // Knockout bracket data (if knockout phase has started)
-        $knockoutRounds = CupRoundTemplate::where('competition_id', $competition->id)
-            ->where('season', $game->season)
-            ->orderBy('round_number')
-            ->get();
+        // Knockout bracket data from schedule.json (year-adjusted for current game season)
+        $knockoutRounds = collect(LeagueFixtureGenerator::loadKnockoutRounds($competition->id, $competition->season, $game->season));
 
         $knockoutTies = CupTie::with(['homeTeam', 'awayTeam', 'winner', 'firstLegMatch', 'secondLegMatch'])
             ->where('game_id', $game->id)
@@ -118,11 +115,8 @@ class ShowCompetition
 
     private function showCup(Game $game, Competition $competition)
     {
-        // Get all round templates
-        $rounds = CupRoundTemplate::where('competition_id', $competition->id)
-            ->where('season', $game->season)
-            ->orderBy('round_number')
-            ->get();
+        // Get all round configs from schedule.json (year-adjusted for current game season)
+        $rounds = collect(LeagueFixtureGenerator::loadKnockoutRounds($competition->id, $competition->season, $game->season));
 
         // Get all ties for this game, grouped by round
         $tiesByRound = CupTie::with(['homeTeam', 'awayTeam', 'winner', 'firstLegMatch', 'secondLegMatch'])
@@ -134,7 +128,7 @@ class ShowCompetition
         // Find player's tie in current/latest round
         $playerTie = null;
         foreach ($rounds->reverse() as $round) {
-            $ties = $tiesByRound->get($round->round_number, collect());
+            $ties = $tiesByRound->get($round->round, collect());
             $playerTie = $ties->first(fn ($tie) => $tie->involvesTeam($game->team_id));
             if ($playerTie) {
                 break;
@@ -142,7 +136,7 @@ class ShowCompetition
         }
 
         // Determine player's cup status from CupTie data
-        $maxRound = $rounds->max('round_number');
+        $maxRound = $rounds->max('round');
         $cupStatus = 'not_entered';
 
         if ($playerTie) {
@@ -155,7 +149,7 @@ class ShowCompetition
             }
         }
 
-        $playerRoundName = $playerTie?->roundTemplate()?->round_name;
+        $playerRoundName = $playerTie?->getRoundConfig()?->name;
 
         return view('cup', [
             'game' => $game,

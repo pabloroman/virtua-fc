@@ -1,0 +1,14 @@
+{
+    "knockout": [
+        {
+            "round": 1,
+            "name": "Semifinal",
+            "date": "2026-01-07"
+        },
+        {
+            "round": 2,
+            "name": "Final",
+            "date": "2026-01-11"
+        }
+    ]
+}

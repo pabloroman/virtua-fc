@@ -3,7 +3,7 @@
 namespace App\Game\Services;
 
 use App\Game\DTO\MatchResult;
-use App\Models\CupRoundTemplate;
+use App\Game\DTO\PlayoffRoundConfig;
 use App\Models\CupTie;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
@@ -20,13 +20,11 @@ class CupTieResolver
      * Attempt to resolve a cup tie and determine the winner.
      * Returns the winner team_id if tie is complete, null if more matches needed.
      */
-    public function resolve(CupTie $tie, Collection $allPlayers, ?CupRoundTemplate $roundTemplate = null): ?string
+    public function resolve(CupTie $tie, Collection $allPlayers, ?PlayoffRoundConfig $roundConfig = null): ?string
     {
-        $roundTemplate ??= CupRoundTemplate::where('competition_id', $tie->competition_id)
-            ->where('round_number', $tie->round_number)
-            ->first();
+        $roundConfig ??= $tie->getRoundConfig();
 
-        if (!$roundTemplate) {
+        if (!$roundConfig) {
             return null;
         }
 
@@ -36,7 +34,7 @@ class CupTieResolver
             return null;
         }
 
-        if ($roundTemplate->isTwoLegged()) {
+        if ($roundConfig->twoLegged) {
             return $this->resolveTwoLeggedTie($tie, $allPlayers);
         }
 

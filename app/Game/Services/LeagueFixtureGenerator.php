@@ -2,6 +2,7 @@
 
 namespace App\Game\Services;
 
+use App\Game\DTO\PlayoffRoundConfig;
 use Carbon\Carbon;
 
 /**
@@ -16,47 +17,114 @@ use Carbon\Carbon;
 class LeagueFixtureGenerator
 {
     /**
-     * Load matchday calendar from a competition's matchdays.json file.
+     * Load matchday calendar from a competition's schedule.json file.
      *
      * @param  string  $competitionId  e.g. 'ESP1', 'ESP2'
      * @param  string  $season  e.g. '2025'
-     * @return array<array{round: int, date: string}>
+     * @return array<array{round: int, date: string}>  Dates in YYYY-MM-DD format
      */
     public static function loadMatchdays(string $competitionId, string $season): array
     {
-        $path = base_path("data/{$season}/{$competitionId}/matchdays.json");
+        $path = base_path("data/{$season}/{$competitionId}/schedule.json");
 
         if (!file_exists($path)) {
-            throw new \RuntimeException("Matchdays file not found: {$path}");
+            throw new \RuntimeException("Schedule file not found: {$path}");
         }
 
-        return json_decode(file_get_contents($path), true);
+        $data = json_decode(file_get_contents($path), true);
+
+        return $data['league'] ?? [];
     }
 
     /**
      * Adjust matchday dates by a year offset.
      * Used for generating fixtures in subsequent seasons.
      *
-     * @param  array<array{round: int, date: string}>  $matchdays
+     * @param  array<array{round: int, date: string}>  $matchdays  Dates in YYYY-MM-DD format
      * @param  int  $yearOffset  Number of years to add (e.g. 1 for next season)
      * @return array<array{round: int, date: string}>
      */
     public static function adjustMatchdayYears(array $matchdays, int $yearOffset): array
     {
         return array_map(function ($md) use ($yearOffset) {
-            $date = Carbon::createFromFormat('d/m/y', $md['date'])->addYears($yearOffset);
+            $date = Carbon::parse($md['date'])->addYears($yearOffset);
 
             return [
                 'round' => $md['round'],
-                'date' => $date->format('d/m/y'),
+                'date' => $date->format('Y-m-d'),
             ];
         }, $matchdays);
     }
     /**
+     * Load knockout rounds from a competition's schedule.json file.
+     *
+     * Dates in schedule.json are stored for the base season (e.g. 2025).
+     * Pass $gameSeason to automatically adjust dates for later seasons.
+     *
+     * @param  string  $competitionId  e.g. 'ESPCUP', 'UCL', 'ESP2'
+     * @param  string  $baseSeason  e.g. '2025' (base season from Competition::season)
+     * @param  string|null  $gameSeason  e.g. '2027' (current game season, for year adjustment)
+     * @return PlayoffRoundConfig[]
+     */
+    public static function loadKnockoutRounds(string $competitionId, string $baseSeason, ?string $gameSeason = null): array
+    {
+        $path = base_path("data/{$baseSeason}/{$competitionId}/schedule.json");
+
+        if (!file_exists($path)) {
+            return [];
+        }
+
+        $data = json_decode(file_get_contents($path), true);
+        $rounds = $data['knockout'] ?? [];
+
+        $configs = array_map(function ($round) {
+            $hasTwoLegs = isset($round['second_leg_date']);
+            $firstLegDate = $hasTwoLegs ? $round['first_leg_date'] : ($round['date'] ?? null);
+
+            return new PlayoffRoundConfig(
+                round: $round['round'],
+                name: $round['name'],
+                twoLegged: $hasTwoLegs,
+                firstLegDate: Carbon::parse($firstLegDate),
+                secondLegDate: $hasTwoLegs ? Carbon::parse($round['second_leg_date']) : null,
+            );
+        }, $rounds);
+
+        if ($gameSeason !== null) {
+            $yearDiff = (int) $gameSeason - (int) $baseSeason;
+            if ($yearDiff !== 0) {
+                $configs = self::adjustKnockoutYears($configs, $yearDiff);
+            }
+        }
+
+        return $configs;
+    }
+
+    /**
+     * Adjust knockout round dates by a year offset.
+     *
+     * @param  PlayoffRoundConfig[]  $rounds
+     * @param  int  $yearOffset
+     * @return PlayoffRoundConfig[]
+     */
+    public static function adjustKnockoutYears(array $rounds, int $yearOffset): array
+    {
+        return array_map(function (PlayoffRoundConfig $round) use ($yearOffset) {
+            return new PlayoffRoundConfig(
+                round: $round->round,
+                name: $round->name,
+                twoLegged: $round->twoLegged,
+                firstLegDate: $round->firstLegDate->copy()->addYears($yearOffset),
+                secondLegDate: $round->secondLegDate?->copy()->addYears($yearOffset),
+            );
+        }, $rounds);
+    }
+
+    /**
      * Generate a full double round-robin schedule.
      *
      * @param  array<string>  $teamIds  Team IDs (must be even count, minimum 4)
-     * @param  array<array{round: int, date: string}>  $matchdays  Schedule with round numbers and dates (dd/mm/yy)
+     * @param  array<array{round: int, date: string}>  $matchdays  Schedule with round numbers and dates (YYYY-MM-DD)
      * @return array<array{matchday: int, date: string, homeTeamId: string, awayTeamId: string}>
      */
     public function generate(array $teamIds, array $matchdays): array

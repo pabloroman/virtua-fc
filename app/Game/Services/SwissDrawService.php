@@ -2,8 +2,6 @@
 
 namespace App\Game\Services;
 
-use Carbon\Carbon;
-
 /**
  * Generates league phase fixtures for Swiss format competitions.
  *
@@ -25,8 +23,9 @@ class SwissDrawService
      * Generate league phase fixtures.
      *
      * @param array<array{id: string, pot: int, country: string}> $teams
+     * @param array<int, string> $matchdayDates Matchday number => ISO date (YYYY-MM-DD)
      */
-    public function generateFixtures(array $teams, Carbon $startDate, int $intervalDays = 14): array
+    public function generateFixtures(array $teams, array $matchdayDates): array
     {
         $pots = [];
         foreach ($teams as $team) {
@@ -50,7 +49,7 @@ class SwissDrawService
 
             $schedule = $this->tryScheduleMatchdays($matches);
             if ($schedule !== null) {
-                return $this->formatSchedule($schedule, $startDate, $intervalDays);
+                return $this->formatSchedule($schedule, $matchdayDates);
             }
         }
 
@@ -351,15 +350,18 @@ class SwissDrawService
         return array_values(array_unique(array_values($matchOf)));
     }
 
-    private function formatSchedule(array $schedule, Carbon $startDate, int $intervalDays): array
+    /**
+     * @param array<int, array<array{homeTeamId: string, awayTeamId: string}>> $schedule
+     * @param array<int, string> $matchdayDates Matchday number => ISO date (YYYY-MM-DD)
+     */
+    private function formatSchedule(array $schedule, array $matchdayDates): array
     {
         $result = [];
         foreach ($schedule as $md => $mdMatches) {
-            $date = $startDate->copy()->addDays(($md - 1) * $intervalDays);
             foreach ($mdMatches as $match) {
                 $result[] = [
                     'matchday' => $md,
-                    'date' => $date->format('d/m/y'),
+                    'date' => $matchdayDates[$md],
                     'homeTeamId' => $match['homeTeamId'],
                     'awayTeamId' => $match['awayTeamId'],
                 ];

@@ -3,10 +3,10 @@
 namespace App\Game\Services;
 
 use App\Game\DTO\PlayoffRoundConfig;
+use App\Models\Competition;
 use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameStanding;
-use Carbon\Carbon;
 
 /**
  * Generates knockout bracket matchups for Swiss format competitions.
@@ -51,47 +51,18 @@ class SwissKnockoutGenerator
         [[7, 8], 0],   // 7/8 vs winners from bracket 0 (9/10 vs 23/24)
     ];
 
-    public function getRoundConfig(int $round, int $seasonYear): PlayoffRoundConfig
+    public function getRoundConfig(int $round, string $competitionId, ?string $gameSeason = null): PlayoffRoundConfig
     {
-        $playoffYear = $seasonYear + 1;
+        $competition = Competition::find($competitionId);
+        $rounds = LeagueFixtureGenerator::loadKnockoutRounds($competitionId, $competition->season, $gameSeason);
 
-        return match ($round) {
-            self::ROUND_KNOCKOUT_PLAYOFF => new PlayoffRoundConfig(
-                round: $round,
-                name: 'Playoff de eliminación',
-                twoLegged: true,
-                firstLegDate: Carbon::parse("{$playoffYear}-02-11"),
-                secondLegDate: Carbon::parse("{$playoffYear}-02-18"),
-            ),
-            self::ROUND_OF_16 => new PlayoffRoundConfig(
-                round: $round,
-                name: 'Octavos de final',
-                twoLegged: true,
-                firstLegDate: Carbon::parse("{$playoffYear}-03-04"),
-                secondLegDate: Carbon::parse("{$playoffYear}-03-11"),
-            ),
-            self::ROUND_QUARTER_FINALS => new PlayoffRoundConfig(
-                round: $round,
-                name: 'Cuartos de final',
-                twoLegged: true,
-                firstLegDate: Carbon::parse("{$playoffYear}-04-08"),
-                secondLegDate: Carbon::parse("{$playoffYear}-04-15"),
-            ),
-            self::ROUND_SEMI_FINALS => new PlayoffRoundConfig(
-                round: $round,
-                name: 'Semifinal',
-                twoLegged: true,
-                firstLegDate: Carbon::parse("{$playoffYear}-04-29"),
-                secondLegDate: Carbon::parse("{$playoffYear}-05-06"),
-            ),
-            self::ROUND_FINAL => new PlayoffRoundConfig(
-                round: $round,
-                name: 'Final',
-                twoLegged: false,
-                firstLegDate: Carbon::parse("{$playoffYear}-05-31"),
-            ),
-            default => throw new \InvalidArgumentException("Invalid knockout round: {$round}"),
-        };
+        foreach ($rounds as $config) {
+            if ($config->round === $round) {
+                return $config;
+            }
+        }
+
+        throw new \RuntimeException("No knockout round config found for {$competitionId} round {$round}");
     }
 
     /**
