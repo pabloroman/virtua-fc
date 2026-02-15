@@ -2,8 +2,6 @@
 
 namespace App\Http\Actions;
 
-use App\Game\Commands\StartNewSeason as StartNewSeasonCommand;
-use App\Game\Game as GameAggregate;
 use App\Game\Services\SeasonEndPipeline;
 use App\Models\Game;
 
@@ -27,15 +25,12 @@ class StartNewSeason
         // Run the season end pipeline
         $data = $this->pipeline->run($game);
 
-        // Record the event
-        $command = new StartNewSeasonCommand(
-            oldSeason: $data->oldSeason,
-            newSeason: $data->newSeason,
-            playerChanges: $data->playerChanges,
-        );
-
-        $aggregate = GameAggregate::retrieve($gameId);
-        $aggregate->startNewSeason($command);
+        // Set current date to the first match of the new season
+        $game->refresh();
+        $firstMatch = $game->getFirstCompetitiveMatch();
+        if ($firstMatch) {
+            $game->update(['current_date' => $firstMatch->scheduled_date]);
+        }
 
         return redirect()->route('show-game', $gameId)
             ->with('message', __('messages.new_season_started', ['season' => Game::formatSeason($data->newSeason)]));

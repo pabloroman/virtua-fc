@@ -2,8 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Game\Commands\CreateGame;
-use App\Game\Game;
+use App\Game\Services\GameCreationService;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Console\Command;
@@ -24,7 +23,7 @@ class CreateTestGame extends Command
         'Athletic Bilbao',
     ];
 
-    public function handle(): int
+    public function handle(GameCreationService $gameCreationService): int
     {
         // Optionally re-seed test data
         if ($this->option('seed')) {
@@ -54,29 +53,27 @@ class CreateTestGame extends Command
         $this->info("Creating game for user: {$user->email}");
         $this->info("Managing team: {$teamToManage->name}");
 
-        $command = new CreateGame(
+        $game = $gameCreationService->create(
             userId: (string) $user->id,
             playerName: 'Test Manager',
             teamId: $teamToManage->id,
         );
-
-        $game = Game::create($command);
 
         $this->newLine();
         $this->info('Test game created successfully!');
         $this->table(
             ['Property', 'Value'],
             [
-                ['Game ID', $game->uuid()],
+                ['Game ID', $game->id],
                 ['League', 'TEST1 (4 teams, 6 matchdays)'],
                 ['Cup', 'TESTCUP (4 teams, 2 rounds)'],
                 ['Team', $teamToManage->name],
-                ['URL', url('/game/' . $game->uuid())],
+                ['URL', url('/game/' . $game->id)],
             ]
         );
 
         $this->newLine();
-        $this->comment('Note: Run "php artisan queue:work --once" to process the game creation event.');
+        $this->comment('Note: Run "php artisan queue:work --once" to process the game setup job.');
 
         return Command::SUCCESS;
     }
