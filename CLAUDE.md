@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-VirtuaFC is a football manager simulation game built with Laravel 12 and Spatie Event Sourcing. Players manage Spanish football teams (La Liga/Segunda División) through seasons, handling squad selection, transfers, and competitions including the Copa del Rey and European competitions (Champions League, Europa League, Conference League).
+VirtuaFC is a football manager simulation game built with Laravel 12. Players manage Spanish football teams (La Liga/Segunda División) through seasons, handling squad selection, transfers, and competitions including the Copa del Rey and European competitions (Champions League, Europa League, Conference League).
 
 The frontend uses Blade templates with Tailwind CSS and Alpine.js. The app defaults to Spanish (`APP_LOCALE=es`).
 
@@ -38,20 +38,9 @@ php artisan app:simulate-season
 php artisan config:clear
 ```
 
-**Important:** The queue worker must be running for event sourcing to work. `composer dev` handles this automatically via `php artisan queue:listen --tries=1`.
+**Important:** The queue worker must be running for background jobs (e.g. game setup). `composer dev` handles this automatically via `php artisan queue:listen --tries=1`.
 
 ## Architecture
-
-### Event Sourcing Flow
-
-```
-HTTP Request → Action → Command → Aggregate → Event → Projector → Read Models
-```
-
-- **Aggregate Root:** `App\Game\Game` (extends Spatie AggregateRoot)
-- **Commands:** `App\Game\Commands\*` sent via `Game::retrieve($uuid)->commandMethod()`
-- **Events:** `App\Game\Events\*` recorded by aggregate, stored in `stored_events` table
-- **Projector:** `App\Game\GameProjector` listens to events and updates read model tables
 
 ### HTTP Layer Pattern
 
@@ -127,8 +116,7 @@ Revenue rates (commercial per seat, matchday per seat) are defined per competiti
 
 | Purpose | Location |
 |---------|----------|
-| Game aggregate | `app/Game/Game.php` |
-| Event projector | `app/Game/GameProjector.php` |
+| Game creation | `app/Game/Services/GameCreationService.php` |
 | Match simulator | `app/Game/Services/MatchSimulator.php` |
 | Simulation config | `config/match_simulation.php` |
 | Season end pipeline | `app/Game/Services/SeasonEndPipeline.php` |
@@ -146,12 +134,10 @@ Revenue rates (commercial per seat, matchday per seat) are defined per competiti
 app/
 ├── Console/Commands/     # Artisan commands (seed, simulate, beta invites)
 ├── Game/
-│   ├── Commands/         # Aggregate commands
 │   ├── Competitions/     # Per-league config classes (LaLigaConfig, etc.)
 │   ├── Contracts/        # Interfaces (CompetitionHandler, SeasonEndProcessor, etc.)
 │   ├── DTO/              # Data Transfer Objects (MatchResult, SeasonTransitionData, etc.)
 │   ├── Enums/            # PHP enums (Formation, Mentality)
-│   ├── Events/           # Domain events
 │   ├── Handlers/         # Competition handlers
 │   ├── Playoffs/         # Playoff generation logic
 │   ├── Processors/       # Season end processors (18 classes)
@@ -202,9 +188,7 @@ config/
 - **Production uses PostgreSQL** (Neon via Laravel Cloud), development uses SQLite
 - **All raw SQL must be PostgreSQL-compatible.** Avoid SQLite-only functions like `strftime()`. When raw SQL is unavoidable, detect the driver with `$query->getQuery()->getConnection()->getDriverName()` and branch for `pgsql` vs `sqlite`. Prefer Eloquent query builder over raw SQL whenever possible to avoid dialect issues.
 - UUID primary keys throughout
-- Event sourcing tables: `stored_events`, `snapshots`
-- Read models: `games`, `game_players`, `game_matches`, `game_standings`, `game_finances`, `game_investments`, `game_notifications`, `loans`, `scout_reports`, `transfer_offers`, `season_archives`, `simulated_seasons`, `cup_ties`, `player_suspensions`, `financial_transactions`, `competition_entries`, `competition_teams`, etc.
-- 53 migrations total
+- Key tables: `games`, `game_players`, `game_matches`, `game_standings`, `game_finances`, `game_investments`, `game_notifications`, `loans`, `scout_reports`, `transfer_offers`, `season_archives`, `simulated_seasons`, `cup_ties`, `player_suspensions`, `financial_transactions`, `competition_entries`, `competition_teams`, etc.
 
 ## Models
 
@@ -212,7 +196,7 @@ Key Eloquent models (24 total):
 
 | Model | Purpose |
 |-------|---------|
-| `Game` | Main game instance (read model) |
+| `Game` | Main game instance |
 | `GamePlayer` | Player within a game |
 | `GameMatch` | Match within a game |
 | `GameStanding` | League standings |
@@ -261,7 +245,7 @@ Clear cache after changes: `php artisan config:clear`
 
 ## Tech Stack
 
-**Backend:** PHP 8.4, Laravel 12, Spatie Event Sourcing 7.12, Laravel Horizon, Laravel Telescope, Resend (email)
+**Backend:** PHP 8.4, Laravel 12, Laravel Horizon, Laravel Telescope, Resend (email)
 
 **Frontend:** Vite 5, Tailwind CSS 3, Alpine.js 3, Alpine Tooltip, Axios
 
