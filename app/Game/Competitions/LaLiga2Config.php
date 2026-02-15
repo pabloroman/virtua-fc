@@ -112,29 +112,40 @@ class LaLiga2Config implements CompetitionConfig
 
     public function getStandingsZones(): array
     {
-        return [
-            [
-                'minPosition' => 1,
-                'maxPosition' => 2,
+        $promotions = config('countries.ES.promotions', []);
+        $rule = collect($promotions)->first(fn ($r) => $r['bottom_division'] === 'ESP2');
+
+        $zones = [];
+
+        if ($rule && !empty($rule['direct_promotion_positions'])) {
+            $zones[] = [
+                'minPosition' => min($rule['direct_promotion_positions']),
+                'maxPosition' => max($rule['direct_promotion_positions']),
                 'borderColor' => 'green-500',
                 'bgColor' => 'bg-green-500',
                 'label' => 'game.direct_promotion',
-            ],
-            [
-                'minPosition' => 3,
-                'maxPosition' => 6,
+            ];
+        }
+
+        if ($rule && !empty($rule['playoff_positions'])) {
+            $zones[] = [
+                'minPosition' => min($rule['playoff_positions']),
+                'maxPosition' => max($rule['playoff_positions']),
                 'borderColor' => 'green-300',
                 'bgColor' => 'bg-green-300',
                 'label' => 'game.promotion_playoff',
-            ],
-            [
-                'minPosition' => 19,
-                'maxPosition' => 22,
-                'borderColor' => 'red-500',
-                'bgColor' => 'bg-red-500',
-                'label' => 'game.relegation',
-            ],
+            ];
+        }
+
+        $zones[] = [
+            'minPosition' => 19,
+            'maxPosition' => 22,
+            'borderColor' => 'red-500',
+            'bgColor' => 'bg-red-500',
+            'label' => 'game.relegation',
         ];
+
+        return $zones;
     }
 
 }
