@@ -15,7 +15,7 @@ use App\Models\GameStanding;
  * Uses PromotionRelegationFactory to get the rules for each country/league system.
  * Rules define which positions are relegated/promoted and whether playoffs are involved.
  *
- * Priority: 26 (runs after Supercopa qualification, before fixture generation)
+ * Priority: 26 (runs after supercup qualification, before fixture generation)
  */
 class PromotionRelegationProcessor implements SeasonEndProcessor
 {

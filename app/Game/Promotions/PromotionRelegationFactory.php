@@ -3,13 +3,14 @@
 namespace App\Game\Promotions;
 
 use App\Game\Contracts\PromotionRelegationRule;
+use App\Game\Services\CountryConfig;
 
 class PromotionRelegationFactory
 {
+    private ?array $rules = null;
+
     public function __construct(
-        private SpanishPromotionRule $spanish,
-        // Add more rules here as needed:
-        // private EnglishPromotionRule $english,
+        private CountryConfig $countryConfig,
     ) {}
 
     /**
@@ -19,10 +20,11 @@ class PromotionRelegationFactory
      */
     public function all(): array
     {
-        return [
-            $this->spanish,
-            // $this->english,
-        ];
+        if ($this->rules === null) {
+            $this->rules = $this->buildRules();
+        }
+
+        return $this->rules;
     }
 
     /**
@@ -53,5 +55,34 @@ class PromotionRelegationFactory
         }
 
         return null;
+    }
+
+    /**
+     * Build rules from country config.
+     *
+     * @return PromotionRelegationRule[]
+     */
+    private function buildRules(): array
+    {
+        $rules = [];
+
+        foreach ($this->countryConfig->allCountryCodes() as $countryCode) {
+            foreach ($this->countryConfig->promotions($countryCode) as $promotion) {
+                $playoffGenerator = null;
+                if (isset($promotion['playoff_generator'])) {
+                    $playoffGenerator = app($promotion['playoff_generator']);
+                }
+
+                $rules[] = new ConfigDrivenPromotionRule(
+                    topDivision: $promotion['top_division'],
+                    bottomDivision: $promotion['bottom_division'],
+                    relegatedPositions: $promotion['relegated_positions'],
+                    directPromotionPositions: $promotion['direct_promotion_positions'],
+                    playoffGenerator: $playoffGenerator,
+                );
+            }
+        }
+
+        return $rules;
     }
 }

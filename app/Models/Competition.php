@@ -2,13 +2,9 @@
 
 namespace App\Models;
 
-use App\Game\Competitions\ChampionsLeagueConfig;
-use App\Game\Competitions\ConferenceLeagueConfig;
 use App\Game\Competitions\DefaultLeagueConfig;
-use App\Game\Competitions\EuropaLeagueConfig;
-use App\Game\Competitions\LaLiga2Config;
-use App\Game\Competitions\LaLigaConfig;
 use App\Game\Contracts\CompetitionConfig;
+use App\Game\Services\CountryConfig;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -40,17 +36,6 @@ class Competition extends Model
         'tier' => 'integer',
     ];
 
-    /**
-     * Competition ID to config class mapping.
-     */
-    private const CONFIG_MAP = [
-        'ESP1' => LaLigaConfig::class,
-        'ESP2' => LaLiga2Config::class,
-        'UCL' => ChampionsLeagueConfig::class,
-        'UEL' => EuropaLeagueConfig::class,
-        'UECL' => ConferenceLeagueConfig::class,
-    ];
-
     public function teams(): BelongsToMany
     {
         return $this->belongsToMany(Team::class, 'competition_teams')
@@ -70,13 +55,13 @@ class Competition extends Model
 
     /**
      * Get the configuration for this competition.
-     * Returns a competition-specific config or a default based on tier.
+     * Checks country config for a specific config class, falls back to defaults.
      */
     public function getConfig(): CompetitionConfig
     {
-        // Check for specific competition config
-        if (isset(self::CONFIG_MAP[$this->id])) {
-            $configClass = self::CONFIG_MAP[$this->id];
+        // Check country config for a specific config class
+        $configClass = app(CountryConfig::class)->configClassForCompetition($this->id);
+        if ($configClass) {
             return new $configClass();
         }
 
