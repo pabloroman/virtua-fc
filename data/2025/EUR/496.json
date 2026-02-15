@@ -1,0 +1,460 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/496.png",
+  "name": "Malmö FF",
+  "players": [
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Jan 8, 1990",
+      "foot": "right",
+      "height": "1,96m",
+      "id": "75458",
+      "marketValue": "€700k",
+      "name": "Robin Olsen",
+      "nationality": [
+        "Sweden",
+        "Denmark"
+      ],
+      "number": "30",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Feb 18, 1993",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "372201",
+      "marketValue": "€300k",
+      "name": "Ricardo Friedrich",
+      "nationality": [
+        "Brazil"
+      ],
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Sep 8, 1986",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "41653",
+      "marketValue": "€100k",
+      "name": "Johan Dahlin",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "27",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Mar 13, 2006",
+      "foot": "left",
+      "id": "1016314",
+      "name": "William Nieroth Lundgren",
+      "nationality": [
+        "Sweden"
+      ],
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Apr 22, 2000",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "405375",
+      "marketValue": "€2.00m",
+      "name": "Colin Rösler",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "19",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2030",
+      "dateOfBirth": "Jun 24, 2007",
+      "height": "1,85m",
+      "id": "1069508",
+      "marketValue": "€1.00m",
+      "name": "Bleon Kurtulus",
+      "nationality": [
+        "Sweden",
+        "Kosovo"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Feb 13, 1991",
+      "foot": "right",
+      "height": "1,96m",
+      "id": "125314",
+      "marketValue": "€700k",
+      "name": "Pontus Jansson",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "18",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Sep 21, 2003",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "706560",
+      "marketValue": "€600k",
+      "name": "Andrej Djuric",
+      "nationality": [
+        "Montenegro",
+        "Serbia"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Feb 20, 2006",
+      "foot": "left",
+      "id": "1026247",
+      "name": "Malte Frejd Pålsson",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "44",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Oct 29, 1998",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "698742",
+      "marketValue": "€3.50m",
+      "name": "Busanello",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "25",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Jul 24, 2007",
+      "foot": "left",
+      "id": "1262146",
+      "name": "Sashwat Rana",
+      "nationality": [
+        "Nepal"
+      ],
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Jun 20, 2001",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "667869",
+      "marketValue": "€500k",
+      "name": "Johan Karlsson",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "2",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Feb 21, 1991",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "69646",
+      "marketValue": "€450k",
+      "name": "Jens Stryger",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "17",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Jan 23, 1996",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "256003",
+      "marketValue": "€800k",
+      "name": "Yanis Karabelyov",
+      "nationality": [
+        "Bulgaria"
+      ],
+      "number": "6",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Aug 18, 1999",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "663424",
+      "marketValue": "€4.00m",
+      "name": "Lasse Berg Johnsen",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "23",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "May 16, 2003",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "667249",
+      "marketValue": "€2.50m",
+      "name": "Otto Rosengren",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "7",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Feb 8, 2007",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "946045",
+      "marketValue": "€2.00m",
+      "name": "Jovan Milosavljevic",
+      "nationality": [
+        "Serbia"
+      ],
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Nov 23, 2005",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "1150261",
+      "marketValue": "€600k",
+      "name": "Adrian Skogmar",
+      "nationality": [
+        "Sweden",
+        "Thailand"
+      ],
+      "number": "37",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Feb 6, 2007",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "1044284",
+      "marketValue": "€400k",
+      "name": "Kenan Busuladzic",
+      "nationality": [
+        "Sweden",
+        "Bosnia-Herzegovina"
+      ],
+      "number": "40",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Jun 8, 1990",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "77259",
+      "marketValue": "€300k",
+      "name": "Anders Christiansen",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "10",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Mar 24, 2006",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "1055216",
+      "name": "Viggo Jeppsson",
+      "nationality": [
+        "Sweden"
+      ],
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Jan 8, 2007",
+      "height": "1,80m",
+      "id": "1069511",
+      "name": "Gentian Lajqi",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "43",
+      "position": "Left Midfield"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Jan 25, 2006",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "1055212",
+      "marketValue": "€600k",
+      "name": "Zakaria Loukili",
+      "nationality": [
+        "Sweden",
+        "Morocco"
+      ],
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Mar 19, 2007",
+      "foot": "right",
+      "id": "1331431",
+      "name": "Anton Höög",
+      "nationality": [
+        "Sweden"
+      ],
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Jan 14, 2007",
+      "foot": "left",
+      "id": "1146607",
+      "name": "Antonio Palac",
+      "nationality": [
+        "Croatia",
+        "Sweden"
+      ],
+      "number": "46",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 4, 1999",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "349300",
+      "marketValue": "€2.50m",
+      "name": "Sead Haksabanovic",
+      "nationality": [
+        "Montenegro",
+        "Sweden"
+      ],
+      "number": "29",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "May 15, 1999",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "377665",
+      "marketValue": "€2.00m",
+      "name": "Arnór Sigurdsson",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "8",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Jan 23, 1995",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "295572",
+      "marketValue": "€1.00m",
+      "name": "Stefano Vecchia",
+      "nationality": [
+        "Sweden",
+        "Italy"
+      ],
+      "number": "21",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Jul 1, 1998",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "731771",
+      "marketValue": "€1.00m",
+      "name": "Taha Ali",
+      "nationality": [
+        "Sweden",
+        "Somalia"
+      ],
+      "number": "22",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Jun 25, 2002",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "603891",
+      "marketValue": "€550k",
+      "name": "Emmanuel Ekong",
+      "nationality": [
+        "Sweden",
+        "Nigeria"
+      ],
+      "number": "11",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Jan 10, 2000",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "418559",
+      "marketValue": "€3.50m",
+      "name": "Erik Botheim",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "20",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Mar 1, 2006",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "927094",
+      "marketValue": "€600k",
+      "name": "Daníel Gudjohnsen",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "32",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Feb 2, 2006",
+      "foot": "left",
+      "height": "1,76m",
+      "id": "1016311",
+      "name": "Alexandru Ghiţă",
+      "nationality": [
+        "Sweden",
+        "Romania"
+      ],
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Eleda Stadion",
+  "stadiumSeats": "22500",
+  "transfermarktId": "496"
+}

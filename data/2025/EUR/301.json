@@ -1,0 +1,433 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/301.png",
+  "name": "FCSB",
+  "players": [
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 9, 2000",
+      "foot": "right",
+      "height": "1,97m",
+      "id": "568544",
+      "marketValue": "€4.50m",
+      "name": "Ștefan Târnovanu",
+      "nationality": [
+        "Romania"
+      ],
+      "number": "32",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 9, 1994",
+      "foot": "right",
+      "height": "1,96m",
+      "id": "147558",
+      "marketValue": "€850k",
+      "name": "Lukas Zima",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "38",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jul 20, 2001",
+      "foot": "left",
+      "height": "1,86m",
+      "id": "786187",
+      "marketValue": "€50k",
+      "name": "Mihai Udrea",
+      "nationality": [
+        "Romania"
+      ],
+      "number": "34",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Apr 29, 2007",
+      "foot": "left",
+      "height": "1,95m",
+      "id": "1350595",
+      "name": "Matei Popa",
+      "nationality": [
+        "Romania"
+      ],
+      "number": "13",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 15, 1997",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "445610",
+      "marketValue": "€3.00m",
+      "name": "Siyabonga Ngezana",
+      "nationality": [
+        "South Africa"
+      ],
+      "number": "30",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 9, 1996",
+      "foot": "right",
+      "height": "1,94m",
+      "id": "569743",
+      "marketValue": "€2.50m",
+      "name": "Joyskim Dawa",
+      "nationality": [
+        "Cameroon",
+        "France"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 12, 1997",
+      "foot": "right",
+      "height": "1,95m",
+      "id": "588095",
+      "marketValue": "€800k",
+      "name": "André Duarte",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "May 7, 1993",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "361537",
+      "marketValue": "€800k",
+      "name": "Mihai Popescu",
+      "nationality": [
+        "Romania"
+      ],
+      "number": "17",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Aug 8, 1993",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "131728",
+      "marketValue": "€450k",
+      "name": "Daniel Graovac",
+      "nationality": [
+        "Bosnia-Herzegovina",
+        "Croatia"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jan 20, 2009",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "1179041",
+      "name": "Andrei Dăncuș",
+      "nationality": [
+        "Romania"
+      ],
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 4, 1992",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "144339",
+      "marketValue": "€800k",
+      "name": "Risto Radunovic",
+      "nationality": [
+        "Montenegro"
+      ],
+      "number": "33",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Nov 25, 1993",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "379870",
+      "marketValue": "€400k",
+      "name": "David Kiki",
+      "nationality": [
+        "Benin",
+        "France"
+      ],
+      "number": "12",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 11, 2003",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "670828",
+      "marketValue": "€850k",
+      "name": "Alexandru Pantea",
+      "nationality": [
+        "Romania"
+      ],
+      "number": "28",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Nov 14, 2006",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "1073910",
+      "marketValue": "€500k",
+      "name": "Ionuț Cercel",
+      "nationality": [
+        "Romania"
+      ],
+      "number": "23",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Jan 2, 1989",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "79507",
+      "marketValue": "€150k",
+      "name": "Valentin Crețu",
+      "nationality": [
+        "Romania"
+      ],
+      "number": "2",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 11, 1998",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "200495",
+      "marketValue": "€1.20m",
+      "name": "Ofri Arad",
+      "nationality": [
+        "Israel",
+        "Germany"
+      ],
+      "number": "15",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 3, 2000",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "626899",
+      "marketValue": "€900k",
+      "name": "Baba Alhassan",
+      "nationality": [
+        "Uganda",
+        "Ghana"
+      ],
+      "number": "42",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 26, 1998",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "623965",
+      "marketValue": "€700k",
+      "name": "João Paulo",
+      "nationality": [
+        "Cape Verde"
+      ],
+      "number": "18",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Nov 14, 1989",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "123261",
+      "marketValue": "€250k",
+      "name": "Vlad Chiricheș",
+      "nationality": [
+        "Romania"
+      ],
+      "number": "21",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 5, 2001",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "824915",
+      "marketValue": "€1.00m",
+      "name": "Mihai Lixandru",
+      "nationality": [
+        "Romania"
+      ],
+      "number": "16",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 5, 1993",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "163999",
+      "marketValue": "€800k",
+      "name": "Juri Cisotti",
+      "nationality": [
+        "Italy"
+      ],
+      "number": "31",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 3, 1998",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "395800",
+      "marketValue": "€6.50m",
+      "name": "Darius Olaru",
+      "nationality": [
+        "Romania"
+      ],
+      "number": "27",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Dec 30, 1994",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "314329",
+      "marketValue": "€2.30m",
+      "name": "Florin Tănase",
+      "nationality": [
+        "Romania"
+      ],
+      "number": "10",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Dec 27, 2002",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "797100",
+      "marketValue": "€850k",
+      "name": "Octavian Popescu",
+      "nationality": [
+        "Romania"
+      ],
+      "number": "37",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 17, 2007",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "992820",
+      "marketValue": "€500k",
+      "name": "Mihai Toma",
+      "nationality": [
+        "Romania"
+      ],
+      "number": "22",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 2, 2001",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "614800",
+      "marketValue": "€2.50m",
+      "name": "David Miculescu",
+      "nationality": [
+        "Romania"
+      ],
+      "number": "11",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 13, 2007",
+      "foot": "left",
+      "height": "1,76m",
+      "id": "992832",
+      "marketValue": "€50k",
+      "name": "David Popa",
+      "nationality": [
+        "Romania"
+      ],
+      "number": "98",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Apr 19, 2000",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "468192",
+      "marketValue": "€4.50m",
+      "name": "Daniel Bîrligea",
+      "nationality": [
+        "Romania"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Mar 20, 1995",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "368624",
+      "marketValue": "€900k",
+      "name": "Mamadou Thiam",
+      "nationality": [
+        "Senegal",
+        "France"
+      ],
+      "number": "93",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Dec 15, 2007",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "992823",
+      "marketValue": "€650k",
+      "name": "Alexandru Stoian",
+      "nationality": [
+        "Romania"
+      ],
+      "number": "90",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Arena Națională",
+  "stadiumSeats": "55634",
+  "transfermarktId": "301"
+}

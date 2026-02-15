@@ -1,0 +1,489 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/371.png",
+  "name": "Celtic FC",
+  "players": [
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Oct 11, 2001",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "484838",
+      "marketValue": "€1.00m",
+      "name": "Viljami Sinisalo",
+      "nationality": [
+        "Finland"
+      ],
+      "number": "12",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Nov 5, 1986",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "16911",
+      "marketValue": "€300k",
+      "name": "Kasper Schmeichel",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Mar 29, 1998",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "285283",
+      "marketValue": "€250k",
+      "name": "Ross Doohan",
+      "nationality": [
+        "Scotland"
+      ],
+      "number": "31",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "May 31, 2029",
+      "dateOfBirth": "Dec 31, 1997",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "341049",
+      "marketValue": "€13.00m",
+      "name": "Cameron Carter-Vickers",
+      "nationality": [
+        "United States",
+        "England"
+      ],
+      "number": "20",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Aug 8, 1998",
+      "foot": "left",
+      "height": "1,87m",
+      "id": "439497",
+      "marketValue": "€5.00m",
+      "name": "Liam Scales",
+      "nationality": [
+        "Ireland"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 12, 1998",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "389253",
+      "marketValue": "€5.00m",
+      "name": "Auston Trusty",
+      "nationality": [
+        "United States"
+      ],
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Jun 26, 2003",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "662932",
+      "marketValue": "€350k",
+      "name": "Dane Murray",
+      "nationality": [
+        "Scotland"
+      ],
+      "number": "47",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Oct 9, 2005",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "1144158",
+      "name": "Benjamin Arthur",
+      "nationality": [
+        "England"
+      ],
+      "number": "43",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jun 5, 1997",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "300716",
+      "marketValue": "€8.00m",
+      "name": "Kieran Tierney",
+      "nationality": [
+        "Scotland",
+        "Isle of Man"
+      ],
+      "number": "63",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Apr 23, 1998",
+      "foot": "left",
+      "height": "1,72m",
+      "id": "373916",
+      "marketValue": "€1.50m",
+      "name": "Marcelo Saracchi",
+      "nationality": [
+        "Uruguay"
+      ],
+      "number": "36",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 18, 2002",
+      "foot": "left",
+      "height": "1,73m",
+      "id": "757272",
+      "marketValue": "€400k",
+      "name": "Adam Montgomery",
+      "nationality": [
+        "Scotland"
+      ],
+      "number": "37",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Aug 13, 2001",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "513970",
+      "marketValue": "€10.00m",
+      "name": "Julián Araujo",
+      "nationality": [
+        "Mexico",
+        "United States"
+      ],
+      "number": "22",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Oct 8, 1998",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "637446",
+      "marketValue": "€8.00m",
+      "name": "Alistair Johnston",
+      "nationality": [
+        "Canada",
+        "Northern Ireland"
+      ],
+      "number": "2",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Nov 16, 1998",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "388171",
+      "marketValue": "€1.50m",
+      "name": "Anthony Ralston",
+      "nationality": [
+        "Scotland"
+      ],
+      "number": "56",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Sep 7, 2006",
+      "id": "1208182",
+      "marketValue": "€1.00m",
+      "name": "Colby Donovan",
+      "nationality": [
+        "Scotland"
+      ],
+      "number": "51",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Jun 14, 1993",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "120977",
+      "marketValue": "€4.50m",
+      "name": "Callum McGregor",
+      "nationality": [
+        "Scotland"
+      ],
+      "number": "42",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Nov 21, 1997",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "496656",
+      "marketValue": "€12.00m",
+      "name": "Reo Hatate",
+      "nationality": [
+        "Japan"
+      ],
+      "number": "41",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 8, 2003",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "565435",
+      "marketValue": "€10.00m",
+      "name": "Arne Engels",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "27",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 24, 2002",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "504090",
+      "marketValue": "€4.00m",
+      "name": "Paulo Bernardo",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "28",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "May 31, 2027",
+      "dateOfBirth": "Dec 9, 1997",
+      "foot": "left",
+      "height": "1,77m",
+      "id": "468264",
+      "marketValue": "€2.50m",
+      "name": "Luke McCowan",
+      "nationality": [
+        "Scotland"
+      ],
+      "number": "14",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "May 31, 2026",
+      "dateOfBirth": "Aug 15, 1993",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "143424",
+      "marketValue": "€1.50m",
+      "name": "Alex Oxlade-Chamberlain",
+      "nationality": [
+        "England"
+      ],
+      "number": "21",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "Jan 18, 2003",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "581109",
+      "marketValue": "€1.00m",
+      "name": "Odin Holm",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "15",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Nov 12, 2002",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "700078",
+      "marketValue": "€2.00m",
+      "name": "Joel Mvuka",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "32",
+      "position": "Right Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Oct 20, 1997",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "420931",
+      "marketValue": "€14.00m",
+      "name": "Daizen Maeda",
+      "nationality": [
+        "Japan"
+      ],
+      "number": "38",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Mar 30, 1999",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "329812",
+      "marketValue": "€6.00m",
+      "name": "Jota",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "7",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "May 10, 2001",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "502239",
+      "marketValue": "€5.00m",
+      "name": "Michel-Ange Balikwisha",
+      "nationality": [
+        "DR Congo",
+        "Belgium"
+      ],
+      "number": "10",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "May 31, 2030",
+      "dateOfBirth": "Jul 13, 2002",
+      "foot": "right",
+      "height": "1,70m",
+      "id": "539677",
+      "marketValue": "€4.00m",
+      "name": "Sebastian Tounekti",
+      "nationality": [
+        "Tunisia",
+        "Norway"
+      ],
+      "number": "23",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jul 8, 2001",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "475949",
+      "marketValue": "€6.50m",
+      "name": "Benjamin Nygren",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "8",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "May 31, 2028",
+      "dateOfBirth": "May 25, 2002",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "853110",
+      "marketValue": "€2.50m",
+      "name": "Hyun-jun Yang",
+      "nationality": [
+        "Korea, South"
+      ],
+      "number": "13",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "May 31, 2026",
+      "dateOfBirth": "Jul 7, 1991",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "84992",
+      "marketValue": "€400k",
+      "name": "James Forrest",
+      "nationality": [
+        "Scotland"
+      ],
+      "number": "49",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jun 6, 2001",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "452477",
+      "marketValue": "€5.00m",
+      "name": "Junior Adamu",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Oct 3, 1996",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "295330",
+      "marketValue": "€3.80m",
+      "name": "Kelechi Iheanacho",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "17",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Aug 13, 2000",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "544148",
+      "marketValue": "€2.50m",
+      "name": "Tomas Cvancara",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "11",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Nov 8, 2005",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "883540",
+      "marketValue": "€500k",
+      "name": "Callum Osmand",
+      "nationality": [
+        "England",
+        "Jersey"
+      ],
+      "number": "19",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Celtic Park",
+  "stadiumSeats": "60411",
+  "transfermarktId": "371"
+}

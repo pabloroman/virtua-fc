@@ -1,0 +1,411 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/1100.png",
+  "name": "SK Brann",
+  "players": [
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Oct 7, 1995",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "228006",
+      "marketValue": "€900k",
+      "name": "Mathias Dyngeland",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Mar 3, 2000",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "736962",
+      "marketValue": "€250k",
+      "name": "Simen Vidtun Nilsen",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "12",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Oct 10, 2007",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "1007801",
+      "marketValue": "€100k",
+      "name": "Mathias Engevik Klausen",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "24",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Dec 5, 2005",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "1281099",
+      "marketValue": "€1.00m",
+      "name": "Nana Kwame Boakye",
+      "nationality": [
+        "Ghana"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Aug 30, 1996",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "347849",
+      "marketValue": "€700k",
+      "name": "Fredrik Pallesen Knudsen",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Feb 20, 2005",
+      "foot": "right",
+      "height": "1,95m",
+      "id": "919675",
+      "marketValue": "€350k",
+      "name": "Rasmus Holten",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "43",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Sep 9, 1995",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "326875",
+      "marketValue": "€600k",
+      "name": "Joachim Soltvedt",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "17",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Feb 6, 1994",
+      "foot": "left",
+      "height": "1,87m",
+      "id": "320046",
+      "marketValue": "€600k",
+      "name": "Vetle Dragsnes",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "20",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "May 24, 2005",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "923538",
+      "marketValue": "€450k",
+      "name": "Jonas Torsvik",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "15",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Aug 10, 2004",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "666131",
+      "marketValue": "€700k",
+      "name": "Denzel De Roeve",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "21",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Aug 11, 1996",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "268151",
+      "marketValue": "€350k",
+      "name": "Thore Pedersen",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "23",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Aug 17, 2003",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "1098471",
+      "marketValue": "€300k",
+      "name": "Martin Hellan",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "2",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Mar 3, 1998",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "390664",
+      "marketValue": "€1.50m",
+      "name": "Jacob Lungi Sørensen",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "18",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Mar 4, 1999",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "367274",
+      "marketValue": "€3.50m",
+      "name": "Felix Horn Myhre",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Jun 12, 2004",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "892045",
+      "marketValue": "€800k",
+      "name": "Niklas Jensen Wassberg",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "25",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Jul 17, 1999",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "503256",
+      "marketValue": "€400k",
+      "name": "Sakarias Opsahl",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "5",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Feb 18, 2006",
+      "height": "1,74m",
+      "id": "1043977",
+      "marketValue": "€350k",
+      "name": "Lars Remmem",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "41",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Feb 8, 2004",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "751105",
+      "marketValue": "€1.80m",
+      "name": "Eggert Aron Gudmundsson",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "19",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Jan 18, 2002",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "490971",
+      "marketValue": "€900k",
+      "name": "Kristall Máni Ingason",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "10",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Jul 2, 2007",
+      "foot": "left",
+      "id": "1007816",
+      "marketValue": "€100k",
+      "name": "Jesper Eikrem",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "40",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Jan 8, 1996",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "410557",
+      "marketValue": "€900k",
+      "name": "Niklas Castro",
+      "nationality": [
+        "Chile",
+        "Norway"
+      ],
+      "number": "9",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Nov 26, 1998",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "331739",
+      "marketValue": "€800k",
+      "name": "Jón Dagur Thorsteinsson",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "16",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Mar 8, 2005",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "877260",
+      "marketValue": "€800k",
+      "name": "Markus Haaland",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "32",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Jun 16, 2000",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "399151",
+      "marketValue": "€2.00m",
+      "name": "Sævar Atli Magnússon",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "22",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 31, 2027",
+      "dateOfBirth": "Jan 18, 1999",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "430031",
+      "marketValue": "€700k",
+      "name": "Ulrik Mathisen",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "14",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Mar 22, 1998",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "343065",
+      "marketValue": "€450k",
+      "name": "Mads Sande",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "27",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Aug 9, 2007",
+      "height": "1,80m",
+      "id": "1513693",
+      "name": "Chinedu Cyprain Ononogbo",
+      "nationality": [
+        "Nigeria"
+      ],
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "May 23, 2001",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "494177",
+      "marketValue": "€1.00m",
+      "name": "Noah Holm",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "29",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Feb 13, 1995",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "202925",
+      "marketValue": "€700k",
+      "name": "Bård Finne",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "11",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Brann Stadion",
+  "stadiumSeats": "17500",
+  "transfermarktId": "1100"
+}

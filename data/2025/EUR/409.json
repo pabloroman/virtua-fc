@@ -1,0 +1,437 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/409.png",
+  "name": "Red Bull Salzburg",
+  "players": [
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 1, 1996",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "186374",
+      "marketValue": "€2.50m",
+      "name": "Alexander Schlager",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 2, 2007",
+      "foot": "left",
+      "height": "1,92m",
+      "id": "915421",
+      "marketValue": "€1.00m",
+      "name": "Christian Zawieschitzky",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "52",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 17, 2006",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "948133",
+      "marketValue": "€400k",
+      "name": "Salko Hamzic",
+      "nationality": [
+        "Austria",
+        "Bosnia-Herzegovina"
+      ],
+      "number": "92",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 17, 2007",
+      "foot": "right",
+      "height": "1,95m",
+      "id": "1075577",
+      "marketValue": "€12.00m",
+      "name": "Joane Gadou",
+      "nationality": [
+        "France",
+        "Cote d'Ivoire"
+      ],
+      "number": "23",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 16, 2006",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "915418",
+      "marketValue": "€3.50m",
+      "name": "Jannik Schuster",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "44",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 6, 2005",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "822958",
+      "marketValue": "€2.50m",
+      "name": "Tim Drexler",
+      "nationality": [
+        "Germany"
+      ],
+      "number": "21",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jul 30, 2006",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "1072724",
+      "marketValue": "€2.00m",
+      "name": "John Mellberg",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Mar 24, 2004",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "948537",
+      "marketValue": "€2.00m",
+      "name": "Anrie Chase",
+      "nationality": [
+        "Japan",
+        "United States"
+      ],
+      "number": "91",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 17, 1999",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "404260",
+      "marketValue": "€3.50m",
+      "name": "Aleksa Terzic",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "3",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 14, 2003",
+      "foot": "left",
+      "height": "1,77m",
+      "id": "604320",
+      "marketValue": "€2.80m",
+      "name": "Frans Krätzig",
+      "nationality": [
+        "Germany"
+      ],
+      "number": "13",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Nov 10, 2005",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "804035",
+      "marketValue": "€1.50m",
+      "name": "Tim Trummer",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "37",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 27, 1992",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "85791",
+      "marketValue": "€1.00m",
+      "name": "Stefan Lainer",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "22",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Nov 22, 2004",
+      "foot": "right",
+      "height": "1,68m",
+      "id": "1089004",
+      "marketValue": "€6.00m",
+      "name": "Soumaïla Diabaté",
+      "nationality": [
+        "Mali"
+      ],
+      "number": "5",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Nov 11, 2002",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "671593",
+      "marketValue": "€2.50m",
+      "name": "Mamady Diambou",
+      "nationality": [
+        "Mali"
+      ],
+      "number": "15",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 28, 1999",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "515650",
+      "marketValue": "€1.50m",
+      "name": "Takumu Kawamura",
+      "nationality": [
+        "Japan"
+      ],
+      "number": "16",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Feb 25, 2001",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "462832",
+      "marketValue": "€15.00m",
+      "name": "Mads Bidstrup",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "18",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 26, 2003",
+      "foot": "left",
+      "height": "1,92m",
+      "id": "610405",
+      "marketValue": "€8.00m",
+      "name": "Maurits Kjaergaard",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "14",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 11, 2005",
+      "foot": "both",
+      "height": "1,92m",
+      "id": "804034",
+      "marketValue": "€1.20m",
+      "name": "Valentin Sulzbacher",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "38",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 22, 2006",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "915896",
+      "marketValue": "€1.00m",
+      "name": "Oliver Lukic",
+      "nationality": [
+        "Croatia",
+        "Austria"
+      ],
+      "number": "25",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 21, 2003",
+      "foot": "left",
+      "height": "1,91m",
+      "id": "581880",
+      "marketValue": "€500k",
+      "name": "Justin Omoregie",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "36",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 13, 2004",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "671114",
+      "marketValue": "€4.50m",
+      "name": "Sota Kitano",
+      "nationality": [
+        "Japan"
+      ],
+      "number": "8",
+      "position": "Right Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 21, 2007",
+      "foot": "both",
+      "height": "1,86m",
+      "id": "929994",
+      "marketValue": "€8.00m",
+      "name": "Kerim Alajbegovic",
+      "nationality": [
+        "Bosnia-Herzegovina",
+        "Germany"
+      ],
+      "number": "27",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Dec 16, 2005",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "953893",
+      "marketValue": "€5.00m",
+      "name": "Clement Bischoff",
+      "nationality": [
+        "Denmark",
+        "Kenya"
+      ],
+      "number": "7",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 1, 2004",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "1041861",
+      "marketValue": "€5.00m",
+      "name": "Moussa Yeo",
+      "nationality": [
+        "Mali"
+      ],
+      "number": "49",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Mar 23, 2003",
+      "foot": "left",
+      "height": "1,79m",
+      "id": "715956",
+      "marketValue": "€1.50m",
+      "name": "Damir Redzic",
+      "nationality": [
+        "Hungary",
+        "Bosnia-Herzegovina"
+      ],
+      "number": "24",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 21, 2004",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "847278",
+      "marketValue": "€10.00m",
+      "name": "Karim Konaté",
+      "nationality": [
+        "Cote d'Ivoire"
+      ],
+      "number": "19",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 8, 2001",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "409517",
+      "marketValue": "€6.00m",
+      "name": "Yorbe Vertessen",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "11",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 30, 2006",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "1236853",
+      "marketValue": "€6.00m",
+      "name": "Edmund Baidoo",
+      "nationality": [
+        "Ghana"
+      ],
+      "number": "20",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 27, 2007",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "1057525",
+      "marketValue": "€1.00m",
+      "name": "Enrique Aguilar",
+      "nationality": [
+        "Switzerland",
+        "Spain"
+      ],
+      "number": "43",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Mar 17, 1992",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "119234",
+      "marketValue": "€500k",
+      "name": "Karim Onisiwo",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Red Bull Arena Salzburg",
+  "stadiumSeats": "30188",
+  "transfermarktId": "409"
+}

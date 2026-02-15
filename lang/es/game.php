@@ -41,6 +41,7 @@ return [
     'last_5' => 'Últimos 5',
     'champions_league' => 'Champions League',
     'europa_league' => 'Europa League',
+    'conference_league' => 'Conference League',
     'relegation' => 'Descenso',
     'direct_promotion' => 'Ascenso Directo',
     'promotion_playoff' => 'Playoff de Ascenso',

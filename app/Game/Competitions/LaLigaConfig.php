@@ -136,6 +136,16 @@ class LaLigaConfig implements CompetitionConfig
             ];
         }
 
+        if (!empty($slots['UECL'])) {
+            $zones[] = [
+                'minPosition' => min($slots['UECL']),
+                'maxPosition' => max($slots['UECL']),
+                'borderColor' => 'green-500',
+                'bgColor' => 'bg-green-500',
+                'label' => 'game.conference_league',
+            ];
+        }
+
         $relegation = collect($promotions)->first(fn ($r) => $r['top_division'] === 'ESP1');
         if ($relegation && !empty($relegation['relegated_positions'])) {
             $zones[] = [

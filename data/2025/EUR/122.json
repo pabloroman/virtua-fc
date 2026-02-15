@@ -1,0 +1,376 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/122.png",
+  "name": "SK Sturm Graz",
+  "players": [
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 9, 2004",
+      "foot": "right",
+      "height": "1,94m",
+      "id": "718756",
+      "marketValue": "€700k",
+      "name": "Daniil Khudyakov",
+      "nationality": [
+        "Russia"
+      ],
+      "number": "53",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "May 6, 2004",
+      "height": "1,90m",
+      "id": "629032",
+      "marketValue": "€400k",
+      "name": "Matteo Bignetti",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "40",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 27, 2006",
+      "height": "1,94m",
+      "id": "948135",
+      "marketValue": "€175k",
+      "name": "Elias Lorenz",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "41",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 13, 1997",
+      "foot": "left",
+      "height": "1,87m",
+      "id": "420890",
+      "marketValue": "€2.00m",
+      "name": "Dimitri Lavalée",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "24",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Sep 29, 2004",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "856068",
+      "marketValue": "€1.80m",
+      "name": "Jeyland Mitchell",
+      "nationality": [
+        "Costa Rica"
+      ],
+      "number": "2",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Feb 11, 2000",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "394008",
+      "marketValue": "€1.50m",
+      "name": "Niklas Geyrhofer",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "35",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 25, 2000",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "394152",
+      "marketValue": "€1.50m",
+      "name": "Emanuel Aiwu",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "47",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Feb 22, 2002",
+      "foot": "left",
+      "height": "1,86m",
+      "id": "523895",
+      "marketValue": "€900k",
+      "name": "Paul Koller",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "30",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jul 2, 1995",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "261935",
+      "marketValue": "€400k",
+      "name": "Albert Vallci",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 9, 1997",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "286596",
+      "marketValue": "€1.50m",
+      "name": "Emir Karic",
+      "nationality": [
+        "Bosnia-Herzegovina",
+        "Austria"
+      ],
+      "number": "17",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Mar 11, 2000",
+      "foot": "both",
+      "height": "1,74m",
+      "id": "393745",
+      "marketValue": "€2.50m",
+      "name": "Jusuf Gazibegovic",
+      "nationality": [
+        "Bosnia-Herzegovina"
+      ],
+      "number": "22",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Aug 28, 2005",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "805534",
+      "marketValue": "€1.80m",
+      "name": "Arjan Malic",
+      "nationality": [
+        "Bosnia-Herzegovina",
+        "Slovenia"
+      ],
+      "number": "23",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 14, 1996",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "245034",
+      "marketValue": "€3.50m",
+      "name": "Jon Gorenc Stankovic",
+      "nationality": [
+        "Slovenia"
+      ],
+      "number": "4",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jun 17, 2002",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "620832",
+      "marketValue": "€2.00m",
+      "name": "Ryan Fosso",
+      "nationality": [
+        "Switzerland",
+        "Cameroon"
+      ],
+      "number": "80",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jan 11, 2009",
+      "height": "1,90m",
+      "id": "1169411",
+      "marketValue": "€1.00m",
+      "name": "Luca Weinhandl",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "39",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jan 31, 2007",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "960463",
+      "marketValue": "€2.00m",
+      "name": "Jacob Peter Hödl",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "43",
+      "position": "Right Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Feb 3, 1991",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "59053",
+      "marketValue": "€150k",
+      "name": "Stefan Hierländer",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "25",
+      "position": "Right Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 26, 1996",
+      "foot": "both",
+      "height": "1,73m",
+      "id": "352596",
+      "marketValue": "€6.00m",
+      "name": "Otar Kiteishvili",
+      "nationality": [
+        "Georgia"
+      ],
+      "number": "10",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 7, 2006",
+      "foot": "left",
+      "height": "1,76m",
+      "id": "974365",
+      "marketValue": "€2.80m",
+      "name": "Filip Rózga",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "8",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jan 15, 2003",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "724965",
+      "marketValue": "€800k",
+      "name": "Gizo Mamageishvili",
+      "nationality": [
+        "Georgia"
+      ],
+      "number": "15",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 22, 2006",
+      "foot": "both",
+      "height": "1,89m",
+      "id": "822601",
+      "marketValue": "€2.50m",
+      "name": "Leon Grgic",
+      "nationality": [
+        "Croatia",
+        "Austria"
+      ],
+      "number": "38",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Feb 25, 2006",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "922788",
+      "marketValue": "€2.00m",
+      "name": "Axel Kayombo",
+      "nationality": [
+        "France",
+        "DR Congo"
+      ],
+      "number": "11",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Aug 17, 2000",
+      "foot": "left",
+      "height": "1,87m",
+      "id": "405568",
+      "marketValue": "€2.00m",
+      "name": "Maurice Malone",
+      "nationality": [
+        "Germany",
+        "United States"
+      ],
+      "number": "77",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 18, 2003",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "661206",
+      "marketValue": "€1.50m",
+      "name": "Seedy Jatta",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "20",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 9, 2004",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "693092",
+      "marketValue": "€800k",
+      "name": "Belmin Beganovic",
+      "nationality": [
+        "Austria",
+        "Bosnia-Herzegovina"
+      ],
+      "number": "26",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 5, 2006",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "924859",
+      "name": "Rory Wilson",
+      "nationality": [
+        "Scotland"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Merkur Arena",
+  "stadiumSeats": "16364",
+  "transfermarktId": "122"
+}

@@ -1,0 +1,393 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/26.png",
+  "name": "FC Basel 1893",
+  "players": [
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Sep 18, 1987",
+      "foot": "right",
+      "height": "1,94m",
+      "id": "59238",
+      "marketValue": "€100k",
+      "name": "Marwin Hitz",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 14, 1994",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "147027",
+      "marketValue": "€100k",
+      "name": "Mirko Salvi",
+      "nationality": [
+        "Switzerland",
+        "Italy"
+      ],
+      "number": "13",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 12, 2005",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "688605",
+      "marketValue": "€100k",
+      "name": "Tim Pfeiffer",
+      "nationality": [
+        "Germany"
+      ],
+      "number": "47",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 27, 2001",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "322655",
+      "marketValue": "€3.00m",
+      "name": "Flavius Daniliuc",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "24",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 25, 2003",
+      "foot": "left",
+      "height": "1,93m",
+      "id": "705016",
+      "marketValue": "€2.50m",
+      "name": "Finn van Breemen",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "25",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 11, 2001",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "507488",
+      "marketValue": "€2.00m",
+      "name": "Nicolas Vouilloz",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "Jul 15, 2007",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "1015823",
+      "marketValue": "€500k",
+      "name": "Marvin Akahomen",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "43",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 10, 1998",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "359409",
+      "marketValue": "€3.00m",
+      "name": "Dominik Schmid",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "31",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 29, 2003",
+      "foot": "left",
+      "height": "1,77m",
+      "id": "620312",
+      "marketValue": "€400k",
+      "name": "Moussa Cissé",
+      "nationality": [
+        "France"
+      ],
+      "number": "29",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 21, 1998",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "353886",
+      "marketValue": "€3.00m",
+      "name": "Keigo Tsunemoto",
+      "nationality": [
+        "Japan"
+      ],
+      "number": "6",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 5, 1998",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "290032",
+      "marketValue": "€400k",
+      "name": "Kevin Rüegg",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "27",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Mar 7, 2007",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "952776",
+      "marketValue": "€2.00m",
+      "name": "Andrej Bacanin",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "14",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Apr 23, 2003",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "859396",
+      "marketValue": "€6.00m",
+      "name": "Metinho",
+      "nationality": [
+        "DR Congo",
+        "Brazil"
+      ],
+      "number": "5",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Oct 27, 2001",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "569375",
+      "marketValue": "€4.00m",
+      "name": "Koba Koindredi",
+      "nationality": [
+        "France"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 14, 2000",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "650350",
+      "marketValue": "€3.00m",
+      "name": "Léo Leroy",
+      "nationality": [
+        "France"
+      ],
+      "number": "22",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 11, 2004",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "659352",
+      "marketValue": "€500k",
+      "name": "Dion Kacuri",
+      "nationality": [
+        "Switzerland",
+        "Kosovo"
+      ],
+      "number": "28",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Oct 10, 1991",
+      "foot": "left",
+      "height": "1,69m",
+      "id": "86792",
+      "marketValue": "€1.80m",
+      "name": "Xherdan Shaqiri",
+      "nationality": [
+        "Switzerland",
+        "Kosovo"
+      ],
+      "number": "10",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 23, 2006",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "806015",
+      "marketValue": "€200k",
+      "name": "Adriano Onyegbule",
+      "nationality": [
+        "Germany",
+        "Nigeria"
+      ],
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Nov 30, 2002",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "852024",
+      "marketValue": "€8.00m",
+      "name": "Bénie Traoré",
+      "nationality": [
+        "Cote d'Ivoire"
+      ],
+      "number": "11",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "May 5, 2006",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "819215",
+      "marketValue": "€7.50m",
+      "name": "Julien Duranville",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "18",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 30, 2001",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "928323",
+      "marketValue": "€2.00m",
+      "name": "Ibrahim Salah",
+      "nationality": [
+        "Morocco",
+        "Belgium"
+      ],
+      "number": "21",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Oct 24, 2005",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "1057820",
+      "marketValue": "€4.50m",
+      "name": "Jeremy Agbonifo",
+      "nationality": [
+        "Sweden",
+        "Nigeria"
+      ],
+      "number": "9",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 18, 2004",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "945345",
+      "marketValue": "€2.00m",
+      "name": "Marin Soticek",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "19",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 23, 2000",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "406973",
+      "marketValue": "€1.50m",
+      "name": "Moritz Broschinski",
+      "nationality": [
+        "Germany"
+      ],
+      "number": "17",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 26, 1997",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "195906",
+      "marketValue": "€1.00m",
+      "name": "Albian Ajeti",
+      "nationality": [
+        "Switzerland",
+        "Albania"
+      ],
+      "number": "23",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Apr 29, 2005",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "1223857",
+      "marketValue": "€400k",
+      "name": "Kaio Eduardo",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "46",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jan 31, 2008",
+      "height": "1,80m",
+      "id": "1138255",
+      "marketValue": "€150k",
+      "name": "Giacomo Koloto",
+      "nationality": [
+        "Switzerland"
+      ],
+      "number": "37",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "St. Jakob-Park",
+  "stadiumSeats": "38512",
+  "transfermarktId": "26"
+}

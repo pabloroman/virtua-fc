@@ -66,8 +66,15 @@ return [
         'continental_slots' => [
             'ESP1' => [
                 'UCL' => [1, 2, 3, 4, 5],
-                'UEL' => [6, 7],
+                'UEL' => [6],
+                'UECL' => [7],
             ],
+        ],
+
+        'cup_winner_slot' => [
+            'cup' => 'ESPCUP',
+            'competition' => 'UEL',
+            'league' => 'ESP1',
         ],
 
         'continental_competitions' => [
@@ -108,6 +115,7 @@ return [
                 // Teams needed for European competitions — rosters reused from
                 // tiers + transfer_pool where possible, gaps filled from EUR pool
                 'UCL' => ['handler' => 'swiss_format', 'country' => 'EU'],
+                'UEL' => ['handler' => 'swiss_format', 'country' => 'EU'],
             ],
         ],
     ],

@@ -1,0 +1,409 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/720.png",
+  "name": "FC Porto",
+  "players": [
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Sep 19, 1999",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "357153",
+      "marketValue": "€40.00m",
+      "name": "Diogo Costa",
+      "nationality": [
+        "Portugal",
+        "Switzerland"
+      ],
+      "number": "99",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Nov 16, 1991",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "155396",
+      "marketValue": "€1.00m",
+      "name": "Cláudio Ramos",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "14",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Feb 2, 1996",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "198638",
+      "marketValue": "€800k",
+      "name": "João Costa",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "24",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Feb 15, 2000",
+      "foot": "left",
+      "height": "1,89m",
+      "id": "425918",
+      "marketValue": "€27.00m",
+      "name": "Jakub Kiwior",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 24, 2000",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "491693",
+      "marketValue": "€13.00m",
+      "name": "Nehuén Pérez",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "18",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Apr 12, 1996",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "243028",
+      "marketValue": "€11.00m",
+      "name": "Jan Bednarek",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "May 19, 2004",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "921533",
+      "marketValue": "€5.00m",
+      "name": "Dominik Prpić",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "21",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Sep 22, 1984",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "29241",
+      "marketValue": "€600k",
+      "name": "Thiago Silva",
+      "nationality": [
+        "Brazil",
+        "France"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 16, 1999",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "478365",
+      "marketValue": "€15.00m",
+      "name": "Francisco Moura",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "74",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 13, 1997",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "544784",
+      "marketValue": "€3.00m",
+      "name": "Zaidu Sanusi",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "12",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Sep 29, 2003",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "877139",
+      "marketValue": "€15.00m",
+      "name": "Alberto Costa",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "20",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jan 18, 2006",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "935480",
+      "marketValue": "€12.00m",
+      "name": "Martim Fernandes",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "52",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jul 4, 2001",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "756990",
+      "marketValue": "€32.00m",
+      "name": "Alan Varela",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "22",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 7, 1997",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "370791",
+      "marketValue": "€8.00m",
+      "name": "Pablo Rosario",
+      "nationality": [
+        "Dominican Republic",
+        "Netherlands"
+      ],
+      "number": "13",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 26, 2005",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "1152154",
+      "marketValue": "€3.00m",
+      "name": "Tomás Pérez",
+      "nationality": [
+        "Argentina"
+      ],
+      "number": "25",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Feb 25, 2006",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "926993",
+      "marketValue": "€30.00m",
+      "name": "Victor Froholdt",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "May 7, 1995",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "182893",
+      "marketValue": "€8.00m",
+      "name": "Seko Fofana",
+      "nationality": [
+        "Cote d'Ivoire",
+        "France"
+      ],
+      "number": "42",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "May 5, 2007",
+      "foot": "right",
+      "height": "1,68m",
+      "id": "957653",
+      "marketValue": "€40.00m",
+      "name": "Rodrigo Mora",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "86",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "May 27, 2002",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "699704",
+      "marketValue": "€23.00m",
+      "name": "Gabri Veiga",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "10",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Feb 21, 2001",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "634461",
+      "marketValue": "€23.00m",
+      "name": "Borja Sainz",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "17",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jan 5, 2029",
+      "dateOfBirth": "May 20, 2008",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "1162012",
+      "marketValue": "€12.00m",
+      "name": "Oskar Pietuszewski",
+      "nationality": [
+        "Poland"
+      ],
+      "number": "77",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jul 8, 1998",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "324804",
+      "marketValue": "€1.50m",
+      "name": "Yann Karamoh",
+      "nationality": [
+        "France",
+        "Cote d'Ivoire"
+      ],
+      "number": "75",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 15, 2006",
+      "foot": "left",
+      "height": "1,71m",
+      "id": "1004725",
+      "marketValue": "€20.00m",
+      "name": "William Gomes",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "7",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 24, 1997",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "520662",
+      "marketValue": "€20.00m",
+      "name": "Pepê",
+      "nationality": [
+        "Brazil",
+        "Italy"
+      ],
+      "number": "11",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "May 5, 2004",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "991268",
+      "marketValue": "€50.00m",
+      "name": "Samu Aghehowa",
+      "nationality": [
+        "Spain",
+        "Nigeria"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "May 25, 1999",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "538874",
+      "marketValue": "€10.00m",
+      "name": "Terem Moffi",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "29",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jul 2, 2004",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "1063292",
+      "marketValue": "€6.00m",
+      "name": "Deniz Gül",
+      "nationality": [
+        "Türkiye",
+        "Sweden"
+      ],
+      "number": "27",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Aug 27, 1990",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "72522",
+      "marketValue": "€1.50m",
+      "name": "Luuk de Jong",
+      "nationality": [
+        "Netherlands"
+      ],
+      "number": "26",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Estádio do Dragão",
+  "stadiumSeats": "50033",
+  "transfermarktId": "720"
+}

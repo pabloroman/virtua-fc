@@ -1,0 +1,46 @@
+{
+    "id": "UEL",
+    "name": "UEFA Europa League",
+    "seasonID": "2025",
+    "clubs": [
+        { "id": "12", "name": "AS Roma", "country": "IT", "pot": 1 },
+        { "id": "720", "name": "FC Porto", "country": "PT", "pot": 1 },
+        { "id": "124", "name": "Rangers FC", "country": "SC", "pot": 1 },
+        { "id": "234", "name": "Feyenoord Rotterdam", "country": "NL", "pot": 1 },
+        { "id": "1082", "name": "LOSC Lille", "country": "FR", "pot": 1 },
+        { "id": "419", "name": "GNK Dinamo Zagreb", "country": "HR", "pot": 1 },
+        { "id": "150", "name": "Real Betis", "country": "ES", "pot": 1 },
+        { "id": "409", "name": "FC Salzburg", "country": "AT", "pot": 1 },
+        { "id": "405", "name": "Aston Villa", "country": "EN", "pot": 1 },
+
+        { "id": "36", "name": "Fenerbahçe SK", "country": "TR", "pot": 2 },
+        { "id": "1075", "name": "SC Braga", "country": "PT", "pot": 2 },
+        { "id": "159", "name": "Crvena Zvezda", "country": "RS", "pot": 2 },
+        { "id": "1041", "name": "Olympique Lyon", "country": "FR", "pot": 2 },
+        { "id": "1091", "name": "PAOK FC", "country": "GR", "pot": 2 },
+        { "id": "941", "name": "Viktoria Plzeň", "country": "CZ", "pot": 2 },
+        { "id": "279", "name": "Ferencváros TC", "country": "HU", "pot": 2 },
+        { "id": "371", "name": "Celtic FC", "country": "SC", "pot": 2 },
+        { "id": "119", "name": "Maccabi Tel-Aviv", "country": "IL", "pot": 2 },
+
+        { "id": "452", "name": "BSC Young Boys", "country": "CH", "pot": 3 },
+        { "id": "26", "name": "FC Basel", "country": "CH", "pot": 3 },
+        { "id": "865", "name": "FC Midtjylland", "country": "DK", "pot": 3 },
+        { "id": "60", "name": "SC Freiburg", "country": "DE", "pot": 3 },
+        { "id": "31614", "name": "PFC Ludogorets", "country": "BG", "pot": 3 },
+        { "id": "703", "name": "Nottingham Forest", "country": "EN", "pot": 3 },
+        { "id": "122", "name": "SK Sturm Graz", "country": "AT", "pot": 3 },
+        { "id": "301", "name": "FCSB", "country": "RO", "pot": 3 },
+        { "id": "417", "name": "OGC Nice", "country": "FR", "pot": 3 },
+
+        { "id": "1025", "name": "Bologna FC", "country": "IT", "pot": 4 },
+        { "id": "940", "name": "Celta de Vigo", "country": "ES", "pot": 4 },
+        { "id": "79", "name": "VfB Stuttgart", "country": "DE", "pot": 4 },
+        { "id": "265", "name": "Panathinaikos FC", "country": "GR", "pot": 4 },
+        { "id": "496", "name": "Malmö FF", "country": "SE", "pot": 4 },
+        { "id": "1435", "name": "Go Ahead Eagles", "country": "NL", "pot": 4 },
+        { "id": "200", "name": "FC Utrecht", "country": "NL", "pot": 4 },
+        { "id": "1184", "name": "KRC Genk", "country": "BE", "pot": 4 },
+        { "id": "1100", "name": "SK Brann", "country": "NO", "pot": 4 }
+    ]
+}

@@ -1,0 +1,433 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/31614.png",
+  "name": "Ludogorets Razgrad",
+  "players": [
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 22, 1994",
+      "foot": "right",
+      "height": "1,94m",
+      "id": "104220",
+      "marketValue": "€750k",
+      "name": "Hendrik Bonmann",
+      "nationality": [
+        "Germany"
+      ],
+      "number": "39",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 6, 1990",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "79573",
+      "marketValue": "€300k",
+      "name": "Sergio Padt",
+      "nationality": [
+        "Netherlands",
+        "Italy"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Nov 10, 2002",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "817632",
+      "marketValue": "€300k",
+      "name": "Damyan Hristov",
+      "nationality": [
+        "Bulgaria"
+      ],
+      "number": "67",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 5, 2000",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "555058",
+      "marketValue": "€3.00m",
+      "name": "Edvin Kurtulus",
+      "nationality": [
+        "Sweden",
+        "Kosovo"
+      ],
+      "number": "15",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Oct 5, 1995",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "504125",
+      "marketValue": "€2.00m",
+      "name": "Olivier Verdon",
+      "nationality": [
+        "Benin",
+        "France"
+      ],
+      "number": "24",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jun 28, 1995",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "329519",
+      "marketValue": "€1.00m",
+      "name": "Dinis Almeida",
+      "nationality": [
+        "Portugal"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 17, 1997",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "408422",
+      "marketValue": "€800k",
+      "name": "Idan Nachmias",
+      "nationality": [
+        "Israel",
+        "Portugal"
+      ],
+      "number": "55",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 18, 2006",
+      "foot": "left",
+      "id": "1052273",
+      "marketValue": "€300k",
+      "name": "Simeon Shishkov",
+      "nationality": [
+        "Bulgaria"
+      ],
+      "number": "42",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Apr 18, 1992",
+      "foot": "both",
+      "height": "1,83m",
+      "id": "95790",
+      "marketValue": "€25k",
+      "name": "Georgi Terziev",
+      "nationality": [
+        "Bulgaria"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 30, 1993",
+      "foot": "both",
+      "height": "1,81m",
+      "id": "218441",
+      "marketValue": "€1.50m",
+      "name": "Anton Nedyalkov",
+      "nationality": [
+        "Bulgaria"
+      ],
+      "number": "3",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Dec 11, 2001",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "1110258",
+      "marketValue": "€1.50m",
+      "name": "Vinícius Nogueira",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "27",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Mar 30, 1994",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "349856",
+      "marketValue": "€1.50m",
+      "name": "Son",
+      "nationality": [
+        "Spain"
+      ],
+      "number": "17",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 26, 1998",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "423166",
+      "marketValue": "€1.20m",
+      "name": "Pipa",
+      "nationality": [
+        "Spain"
+      ],
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Nov 11, 1996",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "255469",
+      "marketValue": "€1.20m",
+      "name": "Joel Andersson",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "2",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 10, 1998",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "646679",
+      "marketValue": "€1.50m",
+      "name": "Pedro Naressi",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "30",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Nov 7, 2000",
+      "foot": "left",
+      "height": "1,70m",
+      "id": "541288",
+      "marketValue": "€700k",
+      "name": "Ivan Yordanov",
+      "nationality": [
+        "Bulgaria"
+      ],
+      "number": "82",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 18, 1993",
+      "foot": "both",
+      "height": "1,88m",
+      "id": "252767",
+      "marketValue": "€1.80m",
+      "name": "Ivaylo Chochev",
+      "nationality": [
+        "Bulgaria"
+      ],
+      "number": "18",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 27, 2000",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "396230",
+      "marketValue": "€1.80m",
+      "name": "Filip Kaloc",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "26",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jul 4, 1999",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "432852",
+      "marketValue": "€1.50m",
+      "name": "Deroy Duarte",
+      "nationality": [
+        "Cape Verde",
+        "Netherlands"
+      ],
+      "number": "23",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 14, 2001",
+      "foot": "both",
+      "height": "1,86m",
+      "id": "766306",
+      "marketValue": "€3.00m",
+      "name": "Petar Stanic",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "14",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 20, 2001",
+      "foot": "right",
+      "height": "1,69m",
+      "id": "543529",
+      "marketValue": "€2.20m",
+      "name": "Aguibou Camara",
+      "nationality": [
+        "Guinea"
+      ],
+      "number": "20",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Nov 4, 2000",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "815686",
+      "marketValue": "€3.50m",
+      "name": "Caio Vidal",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "11",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 3, 1997",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "422380",
+      "marketValue": "€4.00m",
+      "name": "Bernard Tekpetey",
+      "nationality": [
+        "Ghana",
+        "Bulgaria"
+      ],
+      "number": "37",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 1, 2004",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "834481",
+      "marketValue": "€3.50m",
+      "name": "Erick Marcus",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "77",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 16, 1999",
+      "foot": "both",
+      "height": "1,77m",
+      "id": "412537",
+      "marketValue": "€1.20m",
+      "name": "Stanislav Ivanov",
+      "nationality": [
+        "Bulgaria"
+      ],
+      "number": "99",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "May 20, 2001",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "973569",
+      "marketValue": "€4.00m",
+      "name": "Rwan Cruz",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "12",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 24, 1997",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "254955",
+      "marketValue": "€2.50m",
+      "name": "Kwadwo Duah",
+      "nationality": [
+        "Switzerland",
+        "Ghana"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 24, 2004",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "1096637",
+      "marketValue": "€1.00m",
+      "name": "Yves Erick Bile",
+      "nationality": [
+        "Cote d'Ivoire",
+        "Belgium"
+      ],
+      "number": "29",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Sep 6, 1996",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "503001",
+      "marketValue": "€900k",
+      "name": "Matías Tissera",
+      "nationality": [
+        "Argentina"
+      ],
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Mar 13, 2003",
+      "foot": "left",
+      "id": "1099718",
+      "marketValue": "€400k",
+      "name": "Matheus Machado",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "10",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Huvepharma Arena",
+  "stadiumSeats": "10423",
+  "transfermarktId": "31614"
+}

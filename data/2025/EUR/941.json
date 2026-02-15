@@ -1,0 +1,387 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/941.png",
+  "name": "FC Viktoria Plzen",
+  "players": [
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 21, 2001",
+      "foot": "left",
+      "height": "2,05m",
+      "id": "393999",
+      "marketValue": "€1.00m",
+      "name": "Florian Wiegele",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "44",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 16, 2005",
+      "height": "2,01m",
+      "id": "947524",
+      "marketValue": "€700k",
+      "name": "Viktor Baier",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "May 10, 2004",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "973315",
+      "marketValue": "€400k",
+      "name": "Dominik Tapaj",
+      "nationality": [
+        "Slovakia"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Aug 18, 1994",
+      "foot": "right",
+      "height": "1,94m",
+      "id": "316202",
+      "marketValue": "€100k",
+      "name": "Marian Tvrdon",
+      "nationality": [
+        "Slovakia"
+      ],
+      "number": "13",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 6, 2007",
+      "id": "1143612",
+      "name": "Matyas Silhavy",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "15",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Oct 10, 2001",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "686806",
+      "marketValue": "€6.00m",
+      "name": "Sampson Dweh",
+      "nationality": [
+        "Liberia"
+      ],
+      "number": "40",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 18, 2003",
+      "foot": "left",
+      "height": "1,89m",
+      "id": "1109671",
+      "marketValue": "€3.50m",
+      "name": "Karel Spacil",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 23, 2005",
+      "id": "931426",
+      "marketValue": "€3.50m",
+      "name": "Jan Paluska",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "22",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 23, 1995",
+      "foot": "left",
+      "height": "1,87m",
+      "id": "384879",
+      "marketValue": "€1.50m",
+      "name": "Vaclav Jemelka",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "21",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 28, 1999",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "671499",
+      "marketValue": "€800k",
+      "name": "David Krcik",
+      "nationality": [
+        "Slovakia"
+      ],
+      "number": "37",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jun 1, 2000",
+      "id": "396225",
+      "marketValue": "€225k",
+      "name": "Vaclav Mika",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Dec 7, 1999",
+      "foot": "left",
+      "height": "1,73m",
+      "id": "530527",
+      "marketValue": "€800k",
+      "name": "Merchas Doski",
+      "nationality": [
+        "Iraq",
+        "Germany"
+      ],
+      "number": "14",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jul 6, 2003",
+      "height": "1,96m",
+      "id": "889437",
+      "marketValue": "€500k",
+      "name": "Adam Kadlec",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "16",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 10, 2001",
+      "height": "1,82m",
+      "id": "611049",
+      "marketValue": "€6.00m",
+      "name": "Lukas Cerv",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "6",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 22, 1992",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "217879",
+      "marketValue": "€2.00m",
+      "name": "Patrik Hrosovsky",
+      "nationality": [
+        "Slovakia"
+      ],
+      "number": "17",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Nov 15, 2007",
+      "foot": "left",
+      "id": "1013804",
+      "marketValue": "€1.80m",
+      "name": "Jiri Panos",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "20",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 9, 2000",
+      "height": "1,81m",
+      "id": "572240",
+      "marketValue": "€1.20m",
+      "name": "Matej Valenta",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "32",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Apr 2, 2003",
+      "height": "1,88m",
+      "id": "826103",
+      "marketValue": "€800k",
+      "name": "Alexandr Sojka",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "12",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 20, 2001",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "638990",
+      "marketValue": "€3.50m",
+      "name": "Amar Memić",
+      "nationality": [
+        "Bosnia-Herzegovina"
+      ],
+      "number": "99",
+      "position": "Right Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 3, 2002",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "569367",
+      "marketValue": "€3.00m",
+      "name": "Cheick Souaré",
+      "nationality": [
+        "France",
+        "Guinea"
+      ],
+      "number": "19",
+      "position": "Left Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 21, 2004",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "928038",
+      "marketValue": "€2.00m",
+      "name": "Tom Sloncik",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "29",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 21, 2003",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "652060",
+      "marketValue": "€1.50m",
+      "name": "Denis Visinsky",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "9",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 24, 1997",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "334803",
+      "marketValue": "€1.00m",
+      "name": "Tomas Ladra",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "18",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 23, 2003",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "734799",
+      "marketValue": "€3.50m",
+      "name": "Prince Adu",
+      "nationality": [
+        "Ghana"
+      ],
+      "number": "80",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 15, 2003",
+      "height": "1,84m",
+      "id": "1129903",
+      "marketValue": "€1.80m",
+      "name": "Salim Fago Lawal",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "70",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 11, 1998",
+      "foot": "right",
+      "height": "1,95m",
+      "id": "558473",
+      "marketValue": "€1.00m",
+      "name": "Daniel Vasulin",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "51",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 1, 1992",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "101500",
+      "marketValue": "€750k",
+      "name": "Matej Vydra",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "11",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Nov 3, 2005",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "1305470",
+      "marketValue": "€500k",
+      "name": "Mohamed Toure",
+      "nationality": [
+        "Guinea"
+      ],
+      "number": "10",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Doosan Aréna",
+  "stadiumSeats": "11700",
+  "transfermarktId": "941"
+}

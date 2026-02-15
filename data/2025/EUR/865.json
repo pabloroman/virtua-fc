@@ -1,0 +1,418 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/865.png",
+  "name": "FC Midtjylland",
+  "players": [
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 11, 2000",
+      "foot": "right",
+      "height": "2,01m",
+      "id": "464373",
+      "marketValue": "€2.00m",
+      "name": "Elías Ólafsson",
+      "nationality": [
+        "Iceland"
+      ],
+      "number": "16",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Apr 23, 2003",
+      "foot": "right",
+      "height": "1,95m",
+      "id": "586987",
+      "marketValue": "€150k",
+      "name": "Ovie Ejeheri",
+      "nationality": [
+        "England",
+        "Nigeria"
+      ],
+      "number": "30",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Feb 1, 1989",
+      "foot": "right",
+      "height": "1,95m",
+      "id": "48870",
+      "marketValue": "€100k",
+      "name": "Jonas Lössl",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Jan 3, 2004",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "1003546",
+      "name": "Mark Ugboh",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "60",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 13, 2006",
+      "height": "2,01m",
+      "id": "1016309",
+      "name": "Liam Selin",
+      "nationality": [
+        "Sweden"
+      ],
+      "number": "31",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 8, 2004",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "1099668",
+      "marketValue": "€8.00m",
+      "name": "Ousmane Diao",
+      "nationality": [
+        "Senegal"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 7, 1999",
+      "foot": "left",
+      "height": "1,89m",
+      "id": "372240",
+      "marketValue": "€6.00m",
+      "name": "Mads Bech Sørensen",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "22",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jan 24, 1998",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "357003",
+      "marketValue": "€4.00m",
+      "name": "Martin Erlić",
+      "nationality": [
+        "Croatia"
+      ],
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 17, 2002",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "706963",
+      "marketValue": "€1.80m",
+      "name": "Han-beom Lee",
+      "nationality": [
+        "Korea, South"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Feb 13, 2007",
+      "foot": "left",
+      "id": "1162316",
+      "name": "Bilal Konteh",
+      "nationality": [
+        "Sweden",
+        "Spain"
+      ],
+      "number": "35",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Oct 3, 2003",
+      "foot": "left",
+      "height": "1,79m",
+      "id": "623772",
+      "marketValue": "€3.00m",
+      "name": "Victor Bak",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "55",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Jan 3, 1995",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "520492",
+      "marketValue": "€500k",
+      "name": "Paulinho",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "29",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Apr 19, 1995",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "183321",
+      "marketValue": "€3.00m",
+      "name": "Kevin Mbabu",
+      "nationality": [
+        "Switzerland",
+        "DR Congo"
+      ],
+      "number": "43",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "May 28, 2001",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "665538",
+      "marketValue": "€750k",
+      "name": "Adam Gabriel",
+      "nationality": [
+        "Czech Republic"
+      ],
+      "number": "13",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jun 11, 1996",
+      "foot": "left",
+      "height": "1,93m",
+      "id": "320411",
+      "marketValue": "€7.00m",
+      "name": "Philip Billing",
+      "nationality": [
+        "Denmark",
+        "Nigeria"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 24, 2004",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "941418",
+      "marketValue": "€5.50m",
+      "name": "Denil Castillo",
+      "nationality": [
+        "Ecuador"
+      ],
+      "number": "21",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 31, 2030",
+      "dateOfBirth": "Nov 26, 2004",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "742518",
+      "marketValue": "€2.50m",
+      "name": "Pedro Bravo",
+      "nationality": [
+        "Colombia"
+      ],
+      "number": "19",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jan 25, 2005",
+      "foot": "both",
+      "height": "1,80m",
+      "id": "747487",
+      "marketValue": "€2.00m",
+      "name": "Valdemar Byskov",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "20",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Sep 28, 2006",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "1171600",
+      "marketValue": "€200k",
+      "name": "Alamara Djabi",
+      "nationality": [
+        "Guinea-Bissau"
+      ],
+      "number": "33",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 19, 2002",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "514887",
+      "marketValue": "€6.00m",
+      "name": "Aral Şimşir",
+      "nationality": [
+        "Türkiye",
+        "Denmark"
+      ],
+      "number": "58",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Dec 31, 2029",
+      "dateOfBirth": "Sep 27, 2006",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "937680",
+      "marketValue": "€3.00m",
+      "name": "Mikel Gogorza",
+      "nationality": [
+        "Denmark",
+        "France"
+      ],
+      "number": "41",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Mar 22, 2006",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "925199",
+      "marketValue": "€1.50m",
+      "name": "Junior Zé",
+      "nationality": [
+        "Switzerland",
+        "Cameroon"
+      ],
+      "number": "39",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Jan 24, 2004",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "881116",
+      "marketValue": "€10.00m",
+      "name": "Darío Osorio",
+      "nationality": [
+        "Chile"
+      ],
+      "number": "11",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Sep 17, 1999",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "490309",
+      "marketValue": "€850k",
+      "name": "Edward Chilufya",
+      "nationality": [
+        "Zambia"
+      ],
+      "number": "14",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 28, 2004",
+      "foot": "left",
+      "height": "1,86m",
+      "id": "929090",
+      "marketValue": "€22.00m",
+      "name": "Franculino",
+      "nationality": [
+        "Guinea-Bissau",
+        "Portugal"
+      ],
+      "number": "7",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 25, 1998",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "652537",
+      "marketValue": "€3.00m",
+      "name": "Gue-sung Cho",
+      "nationality": [
+        "Korea, South"
+      ],
+      "number": "10",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 30, 1994",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "264423",
+      "marketValue": "€2.80m",
+      "name": "Mikael Uhre",
+      "nationality": [
+        "Denmark"
+      ],
+      "number": "17",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 27, 1999",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "499759",
+      "marketValue": "€2.50m",
+      "name": "Ola Brynhildsen",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 31, 2026",
+      "dateOfBirth": "May 15, 1999",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "524590",
+      "marketValue": "€900k",
+      "name": "Júnior Brumado",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "74",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "MCH Arena",
+  "stadiumSeats": "11809",
+  "transfermarktId": "865"
+}

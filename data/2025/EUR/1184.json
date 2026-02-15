@@ -1,0 +1,393 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/1184.png",
+  "name": "KRC Genk",
+  "players": [
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 7, 2000",
+      "foot": "right",
+      "height": "1,94m",
+      "id": "393686",
+      "marketValue": "€2.50m",
+      "name": "Tobias Lawal",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "26",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 30, 1993",
+      "foot": "left",
+      "height": "1,89m",
+      "id": "137326",
+      "marketValue": "€1.70m",
+      "name": "Hendrik Van Crombrugge",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 27, 2008",
+      "foot": "right",
+      "height": "2,00m",
+      "id": "1105547",
+      "marketValue": "€1.00m",
+      "name": "Lucca Brughmans",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "28",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Sep 28, 2007",
+      "id": "981532",
+      "marketValue": "€300k",
+      "name": "Emile Doucouré",
+      "nationality": [
+        "Mali",
+        "Belgium"
+      ],
+      "number": "97",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Aug 11, 2003",
+      "height": "1,86m",
+      "id": "570784",
+      "marketValue": "€50k",
+      "name": "Brent Stevens",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "71",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 4, 2004",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "1019174",
+      "marketValue": "€11.00m",
+      "name": "Matte Smets",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 14, 2000",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "497663",
+      "marketValue": "€8.00m",
+      "name": "Mujaid Sadick",
+      "nationality": [
+        "Spain",
+        "Nigeria"
+      ],
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 13, 2006",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "997474",
+      "marketValue": "€2.50m",
+      "name": "Josué Kongolo",
+      "nationality": [
+        "Belgium",
+        "DR Congo"
+      ],
+      "number": "44",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 7, 2004",
+      "foot": "left",
+      "height": "1,87m",
+      "id": "1041316",
+      "marketValue": "€1.00m",
+      "name": "Adrián Palacios",
+      "nationality": [
+        "Venezuela",
+        "Colombia"
+      ],
+      "number": "34",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Nov 5, 2004",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "893659",
+      "marketValue": "€4.00m",
+      "name": "Yaimar Medina",
+      "nationality": [
+        "Ecuador"
+      ],
+      "number": "19",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Aug 8, 1994",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "129586",
+      "marketValue": "€2.50m",
+      "name": "Joris Kayembe",
+      "nationality": [
+        "DR Congo",
+        "Belgium"
+      ],
+      "number": "18",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 31, 2001",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "820474",
+      "marketValue": "€15.00m",
+      "name": "Zakaria El Ouahdi",
+      "nationality": [
+        "Morocco",
+        "Belgium"
+      ],
+      "number": "77",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 21, 2002",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "627939",
+      "marketValue": "€2.50m",
+      "name": "Ken Nkuba",
+      "nationality": [
+        "Belgium",
+        "DR Congo"
+      ],
+      "number": "27",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 5, 2004",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "1038348",
+      "marketValue": "€8.00m",
+      "name": "Ibrahima Sory Bangoura",
+      "nationality": [
+        "Guinea"
+      ],
+      "number": "21",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 18, 2004",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "669632",
+      "marketValue": "€3.00m",
+      "name": "Nikolas Sattlberger",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "24",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Feb 6, 1997",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "356081",
+      "marketValue": "€10.00m",
+      "name": "Bryan Heynen",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 25, 2008",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "1184726",
+      "marketValue": "€1.00m",
+      "name": "August De Wannemacker",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "56",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Nov 19, 2007",
+      "foot": "left",
+      "height": "1,73m",
+      "id": "990148",
+      "marketValue": "€28.00m",
+      "name": "Konstantinos Karetsas",
+      "nationality": [
+        "Greece",
+        "Belgium"
+      ],
+      "number": "20",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 15, 1999",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "446491",
+      "marketValue": "€4.00m",
+      "name": "Daan Heymans",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "38",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 19, 2005",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "912436",
+      "marketValue": "€5.00m",
+      "name": "Noah Adedeji-Sternberg",
+      "nationality": [
+        "Belgium",
+        "Germany"
+      ],
+      "number": "32",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jul 24, 2000",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "673382",
+      "marketValue": "€3.00m",
+      "name": "Yira Sor",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "14",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Mar 4, 2003",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "835775",
+      "marketValue": "€900k",
+      "name": "Ayumu Yokoyama",
+      "nationality": [
+        "Japan"
+      ],
+      "number": "30",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 4, 2002",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "707159",
+      "marketValue": "€10.00m",
+      "name": "Jarne Steuckers",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "7",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 9, 1993",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "348791",
+      "marketValue": "€3.50m",
+      "name": "Junya Ito",
+      "nationality": [
+        "Japan"
+      ],
+      "number": "10",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jun 8, 2003",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "851699",
+      "marketValue": "€5.00m",
+      "name": "Jusef Erabi",
+      "nationality": [
+        "Sweden",
+        "Afghanistan"
+      ],
+      "number": "99",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2030",
+      "dateOfBirth": "Dec 8, 2006",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "952439",
+      "marketValue": "€2.50m",
+      "name": "Robin Mirisola",
+      "nationality": [
+        "Belgium"
+      ],
+      "number": "29",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Sep 9, 2004",
+      "height": "1,93m",
+      "id": "1122196",
+      "marketValue": "€1.00m",
+      "name": "Aaron Bibout",
+      "nationality": [
+        "Cameroon"
+      ],
+      "number": "23",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Cegeka Arena",
+  "stadiumSeats": "23718",
+  "transfermarktId": "1184"
+}

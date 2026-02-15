@@ -1,0 +1,67 @@
+{
+    "league": [
+        {
+            "round": 1,
+            "date": "2025-09-24"
+        },
+        {
+            "round": 2,
+            "date": "2025-10-02"
+        },
+        {
+            "round": 3,
+            "date": "2025-10-23"
+        },
+        {
+            "round": 4,
+            "date": "2025-11-06"
+        },
+        {
+            "round": 5,
+            "date": "2025-11-27"
+        },
+        {
+            "round": 6,
+            "date": "2025-12-11"
+        },
+        {
+            "round": 7,
+            "date": "2026-01-22"
+        },
+        {
+            "round": 8,
+            "date": "2026-01-29"
+        }
+    ],
+    "knockout": [
+        {
+            "round": 1,
+            "name": "Playoff de eliminación",
+            "first_leg_date": "2026-02-19",
+            "second_leg_date": "2026-02-26"
+        },
+        {
+            "round": 2,
+            "name": "Octavos de final",
+            "first_leg_date": "2026-03-12",
+            "second_leg_date": "2026-03-19"
+        },
+        {
+            "round": 3,
+            "name": "Cuartos de final",
+            "first_leg_date": "2026-04-09",
+            "second_leg_date": "2026-04-16"
+        },
+        {
+            "round": 4,
+            "name": "Semifinal",
+            "first_leg_date": "2026-04-30",
+            "second_leg_date": "2026-05-07"
+        },
+        {
+            "round": 5,
+            "name": "Final",
+            "date": "2026-05-20"
+        }
+    ]
+}

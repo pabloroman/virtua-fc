@@ -121,6 +121,16 @@ class CountryConfig
     }
 
     /**
+     * Get cup winner qualification slot config for a country.
+     *
+     * @return array{cup: string, competition: string, league: string}|null
+     */
+    public function cupWinnerSlot(string $countryCode): ?array
+    {
+        return $this->get($countryCode)['cup_winner_slot'] ?? null;
+    }
+
+    /**
      * Get supercup config for a country.
      *
      * @return array{competition: string, cup: string, league: string, cup_final_round: int}|null

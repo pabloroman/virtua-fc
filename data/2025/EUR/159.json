@@ -1,0 +1,430 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/159.png",
+  "name": "Red Star Belgrade",
+  "players": [
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 29, 1992",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "177547",
+      "marketValue": "€2.50m",
+      "name": "Matheus",
+      "nationality": [
+        "Brazil",
+        "Portugal"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Mar 11, 1996",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "347268",
+      "marketValue": "€2.50m",
+      "name": "Omri Glazer",
+      "nationality": [
+        "Israel",
+        "Romania"
+      ],
+      "number": "18",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 4, 2002",
+      "foot": "left",
+      "height": "1,89m",
+      "id": "692807",
+      "marketValue": "€1.00m",
+      "name": "Ivan Gutesa",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "77",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 28, 2009",
+      "foot": "right",
+      "height": "1,95m",
+      "id": "1141848",
+      "marketValue": "€400k",
+      "name": "Savo Radanovic",
+      "nationality": [
+        "Serbia",
+        "Bosnia-Herzegovina"
+      ],
+      "number": "50",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 11, 2007",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "952768",
+      "marketValue": "€200k",
+      "name": "Vuk Draskic",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "28",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Aug 31, 2026",
+      "dateOfBirth": "Jan 22, 2001",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "574660",
+      "marketValue": "€7.50m",
+      "name": "Strahinja Erakovic",
+      "nationality": [
+        "Serbia",
+        "Australia"
+      ],
+      "number": "25",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 11, 1995",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "510782",
+      "marketValue": "€2.50m",
+      "name": "Rodrigão",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 26, 1995",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "202228",
+      "marketValue": "€2.50m",
+      "name": "Milos Veljkovic",
+      "nationality": [
+        "Serbia",
+        "Switzerland"
+      ],
+      "number": "13",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 15, 2000",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "748795",
+      "marketValue": "€1.50m",
+      "name": "Franklin Tebo Uchenna",
+      "nationality": [
+        "Nigeria"
+      ],
+      "number": "30",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "May 18, 2006",
+      "foot": "right",
+      "height": "1,94m",
+      "id": "932920",
+      "marketValue": "€100k",
+      "name": "Stefan Gudelj",
+      "nationality": [
+        "Bosnia-Herzegovina",
+        "Serbia"
+      ],
+      "number": "45",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 12, 1999",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "461701",
+      "marketValue": "€4.50m",
+      "name": "Nair Tiknizyan",
+      "nationality": [
+        "Armenia",
+        "Russia"
+      ],
+      "number": "23",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 24, 2007",
+      "foot": "left",
+      "height": "1,73m",
+      "id": "952771",
+      "marketValue": "€2.50m",
+      "name": "Adem Avdic",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "71",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Dec 5, 1998",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "639414",
+      "marketValue": "€4.50m",
+      "name": "Young-woo Seol",
+      "nationality": [
+        "Korea, South"
+      ],
+      "number": "66",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Apr 24, 2003",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "634972",
+      "marketValue": "€1.50m",
+      "name": "Nikola Stankovic",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "24",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Nov 27, 2000",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "645588",
+      "marketValue": "€7.50m",
+      "name": "Tomás Händel",
+      "nationality": [
+        "Portugal",
+        "Austria"
+      ],
+      "number": "20",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Oct 7, 1993",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "259953",
+      "marketValue": "€4.00m",
+      "name": "Rade Krunic",
+      "nationality": [
+        "Bosnia-Herzegovina",
+        "Serbia"
+      ],
+      "number": "33",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 15, 2004",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "1111843",
+      "marketValue": "€2.20m",
+      "name": "Mahmudu Bajo",
+      "nationality": [
+        "The Gambia"
+      ],
+      "number": "6",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 29, 1998",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "320854",
+      "marketValue": "€7.00m",
+      "name": "Timi Max Elsnik",
+      "nationality": [
+        "Slovenia"
+      ],
+      "number": "21",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 11, 2008",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "1073632",
+      "marketValue": "€10.00m",
+      "name": "Vasilije Kostov",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "22",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Sep 13, 1993",
+      "foot": "both",
+      "height": "1,84m",
+      "id": "233129",
+      "marketValue": "€3.50m",
+      "name": "Mirko Ivanic",
+      "nationality": [
+        "Montenegro",
+        "Serbia"
+      ],
+      "number": "4",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 6, 1991",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "139915",
+      "marketValue": "€700k",
+      "name": "Aleksandar Katai",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "10",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Feb 15, 1996",
+      "foot": "both",
+      "height": "1,82m",
+      "id": "245078",
+      "marketValue": "€2.50m",
+      "name": "Nemanja Radonjic",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "49",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 28, 2002",
+      "foot": "both",
+      "height": "1,85m",
+      "id": "706253",
+      "marketValue": "€1.50m",
+      "name": "Vladimir Lucic",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "37",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 31, 2008",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "1073633",
+      "marketValue": "€1.00m",
+      "name": "Luka Zaric",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "40",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 31, 2028",
+      "dateOfBirth": "Apr 10, 2006",
+      "foot": "left",
+      "height": "1,65m",
+      "id": "1305075",
+      "marketValue": "€700k",
+      "name": "Douglas Owusu",
+      "nationality": [
+        "Ghana",
+        "Serbia"
+      ],
+      "number": "35",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 24, 1996",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "598629",
+      "marketValue": "€4.50m",
+      "name": "Bruno Duarte",
+      "nationality": [
+        "Brazil",
+        "Italy"
+      ],
+      "number": "17",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 19, 1989",
+      "foot": "both",
+      "height": "1,92m",
+      "id": "41384",
+      "marketValue": "€2.50m",
+      "name": "Marko Arnautovic",
+      "nationality": [
+        "Austria",
+        "Serbia"
+      ],
+      "number": "89",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Mar 11, 2003",
+      "foot": "right",
+      "height": "1,95m",
+      "id": "678035",
+      "marketValue": "€2.00m",
+      "name": "Jay Enem",
+      "nationality": [
+        "Netherlands",
+        "Nigeria"
+      ],
+      "number": "42",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 4, 2008",
+      "foot": "left",
+      "height": "1,98m",
+      "id": "1073625",
+      "marketValue": "€800k",
+      "name": "Aleksa Damjanovic",
+      "nationality": [
+        "Serbia",
+        "Austria"
+      ],
+      "number": "19",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Rajko Mitić",
+  "stadiumSeats": "51755",
+  "transfermarktId": "159"
+}

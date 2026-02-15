@@ -1,0 +1,401 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/119.png",
+  "name": "Maccabi Tel Aviv",
+  "players": [
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 23, 2005",
+      "height": "1,87m",
+      "id": "930521",
+      "marketValue": "€250k",
+      "name": "Ofek Melika",
+      "nationality": [
+        "Israel"
+      ],
+      "number": "22",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Nov 23, 1992",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "200575",
+      "marketValue": "€200k",
+      "name": "Roi Mishpati",
+      "nationality": [
+        "Israel"
+      ],
+      "number": "90",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 25, 2004",
+      "height": "1,94m",
+      "id": "804067",
+      "name": "Roie Amedi",
+      "nationality": [
+        "Israel"
+      ],
+      "number": "50",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "Feb 23, 2006",
+      "id": "1364962",
+      "name": "Shalev Saadia",
+      "nationality": [
+        "Israel"
+      ],
+      "number": "51",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 9, 2002",
+      "foot": "both",
+      "height": "1,88m",
+      "id": "811805",
+      "marketValue": "€2.00m",
+      "name": "Tyrese Asante",
+      "nationality": [
+        "Netherlands",
+        "Ghana"
+      ],
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Aug 28, 1997",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "426723",
+      "marketValue": "€1.70m",
+      "name": "Mohamed Camara",
+      "nationality": [
+        "Guinea"
+      ],
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 13, 1999",
+      "height": "1,88m",
+      "id": "396635",
+      "marketValue": "€1.30m",
+      "name": "Raz Shlomo",
+      "nationality": [
+        "Israel"
+      ],
+      "number": "13",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Apr 27, 2000",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "815672",
+      "marketValue": "€400k",
+      "name": "Heitor",
+      "nationality": [
+        "Brazil"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 6, 2002",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "668590",
+      "marketValue": "€300k",
+      "name": "Itay Ben Hamo",
+      "nationality": [
+        "Israel"
+      ],
+      "number": "41",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 22, 2003",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "919538",
+      "marketValue": "€2.80m",
+      "name": "Roy Revivo",
+      "nationality": [
+        "Israel"
+      ],
+      "number": "3",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 16, 1999",
+      "foot": "left",
+      "id": "624717",
+      "marketValue": "€300k",
+      "name": "Denny Gropper",
+      "nationality": [
+        "Israel",
+        "Romania"
+      ],
+      "number": "14",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "May 13, 2005",
+      "foot": "both",
+      "height": "1,76m",
+      "id": "982568",
+      "marketValue": "€1.00m",
+      "name": "Noam Ben Harush",
+      "nationality": [
+        "Israel"
+      ],
+      "number": "21",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Mar 25, 2001",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "507223",
+      "marketValue": "€3.50m",
+      "name": "Kristijan Belic",
+      "nationality": [
+        "Serbia",
+        "Belgium"
+      ],
+      "number": "17",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 30, 2002",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "740674",
+      "marketValue": "€1.40m",
+      "name": "Issouf Sissokho",
+      "nationality": [
+        "Mali"
+      ],
+      "number": "28",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "May 8, 2000",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "366929",
+      "marketValue": "€400k",
+      "name": "Ben Lederman",
+      "nationality": [
+        "Poland",
+        "Israel"
+      ],
+      "number": "23",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "May 17, 1995",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "204987",
+      "marketValue": "€1.80m",
+      "name": "Dor Peretz",
+      "nationality": [
+        "Israel",
+        "Portugal"
+      ],
+      "number": "42",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Aug 20, 2001",
+      "foot": "right",
+      "height": "1,71m",
+      "id": "519506",
+      "marketValue": "€800k",
+      "name": "Ido Shahar",
+      "nationality": [
+        "Israel",
+        "Hungary"
+      ],
+      "number": "36",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Apr 28, 2001",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "648091",
+      "marketValue": "€600k",
+      "name": "Itamar Noy",
+      "nationality": [
+        "Israel",
+        "France"
+      ],
+      "number": "30",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Apr 13, 2005",
+      "foot": "right",
+      "height": "1,63m",
+      "id": "896338",
+      "marketValue": "€1.50m",
+      "name": "Kervin Andrade",
+      "nationality": [
+        "Venezuela"
+      ],
+      "number": "10",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "-",
+      "dateOfBirth": "May 3, 2002",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "840836",
+      "marketValue": "€1.20m",
+      "name": "Hélio Varela",
+      "nationality": [
+        "Cape Verde",
+        "Portugal"
+      ],
+      "number": "29",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 18, 2001",
+      "foot": "left",
+      "height": "1,76m",
+      "id": "211847",
+      "marketValue": "€2.00m",
+      "name": "Osher Davida",
+      "nationality": [
+        "Israel"
+      ],
+      "number": "77",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Nov 29, 1998",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "403177",
+      "marketValue": "€1.50m",
+      "name": "Emir Sahiti",
+      "nationality": [
+        "Kosovo",
+        "Albania"
+      ],
+      "number": "70",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 21, 1995",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "293603",
+      "marketValue": "€600k",
+      "name": "Sagiv Jehezkel",
+      "nationality": [
+        "Israel"
+      ],
+      "number": "11",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Sep 7, 1998",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "438310",
+      "marketValue": "€1.00m",
+      "name": "Ion Nicolaescu",
+      "nationality": [
+        "Moldova",
+        "Romania"
+      ],
+      "number": "98",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 10, 2004",
+      "foot": "both",
+      "height": "1,75m",
+      "id": "1079637",
+      "marketValue": "€800k",
+      "name": "Elad Madmon",
+      "nationality": [
+        "Israel"
+      ],
+      "number": "19",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 11, 2006",
+      "foot": "both",
+      "height": "1,84m",
+      "id": "1002520",
+      "marketValue": "€800k",
+      "name": "Sayed Abu Farkhi",
+      "nationality": [
+        "Israel"
+      ],
+      "number": "34",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Nov 14, 1999",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "211845",
+      "marketValue": "€225k",
+      "name": "Yonas Malede",
+      "nationality": [
+        "Israel",
+        "Ethiopia"
+      ],
+      "number": "15",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Mar 30, 2009",
+      "id": "1261451",
+      "name": "Ilay Ben Simon",
+      "nationality": [
+        "Israel"
+      ],
+      "number": "60",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Bloomfield",
+  "stadiumSeats": "29150",
+  "transfermarktId": "119"
+}
