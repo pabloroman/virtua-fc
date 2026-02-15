@@ -6,10 +6,8 @@ use App\Game\Events\CupDrawConducted;
 use App\Game\Events\CupTieCompleted;
 use App\Game\Events\GameCreated;
 use App\Game\Events\NewSeasonStarted;
-use App\Game\Events\SeasonDevelopmentProcessed;
 use App\Game\Services\CountryConfig;
 use App\Game\Services\LeagueFixtureGenerator;
-use App\Game\Services\PlayerDevelopmentService;
 use App\Game\Services\SeasonGoalService;
 use App\Jobs\SetupNewGame;
 use App\Models\Competition;
@@ -17,7 +15,6 @@ use App\Models\CompetitionTeam;
 use App\Models\CupTie;
 use App\Models\FinancialTransaction;
 use App\Models\Game;
-use App\Models\GamePlayer;
 use App\Models\Team;
 use Carbon\Carbon;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
@@ -25,7 +22,6 @@ use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 class GameProjector extends Projector
 {
     public function __construct(
-        private readonly PlayerDevelopmentService $developmentService,
         private readonly SeasonGoalService $seasonGoalService,
     ) {}
 
@@ -140,23 +136,6 @@ class GameProjector extends Projector
             description: "{$competitionName} - {$roundName} advancement",
             transactionDate: $game->current_date->toDateString(),
         );
-    }
-
-    public function onSeasonDevelopmentProcessed(SeasonDevelopmentProcessed $event): void
-    {
-        // Apply development changes to each player
-        foreach ($event->playerChanges as $change) {
-            $player = GamePlayer::find($change['playerId']);
-            if (!$player) {
-                continue;
-            }
-
-            $this->developmentService->applyDevelopment(
-                $player,
-                $change['techAfter'],
-                $change['physAfter']
-            );
-        }
     }
 
     public function onNewSeasonStarted(NewSeasonStarted $event): void

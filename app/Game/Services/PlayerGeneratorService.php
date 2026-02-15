@@ -27,6 +27,7 @@ class PlayerGeneratorService
     public function __construct(
         private readonly ContractService $contractService,
         private readonly PlayerDevelopmentService $developmentService,
+        private readonly PlayerValuationService $valuationService,
     ) {}
 
     /**
@@ -59,7 +60,7 @@ class PlayerGeneratorService
 
         // Determine market value
         $averageAbility = (int) round(($data->technical + $data->physical) / 2);
-        $marketValue = $data->marketValueCents ?? $this->estimateMarketValue($averageAbility, $age);
+        $marketValue = $data->marketValueCents ?? $this->valuationService->abilityToMarketValue($averageAbility, $age);
         $marketValue = max(100_000_00, $marketValue);
 
         // Determine potential
@@ -142,34 +143,4 @@ class PlayerGeneratorService
         return $this->identityPool;
     }
 
-    /**
-     * Estimate market value based on average ability and age.
-     */
-    public function estimateMarketValue(int $ability, int $age): int
-    {
-        $baseValue = match (true) {
-            $ability >= 80 => mt_rand(20_000_000_00, 35_000_000_00),
-            $ability >= 76 => mt_rand(10_000_000_00, 20_000_000_00),
-            $ability >= 72 => mt_rand(5_000_000_00, 10_000_000_00),
-            $ability >= 68 => mt_rand(2_000_000_00, 5_000_000_00),
-            $ability >= 64 => mt_rand(1_000_000_00, 2_000_000_00),
-            $ability >= 60 => mt_rand(500_000_00, 1_000_000_00),
-            $ability >= 55 => mt_rand(200_000_00, 500_000_00),
-            $ability >= 45 => mt_rand(100_000_00, 200_000_00),
-            default => mt_rand(50_000_00, 100_000_00),
-        };
-
-        $ageMultiplier = match (true) {
-            $age <= 17 => 1.2,
-            $age <= 19 => 1.1,
-            $age <= 23 => 1.3,
-            $age <= 26 => 1.1,
-            $age <= 28 => 1.0,
-            $age <= 30 => 0.85,
-            $age <= 33 => 0.65,
-            default => 0.45,
-        };
-
-        return (int) round($baseValue * $ageMultiplier);
-    }
 }

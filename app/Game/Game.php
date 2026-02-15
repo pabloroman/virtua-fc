@@ -4,13 +4,11 @@ namespace App\Game;
 
 use App\Game\Commands\ConductCupDraw;
 use App\Game\Commands\CreateGame;
-use App\Game\Commands\ProcessSeasonDevelopment;
 use App\Game\Commands\StartNewSeason;
 use App\Game\Events\CupDrawConducted;
 use App\Game\Events\CupTieCompleted;
 use App\Game\Events\GameCreated;
 use App\Game\Events\NewSeasonStarted;
-use App\Game\Events\SeasonDevelopmentProcessed;
 use Ramsey\Uuid\Uuid;
 use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 
@@ -64,19 +62,6 @@ final class Game extends AggregateRoot
         return $this;
     }
 
-    public function processSeasonDevelopment(ProcessSeasonDevelopment $command): self
-    {
-        $this->recordThat(new SeasonDevelopmentProcessed(
-            $command->season,
-            $command->teamId,
-            $command->playerChanges,
-        ));
-
-        $this->persist();
-
-        return $this;
-    }
-
     public function startNewSeason(StartNewSeason $command): self
     {
         $this->recordThat(new NewSeasonStarted(
@@ -105,12 +90,6 @@ final class Game extends AggregateRoot
     protected function applyCupTieCompleted(CupTieCompleted $event): void
     {
         // Cup status is now derived per-competition from CupTie data
-    }
-
-    protected function applySeasonDevelopmentProcessed(SeasonDevelopmentProcessed $event): void
-    {
-        // Development processing doesn't change aggregate state directly
-        // The projector handles updating player records
     }
 
     protected function applyNewSeasonStarted(NewSeasonStarted $event): void

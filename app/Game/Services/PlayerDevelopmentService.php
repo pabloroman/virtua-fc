@@ -3,13 +3,11 @@
 namespace App\Game\Services;
 
 use App\Models\GamePlayer;
-use Illuminate\Support\Collection;
 
 /**
  * Core service handling all player development logic.
  *
  * Responsible for:
- * - Processing seasonal development for players
  * - Calculating age-based development rates
  * - Generating potential for new players (influenced by market value)
  * - Projecting future ability development
@@ -22,59 +20,6 @@ use Illuminate\Support\Collection;
  */
 class PlayerDevelopmentService
 {
-    /**
-     * Process seasonal development for all players in a team.
-     *
-     * This includes:
-     * - Calculating ability changes based on age and playing time
-     * - Updating market values to reflect new abilities
-     * - Tracking all changes for the event record
-     *
-     * @return array Array of player changes for the SeasonDevelopmentProcessed event
-     */
-    public function processSeasonEndDevelopment(string $gameId, string $teamId): array
-    {
-        $players = GamePlayer::where('game_id', $gameId)
-            ->where('team_id', $teamId)
-            ->get();
-
-        $changes = [];
-
-        foreach ($players as $player) {
-            // Store previous overall for market value calculation
-            $previousOverall = $player->overall_score;
-            $previousMarketValue = $player->market_value_cents ?? 0;
-
-            // Calculate development changes
-            $change = $this->calculateDevelopment($player);
-
-            // Apply development changes
-            if ($change['techChange'] !== 0 || $change['physChange'] !== 0) {
-                $this->applyDevelopment($player, $change['techAfter'], $change['physAfter']);
-                $player->refresh();
-            }
-
-            // Update market value based on new abilities
-            $newMarketValue = $this->calculateMarketValue($player, $previousOverall);
-            $player->update(['market_value_cents' => $newMarketValue]);
-
-            // Record change if anything changed
-            if ($change['techChange'] !== 0 || $change['physChange'] !== 0 || $newMarketValue !== $previousMarketValue) {
-                $changes[] = [
-                    'playerId' => $player->id,
-                    'techBefore' => $change['techBefore'],
-                    'techAfter' => $change['techAfter'],
-                    'physBefore' => $change['physBefore'],
-                    'physAfter' => $change['physAfter'],
-                    'marketValueBefore' => $previousMarketValue,
-                    'marketValueAfter' => $newMarketValue,
-                ];
-            }
-        }
-
-        return $changes;
-    }
-
     /**
      * Calculate development for a single player.
      *
@@ -457,121 +402,4 @@ class PlayerDevelopmentService
         return $this->generatePotential($player->age, $currentAbility, $marketValueCents);
     }
 
-    /**
-     * Calculate new market value based on current ability and age.
-     *
-     * Market value reflects:
-     * - Current ability (primary factor)
-     * - Age (young players get potential premium, veterans get discounted)
-     * - Performance trend (improving players gain value)
-     *
-     * This creates a feedback loop:
-     * - Young player improves → market value increases → confirms potential
-     * - Veteran declines → market value decreases → reflects trajectory
-     *
-     * @param int $previousAbility Player's overall ability at start of season
-     * @return int New market value in cents
-     */
-    public function calculateMarketValue(GamePlayer $player, int $previousAbility): int
-    {
-        $age = $player->age;
-        $currentAbility = $player->overall_score;
-
-        // Base value from ability tier (inverse of the ability calculation)
-        $baseValue = match (true) {
-            $currentAbility >= 92 => rand(100_000_000_00, 180_000_000_00), // €100-180M
-            $currentAbility >= 88 => rand(60_000_000_00, 100_000_000_00),  // €60-100M
-            $currentAbility >= 84 => rand(35_000_000_00, 60_000_000_00),   // €35-60M
-            $currentAbility >= 80 => rand(20_000_000_00, 35_000_000_00),   // €20-35M
-            $currentAbility >= 76 => rand(10_000_000_00, 20_000_000_00),   // €10-20M
-            $currentAbility >= 72 => rand(5_000_000_00, 10_000_000_00),    // €5-10M
-            $currentAbility >= 68 => rand(2_000_000_00, 5_000_000_00),     // €2-5M
-            $currentAbility >= 64 => rand(1_000_000_00, 2_000_000_00),     // €1-2M
-            $currentAbility >= 60 => rand(500_000_00, 1_000_000_00),       // €500K-1M
-            default => rand(100_000_00, 500_000_00),                        // €100-500K
-        };
-
-        // Age multiplier
-        $ageMultiplier = $this->getAgeValueMultiplier($age);
-
-        // Performance trend multiplier
-        $trendMultiplier = $this->getPerformanceTrendMultiplier($currentAbility, $previousAbility, $age);
-
-        // Apply multipliers
-        $newValue = (int) round($baseValue * $ageMultiplier * $trendMultiplier);
-
-        // Clamp to reasonable range
-        return max(100_000_00, min(200_000_000_00, $newValue)); // €100K to €200M
-    }
-
-    /**
-     * Get age-based value multiplier.
-     *
-     * Young players command a premium (potential value).
-     * Veterans are discounted (limited years remaining).
-     */
-    private function getAgeValueMultiplier(int $age): float
-    {
-        return match (true) {
-            $age <= 19 => 1.8,    // Young stars: high premium
-            $age <= 21 => 1.5,    // Developing: good premium
-            $age <= 23 => 1.3,    // Emerging: slight premium
-            $age <= 26 => 1.1,    // Approaching peak
-            $age <= 28 => 1.0,    // Peak years
-            $age <= 30 => 0.85,   // Post-peak
-            $age <= 32 => 0.65,   // Declining
-            $age <= 34 => 0.45,   // Late career
-            $age <= 36 => 0.30,   // Twilight
-            default => 0.15,       // End of career
-        };
-    }
-
-    /**
-     * Get performance trend multiplier.
-     *
-     * Players who improved get a value boost (momentum).
-     * Players who declined get a value penalty (concern).
-     */
-    private function getPerformanceTrendMultiplier(int $currentAbility, int $previousAbility, int $age): float
-    {
-        $change = $currentAbility - $previousAbility;
-
-        // Young players who improve get bigger boost (confirming potential)
-        if ($age <= 24 && $change > 0) {
-            return match (true) {
-                $change >= 5 => 1.4,   // Big improvement = hot prospect
-                $change >= 3 => 1.25,  // Good improvement
-                $change >= 1 => 1.1,   // Steady progress
-                default => 1.0,
-            };
-        }
-
-        // Declining players lose value faster
-        if ($change < 0) {
-            return match (true) {
-                $change <= -4 => 0.7,   // Big decline = concerning
-                $change <= -2 => 0.85,  // Moderate decline
-                default => 0.95,         // Slight decline
-            };
-        }
-
-        // Stable or slight improvement
-        return 1.0;
-    }
-
-    /**
-     * Update market value for a player after season development.
-     *
-     * @param int $previousAbility The player's overall ability before development
-     */
-    public function updateMarketValue(GamePlayer $player, int $previousAbility): int
-    {
-        $newValue = $this->calculateMarketValue($player, $previousAbility);
-
-        $player->update([
-            'market_value_cents' => $newValue,
-        ]);
-
-        return $newValue;
-    }
 }

@@ -5,6 +5,7 @@ namespace App\Game\Processors;
 use App\Game\Contracts\SeasonEndProcessor;
 use App\Game\DTO\SeasonTransitionData;
 use App\Game\Services\PlayerDevelopmentService;
+use App\Game\Services\PlayerValuationService;
 use App\Models\Game;
 use App\Models\GamePlayer;
 
@@ -16,6 +17,7 @@ class PlayerDevelopmentProcessor implements SeasonEndProcessor
 {
     public function __construct(
         private readonly PlayerDevelopmentService $developmentService,
+        private readonly PlayerValuationService $valuationService,
     ) {}
 
     public function priority(): int
@@ -33,6 +35,9 @@ class PlayerDevelopmentProcessor implements SeasonEndProcessor
         foreach ($players as $player) {
             $change = $this->developmentService->calculateDevelopment($player);
 
+            $previousAbility = (int) round(($change['techBefore'] + $change['physBefore']) / 2);
+            $previousMarketValue = $player->market_value_cents ?? 0;
+
             if ($change['techChange'] !== 0 || $change['physChange'] !== 0) {
                 // Apply development changes immediately
                 $this->developmentService->applyDevelopment(
@@ -40,7 +45,19 @@ class PlayerDevelopmentProcessor implements SeasonEndProcessor
                     $change['techAfter'],
                     $change['physAfter']
                 );
+            }
 
+            // Recalculate market value for ALL players (even if ability didn't change,
+            // age increased by 1 which affects value)
+            $newAbility = (int) round(($change['techAfter'] + $change['physAfter']) / 2);
+            $newMarketValue = $this->valuationService->abilityToMarketValue(
+                $newAbility,
+                $player->age,
+                $previousAbility
+            );
+            $player->update(['market_value_cents' => $newMarketValue]);
+
+            if ($change['techChange'] !== 0 || $change['physChange'] !== 0 || $newMarketValue !== $previousMarketValue) {
                 $allChanges[] = [
                     'playerId' => $player->id,
                     'playerName' => $player->name,
@@ -50,8 +67,10 @@ class PlayerDevelopmentProcessor implements SeasonEndProcessor
                     'techAfter' => $change['techAfter'],
                     'physBefore' => $change['physBefore'],
                     'physAfter' => $change['physAfter'],
-                    'overallBefore' => (int) round(($change['techBefore'] + $change['physBefore']) / 2),
-                    'overallAfter' => (int) round(($change['techAfter'] + $change['physAfter']) / 2),
+                    'overallBefore' => $previousAbility,
+                    'overallAfter' => $newAbility,
+                    'marketValueBefore' => $previousMarketValue,
+                    'marketValueAfter' => $newMarketValue,
                 ];
             }
         }
