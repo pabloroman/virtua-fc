@@ -249,6 +249,12 @@ class AdvanceMatchday
             $this->notificationService->notifyTransferOffer($game, $offer);
         }
 
+        // Resolve pending incoming pre-contract offers (after response delay)
+        $resolvedPreContracts = $this->transferService->resolveIncomingPreContractOffers($game, $this->scoutingService);
+        foreach ($resolvedPreContracts as $result) {
+            $this->notificationService->notifyPreContractResult($game, $result['offer']);
+        }
+
         // Tick scout search progress
         $scoutReport = $this->scoutingService->tickSearch($game);
         if ($scoutReport?->isCompleted()) {

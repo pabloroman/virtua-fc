@@ -306,6 +306,32 @@ class NotificationService
         );
     }
 
+    /**
+     * Create a notification for a pre-contract offer result.
+     */
+    public function notifyPreContractResult(Game $game, TransferOffer $offer): GameNotification
+    {
+        $player = $offer->gamePlayer;
+        $accepted = $offer->isAgreed();
+
+        return $this->create(
+            game: $game,
+            type: GameNotification::TYPE_TRANSFER_OFFER_RECEIVED,
+            title: $accepted
+                ? __('messages.pre_contract_result_accepted', ['player' => $player->name])
+                : __('messages.pre_contract_result_rejected', ['player' => $player->name]),
+            message: $accepted
+                ? __('messages.pre_contract_result_accepted', ['player' => $player->name])
+                : __('messages.pre_contract_result_rejected', ['player' => $player->name]),
+            priority: $accepted ? GameNotification::PRIORITY_MILESTONE : GameNotification::PRIORITY_WARNING,
+            metadata: [
+                'offer_id' => $offer->id,
+                'player_id' => $player->id,
+                'accepted' => $accepted,
+            ],
+        );
+    }
+
     // ==========================================
     // Scout Notifications
     // ==========================================

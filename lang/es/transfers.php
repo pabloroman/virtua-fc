@@ -207,6 +207,7 @@ return [
     'pre_contract_available_from_jan' => 'Este jugador acaba contrato. Desde enero podrás hacerle una oferta de precontrato (fichaje libre).',
     'offered_wage_euros' => 'Salario Ofrecido (euros/año)',
     'submit_pre_contract' => 'Ofrecer Precontrato',
+    'pre_contract_pending' => 'Oferta enviada, esperando respuesta del jugador...',
 
     // Search history
     'search_history' => 'Historial de Búsquedas',

@@ -57,6 +57,10 @@ class TransferOffer extends Model
     public const STATUS_EXPIRED = 'expired';
     public const STATUS_COMPLETED = 'completed'; // Transfer finalized at window
 
+    // Timing constants
+    public const PRE_CONTRACT_OFFER_EXPIRY_DAYS = 14;
+    public const PRE_CONTRACT_RESPONSE_DAYS = 7;
+
     public function game(): BelongsTo
     {
         return $this->belongsTo(Game::class);

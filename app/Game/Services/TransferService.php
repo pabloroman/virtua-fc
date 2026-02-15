@@ -2,6 +2,7 @@
 
 namespace App\Game\Services;
 
+use App\Game\Services\ScoutingService;
 use App\Models\Competition;
 use App\Models\FinancialTransaction;
 use App\Models\Game;
@@ -57,7 +58,7 @@ class TransferService
     /**
      * Pre-contract offer expiry in days.
      */
-    private const PRE_CONTRACT_OFFER_EXPIRY_DAYS = 14;
+    private const PRE_CONTRACT_OFFER_EXPIRY_DAYS = TransferOffer::PRE_CONTRACT_OFFER_EXPIRY_DAYS;
 
     /**
      * Transfer windows configuration.
@@ -434,6 +435,41 @@ class TransferService
         }
 
         return $completedTransfers;
+    }
+
+    /**
+     * Resolve pending incoming pre-contract offers after the response delay.
+     * Called each matchday; evaluates offers where enough time has passed.
+     */
+    public function resolveIncomingPreContractOffers(Game $game, ScoutingService $scoutingService): Collection
+    {
+        $responseDate = $game->current_date->subDays(TransferOffer::PRE_CONTRACT_RESPONSE_DAYS);
+
+        $pendingOffers = TransferOffer::with(['gamePlayer.player'])
+            ->where('game_id', $game->id)
+            ->where('direction', TransferOffer::DIRECTION_INCOMING)
+            ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
+            ->where('status', TransferOffer::STATUS_PENDING)
+            ->where('game_date', '<=', $responseDate)
+            ->get();
+
+        $resolvedOffers = collect();
+
+        foreach ($pendingOffers as $offer) {
+            $evaluation = $scoutingService->evaluatePreContractOffer($offer->gamePlayer, $offer->offered_wage);
+
+            $offer->update([
+                'status' => $evaluation['accepted'] ? TransferOffer::STATUS_AGREED : TransferOffer::STATUS_REJECTED,
+                'resolved_at' => $game->current_date,
+            ]);
+
+            $resolvedOffers->push([
+                'offer' => $offer,
+                'accepted' => $evaluation['accepted'],
+            ]);
+        }
+
+        return $resolvedOffers;
     }
 
     /**

@@ -43,6 +43,9 @@ return [
     'pre_contract_rejected' => ':player ha rechazado tu oferta de precontrato. Intenta mejorar las condiciones salariales.',
     'pre_contract_not_available' => 'Las ofertas de precontrato solo están disponibles entre enero y mayo.',
     'player_not_expiring' => 'Este jugador no tiene el contrato en su último año.',
+    'pre_contract_submitted' => 'Oferta de precontrato enviada. El jugador responderá en los próximos días.',
+    'pre_contract_result_accepted' => '¡:player ha aceptado tu oferta de precontrato!',
+    'pre_contract_result_rejected' => ':player ha rechazado tu oferta de precontrato.',
 
     // Scout messages
     'scout_search_started' => 'El ojeador ha iniciado la búsqueda.',

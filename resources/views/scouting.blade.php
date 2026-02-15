@@ -593,6 +593,16 @@
                                                                     {{ __('transfers.player_will_join', ['player' => $scoutPlayer->name]) }} {{ __('transfers.next_transfer_window') }}.
                                                                 </p>
                                                             </div>
+                                                        @elseif($existingOffer && $existingOffer->isPreContract() && $existingOffer->isPending())
+                                                            <div class="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                                                                <div class="flex items-center gap-2 text-amber-700 font-semibold">
+                                                                    <svg class="w-5 h-5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                                                    {{ __('transfers.pre_contract_offer') }} — {{ __('transfers.pre_contract_pending') }}
+                                                                </div>
+                                                                <p class="text-sm text-amber-600 mt-1">
+                                                                    {{ __('transfers.pre_contract_pending') }}
+                                                                </p>
+                                                            </div>
                                                         @else
                                                             <div class="mb-6 p-5 bg-sky-50 border border-sky-200 rounded-lg">
                                                                 <h4 class="font-semibold text-sky-900 mb-1">{{ __('transfers.pre_contract_offer') }}</h4>
