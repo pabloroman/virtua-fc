@@ -82,7 +82,7 @@ class SwissFormatHandler implements CompetitionHandler
     {
         return route('game.results', [
             'gameId' => $game->id,
-            'competition' => $matches->first()?->competition_id ?? 'UCL',
+            'competition' => $matches->first()?->competition_id ?? $game->competition_id,
             'matchday' => $matches->first()?->round_number ?? $matchday,
         ]);
     }

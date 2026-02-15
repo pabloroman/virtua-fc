@@ -39,10 +39,12 @@ return [
     // Individual awards
     'individual_awards' => 'Premios Individuales',
     'pichichi' => 'Pichichi (Máximo Goleador)',
+    'top_scorer' => 'Máximo Goleador',
     'goals' => 'goles',
     'most_assists' => 'Máximo Asistente',
     'assists' => 'asistencias',
     'zamora' => 'Zamora (Mejor Portero)',
+    'best_goalkeeper' => 'Mejor Portero',
     'clean_sheets' => 'porterías a cero',
     'goals_per_game' => 'goles/partido',
     'no_goals_scored' => 'Sin goles marcados',

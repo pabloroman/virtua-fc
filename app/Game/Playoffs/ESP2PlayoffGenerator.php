@@ -11,34 +11,44 @@ use App\Models\Game;
 use App\Models\GameStanding;
 
 /**
- * Playoff generator for Spanish Segunda División (La Liga 2).
+ * Playoff generator for a two-round promotion playoff (semifinal + final).
  *
  * Format:
- * - Teams finishing 3rd-6th qualify for playoffs
- * - Semifinal: 3rd vs 6th, 4th vs 5th (two legs, lower seed hosts first leg)
+ * - Teams at qualifying positions enter playoffs
+ * - Semifinal: highest vs lowest, 2nd-highest vs 2nd-lowest (two legs, lower seed hosts first leg)
  * - Final: Winners play (two legs)
- * - Winner is promoted as the 3rd team to La Liga
+ * - Winner is promoted alongside the directly promoted teams
+ *
+ * Originally built for Spanish Segunda División, but parameterized via constructor
+ * to support any league with the same playoff format.
  */
 class ESP2PlayoffGenerator implements PlayoffGenerator
 {
+    public function __construct(
+        private readonly string $competitionId,
+        private readonly array $qualifyingPositions = [3, 4, 5, 6],
+        private readonly array $directPromotionPositions = [1, 2],
+        private readonly int $triggerMatchday = 42,
+    ) {}
+
     public function getCompetitionId(): string
     {
-        return 'ESP2';
+        return $this->competitionId;
     }
 
     public function getQualifyingPositions(): array
     {
-        return [3, 4, 5, 6];
+        return $this->qualifyingPositions;
     }
 
     public function getDirectPromotionPositions(): array
     {
-        return [1, 2];
+        return $this->directPromotionPositions;
     }
 
     public function getTriggerMatchday(): int
     {
-        return 42;
+        return $this->triggerMatchday;
     }
 
     public function getTotalRounds(): int
@@ -48,8 +58,8 @@ class ESP2PlayoffGenerator implements PlayoffGenerator
 
     public function getRoundConfig(int $round, ?string $gameSeason = null): PlayoffRoundConfig
     {
-        $competition = Competition::find($this->getCompetitionId());
-        $rounds = LeagueFixtureGenerator::loadKnockoutRounds($this->getCompetitionId(), $competition->season, $gameSeason);
+        $competition = Competition::find($this->competitionId);
+        $rounds = LeagueFixtureGenerator::loadKnockoutRounds($this->competitionId, $competition->season, $gameSeason);
 
         foreach ($rounds as $config) {
             if ($config->round === $round) {
@@ -57,7 +67,7 @@ class ESP2PlayoffGenerator implements PlayoffGenerator
             }
         }
 
-        throw new \RuntimeException("No knockout round config found for {$this->getCompetitionId()} round {$round}");
+        throw new \RuntimeException("No knockout round config found for {$this->competitionId} round {$round}");
     }
 
     public function generateMatchups(Game $game, int $round): array
@@ -70,32 +80,34 @@ class ESP2PlayoffGenerator implements PlayoffGenerator
     }
 
     /**
-     * Semifinal matchups: 3rd vs 6th, 4th vs 5th
+     * Semifinal matchups: highest seed vs lowest, 2nd vs 3rd.
      * Lower-seeded team hosts the first leg.
      */
     private function generateSemifinalMatchups(Game $game): array
     {
+        $positions = $this->qualifyingPositions;
         $standings = GameStanding::where('game_id', $game->id)
-            ->where('competition_id', $this->getCompetitionId())
-            ->whereIn('position', $this->getQualifyingPositions())
+            ->where('competition_id', $this->competitionId)
+            ->whereIn('position', $positions)
             ->orderBy('position')
             ->pluck('team_id', 'position')
             ->toArray();
 
+        // Last vs first, second-to-last vs second
         return [
-            [$standings[6], $standings[3]], // 6th hosts first leg vs 3rd
-            [$standings[5], $standings[4]], // 5th hosts first leg vs 4th
+            [$standings[$positions[3]], $standings[$positions[0]]],
+            [$standings[$positions[2]], $standings[$positions[1]]],
         ];
     }
 
     /**
      * Final matchup: Winners of the two semifinals.
-     * The winner from the 3v6 tie hosts the second leg (higher seed advantage).
+     * The winner from the higher-seed tie hosts the second leg.
      */
     private function generateFinalMatchup(Game $game): array
     {
         $semifinalWinners = CupTie::where('game_id', $game->id)
-            ->where('competition_id', $this->getCompetitionId())
+            ->where('competition_id', $this->competitionId)
             ->where('round_number', 1)
             ->where('completed', true)
             ->orderBy('id')
@@ -106,14 +118,14 @@ class ESP2PlayoffGenerator implements PlayoffGenerator
             throw new \RuntimeException('Cannot generate final: semifinals not complete');
         }
 
-        // Winner of 4v5 hosts first leg, winner of 3v6 hosts second leg
+        // Winner of lower-seed tie hosts first leg, winner of higher-seed tie hosts second leg
         return [[$semifinalWinners[1], $semifinalWinners[0]]];
     }
 
     public function isComplete(Game $game): bool
     {
         $finalTie = CupTie::where('game_id', $game->id)
-            ->where('competition_id', $this->getCompetitionId())
+            ->where('competition_id', $this->competitionId)
             ->where('round_number', $this->getTotalRounds())
             ->first();
 

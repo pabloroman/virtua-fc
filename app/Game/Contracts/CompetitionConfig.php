@@ -44,6 +44,18 @@ interface CompetitionConfig
     public function getAvailableGoals(): array;
 
     /**
+     * Get the translation key for the top scorer award name.
+     * E.g., 'season.pichichi' for La Liga, 'season.top_scorer' for generic leagues.
+     */
+    public function getTopScorerAwardName(): string;
+
+    /**
+     * Get the translation key for the best goalkeeper award name.
+     * E.g., 'season.zamora' for La Liga, 'season.best_goalkeeper' for generic leagues.
+     */
+    public function getBestGoalkeeperAwardName(): string;
+
+    /**
      * Get the standings zones for this competition (UCL, UEL, relegation, promotion, etc.).
      *
      * Each zone has:

@@ -135,7 +135,7 @@
                         <div class="grid grid-cols-3 gap-4 mb-6">
                             {{-- Top Scorer --}}
                             <div class="bg-slate-50 rounded-lg p-4 text-center">
-                                <div class="text-xs text-slate-500 uppercase tracking-wide mb-2">{{ __('season.pichichi') }}</div>
+                                <div class="text-xs text-slate-500 uppercase tracking-wide mb-2">{{ __($competition->getConfig()->getTopScorerAwardName()) }}</div>
                                 @if($topScorers->isNotEmpty())
                                     @php $scorer = $topScorers->first(); @endphp
                                     <div class="flex items-center justify-center gap-2 mb-1">
@@ -167,7 +167,7 @@
 
                             {{-- Best Goalkeeper --}}
                             <div class="bg-slate-50 rounded-lg p-4 text-center">
-                                <div class="text-xs text-slate-500 uppercase tracking-wide mb-2">{{ __('season.zamora') }}</div>
+                                <div class="text-xs text-slate-500 uppercase tracking-wide mb-2">{{ __($competition->getConfig()->getBestGoalkeeperAwardName()) }}</div>
                                 @if($bestGoalkeeper)
                                     <div class="flex items-center justify-center gap-2 mb-1">
                                         <img src="{{ $bestGoalkeeper->team->image }}" class="w-5 h-5">
