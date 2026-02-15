@@ -8,6 +8,7 @@ use App\Game\Services\LineupService;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
+use App\Support\PositionMapper;
 use App\Support\PositionSlotMapper;
 
 class ShowLineup
@@ -95,10 +96,14 @@ class ShowLineup
             ];
         })->keyBy('id')->toArray();
 
-        // Prepare pitch slots for each formation
+        // Prepare pitch slots for each formation, adding Spanish display labels
         $formationSlots = [];
         foreach (Formation::cases() as $formation) {
-            $formationSlots[$formation->value] = $formation->pitchSlots();
+            $formationSlots[$formation->value] = array_map(function ($slot) {
+                $slot['displayLabel'] = PositionMapper::slotToDisplayAbbreviation($slot['label']);
+
+                return $slot;
+            }, $formation->pitchSlots());
         }
 
         // Pass slot compatibility matrix to JavaScript

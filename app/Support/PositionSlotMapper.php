@@ -151,23 +151,26 @@ class PositionSlotMapper
      */
     public static function getSlotDisplayName(string $slotCode): string
     {
-        return match ($slotCode) {
-            'GK' => 'Goalkeeper',
-            'CB' => 'Centre-Back',
-            'LB' => 'Left-Back',
-            'RB' => 'Right-Back',
-            'LWB' => 'Left Wing-Back',
-            'RWB' => 'Right Wing-Back',
-            'DM' => 'Defensive Midfield',
-            'CM' => 'Central Midfield',
-            'AM' => 'Attacking Midfield',
-            'LM' => 'Left Midfield',
-            'RM' => 'Right Midfield',
-            'LW' => 'Left Winger',
-            'RW' => 'Right Winger',
-            'CF' => 'Centre-Forward',
-            default => $slotCode,
-        };
+        $slotToKey = [
+            'GK' => 'goalkeeper',
+            'CB' => 'centre_back',
+            'LB' => 'left_back',
+            'RB' => 'right_back',
+            'LWB' => 'left_wing_back',
+            'RWB' => 'right_wing_back',
+            'DM' => 'defensive_midfield',
+            'CM' => 'central_midfield',
+            'AM' => 'attacking_midfield',
+            'LM' => 'left_midfield',
+            'RM' => 'right_midfield',
+            'LW' => 'left_winger',
+            'RW' => 'right_winger',
+            'CF' => 'centre_forward',
+        ];
+
+        $key = $slotToKey[$slotCode] ?? null;
+
+        return $key ? __("positions.{$key}") : $slotCode;
     }
 
     /**

@@ -54,7 +54,7 @@
                                                     {{ $bid->sellingTeam?->name ?? 'Unknown' }}
                                                 </div>
                                                 <div class="text-sm text-slate-600">
-                                                    {{ $bid->gamePlayer->position }} &middot; {{ $bid->gamePlayer->age }} {{ __('app.years') }}
+                                                    {{ $bid->gamePlayer->position_name }} &middot; {{ $bid->gamePlayer->age }} {{ __('app.years') }}
                                                 </div>
                                                 <div class="text-sm mt-1">
                                                     <span class="text-slate-500 line-through">{{ __('transfers.your_bid_amount', ['amount' => $bid->formatted_transfer_fee]) }}</span>
@@ -102,7 +102,7 @@
                                                     {{ $bid->sellingTeam?->name ?? 'Unknown' }}
                                                 </div>
                                                 <div class="text-sm text-slate-600">
-                                                    {{ $bid->gamePlayer->position }} &middot; {{ $bid->gamePlayer->age }} {{ __('app.years') }}
+                                                    {{ $bid->gamePlayer->position_name }} &middot; {{ $bid->gamePlayer->age }} {{ __('app.years') }}
                                                     @if($bid->offer_type === 'loan_in')
                                                         &middot; <span class="text-emerald-600 font-medium">{{ __('transfers.loan_request') }}</span>
                                                     @endif
@@ -150,7 +150,7 @@
                                                     {{ $transfer->gamePlayer->player->name }} &larr; {{ $transfer->selling_team_name ?? 'Unknown' }}
                                                 </div>
                                                 <div class="text-sm text-slate-600">
-                                                    {{ $transfer->gamePlayer->position }} &middot; {{ $transfer->gamePlayer->age }} {{ __('app.years') }}
+                                                    {{ $transfer->gamePlayer->position_name }} &middot; {{ $transfer->gamePlayer->age }} {{ __('app.years') }}
                                                     @if($transfer->offer_type === 'loan_in')
                                                         &middot; <span class="text-emerald-600 font-medium">{{ __('transfers.loans') }}</span>
                                                     @endif
@@ -190,7 +190,7 @@
                                     {{ trans_choice('game.weeks_remaining', $searchingReport->weeks_remaining, ['count' => $searchingReport->weeks_remaining]) }}
                                 </p>
                                 <p class="text-sm text-slate-500 mb-6">
-                                    {{ __('transfers.looking_for') }}: <span class="font-medium">{{ $searchingReport->filters['position'] }}</span>
+                                    {{ __('transfers.looking_for') }}: <span class="font-medium">{{ \App\Support\PositionMapper::filterToDisplayName($searchingReport->filters['position']) }}</span>
                                     @if(isset($searchingReport->filters['scope']) && count($searchingReport->filters['scope']) === 1)
                                         — <span class="font-medium">{{ in_array('domestic', $searchingReport->filters['scope']) ? __('transfers.scope_domestic') : __('transfers.scope_international') }}</span>
                                     @endif
@@ -256,21 +256,21 @@
                                             <x-select-input name="position" id="position" required class="w-full">
                                                 <option value="">{{ __('transfers.select_position') }}</option>
                                                 <optgroup label="{{ __('transfers.specific_positions') }}">
-                                                    <option value="GK">{{ __('transfers.position_gk') }}</option>
-                                                    <option value="CB">{{ __('transfers.position_cb') }}</option>
-                                                    <option value="LB">{{ __('transfers.position_lb') }}</option>
-                                                    <option value="RB">{{ __('transfers.position_rb') }}</option>
-                                                    <option value="DM">{{ __('transfers.position_dm') }}</option>
-                                                    <option value="CM">{{ __('transfers.position_cm') }}</option>
-                                                    <option value="AM">{{ __('transfers.position_am') }}</option>
-                                                    <option value="LW">{{ __('transfers.position_lw') }}</option>
-                                                    <option value="RW">{{ __('transfers.position_rw') }}</option>
-                                                    <option value="CF">{{ __('transfers.position_cf') }}</option>
+                                                    <option value="GK">{{ __('positions.goalkeeper_label') }}</option>
+                                                    <option value="CB">{{ __('positions.centre_back_label') }}</option>
+                                                    <option value="LB">{{ __('positions.left_back_label') }}</option>
+                                                    <option value="RB">{{ __('positions.right_back_label') }}</option>
+                                                    <option value="DM">{{ __('positions.defensive_midfield_label') }}</option>
+                                                    <option value="CM">{{ __('positions.central_midfield_label') }}</option>
+                                                    <option value="AM">{{ __('positions.attacking_midfield_label') }}</option>
+                                                    <option value="LW">{{ __('positions.left_winger_label') }}</option>
+                                                    <option value="RW">{{ __('positions.right_winger_label') }}</option>
+                                                    <option value="CF">{{ __('positions.centre_forward_label') }}</option>
                                                 </optgroup>
                                                 <optgroup label="{{ __('transfers.position_groups') }}">
-                                                    <option value="any_defender">{{ __('transfers.any_defender') }}</option>
-                                                    <option value="any_midfielder">{{ __('transfers.any_midfielder') }}</option>
-                                                    <option value="any_forward">{{ __('transfers.any_forward') }}</option>
+                                                    <option value="any_defender">{{ __('positions.any_defender') }}</option>
+                                                    <option value="any_midfielder">{{ __('positions.any_midfielder') }}</option>
+                                                    <option value="any_forward">{{ __('positions.any_forward') }}</option>
                                                 </optgroup>
                                             </x-select-input>
                                             @error('position')
@@ -494,7 +494,7 @@
                                                         <h3 class="font-semibold text-2xl text-slate-900">{{ $scoutPlayer->name }}</h3>
                                                         <div class="flex items-center gap-3 mt-1 text-sm text-slate-600">
                                                             <x-position-badge :position="$scoutPlayer->position" size="lg" />
-                                                            <span>{{ $scoutPlayer->position }}</span>
+                                                            <span>{{ $scoutPlayer->position_name }}</span>
                                                             <span>&middot;</span>
                                                             <span>{{ $scoutPlayer->age }} {{ __('transfers.years') }}</span>
                                                             @if($scoutPlayer->nationality_flag)
@@ -723,7 +723,7 @@
                                         <div class="min-w-0">
                                             <div class="font-medium text-sm text-slate-900 truncate">{{ $loan->gamePlayer->name }}</div>
                                             <div class="text-xs text-slate-500">
-                                                {{ $loan->gamePlayer->position }} &middot; {{ $loan->gamePlayer->age }} {{ __('transfers.years') }}
+                                                {{ $loan->gamePlayer->position_name }} &middot; {{ $loan->gamePlayer->age }} {{ __('transfers.years') }}
                                                 &middot; {{ __('transfers.loaned_from', ['team' => $loan->parentTeam->name]) }}
                                             </div>
                                             <div class="text-xs text-slate-400 mt-0.5">
@@ -758,7 +758,7 @@
                                                     {{ $bid->sellingTeam?->name ?? 'Unknown' }}
                                                 </div>
                                                 <div class="text-xs text-slate-500">
-                                                    {{ $bid->gamePlayer->position }} &middot; {{ $bid->gamePlayer->age }} {{ __('app.years') }}
+                                                    {{ $bid->gamePlayer->position_name }} &middot; {{ $bid->gamePlayer->age }} {{ __('app.years') }}
                                                 </div>
                                             </div>
                                         </div>
@@ -802,7 +802,7 @@
                                                 @endphp
                                                 <tr class="border-b border-slate-200 {{ $isActive ? 'bg-sky-50' : 'hover:bg-slate-50' }}">
                                                     <td class="py-2">
-                                                        <span class="font-medium text-slate-900">{{ $filters['position'] ?? '-' }}</span>
+                                                        <span class="font-medium text-slate-900">{{ isset($filters['position']) ? \App\Support\PositionMapper::filterToDisplayName($filters['position']) : '-' }}</span>
                                                     </td>
                                                     <td class="py-2 text-slate-600 hidden md:table-cell">{{ $scopeLabel }}</td>
                                                     <td class="py-2 text-slate-600 hidden md:table-cell">{{ $historyReport->game_date->format('d M') }}</td>

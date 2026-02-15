@@ -341,7 +341,7 @@
                                     <div class="flex items-center justify-between">
                                         <div class="flex items-center gap-2">
                                             <span class="text-sm font-medium text-slate-900">{{ $retiringPlayer->name }}</span>
-                                            <span class="text-xs text-slate-500">({{ $retiringPlayer->age }}, {{ $retiringPlayer->position }})</span>
+                                            <span class="text-xs text-slate-500">({{ $retiringPlayer->age }}, {{ $retiringPlayer->position_name }})</span>
                                         </div>
                                         <span class="text-xs text-orange-600 font-medium">{{ __('season.player_retiring') }}</span>
                                     </div>
@@ -361,7 +361,7 @@
                                             <span class="text-slate-700">{{ $retiringPlayer->name }}</span>
                                             <span class="text-xs text-slate-400">({{ $retiringPlayer->age }})</span>
                                         </div>
-                                        <span class="text-xs text-slate-500">{{ $retiringPlayer->position }}</span>
+                                        <span class="text-xs text-slate-500">{{ $retiringPlayer->position_name }}</span>
                                     </div>
                                 @endforeach
                                 @if($otherTeamRetiring->count() > 10)

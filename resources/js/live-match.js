@@ -429,14 +429,14 @@ export default function liveMatch(config) {
             return event.type === 'goal' || event.type === 'own_goal';
         },
 
-        getPositionBadgeColor(abbr) {
+        getPositionBadgeColor(group) {
             const colors = {
-                GK: 'bg-amber-500',
-                CB: 'bg-blue-600', LB: 'bg-blue-600', RB: 'bg-blue-600', DF: 'bg-blue-600',
-                DM: 'bg-emerald-600', CM: 'bg-emerald-600', AM: 'bg-emerald-600', LM: 'bg-emerald-600', RM: 'bg-emerald-600', MF: 'bg-emerald-600',
-                LW: 'bg-red-600', RW: 'bg-red-600', CF: 'bg-red-600', SS: 'bg-red-600', FW: 'bg-red-600',
+                'Goalkeeper': 'bg-amber-500',
+                'Defender': 'bg-blue-600',
+                'Midfielder': 'bg-emerald-600',
+                'Forward': 'bg-red-600',
             };
-            return colors[abbr] || 'bg-emerald-600';
+            return colors[group] || 'bg-emerald-600';
         },
 
         get secondHalfEvents() {
