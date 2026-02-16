@@ -449,6 +449,9 @@ class ScoutingService
      *
      * @return array{result: string, counter_amount: int|null, message: string}
      */
+    /**
+     * @return array{result: string, counter_amount: int|null, asking_price: int, message: string}
+     */
     public function evaluateBid(GamePlayer $player, int $bidAmount): array
     {
         $askingPrice = $this->calculateAskingPrice($player);

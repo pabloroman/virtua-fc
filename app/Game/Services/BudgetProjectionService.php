@@ -246,7 +246,7 @@ class BudgetProjectionService
      * Season 2+: uses previous season's actual commercial revenue.
      * Season 1: calculates from stadium_seats × config rate.
      */
-    private function getBaseCommercialRevenue(Game $game, Team $team, Competition $league): int
+    private function getBaseCommercialRevenue(Game $game, Team $team, Competition $league): int|float
     {
         // Check for prior season actual commercial revenue
         $previousSeason = (int) $game->season - 1;

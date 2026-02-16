@@ -255,9 +255,6 @@ class ContractService
 
     /**
      * Group squad contracts by expiry year.
-     *
-     * @param Game $game
-     * @return Collection<int, Collection<GamePlayer>>
      */
     public function getContractsByExpiryYear(Game $game): Collection
     {
