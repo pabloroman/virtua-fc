@@ -29,28 +29,21 @@ class TacticalChangeService
     ): array {
         $isUserHome = $match->isHomeTeam($game->team_id);
 
-        // Update match formation/mentality fields
+        // Update match formation/mentality fields (match-only, not game defaults)
         $matchUpdates = [];
-        $gameUpdates = [];
 
         if ($formation !== null) {
             $formationField = $isUserHome ? 'home_formation' : 'away_formation';
             $matchUpdates[$formationField] = $formation;
-            $gameUpdates['default_formation'] = $formation;
         }
 
         if ($mentality !== null) {
             $mentalityField = $isUserHome ? 'home_mentality' : 'away_mentality';
             $matchUpdates[$mentalityField] = $mentality;
-            $gameUpdates['default_mentality'] = $mentality;
         }
 
         if (! empty($matchUpdates)) {
             $match->update($matchUpdates);
-        }
-
-        if (! empty($gameUpdates)) {
-            $game->update($gameUpdates);
         }
 
         // Build active lineup (applying previous subs)
