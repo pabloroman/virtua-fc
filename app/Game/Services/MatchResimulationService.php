@@ -29,6 +29,8 @@ class MatchResimulationService
     /**
      * Revert events after a given minute, re-simulate the match remainder,
      * apply new events, update score and standings.
+     *
+     * @param  array  $allSubstitutions  All subs (previous + new) [{playerOutId, playerInId, minute}]
      */
     public function resimulate(
         GameMatch $match,
@@ -36,9 +38,10 @@ class MatchResimulationService
         int $minute,
         Collection $homePlayers,
         Collection $awayPlayers,
+        array $allSubstitutions = [],
     ): ResimulationResult {
-        return DB::transaction(function () use ($match, $game, $minute, $homePlayers, $awayPlayers) {
-            return $this->doResimulate($match, $game, $minute, $homePlayers, $awayPlayers);
+        return DB::transaction(function () use ($match, $game, $minute, $homePlayers, $awayPlayers, $allSubstitutions) {
+            return $this->doResimulate($match, $game, $minute, $homePlayers, $awayPlayers, $allSubstitutions);
         });
     }
 
@@ -48,6 +51,7 @@ class MatchResimulationService
         int $minute,
         Collection $homePlayers,
         Collection $awayPlayers,
+        array $allSubstitutions = [],
     ): ResimulationResult {
         $competitionId = $match->competition_id;
 
@@ -92,7 +96,19 @@ class MatchResimulationService
             ->unique()
             ->all();
 
-        // 7. Re-simulate the remainder
+        // 7. Build entry minute maps from substitutions
+        $isUserHome = $match->isHomeTeam($game->team_id);
+        $homeEntryMinutes = [];
+        $awayEntryMinutes = [];
+        foreach ($allSubstitutions as $sub) {
+            if ($isUserHome) {
+                $homeEntryMinutes[$sub['playerInId']] = $sub['minute'];
+            } else {
+                $awayEntryMinutes[$sub['playerInId']] = $sub['minute'];
+            }
+        }
+
+        // 8. Re-simulate the remainder
         $remainderResult = $this->matchSimulator->simulateRemainder(
             $match->homeTeam,
             $match->awayTeam,
@@ -106,22 +122,24 @@ class MatchResimulationService
             $game,
             $existingInjuryTeamIds,
             $existingYellowPlayerIds,
+            $homeEntryMinutes,
+            $awayEntryMinutes,
         );
 
-        // 8. Calculate new final score
+        // 9. Calculate new final score
         $newHomeScore = $scoreAtMinute['home'] + $remainderResult->homeScore;
         $newAwayScore = $scoreAtMinute['away'] + $remainderResult->awayScore;
 
-        // 9. Apply the new remainder events
+        // 10. Apply the new remainder events
         $this->applyNewEvents($match, $game, $remainderResult, $competitionId);
 
-        // 10. Update match score
+        // 11. Update match score
         $match->update([
             'home_score' => $newHomeScore,
             'away_score' => $newAwayScore,
         ]);
 
-        // 11. Fix standings if league match and score changed
+        // 12. Fix standings if league match and score changed
         $competition = Competition::find($competitionId);
         $isCupTie = $match->cup_tie_id !== null;
         if ($competition?->isLeague() && ! $isCupTie) {
@@ -140,7 +158,7 @@ class MatchResimulationService
             }
         }
 
-        // 12. Update goalkeeper stats
+        // 13. Update goalkeeper stats
         $this->updateGoalkeeperStats($match, $oldHomeScore, $oldAwayScore, $newHomeScore, $newAwayScore);
 
         return new ResimulationResult($newHomeScore, $newAwayScore, $oldHomeScore, $oldAwayScore);

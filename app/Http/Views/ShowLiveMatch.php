@@ -9,6 +9,7 @@ use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Support\PositionMapper;
+use Carbon\Carbon;
 
 class ShowLiveMatch
 {
@@ -91,6 +92,14 @@ class ShowLiveMatch
             ? ($playerMatch->home_lineup ?? [])
             : ($playerMatch->away_lineup ?? []);
 
+        // Existing substitutions already made on this match (for page reload scenario)
+        $existingSubstitutions = $playerMatch->substitutions ?? [];
+
+        // Build entry minutes map from existing substitutions
+        $entryMinutes = collect($existingSubstitutions)
+            ->pluck('minute', 'player_in_id')
+            ->all();
+
         // Starting lineup players (for the "sub out" picker)
         $lineupPlayers = GamePlayer::with('player')
             ->whereIn('id', $userLineupIds)
@@ -102,6 +111,9 @@ class ShowLiveMatch
                 'positionAbbr' => PositionMapper::toAbbreviation($p->position),
                 'positionGroup' => $p->position_group,
                 'positionSort' => LineupService::positionSortOrder($p->position),
+                'physicalAbility' => $p->physical_ability,
+                'age' => Carbon::parse($p->player->date_of_birth)->age,
+                'minuteEntered' => $entryMinutes[$p->id] ?? 0,
             ])
             ->sortBy('positionSort')
             ->values()
@@ -121,13 +133,13 @@ class ShowLiveMatch
                 'positionAbbr' => PositionMapper::toAbbreviation($p->position),
                 'positionGroup' => $p->position_group,
                 'positionSort' => LineupService::positionSortOrder($p->position),
+                'physicalAbility' => $p->physical_ability,
+                'age' => Carbon::parse($p->player->date_of_birth)->age,
+                'minuteEntered' => null,
             ])
             ->sortBy('positionSort')
             ->values()
             ->all();
-
-        // Existing substitutions already made on this match (for page reload scenario)
-        $existingSubstitutions = $playerMatch->substitutions ?? [];
 
         // User's current tactical setup
         $userFormation = $isUserHome

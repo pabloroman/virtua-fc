@@ -67,8 +67,8 @@ class TacticalChangeService
         $effectiveFormation = $isUserHome ? $match->home_formation : $match->away_formation;
         $effectiveMentality = $isUserHome ? $match->home_mentality : $match->away_mentality;
 
-        // Re-simulate with updated tactics
-        $result = $this->resimulationService->resimulate($match, $game, $minute, $homePlayers, $awayPlayers);
+        // Re-simulate with updated tactics (pass previous subs for energy calculation)
+        $result = $this->resimulationService->resimulate($match, $game, $minute, $homePlayers, $awayPlayers, $previousSubstitutions);
 
         return [
             'newScore' => [

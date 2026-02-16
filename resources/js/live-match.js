@@ -530,6 +530,12 @@ export default function liveMatch(config) {
                         playerInName: sub.playerInName,
                         minute: subMinute,
                     });
+
+                    // Set minuteEntered on the bench player who just came on
+                    const benchPlayer = this.benchPlayers.find(p => p.id === sub.playerInId);
+                    if (benchPlayer) {
+                        benchPlayer.minuteEntered = subMinute;
+                    }
                 }
 
                 // Remove future unrevealed events from the array
@@ -648,6 +654,44 @@ export default function liveMatch(config) {
                 'Forward': 'bg-red-600',
             };
             return colors[group] || 'bg-emerald-600';
+        },
+
+        // =============================
+        // Energy / Stamina
+        // =============================
+
+        calculateDrainRate(physicalAbility, age, positionGroup) {
+            const baseDrain = 0.75;
+            const physicalBonus = (physicalAbility - 50) * 0.005;
+            const agePenalty = Math.max(0, (age - 28)) * 0.015;
+            let drain = baseDrain - physicalBonus + agePenalty;
+            if (positionGroup === 'Goalkeeper') drain *= 0.5;
+            return Math.max(0, drain);
+        },
+
+        getPlayerEnergy(player) {
+            if (player.minuteEntered === null || player.minuteEntered === undefined) return 100;
+            const minutesPlayed = Math.max(0, Math.floor(this.currentMinute) - player.minuteEntered);
+            const drain = this.calculateDrainRate(player.physicalAbility, player.age, player.positionGroup);
+            return Math.max(0, Math.round(100 - drain * minutesPlayed));
+        },
+
+        getEnergyColor(energy) {
+            if (energy > 60) return 'bg-emerald-500';
+            if (energy > 30) return 'bg-amber-400';
+            return 'bg-red-500';
+        },
+
+        getEnergyBarBg(energy) {
+            if (energy > 60) return 'bg-emerald-500/20';
+            if (energy > 30) return 'bg-amber-400/20';
+            return 'bg-red-500/20';
+        },
+
+        getEnergyTextColor(energy) {
+            if (energy > 60) return 'text-emerald-600';
+            if (energy > 30) return 'text-amber-600';
+            return 'text-red-600';
         },
 
         get secondHalfEvents() {

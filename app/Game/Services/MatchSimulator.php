@@ -9,6 +9,7 @@ use App\Game\Enums\Mentality;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\Team;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
 class MatchSimulator
@@ -266,11 +267,13 @@ class MatchSimulator
 
     /**
      * Calculate team strength based on lineup player attributes.
-     * Incorporates match-day performance modifiers for realistic variance.
+     * Incorporates match-day performance modifiers and energy/stamina for realistic variance.
      *
      * @param  Collection<GamePlayer>  $lineup
+     * @param  int  $fromMinute  Start of the simulation period (for energy averaging)
+     * @param  array<string, int>  $playerEntryMinutes  Map of player ID to minute they entered the match
      */
-    private function calculateTeamStrength(Collection $lineup): float
+    private function calculateTeamStrength(Collection $lineup, int $fromMinute = 0, array $playerEntryMinutes = []): float
     {
         if ($lineup->count() < 11) {
             // Fallback for incomplete lineup - reflects amateur/semi-pro level
@@ -297,6 +300,18 @@ class MatchSimulator
                               ($effectivePhysical * 0.35) +
                               ($fitness * 0.05) +
                               ($morale * 0.05);
+
+            // Apply energy/stamina modifier
+            $entryMinute = $playerEntryMinutes[$player->id] ?? 0;
+            $isGK = $player->position === 'Goalkeeper';
+            $avgEnergy = EnergyCalculator::averageEnergy(
+                $player->physical_ability,
+                Carbon::parse($player->player->date_of_birth)->age,
+                $isGK,
+                $entryMinute,
+                $fromMinute,
+            );
+            $playerStrength *= EnergyCalculator::effectivenessModifier($avgEnergy);
 
             $totalStrength += $playerStrength;
         }
@@ -490,6 +505,8 @@ class MatchSimulator
         ?Game $game = null,
         array $existingInjuryTeamIds = [],
         array $existingYellowPlayerIds = [],
+        array $homeEntryMinutes = [],
+        array $awayEntryMinutes = [],
     ): MatchResult {
         $this->resetMatchPerformance();
 
@@ -503,8 +520,8 @@ class MatchSimulator
 
         $events = collect();
 
-        $homeStrength = $this->calculateTeamStrength($homePlayers);
-        $awayStrength = $this->calculateTeamStrength($awayPlayers);
+        $homeStrength = $this->calculateTeamStrength($homePlayers, $fromMinute, $homeEntryMinutes);
+        $awayStrength = $this->calculateTeamStrength($awayPlayers, $fromMinute, $awayEntryMinutes);
 
         $baseGoals = config('match_simulation.base_goals', 1.3);
         $ratioExponent = config('match_simulation.ratio_exponent', 2.0);
@@ -759,12 +776,14 @@ class MatchSimulator
         Team $awayTeam,
         Collection $homePlayers,
         Collection $awayPlayers,
+        array $homeEntryMinutes = [],
+        array $awayEntryMinutes = [],
     ): MatchResult {
         $events = collect();
 
-        // Ratio-based xG scaled to 30 minutes with fatigue reduction
-        $homeStrength = $this->calculateTeamStrength($homePlayers);
-        $awayStrength = $this->calculateTeamStrength($awayPlayers);
+        // Ratio-based xG scaled to 30 minutes — energy already accounts for fatigue
+        $homeStrength = $this->calculateTeamStrength($homePlayers, 90, $homeEntryMinutes);
+        $awayStrength = $this->calculateTeamStrength($awayPlayers, 90, $awayEntryMinutes);
 
         $baseGoals = config('match_simulation.base_goals', 1.3);
         $ratioExponent = config('match_simulation.ratio_exponent', 2.0);

@@ -50,8 +50,8 @@ class SubstitutionService
         $homePlayers = $isUserHome ? $userLineup : $opponentPlayers;
         $awayPlayers = $isUserHome ? $opponentPlayers : $userLineup;
 
-        // Delegate re-simulation to shared service
-        $result = $this->resimulationService->resimulate($match, $game, $minute, $homePlayers, $awayPlayers);
+        // Delegate re-simulation to shared service (pass all subs for energy calculation)
+        $result = $this->resimulationService->resimulate($match, $game, $minute, $homePlayers, $awayPlayers, $allSubs);
 
         // Increment appearances and record each sub in the batch
         foreach ($newSubstitutions as $sub) {
