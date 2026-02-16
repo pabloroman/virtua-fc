@@ -142,8 +142,9 @@ class AdvanceMatchday
         // Recalculate standings positions once per league competition (not per match)
         $this->recalculateLeaguePositions($game->id, $matches);
 
-        // Process post-match actions
-        $game->refresh();
+        // Process post-match actions (clear cached relations so season-scoped
+        // relationships like currentInvestment lazy-load correctly after refresh)
+        $game->refresh()->setRelations([]);
         $this->processPostMatchActions($game, $matches, $handlers, $allPlayers);
 
         $playerMatch = $matches->first(fn ($m) => $m->involvesTeam($game->team_id));
@@ -169,7 +170,7 @@ class AdvanceMatchday
         // Simulate all remaining AI-only batches
         while ($nextBatch = $this->matchdayService->getNextMatchBatch($game)) {
             $this->processBatch($game, $nextBatch);
-            $game->refresh();
+            $game->refresh()->setRelations([]);
         }
     }
 
