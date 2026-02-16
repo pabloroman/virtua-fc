@@ -57,6 +57,20 @@ return [
     'mentality_balanced' => 'Equilibrada',
     'mentality_attacking' => 'Ofensiva',
 
+    // Formation tooltips
+    'formation_tip_442' => 'Equilibrada. Sin bonificación ofensiva ni defensiva.',
+    'formation_tip_433' => 'Ofensiva. +10% ataque, pero +10% goles en contra.',
+    'formation_tip_4231' => 'Control. Sin bonificación ofensiva, -5% goles en contra.',
+    'formation_tip_343' => 'Muy ofensiva. +10% ataque, pero +10% goles en contra.',
+    'formation_tip_352' => 'Ligeramente ofensiva. +5% ataque, pero +5% goles en contra.',
+    'formation_tip_532' => 'Defensiva. -10% ataque, pero -10% goles en contra.',
+    'formation_tip_541' => 'Muy defensiva. -15% ataque, pero -15% goles en contra.',
+
+    // Mentality tooltips
+    'mentality_tip_defensive' => 'Tus goles -30%, goles rival -40%. Cierra el partido.',
+    'mentality_tip_balanced' => 'Sin modificadores. Juego equilibrado.',
+    'mentality_tip_attacking' => 'Tus goles +25%, goles rival +15%. Riesgo y recompensa.',
+
     // Alerts
     'injured' => 'Lesionado',
     'suspended' => 'Sancionado',
@@ -151,6 +165,7 @@ return [
     'sub_player_in' => 'Entra',
     'sub_confirm' => 'Confirmar',
     'sub_cancel' => 'Cancelar',
+    'sub_reset' => 'Restablecer',
     'sub_processing' => 'Procesando...',
     'sub_limit_reached' => 'Límite de sustituciones alcanzado',
     'sub_windows' => 'Ventanas',
@@ -171,10 +186,14 @@ return [
     'tactical_tab_substitutions' => 'Sustituciones',
     'tactical_tab_tactics' => 'Táctica',
     'tactical_formation' => 'Formación',
+    'tactical_formation_hint' => 'Modifica los bonificadores de ataque y defensa de tu equipo.',
     'tactical_mentality' => 'Mentalidad',
+    'tactical_mentality_hint' => 'Controla el balance entre riesgo ofensivo y solidez defensiva.',
     'tactical_resume' => 'Cerrar y reanudar',
     'tactical_subs_made' => 'Sustituciones realizadas',
-    'tactical_coming_soon' => 'Los cambios tácticos en tiempo real estarán disponibles próximamente.',
+    'tactical_changes_pending' => 'Tienes cambios tácticos pendientes.',
+    'tactical_apply' => 'Aplicar cambios',
+    'tactical_no_changes' => 'No hay cambios tácticos que aplicar.',
 
     // Results page
     'results' => 'Resultados',

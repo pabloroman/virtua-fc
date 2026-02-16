@@ -10,6 +10,7 @@
         <title>{{ config('app.name', 'Laravel') }}</title>
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=barlow-semi-condensed:400,600,800&display=swap" rel="stylesheet" />
+        <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
@@ -35,6 +36,9 @@
                 maxWindows: 3,
                 activeFormation: '{{ $userFormation }}',
                 activeMentality: '{{ $userMentality }}',
+                availableFormations: {{ Js::from($availableFormations) }},
+                availableMentalities: {{ Js::from($availableMentalities) }},
+                tacticsUrl: '{{ $tacticsUrl }}',
              })"
              x-on:keydown.escape.window="if (!tacticalPanelOpen) skipToEnd()"
         >

@@ -20,6 +20,15 @@ enum Mentality: string
         };
     }
 
+    public function tooltip(): string
+    {
+        return match ($this) {
+            self::DEFENSIVE => __('game.mentality_tip_defensive'),
+            self::BALANCED => __('game.mentality_tip_balanced'),
+            self::ATTACKING => __('game.mentality_tip_attacking'),
+        };
+    }
+
     /**
      * Modifier applied to YOUR team's expected goals.
      */
