@@ -4,12 +4,21 @@ The injury system simulates realistic football injuries with varying severity, f
 
 ## Overview
 
-Every time a player participates in a match, they have a chance of getting injured. The probability depends on multiple factors:
+Injuries happen both during matches and in training, split roughly 50/50. The probability depends on multiple factors:
 
 - **Durability** - A hidden attribute (1-100) representing injury proneness
 - **Fitness** - Tired players are more likely to get injured
 - **Age** - Young and veteran players are more susceptible
-- **Match Congestion** - Back-to-back games increase risk
+- **Match Congestion** - Back-to-back games increase risk (match injuries only)
+
+### Match vs Training Injuries
+
+| Source | Who | Base Chance | Severe Injuries? |
+|--------|-----|-------------|------------------|
+| Match | Players in the lineup (11) | 2% per player | Yes (ACL, Achilles, etc.) |
+| Training | Non-playing squad members | 1.5% per player per matchday | No (minor/medium only) |
+
+Each team can suffer at most **one** injury per source per matchday (1 match + 1 training max).
 
 ## Durability Attribute
 
@@ -27,7 +36,7 @@ Most players are average, but some are naturally more fragile or resilient. An "
 
 ## Probability Calculation
 
-Base injury chance per player per match: **4%**
+Base injury chance per player per match: **2%** (halved from 4%; the other half comes from training injuries)
 
 This is modified by multipliers:
 
@@ -65,15 +74,15 @@ Final Probability = Base × Durability × Age × Fitness × Congestion
 
 ### Example Calculations
 
-**Low risk player:**
+**Low risk player (match):**
 - Ironman (0.4x) + Prime age (1.0x) + Fresh (0.8x) + Normal rest (1.0x)
-- 4% × 0.4 × 1.0 × 0.8 × 1.0 = **1.3%** chance
+- 2% × 0.4 × 1.0 × 0.8 × 1.0 = **0.64%** chance
 
-**High risk player:**
+**High risk player (match):**
 - Very Injury Prone (2.0x) + Veteran (1.5x) + Tired (1.5x) + Back-to-back (2.0x)
-- 4% × 2.0 × 1.5 × 1.5 × 2.0 = **36%** chance (capped at 35%)
+- 2% × 2.0 × 1.5 × 1.5 × 2.0 = **18%** chance
 
-The maximum probability is capped at **35%** to prevent certainty.
+Match injury probability is capped at **35%**, training at **25%**.
 
 ## Injury Types
 
@@ -118,6 +127,23 @@ Older players take longer to recover:
 | 32+ | 1.2x |
 
 A 35-year-old with a 4-week hamstring tear would actually be out for ~5 weeks.
+
+## Training Injuries
+
+Training injuries occur between matchdays for players **not** in the lineup. They use the same durability, age, fitness, and medical tier modifiers but **no** congestion multiplier (since the player didn't play).
+
+Training injuries are lighter than match injuries — only minor to medium severity:
+
+| Injury | Weight |
+|--------|--------|
+| Muscle fatigue | 40 |
+| Muscle strain | 30 |
+| Calf strain | 15 |
+| Ankle sprain | 8 |
+| Groin strain | 5 |
+| Hamstring tear | 2 |
+
+Severe injuries (metatarsal fracture, ACL tear, Achilles rupture) **cannot** happen in training.
 
 ## Strategic Implications
 

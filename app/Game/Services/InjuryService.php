@@ -5,13 +5,21 @@ namespace App\Game\Services;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 
 class InjuryService
 {
     /**
      * Base injury chance per player per match (percentage).
+     * Halved from 4.0 — the other half of injuries now come from training.
      */
-    private const BASE_INJURY_CHANCE = 4.0;
+    private const BASE_INJURY_CHANCE = 2.0;
+
+    /**
+     * Base training injury chance per non-playing player per matchday (percentage).
+     * Calibrated so training injuries ≈ 50% of total injuries per season.
+     */
+    private const TRAINING_INJURY_CHANCE = 1.5;
 
     /**
      * Medical tier multipliers for injury prevention.
@@ -116,6 +124,19 @@ class InjuryService
             'positions' => ['FW', 'MF', 'DF'],
             'weight' => 1,
         ],
+    ];
+
+    /**
+     * Training injury type weights — skewed toward minor injuries.
+     * Severe injuries (ACL, Achilles, metatarsal) don't happen in training.
+     */
+    private const TRAINING_INJURY_WEIGHTS = [
+        'Muscle fatigue' => 40,
+        'Muscle strain' => 30,
+        'Calf strain' => 15,
+        'Ankle sprain' => 8,
+        'Groin strain' => 5,
+        'Hamstring tear' => 2,
     ];
 
     /**
@@ -435,5 +456,78 @@ class InjuryService
         }
 
         return 'Ironman';
+    }
+
+    // ==========================================
+    // Training Injuries
+    // ==========================================
+
+    /**
+     * Roll for training injuries among non-playing squad members.
+     * At most one player per team gets injured per matchday.
+     *
+     * @param  Collection<GamePlayer>  $eligiblePlayers  Non-playing, non-injured squad members
+     * @param  Game|null  $game  Optional game for medical tier effects
+     * @return array{player: GamePlayer, type: string, weeks: int}|null
+     */
+    public function rollTrainingInjuries(Collection $eligiblePlayers, ?Game $game = null): ?array
+    {
+        foreach ($eligiblePlayers->shuffle() as $player) {
+            if ($this->rollForTrainingInjury($player, $game)) {
+                return $this->generateTrainingInjury($player, $game);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Calculate training injury probability for a player.
+     * Same modifiers as match injuries except no congestion multiplier.
+     */
+    private function calculateTrainingInjuryProbability(GamePlayer $player, ?Game $game = null): float
+    {
+        $baseProbability = self::TRAINING_INJURY_CHANCE;
+
+        $durabilityMultiplier = $this->getDurabilityMultiplier($player);
+        $ageMultiplier = $this->getAgeMultiplier($player->age);
+        $fitnessMultiplier = $this->getFitnessMultiplier($player->fitness);
+        $medicalMultiplier = $this->getMedicalInjuryMultiplier($game);
+
+        $finalProbability = $baseProbability
+            * $durabilityMultiplier
+            * $ageMultiplier
+            * $fitnessMultiplier
+            * $medicalMultiplier;
+
+        return min($finalProbability, 25.0);
+    }
+
+    /**
+     * Roll whether a player gets injured during training.
+     */
+    private function rollForTrainingInjury(GamePlayer $player, ?Game $game = null): bool
+    {
+        $probability = $this->calculateTrainingInjuryProbability($player, $game);
+
+        return $this->percentChance($probability);
+    }
+
+    /**
+     * Generate a training injury for a player.
+     * Training injuries skew toward minor types (no ACL/Achilles/metatarsal).
+     *
+     * @return array{player: GamePlayer, type: string, weeks: int}
+     */
+    private function generateTrainingInjury(GamePlayer $player, ?Game $game = null): array
+    {
+        $injuryType = $this->weightedRandomSelect(self::TRAINING_INJURY_WEIGHTS);
+        $weeksOut = $this->calculateInjuryDuration($injuryType, $player, $game);
+
+        return [
+            'player' => $player,
+            'type' => $injuryType,
+            'weeks' => $weeksOut,
+        ];
     }
 }
