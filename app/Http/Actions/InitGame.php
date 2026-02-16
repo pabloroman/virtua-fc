@@ -5,6 +5,7 @@ namespace App\Http\Actions;
 use App\Game\Services\GameCreationService;
 use App\Models\Game;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class InitGame
 {
@@ -22,12 +23,16 @@ class InitGame
         $request->validate([
             'name' => ['required', 'string', 'max:25'],
             'team_id' => ['required', 'uuid'],
+            'game_mode' => ['sometimes', Rule::in([Game::MODE_CAREER, Game::MODE_TOURNAMENT])],
         ]);
+
+        $gameMode = $request->get('game_mode', Game::MODE_CAREER);
 
         $game = $this->gameCreationService->create(
             userId: (string) $request->user()->id,
             playerName: $request->get('name'),
             teamId: $request->get('team_id'),
+            gameMode: $gameMode,
         );
 
         return redirect()->route('game.onboarding', $game->id);

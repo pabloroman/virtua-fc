@@ -171,7 +171,16 @@ return [
     'delete_game' => 'Eliminar Partida',
     'confirm_delete_game' => '¿Estás seguro de que quieres eliminar esta partida? Esta acción no se puede deshacer.',
     'start_game' => 'Iniciar Partida',
+    'start_tournament' => 'Iniciar Torneo',
     'manager_name' => 'Nombre del mánager',
+
+    // Game modes
+    'mode_career' => 'Modo Carrera',
+    'mode_career_desc' => 'Dirige un club a través de múltiples temporadas',
+    'mode_tournament' => 'Copa del Mundo',
+    'mode_tournament_desc' => 'Dirige una selección en el Mundial',
+    'mode_career_badge' => 'Carrera',
+    'mode_tournament_badge' => 'Copa del Mundo',
 
     // Season Goals
     'goal_title' => 'Ganar la Liga',

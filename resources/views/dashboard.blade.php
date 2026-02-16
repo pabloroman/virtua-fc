@@ -35,6 +35,13 @@
                                     <img class="mx-auto h-20 w-20 flex-shrink-0" src="{{ $game->team->image }}" alt="">
                                     <h3 class="text-xl font-semibold leading-tight text-slate-900">{{ $game->team->name }}</h3>
                                     <dl class="flex flex-col justify-between">
+                                        @if($game->isTournamentMode())
+                                            <dd class="mb-1">
+                                                <span class="inline-flex items-center rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-600/20">
+                                                    {{ __('game.mode_tournament_badge') }}
+                                                </span>
+                                            </dd>
+                                        @endif
                                         <dd class="text-sm text-slate-500">{{ __('game.season_n', ['season' => $game->formatted_season]) }}</dd>
                                         @if($game->current_date)
                                             <dd class="mt-2 mb-2">

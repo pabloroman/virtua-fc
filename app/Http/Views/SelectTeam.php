@@ -5,6 +5,7 @@ namespace App\Http\Views;
 use App\Game\Services\CountryConfig;
 use App\Models\Competition;
 use App\Models\Game;
+use App\Models\WcTeam;
 use Illuminate\Http\Request;
 
 final class SelectTeam
@@ -15,7 +16,7 @@ final class SelectTeam
             return redirect()->route('dashboard')->withErrors(['limit' => __('messages.game_limit_reached')]);
         }
 
-        // Build country → tier → competition structure for the template
+        // Build country → tier → competition structure for career mode
         $countries = [];
 
         foreach ($countryConfig->playableCountryCodes() as $code) {
@@ -40,8 +41,14 @@ final class SelectTeam
             }
         }
 
+        // Load World Cup teams grouped by confederation for tournament mode
+        $wcTeams = WcTeam::orderBy('name')->get()->groupBy('confederation');
+        $hasTournamentMode = $wcTeams->isNotEmpty();
+
         return view('select-team', [
             'countries' => $countries,
+            'wcTeams' => $wcTeams,
+            'hasTournamentMode' => $hasTournamentMode,
         ]);
     }
 }
