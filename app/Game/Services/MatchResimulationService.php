@@ -165,97 +165,34 @@ class MatchResimulationService
     }
 
     /**
-     * Revert all match events after a given minute and undo their stat impact.
+     * Revert all match events after a given minute and rebuild affected player stats.
+     *
+     * Instead of manually decrementing stats (fragile mirror of applyNewEvents),
+     * we delete the events, clear side-effects (suspensions/injuries), then
+     * recalculate each affected player's stats from all their remaining events.
      */
     private function revertEventsAfterMinute(GameMatch $match, int $minute, string $competitionId): void
     {
-        $events = MatchEvent::where('game_match_id', $match->id)
+        $eventsToRevert = MatchEvent::where('game_match_id', $match->id)
             ->where('minute', '>', $minute)
             ->get();
 
-        // Group stat decrements by player to minimize queries
-        $statDecrements = [];
-        $specialReverts = [];
-
-        foreach ($events as $event) {
-            $playerId = $event->game_player_id;
-
-            if (! isset($statDecrements[$playerId])) {
-                $statDecrements[$playerId] = [];
-            }
-
-            switch ($event->event_type) {
-                case 'goal':
-                    $statDecrements[$playerId]['goals'] = ($statDecrements[$playerId]['goals'] ?? 0) + 1;
-                    break;
-                case 'own_goal':
-                    $statDecrements[$playerId]['own_goals'] = ($statDecrements[$playerId]['own_goals'] ?? 0) + 1;
-                    break;
-                case 'assist':
-                    $statDecrements[$playerId]['assists'] = ($statDecrements[$playerId]['assists'] ?? 0) + 1;
-                    break;
-                case 'yellow_card':
-                    $statDecrements[$playerId]['yellow_cards'] = ($statDecrements[$playerId]['yellow_cards'] ?? 0) + 1;
-                    $specialReverts[] = $event;
-                    break;
-                case 'red_card':
-                    $statDecrements[$playerId]['red_cards'] = ($statDecrements[$playerId]['red_cards'] ?? 0) + 1;
-                    $specialReverts[] = $event;
-                    break;
-                case 'injury':
-                    $specialReverts[] = $event;
-                    break;
-            }
+        if ($eventsToRevert->isEmpty()) {
+            return;
         }
 
-        // Batch-load affected players
-        $allPlayerIds = array_unique(array_merge(
-            array_keys($statDecrements),
-            array_column($specialReverts, 'game_player_id'),
-        ));
-        $players = GamePlayer::whereIn('id', $allPlayerIds)->get()->keyBy('id');
+        $affectedPlayerIds = $eventsToRevert->pluck('game_player_id')->unique()->values()->all();
 
-        // Apply stat decrements
-        foreach ($statDecrements as $playerId => $decrements) {
-            $player = $players->get($playerId);
-            if (! $player) {
-                continue;
+        // Clear side-effects that can't be recalculated from events alone
+        foreach ($eventsToRevert as $event) {
+            if (in_array($event->event_type, ['yellow_card', 'red_card'])) {
+                $suspension = PlayerSuspension::forPlayerInCompetition($event->game_player_id, $competitionId);
+                $suspension?->delete();
             }
 
-            foreach ($decrements as $column => $amount) {
-                $player->{$column} = max(0, $player->{$column} - $amount);
-            }
-            $player->save();
-        }
-
-        // Undo special events
-        foreach ($specialReverts as $event) {
-            $player = $players->get($event->game_player_id);
-            if (! $player) {
-                continue;
-            }
-
-            switch ($event->event_type) {
-                case 'yellow_card':
-                    $suspension = PlayerSuspension::forPlayerInCompetition($player->id, $competitionId);
-                    if ($suspension) {
-                        $suspension->delete();
-                    }
-                    break;
-
-                case 'red_card':
-                    $suspension = PlayerSuspension::forPlayerInCompetition($player->id, $competitionId);
-                    if ($suspension) {
-                        $suspension->delete();
-                    }
-                    break;
-
-                case 'injury':
-                    $player->update([
-                        'injury_type' => null,
-                        'injury_until' => null,
-                    ]);
-                    break;
+            if ($event->event_type === 'injury') {
+                GamePlayer::where('id', $event->game_player_id)
+                    ->update(['injury_type' => null, 'injury_until' => null]);
             }
         }
 
@@ -263,6 +200,56 @@ class MatchResimulationService
         MatchEvent::where('game_match_id', $match->id)
             ->where('minute', '>', $minute)
             ->delete();
+
+        // Recalculate stats for affected players from all their remaining events
+        $this->recalculatePlayerStats($affectedPlayerIds, $match->game_id);
+    }
+
+    /**
+     * Recalculate season stats for the given players from their match events.
+     */
+    private function recalculatePlayerStats(array $playerIds, string $gameId): void
+    {
+        if (empty($playerIds)) {
+            return;
+        }
+
+        // Count each stat type per player from all remaining events
+        $statCounts = MatchEvent::where('game_id', $gameId)
+            ->whereIn('game_player_id', $playerIds)
+            ->whereIn('event_type', ['goal', 'own_goal', 'assist', 'yellow_card', 'red_card'])
+            ->selectRaw('game_player_id, event_type, count(*) as cnt')
+            ->groupBy('game_player_id', 'event_type')
+            ->get();
+
+        // Build a map: [playerId => [column => count]]
+        $statsMap = [];
+        $columnMap = [
+            'goal' => 'goals',
+            'own_goal' => 'own_goals',
+            'assist' => 'assists',
+            'yellow_card' => 'yellow_cards',
+            'red_card' => 'red_cards',
+        ];
+
+        foreach ($statCounts as $row) {
+            $column = $columnMap[$row->event_type] ?? null;
+            if ($column) {
+                $statsMap[$row->game_player_id][$column] = $row->cnt;
+            }
+        }
+
+        // Update each affected player — set stats to counted values (0 if no events remain)
+        $players = GamePlayer::whereIn('id', $playerIds)->get();
+        foreach ($players as $player) {
+            $counts = $statsMap[$player->id] ?? [];
+            $player->goals = $counts['goals'] ?? 0;
+            $player->own_goals = $counts['own_goals'] ?? 0;
+            $player->assists = $counts['assists'] ?? 0;
+            $player->yellow_cards = $counts['yellow_cards'] ?? 0;
+            $player->red_cards = $counts['red_cards'] ?? 0;
+            $player->save();
+        }
     }
 
     /**
