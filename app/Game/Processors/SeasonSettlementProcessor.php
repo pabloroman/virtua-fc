@@ -41,7 +41,7 @@ class SeasonSettlementProcessor implements SeasonEndProcessor
             ->where('team_id', $game->team_id)
             ->first();
 
-        $actualPosition = $standing?->position ?? $finances->projected_position;
+        $actualPosition = $standing->position ?? $finances->projected_position;
 
         // Calculate actual revenues
         $actualTvRevenue = $this->calculateTvRevenue($actualPosition, $game);
@@ -110,23 +110,17 @@ class SeasonSettlementProcessor implements SeasonEndProcessor
     private function calculateTvRevenue(int $position, Game $game): int
     {
         $league = $game->competition;
-        if (!$league) {
-            return 0;
-        }
-
         $config = $league->getConfig();
+
         return $config->getTvRevenue($position);
     }
 
     private function calculateMatchdayRevenue(Game $game, int $position): int
     {
         $team = $game->team;
-        $reputation = $team->clubProfile?->reputation_level ?? ClubProfile::REPUTATION_MODEST;
+        $reputation = $team->clubProfile->reputation_level ?? ClubProfile::REPUTATION_MODEST;
 
         $league = $game->competition;
-        if (!$league) {
-            return 0;
-        }
 
         $base = $team->stadium_seats * config("finances.revenue_per_seat.{$reputation}", 15_000);
 
@@ -138,7 +132,7 @@ class SeasonSettlementProcessor implements SeasonEndProcessor
 
         // Position factor from competition config
         $config = $league->getConfig();
-        $positionFactor = $config->getPositionFactor($position) ?? 1.0;
+        $positionFactor = $config->getPositionFactor($position);
 
         return (int) ($base * $facilitiesMultiplier * $positionFactor);
     }

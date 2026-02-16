@@ -64,7 +64,7 @@ class YouthAcademyService
     public function trySpawnProspect(Game $game): ?AcademyPlayer
     {
         $investment = $game->currentInvestment;
-        $tier = $investment?->youth_academy_tier ?? 0;
+        $tier = $investment->youth_academy_tier ?? 0;
 
         if ($tier === 0) {
             return null;
@@ -158,7 +158,7 @@ class YouthAcademyService
     public function generateProspects(Game $game): Collection
     {
         $investment = $game->currentInvestment;
-        $tier = $investment?->youth_academy_tier ?? 0;
+        $tier = $investment->youth_academy_tier ?? 0;
 
         if ($tier === 0) {
             return collect();

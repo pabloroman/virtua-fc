@@ -83,8 +83,8 @@ class MatchdayService
         }
 
         // Determine matchday number (prefer league round if available)
-        $leagueMatch = $allMatches->first(fn ($m) => $m->competition?->isLeague() && !$m->cup_tie_id);
-        $matchday = $leagueMatch?->round_number ?? $game->current_matchday;
+        $leagueMatch = $allMatches->first(fn ($m) => $m->competition->isLeague() && !$m->cup_tie_id);
+        $matchday = $leagueMatch->round_number ?? $game->current_matchday;
 
         // For matchdays spanning multiple days, use the latest date
         $currentDate = $allMatches->max('scheduled_date')->toDateString();

@@ -133,7 +133,7 @@ class CountryConfig
     /**
      * Get supercup config for a country.
      *
-     * @return array{competition: string, cup: string, league: string, cup_final_round: int}|null
+     * @return array{competition: string, cup: string, league: string, cup_final_round: int, cup_entry_round?: int}|null
      */
     public function supercup(string $countryCode): ?array
     {

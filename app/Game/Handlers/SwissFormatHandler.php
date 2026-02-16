@@ -82,8 +82,8 @@ class SwissFormatHandler implements CompetitionHandler
     {
         return route('game.results', [
             'gameId' => $game->id,
-            'competition' => $matches->first()?->competition_id ?? $game->competition_id,
-            'matchday' => $matches->first()?->round_number ?? $matchday,
+            'competition' => $matches->first()->competition_id ?? $game->competition_id,
+            'matchday' => $matches->first()->round_number ?? $matchday,
         ]);
     }
 
@@ -109,7 +109,7 @@ class SwissFormatHandler implements CompetitionHandler
             ->where('round_number', SwissKnockoutGenerator::ROUND_FINAL)
             ->first();
 
-        return $finalTie?->completed ?? false;
+        return $finalTie->completed ?? false;
     }
 
     /**

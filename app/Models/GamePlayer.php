@@ -425,11 +425,7 @@ class GamePlayer extends Model
         }
 
         if ($seasonEndDate === null) {
-            $game = $this->game;
-            if (!$game) {
-                return false;
-            }
-            $seasonEndDate = $game->getSeasonEndDate();
+            $seasonEndDate = $this->game->getSeasonEndDate();
         }
 
         return $this->contract_until->lte($seasonEndDate);
@@ -587,7 +583,7 @@ class GamePlayer extends Model
                 ->where('competition_id', $competitionId)
                 ->where('matches_remaining', '>', 0)
                 ->first()
-                ?->matches_remaining ?? 0;
+                ->matches_remaining ?? 0;
         }
 
         return PlayerSuspension::getMatchesRemaining($this->id, $competitionId);

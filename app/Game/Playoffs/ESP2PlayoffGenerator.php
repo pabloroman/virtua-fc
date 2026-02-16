@@ -129,6 +129,6 @@ class ESP2PlayoffGenerator implements PlayoffGenerator
             ->where('round_number', $this->getTotalRounds())
             ->first();
 
-        return $finalTie?->completed ?? false;
+        return $finalTie->completed ?? false;
     }
 }

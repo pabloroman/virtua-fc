@@ -472,27 +472,25 @@ class ContractService
 
         // Pre-contract pressure (Jan-May)
         $game = $player->game;
-        if ($game) {
-            $month = $game->current_date->month;
-            if ($month >= 1 && $month <= 5) {
-                // Has a concrete pre-contract offer
-                if ($player->relationLoaded('transferOffers')) {
-                    $hasPreContractOffer = $player->transferOffers->contains(function ($offer) {
-                        return $offer->offer_type === TransferOffer::TYPE_PRE_CONTRACT
-                            && $offer->status === TransferOffer::STATUS_PENDING;
-                    });
-                } else {
-                    $hasPreContractOffer = $player->transferOffers()
-                        ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
-                        ->where('status', TransferOffer::STATUS_PENDING)
-                        ->exists();
-                }
+        $month = $game->current_date->month;
+        if ($month >= 1 && $month <= 5) {
+            // Has a concrete pre-contract offer
+            if ($player->relationLoaded('transferOffers')) {
+                $hasPreContractOffer = $player->transferOffers->contains(function ($offer) {
+                    return $offer->offer_type === TransferOffer::TYPE_PRE_CONTRACT
+                        && $offer->status === TransferOffer::STATUS_PENDING;
+                });
+            } else {
+                $hasPreContractOffer = $player->transferOffers()
+                    ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
+                    ->where('status', TransferOffer::STATUS_PENDING)
+                    ->exists();
+            }
 
-                if ($hasPreContractOffer) {
-                    $disposition -= 0.15;
-                } else {
-                    $disposition -= 0.08;
-                }
+            if ($hasPreContractOffer) {
+                $disposition -= 0.15;
+            } else {
+                $disposition -= 0.08;
             }
         }
 

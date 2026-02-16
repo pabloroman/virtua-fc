@@ -27,7 +27,7 @@ class CupDrawService
         }
 
         $competition = Competition::find($competitionId);
-        $season = $competition?->season ?? '2025';
+        $season = $competition->season ?? '2025';
 
         // Get all teams eligible for this round
         $teams = $this->getTeamsForRound($gameId, $competitionId, $season, $roundNumber);

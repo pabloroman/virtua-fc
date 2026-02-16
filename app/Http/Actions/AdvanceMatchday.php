@@ -514,7 +514,7 @@ class AdvanceMatchday
         foreach ($resolvedTies as $tie) {
             $competition = $tie->competition;
             $roundConfig = $tie->getRoundConfig();
-            $roundName = $roundConfig?->name ?? $tie->firstLegMatch?->round_name ?? '';
+            $roundName = $roundConfig->name ?? $tie->firstLegMatch->round_name ?? '';
 
             if ($tie->winner_id === $game->team_id) {
                 $this->notificationService->notifyCompetitionAdvancement(

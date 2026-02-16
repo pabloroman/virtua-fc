@@ -48,7 +48,7 @@ class ShowFinances
         $totalExpenses = $transactions->where('type', FinancialTransaction::TYPE_EXPENSE)->sum('amount');
 
         // Wage-to-revenue ratio
-        $wageRevenueRatio = $finances && $finances->projected_total_revenue > 0
+        $wageRevenueRatio = $finances->projected_total_revenue > 0
             ? round(($finances->projected_wages / $finances->projected_total_revenue) * 100)
             : 0;
 

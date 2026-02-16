@@ -16,13 +16,6 @@ class CreateTestGame extends Command
 
     protected $description = 'Create a test game with the test profile (4-team league, 8-team cup) for quick testing';
 
-    private const TEST_TEAM_NAMES = [
-        'Real Madrid',
-        'FC Barcelona',
-        'Atlético de Madrid',
-        'Athletic Bilbao',
-    ];
-
     public function handle(GameCreationService $gameCreationService): int
     {
         // Optionally re-seed test data
