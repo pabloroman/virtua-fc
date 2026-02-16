@@ -108,4 +108,41 @@ return [
         'min_effectiveness' => 0.6,
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Formation Modifiers
+    |--------------------------------------------------------------------------
+    |
+    | Each formation has an attack and defense modifier applied to xG.
+    | attack: multiplier on YOUR expected goals (1.0 = neutral)
+    | defense: multiplier on OPPONENT's expected goals against you (< 1.0 = concede less)
+    |
+    */
+    'formations' => [
+        '4-4-2'   => ['attack' => 1.00, 'defense' => 1.00],
+        '4-3-3'   => ['attack' => 1.10, 'defense' => 1.10],
+        '4-2-3-1' => ['attack' => 1.00, 'defense' => 0.95],
+        '3-4-3'   => ['attack' => 1.10, 'defense' => 1.10],
+        '3-5-2'   => ['attack' => 1.05, 'defense' => 1.05],
+        '4-1-4-1' => ['attack' => 0.95, 'defense' => 0.95],
+        '5-3-2'   => ['attack' => 0.90, 'defense' => 0.90],
+        '5-4-1'   => ['attack' => 0.85, 'defense' => 0.85],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Mentality Modifiers
+    |--------------------------------------------------------------------------
+    |
+    | Each mentality has two modifiers:
+    | own_goals: multiplier on YOUR expected goals
+    | opponent_goals: multiplier on OPPONENT's expected goals against you
+    |
+    */
+    'mentalities' => [
+        'defensive' => ['own_goals' => 0.80, 'opponent_goals' => 0.70],
+        'balanced'  => ['own_goals' => 1.00, 'opponent_goals' => 1.00],
+        'attacking' => ['own_goals' => 1.15, 'opponent_goals' => 1.10],
+    ],
+
 ];

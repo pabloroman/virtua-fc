@@ -59,17 +59,18 @@ return [
 
     // Formation tooltips
     'formation_tip_442' => 'Equilibrada. Sin bonificación ofensiva ni defensiva.',
-    'formation_tip_433' => 'Ofensiva. +10% ataque, pero +10% goles en contra.',
-    'formation_tip_4231' => 'Control. Sin bonificación ofensiva, -5% goles en contra.',
-    'formation_tip_343' => 'Muy ofensiva. +10% ataque, pero +10% goles en contra.',
-    'formation_tip_352' => 'Ligeramente ofensiva. +5% ataque, pero +5% goles en contra.',
-    'formation_tip_532' => 'Defensiva. -10% ataque, pero -10% goles en contra.',
-    'formation_tip_541' => 'Muy defensiva. -15% ataque, pero -15% goles en contra.',
+    'formation_tip_433' => 'Ofensiva. :attack ataque, pero :defense goles en contra.',
+    'formation_tip_4231' => 'Control. Sin bonificación ofensiva, :defense goles en contra.',
+    'formation_tip_343' => 'Muy ofensiva. :attack ataque, pero :defense goles en contra.',
+    'formation_tip_352' => 'Ligeramente ofensiva. :attack ataque, pero :defense goles en contra.',
+    'formation_tip_4141' => 'Ligeramente defensiva. :attack ataque, pero :defense goles en contra.',
+    'formation_tip_532' => 'Defensiva. :attack ataque, pero :defense goles en contra.',
+    'formation_tip_541' => 'Muy defensiva. :attack ataque, pero :defense goles en contra.',
 
     // Mentality tooltips
-    'mentality_tip_defensive' => 'Tus goles -20%, goles rival -30%. Cierra el partido.',
+    'mentality_tip_defensive' => 'Tus goles :own, goles rival :opponent. Cierra el partido.',
     'mentality_tip_balanced' => 'Sin modificadores. Juego equilibrado.',
-    'mentality_tip_attacking' => 'Tus goles +15%, goles rival +10%. Riesgo y recompensa.',
+    'mentality_tip_attacking' => 'Tus goles :own, goles rival :opponent. Riesgo y recompensa.',
 
     // Alerts
     'injured' => 'Lesionado',

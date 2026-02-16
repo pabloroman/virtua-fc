@@ -22,11 +22,23 @@ enum Mentality: string
 
     public function tooltip(): string
     {
-        return match ($this) {
-            self::DEFENSIVE => __('game.mentality_tip_defensive'),
-            self::BALANCED => __('game.mentality_tip_balanced'),
-            self::ATTACKING => __('game.mentality_tip_attacking'),
+        $ownPct = self::formatModifierPct($this->ownGoalsModifier());
+        $oppPct = self::formatModifierPct($this->opponentGoalsModifier());
+
+        $key = match ($this) {
+            self::DEFENSIVE => 'game.mentality_tip_defensive',
+            self::BALANCED => 'game.mentality_tip_balanced',
+            self::ATTACKING => 'game.mentality_tip_attacking',
         };
+
+        return __($key, ['own' => $ownPct, 'opponent' => $oppPct]);
+    }
+
+    private static function formatModifierPct(float $modifier): string
+    {
+        $pct = (int) round(($modifier - 1.0) * 100);
+
+        return ($pct >= 0 ? '+' : '').$pct.'%';
     }
 
     /**
@@ -34,11 +46,7 @@ enum Mentality: string
      */
     public function ownGoalsModifier(): float
     {
-        return match ($this) {
-            self::DEFENSIVE => 0.80,  // -20% your goals
-            self::BALANCED => 1.00,   // No change
-            self::ATTACKING => 1.15,  // +15% your goals
-        };
+        return (float) config("match_simulation.mentalities.{$this->value}.own_goals", 1.00);
     }
 
     /**
@@ -46,10 +54,6 @@ enum Mentality: string
      */
     public function opponentGoalsModifier(): float
     {
-        return match ($this) {
-            self::DEFENSIVE => 0.70,  // -30% opponent's goals (you defend well)
-            self::BALANCED => 1.00,   // No change
-            self::ATTACKING => 1.10,  // +10% opponent's goals (you leave gaps)
-        };
+        return (float) config("match_simulation.mentalities.{$this->value}.opponent_goals", 1.00);
     }
 }
