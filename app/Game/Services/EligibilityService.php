@@ -37,7 +37,7 @@ class EligibilityService
     public function applyInjury(GamePlayer $player, string $injuryType, int $weeksOut, Carbon $matchDate): void
     {
         $player->injury_type = $injuryType;
-        $player->injury_until = $matchDate->copy()->addWeeks($weeksOut);
+        $player->injury_until = \Illuminate\Support\Carbon::instance($matchDate->copy()->addWeeks($weeksOut));
         $player->save();
     }
 

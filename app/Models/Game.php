@@ -272,6 +272,7 @@ class Game extends Model
 
     public function getNextMatchAttribute(): ?GameMatch
     {
+        /** @var GameMatch|null */
         return $this->matches()
             ->where('played', false)
             ->where(function ($query) {
@@ -453,6 +454,7 @@ class Game extends Model
      */
     public function getFirstCompetitiveMatch(): ?GameMatch
     {
+        /** @var GameMatch|null */
         return $this->matches()
             ->where('played', false)
             ->whereNull('cup_tie_id') // League match

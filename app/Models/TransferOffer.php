@@ -230,7 +230,7 @@ class TransferOffer extends Model
             return 0;
         }
 
-        return $gameDate->diffInDays($this->expires_at);
+        return (int) $gameDate->diffInDays($this->expires_at);
     }
 
     /**

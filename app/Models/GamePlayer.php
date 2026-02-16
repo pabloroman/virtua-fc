@@ -388,6 +388,7 @@ class GamePlayer extends Model
      */
     public function agreedTransfer(): ?TransferOffer
     {
+        /** @var TransferOffer|null */
         return $this->transferOffers()
             ->where('status', TransferOffer::STATUS_AGREED)
             ->first();
