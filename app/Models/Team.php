@@ -48,6 +48,17 @@ class Team extends Model
         return $this->hasOne(ClubProfile::class);
     }
 
+    public function getNameAttribute(): string
+    {
+        $name = $this->attributes['name'] ?? '';
+
+        if (($this->attributes['type'] ?? 'club') === 'national') {
+            return __("countries.{$name}") ?? $name;
+        }
+
+        return $name;
+    }
+
     public function getImageAttribute(): ?string
     {
         // National teams use flag SVGs

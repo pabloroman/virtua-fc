@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Game\Services\PlayerValuationService;
+use App\Support\CountryCodeMapper;
 use App\Support\Money;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -89,9 +90,9 @@ class SeedWorldCupData extends Command
                 continue;
             }
 
-            // Extract team key from filename (e.g., "esp" from "esp.json")
+            // Extract team key from filename (e.g., "3375" from "3375.json")
             $teamKey = pathinfo($filePath, PATHINFO_FILENAME);
-            $countryCode = $data['countryCode'] ?? $teamKey;
+            $countryCode = CountryCodeMapper::toCode($data['name']) ?? $teamKey;
 
             // Create or find the Team record
             $teamId = $this->seedTeam($teamKey, $data, $countryCode);

@@ -219,7 +219,7 @@ class SetupTournamentGame implements ShouldQueue
                     'game_id' => $this->gameId,
                     'player_id' => $player->id,
                     'team_id' => $team->id,
-                    'number' => isset($playerData['number']) ? (int) $playerData['number'] : null,
+                    'number' => null,
                     'position' => $playerData['position'] ?? 'Central Midfield',
                     'market_value' => null,
                     'market_value_cents' => 0,
