@@ -67,9 +67,9 @@ return [
     'formation_tip_541' => 'Muy defensiva. -15% ataque, pero -15% goles en contra.',
 
     // Mentality tooltips
-    'mentality_tip_defensive' => 'Tus goles -30%, goles rival -40%. Cierra el partido.',
+    'mentality_tip_defensive' => 'Tus goles -20%, goles rival -30%. Cierra el partido.',
     'mentality_tip_balanced' => 'Sin modificadores. Juego equilibrado.',
-    'mentality_tip_attacking' => 'Tus goles +25%, goles rival +15%. Riesgo y recompensa.',
+    'mentality_tip_attacking' => 'Tus goles +15%, goles rival +10%. Riesgo y recompensa.',
 
     // Alerts
     'injured' => 'Lesionado',
@@ -191,9 +191,9 @@ return [
     'tactical_mentality_hint' => 'Controla el balance entre riesgo ofensivo y solidez defensiva.',
     'tactical_resume' => 'Cerrar y reanudar',
     'tactical_subs_made' => 'Sustituciones realizadas',
-    'tactical_changes_pending' => 'Tienes cambios tácticos pendientes.',
     'tactical_apply' => 'Aplicar cambios',
     'tactical_no_changes' => 'No hay cambios tácticos que aplicar.',
+    'energy' => 'Energía',
 
     // Results page
     'results' => 'Resultados',

@@ -187,6 +187,18 @@
                                                     <span class="skew-x-12" x-text="player.positionAbbr"></span>
                                                 </span>
                                                 <span class="flex-1 truncate font-medium" x-text="player.name"></span>
+                                                {{-- Energy bar --}}
+                                                <span class="ml-auto flex items-center gap-1 shrink-0">
+                                                    <span class="text-[10px] tabular-nums font-semibold"
+                                                          :class="getEnergyTextColor(getPlayerEnergy(player))"
+                                                          x-text="getPlayerEnergy(player) + '%'"></span>
+                                                    <span class="w-10 h-1.5 rounded-full overflow-hidden"
+                                                          :class="getEnergyBarBg(getPlayerEnergy(player))">
+                                                        <span class="h-full rounded-full block transition-all duration-300"
+                                                              :class="getEnergyColor(getPlayerEnergy(player))"
+                                                              :style="'width:' + getPlayerEnergy(player) + '%'"></span>
+                                                    </span>
+                                                </span>
                                             </button>
                                         </template>
                                     </div>
@@ -209,6 +221,13 @@
                                                     <span class="skew-x-12" x-text="player.positionAbbr"></span>
                                                 </span>
                                                 <span class="flex-1 truncate font-medium" x-text="player.name"></span>
+                                                {{-- Energy bar (always 100% for bench) --}}
+                                                <span class="ml-auto flex items-center gap-1 shrink-0">
+                                                    <span class="text-[10px] tabular-nums font-semibold text-emerald-600">100%</span>
+                                                    <span class="w-10 h-1.5 rounded-full overflow-hidden bg-emerald-500/20">
+                                                        <span class="h-full rounded-full block bg-emerald-500" style="width:100%"></span>
+                                                    </span>
+                                                </span>
                                             </button>
                                         </template>
                                     </div>
@@ -357,11 +376,6 @@
                                 </button>
                             </div>
                             <p class="mt-2 text-xs text-slate-400 italic min-h-[1.25rem]" x-text="getMentalityTooltip(pendingMentality ?? activeMentality)"></p>
-                        </div>
-
-                        {{-- Change indicator --}}
-                        <div x-show="hasTacticalChanges" x-cloak class="p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                            <p class="text-xs text-amber-700 font-medium">{{ __('game.tactical_changes_pending') }}</p>
                         </div>
 
                         {{-- Confirm / Reset --}}

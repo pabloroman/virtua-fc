@@ -35,9 +35,9 @@ enum Mentality: string
     public function ownGoalsModifier(): float
     {
         return match ($this) {
-            self::DEFENSIVE => 0.70,  // -30% your goals
+            self::DEFENSIVE => 0.80,  // -20% your goals
             self::BALANCED => 1.00,   // No change
-            self::ATTACKING => 1.25,  // +25% your goals
+            self::ATTACKING => 1.15,  // +15% your goals
         };
     }
 
@@ -47,9 +47,9 @@ enum Mentality: string
     public function opponentGoalsModifier(): float
     {
         return match ($this) {
-            self::DEFENSIVE => 0.60,  // -40% opponent's goals (you defend well)
+            self::DEFENSIVE => 0.70,  // -30% opponent's goals (you defend well)
             self::BALANCED => 1.00,   // No change
-            self::ATTACKING => 1.15,  // +15% opponent's goals (you leave gaps)
+            self::ATTACKING => 1.10,  // +10% opponent's goals (you leave gaps)
         };
     }
 }

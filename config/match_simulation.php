@@ -80,4 +80,31 @@ return [
     'direct_red_chance' => 1,           // % chance of direct red card per team
     'injury_chance' => 4.0,             // % chance of injury per team per match
 
+    /*
+    |--------------------------------------------------------------------------
+    | Player Energy / Stamina
+    |--------------------------------------------------------------------------
+    |
+    | Players lose energy over the match based on physical ability and age.
+    | Tired players contribute less to team strength, making substitutions
+    | tactically meaningful.
+    |
+    | drain = base_drain - (physicalAbility - 50) * physical_ability_factor
+    |         + max(0, age - age_threshold) * age_penalty_per_year
+    | Goalkeepers drain at gk_drain_multiplier rate.
+    |
+    | Energy modifies player strength via:
+    |   modifier = min_effectiveness + (energy/100) * (1 - min_effectiveness)
+    |   Range: min_effectiveness (0.6) to 1.0
+    |
+    */
+    'energy' => [
+        'base_drain_per_minute' => 0.75,
+        'physical_ability_factor' => 0.005,
+        'age_threshold' => 28,
+        'age_penalty_per_year' => 0.015,
+        'gk_drain_multiplier' => 0.5,
+        'min_effectiveness' => 0.6,
+    ],
+
 ];
