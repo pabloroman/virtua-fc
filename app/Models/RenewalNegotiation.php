@@ -7,6 +7,45 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property string $id
+ * @property string $game_id
+ * @property string $game_player_id
+ * @property string $status
+ * @property int $round
+ * @property int|null $player_demand
+ * @property int|null $preferred_years
+ * @property int|null $user_offer
+ * @property int|null $offered_years
+ * @property int|null $counter_offer
+ * @property int|null $contract_years
+ * @property float|null $disposition
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Game $game
+ * @property-read \App\Models\GamePlayer $gamePlayer
+ * @property-read string $formatted_counter_offer
+ * @property-read string $formatted_player_demand
+ * @property-read string $formatted_user_offer
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RenewalNegotiation newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RenewalNegotiation newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RenewalNegotiation query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RenewalNegotiation whereContractYears($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RenewalNegotiation whereCounterOffer($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RenewalNegotiation whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RenewalNegotiation whereDisposition($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RenewalNegotiation whereGameId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RenewalNegotiation whereGamePlayerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RenewalNegotiation whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RenewalNegotiation whereOfferedYears($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RenewalNegotiation wherePlayerDemand($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RenewalNegotiation wherePreferredYears($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RenewalNegotiation whereRound($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RenewalNegotiation whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RenewalNegotiation whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|RenewalNegotiation whereUserOffer($value)
+ * @mixin \Eloquent
+ */
 class RenewalNegotiation extends Model
 {
     use HasUuids;

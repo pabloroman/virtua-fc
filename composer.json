@@ -16,7 +16,9 @@
         "sentry/sentry-laravel": "^4.20"
     },
     "require-dev": {
+        "barryvdh/laravel-ide-helper": "^3.6",
         "fakerphp/faker": "^1.23",
+        "larastan/larastan": "^3.0",
         "laravel/breeze": "^2.2",
         "laravel/pail": "^1.1",
         "laravel/pint": "^1.13",

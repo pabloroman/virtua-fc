@@ -6,6 +6,36 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property string $id
+ * @property string $game_id
+ * @property string $game_match_id
+ * @property string $game_player_id
+ * @property string $team_id
+ * @property int $minute
+ * @property string $event_type
+ * @property array<array-key, mixed>|null $metadata
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property-read \App\Models\Game $game
+ * @property-read \App\Models\GameMatch $gameMatch
+ * @property-read \App\Models\GamePlayer $gamePlayer
+ * @property-read string $display_string
+ * @property-read string $player_name
+ * @property-read \App\Models\Team $team
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MatchEvent newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MatchEvent newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MatchEvent query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MatchEvent whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MatchEvent whereEventType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MatchEvent whereGameId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MatchEvent whereGameMatchId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MatchEvent whereGamePlayerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MatchEvent whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MatchEvent whereMetadata($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MatchEvent whereMinute($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MatchEvent whereTeamId($value)
+ * @mixin \Eloquent
+ */
 class MatchEvent extends Model
 {
     use HasUuids;

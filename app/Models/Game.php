@@ -11,6 +11,83 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Builder;
 
+/**
+ * @property string $id
+ * @property int $user_id
+ * @property string $player_name
+ * @property string $team_id
+ * @property string $season
+ * @property \Illuminate\Support\Carbon|null $current_date
+ * @property int $current_matchday
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string $default_formation
+ * @property array<array-key, mixed>|null $default_lineup
+ * @property string $default_mentality
+ * @property bool $needs_onboarding
+ * @property string|null $season_goal
+ * @property string $competition_id
+ * @property string $game_mode
+ * @property \Illuminate\Support\Carbon|null $setup_completed_at
+ * @property string $country
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Loan> $activeLoans
+ * @property-read int|null $active_loans_count
+ * @property-read \App\Models\ScoutReport|null $activeScoutReport
+ * @property-read \App\Models\Competition $competition
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CompetitionEntry> $competitionEntries
+ * @property-read int|null $competition_entries_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\CupTie> $cupTies
+ * @property-read int|null $cup_ties_count
+ * @property-read \App\Models\GameFinances|null $currentFinances
+ * @property-read \App\Models\GameInvestment|null $currentInvestment
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\GameFinances> $finances
+ * @property-read int|null $finances_count
+ * @property-read string $formatted_season
+ * @property-read \App\Models\GameMatch|null $next_match
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\GameInvestment> $investments
+ * @property-read int|null $investments_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Loan> $loans
+ * @property-read int|null $loans_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\GameMatch> $matches
+ * @property-read int|null $matches_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\GameNotification> $notifications
+ * @property-read int|null $notifications_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\GamePlayer> $players
+ * @property-read int|null $players_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ScoutReport> $scoutReports
+ * @property-read int|null $scout_reports_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\GamePlayer> $squad
+ * @property-read int|null $squad_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\GameStanding> $standings
+ * @property-read int|null $standings_count
+ * @property-read \App\Models\Team $team
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\GameNotification> $unreadNotifications
+ * @property-read int|null $unread_notifications_count
+ * @property-read \App\Models\User $user
+ * @method static \Database\Factories\GameFactory factory($count = null, $state = [])
+ * @method static Builder<static>|Game newModelQuery()
+ * @method static Builder<static>|Game newQuery()
+ * @method static Builder<static>|Game query()
+ * @method static Builder<static>|Game whereCompetitionId($value)
+ * @method static Builder<static>|Game whereCountry($value)
+ * @method static Builder<static>|Game whereCreatedAt($value)
+ * @method static Builder<static>|Game whereCurrentDate($value)
+ * @method static Builder<static>|Game whereCurrentMatchday($value)
+ * @method static Builder<static>|Game whereDefaultFormation($value)
+ * @method static Builder<static>|Game whereDefaultLineup($value)
+ * @method static Builder<static>|Game whereDefaultMentality($value)
+ * @method static Builder<static>|Game whereGameMode($value)
+ * @method static Builder<static>|Game whereId($value)
+ * @method static Builder<static>|Game whereNeedsOnboarding($value)
+ * @method static Builder<static>|Game wherePlayerName($value)
+ * @method static Builder<static>|Game whereSeason($value)
+ * @method static Builder<static>|Game whereSeasonGoal($value)
+ * @method static Builder<static>|Game whereSetupCompletedAt($value)
+ * @method static Builder<static>|Game whereTeamId($value)
+ * @method static Builder<static>|Game whereUpdatedAt($value)
+ * @method static Builder<static>|Game whereUserId($value)
+ * @mixin \Eloquent
+ */
 class Game extends Model
 {
     use HasFactory, HasUuids;

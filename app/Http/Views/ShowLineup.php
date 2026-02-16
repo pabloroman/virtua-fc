@@ -73,8 +73,6 @@ class ShowLineup
             $currentLineup = $autoLineup;
         }
 
-        $currentLineup = $currentLineup ?? [];
-
         // Prepare player data for JavaScript (flat array with all needed info)
         // Suspensions are eager-loaded via getAllPlayers, so no extra queries needed
         $playersData = $allPlayers->map(function ($p) use ($matchDate, $competitionId) {

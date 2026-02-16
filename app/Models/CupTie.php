@@ -7,6 +7,42 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property string $id
+ * @property string $game_id
+ * @property string $competition_id
+ * @property int $round_number
+ * @property string $home_team_id
+ * @property string $away_team_id
+ * @property string|null $first_leg_match_id
+ * @property string|null $second_leg_match_id
+ * @property string|null $winner_id
+ * @property bool $completed
+ * @property array<array-key, mixed>|null $resolution
+ * @property-read \App\Models\Team $awayTeam
+ * @property-read \App\Models\Competition $competition
+ * @property-read \App\Models\GameMatch|null $firstLegMatch
+ * @property-read \App\Models\Game $game
+ * @property-read \App\Models\Team $homeTeam
+ * @property-read \App\Models\GameMatch|null $secondLegMatch
+ * @property-read \App\Models\Team|null $winner
+ * @method static \Database\Factories\CupTieFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CupTie newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CupTie newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CupTie query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CupTie whereAwayTeamId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CupTie whereCompetitionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CupTie whereCompleted($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CupTie whereFirstLegMatchId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CupTie whereGameId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CupTie whereHomeTeamId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CupTie whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CupTie whereResolution($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CupTie whereRoundNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CupTie whereSecondLegMatchId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CupTie whereWinnerId($value)
+ * @mixin \Eloquent
+ */
 class CupTie extends Model
 {
     use HasFactory, HasUuids;

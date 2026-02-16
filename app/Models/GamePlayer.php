@@ -14,6 +14,115 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+/**
+ * @property string $id
+ * @property string $game_id
+ * @property string $player_id
+ * @property string $team_id
+ * @property string $position
+ * @property string|null $market_value
+ * @property int $market_value_cents
+ * @property \Illuminate\Support\Carbon|null $contract_until
+ * @property int $fitness
+ * @property int $morale
+ * @property \Illuminate\Support\Carbon|null $injury_until
+ * @property string|null $injury_type
+ * @property int|null $suspended_until_matchday
+ * @property int $appearances
+ * @property int $goals
+ * @property int $own_goals
+ * @property int $assists
+ * @property int $yellow_cards
+ * @property int $red_cards
+ * @property int|null $game_technical_ability
+ * @property int|null $game_physical_ability
+ * @property int|null $potential
+ * @property int|null $potential_low
+ * @property int|null $potential_high
+ * @property int $season_appearances
+ * @property int $goals_conceded
+ * @property int $clean_sheets
+ * @property int $annual_wage
+ * @property string|null $transfer_status
+ * @property \Illuminate\Support\Carbon|null $transfer_listed_at
+ * @property int|null $pending_annual_wage
+ * @property int $durability
+ * @property string|null $retiring_at_season
+ * @property int|null $number
+ * @property-read \App\Models\Loan|null $activeLoan
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TransferOffer> $activeOffers
+ * @property-read int|null $active_offers_count
+ * @property-read \App\Models\RenewalNegotiation|null $activeRenewalNegotiation
+ * @property-read \App\Models\Game $game
+ * @property-read int $age
+ * @property-read int $annual_wage_euros
+ * @property-read int|null $contract_expiry_year
+ * @property-read int $current_physical_ability
+ * @property-read int $current_technical_ability
+ * @property-read string $development_status
+ * @property-read string $formatted_market_value
+ * @property-read string|null $formatted_pending_wage
+ * @property-read string $formatted_wage
+ * @property-read string $name
+ * @property-read array|null $nationality
+ * @property-read \App\Models\array{name: $nationality_flag
+ * @property-read int $overall_score
+ * @property-read int $physical_ability
+ * @property-read string $position_abbreviation
+ * @property-read \App\Models\array{abbreviation: $position_display
+ * @property-read string $position_group
+ * @property-read string $position_name
+ * @property-read string $potential_range
+ * @property-read int $technical_ability
+ * @property-read \App\Models\RenewalNegotiation|null $latestRenewalNegotiation
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MatchEvent> $matchEvents
+ * @property-read int|null $match_events_count
+ * @property-read \App\Models\Player $player
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\PlayerSuspension> $suspensions
+ * @property-read int|null $suspensions_count
+ * @property-read \App\Models\Team $team
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TransferOffer> $transferOffers
+ * @property-read int|null $transfer_offers_count
+ * @method static \Database\Factories\GamePlayerFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereAnnualWage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereAppearances($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereAssists($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereCleanSheets($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereContractUntil($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereDurability($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereFitness($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereGameId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereGamePhysicalAbility($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereGameTechnicalAbility($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereGoals($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereGoalsConceded($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereInjuryType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereInjuryUntil($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereMarketValue($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereMarketValueCents($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereMorale($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereNumber($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereOwnGoals($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer wherePendingAnnualWage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer wherePlayerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer wherePosition($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer wherePotential($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer wherePotentialHigh($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer wherePotentialLow($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereRedCards($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereRetiringAtSeason($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereSeasonAppearances($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereSuspendedUntilMatchday($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereTeamId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereTransferListedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereTransferStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GamePlayer whereYellowCards($value)
+ * @mixin \Eloquent
+ */
 class GamePlayer extends Model
 
 {
