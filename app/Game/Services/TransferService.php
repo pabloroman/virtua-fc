@@ -51,6 +51,12 @@ class TransferService
     private const STAR_PLAYER_COUNT = 5;
 
     /**
+     * Maximum transfer fee as a fraction of the buying team's squad value.
+     * Prevents small clubs from making unrealistically large bids.
+     */
+    private const MAX_FEE_TO_SQUAD_VALUE_RATIO = 0.30;
+
+    /**
      * Chance of pre-contract offer per expiring player per matchday.
      */
     private const PRE_CONTRACT_OFFER_CHANCE = 0.10; // 10%
@@ -703,9 +709,10 @@ class TransferService
 
         $squadValues = $this->getSquadValues($game, $leagueTeamIds);
 
-        // Filter to teams that could reasonably afford the player
+        // Filter to teams whose squad value can support the transfer fee
+        // A team's max bid is capped at 30% of their total squad value
         $eligibleTeamIds = $squadValues
-            ->filter(fn ($totalValue) => $totalValue >= $playerValue * 0.2)
+            ->filter(fn ($totalValue) => $totalValue * self::MAX_FEE_TO_SQUAD_VALUE_RATIO >= $playerValue)
             ->keys()
             ->toArray();
 
