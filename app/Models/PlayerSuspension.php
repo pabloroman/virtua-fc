@@ -6,6 +6,26 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property string $id
+ * @property string $game_player_id
+ * @property string $competition_id
+ * @property int $matches_remaining
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Competition|null $competition
+ * @property-read \App\Models\GamePlayer $gamePlayer
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PlayerSuspension newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PlayerSuspension newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PlayerSuspension query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PlayerSuspension whereCompetitionId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PlayerSuspension whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PlayerSuspension whereGamePlayerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PlayerSuspension whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PlayerSuspension whereMatchesRemaining($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PlayerSuspension whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class PlayerSuspension extends Model
 {
     use HasUuids;

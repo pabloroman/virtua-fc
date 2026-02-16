@@ -6,6 +6,19 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property string $id
+ * @property string $team_id
+ * @property string $reputation_level
+ * @property-read \App\Models\Team $team
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ClubProfile newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ClubProfile newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ClubProfile query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ClubProfile whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ClubProfile whereReputationLevel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ClubProfile whereTeamId($value)
+ * @mixin \Eloquent
+ */
 class ClubProfile extends Model
 {
     use HasUuids;

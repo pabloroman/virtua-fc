@@ -6,6 +6,30 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property string $id
+ * @property string $game_id
+ * @property string $status
+ * @property array<array-key, mixed> $filters
+ * @property int $weeks_total
+ * @property int $weeks_remaining
+ * @property array<array-key, mixed>|null $player_ids
+ * @property \Illuminate\Support\Carbon $game_date
+ * @property-read \App\Models\Game $game
+ * @property-read mixed $players
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScoutReport newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScoutReport newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScoutReport query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScoutReport whereFilters($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScoutReport whereGameDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScoutReport whereGameId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScoutReport whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScoutReport wherePlayerIds($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScoutReport whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScoutReport whereWeeksRemaining($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ScoutReport whereWeeksTotal($value)
+ * @mixin \Eloquent
+ */
 class ScoutReport extends Model
 {
     use HasUuids;

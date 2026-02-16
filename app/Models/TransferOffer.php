@@ -7,6 +7,51 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property string $id
+ * @property string $game_id
+ * @property string $game_player_id
+ * @property string $offering_team_id
+ * @property string $offer_type
+ * @property int $transfer_fee
+ * @property string $status
+ * @property \Illuminate\Support\Carbon $expires_at
+ * @property \Illuminate\Support\Carbon $game_date
+ * @property \Illuminate\Support\Carbon|null $resolved_at
+ * @property string $direction
+ * @property string|null $selling_team_id
+ * @property int|null $asking_price
+ * @property int|null $offered_wage
+ * @property-read \App\Models\Game $game
+ * @property-read \App\Models\GamePlayer $gamePlayer
+ * @property-read int $days_until_expiry
+ * @property-read string $formatted_asking_price
+ * @property-read string $formatted_offered_wage
+ * @property-read string $formatted_transfer_fee
+ * @property-read string|null $selling_team_name
+ * @property-read \App\Models\Team $offeringTeam
+ * @property-read \App\Models\Team|null $sellingTeam
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer agreed()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer pending()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer whereAskingPrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer whereDirection($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer whereExpiresAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer whereGameDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer whereGameId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer whereGamePlayerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer whereOfferType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer whereOfferedWage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer whereOfferingTeamId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer whereResolvedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer whereSellingTeamId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TransferOffer whereTransferFee($value)
+ * @mixin \Eloquent
+ */
 class TransferOffer extends Model
 {
     use HasUuids;

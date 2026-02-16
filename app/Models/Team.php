@@ -8,6 +8,33 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+/**
+ * @property string $id
+ * @property int|null $transfermarkt_id
+ * @property string $name
+ * @property string $country
+ * @property string|null $image
+ * @property string|null $stadium_name
+ * @property int $stadium_seats
+ * @property-read \App\Models\ClubProfile|null $clubProfile
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Competition> $competitions
+ * @property-read int|null $competitions_count
+ * @property-read int $goal_difference
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\GamePlayer> $players
+ * @property-read int|null $players_count
+ * @method static \Database\Factories\TeamFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team whereCountry($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team whereImage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team whereStadiumName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team whereStadiumSeats($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team whereTransfermarktId($value)
+ * @mixin \Eloquent
+ */
 class Team extends Model
 {
     use HasFactory, HasUuids;

@@ -6,6 +6,37 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property string $id
+ * @property string $game_id
+ * @property string $game_player_id
+ * @property string $parent_team_id
+ * @property string $loan_team_id
+ * @property \Illuminate\Support\Carbon $started_at
+ * @property \Illuminate\Support\Carbon $return_at
+ * @property string $status
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Game $game
+ * @property-read \App\Models\GamePlayer $gamePlayer
+ * @property-read \App\Models\Team $loanTeam
+ * @property-read \App\Models\Team $parentTeam
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Loan active()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Loan newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Loan newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Loan query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Loan whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Loan whereGameId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Loan whereGamePlayerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Loan whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Loan whereLoanTeamId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Loan whereParentTeamId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Loan whereReturnAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Loan whereStartedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Loan whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Loan whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class Loan extends Model
 {
     use HasUuids;

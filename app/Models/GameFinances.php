@@ -7,6 +7,92 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property string $id
+ * @property string $game_id
+ * @property int $season
+ * @property int|null $projected_position
+ * @property int $projected_tv_revenue
+ * @property int $projected_solidarity_funds_revenue
+ * @property int $projected_matchday_revenue
+ * @property int $projected_commercial_revenue
+ * @property int $projected_total_revenue
+ * @property int $projected_wages
+ * @property int $projected_surplus
+ * @property int $actual_tv_revenue
+ * @property int $actual_cup_bonus_revenue
+ * @property int $actual_matchday_revenue
+ * @property int $actual_commercial_revenue
+ * @property int $actual_transfer_income
+ * @property int $actual_total_revenue
+ * @property int $actual_wages
+ * @property int $actual_surplus
+ * @property int $variance
+ * @property int $carried_debt
+ * @property int $projected_operating_expenses
+ * @property int $projected_taxes
+ * @property int $actual_operating_expenses
+ * @property int $actual_taxes
+ * @property int $projected_subsidy_revenue
+ * @property int $actual_subsidy_revenue
+ * @property int $actual_solidarity_funds_revenue
+ * @property-read \App\Models\Game $game
+ * @property-read int $available_surplus
+ * @property-read string $formatted_actual_commercial_revenue
+ * @property-read string $formatted_actual_cup_bonus_revenue
+ * @property-read string $formatted_actual_matchday_revenue
+ * @property-read string $formatted_actual_operating_expenses
+ * @property-read string $formatted_actual_solidarity_funds_revenue
+ * @property-read string $formatted_actual_surplus
+ * @property-read string $formatted_actual_total_revenue
+ * @property-read string $formatted_actual_transfer_income
+ * @property-read string $formatted_actual_tv_revenue
+ * @property-read string $formatted_actual_wages
+ * @property-read string $formatted_available_surplus
+ * @property-read string $formatted_carried_debt
+ * @property-read string $formatted_projected_commercial_revenue
+ * @property-read string $formatted_projected_matchday_revenue
+ * @property-read string $formatted_projected_operating_expenses
+ * @property-read string $formatted_projected_solidarity_funds_revenue
+ * @property-read string $formatted_projected_subsidy_revenue
+ * @property-read string $formatted_projected_surplus
+ * @property-read string $formatted_projected_total_revenue
+ * @property-read string $formatted_projected_tv_revenue
+ * @property-read string $formatted_projected_wages
+ * @property-read string $formatted_variance
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameFinances newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameFinances newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameFinances query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameFinances whereActualCommercialRevenue($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameFinances whereActualCupBonusRevenue($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameFinances whereActualMatchdayRevenue($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameFinances whereActualOperatingExpenses($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameFinances whereActualSolidarityFundsRevenue($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameFinances whereActualSubsidyRevenue($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameFinances whereActualSurplus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameFinances whereActualTaxes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameFinances whereActualTotalRevenue($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameFinances whereActualTransferIncome($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameFinances whereActualTvRevenue($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameFinances whereActualWages($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameFinances whereCarriedDebt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameFinances whereGameId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameFinances whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameFinances whereProjectedCommercialRevenue($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameFinances whereProjectedMatchdayRevenue($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameFinances whereProjectedOperatingExpenses($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameFinances whereProjectedPosition($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameFinances whereProjectedSolidarityFundsRevenue($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameFinances whereProjectedSubsidyRevenue($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameFinances whereProjectedSurplus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameFinances whereProjectedTaxes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameFinances whereProjectedTotalRevenue($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameFinances whereProjectedTvRevenue($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameFinances whereProjectedWages($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameFinances whereSeason($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameFinances whereVariance($value)
+ * @mixin \Eloquent
+ */
 class GameFinances extends Model
 {
     use HasUuids;

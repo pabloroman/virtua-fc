@@ -9,6 +9,33 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+/**
+ * @property string $id
+ * @property string $name
+ * @property string $country
+ * @property int $tier
+ * @property string $type
+ * @property string $season
+ * @property string $handler_type
+ * @property string $role
+ * @property string $scope
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Team> $teams
+ * @property-read int|null $teams_count
+ * @method static \Database\Factories\CompetitionFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Competition newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Competition newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Competition query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Competition whereCountry($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Competition whereHandlerType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Competition whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Competition whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Competition whereRole($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Competition whereScope($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Competition whereSeason($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Competition whereTier($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Competition whereType($value)
+ * @mixin \Eloquent
+ */
 class Competition extends Model
 {
     use HasFactory;

@@ -7,6 +7,37 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property string $id
+ * @property string $game_id
+ * @property string $type
+ * @property string $title
+ * @property string|null $message
+ * @property string|null $icon
+ * @property string $priority
+ * @property array<array-key, mixed>|null $metadata
+ * @property \Illuminate\Support\Carbon|null $read_at
+ * @property \Illuminate\Support\Carbon|null $game_date
+ * @property-read \App\Models\Game $game
+ * @method static Builder<static>|GameNotification byPriority(string $priority)
+ * @method static Builder<static>|GameNotification newModelQuery()
+ * @method static Builder<static>|GameNotification newQuery()
+ * @method static Builder<static>|GameNotification ofType(string $type)
+ * @method static Builder<static>|GameNotification query()
+ * @method static Builder<static>|GameNotification read()
+ * @method static Builder<static>|GameNotification unread()
+ * @method static Builder<static>|GameNotification whereGameDate($value)
+ * @method static Builder<static>|GameNotification whereGameId($value)
+ * @method static Builder<static>|GameNotification whereIcon($value)
+ * @method static Builder<static>|GameNotification whereId($value)
+ * @method static Builder<static>|GameNotification whereMessage($value)
+ * @method static Builder<static>|GameNotification whereMetadata($value)
+ * @method static Builder<static>|GameNotification wherePriority($value)
+ * @method static Builder<static>|GameNotification whereReadAt($value)
+ * @method static Builder<static>|GameNotification whereTitle($value)
+ * @method static Builder<static>|GameNotification whereType($value)
+ * @mixin \Eloquent
+ */
 class GameNotification extends Model
 {
     use HasUuids;

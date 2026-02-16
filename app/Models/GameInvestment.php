@@ -7,6 +7,48 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property string $id
+ * @property string $game_id
+ * @property int $season
+ * @property int $available_surplus
+ * @property int $youth_academy_amount
+ * @property int $youth_academy_tier
+ * @property int $medical_amount
+ * @property int $medical_tier
+ * @property int $scouting_amount
+ * @property int $scouting_tier
+ * @property int $facilities_amount
+ * @property int $facilities_tier
+ * @property int $transfer_budget
+ * @property-read \App\Models\Game $game
+ * @property-read float $facilities_multiplier
+ * @property-read string $formatted_available_surplus
+ * @property-read string $formatted_facilities_amount
+ * @property-read string $formatted_medical_amount
+ * @property-read string $formatted_scouting_amount
+ * @property-read string $formatted_total_infrastructure
+ * @property-read string $formatted_transfer_budget
+ * @property-read string $formatted_youth_academy_amount
+ * @property-read int $total_infrastructure
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameInvestment newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameInvestment newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameInvestment query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameInvestment whereAvailableSurplus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameInvestment whereFacilitiesAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameInvestment whereFacilitiesTier($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameInvestment whereGameId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameInvestment whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameInvestment whereMedicalAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameInvestment whereMedicalTier($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameInvestment whereScoutingAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameInvestment whereScoutingTier($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameInvestment whereSeason($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameInvestment whereTransferBudget($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameInvestment whereYouthAcademyAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GameInvestment whereYouthAcademyTier($value)
+ * @mixin \Eloquent
+ */
 class GameInvestment extends Model
 {
     use HasUuids;

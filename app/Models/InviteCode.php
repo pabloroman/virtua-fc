@@ -4,6 +4,32 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int $id
+ * @property string $code
+ * @property string|null $email
+ * @property int $max_uses
+ * @property int $times_used
+ * @property bool $invite_sent
+ * @property \Illuminate\Support\Carbon|null $invite_sent_at
+ * @property \Illuminate\Support\Carbon|null $expires_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InviteCode newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InviteCode newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InviteCode query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InviteCode whereCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InviteCode whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InviteCode whereEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InviteCode whereExpiresAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InviteCode whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InviteCode whereInviteSent($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InviteCode whereInviteSentAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InviteCode whereMaxUses($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InviteCode whereTimesUsed($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|InviteCode whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class InviteCode extends Model
 {
     protected $fillable = [

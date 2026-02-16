@@ -7,6 +7,33 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property string $id
+ * @property string $game_id
+ * @property string $type
+ * @property string $category
+ * @property int $amount
+ * @property string $description
+ * @property string|null $related_player_id
+ * @property \Illuminate\Support\Carbon $transaction_date
+ * @property-read \App\Models\Game $game
+ * @property-read string $category_label
+ * @property-read string $formatted_amount
+ * @property-read string $signed_amount
+ * @property-read \App\Models\GamePlayer|null $relatedPlayer
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FinancialTransaction newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FinancialTransaction newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FinancialTransaction query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FinancialTransaction whereAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FinancialTransaction whereCategory($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FinancialTransaction whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FinancialTransaction whereGameId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FinancialTransaction whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FinancialTransaction whereRelatedPlayerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FinancialTransaction whereTransactionDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FinancialTransaction whereType($value)
+ * @mixin \Eloquent
+ */
 class FinancialTransaction extends Model
 {
     use HasUuids;

@@ -8,6 +8,46 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property string $id
+ * @property string $game_id
+ * @property string $team_id
+ * @property string $name
+ * @property array<array-key, mixed>|null $nationality
+ * @property \Illuminate\Support\Carbon $date_of_birth
+ * @property string $position
+ * @property int $technical_ability
+ * @property int $physical_ability
+ * @property int $potential
+ * @property int $potential_low
+ * @property int $potential_high
+ * @property \Illuminate\Support\Carbon $appeared_at
+ * @property-read \App\Models\Game $game
+ * @property-read int $age
+ * @property-read array|null $nationality_flag
+ * @property-read int $overall
+ * @property-read array $position_display
+ * @property-read string $position_group
+ * @property-read string $potential_range
+ * @property-read \App\Models\Team|null $team
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AcademyPlayer newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AcademyPlayer newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AcademyPlayer query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AcademyPlayer whereAppearedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AcademyPlayer whereDateOfBirth($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AcademyPlayer whereGameId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AcademyPlayer whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AcademyPlayer whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AcademyPlayer whereNationality($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AcademyPlayer wherePhysicalAbility($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AcademyPlayer wherePosition($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AcademyPlayer wherePotential($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AcademyPlayer wherePotentialHigh($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AcademyPlayer wherePotentialLow($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AcademyPlayer whereTeamId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AcademyPlayer whereTechnicalAbility($value)
+ * @mixin \Eloquent
+ */
 class AcademyPlayer extends Model
 {
     use HasUuids;
