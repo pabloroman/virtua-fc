@@ -78,6 +78,7 @@ return [
     'assist_chance' => 60.0,            // % chance a goal has an assist
     'yellow_cards_per_team' => 1.4,     // Average yellow cards per team per match
     'direct_red_chance' => 0.5,         // % chance of direct red card per team
-    'injury_chance' => 4.0,             // % chance of injury per team per match
+    'injury_chance' => 2.0,             // % chance of injury per player per match (halved; other half comes from training)
+    'training_injury_chance' => 1.5,    // % chance of training injury per non-playing player per matchday
 
 ];

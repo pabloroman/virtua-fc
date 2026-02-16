@@ -7,6 +7,7 @@ use App\Game\Enums\Formation;
 use App\Game\Enums\Mentality;
 use App\Game\Services\ContractService;
 use App\Game\Services\EligibilityService;
+use App\Game\Services\InjuryService;
 use App\Game\Services\LineupService;
 use App\Game\Services\LoanService;
 use App\Game\Services\MatchdayService;
@@ -26,6 +27,7 @@ use App\Models\GamePlayer;
 use App\Models\GameStanding;
 use App\Models\PlayerSuspension;
 use App\Models\TransferOffer;
+use Carbon\Carbon;
 
 class AdvanceMatchday
 {
@@ -42,6 +44,7 @@ class AdvanceMatchday
         private readonly LoanService $loanService,
         private readonly YouthAcademyService $youthAcademyService,
         private readonly EligibilityService $eligibilityService,
+        private readonly InjuryService $injuryService,
     ) {}
 
     public function __invoke(string $gameId)
@@ -249,6 +252,9 @@ class AdvanceMatchday
             $this->processCareerModeActions($game, $matches, $allPlayers);
         }
 
+        // Roll for training injuries (non-playing squad members)
+        $this->processTrainingInjuries($game, $matches, $allPlayers);
+
         // Check for recovered players
         $this->checkRecoveredPlayers($game, $allPlayers);
 
@@ -416,6 +422,60 @@ class AdvanceMatchday
                 )) {
                     $this->notificationService->notifyLowFitness($game, $player);
                 }
+            }
+        }
+    }
+
+    /**
+     * Roll for training injuries among non-playing squad members.
+     * Each team gets at most one training injury per matchday.
+     */
+    private function processTrainingInjuries(Game $game, $matches, $allPlayers): void
+    {
+        // Collect all lineup player IDs from this batch
+        $allLineupIds = [];
+        foreach ($matches as $match) {
+            $allLineupIds = array_merge($allLineupIds, $match->home_lineup ?? [], $match->away_lineup ?? []);
+        }
+        $allLineupIds = array_unique($allLineupIds);
+
+        foreach ($allPlayers as $teamId => $teamPlayers) {
+            // Filter to non-playing, non-injured squad members
+            $eligible = $teamPlayers->filter(function ($player) use ($allLineupIds, $game) {
+                if (in_array($player->id, $allLineupIds)) {
+                    return false;
+                }
+                if ($player->injury_until && $player->injury_until->gt($game->current_date)) {
+                    return false;
+                }
+
+                return true;
+            });
+
+            if ($eligible->isEmpty()) {
+                continue;
+            }
+
+            $injury = $this->injuryService->rollTrainingInjuries($eligible, $game);
+
+            if (! $injury) {
+                continue;
+            }
+
+            $this->eligibilityService->applyInjury(
+                $injury['player'],
+                $injury['type'],
+                $injury['weeks'],
+                Carbon::parse($game->current_date),
+            );
+
+            if ($teamId === $game->team_id) {
+                $this->notificationService->notifyInjury(
+                    $game,
+                    $injury['player'],
+                    $injury['type'],
+                    $injury['weeks'],
+                );
             }
         }
     }
