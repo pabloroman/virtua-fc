@@ -161,6 +161,17 @@ return [
     'sub_error_player_sent_off' => 'No se puede sustituir a un jugador expulsado',
     'sub_event' => 'Sustitución',
 
+    // Tactical center
+    'tactical_center' => 'Centro Táctico',
+    'tactical_paused' => 'Pausado',
+    'tactical_tab_substitutions' => 'Sustituciones',
+    'tactical_tab_tactics' => 'Táctica',
+    'tactical_formation' => 'Formación',
+    'tactical_mentality' => 'Mentalidad',
+    'tactical_resume' => 'Cerrar y reanudar',
+    'tactical_subs_made' => 'Sustituciones realizadas',
+    'tactical_coming_soon' => 'Los cambios tácticos en tiempo real estarán disponibles próximamente.',
+
     // Results page
     'results' => 'Resultados',
     'matchday_results' => 'Resultados :name',

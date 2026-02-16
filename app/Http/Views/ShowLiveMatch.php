@@ -127,6 +127,14 @@ class ShowLiveMatch
         // Existing substitutions already made on this match (for page reload scenario)
         $existingSubstitutions = $playerMatch->substitutions ?? [];
 
+        // User's current tactical setup
+        $userFormation = $isUserHome
+            ? ($playerMatch->home_formation ?? '4-4-2')
+            : ($playerMatch->away_formation ?? '4-4-2');
+        $userMentality = $isUserHome
+            ? ($playerMatch->home_mentality ?? 'balanced')
+            : ($playerMatch->away_mentality ?? 'balanced');
+
         return view('live-match', [
             'game' => $game,
             'match' => $playerMatch,
@@ -137,6 +145,8 @@ class ShowLiveMatch
             'benchPlayers' => $benchPlayers,
             'existingSubstitutions' => $existingSubstitutions,
             'substituteUrl' => route('game.match.substitute', ['gameId' => $game->id, 'matchId' => $playerMatch->id]),
+            'userFormation' => $userFormation,
+            'userMentality' => $userMentality,
         ]);
     }
 

@@ -18,6 +18,10 @@ export default function liveMatch(config) {
         csrfToken: config.csrfToken || '',
         maxSubstitutions: config.maxSubstitutions || 5,
 
+        // Tactical display config (read-only for now)
+        activeFormation: config.activeFormation || '4-4-2',
+        activeMentality: config.activeMentality || 'balanced',
+
         // Clock state
         currentMinute: 0,
         speed: 1,
@@ -33,8 +37,11 @@ export default function liveMatch(config) {
         goalFlash: false,
         latestEvent: null,
 
+        // Tactical panel state
+        tacticalPanelOpen: false,
+        tacticalTab: 'substitutions',
+
         // Substitution state
-        subPanelOpen: false,
         selectedPlayerOut: null,
         selectedPlayerIn: null,
         subProcessing: false,
@@ -81,7 +88,7 @@ export default function liveMatch(config) {
                 return;
             }
 
-            if (this.isPaused || this.subPanelOpen) {
+            if (this.isPaused || this.tacticalPanelOpen) {
                 this._lastTick = now;
                 this._animFrame = requestAnimationFrame(this.tick.bind(this));
                 return;
@@ -138,9 +145,9 @@ export default function liveMatch(config) {
                 this.pauseForDrama(1500);
             }
 
-            // Auto-open substitution panel when user's player gets injured
+            // Auto-open tactical panel on substitutions tab when user's player gets injured
             if (event.type === 'injury' && event.teamId === this.userTeamId && this.substitutionsMade.length < this.maxSubstitutions) {
-                this.openSubPanel();
+                this.openTacticalPanel('substitutions');
                 // Pre-select the injured player as "player out"
                 const injured = this.availableLineupPlayers.find(p => p.id === event.gamePlayerId);
                 if (injured) {
@@ -232,23 +239,37 @@ export default function liveMatch(config) {
             this.enterFullTime();
         },
 
-        // =====================
+        // =============================
+        // Tactical panel methods
+        // =============================
+
+        openTacticalPanel(tab = 'substitutions') {
+            this.tacticalTab = tab;
+            this.tacticalPanelOpen = true;
+            this.selectedPlayerOut = null;
+            this.selectedPlayerIn = null;
+            document.body.classList.add('overflow-y-hidden');
+        },
+
+        closeTacticalPanel() {
+            this.tacticalPanelOpen = false;
+            this.selectedPlayerOut = null;
+            this.selectedPlayerIn = null;
+            document.body.classList.remove('overflow-y-hidden');
+        },
+
+        get mentalityLabel() {
+            const labels = {
+                'defensive': 'Defensiva',
+                'balanced': 'Equilibrada',
+                'attacking': 'Ofensiva',
+            };
+            return labels[this.activeMentality] || this.activeMentality;
+        },
+
+        // =============================
         // Substitution methods
-        // =====================
-
-        openSubPanel() {
-            if (this.substitutionsMade.length >= this.maxSubstitutions) return;
-            this.subPanelOpen = true;
-            this.selectedPlayerOut = null;
-            this.selectedPlayerIn = null;
-            // Pause the match clock while the sub panel is open
-        },
-
-        closeSubPanel() {
-            this.subPanelOpen = false;
-            this.selectedPlayerOut = null;
-            this.selectedPlayerIn = null;
-        },
+        // =============================
 
         get redCardedPlayerIds() {
             return this.revealedEvents
@@ -275,6 +296,10 @@ export default function liveMatch(config) {
             // Bench players minus those already subbed in
             const subbedInIds = this.substitutionsMade.map(s => s.playerInId);
             return this.benchPlayers.filter(p => !subbedInIds.includes(p.id)).sort((a, b) => a.positionSort - b.positionSort);
+        },
+
+        get canSubstitute() {
+            return this.substitutionsMade.length < this.maxSubstitutions;
         },
 
         async confirmSubstitution() {
@@ -364,7 +389,7 @@ export default function liveMatch(config) {
                 this.recalculateScore();
 
                 // Close the panel and resume
-                this.closeSubPanel();
+                this.closeTacticalPanel();
             } catch (err) {
                 console.error('Substitution request failed:', err);
             } finally {
@@ -388,7 +413,10 @@ export default function liveMatch(config) {
             this.awayScore = away;
         },
 
+        // =============================
         // Display helpers
+        // =============================
+
         get displayMinute() {
             const m = Math.floor(this.currentMinute);
             if (this.phase === 'pre_match') return '0';
@@ -402,7 +430,7 @@ export default function liveMatch(config) {
         },
 
         get isRunning() {
-            return (this.phase === 'first_half' || this.phase === 'second_half') && !this.subPanelOpen;
+            return (this.phase === 'first_half' || this.phase === 'second_half') && !this.tacticalPanelOpen;
         },
 
         getEventIcon(type) {
@@ -466,6 +494,7 @@ export default function liveMatch(config) {
                 cancelAnimationFrame(this._animFrame);
             }
             clearTimeout(this.pauseTimer);
+            document.body.classList.remove('overflow-y-hidden');
         },
     };
 }
