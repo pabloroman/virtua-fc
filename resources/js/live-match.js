@@ -17,6 +17,7 @@ export default function liveMatch(config) {
         substituteUrl: config.substituteUrl || '',
         csrfToken: config.csrfToken || '',
         maxSubstitutions: config.maxSubstitutions || 5,
+        maxWindows: config.maxWindows || 3,
 
         // Tactical display config (read-only for now)
         activeFormation: config.activeFormation || '4-4-2',
@@ -44,6 +45,7 @@ export default function liveMatch(config) {
         // Substitution state
         selectedPlayerOut: null,
         selectedPlayerIn: null,
+        pendingSubs: [],        // Queued subs for the current window [{playerOut, playerIn}]
         subProcessing: false,
         substitutionsMade: config.existingSubstitutions
             ? config.existingSubstitutions.map(s => ({
@@ -146,10 +148,10 @@ export default function liveMatch(config) {
             }
 
             // Auto-open tactical panel on substitutions tab when user's player gets injured
-            if (event.type === 'injury' && event.teamId === this.userTeamId && this.substitutionsMade.length < this.maxSubstitutions) {
+            if (event.type === 'injury' && event.teamId === this.userTeamId && this.canSubstitute && this.hasWindowsLeft) {
                 this.openTacticalPanel('substitutions');
                 // Pre-select the injured player as "player out"
-                const injured = this.availableLineupPlayers.find(p => p.id === event.gamePlayerId);
+                const injured = this.availableLineupForPicker.find(p => p.id === event.gamePlayerId);
                 if (injured) {
                     this.selectedPlayerOut = injured;
                 }
@@ -248,6 +250,7 @@ export default function liveMatch(config) {
             this.tacticalPanelOpen = true;
             this.selectedPlayerOut = null;
             this.selectedPlayerIn = null;
+            this.pendingSubs = [];
             document.body.classList.add('overflow-y-hidden');
         },
 
@@ -255,6 +258,7 @@ export default function liveMatch(config) {
             this.tacticalPanelOpen = false;
             this.selectedPlayerOut = null;
             this.selectedPlayerIn = null;
+            this.pendingSubs = [];
             document.body.classList.remove('overflow-y-hidden');
         },
 
@@ -277,33 +281,89 @@ export default function liveMatch(config) {
                 .map(e => e.gamePlayerId);
         },
 
-        get availableLineupPlayers() {
-            // Start with original lineup, apply substitutions
-            const subbedOutIds = this.substitutionsMade.map(s => s.playerOutId);
-            const subbedInIds = this.substitutionsMade.map(s => s.playerInId);
+        get windowsUsed() {
+            // Count unique minutes in substitutionsMade — each unique minute = one window
+            const minutes = new Set(this.substitutionsMade.map(s => s.minute));
+            return minutes.size;
+        },
+
+        get hasWindowsLeft() {
+            return this.windowsUsed < this.maxWindows;
+        },
+
+        get subsRemaining() {
+            return this.maxSubstitutions - this.substitutionsMade.length - this.pendingSubs.length;
+        },
+
+        get canSubstitute() {
+            return this.substitutionsMade.length + this.pendingSubs.length < this.maxSubstitutions;
+        },
+
+        get canAddMoreToPending() {
+            return this.canSubstitute && this.pendingSubs.length < this.subsRemaining;
+        },
+
+        // Lineup players considering both confirmed subs AND pending subs in this window
+        get availableLineupForPicker() {
+            const confirmedOutIds = this.substitutionsMade.map(s => s.playerOutId);
+            const confirmedInIds = this.substitutionsMade.map(s => s.playerInId);
+            const pendingOutIds = this.pendingSubs.map(s => s.playerOut.id);
+            const pendingInIds = this.pendingSubs.map(s => s.playerIn.id);
+            const allOutIds = [...confirmedOutIds, ...pendingOutIds];
+            const allInIds = [...confirmedInIds, ...pendingInIds];
             const redCarded = this.redCardedPlayerIds;
 
-            // Original lineup players still on pitch (not subbed out, not red-carded)
-            const onPitch = this.lineupPlayers.filter(p => !subbedOutIds.includes(p.id) && !redCarded.includes(p.id));
+            // Original lineup players still on pitch
+            const onPitch = this.lineupPlayers.filter(p =>
+                !allOutIds.includes(p.id) && !redCarded.includes(p.id)
+            );
 
-            // Players who came on as subs and are still on pitch (not red-carded)
-            const subsOnPitch = this.benchPlayers.filter(p => subbedInIds.includes(p.id) && !subbedOutIds.includes(p.id) && !redCarded.includes(p.id));
+            // Players who came on (confirmed or pending) and are still on pitch
+            const subsOnPitch = this.benchPlayers.filter(p =>
+                allInIds.includes(p.id) && !allOutIds.includes(p.id) && !redCarded.includes(p.id)
+            );
 
             return [...onPitch, ...subsOnPitch].sort((a, b) => a.positionSort - b.positionSort);
         },
 
+        // Bench players minus those already subbed in (confirmed or pending)
+        get availableBenchForPicker() {
+            const confirmedInIds = this.substitutionsMade.map(s => s.playerInId);
+            const pendingInIds = this.pendingSubs.map(s => s.playerIn.id);
+            const allInIds = [...confirmedInIds, ...pendingInIds];
+            return this.benchPlayers.filter(p => !allInIds.includes(p.id)).sort((a, b) => a.positionSort - b.positionSort);
+        },
+
+        // Keep old getters for the tactical bar display (confirmed subs only)
+        get availableLineupPlayers() {
+            return this.availableLineupForPicker;
+        },
+
         get availableBenchPlayers() {
-            // Bench players minus those already subbed in
-            const subbedInIds = this.substitutionsMade.map(s => s.playerInId);
-            return this.benchPlayers.filter(p => !subbedInIds.includes(p.id)).sort((a, b) => a.positionSort - b.positionSort);
+            return this.availableBenchForPicker;
         },
 
-        get canSubstitute() {
-            return this.substitutionsMade.length < this.maxSubstitutions;
+        addPendingSub() {
+            if (!this.selectedPlayerOut || !this.selectedPlayerIn) return;
+            this.pendingSubs.push({
+                playerOut: { ...this.selectedPlayerOut },
+                playerIn: { ...this.selectedPlayerIn },
+            });
+            this.selectedPlayerOut = null;
+            this.selectedPlayerIn = null;
         },
 
-        async confirmSubstitution() {
-            if (!this.selectedPlayerOut || !this.selectedPlayerIn || this.subProcessing) return;
+        removePendingSub(index) {
+            this.pendingSubs.splice(index, 1);
+        },
+
+        async confirmSubstitutions() {
+            // If there's a selected pair not yet added to pending, add it first
+            if (this.selectedPlayerOut && this.selectedPlayerIn) {
+                this.addPendingSub();
+            }
+
+            if (this.pendingSubs.length === 0 || this.subProcessing) return;
 
             this.subProcessing = true;
 
@@ -318,8 +378,10 @@ export default function liveMatch(config) {
                         'Accept': 'application/json',
                     },
                     body: JSON.stringify({
-                        playerOutId: this.selectedPlayerOut.id,
-                        playerInId: this.selectedPlayerIn.id,
+                        substitutions: this.pendingSubs.map(s => ({
+                            playerOutId: s.playerOut.id,
+                            playerInId: s.playerIn.id,
+                        })),
                         minute: subMinute,
                         previousSubstitutions: this.substitutionsMade.map(s => ({
                             playerOutId: s.playerOutId,
@@ -338,14 +400,16 @@ export default function liveMatch(config) {
 
                 const result = await response.json();
 
-                // Record the substitution
-                this.substitutionsMade.push({
-                    playerOutId: this.selectedPlayerOut.id,
-                    playerInId: this.selectedPlayerIn.id,
-                    playerOutName: this.selectedPlayerOut.name,
-                    playerInName: this.selectedPlayerIn.name,
-                    minute: subMinute,
-                });
+                // Record all substitutions in the batch
+                for (const sub of result.substitutions) {
+                    this.substitutionsMade.push({
+                        playerOutId: sub.playerOutId,
+                        playerInId: sub.playerInId,
+                        playerOutName: sub.playerOutName,
+                        playerInName: sub.playerInName,
+                        minute: subMinute,
+                    });
+                }
 
                 // Remove future unrevealed events from the array
                 this.events = this.events.filter(e => e.minute <= subMinute);
@@ -353,25 +417,24 @@ export default function liveMatch(config) {
                 // Remove future events from revealedEvents too
                 this.revealedEvents = this.revealedEvents.filter(e => e.minute <= subMinute);
 
-                // Add the substitution event to the revealed events feed
-                const subEvent = {
-                    minute: subMinute,
-                    type: 'substitution',
-                    playerName: this.selectedPlayerOut.name,
-                    playerInName: this.selectedPlayerIn.name,
-                    teamId: result.substitution.teamId,
-                };
-                this.revealedEvents.unshift(subEvent);
+                // Add substitution events to the feed (one per sub in the batch)
+                for (const sub of result.substitutions) {
+                    this.revealedEvents.unshift({
+                        minute: subMinute,
+                        type: 'substitution',
+                        playerName: sub.playerOutName,
+                        playerInName: sub.playerInName,
+                        teamId: sub.teamId,
+                    });
+                }
 
                 // Append new events from the server (they'll be revealed as the clock advances)
                 if (result.newEvents && result.newEvents.length > 0) {
                     this.events.push(...result.newEvents);
-                    // Re-sort all events by minute
                     this.events.sort((a, b) => a.minute - b.minute);
                 }
 
                 // Reset lastRevealedIndex to account for the modified events array
-                // Find the last event that's <= current minute
                 this.lastRevealedIndex = -1;
                 for (let i = 0; i < this.events.length; i++) {
                     if (this.events[i].minute <= this.currentMinute) {
@@ -447,7 +510,6 @@ export default function liveMatch(config) {
 
         getEventSide(event) {
             if (event.type === 'own_goal') {
-                // Own goal: the team recorded is the team of the scorer, but it benefits the other side
                 return event.teamId === this.homeTeamId ? 'away' : 'home';
             }
             return event.teamId === this.homeTeamId ? 'home' : 'away';

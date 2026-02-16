@@ -118,22 +118,63 @@
                 {{-- Substitutions tab --}}
                 <div x-show="tacticalTab === 'substitutions'" class="p-4 sm:p-6">
 
-                    {{-- Limit reached notice --}}
-                    <template x-if="!canSubstitute">
+                    {{-- Window + sub budget summary --}}
+                    <div class="flex items-center gap-3 mb-4 text-xs text-slate-500">
+                        <span>{{ __('game.sub_title') }}: <span class="font-semibold text-slate-700" x-text="substitutionsMade.length + '/' + maxSubstitutions"></span></span>
+                        <span class="text-slate-300">&middot;</span>
+                        <span>{{ __('game.sub_windows') }}: <span class="font-semibold text-slate-700" x-text="windowsUsed + '/' + maxWindows"></span></span>
+                    </div>
+
+                    {{-- All windows exhausted --}}
+                    <template x-if="!hasWindowsLeft && pendingSubs.length === 0">
+                        <div class="text-center py-8">
+                            <div class="text-slate-400 text-sm">{{ __('game.sub_error_windows_reached') }}</div>
+                        </div>
+                    </template>
+
+                    {{-- All subs used --}}
+                    <template x-if="hasWindowsLeft && !canSubstitute && pendingSubs.length === 0">
                         <div class="text-center py-8">
                             <div class="text-slate-400 text-sm">{{ __('game.sub_limit_reached') }}</div>
                         </div>
                     </template>
 
-                    {{-- Substitution picker --}}
-                    <template x-if="canSubstitute">
+                    {{-- Pending subs for this window --}}
+                    <template x-if="pendingSubs.length > 0">
+                        <div class="mb-4 space-y-2">
+                            <h4 class="text-xs font-semibold text-slate-500 uppercase">{{ __('game.sub_pending') }}</h4>
+                            <template x-for="(sub, idx) in pendingSubs" :key="idx">
+                                <div class="flex items-center gap-2 px-3 py-2 bg-sky-50 border border-sky-200 rounded-md text-sm">
+                                    <span class="text-red-500 shrink-0">&#8617;</span>
+                                    <span class="truncate font-medium text-slate-700" x-text="sub.playerOut.name"></span>
+                                    <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                                    </svg>
+                                    <span class="truncate font-medium text-slate-700" x-text="sub.playerIn.name"></span>
+                                    <span class="text-green-500 shrink-0">&#8618;</span>
+                                    <button
+                                        @click="removePendingSub(idx)"
+                                        class="ml-auto p-1 text-slate-400 hover:text-red-500 transition-colors shrink-0 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                                        :disabled="subProcessing"
+                                    >
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+
+                    {{-- Player picker (shown when there's room for more subs in this window) --}}
+                    <template x-if="canSubstitute && hasWindowsLeft">
                         <div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {{-- Player Out --}}
                                 <div>
                                     <h4 class="text-xs font-semibold text-slate-500 uppercase mb-2">{{ __('game.sub_player_out') }}</h4>
                                     <div class="space-y-1 max-h-52 overflow-y-auto">
-                                        <template x-for="player in availableLineupPlayers" :key="player.id">
+                                        <template x-for="player in availableLineupForPicker" :key="player.id">
                                             <button
                                                 @click="selectedPlayerOut = player"
                                                 class="w-full flex items-center gap-2 px-3 py-2 rounded-md text-left text-sm transition-colors min-h-[44px]"
@@ -155,7 +196,7 @@
                                 <div>
                                     <h4 class="text-xs font-semibold text-slate-500 uppercase mb-2">{{ __('game.sub_player_in') }}</h4>
                                     <div class="space-y-1 max-h-52 overflow-y-auto">
-                                        <template x-for="player in availableBenchPlayers" :key="player.id">
+                                        <template x-for="player in availableBenchForPicker" :key="player.id">
                                             <button
                                                 @click="selectedPlayerIn = player"
                                                 class="w-full flex items-center gap-2 px-3 py-2 rounded-md text-left text-sm transition-colors min-h-[44px]"
@@ -174,21 +215,49 @@
                                 </div>
                             </div>
 
-                            {{-- Confirm/Cancel --}}
+                            {{-- Add to pending / Confirm --}}
                             <div class="flex items-center justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
                                 <x-secondary-button @click="closeTacticalPanel()">
                                     {{ __('game.sub_cancel') }}
                                 </x-secondary-button>
+
+                                {{-- "Add another" button: queues current pair and keeps panel open --}}
+                                <x-secondary-button
+                                    @click="addPendingSub()"
+                                    x-show="selectedPlayerOut && selectedPlayerIn && canAddMoreToPending && subsRemaining > 1"
+                                >
+                                    {{ __('game.sub_add_another') }}
+                                </x-secondary-button>
+
+                                {{-- Confirm button: sends the whole batch --}}
                                 <x-primary-button
                                     color="sky"
                                     type="button"
-                                    @click="confirmSubstitution()"
-                                    x-bind:disabled="!selectedPlayerOut || !selectedPlayerIn || subProcessing"
+                                    @click="confirmSubstitutions()"
+                                    x-bind:disabled="(!selectedPlayerOut || !selectedPlayerIn) && pendingSubs.length === 0 || subProcessing"
                                 >
                                     <span x-show="!subProcessing">{{ __('game.sub_confirm') }}</span>
                                     <span x-show="subProcessing">{{ __('game.sub_processing') }}</span>
                                 </x-primary-button>
                             </div>
+                        </div>
+                    </template>
+
+                    {{-- Confirm pending subs when picker is hidden (windows/subs exhausted but pending exists) --}}
+                    <template x-if="pendingSubs.length > 0 && (!canSubstitute || !hasWindowsLeft)">
+                        <div class="flex items-center justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
+                            <x-secondary-button @click="closeTacticalPanel()">
+                                {{ __('game.sub_cancel') }}
+                            </x-secondary-button>
+                            <x-primary-button
+                                color="sky"
+                                type="button"
+                                @click="confirmSubstitutions()"
+                                x-bind:disabled="subProcessing"
+                            >
+                                <span x-show="!subProcessing">{{ __('game.sub_confirm') }}</span>
+                                <span x-show="subProcessing">{{ __('game.sub_processing') }}</span>
+                            </x-primary-button>
                         </div>
                     </template>
 

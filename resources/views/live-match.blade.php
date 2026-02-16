@@ -32,6 +32,7 @@
                 substituteUrl: '{{ $substituteUrl }}',
                 csrfToken: '{{ csrf_token() }}',
                 maxSubstitutions: 5,
+                maxWindows: 3,
                 activeFormation: '{{ $userFormation }}',
                 activeMentality: '{{ $userMentality }}',
              })"
@@ -164,6 +165,11 @@
                                 <span class="text-xs text-slate-400 shrink-0">
                                     {{ __('game.sub_title') }}
                                     <span x-text="substitutionsMade.length + '/' + maxSubstitutions"></span>
+                                </span>
+                                <span class="text-slate-300 shrink-0 hidden sm:inline">&middot;</span>
+                                <span class="text-xs text-slate-400 shrink-0 hidden sm:inline">
+                                    {{ __('game.sub_windows') }}
+                                    <span x-text="windowsUsed + '/' + maxWindows"></span>
                                 </span>
                             </div>
 

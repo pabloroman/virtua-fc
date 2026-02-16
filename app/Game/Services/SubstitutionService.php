@@ -23,16 +23,17 @@ class SubstitutionService
     ) {}
 
     /**
-     * Process a substitution: revert future events, re-simulate remainder, apply new result.
+     * Process a batch of substitutions: revert future events, re-simulate remainder, apply new result.
+     * All subs in the batch happen at the same minute (one "window").
      *
+     * @param  array  $newSubstitutions  Subs to make now [{playerOutId, playerInId}]
      * @param  array  $previousSubstitutions  Previous subs already made this match [{playerOutId, playerInId, minute}]
      * @return array  Response payload for the frontend
      */
-    public function processSubstitution(
+    public function processBatchSubstitution(
         GameMatch $match,
         Game $game,
-        string $playerOutId,
-        string $playerInId,
+        array $newSubstitutions,
         int $minute,
         array $previousSubstitutions,
     ): array {
@@ -49,10 +50,15 @@ class SubstitutionService
         // 3. Calculate score at the substitution minute (from remaining events)
         $scoreAtMinute = $this->calculateScoreAtMinute($match);
 
-        // 4. Build the active lineup for both teams
-        $allSubs = array_merge($previousSubstitutions, [
-            ['playerOutId' => $playerOutId, 'playerInId' => $playerInId, 'minute' => $minute],
-        ]);
+        // 4. Build the active lineup for both teams (applying ALL subs including the new batch)
+        $allSubs = array_merge(
+            $previousSubstitutions,
+            array_map(fn ($s) => [
+                'playerOutId' => $s['playerOutId'],
+                'playerInId' => $s['playerInId'],
+                'minute' => $minute,
+            ], $newSubstitutions),
+        );
 
         $userLineup = $this->buildActiveLineup($match, $game->team_id, $allSubs);
         $opponentLineupIds = $isUserHome ? ($match->away_lineup ?? []) : ($match->home_lineup ?? []);
@@ -122,28 +128,28 @@ class SubstitutionService
             'away_score' => $newAwayScore,
         ]);
 
-        // 9. Increment sub player's appearances
-        GamePlayer::where('id', $playerInId)
-            ->increment('appearances');
-        GamePlayer::where('id', $playerInId)
-            ->increment('season_appearances');
+        // 9. Increment appearances and record each sub in the batch
+        foreach ($newSubstitutions as $sub) {
+            GamePlayer::where('id', $sub['playerInId'])
+                ->increment('appearances');
+            GamePlayer::where('id', $sub['playerInId'])
+                ->increment('season_appearances');
 
-        // 11. Record the substitution on the match
-        $this->recordSubstitution($match, $game->team_id, $playerOutId, $playerInId, $minute);
+            $this->recordSubstitution($match, $game->team_id, $sub['playerOutId'], $sub['playerInId'], $minute);
 
-        // 12. Insert a substitution MatchEvent
-        MatchEvent::create([
-            'id' => Str::uuid()->toString(),
-            'game_id' => $game->id,
-            'game_match_id' => $match->id,
-            'game_player_id' => $playerOutId,
-            'team_id' => $game->team_id,
-            'minute' => $minute,
-            'event_type' => MatchEvent::TYPE_SUBSTITUTION,
-            'metadata' => json_encode(['player_in_id' => $playerInId]),
-        ]);
+            MatchEvent::create([
+                'id' => Str::uuid()->toString(),
+                'game_id' => $game->id,
+                'game_match_id' => $match->id,
+                'game_player_id' => $sub['playerOutId'],
+                'team_id' => $game->team_id,
+                'minute' => $minute,
+                'event_type' => MatchEvent::TYPE_SUBSTITUTION,
+                'metadata' => json_encode(['player_in_id' => $sub['playerInId']]),
+            ]);
+        }
 
-        // 13. Fix standings if this is a league match and the score changed
+        // 10. Fix standings if this is a league match and the score changed
         $competition = Competition::find($competitionId);
         $isCupTie = $match->cup_tie_id !== null;
         if ($competition?->isLeague() && ! $isCupTie) {
@@ -162,11 +168,11 @@ class SubstitutionService
             }
         }
 
-        // 14. Update goalkeeper stats
+        // 11. Update goalkeeper stats
         $this->updateGoalkeeperStats($match, $oldHomeScore, $oldAwayScore, $newHomeScore, $newAwayScore);
 
-        // 15. Build the response for the frontend
-        return $this->buildResponse($match, $game, $minute, $playerOutId, $playerInId, $newHomeScore, $newAwayScore);
+        // 12. Build the response for the frontend
+        return $this->buildBatchResponse($match, $game, $minute, $newSubstitutions, $newHomeScore, $newAwayScore);
     }
 
     /**
@@ -513,9 +519,9 @@ class SubstitutionService
     }
 
     /**
-     * Build the JSON response for the frontend.
+     * Build the JSON response for a batch substitution.
      */
-    private function buildResponse(GameMatch $match, Game $game, int $minute, string $playerOutId, string $playerInId, int $newHomeScore, int $newAwayScore): array
+    private function buildBatchResponse(GameMatch $match, Game $game, int $minute, array $newSubstitutions, int $newHomeScore, int $newAwayScore): array
     {
         // Get all events after the sub minute (the new ones)
         $newEvents = MatchEvent::with('gamePlayer.player')
@@ -551,9 +557,22 @@ class SubstitutionService
             return $event;
         }, $formattedEvents);
 
-        // Load player names for the substitution
-        $playerOut = GamePlayer::with('player')->find($playerOutId);
-        $playerIn = GamePlayer::with('player')->find($playerInId);
+        // Load player names for each substitution
+        $playerIds = [];
+        foreach ($newSubstitutions as $sub) {
+            $playerIds[] = $sub['playerOutId'];
+            $playerIds[] = $sub['playerInId'];
+        }
+        $players = GamePlayer::with('player')->whereIn('id', $playerIds)->get()->keyBy('id');
+
+        $substitutionDetails = array_map(fn ($sub) => [
+            'playerOutId' => $sub['playerOutId'],
+            'playerInId' => $sub['playerInId'],
+            'playerOutName' => $players->get($sub['playerOutId'])?->player->name ?? '',
+            'playerInName' => $players->get($sub['playerInId'])?->player->name ?? '',
+            'minute' => $minute,
+            'teamId' => $game->team_id,
+        ], $newSubstitutions);
 
         return [
             'newScore' => [
@@ -561,14 +580,7 @@ class SubstitutionService
                 'away' => $newAwayScore,
             ],
             'newEvents' => $formattedEvents,
-            'substitution' => [
-                'playerOutId' => $playerOutId,
-                'playerInId' => $playerInId,
-                'playerOutName' => $playerOut?->player->name ?? '',
-                'playerInName' => $playerIn?->player->name ?? '',
-                'minute' => $minute,
-                'teamId' => $game->team_id,
-            ],
+            'substitutions' => $substitutionDetails,
         ];
     }
 }

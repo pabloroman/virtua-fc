@@ -14,6 +14,8 @@ class ProcessSubstitution
 {
     private const MAX_SUBSTITUTIONS = 5;
 
+    private const MAX_WINDOWS = 3;
+
     public function __construct(
         private readonly SubstitutionService $substitutionService,
     ) {}
@@ -31,8 +33,9 @@ class ProcessSubstitution
         }
 
         $validated = $request->validate([
-            'playerOutId' => 'required|string',
-            'playerInId' => 'required|string',
+            'substitutions' => 'required|array|min:1|max:'.self::MAX_SUBSTITUTIONS,
+            'substitutions.*.playerOutId' => 'required|string',
+            'substitutions.*.playerInId' => 'required|string',
             'minute' => 'required|integer|min:1|max:93',
             'previousSubstitutions' => 'array',
             'previousSubstitutions.*.playerOutId' => 'required|string',
@@ -40,22 +43,27 @@ class ProcessSubstitution
             'previousSubstitutions.*.minute' => 'required|integer',
         ]);
 
-        $playerOutId = $validated['playerOutId'];
-        $playerInId = $validated['playerInId'];
+        $newSubs = $validated['substitutions'];
         $minute = $validated['minute'];
         $previousSubs = $validated['previousSubstitutions'] ?? [];
 
-        // Check substitution limit
-        $totalSubs = count($previousSubs) + 1;
+        // Check total substitution limit
+        $totalSubs = count($previousSubs) + count($newSubs);
         if ($totalSubs > self::MAX_SUBSTITUTIONS) {
             return response()->json(['error' => __('game.sub_error_limit_reached')], 422);
         }
 
-        // Validate that playerOut is in the current active lineup
+        // Check substitution window limit (group previous subs by minute to count windows used)
+        $previousWindows = count(array_unique(array_column($previousSubs, 'minute')));
+        if ($previousWindows >= self::MAX_WINDOWS) {
+            return response()->json(['error' => __('game.sub_error_windows_reached')], 422);
+        }
+
+        // Validate each sub in the batch
         $isHome = $match->isHomeTeam($game->team_id);
         $currentLineupIds = $isHome ? ($match->home_lineup ?? []) : ($match->away_lineup ?? []);
 
-        // Apply previous subs to get current active lineup
+        // Build active lineup from previous subs
         $activeLineupIds = $currentLineupIds;
         foreach ($previousSubs as $sub) {
             $activeLineupIds = array_values(array_filter(
@@ -65,38 +73,62 @@ class ProcessSubstitution
             $activeLineupIds[] = $sub['playerInId'];
         }
 
-        if (! in_array($playerOutId, $activeLineupIds)) {
-            return response()->json(['error' => __('game.sub_error_player_not_on_pitch')], 422);
+        // Track IDs used in this batch to prevent conflicts within the same window
+        $batchOutIds = [];
+        $batchInIds = [];
+
+        foreach ($newSubs as $sub) {
+            $playerOutId = $sub['playerOutId'];
+            $playerInId = $sub['playerInId'];
+
+            // Check player is on pitch (considering earlier subs in this batch)
+            $effectiveLineup = $activeLineupIds;
+            foreach ($batchOutIds as $i => $outId) {
+                $effectiveLineup = array_values(array_filter($effectiveLineup, fn ($id) => $id !== $outId));
+                $effectiveLineup[] = $batchInIds[$i];
+            }
+
+            if (! in_array($playerOutId, $effectiveLineup)) {
+                return response()->json(['error' => __('game.sub_error_player_not_on_pitch')], 422);
+            }
+
+            // Prevent substituting a red-carded player
+            $wasRedCarded = MatchEvent::where('game_match_id', $match->id)
+                ->where('game_player_id', $playerOutId)
+                ->where('event_type', 'red_card')
+                ->where('minute', '<=', $minute)
+                ->exists();
+
+            if ($wasRedCarded) {
+                return response()->json(['error' => __('game.sub_error_player_sent_off')], 422);
+            }
+
+            // Validate player-in belongs to team and is not on pitch
+            $playerIn = GamePlayer::where('id', $playerInId)
+                ->where('game_id', $gameId)
+                ->where('team_id', $game->team_id)
+                ->first();
+
+            if (! $playerIn) {
+                return response()->json(['error' => __('game.sub_error_invalid_player')], 422);
+            }
+
+            if (in_array($playerInId, $effectiveLineup)) {
+                return response()->json(['error' => __('game.sub_error_already_on_pitch')], 422);
+            }
+
+            // Check not already used in this batch
+            if (in_array($playerInId, $batchInIds)) {
+                return response()->json(['error' => __('game.sub_error_already_on_pitch')], 422);
+            }
+
+            $batchOutIds[] = $playerOutId;
+            $batchInIds[] = $playerInId;
         }
 
-        // Prevent substituting a player who has been sent off (red card)
-        $wasRedCarded = MatchEvent::where('game_match_id', $match->id)
-            ->where('game_player_id', $playerOutId)
-            ->where('event_type', 'red_card')
-            ->where('minute', '<=', $minute)
-            ->exists();
-
-        if ($wasRedCarded) {
-            return response()->json(['error' => __('game.sub_error_player_sent_off')], 422);
-        }
-
-        // Validate that playerIn belongs to the user's team and is not already on the pitch
-        $playerIn = GamePlayer::where('id', $playerInId)
-            ->where('game_id', $gameId)
-            ->where('team_id', $game->team_id)
-            ->first();
-
-        if (! $playerIn) {
-            return response()->json(['error' => __('game.sub_error_invalid_player')], 422);
-        }
-
-        if (in_array($playerInId, $activeLineupIds)) {
-            return response()->json(['error' => __('game.sub_error_already_on_pitch')], 422);
-        }
-
-        // Process the substitution
-        $result = $this->substitutionService->processSubstitution(
-            $match, $game, $playerOutId, $playerInId, $minute, $previousSubs,
+        // Process the batch
+        $result = $this->substitutionService->processBatchSubstitution(
+            $match, $game, $newSubs, $minute, $previousSubs,
         );
 
         return response()->json($result);
