@@ -1,0 +1,9 @@
+{
+    "knockout": [
+        {"round": 1, "name": "Dieciseisavos de final", "date": "2026-06-28"},
+        {"round": 2, "name": "Octavos de final", "date": "2026-07-01"},
+        {"round": 3, "name": "Cuartos de final", "date": "2026-07-05"},
+        {"round": 4, "name": "Semifinal", "date": "2026-07-09"},
+        {"round": 5, "name": "Final", "date": "2026-07-13"}
+    ]
+}

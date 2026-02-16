@@ -11,14 +11,14 @@
                 @php
                     $allCompetitions = collect($countries)->flatMap(fn ($c) => collect($c['tiers']))->values();
                     $firstId = $allCompetitions->first()?->id;
-                    $confederations = $wcTeams->keys()->sort()->values();
-                    $firstConfederation = $confederations->first() ?? '';
+                    $groupKeys = $wcGroups->keys()->sort()->values();
+                    $firstGroup = $groupKeys->first() ?? '';
                 @endphp
                 <div class="p-6 sm:p-8"
                      x-data="{
                          mode: 'career',
                          openTab: '{{ $firstId }}',
-                         openConfederation: '{{ $firstConfederation }}',
+                         openGroup: '{{ $firstGroup }}',
                          loading: false,
                      }">
                     <form method="post" action="{{ route('init-game') }}" @submit="loading = true" class="space-y-6">
@@ -137,25 +137,25 @@
                         {{-- ===================== TOURNAMENT MODE: National teams ===================== --}}
                         @if($hasTournamentMode)
                             <div x-show="mode === 'tournament'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
-                                {{-- Confederation tabs --}}
+                                {{-- Group tabs --}}
                                 <div class="flex space-x-2 overflow-x-auto scrollbar-hide">
-                                    @foreach($wcTeams as $confederation => $teams)
-                                        <a x-on:click="openConfederation = '{{ $confederation }}'" :class="{ 'bg-amber-500 text-white': openConfederation === '{{ $confederation }}' }" class="py-2 px-4 rounded-md focus:outline-none text-lg transition-all duration-300 cursor-pointer shrink-0">
-                                            {{ $confederation }}
+                                    @foreach($wcGroups as $groupLabel => $teams)
+                                        <a x-on:click="openGroup = '{{ $groupLabel }}'" :class="{ 'bg-amber-500 text-white': openGroup === '{{ $groupLabel }}' }" class="py-2 px-4 rounded-md focus:outline-none text-lg transition-all duration-300 cursor-pointer shrink-0">
+                                            {{ __('game.group') }} {{ $groupLabel }}
                                         </a>
                                     @endforeach
                                 </div>
 
-                                {{-- Team grids per confederation --}}
+                                {{-- Team grids per group --}}
                                 <div class="space-y-6">
-                                    @foreach($wcTeams as $confederation => $teams)
-                                        <div x-show="openConfederation === '{{ $confederation }}'">
+                                    @foreach($wcGroups as $groupLabel => $teams)
+                                        <div x-show="openGroup === '{{ $groupLabel }}'">
                                             <div class="grid lg:grid-cols-4 md:grid-cols-2 gap-2 mt-4">
-                                                @foreach($teams as $wcTeam)
+                                                @foreach($teams as $team)
                                                     <label class="border text-slate-700 has-[:checked]:ring-amber-200 has-[:checked]:text-amber-900 has-[:checked]:bg-amber-50 grid grid-cols-[40px_1fr_auto] items-center gap-4 rounded-lg p-4 ring-1 ring-transparent hover:bg-amber-50">
-                                                        <img src="/flags/{{ strtolower($wcTeam->country_code) }}.svg" class="w-10 h-7 rounded shadow object-cover" onerror="this.style.display='none'">
-                                                        <span class="text-[20px]">{{ $wcTeam->name }}</span>
-                                                        <input x-bind:required="mode === 'tournament'" x-bind:disabled="mode !== 'tournament'" type="radio" name="team_id" value="{{ $wcTeam->id }}" class="hidden appearance-none rounded-full border-[5px] border-white bg-white bg-clip-padding outline-none ring-1 ring-gray-950/10 checked:border-amber-600 checked:ring-amber-600 focus:outline-none">
+                                                        <img src="{{ $team->image }}" class="w-10 h-7 rounded shadow object-cover" onerror="this.style.display='none'">
+                                                        <span class="text-[20px]">{{ $team->name }}</span>
+                                                        <input x-bind:required="mode === 'tournament'" x-bind:disabled="mode !== 'tournament'" type="radio" name="team_id" value="{{ $team->id }}" class="hidden appearance-none rounded-full border-[5px] border-white bg-white bg-clip-padding outline-none ring-1 ring-gray-950/10 checked:border-amber-600 checked:ring-amber-600 focus:outline-none">
                                                     </label>
                                                 @endforeach
                                             </div>

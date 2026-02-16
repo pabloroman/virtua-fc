@@ -26,6 +26,10 @@ return [
     'no_form' => 'Sin historial',
     'form' => 'Forma',
 
+    // Groups (World Cup)
+    'group' => 'Grupo',
+    'group_stage' => 'Fase de Grupos',
+
     // Standings
     'standings' => 'Clasificación',
     'pts' => 'pts',

@@ -12,6 +12,7 @@ class GameStanding extends Model
     protected $fillable = [
         'game_id',
         'competition_id',
+        'group_label',
         'team_id',
         'position',
         'prev_position',

@@ -15,7 +15,10 @@ class SeedWorldCupData extends Command
     protected $signature = 'app:seed-world-cup-data
                             {--fresh : Clear existing World Cup data before seeding}';
 
-    protected $description = 'Seed World Cup national teams and players from JSON data (isolated from career mode)';
+    protected $description = 'Seed World Cup national teams and players into the main teams/players tables';
+
+    private const COMPETITION_ID = 'WC2026';
+    private const SEASON = '2025';
 
     public function handle(): int
     {
@@ -23,7 +26,8 @@ class SeedWorldCupData extends Command
             $this->clearExistingData();
         }
 
-        $this->seedWorldCupTeams();
+        $this->seedCompetition();
+        $this->seedTeamsAndPlayers();
         $this->displaySummary();
 
         return CommandAlias::SUCCESS;
@@ -33,92 +37,137 @@ class SeedWorldCupData extends Command
     {
         $this->info('Clearing existing World Cup data...');
 
-        DB::table('wc_players')->delete();
-        DB::table('wc_teams')->delete();
+        // Remove competition_teams links for WC2026
+        DB::table('competition_teams')
+            ->where('competition_id', self::COMPETITION_ID)
+            ->delete();
+
+        // Remove national teams (don't delete Players — they may be shared with career mode)
+        DB::table('teams')->where('type', 'national')->delete();
+
+        // Remove the competition record
+        DB::table('competitions')->where('id', self::COMPETITION_ID)->delete();
 
         $this->info('Cleared.');
     }
 
-    private function seedWorldCupTeams(): void
+    private function seedCompetition(): void
     {
-        $filePath = base_path('data/2025/WC/teams.json');
+        DB::table('competitions')->updateOrInsert(
+            ['id' => self::COMPETITION_ID],
+            [
+                'name' => 'Copa del Mundo FIFA 2026',
+                'country' => 'INT',
+                'tier' => 0,
+                'type' => 'league',
+                'role' => 'primary',
+                'scope' => 'continental',
+                'handler_type' => 'league',
+                'season' => self::SEASON,
+            ]
+        );
 
-        if (!file_exists($filePath)) {
-            $this->error('World Cup data file not found: data/2025/WC/teams.json');
+        $this->info('Competition: Copa del Mundo FIFA 2026');
+    }
+
+    private function seedTeamsAndPlayers(): void
+    {
+        $basePath = base_path('data/2025/WC/teams');
+
+        if (!is_dir($basePath)) {
+            $this->error('World Cup teams directory not found: data/2025/WC/teams/');
             return;
         }
-
-        $data = json_decode(file_get_contents($filePath), true);
-        $teams = $data['teams'] ?? [];
-
-        if (empty($teams)) {
-            $this->warn('No teams found in World Cup data file.');
-            return;
-        }
-
-        $this->newLine();
-        $this->info("=== {$data['name']} ===");
 
         $valuationService = app(PlayerValuationService::class);
         $teamCount = 0;
         $playerCount = 0;
 
-        foreach ($teams as $team) {
-            $teamId = $this->seedWcTeam($team);
+        foreach (glob("{$basePath}/*.json") as $filePath) {
+            $data = json_decode(file_get_contents($filePath), true);
+            if (!$data) {
+                continue;
+            }
 
+            // Extract team key from filename (e.g., "esp" from "esp.json")
+            $teamKey = pathinfo($filePath, PATHINFO_FILENAME);
+            $countryCode = $data['countryCode'] ?? $teamKey;
+
+            // Create or find the Team record
+            $teamId = $this->seedTeam($teamKey, $data, $countryCode);
             if (!$teamId) {
                 continue;
             }
 
             $teamCount++;
 
-            $players = $team['players'] ?? [];
-            $playerCount += $this->seedWcPlayers($teamId, $players, $valuationService);
+            // Seed players
+            $players = $data['players'] ?? [];
+            $playerCount += $this->seedPlayers($teamId, $players, $valuationService);
         }
 
         $this->line("  Teams: {$teamCount}");
         $this->line("  Players: {$playerCount}");
     }
 
-    private function seedWcTeam(array $team): ?string
+    private function seedTeam(string $teamKey, array $data, string $countryCode): ?string
     {
-        $countryCode = $team['countryCode'] ?? null;
-
-        if (!$countryCode) {
-            $this->warn("  Skipping team without countryCode: {$team['name']}");
-            return null;
-        }
-
-        $existing = DB::table('wc_teams')
-            ->where('country_code', $countryCode)
+        // Use the team key as a pseudo transfermarkt_id for national teams
+        $existing = DB::table('teams')
+            ->where('type', 'national')
+            ->where('country', $countryCode)
             ->first();
 
         if ($existing) {
-            return $existing->id;
+            $teamId = $existing->id;
+        } else {
+            $teamId = Str::uuid()->toString();
+
+            DB::table('teams')->insert([
+                'id' => $teamId,
+                'transfermarkt_id' => $teamKey,
+                'type' => 'national',
+                'name' => $data['name'],
+                'country' => $countryCode,
+                'image' => null,
+                'stadium_name' => null,
+                'stadium_seats' => 0,
+            ]);
         }
 
-        $teamId = Str::uuid()->toString();
-
-        DB::table('wc_teams')->insert([
-            'id' => $teamId,
-            'name' => $team['name'],
-            'short_name' => $team['shortName'] ?? strtoupper(substr($team['name'], 0, 3)),
-            'country_code' => $countryCode,
-            'confederation' => $team['confederation'] ?? 'UEFA',
-            'image' => $team['image'] ?? null,
-            'strength' => $team['strength'] ?? 50,
-            'pot' => $team['pot'] ?? 4,
-        ]);
+        // Link team to WC2026 competition
+        DB::table('competition_teams')->updateOrInsert(
+            [
+                'competition_id' => self::COMPETITION_ID,
+                'team_id' => $teamId,
+                'season' => self::SEASON,
+            ],
+            []
+        );
 
         return $teamId;
     }
 
-    private function seedWcPlayers(string $teamId, array $players, PlayerValuationService $valuationService): int
+    private function seedPlayers(string $teamId, array $players, PlayerValuationService $valuationService): int
     {
         $count = 0;
-        $rows = [];
 
         foreach ($players as $player) {
+            $transfermarktId = $player['id'] ?? null;
+            if (!$transfermarktId) {
+                continue;
+            }
+
+            // Skip if player already exists (may be shared with career mode)
+            $exists = DB::table('players')
+                ->where('transfermarkt_id', $transfermarktId)
+                ->exists();
+
+            if ($exists) {
+                $count++;
+                continue;
+            }
+
             $dateOfBirth = null;
             $age = null;
 
@@ -143,25 +192,19 @@ class SeedWorldCupData extends Command
             $position = $player['position'] ?? 'Central Midfield';
             [$technical, $physical] = $valuationService->marketValueToAbilities($marketValueCents, $position, $age ?? 25);
 
-            $rows[] = [
+            DB::table('players')->insert([
                 'id' => Str::uuid()->toString(),
-                'wc_team_id' => $teamId,
+                'transfermarkt_id' => $transfermarktId,
                 'name' => $player['name'],
                 'date_of_birth' => $dateOfBirth,
                 'nationality' => json_encode($player['nationality'] ?? []),
                 'height' => $player['height'] ?? null,
                 'foot' => $foot,
-                'position' => $position,
-                'number' => $player['number'] ?? null,
                 'technical_ability' => $technical,
                 'physical_ability' => $physical,
-            ];
+            ]);
 
             $count++;
-        }
-
-        foreach (array_chunk($rows, 100) as $chunk) {
-            DB::table('wc_players')->insert($chunk);
         }
 
         return $count;
@@ -171,8 +214,9 @@ class SeedWorldCupData extends Command
     {
         $this->newLine();
         $this->info('Summary:');
-        $this->line('  WC Teams: ' . DB::table('wc_teams')->count());
-        $this->line('  WC Players: ' . DB::table('wc_players')->count());
+        $this->line('  National Teams: ' . DB::table('teams')->where('type', 'national')->count());
+        $this->line('  WC Competition Teams: ' . DB::table('competition_teams')->where('competition_id', self::COMPETITION_ID)->count());
+        $this->line('  Total Players: ' . DB::table('players')->count());
         $this->newLine();
         $this->info('World Cup data seeded successfully!');
     }

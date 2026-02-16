@@ -47,6 +47,7 @@ class ShowCompetition
         $standings = GameStanding::with('team')
             ->where('game_id', $game->id)
             ->where('competition_id', $competition->id)
+            ->orderBy('group_label')
             ->orderBy('position')
             ->get();
 
@@ -59,10 +60,15 @@ class ShowCompetition
         // Get standings zones from competition config
         $standingsZones = $competition->getConfig()->getStandingsZones();
 
+        // Check if standings are grouped (e.g. World Cup group stage)
+        $hasGroups = $standings->whereNotNull('group_label')->isNotEmpty();
+        $groupedStandings = $hasGroups ? $standings->groupBy('group_label') : null;
+
         return view('standings', [
             'game' => $game,
             'competition' => $competition,
             'standings' => $standings,
+            'groupedStandings' => $groupedStandings,
             'topScorers' => $topScorers,
             'teamForms' => $teamForms,
             'standingsZones' => $standingsZones,

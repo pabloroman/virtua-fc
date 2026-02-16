@@ -3,6 +3,7 @@
 namespace App\Http\Actions;
 
 use App\Game\Services\GameCreationService;
+use App\Game\Services\TournamentCreationService;
 use App\Models\Game;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -11,6 +12,7 @@ class InitGame
 {
     public function __construct(
         private readonly GameCreationService $gameCreationService,
+        private readonly TournamentCreationService $tournamentCreationService,
     ) {}
 
     public function __invoke(Request $request)
@@ -27,6 +29,16 @@ class InitGame
         ]);
 
         $gameMode = $request->get('game_mode', Game::MODE_CAREER);
+
+        if ($gameMode === Game::MODE_TOURNAMENT) {
+            $game = $this->tournamentCreationService->create(
+                userId: (string) $request->user()->id,
+                playerName: $request->get('name'),
+                teamId: $request->get('team_id'),
+            );
+
+            return redirect()->route('show-game', $game->id);
+        }
 
         $game = $this->gameCreationService->create(
             userId: (string) $request->user()->id,

@@ -1,0 +1,13 @@
+{
+    "A": {
+        "teams": ["esp", "bra", "arg", "ger"],
+        "matches": [
+            {"round": 1, "home": "esp", "away": "bra", "date": "2026-06-11"},
+            {"round": 1, "home": "arg", "away": "ger", "date": "2026-06-11"},
+            {"round": 2, "home": "esp", "away": "arg", "date": "2026-06-15"},
+            {"round": 2, "home": "ger", "away": "bra", "date": "2026-06-15"},
+            {"round": 3, "home": "bra", "away": "arg", "date": "2026-06-20"},
+            {"round": 3, "home": "esp", "away": "ger", "date": "2026-06-20"}
+        ]
+    }
+}

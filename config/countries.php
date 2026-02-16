@@ -125,9 +125,9 @@ return [
     | World Cup (Tournament Mode)
     |--------------------------------------------------------------------------
     |
-    | The World Cup uses its own isolated tables (wc_teams, wc_players) and
-    | does not interact with career-mode reference data. Game creation in
-    | tournament mode reads from these tables instead of teams/players.
+    | The World Cup uses the main teams/players tables with type='national'.
+    | Game creation in tournament mode reads from these teams and the WC2026
+    | competition via competition_teams, sharing Player records with career mode.
     |
     */
 
@@ -138,7 +138,7 @@ return [
 
         'tiers' => [
             1 => [
-                'competition' => 'WC1',
+                'competition' => 'WC2026',
                 'teams' => 48,
                 'handler' => 'world_cup',
             ],
