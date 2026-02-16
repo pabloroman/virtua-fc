@@ -122,6 +122,35 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | World Cup (Tournament Mode)
+    |--------------------------------------------------------------------------
+    |
+    | The World Cup uses its own isolated tables (wc_teams, wc_players) and
+    | does not interact with career-mode reference data. Game creation in
+    | tournament mode reads from these tables instead of teams/players.
+    |
+    */
+
+    'WC' => [
+        'name' => 'Copa del Mundo',
+        'flag' => 'wc',
+        'tournament' => true,
+
+        'tiers' => [
+            1 => [
+                'competition' => 'WC1',
+                'teams' => 48,
+                'handler' => 'world_cup',
+            ],
+        ],
+
+        'domestic_cups' => [],
+        'promotions' => [],
+        'continental_slots' => [],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Test Country (used by test suite)
     |--------------------------------------------------------------------------
     */

@@ -24,7 +24,20 @@ class CountryConfig
     public function playableCountryCodes(): array
     {
         return collect($this->allCountries())
-            ->filter(fn (array $config, string $code) => $code !== 'XX' && !empty($config['tiers']))
+            ->filter(fn (array $config, string $code) => $code !== 'XX' && !empty($config['tiers']) && empty($config['tournament']))
+            ->keys()
+            ->all();
+    }
+
+    /**
+     * Get all tournament country codes (e.g., World Cup).
+     *
+     * @return string[]
+     */
+    public function tournamentCountryCodes(): array
+    {
+        return collect($this->allCountries())
+            ->filter(fn (array $config) => !empty($config['tournament']) && !empty($config['tiers']))
             ->keys()
             ->all();
     }
