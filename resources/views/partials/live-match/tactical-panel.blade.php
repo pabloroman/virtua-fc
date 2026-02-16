@@ -5,13 +5,13 @@
     x-show="tacticalPanelOpen"
     x-cloak
     class="fixed inset-0 z-50 overflow-y-auto"
-    x-on:keydown.escape.window="if (tacticalPanelOpen && !subProcessing) closeTacticalPanel()"
+    x-on:keydown.escape.window="if (tacticalPanelOpen && !subProcessing && !tacticsProcessing) closeTacticalPanel()"
 >
     {{-- Backdrop --}}
     <div
         x-show="tacticalPanelOpen"
         class="fixed inset-0 transform transition-all"
-        x-on:click="if (!subProcessing) closeTacticalPanel()"
+        x-on:click="if (!subProcessing && !tacticsProcessing) closeTacticalPanel()"
         x-transition:enter="ease-out duration-300"
         x-transition:enter-start="opacity-0"
         x-transition:enter-end="opacity-100"
@@ -60,7 +60,7 @@
                         <button
                             @click="closeTacticalPanel()"
                             class="p-1.5 rounded-lg hover:bg-white/10 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
-                            :disabled="subProcessing"
+                            :disabled="subProcessing || tacticsProcessing"
                         >
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -217,8 +217,11 @@
 
                             {{-- Add to pending / Confirm --}}
                             <div class="flex items-center justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
-                                <x-secondary-button @click="closeTacticalPanel()">
-                                    {{ __('game.sub_cancel') }}
+                                <x-secondary-button
+                                    @click="resetSubstitutions()"
+                                    x-show="selectedPlayerOut || selectedPlayerIn || pendingSubs.length > 0"
+                                >
+                                    {{ __('game.sub_reset') }}
                                 </x-secondary-button>
 
                                 {{-- "Add another" button: queues current pair and keeps panel open --}}
@@ -246,8 +249,8 @@
                     {{-- Confirm pending subs when picker is hidden (windows/subs exhausted but pending exists) --}}
                     <template x-if="pendingSubs.length > 0 && (!canSubstitute || !hasWindowsLeft)">
                         <div class="flex items-center justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
-                            <x-secondary-button @click="closeTacticalPanel()">
-                                {{ __('game.sub_cancel') }}
+                            <x-secondary-button @click="resetSubstitutions()">
+                                {{ __('game.sub_reset') }}
                             </x-secondary-button>
                             <x-primary-button
                                 color="sky"
@@ -280,43 +283,104 @@
                     </template>
                 </div>
 
-                {{-- Tactics tab (read-only overview for now, future: editable) --}}
+                {{-- Tactics tab --}}
                 <div x-show="tacticalTab === 'tactics'" class="p-4 sm:p-6">
-                    <div class="space-y-4">
-                        {{-- Current formation --}}
+                    <div class="space-y-5">
+                        {{-- Formation picker --}}
                         <div>
-                            <h4 class="text-xs font-semibold text-slate-500 uppercase mb-2">{{ __('game.tactical_formation') }}</h4>
-                            <div class="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-100 rounded-lg">
-                                <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                                </svg>
-                                <span class="text-sm font-bold text-slate-800 tabular-nums" x-text="activeFormation"></span>
+                            <h4 class="text-xs font-semibold text-slate-500 uppercase mb-2 flex items-center gap-1.5">
+                                {{ __('game.tactical_formation') }}
+                                <span x-tooltip.raw="{{ __('game.tactical_formation_hint') }}" class="cursor-help shrink-0"><svg class="w-3.5 h-3.5 text-slate-300 hover:text-slate-500" fill="currentColor" viewBox="0 0 512 512"><path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zm0-336c-17.7 0-32 14.3-32 32 0 13.3-10.7 24-24 24s-24-10.7-24-24c0-44.2 35.8-80 80-80s80 35.8 80 80c0 47.2-36 67.2-56 74.5l0 3.8c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-8.1c0-20.5 14.8-35.2 30.1-40.2 6.4-2.1 13.2-5.5 18.2-10.3 4.3-4.2 7.7-10 7.7-19.6 0-17.7-14.3-32-32-32zM224 368a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg></span>
+                            </h4>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                <template x-for="formation in availableFormations" :key="formation.value">
+                                    <button
+                                        @click="pendingFormation = formation.value"
+                                        class="px-3 py-2.5 rounded-lg text-sm font-bold tabular-nums border-2 transition-all min-h-[44px]"
+                                        :class="(pendingFormation ?? activeFormation) === formation.value
+                                            ? 'bg-slate-800 text-white border-slate-800'
+                                            : 'bg-white text-slate-700 border-slate-200 hover:border-slate-400'"
+                                        x-text="formation.value"
+                                    ></button>
+                                </template>
                             </div>
+                            <p class="mt-2 text-xs text-slate-400 italic min-h-[1.25rem]" x-text="getFormationTooltip()"></p>
                         </div>
 
-                        {{-- Current mentality --}}
+                        {{-- Mentality picker --}}
                         <div>
-                            <h4 class="text-xs font-semibold text-slate-500 uppercase mb-2">{{ __('game.tactical_mentality') }}</h4>
-                            <div class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg"
-                                 :class="{
-                                     'bg-blue-50 text-blue-800': activeMentality === 'defensive',
-                                     'bg-slate-100 text-slate-800': activeMentality === 'balanced',
-                                     'bg-red-50 text-red-800': activeMentality === 'attacking',
-                                 }">
-                                <svg class="w-4 h-4" :class="{
-                                         'text-blue-500': activeMentality === 'defensive',
-                                         'text-slate-500': activeMentality === 'balanced',
-                                         'text-red-500': activeMentality === 'attacking',
-                                     }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                                </svg>
-                                <span class="text-sm font-bold" x-text="mentalityLabel"></span>
+                            <h4 class="text-xs font-semibold text-slate-500 uppercase mb-2 flex items-center gap-1.5">
+                                {{ __('game.tactical_mentality') }}
+                                <span x-tooltip.raw="{{ __('game.tactical_mentality_hint') }}" class="cursor-help shrink-0"><svg class="w-3.5 h-3.5 text-slate-300 hover:text-slate-500" fill="currentColor" viewBox="0 0 512 512"><path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zm0-336c-17.7 0-32 14.3-32 32 0 13.3-10.7 24-24 24s-24-10.7-24-24c0-44.2 35.8-80 80-80s80 35.8 80 80c0 47.2-36 67.2-56 74.5l0 3.8c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-8.1c0-20.5 14.8-35.2 30.1-40.2 6.4-2.1 13.2-5.5 18.2-10.3 4.3-4.2 7.7-10 7.7-19.6 0-17.7-14.3-32-32-32zM224 368a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg></span>
+                            </h4>
+                            <div class="grid grid-cols-3 gap-2">
+                                {{-- Defensive --}}
+                                <button
+                                    @click="pendingMentality = 'defensive'"
+                                    class="flex flex-col items-center gap-1.5 px-3 py-3 rounded-lg border-2 transition-all min-h-[44px]"
+                                    :class="(pendingMentality ?? activeMentality) === 'defensive'
+                                        ? 'bg-blue-100 text-blue-800 border-blue-500'
+                                        : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'"
+                                >
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                                    </svg>
+                                    <span class="text-xs font-semibold" x-text="getMentalityLabel('defensive')"></span>
+                                </button>
+
+                                {{-- Balanced --}}
+                                <button
+                                    @click="pendingMentality = 'balanced'"
+                                    class="flex flex-col items-center gap-1.5 px-3 py-3 rounded-lg border-2 transition-all min-h-[44px]"
+                                    :class="(pendingMentality ?? activeMentality) === 'balanced'
+                                        ? 'bg-slate-200 text-slate-800 border-slate-500'
+                                        : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'"
+                                >
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/>
+                                    </svg>
+                                    <span class="text-xs font-semibold" x-text="getMentalityLabel('balanced')"></span>
+                                </button>
+
+                                {{-- Attacking --}}
+                                <button
+                                    @click="pendingMentality = 'attacking'"
+                                    class="flex flex-col items-center gap-1.5 px-3 py-3 rounded-lg border-2 transition-all min-h-[44px]"
+                                    :class="(pendingMentality ?? activeMentality) === 'attacking'
+                                        ? 'bg-red-100 text-red-800 border-red-500'
+                                        : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'"
+                                >
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                    </svg>
+                                    <span class="text-xs font-semibold" x-text="getMentalityLabel('attacking')"></span>
+                                </button>
                             </div>
+                            <p class="mt-2 text-xs text-slate-400 italic min-h-[1.25rem]" x-text="getMentalityTooltip(pendingMentality ?? activeMentality)"></p>
                         </div>
 
-                        {{-- Coming soon hint --}}
-                        <div class="mt-2 p-3 bg-slate-50 rounded-lg border border-dashed border-slate-200">
-                            <p class="text-xs text-slate-400">{{ __('game.tactical_coming_soon') }}</p>
+                        {{-- Change indicator --}}
+                        <div x-show="hasTacticalChanges" x-cloak class="p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                            <p class="text-xs text-amber-700 font-medium">{{ __('game.tactical_changes_pending') }}</p>
+                        </div>
+
+                        {{-- Confirm / Reset --}}
+                        <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                            <x-secondary-button
+                                @click="resetTactics()"
+                                x-show="hasTacticalChanges"
+                            >
+                                {{ __('game.sub_reset') }}
+                            </x-secondary-button>
+                            <x-primary-button
+                                color="sky"
+                                type="button"
+                                @click="confirmTacticalChanges()"
+                                x-bind:disabled="!hasTacticalChanges || tacticsProcessing"
+                            >
+                                <span x-show="!tacticsProcessing">{{ __('game.tactical_apply') }}</span>
+                                <span x-show="tacticsProcessing">{{ __('game.sub_processing') }}</span>
+                            </x-primary-button>
                         </div>
                     </div>
                 </div>
@@ -327,7 +391,7 @@
             <div class="border-t border-slate-200 bg-slate-50 px-4 py-3 sm:px-6 sm:py-4">
                 <button
                     @click="closeTacticalPanel()"
-                    :disabled="subProcessing"
+                    :disabled="subProcessing || tacticsProcessing"
                     class="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold text-slate-600 hover:text-slate-800 rounded-lg hover:bg-slate-100 transition-colors min-h-[44px]"
                 >
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">

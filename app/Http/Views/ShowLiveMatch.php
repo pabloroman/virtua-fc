@@ -2,6 +2,8 @@
 
 namespace App\Http\Views;
 
+use App\Game\Enums\Formation;
+use App\Game\Enums\Mentality;
 use App\Game\Services\LineupService;
 use App\Models\Game;
 use App\Models\GameMatch;
@@ -135,6 +137,16 @@ class ShowLiveMatch
             ? ($playerMatch->home_mentality ?? 'balanced')
             : ($playerMatch->away_mentality ?? 'balanced');
 
+        $availableFormations = array_map(fn ($f) => [
+            'value' => $f->value,
+            'tooltip' => $f->tooltip(),
+        ], Formation::cases());
+        $availableMentalities = array_map(fn ($m) => [
+            'value' => $m->value,
+            'label' => $m->label(),
+            'tooltip' => $m->tooltip(),
+        ], Mentality::cases());
+
         return view('live-match', [
             'game' => $game,
             'match' => $playerMatch,
@@ -145,8 +157,11 @@ class ShowLiveMatch
             'benchPlayers' => $benchPlayers,
             'existingSubstitutions' => $existingSubstitutions,
             'substituteUrl' => route('game.match.substitute', ['gameId' => $game->id, 'matchId' => $playerMatch->id]),
+            'tacticsUrl' => route('game.match.tactics', ['gameId' => $game->id, 'matchId' => $playerMatch->id]),
             'userFormation' => $userFormation,
             'userMentality' => $userMentality,
+            'availableFormations' => $availableFormations,
+            'availableMentalities' => $availableMentalities,
         ]);
     }
 

@@ -62,6 +62,19 @@ enum Formation: string
         return $this->value;
     }
 
+    public function tooltip(): string
+    {
+        return match ($this) {
+            self::F_4_4_2 => __('game.formation_tip_442'),
+            self::F_4_3_3 => __('game.formation_tip_433'),
+            self::F_4_2_3_1 => __('game.formation_tip_4231'),
+            self::F_3_4_3 => __('game.formation_tip_343'),
+            self::F_3_5_2 => __('game.formation_tip_352'),
+            self::F_5_3_2 => __('game.formation_tip_532'),
+            self::F_5_4_1 => __('game.formation_tip_541'),
+        };
+    }
+
     /**
      * Get pitch slot positions for visual formation display.
      * Returns array of slots with: id, role (position group), x (0-100), y (0-100), label

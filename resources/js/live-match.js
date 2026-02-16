@@ -19,9 +19,17 @@ export default function liveMatch(config) {
         maxSubstitutions: config.maxSubstitutions || 5,
         maxWindows: config.maxWindows || 3,
 
-        // Tactical display config (read-only for now)
+        // Tactical config
         activeFormation: config.activeFormation || '4-4-2',
         activeMentality: config.activeMentality || 'balanced',
+        availableFormations: config.availableFormations || [],
+        availableMentalities: config.availableMentalities || [],
+        tacticsUrl: config.tacticsUrl || '',
+
+        // Tactical change state
+        pendingFormation: null,
+        pendingMentality: null,
+        tacticsProcessing: false,
 
         // Clock state
         currentMinute: 0,
@@ -251,6 +259,8 @@ export default function liveMatch(config) {
             this.selectedPlayerOut = null;
             this.selectedPlayerIn = null;
             this.pendingSubs = [];
+            this.pendingFormation = null;
+            this.pendingMentality = null;
             document.body.classList.add('overflow-y-hidden');
         },
 
@@ -259,16 +269,121 @@ export default function liveMatch(config) {
             this.selectedPlayerOut = null;
             this.selectedPlayerIn = null;
             this.pendingSubs = [];
+            this.pendingFormation = null;
+            this.pendingMentality = null;
             document.body.classList.remove('overflow-y-hidden');
         },
 
         get mentalityLabel() {
-            const labels = {
-                'defensive': 'Defensiva',
-                'balanced': 'Equilibrada',
-                'attacking': 'Ofensiva',
-            };
-            return labels[this.activeMentality] || this.activeMentality;
+            const m = this.availableMentalities.find(m => m.value === this.activeMentality);
+            return m ? m.label : this.activeMentality;
+        },
+
+        get hasTacticalChanges() {
+            return (this.pendingFormation !== null && this.pendingFormation !== this.activeFormation)
+                || (this.pendingMentality !== null && this.pendingMentality !== this.activeMentality);
+        },
+
+        getMentalityLabel(value) {
+            const m = this.availableMentalities.find(m => m.value === value);
+            return m ? m.label : value;
+        },
+
+        getFormationTooltip() {
+            const selected = this.pendingFormation ?? this.activeFormation;
+            const f = this.availableFormations.find(f => f.value === selected);
+            return f ? f.tooltip : '';
+        },
+
+        getMentalityTooltip(value) {
+            const m = this.availableMentalities.find(m => m.value === value);
+            return m ? m.tooltip : '';
+        },
+
+        resetTactics() {
+            this.pendingFormation = null;
+            this.pendingMentality = null;
+        },
+
+        async confirmTacticalChanges() {
+            if (!this.hasTacticalChanges || this.tacticsProcessing) return;
+            this.tacticsProcessing = true;
+
+            const minute = Math.floor(this.currentMinute);
+
+            try {
+                const response = await fetch(this.tacticsUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': this.csrfToken,
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        minute,
+                        formation: this.pendingFormation !== this.activeFormation ? this.pendingFormation : null,
+                        mentality: this.pendingMentality !== this.activeMentality ? this.pendingMentality : null,
+                        previousSubstitutions: this.substitutionsMade.map(s => ({
+                            playerOutId: s.playerOutId,
+                            playerInId: s.playerInId,
+                            minute: s.minute,
+                        })),
+                    }),
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    console.error('Tactical change failed:', error);
+                    this.tacticsProcessing = false;
+                    return;
+                }
+
+                const result = await response.json();
+
+                // Update active tactics
+                if (result.formation) {
+                    this.activeFormation = result.formation;
+                }
+                if (result.mentality) {
+                    this.activeMentality = result.mentality;
+                }
+
+                // Remove future unrevealed events from the array
+                this.events = this.events.filter(e => e.minute <= minute);
+
+                // Remove future events from revealedEvents too
+                this.revealedEvents = this.revealedEvents.filter(e => e.minute <= minute);
+
+                // Append new events from the server
+                if (result.newEvents && result.newEvents.length > 0) {
+                    this.events.push(...result.newEvents);
+                    this.events.sort((a, b) => a.minute - b.minute);
+                }
+
+                // Reset lastRevealedIndex
+                this.lastRevealedIndex = -1;
+                for (let i = 0; i < this.events.length; i++) {
+                    if (this.events[i].minute <= this.currentMinute) {
+                        this.lastRevealedIndex = i;
+                    } else {
+                        break;
+                    }
+                }
+
+                // Update the final score
+                this.finalHomeScore = result.newScore.home;
+                this.finalAwayScore = result.newScore.away;
+
+                // Recalculate current displayed score
+                this.recalculateScore();
+
+                // Close the panel and resume
+                this.closeTacticalPanel();
+            } catch (err) {
+                console.error('Tactical change request failed:', err);
+            } finally {
+                this.tacticsProcessing = false;
+            }
         },
 
         // =============================
@@ -341,6 +456,12 @@ export default function liveMatch(config) {
 
         get availableBenchPlayers() {
             return this.availableBenchForPicker;
+        },
+
+        resetSubstitutions() {
+            this.selectedPlayerOut = null;
+            this.selectedPlayerIn = null;
+            this.pendingSubs = [];
         },
 
         addPendingSub() {
