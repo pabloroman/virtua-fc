@@ -27,7 +27,7 @@ class PlayoffGeneratorFactory
                 $this->generators[$competitionId] = new ($rule['playoff_generator'])(
                     competitionId: $competitionId,
                     qualifyingPositions: $rule['playoff_positions'] ?? [],
-                    directPromotionPositions: $rule['direct_promotion_positions'] ?? [],
+                    directPromotionPositions: $rule['direct_promotion_positions'],
                     triggerMatchday: $triggerMatchday,
                 );
             }

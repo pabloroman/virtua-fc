@@ -54,7 +54,7 @@ class LeagueHandler implements CompetitionHandler
     {
         return route('game.results', [
             'gameId' => $game->id,
-            'competition' => $matches->first()?->competition_id ?? $game->competition_id,
+            'competition' => $matches->first()->competition_id ?? $game->competition_id,
             'matchday' => $matchday,
         ]);
     }

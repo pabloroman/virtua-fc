@@ -111,8 +111,7 @@ class PlayerValuationService
                 $trendMultiplier = match (true) {
                     $change >= 5 => 1.4,
                     $change >= 3 => 1.25,
-                    $change >= 1 => 1.1,
-                    default => 1.0,
+                    default => 1.1,
                 };
             } elseif ($change < 0) {
                 // Declining players lose value faster

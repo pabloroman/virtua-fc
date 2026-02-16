@@ -38,7 +38,7 @@ class LineupService
                 return false;
             }
             // Check injury
-            if ($player->injury_until && $matchDate && $player->injury_until->gt($matchDate)) {
+            if ($player->injury_until && $player->injury_until->gt($matchDate)) {
                 return false;
             }
             return true;
@@ -470,7 +470,7 @@ class LineupService
                     return false;
                 }
                 // Check injury
-                if ($player->injury_until && $matchDate && $player->injury_until->gt($matchDate)) {
+                if ($player->injury_until && $player->injury_until->gt($matchDate)) {
                     return false;
                 }
                 return true;

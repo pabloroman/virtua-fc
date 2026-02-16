@@ -272,7 +272,7 @@ class NotificationService
         $isIncoming = $offer->direction === TransferOffer::DIRECTION_INCOMING;
 
         if ($isIncoming) {
-            $fromTeam = $offer->sellingTeam?->name ?? $player->team?->name ?? '';
+            $fromTeam = $offer->sellingTeam->name ?? $player->team->name ?? '';
             $fee = $offer->transfer_fee > 0
                 ? $offer->formatted_transfer_fee
                 : __('notifications.free_transfer');
@@ -556,6 +556,7 @@ class NotificationService
                 priority: GameNotification::PRIORITY_CRITICAL,
                 metadata: ['player_id' => $player->id],
             ),
+            default => throw new \InvalidArgumentException("Unexpected renewal result: {$result}"),
         };
     }
 

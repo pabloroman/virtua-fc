@@ -135,7 +135,7 @@ class TransferOffer extends Model
             return $this->sellingTeam?->name;
         }
 
-        return $this->gamePlayer?->team?->name;
+        return $this->gamePlayer->team->name;
     }
 
     /**

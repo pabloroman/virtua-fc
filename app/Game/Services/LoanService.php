@@ -186,7 +186,7 @@ class LoanService
     private function scoreReputation(GamePlayer $player, Team $team): int
     {
         $expectedReputation = $this->getExpectedReputation($player);
-        $teamReputation = $team->clubProfile?->reputation_level ?? ClubProfile::REPUTATION_MODEST;
+        $teamReputation = $team->clubProfile->reputation_level ?? ClubProfile::REPUTATION_MODEST;
 
         $tiers = [
             ClubProfile::REPUTATION_ELITE,
@@ -268,7 +268,7 @@ class LoanService
      */
     private function scoreLeagueTier(GamePlayer $player, Team $team): int
     {
-        $reputation = $team->clubProfile?->reputation_level ?? ClubProfile::REPUTATION_MODEST;
+        $reputation = $team->clubProfile->reputation_level ?? ClubProfile::REPUTATION_MODEST;
         $devStatus = $player->development_status;
         $avgAbility = (int) round(($player->current_technical_ability + $player->current_physical_ability) / 2);
 

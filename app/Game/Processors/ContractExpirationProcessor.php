@@ -50,7 +50,7 @@ class ContractExpirationProcessor implements SeasonEndProcessor
                 'playerId' => $player->id,
                 'playerName' => $player->name,
                 'teamId' => $player->team_id,
-                'teamName' => $player->team?->name,
+                'teamName' => $player->team->name,
                 'wasUserTeam' => $player->team_id === $game->team_id,
             ];
 

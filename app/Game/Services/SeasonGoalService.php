@@ -14,7 +14,7 @@ class SeasonGoalService
      */
     public function determineGoalForTeam(Team $team, Competition $competition): string
     {
-        $reputation = $team->clubProfile?->reputation_level ?? ClubProfile::REPUTATION_MODEST;
+        $reputation = $team->clubProfile->reputation_level ?? ClubProfile::REPUTATION_MODEST;
         $config = $competition->getConfig();
 
         return $config->getSeasonGoal($reputation);

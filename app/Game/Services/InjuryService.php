@@ -358,7 +358,7 @@ class InjuryService
         }
 
         $investment = $game->currentInvestment;
-        $tier = $investment?->medical_tier ?? 1;
+        $tier = $investment->medical_tier ?? 1;
 
         return self::MEDICAL_INJURY_MULTIPLIER[$tier] ?? 1.0;
     }
@@ -373,7 +373,7 @@ class InjuryService
         }
 
         $investment = $game->currentInvestment;
-        $tier = $investment?->medical_tier ?? 1;
+        $tier = $investment->medical_tier ?? 1;
 
         return self::MEDICAL_RECOVERY_MULTIPLIER[$tier] ?? 1.0;
     }

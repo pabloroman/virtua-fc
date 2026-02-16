@@ -111,6 +111,6 @@ class PlayerSuspension extends Model
     public static function getMatchesRemaining(string $gamePlayerId, string $competitionId): int
     {
         $suspension = self::forPlayerInCompetition($gamePlayerId, $competitionId);
-        return $suspension?->matches_remaining ?? 0;
+        return $suspension->matches_remaining ?? 0;
     }
 }

@@ -25,7 +25,7 @@ class RegisteredUserController extends Controller
         return view('auth.register', [
             'inviteCode' => $request->query('invite'),
             'betaMode' => config('beta.enabled'),
-            'email' => $invite?->email ?? null,
+            'email' => $invite->email ?? null,
         ]);
     }
 

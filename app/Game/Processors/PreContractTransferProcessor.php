@@ -43,7 +43,7 @@ class PreContractTransferProcessor implements SeasonEndProcessor
             'playerId' => $offer->game_player_id,
             'playerName' => $offer->gamePlayer->name,
             'fromTeamId' => $offer->selling_team_id,
-            'fromTeamName' => $offer->sellingTeam?->name ?? 'Unknown',
+            'fromTeamName' => $offer->sellingTeam->name ?? 'Unknown',
             'toTeamId' => $game->team_id,
         ])->toArray();
 

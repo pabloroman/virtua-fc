@@ -138,7 +138,7 @@ class SetupNewGame implements ShouldQueue
 
         $countryConfig = app(CountryConfig::class);
         $game = Game::find($this->gameId);
-        $countryCode = $game?->country ?? 'ES';
+        $countryCode = $game->country ?? 'ES';
 
         // Get competitions in dependency order from country config
         $competitionIds = $countryConfig->playerInitializationOrder($countryCode);
@@ -220,7 +220,7 @@ class SetupNewGame implements ShouldQueue
     ): void {
         $countryConfig = app(CountryConfig::class);
         $game = Game::find($this->gameId);
-        $countryCode = $game?->country ?? 'ES';
+        $countryCode = $game->country ?? 'ES';
 
         $swissIds = $countryConfig->swissFormatCompetitionIds($countryCode);
 

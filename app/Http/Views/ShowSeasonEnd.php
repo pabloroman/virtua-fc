@@ -67,7 +67,7 @@ class ShowSeasonEnd
 
         $cupWinner = null;
         $cupRunnerUp = null;
-        $cupName = $cupCompetition?->name ?? 'Cup';
+        $cupName = $cupCompetition->name ?? 'Cup';
 
         if ($cupCompetition) {
             // Find the final round (highest round number that was completed)

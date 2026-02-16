@@ -66,8 +66,8 @@ class KnockoutCupHandler implements CompetitionHandler
 
         return route('game.results', [
             'gameId' => $game->id,
-            'competition' => $firstMatch?->competition_id ?? $game->competition_id,
-            'matchday' => $firstMatch?->round_number ?? $matchday,
+            'competition' => $firstMatch->competition_id ?? $game->competition_id,
+            'matchday' => $firstMatch->round_number ?? $matchday,
         ]);
     }
 
@@ -142,7 +142,7 @@ class KnockoutCupHandler implements CompetitionHandler
         $amount = $prizeAmounts[$roundNumber] ?? $prizeAmounts[1];
 
         $competition = Competition::find($competitionId);
-        $competitionName = $competition?->name ?? 'Cup';
+        $competitionName = $competition->name ?? 'Cup';
 
         $roundName = "Round $roundNumber";
 

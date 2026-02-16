@@ -111,7 +111,7 @@ class CupTie extends Model
         $competition = $this->competition ?? Competition::find($this->competition_id);
         $rounds = \App\Game\Services\LeagueFixtureGenerator::loadKnockoutRounds(
             $this->competition_id,
-            $competition?->season ?? '2025',
+            $competition->season ?? '2025',
         );
 
         foreach ($rounds as $round) {
@@ -125,7 +125,7 @@ class CupTie extends Model
 
     public function isTwoLegged(): bool
     {
-        return $this->getRoundConfig()?->twoLegged ?? false;
+        return $this->getRoundConfig()->twoLegged ?? false;
     }
 
     /**

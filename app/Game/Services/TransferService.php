@@ -935,7 +935,7 @@ class TransferService
     {
         $player = $offer->gamePlayer;
         $playerName = $player->player->name;
-        $sellerName = $offer->sellingTeam?->name ?? $player->team?->name ?? 'Unknown';
+        $sellerName = $offer->sellingTeam->name ?? $player->team->name ?? 'Unknown';
 
         // Transfer player to user's team
         $age = $player->age;

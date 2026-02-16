@@ -27,7 +27,7 @@ class ShowAcademy
 
         $expiringContractsCount = $this->contractService->getPlayersEligibleForRenewal($game)->count();
 
-        $tier = $game->currentInvestment?->youth_academy_tier ?? 0;
+        $tier = $game->currentInvestment->youth_academy_tier ?? 0;
         $tierDescription = YouthAcademyService::getTierDescription($tier);
 
         return view('squad-academy', [

@@ -197,7 +197,11 @@ class MatchResultProcessor
                             'goal' => 'goals',
                             'own_goal' => 'own_goals',
                             'assist' => 'assists',
+                            default => null,
                         };
+                        if ($column === null) {
+                            break;
+                        }
                         $statIncrements[$playerId][$column] = ($statIncrements[$playerId][$column] ?? 0) + 1;
                         break;
 

@@ -78,7 +78,7 @@ class PromotionRelegationFactory
                     $playoffGenerator = new ($promotion['playoff_generator'])(
                         competitionId: $competitionId,
                         qualifyingPositions: $promotion['playoff_positions'] ?? [],
-                        directPromotionPositions: $promotion['direct_promotion_positions'] ?? [],
+                        directPromotionPositions: $promotion['direct_promotion_positions'],
                         triggerMatchday: ($teamCount - 1) * 2,
                     );
                 }

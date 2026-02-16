@@ -32,10 +32,6 @@ class BudgetProjectionService
         $team = $game->team;
         $league = $game->competition;
 
-        if (!$league) {
-            throw new \RuntimeException('Team has no league competition');
-        }
-
         // Calculate squad strengths for all teams in the league
         $teamStrengths = $this->calculateLeagueStrengths($game, $league);
 
@@ -57,7 +53,7 @@ class BudgetProjectionService
         $projectedWages = $this->calculateProjectedWages($game);
 
         // Calculate operating expenses based on club reputation
-        $reputation = $team->clubProfile?->reputation_level ?? ClubProfile::REPUTATION_MODEST;
+        $reputation = $team->clubProfile->reputation_level ?? ClubProfile::REPUTATION_MODEST;
         $baseOperatingExpenses = config('finances.operating_expenses.' . $reputation, 700_000_000);
         $tierMultiplier = config('finances.operating_expense_tier_multiplier.' . $league->tier, 1.0);
         $projectedOperatingExpenses = (int) ($baseOperatingExpenses * $tierMultiplier);
@@ -179,14 +175,9 @@ class BudgetProjectionService
      */
     public function calculateMatchdayRevenue(Team $team, Game $game): int
     {
-        $reputation = $team->clubProfile?->reputation_level ?? ClubProfile::REPUTATION_MODEST;
+        $reputation = $team->clubProfile->reputation_level ?? ClubProfile::REPUTATION_MODEST;
 
         // Base matchday revenue from stadium size and competition config rates
-        $league = $game->competition;
-        if (!$league) {
-            return 0;
-        }
-
         $base = $team->stadium_seats * config("finances.revenue_per_seat.{$reputation}", 15_000);
 
         // Get facilities multiplier from current investment (default to Tier 1 = 1.0)
@@ -259,7 +250,7 @@ class BudgetProjectionService
         }
 
         // First season: calculate from stadium seats × config rate
-        $reputation = $team->clubProfile?->reputation_level ?? ClubProfile::REPUTATION_MODEST;
+        $reputation = $team->clubProfile->reputation_level ?? ClubProfile::REPUTATION_MODEST;
 
         $base = $team->stadium_seats * config("finances.commercial_per_seat.{$reputation}", 80_000);
 

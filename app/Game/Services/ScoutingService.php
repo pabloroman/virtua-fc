@@ -38,7 +38,7 @@ class ScoutingService
      */
     public function canSearchInternationally(Game $game): bool
     {
-        $tier = $game->currentInvestment?->scouting_tier ?? 1;
+        $tier = $game->currentInvestment->scouting_tier ?? 1;
 
         return $tier >= self::INTERNATIONAL_SEARCH_MIN_TIER;
     }
@@ -46,15 +46,6 @@ class ScoutingService
     // =========================================
     // SCOUT SEARCH
     // =========================================
-
-    /**
-     * Position groups for broad searches.
-     */
-    private const POSITION_GROUPS = [
-        'any_defender' => ['Centre-Back', 'Left-Back', 'Right-Back'],
-        'any_midfielder' => ['Defensive Midfield', 'Central Midfield', 'Attacking Midfield', 'Left Midfield', 'Right Midfield'],
-        'any_forward' => ['Left Winger', 'Right Winger', 'Centre-Forward', 'Second Striker'],
-    ];
 
     /**
      * Map filter position values to actual position strings.
@@ -152,7 +143,7 @@ class ScoutingService
 
         // Apply scouting tier reduction
         if ($game) {
-            $tier = $game->currentInvestment?->scouting_tier ?? 1;
+            $tier = $game->currentInvestment->scouting_tier ?? 1;
             $reduction = self::SCOUTING_TIER_EFFECTS[$tier][0] ?? 0;
             $baseWeeks = max(1, $baseWeeks - $reduction);
         }
@@ -311,7 +302,7 @@ class ScoutingService
         $baseCount = rand(5, 8);
 
         // Apply scouting tier bonus for extra results
-        $tier = $game->currentInvestment?->scouting_tier ?? 1;
+        $tier = $game->currentInvestment->scouting_tier ?? 1;
         $extraResults = self::SCOUTING_TIER_EFFECTS[$tier][1] ?? 0;
 
         // Take players, biased toward available ones but include 1-2 stretch targets
@@ -632,7 +623,7 @@ class ScoutingService
         $techAbility = $player->current_technical_ability;
         $physAbility = $player->current_physical_ability;
 
-        $tier = $game->currentInvestment?->scouting_tier ?? 1;
+        $tier = $game->currentInvestment->scouting_tier ?? 1;
         $fuzzReduction = self::SCOUTING_TIER_EFFECTS[$tier][2] ?? 0;
         $baseFuzz = rand(3, 7);
         $fuzz = max(1, $baseFuzz - $fuzzReduction);
@@ -646,7 +637,7 @@ class ScoutingService
             'importance' => $importance,
             'can_afford_fee' => $canAffordFee,
             'can_afford_wage' => $canAffordWage,
-            'transfer_budget' => $investment?->transfer_budget ?? 0,
+            'transfer_budget' => $investment->transfer_budget ?? 0,
             'formatted_transfer_budget' => $investment ? $investment->formatted_transfer_budget : '€ 0',
             'tech_range' => [max(1, $techAbility - $fuzz), min(99, $techAbility + $fuzz)],
             'phys_range' => [max(1, $physAbility - $fuzz), min(99, $physAbility + $fuzz)],
