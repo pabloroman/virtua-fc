@@ -16,13 +16,16 @@
                         'teamForms' => $teamForms,
                     ])
                 @else
-                    @include('partials.standings-flat', [
-                        'game' => $game,
-                        'competition' => $competition,
-                        'standings' => $standings,
-                        'teamForms' => $teamForms,
-                        'standingsZones' => $standingsZones,
-                    ])
+                    <div class="md:col-span-2 space-y-3">
+                        <h3 class="font-semibold text-xl text-slate-900">{{ $competition->name }}</h3>
+
+                        @include('partials.standings-flat', [
+                            'game' => $game,
+                            'standings' => $standings,
+                            'teamForms' => $teamForms,
+                            'standingsZones' => $standingsZones,
+                        ])
+                    </div>
                 @endif
 
                 <x-top-scorers :top-scorers="$topScorers" :player-team-id="$game->team_id" />
