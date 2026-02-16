@@ -31,8 +31,8 @@ class ShowSquadDevelopment
             ->get()
             ->map(function ($player) {
                 // Add projection data
-                $player->projection = $this->developmentService->getNextSeasonProjection($player);
-                $player->development_status = DevelopmentCurve::getStatus($player->age);
+                $player->setAttribute('projection', $this->developmentService->getNextSeasonProjection($player));
+                $player->setAttribute('development_status', DevelopmentCurve::getStatus($player->age));
                 return $player;
             })
             ->sortBy(fn ($p) => $this->sortOrder($p));

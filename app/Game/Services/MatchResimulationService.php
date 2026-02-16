@@ -232,6 +232,7 @@ class MatchResimulationService
             'red_card' => 'red_cards',
         ];
 
+        /** @var object{game_player_id: string, event_type: string, cnt: int} $row */
         foreach ($statCounts as $row) {
             $column = $columnMap[$row->event_type] ?? null;
             if ($column) {

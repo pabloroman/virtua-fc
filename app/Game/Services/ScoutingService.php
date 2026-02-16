@@ -213,7 +213,9 @@ class ScoutingService
 
         // Age filter (age is computed from players.date_of_birth, not a column)
         if (! empty($filters['age_min']) || ! empty($filters['age_max'])) {
-            $driver = $query->getQuery()->getConnection()->getDriverName();
+            /** @var \Illuminate\Database\Connection $connection */
+            $connection = $query->getQuery()->getConnection();
+            $driver = $connection->getDriverName();
             $dobSubquery = '(SELECT date_of_birth FROM players WHERE players.id = game_players.player_id)';
 
             if ($driver === 'pgsql') {
