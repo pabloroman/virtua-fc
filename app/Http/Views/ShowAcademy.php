@@ -52,7 +52,7 @@ class ShowAcademy
             'Forward' => '4',
             default => '5',
         };
-        $potential = str_pad(99 - $player->potential, 2, '0', STR_PAD_LEFT);
+        $potential = str_pad((string) (99 - $player->potential), 2, '0', STR_PAD_LEFT);
 
         return "{$positionOrder}-{$potential}";
     }

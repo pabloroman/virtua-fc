@@ -112,7 +112,7 @@ class SeasonEndPipeline
             $startYear = (int) $parts[0] + 1;
             $endYear = (int) $parts[1] + 1;
 
-            return $startYear.'-'.str_pad($endYear, 2, '0', STR_PAD_LEFT);
+            return $startYear.'-'.str_pad((string) $endYear, 2, '0', STR_PAD_LEFT);
         }
 
         return (string) ((int) $season + 1);
