@@ -136,6 +136,7 @@
                 const response = await fetch(`{{ route('game.lineup.auto', [$game->id, $match->id]) }}?formation=${this.selectedFormation}`);
                 const data = await response.json();
                 this.autoLineup = data.autoLineup;
+                this.selectedPlayers = [...this.autoLineup];
             } catch (e) {
                 console.error('Failed to fetch auto lineup', e);
             }
