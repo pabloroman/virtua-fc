@@ -696,6 +696,7 @@ class ContractService
      */
     public function reconsiderRenewal(GamePlayer $player): void
     {
+        /** @var RenewalNegotiation|null $latest */
         $latest = $player->relationLoaded('latestRenewalNegotiation')
             ? $player->latestRenewalNegotiation
             : $player->latestRenewalNegotiation()->first();

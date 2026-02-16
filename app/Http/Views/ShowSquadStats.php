@@ -18,13 +18,13 @@ class ShowSquadStats
             ->get()
             ->map(function ($player) {
                 // Add calculated stats
-                $player->goal_contributions = $player->goals + $player->assists;
-                $player->goals_per_game = $player->appearances > 0
+                $player->setAttribute('goal_contributions', $player->goals + $player->assists);
+                $player->setAttribute('goals_per_game', $player->appearances > 0
                     ? round($player->goals / $player->appearances, 2)
-                    : 0;
-                $player->assists_per_game = $player->appearances > 0
+                    : 0);
+                $player->setAttribute('assists_per_game', $player->appearances > 0
                     ? round($player->assists / $player->appearances, 2)
-                    : 0;
+                    : 0);
                 return $player;
             });
 

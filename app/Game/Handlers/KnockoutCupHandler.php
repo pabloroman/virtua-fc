@@ -144,11 +144,7 @@ class KnockoutCupHandler implements CompetitionHandler
         $competition = Competition::find($competitionId);
         $competitionName = $competition?->name ?? 'Cup';
 
-        $tie = CupTie::where('game_id', $game->id)
-            ->where('competition_id', $competitionId)
-            ->where('round_number', $roundNumber)
-            ->first();
-        $roundName = $tie?->round_name ?? "Round $roundNumber";
+        $roundName = "Round $roundNumber";
 
         FinancialTransaction::recordIncome(
             gameId: $game->id,

@@ -161,8 +161,8 @@ class SimulateMatch extends Command
             $results['scorelines'][$scoreline] = ($results['scorelines'][$scoreline] ?? 0) + 1;
 
             if ($this->option('verbose-results')) {
-                $hn = $homeTeam->short_name ?: $homeTeam->name;
-                $an = $awayTeam->short_name ?: $awayTeam->name;
+                $hn = $homeTeam->name;
+                $an = $awayTeam->name;
                 $this->line(" [{$i}] {$hn} {$result->homeScore} - {$result->awayScore} {$an}");
             }
 
@@ -182,8 +182,8 @@ class SimulateMatch extends Command
         $avgTotalGoals = round(array_sum($results['total_goals']) / $runs, 2);
 
         // Get display names (use short_name or fallback to name)
-        $homeName = $homeTeam->short_name ?: $homeTeam->name;
-        $awayName = $awayTeam->short_name ?: $awayTeam->name;
+        $homeName = $homeTeam->name;
+        $awayName = $awayTeam->name;
 
         // Display results
         $this->info('=== Results ===');

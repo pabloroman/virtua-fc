@@ -65,11 +65,11 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property-read string $formatted_wage
  * @property-read string $name
  * @property-read array|null $nationality
- * @property-read \App\Models\array{name: $nationality_flag
+ * @property-read array{name: string, flag: string}|null $nationality_flag
  * @property-read int $overall_score
  * @property-read int $physical_ability
  * @property-read string $position_abbreviation
- * @property-read \App\Models\array{abbreviation: $position_display
+ * @property-read array{abbreviation: string, name: string}|null $position_display
  * @property-read string $position_group
  * @property-read string $position_name
  * @property-read string $potential_range
@@ -306,6 +306,7 @@ class GamePlayer extends Model
             return $latest !== null && $latest->isBlocking();
         }
 
+        /** @var RenewalNegotiation|null $latest */
         $latest = $this->latestRenewalNegotiation()->first();
         return $latest !== null && $latest->isBlocking();
     }
