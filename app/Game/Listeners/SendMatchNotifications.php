@@ -17,15 +17,6 @@ class SendMatchNotifications
 
     public function handle(MatchFinalized $event): void
     {
-        $this->notifyMatchEvents($event);
-        $this->notifyCupTieResult($event);
-    }
-
-    /**
-     * Create notifications for red cards, injuries, and yellow card accumulation suspensions.
-     */
-    private function notifyMatchEvents(MatchFinalized $event): void
-    {
         $events = MatchEvent::where('game_match_id', $event->match->id)
             ->whereIn('event_type', ['red_card', 'injury', 'yellow_card'])
             ->get();
@@ -84,43 +75,6 @@ class SendMatchNotifications
                 $player,
                 $suspension,
                 __('notifications.reason_yellow_accumulation'),
-            );
-        }
-    }
-
-    /**
-     * Notify about cup tie advancement or elimination.
-     */
-    private function notifyCupTieResult(MatchFinalized $event): void
-    {
-        if (! $event->resolvedCupTie || ! $event->cupTieWinnerId) {
-            return;
-        }
-
-        $cupTie = $event->resolvedCupTie;
-        $game = $event->game;
-
-        if (! $cupTie->involvesTeam($game->team_id)) {
-            return;
-        }
-
-        $roundConfig = $cupTie->getRoundConfig();
-        $roundName = $roundConfig->name ?? '';
-        $competitionName = $event->competition->name ?? 'Cup';
-
-        if ($event->cupTieWinnerId === $game->team_id) {
-            $this->notificationService->notifyCompetitionAdvancement(
-                $game,
-                $event->competition->id,
-                $competitionName,
-                __('cup.advanced_past_round', ['round' => $roundName]),
-            );
-        } else {
-            $this->notificationService->notifyCompetitionElimination(
-                $game,
-                $event->competition->id,
-                $competitionName,
-                __('cup.eliminated_in_round', ['round' => $roundName]),
             );
         }
     }
