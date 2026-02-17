@@ -220,7 +220,7 @@ class YouthAcademyService
      */
     public function loanPlayer(AcademyPlayer $player): void
     {
-        $player->update(['is_on_loan' => true]);
+        $player->update(['is_on_loan' => true, 'evaluation_needed' => false]);
     }
 
     /**

@@ -173,6 +173,16 @@ class Game extends Model
         return $this->pending_actions[0] ?? null;
     }
 
+    public function hasPendingAction(string $type): bool
+    {
+        foreach ($this->pending_actions ?? [] as $action) {
+            if ($action['type'] === $type) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public function addPendingAction(string $type, string $route): void
     {
         $actions = $this->pending_actions ?? [];

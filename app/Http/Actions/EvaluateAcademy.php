@@ -80,12 +80,12 @@ class EvaluateAcademy
                 ->with('warning', __('messages.academy_over_capacity', ['excess' => $excess]));
         }
 
-        // Process decisions
+        // Process decisions, clearing the evaluation flag as each player is handled
         foreach ($players as $player) {
             $decision = $decisions[$player->id];
 
             match ($decision) {
-                'keep' => null, // No action needed
+                'keep' => $player->update(['evaluation_needed' => false]),
                 'promote' => $this->youthAcademyService->promoteToFirstTeam($player, $game),
                 'loan' => $this->youthAcademyService->loanPlayer($player),
                 'dismiss' => $this->youthAcademyService->dismissPlayer($player),
@@ -93,8 +93,15 @@ class EvaluateAcademy
             };
         }
 
-        // Remove the pending action
-        $game->removePendingAction('academy_evaluation');
+        // Remove pending action only when all players have been evaluated
+        $stillNeedsEval = AcademyPlayer::where('game_id', $gameId)
+            ->where('team_id', $game->team_id)
+            ->where('evaluation_needed', true)
+            ->exists();
+
+        if (!$stillNeedsEval) {
+            $game->removePendingAction('academy_evaluation');
+        }
 
         return redirect()->route('game.squad.academy', $gameId)
             ->with('success', __('messages.academy_evaluation_complete'));

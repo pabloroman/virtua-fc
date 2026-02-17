@@ -377,14 +377,23 @@ class AdvanceMatchday
         // Develop academy players each matchday
         $this->youthAcademyService->developPlayers($game);
 
-        // Trigger academy evaluation at winter window start
+        // Mark players for evaluation at winter window start
         if ($game->isStartOfWinterWindow()) {
-            $academyCount = \App\Models\AcademyPlayer::where('game_id', $game->id)
+            \App\Models\AcademyPlayer::where('game_id', $game->id)
                 ->where('team_id', $game->team_id)
                 ->where('is_on_loan', false)
-                ->count();
+                ->where('evaluation_needed', false)
+                ->update(['evaluation_needed' => true]);
+        }
 
-            if ($academyCount > 0) {
+        // Add pending action if any players still need evaluation
+        $needsEval = \App\Models\AcademyPlayer::where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->where('evaluation_needed', true)
+            ->exists();
+
+        if ($needsEval) {
+            if (!$game->hasPendingAction('academy_evaluation')) {
                 $game->addPendingAction('academy_evaluation', 'game.squad.academy.evaluate');
                 $this->notificationService->notifyAcademyEvaluation($game);
             }
