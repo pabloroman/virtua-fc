@@ -163,7 +163,7 @@
                                             {{-- Contract --}}
                                             <td class="py-2 text-center text-slate-600 hidden md:table-cell">
                                                 @if($gamePlayer->contract_until)
-                                                    @if($gamePlayer->isContractExpiring())
+                                                    @if($gamePlayer->isContractExpiring($seasonEndDate))
                                                         <span class="text-red-600 font-medium" title="Contract expiring">
                                                             {{ $gamePlayer->contract_expiry_year }}
                                                         </span>

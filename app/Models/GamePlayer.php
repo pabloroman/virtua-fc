@@ -337,6 +337,10 @@ class GamePlayer extends Model
      */
     public function isLoanedIn(string $userTeamId): bool
     {
+        if ($this->relationLoaded('activeLoan')) {
+            return $this->activeLoan !== null && $this->activeLoan->loan_team_id === $userTeamId;
+        }
+
         return Loan::where('game_player_id', $this->id)
             ->where('loan_team_id', $userTeamId)
             ->where('status', Loan::STATUS_ACTIVE)

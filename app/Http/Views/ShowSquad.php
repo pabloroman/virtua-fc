@@ -63,6 +63,8 @@ class ShowSquad
             $academyCount = AcademyPlayer::where('game_id', $gameId)->where('team_id', $game->team_id)->count();
         }
 
+        $seasonEndDate = $game->getSeasonEndDate();
+
         return view('squad', [
             'game' => $game,
             'goalkeepers' => $players['goalkeepers'],
@@ -76,6 +78,7 @@ class ShowSquad
             'agreedPreContracts' => $agreedPreContracts,
             'isTransferWindow' => $isTransferWindow,
             'academyCount' => $academyCount,
+            'seasonEndDate' => $seasonEndDate,
         ]);
     }
 }

@@ -50,7 +50,7 @@ class LineupService
      */
     public function getAllPlayers(string $gameId, string $teamId): Collection
     {
-        return GamePlayer::with(['player', 'suspensions'])
+        return GamePlayer::with(['player', 'suspensions', 'transferOffers', 'activeLoan'])
             ->where('game_id', $gameId)
             ->where('team_id', $teamId)
             ->get();
