@@ -30,8 +30,12 @@
     <div class="flex items-start justify-between gap-4 pb-5 border-b border-slate-200">
         {{-- Left: avatar + player info --}}
         <div class="flex items-start gap-4 min-w-0">
-            <img src="/img/player-avatar.svg" class="w-16 h-20 md:w-20 md:h-24 rounded-lg border border-slate-200 shrink-0 bg-slate-100" alt="">
+            <img src="/img/default-player.jpg" class="h-24 w-auto md:h-32 md:w-auto rounded-lg border border-slate-200 shrink-0 bg-slate-100" alt="">
             <div class="min-w-0">
+                <div class="flex items-center gap-2 mt-1.5">
+                    <x-position-badge :position="$gamePlayer->position" />
+                    <span class="text-sm font-medium text-slate-600">{{ $gamePlayer->position_name }}</span>
+                </div>
                 <div class="flex items-center gap-2.5 flex-wrap">
                     <h3 class="font-bold text-xl md:text-2xl text-slate-900 truncate">{{ $gamePlayer->name }}</h3>
                     @if($gamePlayer->number)
@@ -41,31 +45,20 @@
                 <div class="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1.5 text-sm text-slate-500">
                     @if($nationalityFlag)
                         <img src="/flags/{{ $nationalityFlag['code'] }}.svg" class="w-5 h-4 rounded shadow-sm">
-                        <span>{{ $nationalityFlag['name'] }}</span>
+                        <span>{{ __('countries.' . $nationalityFlag['name']) }}</span>
                         <span class="text-slate-300">&middot;</span>
                     @endif
-                    <span>{{ $gamePlayer->age }} {{ __('app.years') }}</span>
-                </div>
-                <div class="flex items-center gap-2 mt-1.5">
-                    <x-position-badge :position="$gamePlayer->position" />
-                    <span class="text-sm font-medium text-slate-600">{{ $gamePlayer->position_name }}</span>
-                    @if($devStatus)
+                    @if($gamePlayer->team && $isCareerMode)
+                        <img src="{{ $gamePlayer->team->image }}" class="w-4 h-4 rounded shadow-sm">
+                        <span>{{ $gamePlayer->team->name }}</span>
                         <span class="text-slate-300">&middot;</span>
-                        <span class="inline-flex items-center gap-1 text-xs font-semibold
-                            @if($devStatus === 'growing') text-green-600
-                            @elseif($devStatus === 'peak') text-sky-600
-                            @else text-orange-600
-                            @endif">
-                            @if($devStatus === 'growing')
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg>
-                            @elseif($devStatus === 'declining')
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-                            @else
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14"/></svg>
+                    @endif
+                    <span>
+                        {{ $gamePlayer->age }} {{ __('app.years') }}
+                            @if($gamePlayer->player->height)
+                                / {{ $gamePlayer->player->height }}
                             @endif
-                            {{ $devLabels[$devStatus] ?? $devStatus }}
-                        </span>
-                    @endif
+                    </span>
                 </div>
             </div>
         </div>
@@ -86,12 +79,12 @@
     </div>
 
     {{-- Two columns: Parameters + Details --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 mt-5">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-6 mt-5">
 
         {{-- Parameters --}}
         <div>
             <h4 class="text-sm font-semibold text-slate-900 pb-2 border-b border-slate-200 mb-4">{{ __('squad.abilities') }}</h4>
-            <div class="space-y-3.5">
+            <div class="space-y-3">
                 {{-- Technical --}}
                 @php $val = $gamePlayer->technical_ability; @endphp
                 <div class="flex items-center justify-between gap-3">
@@ -100,7 +93,7 @@
                         <div class="w-28 h-2 bg-slate-100 rounded-full overflow-hidden">
                             <div class="h-2 rounded-full @if($val >= 80) bg-green-500 @elseif($val >= 70) bg-lime-500 @elseif($val >= 60) bg-amber-500 @else bg-slate-400 @endif" style="width: {{ $val / 99 * 100 }}%"></div>
                         </div>
-                        <span class="text-sm font-bold tabular-nums w-7 text-right @if($val >= 80) text-green-600 @elseif($val >= 70) text-lime-600 @elseif($val >= 60) text-amber-600 @else text-slate-400 @endif">{{ $val }}</span>
+                        <span class="text-sm font-semibold tabular-nums w-7 text-right @if($val >= 80) text-green-600 @elseif($val >= 70) text-lime-600 @elseif($val >= 60) text-amber-600 @else text-slate-400 @endif">{{ $val }}</span>
                     </div>
                 </div>
                 {{-- Physical --}}
@@ -111,7 +104,7 @@
                         <div class="w-28 h-2 bg-slate-100 rounded-full overflow-hidden">
                             <div class="h-2 rounded-full @if($val >= 80) bg-green-500 @elseif($val >= 70) bg-lime-500 @elseif($val >= 60) bg-amber-500 @else bg-slate-400 @endif" style="width: {{ $val / 99 * 100 }}%"></div>
                         </div>
-                        <span class="text-sm font-bold tabular-nums w-7 text-right @if($val >= 80) text-green-600 @elseif($val >= 70) text-lime-600 @elseif($val >= 60) text-amber-600 @else text-slate-400 @endif">{{ $val }}</span>
+                        <span class="text-sm font-semibold tabular-nums w-7 text-right @if($val >= 80) text-green-600 @elseif($val >= 70) text-lime-600 @elseif($val >= 60) text-amber-600 @else text-slate-400 @endif">{{ $val }}</span>
                     </div>
                 </div>
                 {{-- Fitness --}}
@@ -122,7 +115,7 @@
                         <div class="w-28 h-2 bg-slate-100 rounded-full overflow-hidden">
                             <div class="h-2 rounded-full @if($val >= 80) bg-green-500 @elseif($val >= 70) bg-lime-500 @elseif($val >= 60) bg-amber-500 @else bg-slate-400 @endif" style="width: {{ $val }}%"></div>
                         </div>
-                        <span class="text-sm font-bold tabular-nums w-7 text-right @if($val >= 90) text-green-600 @elseif($val >= 80) text-lime-600 @elseif($val >= 70) text-yellow-600 @else text-red-500 @endif">{{ $val }}</span>
+                        <span class="text-sm font-semibold tabular-nums w-7 text-right @if($val >= 90) text-green-600 @elseif($val >= 80) text-lime-600 @elseif($val >= 70) text-yellow-600 @else text-red-500 @endif">{{ $val }}</span>
                     </div>
                 </div>
                 {{-- Morale --}}
@@ -133,18 +126,32 @@
                         <div class="w-28 h-2 bg-slate-100 rounded-full overflow-hidden">
                             <div class="h-2 rounded-full @if($val >= 80) bg-green-500 @elseif($val >= 70) bg-lime-500 @elseif($val >= 60) bg-amber-500 @else bg-slate-400 @endif" style="width: {{ $val }}%"></div>
                         </div>
-                        <span class="text-sm font-bold tabular-nums w-7 text-right @if($val >= 85) text-green-600 @elseif($val >= 75) text-lime-600 @elseif($val >= 65) text-yellow-600 @else text-red-500 @endif">{{ $val }}</span>
+                        <span class="text-sm font-semibold tabular-nums w-7 text-right @if($val >= 85) text-green-600 @elseif($val >= 75) text-lime-600 @elseif($val >= 65) text-yellow-600 @else text-red-500 @endif">{{ $val }}</span>
                     </div>
                 </div>
-                {{-- Average --}}
+                @if($devStatus)
+                {{-- Development --}}
                 <div class="flex items-center justify-between pt-3 border-t border-slate-100">
-                    <span class="text-xs text-slate-500 uppercase tracking-wide font-semibold">{{ __('squad.overall') }}</span>
-                    <span class="text-sm font-bold tabular-nums
-                        @if($gamePlayer->overall_score >= 80) text-emerald-600
-                        @elseif($gamePlayer->overall_score >= 70) text-lime-600
-                        @elseif($gamePlayer->overall_score >= 60) text-amber-600
-                        @else text-slate-500
-                        @endif">{{ $gamePlayer->overall_score }}</span>
+                    <span class="text-xs text-slate-400 uppercase tracking-wide">{{ __('squad.projection') }}</span>
+                    <span class="inline-flex items-center gap-1 text-xs font-semibold
+                            @if($devStatus === 'growing') text-green-600
+                            @elseif($devStatus === 'peak') text-sky-600
+                            @else text-orange-600
+                            @endif">
+                            @if($devStatus === 'growing')
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg>
+                        @elseif($devStatus === 'declining')
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                        @else
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14"/></svg>
+                        @endif
+                        {{ $devLabels[$devStatus] ?? $devStatus }}
+                        </span>
+                </div>
+                @endif
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-slate-400 uppercase tracking-wide">{{ __('game.potential') }}</span>
+                    <span class="text-sm font-semibold text-slate-900">{{ $gamePlayer->potential_range }}</span>
                 </div>
             </div>
         </div>
@@ -156,24 +163,20 @@
                 @if($isCareerMode)
                     <div class="flex items-center justify-between">
                         <span class="text-xs text-slate-400 uppercase tracking-wide">{{ __('app.value') }}</span>
-                        <span class="text-sm font-bold text-slate-900">{{ $gamePlayer->formatted_market_value }}</span>
+                        <span class="text-sm font-semibold text-slate-900">{{ $gamePlayer->formatted_market_value }}</span>
                     </div>
                     <div class="flex items-center justify-between">
                         <span class="text-xs text-slate-400 uppercase tracking-wide">{{ __('app.wage') }}</span>
-                        <span class="text-sm font-bold text-slate-900">{{ $gamePlayer->formatted_wage }}{{ __('squad.per_year') }}</span>
+                        <span class="text-sm font-semibold text-slate-900">{{ $gamePlayer->formatted_wage }}{{ __('squad.per_year') }}</span>
                     </div>
                     @if($gamePlayer->contract_expiry_year)
                         <div class="flex items-center justify-between">
                             <span class="text-xs text-slate-400 uppercase tracking-wide">{{ __('app.contract') }}</span>
-                            <span class="text-sm font-bold text-slate-900">{{ $gamePlayer->contract_expiry_year }}</span>
+                            <span class="text-sm font-semibold text-slate-900">{{ $gamePlayer->contract_expiry_year }}</span>
                         </div>
                     @endif
                     <div class="border-t border-slate-100 pt-3"></div>
                 @endif
-                <div class="flex items-center justify-between">
-                    <span class="text-xs text-slate-400 uppercase tracking-wide">{{ __('game.potential') }}</span>
-                    <span class="text-sm font-bold text-slate-900">{{ $gamePlayer->potential_range }}</span>
-                </div>
                 {{-- Status indicators --}}
                 @if($gamePlayer->isInjured())
                     <div class="flex items-center justify-between">
@@ -193,25 +196,46 @@
                 @endif
             </div>
         </div>
-    </div>
 
-    {{-- Season Stats --}}
-    <div class="mt-5 pt-4 border-t border-slate-100">
-        <div class="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-slate-500">
-            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wide">{{ __('squad.season_stats') }}</span>
-            <span><span class="font-semibold text-slate-700">{{ $gamePlayer->appearances }}</span> {{ __('squad.appearances') }}</span>
-            <span><span class="font-semibold text-slate-700">{{ $gamePlayer->goals }}</span> {{ __('squad.legend_goals') }}</span>
-            <span><span class="font-semibold text-slate-700">{{ $gamePlayer->assists }}</span> {{ __('squad.legend_assists') }}</span>
-            <span class="inline-flex items-center gap-1.5">
-                <span class="w-2 h-3 bg-yellow-400 rounded-sm"></span>
-                <span class="font-semibold text-slate-700">{{ $gamePlayer->yellow_cards }}</span>
-                <span class="w-2 h-3 bg-red-500 rounded-sm ml-1"></span>
-                <span class="font-semibold text-slate-700">{{ $gamePlayer->red_cards }}</span>
-            </span>
-            @if($gamePlayer->position_group === 'Goalkeeper')
-                <span><span class="font-semibold text-slate-700">{{ $gamePlayer->clean_sheets }}</span> {{ __('squad.clean_sheets_full') }}</span>
-                <span><span class="font-semibold text-slate-700">{{ $gamePlayer->goals_conceded }}</span> {{ __('squad.goals_conceded_full') }}</span>
-            @endif
+        {{-- Season Stats --}}
+        <div>
+            <h4 class="text-sm font-semibold text-slate-900 pb-2 border-b border-slate-200 mb-4">{{ __('squad.season_stats') }}</h4>
+            <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-slate-400 uppercase tracking-wide">{{ __('squad.appearances') }}</span>
+                    <span class="text-sm font-semibold text-slate-900">{{ $gamePlayer->appearances }}</span>
+                </div>
+                @if($gamePlayer->position_group === 'Goalkeeper')
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-slate-400 uppercase tracking-wide">{{ __('squad.clean_sheets_full') }}</span>
+                        <span class="text-sm font-semibold text-slate-900">{{ $gamePlayer->clean_sheets }}</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-slate-400 uppercase tracking-wide">{{ __('squad.goals_conceded_full') }}</span>
+                        <span class="text-sm font-semibold text-slate-900">{{ $gamePlayer->goals_conceded }}</span>
+                    </div>
+                @else
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-slate-400 uppercase tracking-wide">{{ __('squad.legend_goals') }}</span>
+                        <span class="text-sm font-semibold text-slate-900">{{ $gamePlayer->goals }}</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-slate-400 uppercase tracking-wide">{{ __('squad.legend_assists') }}</span>
+                        <span class="text-sm font-semibold text-slate-900">{{ $gamePlayer->assists }}</span>
+                    </div>
+                @endif
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-slate-400 uppercase tracking-wide">{{ __('squad.bookings') }}</span>
+                    <span class="text-sm font-semibold text-slate-900">
+                        <span class="inline-flex items-center gap-1.5">
+                            <span class="w-2 h-3 bg-yellow-400 rounded-sm"></span>
+                            <span class="font-semibold text-slate-700">{{ $gamePlayer->yellow_cards }}</span>
+                            <span class="w-2 h-3 bg-red-500 rounded-sm ml-1"></span>
+                            <span class="font-semibold text-slate-700">{{ $gamePlayer->red_cards }}</span>
+                        </span>
+                    </span>
+                </div>
+            </div>
         </div>
     </div>
 

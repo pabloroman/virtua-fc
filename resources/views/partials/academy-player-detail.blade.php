@@ -11,13 +11,13 @@
     <div class="flex items-start justify-between gap-4 pb-5 border-b border-slate-200">
         {{-- Left: avatar + player info --}}
         <div class="flex items-start gap-4 min-w-0">
-            <img src="/img/player-avatar.svg" class="w-16 h-20 md:w-20 md:h-24 rounded-lg border border-slate-200 shrink-0 bg-slate-100" alt="">
+            <img src="/img/default-player.jpg" class="w-16 h-20 md:w-20 md:h-24 rounded-lg border border-slate-200 shrink-0 bg-slate-100" alt="">
             <div class="min-w-0">
                 <h3 class="font-bold text-xl md:text-2xl text-slate-900 truncate">{{ $academyPlayer->name }}</h3>
                 <div class="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1.5 text-sm text-slate-500">
                     @if($nationalityFlag)
                         <img src="/flags/{{ $nationalityFlag['code'] }}.svg" class="w-5 h-4 rounded shadow-sm">
-                        <span>{{ $nationalityFlag['name'] }}</span>
+                        <span>{{ __('countries.' . $nationalityFlag['name']) }}</span>
                         <span class="text-slate-300">&middot;</span>
                     @endif
                     <span>{{ $academyPlayer->age }} {{ __('app.years') }}</span>

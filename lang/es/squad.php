@@ -151,6 +151,7 @@ return [
     'red_cards' => 'TR',
     'clean_sheets' => 'PC',
     'appearances' => 'Partidos',
+    'bookings' => 'Amonestaciones',
     'click_to_sort' => 'Haz clic en las cabeceras de columna para ordenar',
     'gk_only' => 'solo PO',
 

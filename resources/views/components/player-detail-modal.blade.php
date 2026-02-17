@@ -12,7 +12,7 @@
     }
 }" x-on:show-player-detail.window="loadPlayer($event.detail)">
 
-    <x-modal name="player-detail" maxWidth="3xl">
+    <x-modal name="player-detail" maxWidth="4xl">
         {{-- Loading spinner --}}
         <div x-show="loading" class="p-8 flex items-center justify-center">
             <svg class="animate-spin h-8 w-8 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
