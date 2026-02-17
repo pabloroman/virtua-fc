@@ -93,7 +93,7 @@ class ShowCompetition
         // Knockout bracket data from schedule.json (year-adjusted for current game season)
         $knockoutRounds = collect(LeagueFixtureGenerator::loadKnockoutRounds($competition->id, $competition->season, $game->season));
 
-        $knockoutTies = CupTie::with(['homeTeam', 'awayTeam', 'winner', 'firstLegMatch', 'secondLegMatch'])
+        $knockoutTies = CupTie::with(['homeTeam', 'awayTeam', 'winner', 'firstLegMatch', 'secondLegMatch', 'competition'])
             ->where('game_id', $game->id)
             ->where('competition_id', $competition->id)
             ->get()
@@ -125,7 +125,7 @@ class ShowCompetition
         $rounds = collect(LeagueFixtureGenerator::loadKnockoutRounds($competition->id, $competition->season, $game->season));
 
         // Get all ties for this game, grouped by round
-        $tiesByRound = CupTie::with(['homeTeam', 'awayTeam', 'winner', 'firstLegMatch', 'secondLegMatch'])
+        $tiesByRound = CupTie::with(['homeTeam', 'awayTeam', 'winner', 'firstLegMatch', 'secondLegMatch', 'competition'])
             ->where('game_id', $game->id)
             ->where('competition_id', $competition->id)
             ->get()
