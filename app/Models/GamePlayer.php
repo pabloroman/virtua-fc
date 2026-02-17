@@ -679,10 +679,10 @@ class GamePlayer extends Model
     public function getOverallScoreAttribute(): int
     {
         return (int) round(
-            ($this->current_technical_ability +
-             $this->current_physical_ability +
-             $this->fitness +
-             $this->morale) / 4
+            $this->current_technical_ability * 0.35 +
+            $this->current_physical_ability * 0.35 +
+            $this->fitness * 0.15 +
+            $this->morale * 0.15
         );
     }
 
