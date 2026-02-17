@@ -48,7 +48,7 @@
                                     <th class="font-semibold py-2 text-center w-10">{{ __('squad.physical') }}</th>
                                     <th class="font-semibold py-2 text-center w-16">{{ __('squad.pot') }}</th>
                                     <th class="font-semibold py-2 text-center w-10">{{ __('squad.overall') }}</th>
-                                    <th class="font-semibold py-2 text-right w-8"></th>
+                                    <th class="py-2 w-8"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -101,22 +101,11 @@
                                                         {{ $prospect->overall }}
                                                     </span>
                                                 </td>
-                                                {{-- Actions --}}
+                                                {{-- Player detail --}}
                                                 <td class="py-2 text-right">
-                                                    <div x-data="{ open: false }" class="relative inline-block">
-                                                        <button @click="open = !open" class="p-1 text-slate-400 hover:text-slate-600 rounded hover:bg-slate-100">
-                                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="4" r="1.5"/><circle cx="10" cy="10" r="1.5"/><circle cx="10" cy="16" r="1.5"/></svg>
-                                                        </button>
-                                                        <div x-show="open" @click.away="open = false" x-transition
-                                                             class="absolute right-0 mt-1 w-48 bg-white rounded-lg shadow-lg border border-slate-200 py-1 z-10">
-                                                            <form method="post" action="{{ route('game.academy.promote', [$game->id, $prospect->id]) }}">
-                                                                @csrf
-                                                                <button type="submit" class="w-full text-left px-3 py-1.5 text-xs text-sky-600 hover:bg-sky-50">
-                                                                    {{ __('squad.promote_to_first_team') }}
-                                                                </button>
-                                                            </form>
-                                                        </div>
-                                                    </div>
+                                                    <button x-data @click="$dispatch('show-player-detail', '{{ route('game.academy.detail', [$game->id, $prospect->id]) }}')" class="p-1.5 text-slate-400 hover:text-sky-600 rounded hover:bg-slate-100 transition-colors">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                                    </button>
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -130,4 +119,6 @@
             </div>
         </div>
     </div>
+
+    <x-player-detail-modal />
 </x-app-layout>

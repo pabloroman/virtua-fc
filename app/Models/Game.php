@@ -123,6 +123,7 @@ class Game extends Model
         'default_mentality',
         'season_goal',
         'needs_onboarding',
+        'pending_actions',
         'setup_completed_at',
     ];
 
@@ -134,6 +135,7 @@ class Game extends Model
         'default_mentality' => 'string',
         'season_goal' => 'string',
         'needs_onboarding' => 'boolean',
+        'pending_actions' => 'array',
         'setup_completed_at' => 'datetime',
     ];
 
@@ -154,6 +156,46 @@ class Game extends Model
     public function isSetupComplete(): bool
     {
         return $this->setup_completed_at !== null;
+    }
+
+    // ==========================================
+    // Pending Actions (Game Progress Blocking)
+    // ==========================================
+
+    public function hasPendingActions(): bool
+    {
+        return !empty($this->pending_actions);
+    }
+
+    public function getFirstPendingAction(): ?array
+    {
+        return $this->pending_actions[0] ?? null;
+    }
+
+    public function addPendingAction(string $type, string $route): void
+    {
+        $actions = $this->pending_actions ?? [];
+
+        foreach ($actions as $action) {
+            if ($action['type'] === $type) {
+                return;
+            }
+        }
+
+        $actions[] = ['type' => $type, 'route' => $route];
+        $this->update(['pending_actions' => $actions]);
+    }
+
+    public function removePendingAction(string $type): void
+    {
+        $actions = $this->pending_actions ?? [];
+        $actions = array_values(array_filter($actions, fn ($a) => $a['type'] !== $type));
+        $this->update(['pending_actions' => empty($actions) ? null : $actions]);
+    }
+
+    public function clearPendingActions(): void
+    {
+        $this->update(['pending_actions' => null]);
     }
 
     // ==========================================

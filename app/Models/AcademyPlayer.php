@@ -141,4 +141,5 @@ class AcademyPlayer extends Model
             'code' => $code,
         ];
     }
+
 }

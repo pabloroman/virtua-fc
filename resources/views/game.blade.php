@@ -7,6 +7,25 @@
 
     <div>
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            {{-- Pending action alert --}}
+            @if($game->hasPendingActions())
+                @php $pendingAction = $game->getFirstPendingAction(); @endphp
+                <div class="mb-4 p-4 bg-amber-50 border border-amber-200 rounded-lg flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <svg class="w-5 h-5 text-amber-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                        </svg>
+                        <span class="text-sm text-amber-800 font-medium">{{ __('messages.action_required') }}</span>
+                    </div>
+                    @if($pendingAction && $pendingAction['route'])
+                    <a href="{{ route($pendingAction['route'], $game->id) }}"
+                       class="inline-flex items-center px-4 py-2 bg-amber-500 text-white text-xs font-semibold uppercase tracking-wide rounded-md hover:bg-amber-600 transition-colors shrink-0 min-h-[44px]">
+                        {{ __('messages.action_required_short') }}
+                    </a>
+                    @endif
+                </div>
+            @endif
+
             @if($nextMatch)
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-4 sm:p-6 md:p-8 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">

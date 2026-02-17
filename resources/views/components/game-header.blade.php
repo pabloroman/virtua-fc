@@ -37,7 +37,16 @@
                     <img class="w-4 h-4" src="{{ $nextMatch->awayTeam->image }}">
                 </div>
             </div>
-            @if($continueToHome)
+            @if($game->hasPendingActions())
+                @php $pendingAction = $game->getFirstPendingAction(); @endphp
+                <a href="{{ $pendingAction && $pendingAction['route'] ? route($pendingAction['route'], $game->id) : route('show-game', $game->id) }}"
+                   class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-500 to-yellow-400 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-wide hover:from-amber-600 hover:to-yellow-500 transition-all animate-pulse">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                    </svg>
+                    {{ __('messages.action_required_short') }}
+                </a>
+            @elseif($continueToHome)
                 <x-primary-button-link :href="route('show-game', $game->id)">{{ __('app.continue') }}</x-primary-button-link>
             @else
                 <form method="post" action="{{ route('game.advance', $game->id) }}" x-data="{ loading: false }" @submit="loading = true">
@@ -101,7 +110,16 @@
         </div>
         <div class="flex items-center space-x-2 shrink-0">
             @if($nextMatch)
-                @if($continueToHome)
+                @if($game->hasPendingActions())
+                    @php $pendingAction = $game->getFirstPendingAction(); @endphp
+                    <a href="{{ $pendingAction && $pendingAction['route'] ? route($pendingAction['route'], $game->id) : route('show-game', $game->id) }}"
+                       class="inline-flex items-center gap-1 px-3 py-1.5 bg-gradient-to-r from-amber-500 to-yellow-400 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-wide hover:from-amber-600 hover:to-yellow-500 transition-all animate-pulse">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                        </svg>
+                        {{ __('messages.action_required_short') }}
+                    </a>
+                @elseif($continueToHome)
                     <x-primary-button-link :href="route('show-game', $game->id)" class="text-xs! px-3">{{ __('app.continue') }}</x-primary-button-link>
                 @else
                     <form method="post" action="{{ route('game.advance', $game->id) }}" x-data="{ loading: false }" @submit="loading = true">
