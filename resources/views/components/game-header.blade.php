@@ -13,12 +13,16 @@
     {{-- Desktop Header --}}
     <div class="hidden md:flex justify-between text-slate-400">
         <div class="flex items-center space-x-4">
-            <img src="{{ $game->team->image }}" class="w-16 h-16">
+            <img src="{{ $game->team->image }}" class="w-16 h-16 rounded">
             <div>
                 <h2 class="font-semibold text-xl text-white leading-tight">
                     {{ $game->team->name }}
                 </h2>
-                <p>{{ __('game.season') }} {{ $game->formatted_season }}</p>
+                @if($game->game_mode === \App\Models\Game::MODE_CAREER)
+                    <p>{{ __('game.season') }} {{ $game->formatted_season }}</p>
+                @elseif($game->game_mode === \App\Models\Game::MODE_TOURNAMENT)
+                    <p>{{ $teamCompetitions[0]->name }}</p>
+                @endif
             </div>
         </div>
         <div class="text-right flex items-center space-x-4">
@@ -87,7 +91,7 @@
     {{-- Mobile Header --}}
     <div class="flex md:hidden items-center justify-between text-slate-400">
         <div class="flex items-center space-x-3 min-w-0">
-            <img src="{{ $game->team->image }}" class="w-8 h-8 shrink-0">
+            <img src="{{ $game->team->image }}" class="w-8 h-8 rounded-sm shrink-0">
             <div class="min-w-0">
                 <h2 class="font-semibold text-base text-white leading-tight truncate">
                     {{ $game->team->name }}
@@ -145,7 +149,7 @@
             {{-- Drawer Header --}}
             <div class="flex items-center justify-between p-4 border-b border-slate-200 bg-slate-50">
                 <div class="flex items-center space-x-3 min-w-0">
-                    <img src="{{ $game->team->image }}" class="w-10 h-10 shrink-0">
+                    <img src="{{ $game->team->image }}" class="w-10 h-10 rounded-sm shrink-0">
                     <div class="min-w-0">
                         <h3 class="font-semibold text-sm text-slate-900 truncate">{{ $game->team->name }}</h3>
                         <p class="text-xs text-slate-500">{{ __('game.season') }} {{ $game->formatted_season }}</p>

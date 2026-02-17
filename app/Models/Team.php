@@ -43,6 +43,7 @@ class Team extends Model
 
     protected $fillable = [
         'transfermarkt_id',
+        'type',
         'name',
         'official_name',
         'country',
@@ -74,8 +75,24 @@ class Team extends Model
         return $this->hasOne(ClubProfile::class);
     }
 
+    public function getNameAttribute(): string
+    {
+        $name = $this->attributes['name'] ?? '';
+
+        if (($this->attributes['type'] ?? 'club') === 'national') {
+            return __("countries.{$name}") ?? $name;
+        }
+
+        return $name;
+    }
+
     public function getImageAttribute(): ?string
     {
+        // National teams use flag SVGs
+        if (($this->attributes['type'] ?? 'club') === 'national') {
+            return '/flags/' . strtolower($this->country) . '.svg';
+        }
+
         $originalUrl = $this->attributes['image'] ?? null;
 
         if ($this->transfermarkt_id) {

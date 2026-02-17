@@ -1,0 +1,423 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/3299.png",
+  "name": "England",
+  "players": [
+    {
+      "contract": "Nov 10, 2017",
+      "dateOfBirth": "Mar 7, 1994",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "130164",
+      "marketValue": "€20.00m",
+      "name": "Jordan Pickford",
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "dateOfBirth": "Oct 10, 2002",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "566799",
+      "marketValue": "€18.00m",
+      "name": "James Trafford",
+      "number": "22",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Nov 12, 2020",
+      "dateOfBirth": "Mar 12, 1997",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "258919",
+      "marketValue": "€15.00m",
+      "name": "Dean Henderson",
+      "number": "13",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Oct 13, 2023",
+      "dateOfBirth": "Feb 26, 2003",
+      "foot": "left",
+      "height": "1,87m",
+      "id": "614258",
+      "marketValue": "€55.00m",
+      "name": "Levi Colwill",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Mar 26, 2022",
+      "dateOfBirth": "Jul 13, 2000",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "392757",
+      "marketValue": "€45.00m",
+      "name": "Marc Guéhi",
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Mar 23, 2024",
+      "dateOfBirth": "Oct 23, 1997",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "413403",
+      "marketValue": "€35.00m",
+      "name": "Ezri Konsa",
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "May 30, 2014",
+      "dateOfBirth": "May 28, 1994",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "186590",
+      "marketValue": "€32.00m",
+      "name": "John Stones",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Nov 16, 2025",
+      "dateOfBirth": "Jan 29, 2003",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "632349",
+      "marketValue": "€22.00m",
+      "name": "Jarell Quansah",
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 10, 2025",
+      "dateOfBirth": "Jul 5, 1999",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "346314",
+      "marketValue": "€13.00m",
+      "name": "Trevoh Chalobah",
+      "number": "23",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Mar 21, 2025",
+      "dateOfBirth": "May 9, 1992",
+      "foot": "left",
+      "height": "2,01m",
+      "id": "134270",
+      "marketValue": "€7.00m",
+      "name": "Dan Burn",
+      "number": "12",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Mar 21, 2025",
+      "dateOfBirth": "Sep 26, 2006",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "890721",
+      "marketValue": "€10.00m",
+      "name": "Myles Lewis-Skelly",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Sep 9, 2025",
+      "dateOfBirth": "Aug 9, 2000",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "483348",
+      "marketValue": "€8.00m",
+      "name": "Djed Spence",
+      "number": "14",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Nov 13, 2025",
+      "dateOfBirth": "Mar 21, 2005",
+      "foot": "left",
+      "height": "1,93m",
+      "id": "743413",
+      "name": "Nico O'Reilly",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 7, 2018",
+      "dateOfBirth": "Oct 7, 1998",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "314353",
+      "marketValue": "€75.00m",
+      "name": "Trent Alexander-Arnold",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Nov 17, 2024",
+      "dateOfBirth": "Nov 12, 2002",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "503981",
+      "marketValue": "€35.00m",
+      "name": "Tino Livramento",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Oct 8, 2020",
+      "dateOfBirth": "Dec 8, 1999",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "472423",
+      "marketValue": "€30.00m",
+      "name": "Reece James",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Nov 12, 2011",
+      "dateOfBirth": "May 28, 1990",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "95424",
+      "marketValue": "€10.00m",
+      "name": "Kyle Walker",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 3, 2024",
+      "dateOfBirth": "Feb 6, 2004",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "744149",
+      "marketValue": "€32.00m",
+      "name": "Adam Wharton",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Nov 17, 2010",
+      "dateOfBirth": "Jun 17, 1990",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "61651",
+      "marketValue": "€3.50m",
+      "name": "Jordan Henderson",
+      "number": "8",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Mar 22, 2019",
+      "dateOfBirth": "Jan 14, 1999",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "357662",
+      "marketValue": "€110.00m",
+      "name": "Declan Rice",
+      "number": "4",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Nov 14, 2024",
+      "dateOfBirth": "Jan 30, 2001",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "433188",
+      "marketValue": "€45.00m",
+      "name": "Curtis Jones",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Nov 15, 2021",
+      "dateOfBirth": "Feb 6, 2000",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "488362",
+      "marketValue": "€40.00m",
+      "name": "Conor Gallagher",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Sep 6, 2025",
+      "dateOfBirth": "Nov 6, 2002",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "567576",
+      "marketValue": "€24.00m",
+      "name": "Elliot Anderson",
+      "number": "23",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Nov 10, 2017",
+      "dateOfBirth": "Jan 23, 1996",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "202886",
+      "marketValue": "€20.00m",
+      "name": "Ruben Loftus-Cheek",
+      "position": "Central Midfield"
+    },
+    {
+      "dateOfBirth": "Aug 21, 2003",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "855256",
+      "marketValue": "€20.00m",
+      "name": "Alex Scott",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Nov 12, 2020",
+      "dateOfBirth": "Jun 29, 2003",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "581678",
+      "marketValue": "€180.00m",
+      "name": "Jude Bellingham",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Sep 5, 2020",
+      "dateOfBirth": "May 28, 2000",
+      "foot": "left",
+      "height": "1,71m",
+      "id": "406635",
+      "marketValue": "€140.00m",
+      "name": "Phil Foden",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Nov 17, 2023",
+      "dateOfBirth": "May 6, 2002",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "568177",
+      "marketValue": "€130.00m",
+      "name": "Cole Palmer",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 16, 2023",
+      "dateOfBirth": "Jun 29, 1998",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "479999",
+      "marketValue": "€55.00m",
+      "name": "Eberechi Eze",
+      "number": "10",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Sep 7, 2024",
+      "dateOfBirth": "Jan 27, 2000",
+      "foot": "right",
+      "height": "1,71m",
+      "id": "429014",
+      "marketValue": "€40.00m",
+      "name": "Morgan Gibbs-White",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Nov 14, 2024",
+      "dateOfBirth": "Jul 26, 2002",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "503743",
+      "marketValue": "€40.00m",
+      "name": "Morgan Rogers",
+      "number": "15",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Mar 23, 2024",
+      "dateOfBirth": "Feb 24, 2001",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "503733",
+      "marketValue": "€60.00m",
+      "name": "Anthony Gordon",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "May 27, 2016",
+      "dateOfBirth": "Oct 31, 1997",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "258923",
+      "marketValue": "€55.00m",
+      "name": "Marcus Rashford",
+      "number": "11",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Oct 8, 2020",
+      "dateOfBirth": "Sep 5, 2001",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "433177",
+      "marketValue": "€150.00m",
+      "name": "Bukayo Saka",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 4, 2022",
+      "dateOfBirth": "Dec 20, 1996",
+      "foot": "left",
+      "height": "1,76m",
+      "id": "314875",
+      "marketValue": "€45.00m",
+      "name": "Jarrod Bowen",
+      "number": "20",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Sep 10, 2024",
+      "dateOfBirth": "Mar 10, 2002",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "503987",
+      "marketValue": "€40.00m",
+      "name": "Noni Madueke",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Mar 27, 2015",
+      "dateOfBirth": "Jul 28, 1993",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "132098",
+      "marketValue": "€90.00m",
+      "name": "Harry Kane",
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Mar 25, 2021",
+      "dateOfBirth": "Dec 30, 1995",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "324358",
+      "marketValue": "€55.00m",
+      "name": "Ollie Watkins",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Nov 14, 2017",
+      "dateOfBirth": "Sep 14, 1997",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "258889",
+      "marketValue": "€45.00m",
+      "name": "Dominic Solanke",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Mar 26, 2023",
+      "dateOfBirth": "Mar 16, 1996",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "251664",
+      "marketValue": "€28.00m",
+      "name": "Ivan Toney",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": null,
+  "stadiumSeats": null,
+  "transfermarktId": "3299"
+}

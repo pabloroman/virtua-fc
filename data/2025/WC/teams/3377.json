@@ -1,0 +1,410 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/3377.png",
+  "name": "France",
+  "players": [
+    {
+      "contract": "Oct 7, 2020",
+      "dateOfBirth": "Jul 3, 1995",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "182906",
+      "marketValue": "€35.00m",
+      "name": "Mike Maignan",
+      "number": "16",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Nov 16, 2025",
+      "dateOfBirth": "Nov 6, 2001",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "463600",
+      "marketValue": "€30.00m",
+      "name": "Lucas Chevalier",
+      "number": "23",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 16, 2023",
+      "dateOfBirth": "Apr 25, 1994",
+      "foot": "left",
+      "height": "1,87m",
+      "id": "191056",
+      "marketValue": "€15.00m",
+      "name": "Brice Samba",
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Mar 25, 2022",
+      "dateOfBirth": "Mar 24, 2001",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "495666",
+      "marketValue": "€80.00m",
+      "name": "William Saliba",
+      "number": "17",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Sep 5, 2020",
+      "dateOfBirth": "Oct 27, 1998",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "344695",
+      "marketValue": "€50.00m",
+      "name": "Dayot Upamecano",
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 10, 2022",
+      "dateOfBirth": "May 25, 1999",
+      "foot": "right",
+      "height": "1,94m",
+      "id": "357119",
+      "marketValue": "€50.00m",
+      "name": "Ibrahima Konaté",
+      "number": "15",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Nov 10, 2017",
+      "dateOfBirth": "Mar 28, 1996",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "353366",
+      "marketValue": "€40.00m",
+      "name": "Benjamin Pavard",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 5, 2025",
+      "dateOfBirth": "Jun 5, 2000",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "585949",
+      "marketValue": "€26.00m",
+      "name": "Pierre Kalulu",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 8, 2025",
+      "dateOfBirth": "Apr 11, 2000",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "730581",
+      "marketValue": "€25.00m",
+      "name": "Loïc Badé",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 11, 2019",
+      "dateOfBirth": "Jun 17, 1995",
+      "foot": "left",
+      "height": "1,86m",
+      "id": "182904",
+      "marketValue": "€7.50m",
+      "name": "Clément Lenglet",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Sep 7, 2021",
+      "dateOfBirth": "Oct 6, 1997",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "339808",
+      "marketValue": "€50.00m",
+      "name": "Theo Hernández",
+      "number": "22",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Mar 23, 2018",
+      "dateOfBirth": "Feb 14, 1996",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "281963",
+      "marketValue": "€32.00m",
+      "name": "Lucas Hernández",
+      "number": "21",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Mar 5, 2014",
+      "dateOfBirth": "Jul 20, 1993",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "126664",
+      "marketValue": "€12.00m",
+      "name": "Lucas Digne",
+      "number": "3",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 2, 2021",
+      "dateOfBirth": "Nov 12, 1998",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "411975",
+      "marketValue": "€60.00m",
+      "name": "Jules Koundé",
+      "number": "5",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Oct 13, 2023",
+      "dateOfBirth": "May 19, 2003",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "620322",
+      "marketValue": "€35.00m",
+      "name": "Malo Gusto",
+      "number": "2",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Mar 25, 2022",
+      "dateOfBirth": "Sep 25, 1992",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "175639",
+      "marketValue": "€6.00m",
+      "name": "Jonathan Clauss",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Sep 1, 2021",
+      "dateOfBirth": "Jan 27, 2000",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "413112",
+      "marketValue": "€80.00m",
+      "name": "Aurélien Tchouaméni",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Mar 25, 2016",
+      "dateOfBirth": "Mar 29, 1991",
+      "foot": "right",
+      "height": "1,68m",
+      "id": "225083",
+      "marketValue": "€7.00m",
+      "name": "N'Golo Kanté",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Sep 8, 2020",
+      "dateOfBirth": "Nov 10, 2002",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "640428",
+      "marketValue": "€80.00m",
+      "name": "Eduardo Camavinga",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Nov 18, 2023",
+      "dateOfBirth": "Mar 8, 2006",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "810092",
+      "marketValue": "€60.00m",
+      "name": "Warren Zaïre-Emery",
+      "number": "18",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Mar 24, 2023",
+      "dateOfBirth": "Mar 26, 2001",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "463618",
+      "marketValue": "€35.00m",
+      "name": "Khéphren Thuram",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Nov 16, 2021",
+      "dateOfBirth": "Apr 14, 1999",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "465830",
+      "marketValue": "€32.00m",
+      "name": "Mattéo Guendouzi",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Sep 6, 2024",
+      "dateOfBirth": "May 17, 2001",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "624690",
+      "marketValue": "€26.00m",
+      "name": "Manu Koné",
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Nov 15, 2016",
+      "dateOfBirth": "Apr 3, 1995",
+      "foot": "left",
+      "height": "1,91m",
+      "id": "182913",
+      "marketValue": "€25.00m",
+      "name": "Adrien Rabiot",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 5, 2025",
+      "dateOfBirth": "Aug 17, 2003",
+      "foot": "both",
+      "height": "1,77m",
+      "id": "607223",
+      "marketValue": "€30.00m",
+      "name": "Rayan Cherki",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 5, 2024",
+      "dateOfBirth": "Sep 2, 2002",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "708265",
+      "marketValue": "€65.00m",
+      "name": "Bradley Barcola",
+      "number": "20",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Nov 13, 2015",
+      "dateOfBirth": "Jun 13, 1996",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "243714",
+      "marketValue": "€35.00m",
+      "name": "Kingsley Coman",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Sep 6, 2024",
+      "dateOfBirth": "Dec 12, 2001",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "566723",
+      "marketValue": "€65.00m",
+      "name": "Michael Olise",
+      "number": "11",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Mar 23, 2025",
+      "dateOfBirth": "Jun 3, 2005",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "914562",
+      "marketValue": "€40.00m",
+      "name": "Désiré Doué",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Sep 5, 2025",
+      "dateOfBirth": "Feb 25, 2002",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "745200",
+      "marketValue": "€40.00m",
+      "name": "Maghnes Akliouche",
+      "number": "12",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 2, 2017",
+      "dateOfBirth": "Jan 26, 1993",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "184892",
+      "marketValue": "€5.00m",
+      "name": "Florian Thauvin",
+      "number": "20",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Mar 25, 2017",
+      "dateOfBirth": "Dec 20, 1998",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "342229",
+      "marketValue": "€160.00m",
+      "name": "Kylian Mbappé",
+      "number": "10",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Nov 11, 2020",
+      "dateOfBirth": "Aug 6, 1997",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "318528",
+      "marketValue": "€75.00m",
+      "name": "Marcus Thuram",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Sep 1, 2016",
+      "dateOfBirth": "May 15, 1997",
+      "foot": "both",
+      "height": "1,78m",
+      "id": "288230",
+      "marketValue": "€55.00m",
+      "name": "Ousmane Dembélé",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Mar 25, 2022",
+      "dateOfBirth": "Nov 14, 1997",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "344381",
+      "marketValue": "€50.00m",
+      "name": "Christopher Nkunku",
+      "number": "18",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Sep 5, 2025",
+      "dateOfBirth": "Jun 20, 2002",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "709726",
+      "marketValue": "€40.00m",
+      "name": "Hugo Ekitiké",
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Sep 22, 2022",
+      "dateOfBirth": "Dec 5, 1998",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "487969",
+      "marketValue": "€30.00m",
+      "name": "Randal Kolo Muani",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Oct 10, 2025",
+      "dateOfBirth": "Jun 28, 1997",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "420002",
+      "marketValue": "€20.00m",
+      "name": "Jean-Philippe Mateta",
+      "number": "13",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": null,
+  "stadiumSeats": null,
+  "transfermarktId": "3377"
+}

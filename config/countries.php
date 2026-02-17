@@ -122,6 +122,35 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | World Cup (Tournament Mode)
+    |--------------------------------------------------------------------------
+    |
+    | The World Cup uses the main teams/players tables with type='national'.
+    | Game creation in tournament mode reads from these teams and the WC2026
+    | competition via competition_teams, sharing Player records with career mode.
+    |
+    */
+
+    'WC' => [
+        'name' => 'Copa del Mundo',
+        'flag' => 'wc',
+        'tournament' => true,
+
+        'tiers' => [
+            1 => [
+                'competition' => 'WC2026',
+                'teams' => 48,
+                'handler' => 'world_cup',
+            ],
+        ],
+
+        'domestic_cups' => [],
+        'promotions' => [],
+        'continental_slots' => [],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Test Country (used by test suite)
     |--------------------------------------------------------------------------
     */

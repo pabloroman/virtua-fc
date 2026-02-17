@@ -156,6 +156,9 @@ class StandingsCalculator
     /**
      * Recalculate positions for all teams in a competition.
      * Order by: points DESC, goal difference DESC, goals for DESC
+     *
+     * When standings have group_label set (e.g. World Cup), positions are
+     * recalculated within each group separately.
      */
     public function recalculatePositions(string $gameId, string $competitionId): void
     {
@@ -167,14 +170,31 @@ class StandingsCalculator
             ->orderByDesc('goals_for')
             ->get();
 
-        // Update positions
-        $position = 1;
-        foreach ($standings as $standing) {
-            $standing->update([
-                'prev_position' => $standing->position ?: $position,
-                'position' => $position,
-            ]);
-            $position++;
+        // Check if this competition uses groups
+        $hasGroups = $standings->whereNotNull('group_label')->isNotEmpty();
+
+        if ($hasGroups) {
+            // Recalculate positions within each group separately
+            foreach ($standings->groupBy('group_label') as $groupStandings) {
+                $position = 1;
+                foreach ($groupStandings as $standing) {
+                    $standing->update([
+                        'prev_position' => $standing->position ?: $position,
+                        'position' => $position,
+                    ]);
+                    $position++;
+                }
+            }
+        } else {
+            // Flat league — single position sequence
+            $position = 1;
+            foreach ($standings as $standing) {
+                $standing->update([
+                    'prev_position' => $standing->position ?: $position,
+                    'position' => $position,
+                ]);
+                $position++;
+            }
         }
     }
 
