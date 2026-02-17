@@ -350,7 +350,7 @@ class GamePlayer extends Model
     {
         return $this->transferOffers()
             ->where('status', TransferOffer::STATUS_PENDING)
-            ->where('expires_at', '>=', now());
+            ->where('expires_at', '>=', $this->game->current_date);
     }
 
     /**
@@ -598,7 +598,7 @@ class GamePlayer extends Model
             return false;
         }
 
-        $checkDate = $date ?? now();
+        $checkDate = $date ?? $this->game->current_date;
         return $this->injury_until->gt($checkDate);
     }
 

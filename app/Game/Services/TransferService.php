@@ -79,7 +79,7 @@ class TransferService
     {
         $player->update([
             'transfer_status' => GamePlayer::TRANSFER_STATUS_LISTED,
-            'transfer_listed_at' => now(),
+            'transfer_listed_at' => $player->game->current_date,
         ]);
     }
 
