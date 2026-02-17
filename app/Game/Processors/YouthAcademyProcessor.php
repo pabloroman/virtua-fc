@@ -4,16 +4,26 @@ namespace App\Game\Processors;
 
 use App\Game\Contracts\SeasonEndProcessor;
 use App\Game\DTO\SeasonTransitionData;
+use App\Game\Services\NotificationService;
+use App\Game\Services\YouthAcademyService;
 use App\Models\AcademyPlayer;
 use App\Models\Game;
 
 /**
- * Handles academy players at season end.
- * Academy prospects now spawn mid-season during matchday advancement,
- * so this processor just records metadata about existing academy players.
+ * Handles academy cleanup at season end:
+ * 1. Develop loaned players (full season at 1.5x rate)
+ * 2. Return loaned players to academy
+ * 3. Add academy_evaluation pending action if players exist
+ *
+ * New batch generation is handled by the SeasonStarted event listener.
  */
 class YouthAcademyProcessor implements SeasonEndProcessor
 {
+    public function __construct(
+        private readonly YouthAcademyService $youthAcademyService,
+        private readonly NotificationService $notificationService,
+    ) {}
+
     public function priority(): int
     {
         return 55;
@@ -21,13 +31,28 @@ class YouthAcademyProcessor implements SeasonEndProcessor
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData
     {
-        $academyCount = AcademyPlayer::where('game_id', $game->id)
+        // 1. Develop loaned players at 1.5x rate before returning
+        $this->youthAcademyService->developLoanedPlayers($game);
+
+        // 2. Return loaned players to academy
+        $returnedPlayers = $this->youthAcademyService->returnLoans($game);
+
+        if ($returnedPlayers->isNotEmpty()) {
+            $data->setMetadata('academy_loans_returned', $returnedPlayers->count());
+        }
+
+        // 3. If there are academy players, add evaluation pending action
+        $totalPlayers = AcademyPlayer::where('game_id', $game->id)
             ->where('team_id', $game->team_id)
+            ->where('is_on_loan', false)
             ->count();
 
-        if ($academyCount > 0) {
-            $data->setMetadata('academy_players_count', $academyCount);
+        if ($totalPlayers > 0) {
+            $game->addPendingAction('academy_evaluation', 'game.squad.academy.evaluate');
+            $this->notificationService->notifyAcademyEvaluation($game);
         }
+
+        $data->setMetadata('academy_players_count', $totalPlayers);
 
         return $data;
     }

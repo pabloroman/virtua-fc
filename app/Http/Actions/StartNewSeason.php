@@ -2,6 +2,7 @@
 
 namespace App\Http\Actions;
 
+use App\Events\SeasonStarted;
 use App\Game\Services\SeasonEndPipeline;
 use App\Models\Game;
 
@@ -26,11 +27,13 @@ class StartNewSeason
         $data = $this->pipeline->run($game);
 
         // Set current date to the first match of the new season
-        $game->refresh();
+        $game->refresh()->setRelations([]);
         $firstMatch = $game->getFirstCompetitiveMatch();
         if ($firstMatch) {
             $game->update(['current_date' => $firstMatch->scheduled_date]);
         }
+
+        event(new SeasonStarted($game));
 
         return redirect()->route('show-game', $gameId)
             ->with('message', __('messages.new_season_started', ['season' => Game::formatSeason($data->newSeason)]));

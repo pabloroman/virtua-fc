@@ -353,10 +353,20 @@ class AdvanceMatchday
         // Check for expiring transfer offers (2 days or less)
         $this->checkExpiringOffers($game);
 
-        // Check for new academy prospect
-        $prospect = $this->youthAcademyService->trySpawnProspect($game);
-        if ($prospect) {
-            $this->notificationService->notifyAcademyProspect($game, $prospect);
+        // Develop academy players each matchday
+        $this->youthAcademyService->developPlayers($game);
+
+        // Trigger academy evaluation at winter window start
+        if ($game->isStartOfWinterWindow()) {
+            $academyCount = \App\Models\AcademyPlayer::where('game_id', $game->id)
+                ->where('team_id', $game->team_id)
+                ->where('is_on_loan', false)
+                ->count();
+
+            if ($academyCount > 0) {
+                $game->addPendingAction('academy_evaluation', 'game.squad.academy.evaluate');
+                $this->notificationService->notifyAcademyEvaluation($game);
+            }
         }
     }
 

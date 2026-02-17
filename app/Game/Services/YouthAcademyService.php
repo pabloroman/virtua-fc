@@ -13,29 +13,23 @@ use Illuminate\Support\Str;
 class YouthAcademyService
 {
     /**
-     * Youth academy tier effects on prospect generation.
-     * [min_prospects, max_prospects, min_potential, max_potential, min_ability, max_ability]
+     * Tier configuration: [capacity, min_arrivals, max_arrivals, min_potential, max_potential, min_ability, max_ability]
      */
-    private const TIER_EFFECTS = [
-        0 => [0, 0, 0, 0, 0, 0],           // No academy
-        1 => [1, 1, 60, 70, 35, 50],       // Basic
-        2 => [1, 2, 65, 75, 40, 55],       // Good
-        3 => [2, 3, 70, 82, 45, 60],       // Excellent
-        4 => [2, 4, 75, 90, 50, 70],       // World-class
-    ];
-
-    /**
-     * Expected prospects per season by tier.
-     */
-    private const TIER_TARGET_PER_SEASON = [
-        0 => 0,
-        1 => 1,
-        2 => 1.5,
-        3 => 2.5,
-        4 => 3,
+    private const TIER_CONFIG = [
+        0 => [0, 0, 0, 0, 0, 0, 0],
+        1 => [4, 2, 3, 60, 70, 35, 50],
+        2 => [6, 3, 5, 65, 75, 40, 55],
+        3 => [8, 5, 7, 70, 82, 45, 60],
+        4 => [10, 6, 8, 75, 90, 50, 70],
     ];
 
     private const ESTIMATED_MATCHDAYS = 38;
+
+    /**
+     * Season growth rates for development.
+     */
+    private const GROWTH_RATE_ACADEMY = 0.35;
+    private const GROWTH_RATE_LOAN = 0.50;
 
     /**
      * Positions with weights for random selection.
@@ -58,66 +52,183 @@ class YouthAcademyService
     ) {}
 
     /**
-     * Try to spawn a new academy prospect during matchday advancement.
-     * Returns the new prospect if one spawned, null otherwise.
+     * Generate a batch of new academy prospects at season start.
+     *
+     * @return Collection<int, AcademyPlayer>
      */
-    public function trySpawnProspect(Game $game): ?AcademyPlayer
+    public function generateSeasonBatch(Game $game): Collection
     {
-        $investment = $game->currentInvestment;
-        $tier = $investment->youth_academy_tier ?? 0;
+        $tier = $game->currentInvestment->youth_academy_tier ?? 0;
 
         if ($tier === 0) {
-            return null;
+            return collect();
         }
 
-        $target = self::TIER_TARGET_PER_SEASON[$tier];
-        $spawnChance = $target / self::ESTIMATED_MATCHDAYS;
+        $config = self::TIER_CONFIG[$tier];
+        [, $minArrivals, $maxArrivals, $minPotential, $maxPotential, $minAbility, $maxAbility] = $config;
 
-        if (mt_rand(1, 10000) > (int) ($spawnChance * 10000)) {
-            return null;
+        $count = rand($minArrivals, $maxArrivals);
+        $prospects = collect();
+
+        for ($i = 0; $i < $count; $i++) {
+            $prospects->push($this->createAcademyProspect($game, $minPotential, $maxPotential, $minAbility, $maxAbility));
         }
 
-        return $this->createAcademyProspect($game, $tier);
+        return $prospects;
     }
 
     /**
-     * Create an academy prospect record.
+     * Develop all academy players' abilities for one matchday.
+     * Growth is applied each matchday as a small increment toward potential.
+     * Only non-loaned players develop (loaned players develop off-screen at season end).
      */
-    private function createAcademyProspect(Game $game, int $tier): AcademyPlayer
+    public function developPlayers(Game $game): void
     {
-        $effects = self::TIER_EFFECTS[$tier];
-        [, , $minPotential, $maxPotential, $minAbility, $maxAbility] = $effects;
+        $players = AcademyPlayer::where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->where('is_on_loan', false)
+            ->get();
 
-        $position = $this->selectPosition();
-        $technical = rand($minAbility, $maxAbility);
-        $physical = rand($minAbility, $maxAbility);
+        foreach ($players as $player) {
+            $this->developPlayer($player, self::GROWTH_RATE_ACADEMY);
+        }
+    }
 
-        $age = rand(16, 18);
-        $currentYear = (int) $game->season;
-        $dateOfBirth = Carbon::createFromDate($currentYear - $age, rand(1, 12), rand(1, 28));
+    /**
+     * Apply one matchday of development to a single player.
+     */
+    private function developPlayer(AcademyPlayer $player, float $seasonRate): void
+    {
+        $growthPerMatchday = fn (int $current, int $potential) => max(0, ($potential - $current) * $seasonRate / self::ESTIMATED_MATCHDAYS);
 
-        $potential = rand($minPotential, $maxPotential);
-        $potentialVariance = rand(3, 8);
-        $potentialLow = max($potential - $potentialVariance, max($technical, $physical));
-        $potentialHigh = min($potential + $potentialVariance, 99);
+        $techGrowth = $growthPerMatchday($player->technical_ability, $player->potential);
+        $physGrowth = $growthPerMatchday($player->physical_ability, $player->potential);
 
-        $identity = $this->playerGenerator->pickRandomIdentity();
+        // Accumulate fractional growth — only update when it rounds up
+        $newTech = min($player->potential, $player->technical_ability + $techGrowth);
+        $newPhys = min($player->potential, $player->physical_ability + $physGrowth);
 
-        return AcademyPlayer::create([
-            'id' => Str::uuid()->toString(),
-            'game_id' => $game->id,
-            'team_id' => $game->team_id,
-            'name' => $identity['name'],
-            'nationality' => $identity['nationality'],
-            'date_of_birth' => $dateOfBirth,
-            'position' => $position,
-            'technical_ability' => $technical,
-            'physical_ability' => $physical,
-            'potential' => $potential,
-            'potential_low' => $potentialLow,
-            'potential_high' => $potentialHigh,
-            'appeared_at' => $game->current_date,
-        ]);
+        $techInt = (int) round($newTech);
+        $physInt = (int) round($newPhys);
+
+        if ($techInt !== $player->technical_ability || $physInt !== $player->physical_ability) {
+            $player->update([
+                'technical_ability' => $techInt,
+                'physical_ability' => $physInt,
+            ]);
+        }
+    }
+
+    /**
+     * Apply a full season of off-screen development to loaned players.
+     * Called at season end when loans return.
+     */
+    public function developLoanedPlayers(Game $game): void
+    {
+        $loanedPlayers = AcademyPlayer::where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->where('is_on_loan', true)
+            ->get();
+
+        foreach ($loanedPlayers as $player) {
+            // Apply full season growth at loan rate
+            $techGrowth = ($player->potential - $player->technical_ability) * self::GROWTH_RATE_LOAN;
+            $physGrowth = ($player->potential - $player->physical_ability) * self::GROWTH_RATE_LOAN;
+
+            $player->update([
+                'technical_ability' => min($player->potential, (int) round($player->technical_ability + $techGrowth)),
+                'physical_ability' => min($player->potential, (int) round($player->physical_ability + $physGrowth)),
+            ]);
+        }
+    }
+
+    /**
+     * Return all loaned players to the academy at season end.
+     *
+     * @return Collection<int, AcademyPlayer> The returned players
+     */
+    public function returnLoans(Game $game): Collection
+    {
+        $loanedPlayers = AcademyPlayer::where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->where('is_on_loan', true)
+            ->get();
+
+        foreach ($loanedPlayers as $player) {
+            $player->update(['is_on_loan' => false]);
+        }
+
+        return $loanedPlayers;
+    }
+
+    /**
+     * Get the reveal phase based on the game's current matchday.
+     *
+     * Phase 0: Stats hidden (matchdays 1-9)
+     * Phase 1: Abilities visible (matchday 10 until winter window)
+     * Phase 2: Potential visible (winter window onward)
+     */
+    public static function getRevealPhase(Game $game): int
+    {
+        if ($game->isWinterWindowOpen() || $game->isStartOfWinterWindow()) {
+            return 2;
+        }
+
+        // After winter window (February onward), stay at phase 2
+        if ($game->current_date && $game->current_date->month >= 2 && $game->current_date->month <= 6) {
+            return 2;
+        }
+
+        if ($game->current_matchday >= 10) {
+            return 1;
+        }
+
+        return 0;
+    }
+
+    /**
+     * Get the academy capacity (max seats) for a given tier.
+     */
+    public static function getCapacity(int $tier): int
+    {
+        return self::TIER_CONFIG[$tier][0] ?? 0;
+    }
+
+    /**
+     * Get the number of currently occupied seats (non-loaned players).
+     */
+    public static function getOccupiedSeats(Game $game): int
+    {
+        return AcademyPlayer::where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->where('is_on_loan', false)
+            ->count();
+    }
+
+    /**
+     * Get the total number of academy players (including loaned).
+     */
+    public static function getTotalPlayers(Game $game): int
+    {
+        return AcademyPlayer::where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->count();
+    }
+
+    /**
+     * Mark a player as loaned out.
+     */
+    public function loanPlayer(AcademyPlayer $player): void
+    {
+        $player->update(['is_on_loan' => true]);
+    }
+
+    /**
+     * Dismiss a player from the academy (permanently removed).
+     */
+    public function dismissPlayer(AcademyPlayer $player): void
+    {
+        $player->delete();
     }
 
     /**
@@ -150,90 +261,23 @@ class YouthAcademyService
     }
 
     /**
-     * Generate youth prospects (batch) for the user's team based on academy tier.
-     * Legacy method — kept for backward compatibility.
-     *
-     * @return Collection<GamePlayer> Generated prospects
+     * Check if a player must be promoted or dismissed (age 21+).
      */
-    public function generateProspects(Game $game): Collection
+    public static function mustDecide(AcademyPlayer $player): bool
     {
-        $investment = $game->currentInvestment;
-        $tier = $investment->youth_academy_tier ?? 0;
-
-        if ($tier === 0) {
-            return collect();
-        }
-
-        $effects = self::TIER_EFFECTS[$tier];
-        [$minProspects, $maxProspects, $minPotential, $maxPotential, $minAbility, $maxAbility] = $effects;
-
-        $prospectCount = rand($minProspects, $maxProspects);
-        $prospects = collect();
-
-        for ($i = 0; $i < $prospectCount; $i++) {
-            $prospect = $this->createProspect(
-                $game,
-                $minPotential,
-                $maxPotential,
-                $minAbility,
-                $maxAbility
-            );
-            $prospects->push($prospect);
-        }
-
-        return $prospects;
+        return $player->age >= 21;
     }
 
-    private function createProspect(
-        Game $game,
-        int $minPotential,
-        int $maxPotential,
-        int $minAbility,
-        int $maxAbility,
-    ): GamePlayer {
-        $position = $this->selectPosition();
-        $technical = rand($minAbility, $maxAbility);
-        $physical = rand($minAbility, $maxAbility);
-
-        $age = rand(16, 18);
-        $currentYear = (int) $game->season;
-        $dateOfBirth = Carbon::createFromDate($currentYear - $age, rand(1, 12), rand(1, 28));
-
-        $potential = rand($minPotential, $maxPotential);
-        $potentialVariance = rand(3, 8);
-        $potentialLow = max($potential - $potentialVariance, max($technical, $physical));
-        $potentialHigh = min($potential + $potentialVariance, 99);
-
-        return $this->playerGenerator->create($game, new GeneratedPlayerData(
-            teamId: $game->team_id,
-            position: $position,
-            technical: $technical,
-            physical: $physical,
-            dateOfBirth: $dateOfBirth,
-            contractYears: 3,
-            potential: $potential,
-            potentialLow: $potentialLow,
-            potentialHigh: $potentialHigh,
-            fitnessMin: 85,
-            fitnessMax: 100,
-            moraleMin: 70,
-            moraleMax: 90,
-        ));
-    }
-
-    private function selectPosition(): string
+    /**
+     * Get the expected new arrivals range for a tier.
+     *
+     * @return array{min: int, max: int}
+     */
+    public static function getArrivalsRange(int $tier): array
     {
-        $totalWeight = array_sum(self::POSITION_WEIGHTS);
-        $random = rand(1, $totalWeight);
+        $config = self::TIER_CONFIG[$tier] ?? self::TIER_CONFIG[0];
 
-        foreach (self::POSITION_WEIGHTS as $position => $weight) {
-            $random -= $weight;
-            if ($random <= 0) {
-                return $position;
-            }
-        }
-
-        return 'Central Midfield';
+        return ['min' => $config[1], 'max' => $config[2]];
     }
 
     public static function getTierDescription(int $tier): string
@@ -250,12 +294,73 @@ class YouthAcademyService
 
     public static function getProspectInfo(int $tier): array
     {
-        $effects = self::TIER_EFFECTS[$tier] ?? self::TIER_EFFECTS[0];
+        $config = self::TIER_CONFIG[$tier] ?? self::TIER_CONFIG[0];
 
         return [
-            'min_prospects' => $effects[0],
-            'max_prospects' => $effects[1],
-            'potential_range' => $effects[2] > 0 ? "{$effects[2]}-{$effects[3]}" : 'N/A',
+            'min_prospects' => $config[1],
+            'max_prospects' => $config[2],
+            'potential_range' => $config[3] > 0 ? "{$config[3]}-{$config[4]}" : 'N/A',
         ];
+    }
+
+    /**
+     * Create an academy prospect record.
+     */
+    private function createAcademyProspect(
+        Game $game,
+        int $minPotential,
+        int $maxPotential,
+        int $minAbility,
+        int $maxAbility,
+    ): AcademyPlayer {
+        $position = $this->selectPosition();
+        $technical = rand($minAbility, $maxAbility);
+        $physical = rand($minAbility, $maxAbility);
+
+        $age = rand(16, 18);
+        $currentYear = (int) $game->season;
+        $dateOfBirth = Carbon::createFromDate($currentYear - $age, rand(1, 12), rand(1, 28));
+
+        $potential = rand($minPotential, $maxPotential);
+        $potentialVariance = rand(3, 8);
+        $potentialLow = max($potential - $potentialVariance, max($technical, $physical));
+        $potentialHigh = min($potential + $potentialVariance, 99);
+
+        $identity = $this->playerGenerator->pickRandomIdentity();
+
+        return AcademyPlayer::create([
+            'id' => Str::uuid()->toString(),
+            'game_id' => $game->id,
+            'team_id' => $game->team_id,
+            'name' => $identity['name'],
+            'nationality' => $identity['nationality'],
+            'date_of_birth' => $dateOfBirth,
+            'position' => $position,
+            'technical_ability' => $technical,
+            'physical_ability' => $physical,
+            'potential' => $potential,
+            'potential_low' => $potentialLow,
+            'potential_high' => $potentialHigh,
+            'appeared_at' => $game->current_date,
+            'is_on_loan' => false,
+            'joined_season' => (int) $game->season,
+            'initial_technical' => $technical,
+            'initial_physical' => $physical,
+        ]);
+    }
+
+    private function selectPosition(): string
+    {
+        $totalWeight = array_sum(self::POSITION_WEIGHTS);
+        $random = rand(1, $totalWeight);
+
+        foreach (self::POSITION_WEIGHTS as $position => $weight) {
+            $random -= $weight;
+            if ($random <= 0) {
+                return $position;
+            }
+        }
+
+        return 'Central Midfield';
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Views;
 
+use App\Game\Services\YouthAcademyService;
 use App\Models\AcademyPlayer;
 use App\Models\Game;
 
@@ -18,6 +19,7 @@ class ShowAcademyPlayerDetail
         return view('partials.academy-player-detail', [
             'game' => $game,
             'academyPlayer' => $academyPlayer,
+            'revealPhase' => YouthAcademyService::getRevealPhase($game),
         ]);
     }
 }
