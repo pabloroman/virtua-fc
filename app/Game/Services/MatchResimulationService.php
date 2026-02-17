@@ -8,6 +8,8 @@ use App\Game\DTO\ResimulationResult;
 use App\Game\Enums\Formation;
 use App\Game\Enums\Mentality;
 use App\Models\Competition;
+use App\Models\CupTie;
+use App\Models\FinancialTransaction;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
@@ -24,6 +26,7 @@ class MatchResimulationService
         private readonly MatchSimulator $matchSimulator,
         private readonly StandingsCalculator $standingsCalculator,
         private readonly EligibilityService $eligibilityService,
+        private readonly CupTieResolver $cupTieResolver,
     ) {}
 
     /**
@@ -156,6 +159,11 @@ class MatchResimulationService
                 );
                 $this->standingsCalculator->recalculatePositions($game->id, $competitionId);
             }
+        }
+
+        // 12b. Reset and re-resolve cup tie if knockout match and score changed
+        if ($isCupTie && ($oldHomeScore !== $newHomeScore || $oldAwayScore !== $newAwayScore)) {
+            $this->resetAndReresolveCupTie($match, $game, $competition, $homePlayers, $awayPlayers);
         }
 
         // 13. Update goalkeeper stats
@@ -449,6 +457,129 @@ class MatchResimulationService
 
                 $awayGk->save();
             }
+        }
+    }
+
+    /**
+     * Reset a completed cup tie and re-resolve it with the new match score.
+     */
+    private function resetAndReresolveCupTie(
+        GameMatch $match,
+        Game $game,
+        ?Competition $competition,
+        Collection $homePlayers,
+        Collection $awayPlayers,
+    ): void {
+        $cupTie = CupTie::find($match->cup_tie_id);
+
+        if (! $cupTie || ! $cupTie->completed) {
+            return;
+        }
+
+        $oldWinnerId = $cupTie->winner_id;
+
+        // Reset the cup tie
+        $cupTie->update([
+            'winner_id' => null,
+            'completed' => false,
+            'resolution' => null,
+        ]);
+
+        // Clear extra time and penalty data from the match
+        $match->update([
+            'is_extra_time' => false,
+            'home_score_et' => null,
+            'away_score_et' => null,
+            'home_score_penalties' => null,
+            'away_score_penalties' => null,
+        ]);
+
+        // Delete cup prize money if user team won previously
+        if ($oldWinnerId === $game->team_id) {
+            $competitionName = $competition->name ?? 'Cup';
+            FinancialTransaction::where('game_id', $game->id)
+                ->where('category', FinancialTransaction::CATEGORY_CUP_BONUS)
+                ->where('description', "{$competitionName} - Round {$cupTie->round_number} advancement")
+                ->delete();
+        }
+
+        // Re-resolve the tie with new scores
+        $allPlayersForTie = collect([
+            $match->home_team_id => $homePlayers,
+            $match->away_team_id => $awayPlayers,
+        ]);
+        $newWinnerId = $this->cupTieResolver->resolve($cupTie->fresh(), $allPlayersForTie);
+
+        // Re-award prize money if user team now advances
+        if ($newWinnerId === $game->team_id) {
+            $this->awardCupPrizeMoney($game, $competition, $cupTie->round_number);
+        }
+
+        // If winner changed and next round draw exists, update it
+        if ($oldWinnerId && $newWinnerId && $oldWinnerId !== $newWinnerId) {
+            $this->updateNextRoundDraw($cupTie, $oldWinnerId, $newWinnerId);
+        }
+    }
+
+    /**
+     * Award cup prize money for advancing in a knockout round.
+     */
+    private function awardCupPrizeMoney(Game $game, ?Competition $competition, int $roundNumber): void
+    {
+        $prizeAmounts = [
+            1 => 10_000_000,
+            2 => 20_000_000,
+            3 => 30_000_000,
+            4 => 50_000_000,
+            5 => 100_000_000,
+            6 => 200_000_000,
+        ];
+
+        $amount = $prizeAmounts[$roundNumber] ?? $prizeAmounts[1];
+        $competitionName = $competition->name ?? 'Cup';
+
+        FinancialTransaction::recordIncome(
+            gameId: $game->id,
+            category: FinancialTransaction::CATEGORY_CUP_BONUS,
+            amount: $amount,
+            description: "{$competitionName} - Round {$roundNumber} advancement",
+            transactionDate: $game->current_date->toDateString(),
+        );
+    }
+
+    /**
+     * Update the next round draw if the winner of a cup tie changed.
+     */
+    private function updateNextRoundDraw(CupTie $currentTie, string $oldWinnerId, string $newWinnerId): void
+    {
+        $nextRoundTie = CupTie::where('game_id', $currentTie->game_id)
+            ->where('competition_id', $currentTie->competition_id)
+            ->where('round_number', $currentTie->round_number + 1)
+            ->where(function ($q) use ($oldWinnerId) {
+                $q->where('home_team_id', $oldWinnerId)
+                    ->orWhere('away_team_id', $oldWinnerId);
+            })
+            ->first();
+
+        if (! $nextRoundTie) {
+            return;
+        }
+
+        $isHome = $nextRoundTie->home_team_id === $oldWinnerId;
+        $teamField = $isHome ? 'home_team_id' : 'away_team_id';
+        $nextRoundTie->update([$teamField => $newWinnerId]);
+
+        // Update first leg match
+        if ($nextRoundTie->first_leg_match_id) {
+            GameMatch::where('id', $nextRoundTie->first_leg_match_id)
+                ->update([$teamField => $newWinnerId]);
+        }
+
+        // Update second leg match (teams are swapped in second leg)
+        if ($nextRoundTie->second_leg_match_id) {
+            $secondLegField = $isHome ? 'away_team_id' : 'home_team_id';
+            GameMatch::where('id', $nextRoundTie->second_leg_match_id)
+                ->update([$secondLegField => $newWinnerId]);
         }
     }
 
