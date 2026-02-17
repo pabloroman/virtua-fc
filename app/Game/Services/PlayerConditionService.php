@@ -38,6 +38,9 @@ class PlayerConditionService
     private const MORALE_DRAW = [-1, 2];
     private const MORALE_LOSS = [-6, -2];
 
+    // Bench frustration: morale penalty applied each match a player doesn't feature
+    private const MORALE_BENCH_FRUSTRATION = [2, 3];
+
     // Individual event morale impacts
     private const MORALE_GOAL = [2, 4];
     private const MORALE_ASSIST = [1, 3];
@@ -94,7 +97,6 @@ class PlayerConditionService
         // Determine match result for each team
         $homeWon = $match->home_score > $match->away_score;
         $awayWon = $match->away_score > $match->home_score;
-        $isDraw = $match->home_score === $match->away_score;
 
         // Calculate new values for all players
         $updates = [];
@@ -108,7 +110,6 @@ class PlayerConditionService
                 $isInLineup,
                 $isHomePlayer ? $homeWon : $awayWon,
                 $isHomePlayer ? $awayWon : $homeWon,
-                $isDraw,
                 $eventsByPlayer[$player->id] ?? []
             );
 
@@ -224,7 +225,6 @@ class PlayerConditionService
         bool $playedMatch,
         bool $teamWon,
         bool $teamLost,
-        bool $isDraw,
         array $playerEvents
     ): int {
         $change = 0;
@@ -255,14 +255,25 @@ class PlayerConditionService
             }
         }
 
+        // Bench frustration: players who don't get game time gradually lose morale
+        // regardless of team results. Offsets the win bonus for non-playing players.
+        // Better players get more frustrated — star players have higher expectations.
+        if (!$playedMatch) {
+            $ability = $player->current_technical_ability;
+            // Multiplier ranges from ~0.3x (ability 20) to ~1.5x (ability 100)
+            $frustrationMultiplier = 0.3 + ($ability / 100.0) * 1.2;
+            $baseFrustration = rand(self::MORALE_BENCH_FRUSTRATION[0], self::MORALE_BENCH_FRUSTRATION[1]);
+            $change -= max(1, (int) round($baseFrustration * $frustrationMultiplier));
+        }
+
         // Players with very low morale are harder to boost
         if ($player->morale < 40 && $change > 0) {
-            $change = (int) ($change * 0.7);
+            $change = (int) ($change * 0.8);
         }
 
         // Players with very high morale don't drop as easily
         if ($player->morale > 85 && $change < 0) {
-            $change = (int) ($change * 0.7);
+            $change = (int) ($change * 0.8);
         }
 
         return $change;
