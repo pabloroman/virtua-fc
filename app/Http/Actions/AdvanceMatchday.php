@@ -51,6 +51,10 @@ class AdvanceMatchday
     {
         $game = Game::findOrFail($gameId);
 
+        // Safety net: finalize any pending match from a previous matchday
+        // (e.g. user closed browser without clicking "Continue")
+        $this->finalizePendingMatch($game);
+
         // Block advancement if there are pending actions the user must resolve
         if ($game->hasPendingActions()) {
             $action = $game->getFirstPendingAction();
@@ -148,8 +152,12 @@ class AdvanceMatchday
         // Simulate all matches (pass game for medical tier effects on injuries)
         $matchResults = $this->simulateMatches($matches, $game, $allPlayers);
 
-        // Process all match results in one batched call
-        $this->matchResultProcessor->processAll($game->id, $matchday, $currentDate, $matchResults);
+        // Identify user's match — its score-dependent effects are deferred to finalization
+        $playerMatch = $matches->first(fn ($m) => $m->involvesTeam($game->team_id));
+        $deferMatchId = $playerMatch?->id;
+
+        // Process all match results (standings + GK stats skipped for user's match)
+        $this->matchResultProcessor->processAll($game->id, $matchday, $currentDate, $matchResults, $deferMatchId);
 
         // Recalculate standings positions once per league competition (not per match)
         $this->recalculateLeaguePositions($game->id, $matches);
@@ -157,9 +165,12 @@ class AdvanceMatchday
         // Process post-match actions (clear cached relations so season-scoped
         // relationships like currentInvestment lazy-load correctly after refresh)
         $game->refresh()->setRelations([]);
-        $this->processPostMatchActions($game, $matches, $handlers, $allPlayers);
+        $this->processPostMatchActions($game, $matches, $handlers, $allPlayers, $deferMatchId);
 
-        $playerMatch = $matches->first(fn ($m) => $m->involvesTeam($game->team_id));
+        // Mark user's match as pending finalization
+        if ($playerMatch) {
+            $game->update(['pending_finalization_match_id' => $playerMatch->id]);
+        }
 
         return ['playerMatch' => $playerMatch];
     }
@@ -258,7 +269,7 @@ class AdvanceMatchday
         }
     }
 
-    private function processPostMatchActions(Game $game, $matches, array $handlers, $allPlayers): void
+    private function processPostMatchActions(Game $game, $matches, array $handlers, $allPlayers, ?string $deferMatchId = null): void
     {
         // Career-mode only: transfers, scouting, loans, academy
         if ($game->isCareerMode()) {
@@ -278,13 +289,23 @@ class AdvanceMatchday
         $this->notificationService->cleanupOldNotifications($game);
 
         // Competition-specific post-match actions for each handler
+        // Skip user's match for knockout handlers (cup tie resolved at finalization)
         foreach ($handlers as $competitionId => $handler) {
             $competitionMatches = $matches->filter(fn ($m) => $m->competition_id === $competitionId);
-            $handler->afterMatches($game, $competitionMatches, $allPlayers);
+            if ($deferMatchId) {
+                $competitionMatches = $competitionMatches->reject(fn ($m) => $m->id === $deferMatchId);
+            }
+            if ($competitionMatches->isNotEmpty()) {
+                $handler->afterMatches($game, $competitionMatches, $allPlayers);
+            }
         }
 
         // Check competition progress (advancement/elimination) after handlers have resolved ties
-        $this->checkCompetitionProgress($game, $matches, $handlers);
+        // Skip knockout tie check for user's deferred match (handled in FinalizeMatch)
+        $matchesForProgress = $deferMatchId
+            ? $matches->reject(fn ($m) => $m->id === $deferMatchId)
+            : $matches;
+        $this->checkCompetitionProgress($game, $matchesForProgress, $handlers);
     }
 
     private function processCareerModeActions(Game $game, $matches, $allPlayers): void
@@ -605,6 +626,22 @@ class AdvanceMatchday
                 );
             }
         }
+    }
+
+    /**
+     * Safety net: finalize any match whose side effects were deferred but not yet applied.
+     * This handles the case where a user closed their browser without clicking "Continue".
+     */
+    private function finalizePendingMatch(Game $game): void
+    {
+        if (! $game->pending_finalization_match_id) {
+            return;
+        }
+
+        app(FinalizeMatch::class)->finalizeMatch(
+            GameMatch::find($game->pending_finalization_match_id),
+            $game,
+        );
     }
 
     /**

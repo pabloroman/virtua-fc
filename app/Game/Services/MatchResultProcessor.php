@@ -23,8 +23,10 @@ class MatchResultProcessor
 
     /**
      * Process all match results for a matchday in batched operations.
+     *
+     * @param  string|null  $deferMatchId  Match ID to skip standings and GK stats for (deferred to finalization)
      */
-    public function processAll(string $gameId, int $matchday, string $currentDate, array $matchResults): void
+    public function processAll(string $gameId, int $matchday, string $currentDate, array $matchResults, ?string $deferMatchId = null): void
     {
         // 1. Update game state (replaces onMatchdayAdvanced projector)
         Game::where('id', $gameId)->update([
@@ -59,11 +61,21 @@ class MatchResultProcessor
         // 7. Batch update conditions for all matches
         $this->batchUpdateConditions($matches, $matchResults);
 
-        // 8. Batch update goalkeeper stats
-        $this->batchUpdateGoalkeeperStats($matches, $matchResults);
+        // 8. Batch update goalkeeper stats (skip deferred match)
+        $gkResults = $deferMatchId
+            ? array_filter($matchResults, fn ($r) => $r['matchId'] !== $deferMatchId)
+            : $matchResults;
+        $gkMatches = $deferMatchId
+            ? $matches->except($deferMatchId)
+            : $matches;
+        $this->batchUpdateGoalkeeperStats($gkMatches, $gkResults);
 
-        // 9. Update standings per league
+        // 9. Update standings per league (skip deferred match)
         foreach ($matchResults as $result) {
+            if ($result['matchId'] === $deferMatchId) {
+                continue;
+            }
+
             $competition = $competitions->get($result['competitionId']);
             $match = $matches->get($result['matchId']);
             $isCupTie = $match?->cup_tie_id !== null;
