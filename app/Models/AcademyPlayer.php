@@ -22,6 +22,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $potential_low
  * @property int $potential_high
  * @property \Illuminate\Support\Carbon $appeared_at
+ * @property bool $is_on_loan
+ * @property int|null $joined_season
+ * @property int|null $initial_technical
+ * @property int|null $initial_physical
  * @property-read \App\Models\Game $game
  * @property-read int $age
  * @property-read array|null $nationality_flag
@@ -67,6 +71,10 @@ class AcademyPlayer extends Model
         'potential_low',
         'potential_high',
         'appeared_at',
+        'is_on_loan',
+        'joined_season',
+        'initial_technical',
+        'initial_physical',
     ];
 
     protected $casts = [
@@ -78,6 +86,10 @@ class AcademyPlayer extends Model
         'potential' => 'integer',
         'potential_low' => 'integer',
         'potential_high' => 'integer',
+        'is_on_loan' => 'boolean',
+        'joined_season' => 'integer',
+        'initial_technical' => 'integer',
+        'initial_physical' => 'integer',
     ];
 
     public function game(): BelongsTo
@@ -93,6 +105,15 @@ class AcademyPlayer extends Model
     public function getAgeAttribute(): int
     {
         return $this->date_of_birth->age;
+    }
+
+    public function getSeasonsInAcademyAttribute(): int
+    {
+        if (!$this->joined_season) {
+            return 1;
+        }
+
+        return max(1, (int) $this->game->season - $this->joined_season + 1);
     }
 
     public function getOverallAttribute(): int

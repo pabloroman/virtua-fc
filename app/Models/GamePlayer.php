@@ -617,7 +617,13 @@ class GamePlayer extends Model
 
         if ($this->isInjured($gameDate)) {
             $translationKey = InjuryService::INJURY_TRANSLATION_MAP[$this->injury_type] ?? null;
-            return $translationKey ? __($translationKey) : __('squad.injured_generic');
+            $injuryName = $translationKey ? __($translationKey) : __('squad.injured_generic');
+
+            $checkDate = $gameDate ?? $this->game->current_date;
+            $weeksRemaining = (int) ceil($checkDate->diffInDays($this->injury_until) / 7);
+            $duration = trans_choice('squad.injury_weeks', max(1, $weeksRemaining), ['count' => max(1, $weeksRemaining)]);
+
+            return "$injuryName ($duration)";
         }
 
         return null;

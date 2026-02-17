@@ -2,6 +2,7 @@
 
 namespace App\Http\Actions;
 
+use App\Events\SeasonStarted;
 use App\Models\Game;
 use App\Models\GameInvestment;
 use Illuminate\Http\Request;
@@ -77,7 +78,10 @@ class CompleteOnboarding
         ]);
 
         // Complete onboarding
+        $game->refresh()->setRelations([]);
         $game->completeOnboarding();
+
+        event(new SeasonStarted($game));
 
         return redirect()->route('show-game', $gameId)
             ->with('success', __('messages.welcome_to_team', ['team' => $game->team->name]));

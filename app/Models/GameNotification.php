@@ -59,6 +59,8 @@ class GameNotification extends Model
     public const TYPE_COMPETITION_ADVANCEMENT = 'competition_advancement';
     public const TYPE_COMPETITION_ELIMINATION = 'competition_elimination';
     public const TYPE_ACADEMY_PROSPECT = 'academy_prospect';
+    public const TYPE_ACADEMY_EVALUATION = 'academy_evaluation';
+    public const TYPE_ACADEMY_BATCH = 'academy_batch';
     public const TYPE_TRANSFER_COMPLETE = 'transfer_complete';
     public const TYPE_RENEWAL_ACCEPTED = 'renewal_accepted';
     public const TYPE_RENEWAL_COUNTERED = 'renewal_countered';
@@ -86,6 +88,8 @@ class GameNotification extends Model
         self::TYPE_COMPETITION_ADVANCEMENT => 'competition',
         self::TYPE_COMPETITION_ELIMINATION => 'competition',
         self::TYPE_ACADEMY_PROSPECT => 'academy',
+        self::TYPE_ACADEMY_EVALUATION => 'academy',
+        self::TYPE_ACADEMY_BATCH => 'academy',
         self::TYPE_TRANSFER_COMPLETE => 'squad',
         self::TYPE_RENEWAL_ACCEPTED => 'transfers',
         self::TYPE_RENEWAL_COUNTERED => 'transfers',
@@ -324,11 +328,18 @@ class GameNotification extends Model
                 'icon_bg' => 'bg-rose-500',
                 'icon_text' => 'text-white',
             ],
-            self::TYPE_ACADEMY_PROSPECT => [
+            self::TYPE_ACADEMY_PROSPECT, self::TYPE_ACADEMY_BATCH => [
                 'bg' => 'bg-lime-50',
                 'border' => 'border-lime-200',
                 'text' => 'text-lime-800',
                 'icon_bg' => 'bg-lime-600',
+                'icon_text' => 'text-white',
+            ],
+            self::TYPE_ACADEMY_EVALUATION => [
+                'bg' => 'bg-amber-50',
+                'border' => 'border-amber-200',
+                'text' => 'text-amber-800',
+                'icon_bg' => 'bg-amber-500',
                 'icon_text' => 'text-white',
             ],
             default => [

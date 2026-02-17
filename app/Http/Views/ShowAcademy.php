@@ -20,6 +20,13 @@ class ShowAcademy
 
         $prospects = AcademyPlayer::where('game_id', $gameId)
             ->where('team_id', $game->team_id)
+            ->where('is_on_loan', false)
+            ->get()
+            ->sortBy(fn ($p) => $this->sortOrder($p));
+
+        $loanedPlayers = AcademyPlayer::where('game_id', $gameId)
+            ->where('team_id', $game->team_id)
+            ->where('is_on_loan', true)
             ->get()
             ->sortBy(fn ($p) => $this->sortOrder($p));
 
@@ -29,6 +36,8 @@ class ShowAcademy
 
         $tier = $game->currentInvestment->youth_academy_tier ?? 0;
         $tierDescription = YouthAcademyService::getTierDescription($tier);
+        $capacity = YouthAcademyService::getCapacity($tier);
+        $revealPhase = YouthAcademyService::getRevealPhase($game);
 
         return view('squad-academy', [
             'game' => $game,
@@ -36,10 +45,13 @@ class ShowAcademy
             'defenders' => $grouped->get('Defender', collect()),
             'midfielders' => $grouped->get('Midfielder', collect()),
             'forwards' => $grouped->get('Forward', collect()),
+            'loanedPlayers' => $loanedPlayers,
             'academyCount' => $prospects->count(),
             'expiringContractsCount' => $expiringContractsCount,
             'tier' => $tier,
             'tierDescription' => $tierDescription,
+            'capacity' => $capacity,
+            'revealPhase' => $revealPhase,
         ]);
     }
 
