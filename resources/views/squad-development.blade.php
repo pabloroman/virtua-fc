@@ -76,7 +76,7 @@
                                         $hasStarterBonus = $player->season_appearances >= 15;
                                         $projectedAbility = $currentAbility + ($player->projection ?? 0);
                                     @endphp
-                                    <tr class="border-b border-slate-100 hover:bg-slate-50">
+                                    <tr class="border-b border-slate-100 hover:bg-slate-50 cursor-pointer" @click="$dispatch('show-player-detail', @js($player->toModalData($game)))">
                                         {{-- Player: badge + name + position --}}
                                         <td class="py-3 pl-2">
                                             <div class="flex items-center gap-3">
@@ -220,4 +220,6 @@
             </div>
         </div>
     </div>
+
+    <x-player-detail-modal />
 </x-app-layout>

@@ -165,6 +165,19 @@ return [
     'legend_own_goals' => 'Goles en Propia',
     'legend_clean_sheets' => 'Porterías a Cero (solo PO)',
 
+    // Player detail modal
+    'abilities' => 'Habilidades',
+    'technical_full' => 'Técnica',
+    'physical_full' => 'Física',
+    'fitness_full' => 'Forma Física',
+    'morale_full' => 'Moral',
+    'phase' => 'Fase',
+    'season_stats' => 'Estadísticas de Temporada',
+    'cards' => 'Tarjetas',
+    'clean_sheets_full' => 'Porterías a Cero',
+    'goals_conceded_full' => 'Goles Encajados',
+    'discovered' => 'Descubierto',
+
     // Academy
     'academy' => 'Cantera',
     'promote_to_first_team' => 'Subir al Primer Equipo',

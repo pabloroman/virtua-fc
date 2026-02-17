@@ -79,7 +79,7 @@
                                             $isUnavailable = !$gamePlayer->isAvailable($game->current_date, $nextMatchday);
                                             $unavailabilityReason = $gamePlayer->getUnavailabilityReason($game->current_date, $nextMatchday);
                                         @endphp
-                                        <tr class="border-b border-slate-200 @if($isUnavailable) text-slate-400 @endif hover:bg-slate-50">
+                                        <tr class="border-b border-slate-200 @if($isUnavailable) text-slate-400 @endif hover:bg-slate-50 cursor-pointer" @click="$dispatch('show-player-detail', @js($gamePlayer->toModalData($game)))">
                                             {{-- Position --}}
                                             <td class="py-2 text-center">
                                                 <x-position-badge :position="$gamePlayer->position" :tooltip="\App\Support\PositionMapper::toDisplayName($gamePlayer->position)" class="cursor-help" />
@@ -200,7 +200,7 @@
                                             {{-- Actions (career mode only) --}}
                                             <td class="py-2 text-right">
                                                 @if($game->isCareerMode() && $gamePlayer->isTransferListed())
-                                                    <div x-data="{ open: false }" @click.outside="open = false" class="relative inline-block">
+                                                    <div x-data="{ open: false }" @click.stop @click.outside="open = false" class="relative inline-block">
                                                         <button @click="open = !open" class="p-1 text-slate-400 hover:text-slate-600 rounded hover:bg-slate-100">
                                                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="4" r="1.5"/><circle cx="10" cy="10" r="1.5"/><circle cx="10" cy="16" r="1.5"/></svg>
                                                         </button>
@@ -223,7 +223,7 @@
                                                         </div>
                                                     </div>
                                                 @elseif($game->isCareerMode() && !$gamePlayer->isRetiring() && !$gamePlayer->isLoanedIn($game->team_id) && !$gamePlayer->hasPreContractAgreement() && !$gamePlayer->hasRenewalAgreed() && !$gamePlayer->hasAgreedTransfer() && !$gamePlayer->hasActiveLoanSearch())
-                                                    <div x-data="{ open: false }" @click.outside="open = false" class="relative inline-block">
+                                                    <div x-data="{ open: false }" @click.stop @click.outside="open = false" class="relative inline-block">
                                                         <button @click="open = !open" class="p-1 text-slate-400 hover:text-slate-600 rounded hover:bg-slate-100">
                                                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="4" r="1.5"/><circle cx="10" cy="10" r="1.5"/><circle cx="10" cy="16" r="1.5"/></svg>
                                                         </button>
@@ -313,4 +313,6 @@
             </div>
         </div>
     </div>
+
+    <x-player-detail-modal />
 </x-app-layout>

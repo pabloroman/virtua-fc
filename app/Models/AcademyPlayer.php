@@ -141,4 +141,25 @@ class AcademyPlayer extends Model
             'code' => $code,
         ];
     }
+
+    /**
+     * Get data for the player detail modal.
+     */
+    public function toModalData(): array
+    {
+        return [
+            'type' => 'academy',
+            'name' => $this->name,
+            'position' => $this->position,
+            'positionDisplay' => $this->position_display,
+            'positionName' => PositionMapper::toDisplayName($this->position),
+            'age' => $this->age,
+            'nationalityFlag' => $this->nationality_flag,
+            'technicalAbility' => $this->technical_ability,
+            'physicalAbility' => $this->physical_ability,
+            'overallScore' => $this->overall,
+            'potentialRange' => $this->potential_range,
+            'appearedAt' => $this->appeared_at->format('d M Y'),
+        ];
+    }
 }

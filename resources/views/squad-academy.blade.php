@@ -65,7 +65,7 @@
                                             </td>
                                         </tr>
                                         @foreach($group['players'] as $prospect)
-                                            <tr class="border-b border-slate-200 hover:bg-slate-50">
+                                            <tr class="border-b border-slate-200 hover:bg-slate-50 cursor-pointer" @click="$dispatch('show-player-detail', @js($prospect->toModalData()))">
                                                 {{-- Position --}}
                                                 <td class="py-2 text-center">
                                                     <x-position-badge :position="$prospect->position" :tooltip="\App\Support\PositionMapper::toDisplayName($prospect->position)" class="cursor-help" />
@@ -103,7 +103,7 @@
                                                 </td>
                                                 {{-- Actions --}}
                                                 <td class="py-2 text-right">
-                                                    <div x-data="{ open: false }" class="relative inline-block">
+                                                    <div x-data="{ open: false }" @click.stop class="relative inline-block">
                                                         <button @click="open = !open" class="p-1 text-slate-400 hover:text-slate-600 rounded hover:bg-slate-100">
                                                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="4" r="1.5"/><circle cx="10" cy="10" r="1.5"/><circle cx="10" cy="16" r="1.5"/></svg>
                                                         </button>
@@ -130,4 +130,6 @@
             </div>
         </div>
     </div>
+
+    <x-player-detail-modal />
 </x-app-layout>

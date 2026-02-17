@@ -51,6 +51,18 @@ class AdvanceMatchday
     {
         $game = Game::findOrFail($gameId);
 
+        // Block advancement if there are pending actions the user must resolve
+        if ($game->hasPendingActions()) {
+            $action = $game->getFirstPendingAction();
+            if ($action && $action['route']) {
+                return redirect()->route($action['route'], $gameId)
+                    ->with('warning', __('messages.action_required'));
+            }
+
+            return redirect()->route('show-game', $gameId)
+                ->with('warning', __('messages.action_required'));
+        }
+
         // Mark all existing notifications as read before processing new matchday
         $this->notificationService->markAllAsRead($gameId);
 

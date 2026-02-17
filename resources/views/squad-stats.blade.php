@@ -169,7 +169,7 @@
                                         $isTopAppearances = $maxAppearances > 0 && $player->appearances === $maxAppearances;
                                         $isTopCleanSheets = $maxCleanSheets > 0 && $player->position === 'Goalkeeper' && $player->clean_sheets === $maxCleanSheets;
                                     @endphp
-                                    <tr class="border-b border-slate-100 hover:bg-slate-50 player-row"
+                                    <tr class="border-b border-slate-100 hover:bg-slate-50 cursor-pointer player-row" @click="$dispatch('show-player-detail', @js($player->toModalData($game)))"
                                         data-name="{{ strtolower($player->name) }}"
                                         data-age="{{ $player->age }}"
                                         data-appearances="{{ $player->appearances }}"
@@ -276,4 +276,5 @@
         </div>
     </div>
 
+    <x-player-detail-modal />
 </x-app-layout>

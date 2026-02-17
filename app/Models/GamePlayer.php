@@ -790,6 +790,45 @@ class GamePlayer extends Model
     }
 
     /**
+     * Get data for the player detail modal.
+     */
+    public function toModalData(Game $game): array
+    {
+        return [
+            'type' => 'squad',
+            'name' => $this->name,
+            'number' => $this->number,
+            'position' => $this->position,
+            'positionDisplay' => $this->position_display,
+            'positionName' => $this->position_name,
+            'age' => $this->age,
+            'nationalityFlag' => $this->nationality_flag,
+            'technicalAbility' => $this->technical_ability,
+            'physicalAbility' => $this->physical_ability,
+            'overallScore' => $this->overall_score,
+            'fitness' => $this->fitness,
+            'morale' => $this->morale,
+            'potentialRange' => $this->potential_range,
+            'developmentStatus' => $this->development_status,
+            'marketValue' => $game->isCareerMode() ? $this->formatted_market_value : null,
+            'wage' => $game->isCareerMode() ? $this->formatted_wage : null,
+            'contractUntil' => $this->contract_expiry_year,
+            'appearances' => $this->appearances,
+            'goals' => $this->goals,
+            'assists' => $this->assists,
+            'yellowCards' => $this->yellow_cards,
+            'redCards' => $this->red_cards,
+            'cleanSheets' => $this->clean_sheets,
+            'goalsConceded' => $this->goals_conceded,
+            'isGoalkeeper' => $this->position_group === 'Goalkeeper',
+            'isInjured' => $this->isInjured(),
+            'injuryType' => $this->injury_type,
+            'isRetiring' => $this->isRetiring(),
+            'isCareerMode' => $game->isCareerMode(),
+        ];
+    }
+
+    /**
      * Get primary nationality flag data (first nationality only).
      *
      * @return array{name: string, code: string}|null
