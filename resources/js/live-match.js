@@ -71,6 +71,7 @@ export default function liveMatch(config) {
         // Animation loop
         _lastTick: null,
         _animFrame: null,
+        _kickoffTimeout: null,
 
         // Speed presets: match minutes per real second
         speedRates: {
@@ -86,7 +87,8 @@ export default function liveMatch(config) {
             }));
 
             // Brief delay before kickoff
-            setTimeout(() => {
+            this._kickoffTimeout = setTimeout(() => {
+                this._kickoffTimeout = null;
                 this.phase = 'first_half';
                 this._lastTick = performance.now();
                 this._animFrame = requestAnimationFrame(this.tick.bind(this));
@@ -243,8 +245,12 @@ export default function liveMatch(config) {
         },
 
         skipToEnd() {
+            // Cancel the kickoff timeout if skip is pressed during pre_match
+            if (this._kickoffTimeout) {
+                clearTimeout(this._kickoffTimeout);
+                this._kickoffTimeout = null;
+            }
             this.currentMinute = 93;
-            this.processEvents();
             this.updateOtherMatches();
             this.enterFullTime();
         },
@@ -710,7 +716,7 @@ export default function liveMatch(config) {
             return this.revealedEvents
                 .filter(e => e.type !== 'assist')
                 .map(e => ({
-                    position: (e.minute / 90) * 100,
+                    position: Math.min((e.minute / 90) * 100, 100),
                     type: e.type,
                     minute: e.minute,
                 }));
@@ -721,6 +727,7 @@ export default function liveMatch(config) {
                 cancelAnimationFrame(this._animFrame);
             }
             clearTimeout(this.pauseTimer);
+            clearTimeout(this._kickoffTimeout);
             document.body.classList.remove('overflow-y-hidden');
         },
     };

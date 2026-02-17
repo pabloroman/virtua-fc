@@ -131,7 +131,7 @@ class LineupService
 
         foreach ($playerIds as $playerId) {
             if (!in_array($playerId, $availableIds)) {
-                $errors[] = 'One or more selected players are not available.';
+                $errors[] = __('squad.player_not_available');
                 break;
             }
         }
@@ -143,7 +143,18 @@ class LineupService
         foreach ($requirements as $positionGroup => $requiredCount) {
             $actualCount = $positionCounts->get($positionGroup, 0);
             if ($actualCount !== $requiredCount) {
-                $errors[] = "Formation {$formation->value} requires {$requiredCount} {$positionGroup}(s), but you selected {$actualCount}.";
+                $positionTranslations = [
+                    'Goalkeeper' => __('squad.goalkeepers'),
+                    'Defender' => __('squad.defenders'),
+                    'Midfielder' => __('squad.midfielders'),
+                    'Forward' => __('squad.forwards'),
+                ];
+                $errors[] = __('squad.formation_position_mismatch', [
+                    'formation' => $formation->value,
+                    'required' => $requiredCount,
+                    'position' => $positionTranslations[$positionGroup] ?? $positionGroup,
+                    'actual' => $actualCount,
+                ]);
             }
         }
 

@@ -78,6 +78,10 @@ return [
     'for_years' => 'por :years año(s)',
     'pre_contract_offers_count' => 'oferta de precontrato|ofertas de precontrato',
 
+    // Lineup validation
+    'formation_position_mismatch' => 'La formación :formation requiere :required :position, pero seleccionaste :actual.',
+    'player_not_available' => 'Uno o más jugadores seleccionados no están disponibles.',
+
     // Lineup
     'formation' => 'Formación',
     'mentality' => 'Mentalidad',

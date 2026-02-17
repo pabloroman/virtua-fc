@@ -24,6 +24,11 @@ class ProcessTacticalChange
             ->where('game_id', $gameId)
             ->findOrFail($matchId);
 
+        // Validate that the match is currently pending finalization (i.e. being played right now)
+        if ($game->pending_finalization_match_id !== $match->id) {
+            return response()->json(['error' => __('game.match_not_in_progress')], 403);
+        }
+
         // Validate that the match involves the user's team
         if (! $match->involvesTeam($game->team_id)) {
             return response()->json(['error' => __('game.sub_error_not_your_match')], 422);

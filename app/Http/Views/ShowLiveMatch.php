@@ -25,6 +25,11 @@ class ShowLiveMatch
             'events.gamePlayer.player',
         ])->where('game_id', $gameId)->findOrFail($matchId);
 
+        // Prevent viewing/interacting with matches that are not currently in play
+        if ($game->pending_finalization_match_id !== $playerMatch->id) {
+            return redirect()->route('show-game', $gameId);
+        }
+
         // Build the events payload for the Alpine.js component
         $events = $playerMatch->events
             ->filter(fn ($e) => $e->event_type !== 'assist')
