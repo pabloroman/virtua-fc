@@ -127,11 +127,15 @@ class LoanService
             return null;
         }
 
+        // Pre-load position group counts for all candidate teams in one query
+        $teamIds = $teams->pluck('id')->toArray();
+        $positionCounts = $this->getPositionCountsByTeam($game, $teamIds);
+
         // Score each team
-        $scored = $teams->map(function (Team $team) use ($game, $player) {
+        $scored = $teams->map(function (Team $team) use ($game, $player, $positionCounts) {
             return [
                 'team' => $team,
-                'score' => $this->scoreLoanDestination($game, $player, $team),
+                'score' => $this->scoreLoanDestination($game, $player, $team, $positionCounts),
             ];
         })
         ->filter(fn ($item) => $item['score'] >= 20)
@@ -160,8 +164,10 @@ class LoanService
 
     /**
      * Score a potential loan destination (0-100).
+     *
+     * @param  array<string, array<string, int>>  $positionCounts  Pre-loaded position counts by team
      */
-    private function scoreLoanDestination(Game $game, GamePlayer $player, Team $team): int
+    private function scoreLoanDestination(Game $game, GamePlayer $player, Team $team, array $positionCounts = []): int
     {
         $score = 0;
 
@@ -169,7 +175,7 @@ class LoanService
         $score += $this->scoreReputation($player, $team);
 
         // Position need (0-30 pts)
-        $score += $this->scorePositionNeed($game, $player, $team);
+        $score += $this->scorePositionNeed($player, $team, $positionCounts);
 
         // League tier (0-20 pts)
         $score += $this->scoreLeagueTier($player, $team);
@@ -243,16 +249,13 @@ class LoanService
 
     /**
      * Score position need (0-30 pts).
+     *
+     * @param  array<string, array<string, int>>  $positionCounts  Pre-loaded position counts by team
      */
-    private function scorePositionNeed(Game $game, GamePlayer $player, Team $team): int
+    private function scorePositionNeed(GamePlayer $player, Team $team, array $positionCounts = []): int
     {
         $positionGroup = $player->position_group;
-
-        $count = GamePlayer::where('game_id', $game->id)
-            ->where('team_id', $team->id)
-            ->get()
-            ->filter(fn ($p) => $p->position_group === $positionGroup)
-            ->count();
+        $count = $positionCounts[$team->id][$positionGroup] ?? 0;
 
         return match (true) {
             $count <= 1 => 30,
@@ -260,6 +263,26 @@ class LoanService
             $count === 3 => 10,
             default => 0,
         };
+    }
+
+    /**
+     * Pre-load position group counts for multiple teams in a single query.
+     *
+     * @return array<string, array<string, int>>  [teamId => [positionGroup => count]]
+     */
+    private function getPositionCountsByTeam(Game $game, array $teamIds): array
+    {
+        $players = GamePlayer::where('game_id', $game->id)
+            ->whereIn('team_id', $teamIds)
+            ->get(['id', 'team_id', 'position']);
+
+        $counts = [];
+        foreach ($players as $player) {
+            $group = $player->position_group;
+            $counts[$player->team_id][$group] = ($counts[$player->team_id][$group] ?? 0) + 1;
+        }
+
+        return $counts;
     }
 
     /**

@@ -440,6 +440,11 @@ class LineupService
                 $allPlayersGrouped,
                 $suspendedPlayerIds
             );
+
+            // Save once per match (covers lineup, formation, mentality for both sides)
+            if ($match->isDirty()) {
+                $match->save();
+            }
         }
     }
 
@@ -509,13 +514,26 @@ class LineupService
             $lineup = $this->selectBestXI($availablePlayers, $playerFormation)->pluck('id')->toArray();
         }
 
-        $this->saveLineup($match, $teamId, $lineup);
+        // Set lineup in memory (save deferred to end)
+        if ($match->home_team_id === $teamId) {
+            $match->home_lineup = $lineup;
+        } else {
+            $match->away_lineup = $lineup;
+        }
 
         if ($isPlayerTeam) {
             if ($playerFormation) {
-                $this->saveFormation($match, $teamId, $playerFormation->value);
+                if ($match->home_team_id === $teamId) {
+                    $match->home_formation = $playerFormation->value;
+                } else {
+                    $match->away_formation = $playerFormation->value;
+                }
             }
-            $this->saveMentality($match, $teamId, $playerMentality);
+            if ($match->home_team_id === $teamId) {
+                $match->home_mentality = $playerMentality;
+            } else {
+                $match->away_mentality = $playerMentality;
+            }
         }
     }
 

@@ -52,9 +52,12 @@ class MatchdayService
             ->get();
 
         // Resolve handlers and call beforeMatches for each competition
+        $competitionIds = $matchesOnDate->pluck('competition_id')->unique();
+        $competitions = Competition::whereIn('id', $competitionIds)->get()->keyBy('id');
+
         $handlers = [];
         foreach ($matchesOnDate->groupBy('competition_id') as $competitionId => $compMatches) {
-            $competition = Competition::find($competitionId);
+            $competition = $competitions->get($competitionId);
             $handler = $this->handlerResolver->resolve($competition);
             $handler->beforeMatches($game, $targetDate);
             $handlers[$competitionId] = $handler;

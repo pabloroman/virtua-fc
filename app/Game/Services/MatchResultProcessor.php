@@ -26,7 +26,7 @@ class MatchResultProcessor
      *
      * @param  string|null  $deferMatchId  Match ID to skip standings and GK stats for (deferred to finalization)
      */
-    public function processAll(string $gameId, int $matchday, string $currentDate, array $matchResults, ?string $deferMatchId = null): void
+    public function processAll(string $gameId, int $matchday, string $currentDate, array $matchResults, ?string $deferMatchId = null, $allPlayers = null): void
     {
         // 1. Update game state (replaces onMatchdayAdvanced projector)
         Game::where('id', $gameId)->update([
@@ -59,7 +59,7 @@ class MatchResultProcessor
         $this->bulkUpdateAppearances($matches);
 
         // 7. Batch update conditions for all matches
-        $this->batchUpdateConditions($matches, $matchResults);
+        $this->batchUpdateConditions($matches, $matchResults, $allPlayers ?? collect());
 
         // 8. Batch update goalkeeper stats (skip deferred match)
         $gkResults = $deferMatchId
@@ -94,17 +94,34 @@ class MatchResultProcessor
     }
 
     /**
-     * Update match scores — one query per match (each has different scores).
+     * Update match scores in a single query using CASE WHEN.
      */
     private function bulkUpdateMatchScores(array $matchResults): void
     {
-        foreach ($matchResults as $result) {
-            GameMatch::where('id', $result['matchId'])->update([
-                'home_score' => $result['homeScore'],
-                'away_score' => $result['awayScore'],
-                'played' => true,
-            ]);
+        if (empty($matchResults)) {
+            return;
         }
+
+        $ids = [];
+        $homeCases = [];
+        $awayCases = [];
+
+        foreach ($matchResults as $result) {
+            $id = $result['matchId'];
+            $ids[] = $id;
+            $homeCases[] = "WHEN id = '{$id}' THEN {$result['homeScore']}";
+            $awayCases[] = "WHEN id = '{$id}' THEN {$result['awayScore']}";
+        }
+
+        $idList = "'" . implode("','", $ids) . "'";
+
+        DB::statement("
+            UPDATE game_matches
+            SET home_score = CASE " . implode(' ', $homeCases) . " END,
+                away_score = CASE " . implode(' ', $awayCases) . " END,
+                played = true
+            WHERE id IN ({$idList})
+        ");
     }
 
     /**
@@ -261,7 +278,7 @@ class MatchResultProcessor
 
         $players = GamePlayer::whereIn('id', $allPlayerIds)->get()->keyBy('id');
 
-        // Apply stat increments (1 save per player, not per event)
+        // Apply stat increments in memory (for special events processing below)
         foreach ($statIncrements as $playerId => $increments) {
             $player = $players->get($playerId);
             if (! $player) {
@@ -271,8 +288,10 @@ class MatchResultProcessor
             foreach ($increments as $column => $amount) {
                 $player->{$column} += $amount;
             }
-            $player->save();
         }
+
+        // Bulk update all stat increments in a single query
+        $this->bulkUpdatePlayerStats($statIncrements);
 
         // Process special events (cards -> suspensions, injuries)
         foreach ($specialEvents as $eventData) {
@@ -286,9 +305,8 @@ class MatchResultProcessor
 
             switch ($eventData['event_type']) {
                 case 'yellow_card':
-                    // Reload the player to get accurate yellow_cards count after stat increments
-                    $freshPlayer = $player->fresh();
-                    $suspension = $this->eligibilityService->checkYellowCardAccumulation($freshPlayer);
+                    // Player already has updated yellow_cards from stat increment loop above
+                    $suspension = $this->eligibilityService->checkYellowCardAccumulation($player);
                     if ($suspension) {
                         $this->eligibilityService->applySuspension($player, $suspension, $eventData['competitionId']);
 
@@ -340,6 +358,47 @@ class MatchResultProcessor
     }
 
     /**
+     * Bulk update player stat increments in a single query using CASE WHEN.
+     *
+     * @param  array<string, array<string, int>>  $statIncrements  [playerId => [column => increment]]
+     */
+    private function bulkUpdatePlayerStats(array $statIncrements): void
+    {
+        if (empty($statIncrements)) {
+            return;
+        }
+
+        // Collect all columns that need updating
+        $columns = [];
+        foreach ($statIncrements as $increments) {
+            foreach (array_keys($increments) as $col) {
+                $columns[$col] = true;
+            }
+        }
+
+        $ids = array_keys($statIncrements);
+        $idList = "'" . implode("','", $ids) . "'";
+
+        $setClauses = [];
+        foreach (array_keys($columns) as $column) {
+            $cases = [];
+            foreach ($statIncrements as $playerId => $increments) {
+                $amount = $increments[$column] ?? 0;
+                if ($amount !== 0) {
+                    $cases[] = "WHEN id = '{$playerId}' THEN {$column} + {$amount}";
+                }
+            }
+            if (! empty($cases)) {
+                $setClauses[] = "{$column} = CASE " . implode(' ', $cases) . " ELSE {$column} END";
+            }
+        }
+
+        if (! empty($setClauses)) {
+            DB::statement("UPDATE game_players SET " . implode(', ', $setClauses) . " WHERE id IN ({$idList})");
+        }
+    }
+
+    /**
      * Bulk update appearances — 1 query for all lineup players across all matches.
      */
     private function bulkUpdateAppearances($matches): void
@@ -360,26 +419,48 @@ class MatchResultProcessor
 
     /**
      * Batch update fitness and morale for all matches.
+     *
+     * @param  \Illuminate\Support\Collection  $matches
+     * @param  array  $matchResults
+     * @param  \Illuminate\Support\Collection  $allPlayers  Pre-loaded players grouped by team_id
      */
-    private function batchUpdateConditions($matches, array $matchResults): void
+    private function batchUpdateConditions($matches, array $matchResults, $allPlayers): void
     {
+        if ($matches->isEmpty()) {
+            return;
+        }
+
+        // Batch-load previous match dates for all teams in one query per team
+        $gameId = $matches->first()->game_id;
+        $teamIds = $matches->pluck('home_team_id')
+            ->merge($matches->pluck('away_team_id'))
+            ->unique()
+            ->values();
+
+        // Get the most recent played match date for each team (before this batch)
+        $matchIds = $matches->pluck('id')->toArray();
+        $previousDates = collect();
+        foreach ($teamIds as $teamId) {
+            $previousMatch = GameMatch::where('game_id', $gameId)
+                ->where('played', true)
+                ->whereNotIn('id', $matchIds)
+                ->where(function ($query) use ($teamId) {
+                    $query->where('home_team_id', $teamId)
+                        ->orWhere('away_team_id', $teamId);
+                })
+                ->orderByDesc('scheduled_date')
+                ->first();
+
+            $previousDates[$teamId] = $previousMatch?->scheduled_date;
+        }
+
         foreach ($matches as $match) {
             // Find the matching result for events
             $result = collect($matchResults)->firstWhere('matchId', $match->id);
             $events = $result['events'] ?? [];
 
-            // Get previous match dates for each team
-            $homePreviousDate = $this->conditionService->getPreviousMatchDate(
-                $match->game_id,
-                $match->home_team_id,
-                $match->id
-            );
-
-            $awayPreviousDate = $this->conditionService->getPreviousMatchDate(
-                $match->game_id,
-                $match->away_team_id,
-                $match->id
-            );
+            $homePreviousDate = $previousDates->get($match->home_team_id);
+            $awayPreviousDate = $previousDates->get($match->away_team_id);
 
             $previousDate = null;
             if ($homePreviousDate && $awayPreviousDate) {
@@ -388,7 +469,7 @@ class MatchResultProcessor
                 $previousDate = $homePreviousDate ?? $awayPreviousDate;
             }
 
-            $this->conditionService->updateAfterMatch($match, $events, $previousDate);
+            $this->conditionService->updateAfterMatch($match, $events, $previousDate, $allPlayers);
         }
     }
 

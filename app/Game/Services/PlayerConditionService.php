@@ -56,15 +56,22 @@ class PlayerConditionService
      * @param GameMatch $match The completed match
      * @param array $events Array of match events
      * @param Carbon|null $previousMatchDate Date of the previous match (for recovery calculation)
+     * @param \Illuminate\Support\Collection|null $preloadedPlayers Pre-loaded players grouped by team_id (avoids redundant queries)
      */
-    public function updateAfterMatch(GameMatch $match, array $events, ?Carbon $previousMatchDate = null): void
+    public function updateAfterMatch(GameMatch $match, array $events, ?Carbon $previousMatchDate = null, $preloadedPlayers = null): void
     {
         $gameId = $match->game_id;
 
-        // Get all players for both teams
-        $allPlayers = GamePlayer::where('game_id', $gameId)
-            ->whereIn('team_id', [$match->home_team_id, $match->away_team_id])
-            ->get();
+        // Use pre-loaded players if available, otherwise load
+        if ($preloadedPlayers && $preloadedPlayers->isNotEmpty()) {
+            $allPlayers = collect()
+                ->merge($preloadedPlayers->get($match->home_team_id, collect()))
+                ->merge($preloadedPlayers->get($match->away_team_id, collect()));
+        } else {
+            $allPlayers = GamePlayer::where('game_id', $gameId)
+                ->whereIn('team_id', [$match->home_team_id, $match->away_team_id])
+                ->get();
+        }
 
         if ($allPlayers->isEmpty()) {
             return;
@@ -278,21 +285,4 @@ class PlayerConditionService
         return $grouped;
     }
 
-    /**
-     * Get previous match date for a team.
-     */
-    public function getPreviousMatchDate(string $gameId, string $teamId, string $currentMatchId): ?Carbon
-    {
-        $previousMatch = GameMatch::where('game_id', $gameId)
-            ->where('played', true)
-            ->where('id', '!=', $currentMatchId)
-            ->where(function ($query) use ($teamId) {
-                $query->where('home_team_id', $teamId)
-                    ->orWhere('away_team_id', $teamId);
-            })
-            ->orderByDesc('scheduled_date')
-            ->first();
-
-        return $previousMatch?->scheduled_date;
-    }
 }

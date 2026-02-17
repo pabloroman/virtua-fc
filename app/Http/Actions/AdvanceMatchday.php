@@ -157,7 +157,7 @@ class AdvanceMatchday
         $deferMatchId = $playerMatch?->id;
 
         // Process all match results (standings + GK stats skipped for user's match)
-        $this->matchResultProcessor->processAll($game->id, $matchday, $currentDate, $matchResults, $deferMatchId);
+        $this->matchResultProcessor->processAll($game->id, $matchday, $currentDate, $matchResults, $deferMatchId, $allPlayers);
 
         // Recalculate standings positions once per league competition (not per match)
         $this->recalculateLeaguePositions($game->id, $matches);
