@@ -2,9 +2,9 @@
 
 namespace App\Http\Actions;
 
+use App\Game\Events\MatchFinalized;
 use App\Game\Services\CupDrawService;
 use App\Game\Services\CupTieResolver;
-use App\Game\Services\NotificationService;
 use App\Game\Services\StandingsCalculator;
 use App\Models\Competition;
 use App\Models\CupTie;
@@ -20,7 +20,6 @@ class FinalizeMatch
         private readonly StandingsCalculator $standingsCalculator,
         private readonly CupTieResolver $cupTieResolver,
         private readonly CupDrawService $cupDrawService,
-        private readonly NotificationService $notificationService,
     ) {}
 
     public function __invoke(Request $request, string $gameId)
@@ -71,15 +70,23 @@ class FinalizeMatch
         $this->updateGoalkeeperStats($match);
 
         // 3. Resolve cup tie (knockout matches only)
+        $cupTie = null;
+        $cupTieWinnerId = null;
         if ($isCupTie) {
-            $this->resolveCupTie($match, $game, $competition);
+            [$cupTie, $cupTieWinnerId] = $this->resolveCupTie($match, $game, $competition);
         }
+
+        // 4. Dispatch event for notifications (match events, cup tie results)
+        MatchFinalized::dispatch($match, $game, $competition, $cupTie, $cupTieWinnerId);
 
         // Clear the pending flag
         $game->update(['pending_finalization_match_id' => null]);
     }
 
-    private function resolveCupTie(GameMatch $match, Game $game, ?Competition $competition): void
+    /**
+     * @return array{CupTie|null, string|null} [cupTie, winnerId]
+     */
+    private function resolveCupTie(GameMatch $match, Game $game, ?Competition $competition): array
     {
         $cupTie = CupTie::with([
             'firstLegMatch.homeTeam', 'firstLegMatch.awayTeam',
@@ -87,7 +94,7 @@ class FinalizeMatch
         ])->find($match->cup_tie_id);
 
         if (! $cupTie || $cupTie->completed) {
-            return;
+            return [null, null];
         }
 
         // Build players collection for extra time / penalty simulation
@@ -101,7 +108,7 @@ class FinalizeMatch
         $winnerId = $this->cupTieResolver->resolve($cupTie, $allPlayers);
 
         if (! $winnerId) {
-            return;
+            return [null, null];
         }
 
         // Award prize money if user team advances
@@ -109,41 +116,13 @@ class FinalizeMatch
             $this->awardCupPrizeMoney($game, $competition, $cupTie->round_number);
         }
 
-        // Notify about advancement/elimination
-        $this->notifyCupTieResult($game, $cupTie, $competition, $winnerId);
-
         // Conduct next round draw if ready
         $nextRound = $this->cupDrawService->getNextRoundNeedingDraw($game->id, $match->competition_id);
         if ($nextRound !== null) {
             $this->cupDrawService->conductDraw($game->id, $match->competition_id, $nextRound);
         }
-    }
 
-    private function notifyCupTieResult(Game $game, CupTie $cupTie, ?Competition $competition, string $winnerId): void
-    {
-        if (! $cupTie->involvesTeam($game->team_id)) {
-            return;
-        }
-
-        $roundConfig = $cupTie->getRoundConfig();
-        $roundName = $roundConfig->name ?? '';
-        $competitionName = $competition->name ?? 'Cup';
-
-        if ($winnerId === $game->team_id) {
-            $this->notificationService->notifyCompetitionAdvancement(
-                $game,
-                $competition->id,
-                $competitionName,
-                __('cup.advanced_past_round', ['round' => $roundName]),
-            );
-        } else {
-            $this->notificationService->notifyCompetitionElimination(
-                $game,
-                $competition->id,
-                $competitionName,
-                __('cup.eliminated_in_round', ['round' => $roundName]),
-            );
-        }
+        return [$cupTie, $winnerId];
     }
 
     private function awardCupPrizeMoney(Game $game, ?Competition $competition, int $roundNumber): void

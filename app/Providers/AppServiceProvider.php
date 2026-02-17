@@ -2,11 +2,14 @@
 
 namespace App\Providers;
 
+use App\Game\Events\MatchFinalized;
 use App\Game\Handlers\KnockoutCupHandler;
 use App\Game\Handlers\LeagueHandler;
 use App\Game\Handlers\LeagueWithPlayoffHandler;
 use App\Game\Handlers\SwissFormatHandler;
+use App\Game\Listeners\SendMatchNotifications;
 use App\Game\Services\CompetitionHandlerResolver;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -40,6 +43,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Event::listen(MatchFinalized::class, SendMatchNotifications::class);
     }
 }
