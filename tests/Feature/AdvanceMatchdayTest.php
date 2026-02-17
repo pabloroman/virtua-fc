@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Http\Actions\AdvanceMatchday;
+use App\Http\Actions\FinalizeMatch;
 use App\Models\Competition;
 use App\Models\CupTie;
 use App\Models\Game;
@@ -120,6 +121,13 @@ class AdvanceMatchdayTest extends TestCase
             'played' => true,
         ]);
 
+        // Finalize the user's match (standings are deferred until finalization)
+        $this->game->refresh();
+        app(FinalizeMatch::class)->finalizeMatch(
+            GameMatch::find($this->game->pending_finalization_match_id),
+            $this->game,
+        );
+
         // All 4 teams should have 1 game played in standings
         $standings = GameStanding::where('game_id', $this->game->id)->get();
         foreach ($standings as $standing) {
@@ -163,6 +171,13 @@ class AdvanceMatchdayTest extends TestCase
         // Get the match result
         $match = GameMatch::where('game_id', $this->game->id)->first();
         $this->assertTrue($match->played);
+
+        // Finalize the user's match (standings are deferred until finalization)
+        $this->game->refresh();
+        app(FinalizeMatch::class)->finalizeMatch(
+            GameMatch::find($this->game->pending_finalization_match_id),
+            $this->game,
+        );
 
         // Verify standings were updated
         $homeStanding = GameStanding::where('game_id', $this->game->id)
@@ -250,6 +265,13 @@ class AdvanceMatchdayTest extends TestCase
         // Advance matchday
         $action = app(AdvanceMatchday::class);
         $action($this->game->id);
+
+        // Cup tie resolution is deferred until match finalization
+        $this->game->refresh();
+        app(FinalizeMatch::class)->finalizeMatch(
+            GameMatch::find($this->game->pending_finalization_match_id),
+            $this->game,
+        );
 
         // Cup tie should be completed with a winner
         $cupTie->refresh();

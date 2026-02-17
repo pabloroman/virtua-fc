@@ -367,9 +367,12 @@
                             @endif
 
                             <div class="text-center">
-                                <x-primary-button-link :href="route('show-game', $game->id)" class="px-6">
-                                    {{ __('game.live_continue_dashboard') }}
-                                </x-primary-button-link>
+                                <form method="POST" action="{{ route('game.finalize-match', $game->id) }}">
+                                    @csrf
+                                    <x-primary-button class="px-6">
+                                        {{ __('game.live_continue_dashboard') }}
+                                    </x-primary-button>
+                                </form>
                             </div>
                         </div>
                     </template>

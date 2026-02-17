@@ -23,8 +23,10 @@ class MatchResultProcessor
 
     /**
      * Process all match results for a matchday in batched operations.
+     *
+     * @param  string|null  $deferMatchId  Match ID to skip standings and GK stats for (deferred to finalization)
      */
-    public function processAll(string $gameId, int $matchday, string $currentDate, array $matchResults): void
+    public function processAll(string $gameId, int $matchday, string $currentDate, array $matchResults, ?string $deferMatchId = null): void
     {
         // 1. Update game state (replaces onMatchdayAdvanced projector)
         Game::where('id', $gameId)->update([
@@ -51,7 +53,7 @@ class MatchResultProcessor
         $this->bulkInsertMatchEvents($gameId, $matchResults);
 
         // 5. Batch process player stats across all matches
-        $this->batchProcessPlayerStats($game, $matchResults, $matches, $competitions);
+        $this->batchProcessPlayerStats($game, $matchResults, $matches, $competitions, $deferMatchId);
 
         // 6. Bulk update appearances across all matches
         $this->bulkUpdateAppearances($matches);
@@ -59,11 +61,21 @@ class MatchResultProcessor
         // 7. Batch update conditions for all matches
         $this->batchUpdateConditions($matches, $matchResults);
 
-        // 8. Batch update goalkeeper stats
-        $this->batchUpdateGoalkeeperStats($matches, $matchResults);
+        // 8. Batch update goalkeeper stats (skip deferred match)
+        $gkResults = $deferMatchId
+            ? array_filter($matchResults, fn ($r) => $r['matchId'] !== $deferMatchId)
+            : $matchResults;
+        $gkMatches = $deferMatchId
+            ? $matches->except($deferMatchId)
+            : $matches;
+        $this->batchUpdateGoalkeeperStats($gkMatches, $gkResults);
 
-        // 9. Update standings per league
+        // 9. Update standings per league (skip deferred match)
         foreach ($matchResults as $result) {
+            if ($result['matchId'] === $deferMatchId) {
+                continue;
+            }
+
             $competition = $competitions->get($result['competitionId']);
             $match = $matches->get($result['matchId']);
             $isCupTie = $match?->cup_tie_id !== null;
@@ -172,7 +184,10 @@ class MatchResultProcessor
      * Batch process player stats (goals, assists, cards, injuries) across all matches.
      * Loads all affected players once, aggregates increments, saves once per player.
      */
-    private function batchProcessPlayerStats(Game $game, array $matchResults, $matches, $competitions): void
+    /**
+     * @param  string|null  $deferMatchId  Match ID to skip notifications for (deferred to finalization)
+     */
+    private function batchProcessPlayerStats(Game $game, array $matchResults, $matches, $competitions, ?string $deferMatchId = null): void
     {
         // Aggregate stat increments across ALL matches
         $statIncrements = []; // [player_id => [goals => N, assists => N, ...]]
@@ -208,6 +223,7 @@ class MatchResultProcessor
                     case 'yellow_card':
                         $statIncrements[$playerId]['yellow_cards'] = ($statIncrements[$playerId]['yellow_cards'] ?? 0) + 1;
                         $specialEvents[] = array_merge($eventData, [
+                            'matchId' => $result['matchId'],
                             'competitionId' => $result['competitionId'],
                             'matchDate' => $match?->scheduled_date,
                         ]);
@@ -216,6 +232,7 @@ class MatchResultProcessor
                     case 'red_card':
                         $statIncrements[$playerId]['red_cards'] = ($statIncrements[$playerId]['red_cards'] ?? 0) + 1;
                         $specialEvents[] = array_merge($eventData, [
+                            'matchId' => $result['matchId'],
                             'competitionId' => $result['competitionId'],
                             'matchDate' => $match?->scheduled_date,
                         ]);
@@ -223,6 +240,7 @@ class MatchResultProcessor
 
                     case 'injury':
                         $specialEvents[] = array_merge($eventData, [
+                            'matchId' => $result['matchId'],
                             'competitionId' => $result['competitionId'],
                             'matchDate' => $match?->scheduled_date,
                         ]);
@@ -264,6 +282,7 @@ class MatchResultProcessor
             }
 
             $isUserTeamPlayer = $player->team_id === $game->team_id;
+            $isDeferredMatch = $eventData['matchId'] === $deferMatchId;
 
             switch ($eventData['event_type']) {
                 case 'yellow_card':
@@ -273,7 +292,8 @@ class MatchResultProcessor
                     if ($suspension) {
                         $this->eligibilityService->applySuspension($player, $suspension, $eventData['competitionId']);
 
-                        if ($isUserTeamPlayer) {
+                        // Notifications for the deferred match are created during finalization
+                        if ($isUserTeamPlayer && ! $isDeferredMatch) {
                             $this->notificationService->notifySuspension(
                                 $game,
                                 $player,
@@ -288,7 +308,8 @@ class MatchResultProcessor
                     $isSecondYellow = $eventData['metadata']['second_yellow'] ?? false;
                     $this->eligibilityService->processRedCard($player, $isSecondYellow, $eventData['competitionId']);
 
-                    if ($isUserTeamPlayer) {
+                    // Notifications for the deferred match are created during finalization
+                    if ($isUserTeamPlayer && ! $isDeferredMatch) {
                         $suspensionMatches = $isSecondYellow ? 1 : 1;
                         $this->notificationService->notifySuspension(
                             $game,
@@ -309,7 +330,8 @@ class MatchResultProcessor
                         Carbon::parse($eventData['matchDate'])
                     );
 
-                    if ($isUserTeamPlayer) {
+                    // Notifications for the deferred match are created during finalization
+                    if ($isUserTeamPlayer && ! $isDeferredMatch) {
                         $this->notificationService->notifyInjury($game, $player, $injuryType, $weeksOut);
                     }
                     break;

@@ -125,6 +125,7 @@ class Game extends Model
         'needs_onboarding',
         'pending_actions',
         'setup_completed_at',
+        'pending_finalization_match_id',
     ];
 
     protected $casts = [

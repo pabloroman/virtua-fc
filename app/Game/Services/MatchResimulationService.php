@@ -7,7 +7,6 @@ use App\Game\DTO\MatchResult;
 use App\Game\DTO\ResimulationResult;
 use App\Game\Enums\Formation;
 use App\Game\Enums\Mentality;
-use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
@@ -22,7 +21,6 @@ class MatchResimulationService
 {
     public function __construct(
         private readonly MatchSimulator $matchSimulator,
-        private readonly StandingsCalculator $standingsCalculator,
         private readonly EligibilityService $eligibilityService,
     ) {}
 
@@ -134,32 +132,14 @@ class MatchResimulationService
         $this->applyNewEvents($match, $game, $remainderResult, $competitionId);
 
         // 11. Update match score
+        // Note: Score-dependent side effects (standings, cup ties, GK stats, prize money)
+        // are NOT handled here. They are deferred to FinalizeMatch, which applies them
+        // once after the user finishes the live match. This eliminates the need for
+        // fragile reversal logic on every resimulation.
         $match->update([
             'home_score' => $newHomeScore,
             'away_score' => $newAwayScore,
         ]);
-
-        // 12. Fix standings if league match and score changed
-        $competition = Competition::find($competitionId);
-        $isCupTie = $match->cup_tie_id !== null;
-        if ($competition?->isLeague() && ! $isCupTie) {
-            if ($oldHomeScore !== $newHomeScore || $oldAwayScore !== $newAwayScore) {
-                $this->standingsCalculator->reverseMatchResult(
-                    $game->id, $competitionId,
-                    $match->home_team_id, $match->away_team_id,
-                    $oldHomeScore, $oldAwayScore,
-                );
-                $this->standingsCalculator->updateAfterMatch(
-                    $game->id, $competitionId,
-                    $match->home_team_id, $match->away_team_id,
-                    $newHomeScore, $newAwayScore,
-                );
-                $this->standingsCalculator->recalculatePositions($game->id, $competitionId);
-            }
-        }
-
-        // 13. Update goalkeeper stats
-        $this->updateGoalkeeperStats($match, $oldHomeScore, $oldAwayScore, $newHomeScore, $newAwayScore);
 
         return new ResimulationResult($newHomeScore, $newAwayScore, $oldHomeScore, $oldAwayScore);
     }
@@ -392,62 +372,6 @@ class MatchResimulationService
                         Carbon::parse($match->scheduled_date),
                     );
                     break;
-            }
-        }
-    }
-
-    /**
-     * Update goalkeeper stats when the score changes.
-     */
-    private function updateGoalkeeperStats(GameMatch $match, int $oldHomeScore, int $oldAwayScore, int $newHomeScore, int $newAwayScore): void
-    {
-        if ($oldHomeScore === $newHomeScore && $oldAwayScore === $newAwayScore) {
-            return;
-        }
-
-        $match->refresh();
-
-        // Recalculate home goalkeeper stats
-        $homeLineupIds = $match->home_lineup ?? [];
-        if (! empty($homeLineupIds)) {
-            $homeGk = GamePlayer::whereIn('id', $homeLineupIds)
-                ->where('position', 'Goalkeeper')
-                ->first();
-
-            if ($homeGk) {
-                $homeGk->goals_conceded = max(0, $homeGk->goals_conceded - $oldAwayScore + $newAwayScore);
-
-                $wasCleanSheet = $oldAwayScore === 0;
-                $isCleanSheet = $newAwayScore === 0;
-                if ($wasCleanSheet && ! $isCleanSheet) {
-                    $homeGk->clean_sheets = max(0, $homeGk->clean_sheets - 1);
-                } elseif (! $wasCleanSheet && $isCleanSheet) {
-                    $homeGk->clean_sheets++;
-                }
-
-                $homeGk->save();
-            }
-        }
-
-        // Recalculate away goalkeeper stats
-        $awayLineupIds = $match->away_lineup ?? [];
-        if (! empty($awayLineupIds)) {
-            $awayGk = GamePlayer::whereIn('id', $awayLineupIds)
-                ->where('position', 'Goalkeeper')
-                ->first();
-
-            if ($awayGk) {
-                $awayGk->goals_conceded = max(0, $awayGk->goals_conceded - $oldHomeScore + $newHomeScore);
-
-                $wasCleanSheet = $oldHomeScore === 0;
-                $isCleanSheet = $newHomeScore === 0;
-                if ($wasCleanSheet && ! $isCleanSheet) {
-                    $awayGk->clean_sheets = max(0, $awayGk->clean_sheets - 1);
-                } elseif (! $wasCleanSheet && $isCleanSheet) {
-                    $awayGk->clean_sheets++;
-                }
-
-                $awayGk->save();
             }
         }
     }
