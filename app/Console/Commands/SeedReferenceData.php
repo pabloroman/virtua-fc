@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Game\Services\CountryConfig;
+use App\Game\Services\GamePlayerTemplateService;
 use App\Game\Services\PlayerValuationService;
 use App\Models\User;
 use App\Support\Money;
@@ -71,6 +72,9 @@ class SeedReferenceData extends Command
         $seeder = new ClubProfilesSeeder();
         $seeder->setCommand($this);
         $seeder->run();
+
+        // Generate pre-computed game player templates
+        $this->generateGamePlayerTemplates($countryCodes);
 
         $this->displaySummary();
 
@@ -178,6 +182,7 @@ class SeedReferenceData extends Command
         DB::table('games')->delete();
 
         // Clear reference tables
+        DB::table('game_player_templates')->delete();
         DB::table('competition_teams')->delete();
         DB::table('players')->delete();
         DB::table('teams')->delete();
@@ -634,6 +639,24 @@ class SeedReferenceData extends Command
         return null;
     }
 
+    private function generateGamePlayerTemplates(array $countryCodes): void
+    {
+        $this->newLine();
+        $this->info('Generating game player templates...');
+
+        $templateService = app(GamePlayerTemplateService::class);
+        $season = '2025';
+        $totalCount = 0;
+
+        foreach ($countryCodes as $countryCode) {
+            $count = $templateService->generateTemplates($season, $countryCode);
+            $this->line("  {$countryCode}: {$count} player templates");
+            $totalCount += $count;
+        }
+
+        $this->info("Total templates: {$totalCount}");
+    }
+
     private function displaySummary(): void
     {
         $this->newLine();
@@ -642,6 +665,7 @@ class SeedReferenceData extends Command
         $this->line('  Teams: ' . DB::table('teams')->count());
         $this->line('  Players: ' . DB::table('players')->count());
         $this->line('  Competition-Team links: ' . DB::table('competition_teams')->count());
+        $this->line('  Game player templates: ' . DB::table('game_player_templates')->count());
         $this->newLine();
         $this->info('Reference data seeded successfully!');
     }
