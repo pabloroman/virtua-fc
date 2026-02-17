@@ -24,7 +24,7 @@ return [
     // Feedback Request Email (sent 24h after first game)
     'feedback_email_subject' => 'VirtuaFC — ¿Qué te está pareciendo?',
     'feedback_email_greeting' => '¡Hola :name!',
-    'feedback_email_body' => 'Ya llevas un día jugando a VirtuaFC y tu opinión es muy importante para nosotros. Queremos saber qué te está pareciendo la experiencia.',
+    'feedback_email_body' => 'Ya llevas un día jugando a VirtuaFC y tu opinión es muy importante para mí.',
     'feedback_email_questions' => '¿Qué funciona bien? ¿Qué mejorarías? ¿Has encontrado algún bug? Todo feedback es bienvenido, por pequeño que sea.',
     'feedback_email_cta' => 'Dejar feedback en GitHub',
     'feedback_email_reply_hint' => 'También puedes simplemente responder a este email con tus comentarios.',
