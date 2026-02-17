@@ -66,6 +66,7 @@
                                     <th class="font-semibold py-2 text-center w-24">{{ __('app.status') }}</th>
                                     <th class="font-semibold py-2 text-center w-24 hidden md:table-cell">{{ __('squad.playing_time') }}</th>
                                     <th class="font-semibold py-2 text-center" style="min-width: 120px">{{ __('squad.projection') }}</th>
+                                    <th class="py-2 w-8"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -76,7 +77,7 @@
                                         $hasStarterBonus = $player->season_appearances >= 15;
                                         $projectedAbility = $currentAbility + ($player->projection ?? 0);
                                     @endphp
-                                    <tr class="border-b border-slate-100 hover:bg-slate-50 cursor-pointer" @click="$dispatch('show-player-detail', @js($player->toModalData($game)))">
+                                    <tr class="border-b border-slate-100 hover:bg-slate-50">
                                         {{-- Player: badge + name + position --}}
                                         <td class="py-3 pl-2">
                                             <div class="flex items-center gap-3">
@@ -179,6 +180,13 @@
                                                     <span class="text-xs text-slate-400">(=)</span>
                                                 </div>
                                             @endif
+                                        </td>
+
+                                        {{-- Player detail --}}
+                                        <td class="py-3 text-right">
+                                            <button x-data @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $player->id]) }}')" class="p-1.5 text-slate-400 hover:text-sky-600 rounded hover:bg-slate-100 transition-colors">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                            </button>
                                         </td>
                                     </tr>
                                 @endforeach

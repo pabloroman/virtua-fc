@@ -79,7 +79,7 @@
                                             $isUnavailable = !$gamePlayer->isAvailable($game->current_date, $nextMatchday);
                                             $unavailabilityReason = $gamePlayer->getUnavailabilityReason($game->current_date, $nextMatchday);
                                         @endphp
-                                        <tr class="border-b border-slate-200 @if($isUnavailable) text-slate-400 @endif hover:bg-slate-50 cursor-pointer" @click="$dispatch('show-player-detail', @js($gamePlayer->toModalData($game)))">
+                                        <tr class="border-b border-slate-200 @if($isUnavailable) text-slate-400 @endif hover:bg-slate-50">
                                             {{-- Position --}}
                                             <td class="py-2 text-center">
                                                 <x-position-badge :position="$gamePlayer->position" :tooltip="\App\Support\PositionMapper::toDisplayName($gamePlayer->position)" class="cursor-help" />
@@ -197,55 +197,11 @@
                                                     {{ $gamePlayer->overall_score }}
                                                 </span>
                                             </td>
-                                            {{-- Actions (career mode only) --}}
+                                            {{-- Player detail --}}
                                             <td class="py-2 text-right">
-                                                @if($game->isCareerMode() && $gamePlayer->isTransferListed())
-                                                    <div x-data="{ open: false }" @click.stop @click.outside="open = false" class="relative inline-block">
-                                                        <button @click="open = !open" class="p-1 text-slate-400 hover:text-slate-600 rounded hover:bg-slate-100">
-                                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="4" r="1.5"/><circle cx="10" cy="10" r="1.5"/><circle cx="10" cy="16" r="1.5"/></svg>
-                                                        </button>
-                                                        <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
-                                                             class="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50 py-1" style="display: none;">
-                                                            <form method="post" action="{{ route('game.transfers.unlist', [$game->id, $gamePlayer->id]) }}">
-                                                                @csrf
-                                                                <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-slate-100">
-                                                                    {{ __('squad.unlist_from_sale') }}
-                                                                </button>
-                                                            </form>
-                                                            @if($isTransferWindow)
-                                                            <form method="post" action="{{ route('game.loans.out', [$game->id, $gamePlayer->id]) }}">
-                                                                @csrf
-                                                                <button type="submit" class="w-full text-left px-4 py-2 text-sm text-amber-600 hover:bg-slate-100">
-                                                                    {{ __('squad.loan_out') }}
-                                                                </button>
-                                                            </form>
-                                                            @endif
-                                                        </div>
-                                                    </div>
-                                                @elseif($game->isCareerMode() && !$gamePlayer->isRetiring() && !$gamePlayer->isLoanedIn($game->team_id) && !$gamePlayer->hasPreContractAgreement() && !$gamePlayer->hasRenewalAgreed() && !$gamePlayer->hasAgreedTransfer() && !$gamePlayer->hasActiveLoanSearch())
-                                                    <div x-data="{ open: false }" @click.stop @click.outside="open = false" class="relative inline-block">
-                                                        <button @click="open = !open" class="p-1 text-slate-400 hover:text-slate-600 rounded hover:bg-slate-100">
-                                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="4" r="1.5"/><circle cx="10" cy="10" r="1.5"/><circle cx="10" cy="16" r="1.5"/></svg>
-                                                        </button>
-                                                        <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
-                                                             class="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50 py-1" style="display: none;">
-                                                            <form method="post" action="{{ route('game.transfers.list', [$game->id, $gamePlayer->id]) }}">
-                                                                @csrf
-                                                                <button type="submit" class="w-full text-left px-4 py-2 text-sm text-sky-600 hover:bg-slate-100">
-                                                                    {{ __('squad.list_for_sale') }}
-                                                                </button>
-                                                            </form>
-                                                            @if($isTransferWindow)
-                                                            <form method="post" action="{{ route('game.loans.out', [$game->id, $gamePlayer->id]) }}">
-                                                                @csrf
-                                                                <button type="submit" class="w-full text-left px-4 py-2 text-sm text-amber-600 hover:bg-slate-100">
-                                                                    {{ __('squad.loan_out') }}
-                                                                </button>
-                                                            </form>
-                                                            @endif
-                                                        </div>
-                                                    </div>
-                                                @endif
+                                                <button x-data @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $gamePlayer->id]) }}')" class="p-1.5 text-slate-400 hover:text-sky-600 rounded hover:bg-slate-100 transition-colors">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                                </button>
                                             </td>
                                         </tr>
                                     @endforeach

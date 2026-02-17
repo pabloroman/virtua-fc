@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140" fill="none">
+  <rect width="120" height="140" rx="10" fill="#e2e8f0"/>
+  <!-- Shirt/body -->
+  <path d="M20 140 C20 105, 40 95, 60 95 C80 95, 100 105, 100 140Z" fill="#475569"/>
+  <!-- Neck -->
+  <rect x="50" y="82" width="20" height="16" rx="4" fill="#94a3b8"/>
+  <!-- Head -->
+  <ellipse cx="60" cy="58" rx="26" ry="30" fill="#94a3b8"/>
+  <!-- Hair -->
+  <path d="M34 52 C34 30, 45 22, 60 22 C75 22, 86 30, 86 52 C86 42, 78 32, 60 32 C42 32, 34 42, 34 52Z" fill="#1e293b"/>
+  <path d="M34 52 C32 46, 34 38, 40 30 C36 40, 36 48, 38 54Z" fill="#1e293b"/>
+  <!-- Face details -->
+  <ellipse cx="49" cy="56" rx="3" ry="2" fill="#64748b"/>
+  <ellipse cx="71" cy="56" rx="3" ry="2" fill="#64748b"/>
+  <path d="M54 70 Q60 74 66 70" stroke="#64748b" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  <!-- Collar -->
+  <path d="M45 95 L55 102 L60 98 L65 102 L75 95" stroke="#334155" stroke-width="1.5" fill="none"/>
+</svg>
