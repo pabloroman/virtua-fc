@@ -7,6 +7,7 @@ use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\MatchEvent;
+use App\Models\PlayerSuspension;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -115,6 +116,11 @@ class ProcessSubstitution
 
             if (in_array($playerInId, $effectiveLineup)) {
                 return response()->json(['error' => __('game.sub_error_already_on_pitch')], 422);
+            }
+
+            // Prevent substituting in a suspended player
+            if (PlayerSuspension::isSuspended($playerInId, $match->competition_id)) {
+                return response()->json(['error' => __('game.sub_error_player_suspended')], 422);
             }
 
             // Check not already used in this batch

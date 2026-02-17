@@ -8,6 +8,7 @@ use App\Game\Services\LineupService;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
+use App\Models\PlayerSuspension;
 use App\Support\PositionMapper;
 use Carbon\Carbon;
 
@@ -119,11 +120,18 @@ class ShowLiveMatch
             ->values()
             ->all();
 
-        // Bench players (all squad players NOT in the starting lineup)
+        // Batch load suspended player IDs for this competition
+        $suspendedPlayerIds = PlayerSuspension::where('competition_id', $playerMatch->competition_id)
+            ->where('matches_remaining', '>', 0)
+            ->pluck('game_player_id')
+            ->toArray();
+
+        // Bench players (all squad players NOT in the starting lineup, not suspended)
         $benchPlayers = GamePlayer::with('player')
             ->where('game_id', $gameId)
             ->where('team_id', $game->team_id)
             ->whereNotIn('id', $userLineupIds)
+            ->whereNotIn('id', $suspendedPlayerIds)
             ->whereNull('injury_until')
             ->get()
             ->map(fn ($p) => [

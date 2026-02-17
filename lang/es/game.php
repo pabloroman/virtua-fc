@@ -183,6 +183,7 @@ return [
     'sub_error_invalid_player' => 'Jugador no válido',
     'sub_error_already_on_pitch' => 'El jugador ya está en el campo',
     'sub_error_player_sent_off' => 'No se puede sustituir a un jugador expulsado',
+    'sub_error_player_suspended' => 'El jugador está sancionado en esta competición',
     'sub_event' => 'Sustitución',
 
     // Tactical center
