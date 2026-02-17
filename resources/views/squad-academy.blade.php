@@ -72,12 +72,11 @@
                                             <th class="font-semibold py-2 w-10"></th>
                                             <th class="font-semibold py-2">{{ __('app.name') }}</th>
                                             <th class="font-semibold py-2 text-center w-12 hidden md:table-cell">{{ __('app.country') }}</th>
-                                            <th class="font-semibold py-2 text-center w-12">{{ __('app.age') }}</th>
-                                            <th class="font-semibold py-2 text-center w-10">{{ __('squad.technical') }}</th>
-                                            <th class="font-semibold py-2 text-center w-10">{{ __('squad.physical') }}</th>
+                                            <th class="font-semibold py-2 text-center w-12 hidden md:table-cell">{{ __('app.age') }}</th>
+                                            <th class="font-semibold py-2 pl-3 text-center w-10 hidden md:table-cell">{{ __('squad.technical') }}</th>
+                                            <th class="font-semibold py-2 text-center w-10 hidden md:table-cell">{{ __('squad.physical') }}</th>
                                             <th class="font-semibold py-2 text-center w-16 hidden md:table-cell">{{ __('squad.pot') }}</th>
                                             <th class="font-semibold py-2 text-center w-10">{{ __('squad.overall') }}</th>
-                                            <th class="py-2 w-8"></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -89,7 +88,7 @@
                                         ] as $group)
                                             @if($group['players']->isNotEmpty())
                                                 <tr class="bg-slate-200">
-                                                    <td colspan="9" class="py-2 px-2 text-xs font-semibold text-slate-600 uppercase tracking-wide">
+                                                    <td colspan="8" class="py-2 px-2 text-xs font-semibold text-slate-600 uppercase tracking-wide">
                                                         {{ $group['name'] }}
                                                     </td>
                                                 </tr>
@@ -101,8 +100,17 @@
                                                         </td>
                                                         {{-- Name --}}
                                                         <td class="py-2">
-                                                            <div class="font-medium text-slate-900">{{ $prospect->name }}</div>
-                                                            <div class="text-xs text-slate-400">{{ trans_choice('squad.academy_seasons', $prospect->seasons_in_academy, ['count' => $prospect->seasons_in_academy]) }}</div>
+                                                            <div class="flex items-center space-x-2">
+                                                                <button x-data @click="$dispatch('show-player-detail', '{{ route('game.academy.detail', [$game->id, $prospect->id]) }}')" class="p-1.5 text-slate-300 rounded hover:text-slate-400">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="w-5 h-5">
+                                                                        <path fill-rule="evenodd" d="M19.5 21a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3h-5.379a.75.75 0 0 1-.53-.22L11.47 3.66A2.25 2.25 0 0 0 9.879 3H4.5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h15Zm-6.75-10.5a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V10.5Z" clip-rule="evenodd" />
+                                                                    </svg>
+                                                                </button>
+                                                                <div>
+                                                                    <div class="font-medium text-slate-900">{{ $prospect->name }}</div>
+                                                                    <div class="text-xs text-slate-400">{{ trans_choice('squad.academy_seasons', $prospect->seasons_in_academy, ['count' => $prospect->seasons_in_academy]) }}</div>
+                                                                </div>
+                                                            </div>
                                                         </td>
                                                         {{-- Nationality --}}
                                                         <td class="py-2 text-center hidden md:table-cell">
@@ -111,14 +119,22 @@
                                                             @endif
                                                         </td>
                                                         {{-- Age --}}
-                                                        <td class="py-2 text-center">{{ $prospect->age }}</td>
+                                                        <td class="py-2 text-center hidden md:table-cell">{{ $prospect->age }}</td>
                                                         {{-- Technical --}}
-                                                        <td class="border-l border-slate-200 py-2 text-center @if($revealPhase >= 1) @if($prospect->technical_ability >= 80) text-green-600 @elseif($prospect->technical_ability >= 70) text-lime-600 @elseif($prospect->technical_ability < 60) text-slate-400 @endif @else text-slate-300 @endif">
-                                                            {{ $revealPhase >= 1 ? $prospect->technical_ability : '?' }}
+                                                        <td class="border-l border-slate-200 py-2 pl-3 text-center hidden md:table-cell">
+                                                            @if($revealPhase >= 1)
+                                                                <x-ability-bar :value="$prospect->technical_ability" size="sm" class="text-xs font-medium justify-center @if($prospect->technical_ability >= 80) text-green-600 @elseif($prospect->technical_ability >= 70) text-lime-600 @elseif($prospect->technical_ability < 60) text-slate-400 @endif" />
+                                                            @else
+                                                                <span class="text-slate-300">?</span>
+                                                            @endif
                                                         </td>
                                                         {{-- Physical --}}
-                                                        <td class="py-2 text-center @if($revealPhase >= 1) @if($prospect->physical_ability >= 80) text-green-600 @elseif($prospect->physical_ability >= 70) text-lime-600 @elseif($prospect->physical_ability < 60) text-slate-400 @endif @else text-slate-300 @endif">
-                                                            {{ $revealPhase >= 1 ? $prospect->physical_ability : '?' }}
+                                                        <td class="py-2 text-center hidden md:table-cell">
+                                                            @if($revealPhase >= 1)
+                                                                <x-ability-bar :value="$prospect->physical_ability" size="sm" class="text-xs font-medium justify-center @if($prospect->physical_ability >= 80) text-green-600 @elseif($prospect->physical_ability >= 70) text-lime-600 @elseif($prospect->physical_ability < 60) text-slate-400 @endif" />
+                                                            @else
+                                                                <span class="text-slate-300">?</span>
+                                                            @endif
                                                         </td>
                                                         {{-- Potential range --}}
                                                         <td class="py-2 text-center text-xs hidden md:table-cell {{ $revealPhase >= 2 ? 'text-slate-500' : 'text-slate-300' }}">
@@ -127,18 +143,17 @@
                                                         {{-- Overall --}}
                                                         <td class="py-2 text-center">
                                                             @if($revealPhase >= 1)
-                                                                <span class="font-bold @if($prospect->overall >= 80) text-green-600 @elseif($prospect->overall >= 70) text-lime-600 @elseif($prospect->overall >= 60) text-yellow-600 @else text-slate-500 @endif">
+                                                                <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold
+                                                                    @if($prospect->overall >= 80) bg-emerald-500 text-white
+                                                                    @elseif($prospect->overall >= 70) bg-lime-500 text-white
+                                                                    @elseif($prospect->overall >= 60) bg-amber-500 text-white
+                                                                    @else bg-slate-300 text-slate-700
+                                                                    @endif">
                                                                     {{ $prospect->overall }}
                                                                 </span>
                                                             @else
-                                                                <span class="text-slate-300">?</span>
+                                                                <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold bg-slate-200 text-slate-400">?</span>
                                                             @endif
-                                                        </td>
-                                                        {{-- Player detail --}}
-                                                        <td class="py-2 text-right">
-                                                            <button x-data @click="$dispatch('show-player-detail', '{{ route('game.academy.detail', [$game->id, $prospect->id]) }}')" class="p-1.5 text-slate-400 hover:text-sky-600 rounded hover:bg-slate-100 transition-colors">
-                                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                                            </button>
                                                         </td>
                                                     </tr>
                                                 @endforeach
@@ -164,15 +179,33 @@
                                                         <x-position-badge :position="$prospect->position" :tooltip="\App\Support\PositionMapper::toDisplayName($prospect->position)" class="cursor-help" />
                                                     </td>
                                                     <td class="py-2">
-                                                        <div class="flex items-center gap-2">
-                                                            <span class="font-medium text-slate-900">{{ $prospect->name }}</span>
-                                                            <span class="text-xs bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded font-medium">{{ __('squad.academy_on_loan') }}</span>
+                                                        <div class="flex items-center space-x-2">
+                                                            <button x-data @click="$dispatch('show-player-detail', '{{ route('game.academy.detail', [$game->id, $prospect->id]) }}')" class="p-1.5 text-slate-300 rounded hover:text-slate-400">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="w-5 h-5">
+                                                                    <path fill-rule="evenodd" d="M19.5 21a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3h-5.379a.75.75 0 0 1-.53-.22L11.47 3.66A2.25 2.25 0 0 0 9.879 3H4.5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h15Zm-6.75-10.5a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V10.5Z" clip-rule="evenodd" />
+                                                                </svg>
+                                                            </button>
+                                                            <div>
+                                                                <div class="flex items-center gap-2">
+                                                                    <span class="font-medium text-slate-900">{{ $prospect->name }}</span>
+                                                                    <span class="text-xs bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded font-medium">{{ __('squad.academy_on_loan') }}</span>
+                                                                </div>
+                                                                <div class="text-xs text-slate-400">{{ trans_choice('squad.academy_seasons', $prospect->seasons_in_academy, ['count' => $prospect->seasons_in_academy]) }}</div>
+                                                            </div>
                                                         </div>
                                                     </td>
-                                                    <td class="py-2 text-center text-slate-400 w-12">{{ $prospect->age }}</td>
-                                                    <td class="py-2 text-center text-slate-300 w-10">—</td>
-                                                    <td class="py-2 text-center text-slate-300 w-10">—</td>
-                                                    <td class="py-2 text-center text-slate-300 w-10">—</td>
+                                                    <td class="py-2 text-center hidden md:table-cell">
+                                                        @if($prospect->nationality_flag)
+                                                            <img src="/flags/{{ $prospect->nationality_flag['code'] }}.svg" class="w-5 h-4 mx-auto rounded shadow-sm" title="{{ $prospect->nationality_flag['name'] }}">
+                                                        @endif
+                                                    </td>
+                                                    <td class="py-2 text-center text-slate-400 hidden md:table-cell">{{ $prospect->age }}</td>
+                                                    <td class="border-l border-slate-200 py-2 text-center text-slate-300 hidden md:table-cell">—</td>
+                                                    <td class="py-2 text-center text-slate-300 hidden md:table-cell">—</td>
+                                                    <td class="py-2 text-center text-slate-300 hidden md:table-cell">—</td>
+                                                    <td class="py-2 text-center">
+                                                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold bg-slate-200 text-slate-400">—</span>
+                                                    </td>
                                                 </tr>
                                             @endforeach
                                         </tbody>

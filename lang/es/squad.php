@@ -105,6 +105,7 @@ return [
     // Unavailability reasons
     'suspended_matches' => 'Sancionado (:count partido)|Sancionado (:count partidos)',
     'injured_generic' => 'Lesionado',
+    'injury_weeks' => ':count semana|:count semanas',
 
     // Injury types
     'injury_muscle_fatigue' => 'Fatiga muscular',
@@ -188,9 +189,13 @@ return [
     'academy_evaluation' => 'Evaluación de Cantera',
     'academy_capacity' => 'Plazas',
     'academy_keep' => 'Mantener',
+    'academy_keep_desc' => 'El jugador sigue en la cantera y se desarrolla la próxima temporada.',
     'academy_dismiss' => 'Descartar',
+    'academy_dismiss_desc' => 'El jugador es liberado del club de forma permanente.',
     'academy_loan_out' => 'Ceder',
+    'academy_loan_desc' => 'El jugador sale cedido con desarrollo acelerado (1.5x) y regresa a final de temporada.',
     'academy_promote' => 'Subir',
+    'academy_promote_desc' => 'El jugador se incorpora al primer equipo con contrato profesional.',
     'academy_must_decide' => 'Decisión obligatoria',
     'academy_over_capacity' => 'La cantera está llena. Debes liberar plazas.',
     'academy_returning_loans' => ':count jugador regresa de cesión|:count jugadores regresan de cesión',
@@ -202,4 +207,11 @@ return [
     'academy_phase_unknown' => 'Habilidades desconocidas',
     'academy_phase_glimpse' => 'Habilidades visibles',
     'academy_phase_verdict' => 'Potencial revelado',
+
+    'academy_tier_0' => 'Sin Cantera',
+    'academy_tier_1' => 'Cantera Básica',
+    'academy_tier_2' => 'Buena Cantera',
+    'academy_tier_3' => 'Cantera de Élite',
+    'academy_tier_4' => 'Cantera de Clase Mundial',
+    'academy_tier_unknown' => 'Desconocido',
 ];

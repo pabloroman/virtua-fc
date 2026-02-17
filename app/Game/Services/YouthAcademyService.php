@@ -282,14 +282,10 @@ class YouthAcademyService
 
     public static function getTierDescription(int $tier): string
     {
-        return match ($tier) {
-            0 => 'No Academy',
-            1 => 'Basic Academy',
-            2 => 'Good Academy',
-            3 => 'Excellent Academy',
-            4 => 'World-class Academy',
-            default => 'Unknown',
-        };
+        return __('squad.academy_tier_'.(match ($tier) {
+            0, 1, 2, 3, 4 => $tier,
+            default => 'unknown',
+        }));
     }
 
     public static function getProspectInfo(int $tier): array

@@ -62,6 +62,48 @@
                     @endif
                 </div>
 
+                {{-- Action legend --}}
+                <div class="mb-6 border border-slate-200 rounded-lg overflow-hidden">
+                    <div class="px-4 py-3 grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div class="flex items-start gap-2.5">
+                            <span class="shrink-0 mt-0.5 w-5 h-5 rounded bg-emerald-600 flex items-center justify-center">
+                                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                            </span>
+                            <div>
+                                <span class="text-sm font-medium text-slate-900">{{ __('squad.academy_keep') }}</span>
+                                <p class="text-xs text-slate-500">{{ __('squad.academy_keep_desc') }}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-2.5">
+                            <span class="shrink-0 mt-0.5 w-5 h-5 rounded bg-sky-600 flex items-center justify-center">
+                                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+                            </span>
+                            <div>
+                                <span class="text-sm font-medium text-slate-900">{{ __('squad.academy_promote') }}</span>
+                                <p class="text-xs text-slate-500">{{ __('squad.academy_promote_desc') }}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-2.5">
+                            <span class="shrink-0 mt-0.5 w-5 h-5 rounded bg-indigo-600 flex items-center justify-center">
+                                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                            </span>
+                            <div>
+                                <span class="text-sm font-medium text-slate-900">{{ __('squad.academy_loan_out') }}</span>
+                                <p class="text-xs text-slate-500">{{ __('squad.academy_loan_desc') }}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-2.5">
+                            <span class="shrink-0 mt-0.5 w-5 h-5 rounded bg-red-600 flex items-center justify-center">
+                                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </span>
+                            <div>
+                                <span class="text-sm font-medium text-slate-900">{{ __('squad.academy_dismiss') }}</span>
+                                <p class="text-xs text-slate-500">{{ __('squad.academy_dismiss_desc') }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 {{-- Evaluation form --}}
                 <form method="POST" action="{{ route('game.squad.academy.evaluate.submit', $game->id) }}">
                     @csrf
@@ -96,6 +138,11 @@
                                     {{-- Name + info --}}
                                     <div class="col-span-3">
                                         <div class="flex items-center gap-2">
+                                            <button x-data @click="$dispatch('show-player-detail', '{{ route('game.academy.detail', [$game->id, $prospect->id]) }}')" class="p-1 text-slate-300 rounded hover:text-slate-400 shrink-0">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="w-5 h-5">
+                                                    <path fill-rule="evenodd" d="M19.5 21a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3h-5.379a.75.75 0 0 1-.53-.22L11.47 3.66A2.25 2.25 0 0 0 9.879 3H4.5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h15Zm-6.75-10.5a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V10.5Z" clip-rule="evenodd" />
+                                                </svg>
+                                            </button>
                                             @if($prospect->nationality_flag)
                                                 <img src="/flags/{{ $prospect->nationality_flag['code'] }}.svg" class="w-5 h-4 rounded shadow-sm shrink-0" title="{{ $prospect->nationality_flag['name'] }}">
                                             @endif
@@ -128,13 +175,18 @@
                                     </div>
 
                                     {{-- Overall --}}
-                                    <div class="col-span-1 text-center">
+                                    <div class="col-span-1 flex justify-center">
                                         @if($revealPhase >= 1)
-                                            <span class="font-bold text-sm @if($prospect->overall >= 80) text-green-600 @elseif($prospect->overall >= 70) text-lime-600 @elseif($prospect->overall >= 60) text-yellow-600 @else text-slate-500 @endif">
+                                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold
+                                                @if($prospect->overall >= 80) bg-emerald-500 text-white
+                                                @elseif($prospect->overall >= 70) bg-lime-500 text-white
+                                                @elseif($prospect->overall >= 60) bg-amber-500 text-white
+                                                @else bg-slate-300 text-slate-700
+                                                @endif">
                                                 {{ $prospect->overall }}
                                             </span>
                                         @else
-                                            <span class="text-sm text-slate-400">?</span>
+                                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold bg-slate-200 text-slate-400">?</span>
                                         @endif
                                     </div>
 
@@ -177,6 +229,11 @@
                                 {{-- Mobile card --}}
                                 <div class="md:hidden p-3">
                                     <div class="flex items-center gap-2 mb-2">
+                                        <button x-data @click="$dispatch('show-player-detail', '{{ route('game.academy.detail', [$game->id, $prospect->id]) }}')" class="p-1 text-slate-300 rounded hover:text-slate-400 shrink-0">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="w-5 h-5">
+                                                <path fill-rule="evenodd" d="M19.5 21a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3h-5.379a.75.75 0 0 1-.53-.22L11.47 3.66A2.25 2.25 0 0 0 9.879 3H4.5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h15Zm-6.75-10.5a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V10.5Z" clip-rule="evenodd" />
+                                            </svg>
+                                        </button>
                                         <x-position-badge :position="$prospect->position" :tooltip="\App\Support\PositionMapper::toDisplayName($prospect->position)" />
                                         @if($prospect->nationality_flag)
                                             <img src="/flags/{{ $prospect->nationality_flag['code'] }}.svg" class="w-5 h-4 rounded shadow-sm shrink-0" title="{{ $prospect->nationality_flag['name'] }}">
@@ -196,7 +253,14 @@
                                         <span>{{ __('squad.physical') }}: <strong class="text-slate-700">{{ $revealPhase >= 1 ? $prospect->physical_ability : '?' }}</strong></span>
                                         <span>{{ __('squad.pot') }}: <strong class="text-slate-700">{{ $revealPhase >= 2 ? $prospect->potential_range : '?' }}</strong></span>
                                         @if($revealPhase >= 1)
-                                            <span>{{ __('squad.overall') }}: <strong class="font-bold @if($prospect->overall >= 80) text-green-600 @elseif($prospect->overall >= 70) text-lime-600 @elseif($prospect->overall >= 60) text-yellow-600 @else text-slate-500 @endif">{{ $prospect->overall }}</strong></span>
+                                            <span class="inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold
+                                                @if($prospect->overall >= 80) bg-emerald-500 text-white
+                                                @elseif($prospect->overall >= 70) bg-lime-500 text-white
+                                                @elseif($prospect->overall >= 60) bg-amber-500 text-white
+                                                @else bg-slate-300 text-slate-700
+                                                @endif">
+                                                {{ $prospect->overall }}
+                                            </span>
                                         @endif
                                     </div>
 
@@ -289,4 +353,6 @@
             }
         }
     </script>
+
+    <x-player-detail-modal />
 </x-app-layout>

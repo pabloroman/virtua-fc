@@ -12,8 +12,12 @@
     <div class="flex items-start justify-between gap-4 pb-5 border-b border-slate-200">
         {{-- Left: avatar + player info --}}
         <div class="flex items-start gap-4 min-w-0">
-            <img src="/img/default-player.jpg" class="w-16 h-20 md:w-20 md:h-24 rounded-lg border border-slate-200 shrink-0 bg-slate-100" alt="">
+            <img src="/img/default-player.jpg" class="h-24 w-auto md:h-32 md:w-auto rounded-lg border border-slate-200 shrink-0 bg-slate-100" alt="">
             <div class="min-w-0">
+                <div class="flex items-center gap-2 mt-1.5">
+                    <x-position-badge :position="$academyPlayer->position" />
+                    <span class="text-sm font-medium text-slate-600">{{ \App\Support\PositionMapper::toDisplayName($academyPlayer->position) }}</span>
+                </div>
                 <h3 class="font-bold text-xl md:text-2xl text-slate-900 truncate">{{ $academyPlayer->name }}</h3>
                 <div class="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1.5 text-sm text-slate-500">
                     @if($nationalityFlag)
@@ -22,10 +26,6 @@
                         <span class="text-slate-300">&middot;</span>
                     @endif
                     <span>{{ $academyPlayer->age }} {{ __('app.years') }}</span>
-                </div>
-                <div class="flex items-center gap-2 mt-1.5">
-                    <x-position-badge :position="$academyPlayer->position" />
-                    <span class="text-sm font-medium text-slate-600">{{ \App\Support\PositionMapper::toDisplayName($academyPlayer->position) }}</span>
                 </div>
                 @if($academyPlayer->is_on_loan)
                     <span class="inline-block mt-1.5 text-xs bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded font-medium">{{ __('squad.academy_on_loan') }}</span>
@@ -69,7 +69,7 @@
                             <div class="w-28 h-2 bg-slate-100 rounded-full overflow-hidden">
                                 <div class="h-2 rounded-full @if($val >= 80) bg-green-500 @elseif($val >= 70) bg-lime-500 @elseif($val >= 60) bg-amber-500 @else bg-slate-400 @endif" style="width: {{ $val / 99 * 100 }}%"></div>
                             </div>
-                            <span class="text-sm font-bold tabular-nums w-7 text-right @if($val >= 80) text-green-600 @elseif($val >= 70) text-lime-600 @elseif($val >= 60) text-amber-600 @else text-slate-400 @endif">{{ $val }}</span>
+                            <span class="text-sm font-semibold tabular-nums w-7 text-right @if($val >= 80) text-green-600 @elseif($val >= 70) text-lime-600 @elseif($val >= 60) text-amber-600 @else text-slate-400 @endif">{{ $val }}</span>
                         </div>
                     </div>
                     {{-- Physical --}}
@@ -80,13 +80,13 @@
                             <div class="w-28 h-2 bg-slate-100 rounded-full overflow-hidden">
                                 <div class="h-2 rounded-full @if($val >= 80) bg-green-500 @elseif($val >= 70) bg-lime-500 @elseif($val >= 60) bg-amber-500 @else bg-slate-400 @endif" style="width: {{ $val / 99 * 100 }}%"></div>
                             </div>
-                            <span class="text-sm font-bold tabular-nums w-7 text-right @if($val >= 80) text-green-600 @elseif($val >= 70) text-lime-600 @elseif($val >= 60) text-amber-600 @else text-slate-400 @endif">{{ $val }}</span>
+                            <span class="text-sm font-semibold tabular-nums w-7 text-right @if($val >= 80) text-green-600 @elseif($val >= 70) text-lime-600 @elseif($val >= 60) text-amber-600 @else text-slate-400 @endif">{{ $val }}</span>
                         </div>
                     </div>
                     {{-- Average --}}
                     <div class="flex items-center justify-between pt-3 border-t border-slate-100">
                         <span class="text-xs text-slate-500 uppercase tracking-wide font-semibold">{{ __('squad.overall') }}</span>
-                        <span class="text-sm font-bold tabular-nums
+                        <span class="text-sm font-semibold tabular-nums
                             @if($academyPlayer->overall >= 80) text-emerald-600
                             @elseif($academyPlayer->overall >= 70) text-lime-600
                             @elseif($academyPlayer->overall >= 60) text-amber-600
@@ -109,21 +109,21 @@
                 @if($revealPhase >= 2)
                     <div class="flex items-center justify-between">
                         <span class="text-xs text-slate-400 uppercase tracking-wide">{{ __('game.potential') }}</span>
-                        <span class="text-sm font-bold text-slate-900">{{ $academyPlayer->potential_range }}</span>
+                        <span class="text-sm font-semibold text-slate-900">{{ $academyPlayer->potential_range }}</span>
                     </div>
                 @else
                     <div class="flex items-center justify-between">
                         <span class="text-xs text-slate-400 uppercase tracking-wide">{{ __('game.potential') }}</span>
-                        <span class="text-sm font-bold text-slate-300">?</span>
+                        <span class="text-sm font-semibold text-slate-300">?</span>
                     </div>
                 @endif
                 <div class="flex items-center justify-between">
                     <span class="text-xs text-slate-400 uppercase tracking-wide">{{ __('squad.discovered') }}</span>
-                    <span class="text-sm font-bold text-slate-900">{{ $academyPlayer->appeared_at->format('d M Y') }}</span>
+                    <span class="text-sm font-semibold text-slate-900">{{ $academyPlayer->appeared_at->format('d M Y') }}</span>
                 </div>
                 <div class="flex items-center justify-between">
                     <span class="text-xs text-slate-400 uppercase tracking-wide">{{ __('squad.academy') }}</span>
-                    <span class="text-sm font-bold text-slate-900">{{ trans_choice('squad.academy_seasons', $academyPlayer->seasons_in_academy, ['count' => $academyPlayer->seasons_in_academy]) }}</span>
+                    <span class="text-sm font-semibold text-slate-900">{{ trans_choice('squad.academy_seasons', $academyPlayer->seasons_in_academy, ['count' => $academyPlayer->seasons_in_academy]) }}</span>
                 </div>
             </div>
         </div>
