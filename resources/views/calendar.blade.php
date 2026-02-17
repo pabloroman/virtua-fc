@@ -16,7 +16,7 @@
                                 <h4 class="text-md font-semibold mb-3 border-b pb-2">{{ $month }}</h4>
                                 <div class="space-y-2">
                                     @foreach($matches as $match)
-                                        <x-fixture-row :match="$match" :game="$game" />
+                                        <x-fixture-row :match="$match" :game="$game" :next-match-id="$nextMatchId" />
                                     @endforeach
                                 </div>
                             </div>

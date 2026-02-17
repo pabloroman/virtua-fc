@@ -17,6 +17,7 @@ class ShowCalendar
 
         $fixtures = $this->calendarService->getTeamFixtures($game);
         $calendar = $this->calendarService->groupByMonth($fixtures);
+        $nextMatchId = $fixtures->first(fn ($m) => !$m->played)?->id;
 
         // Calculate season stats from played fixtures
         $playedMatches = $fixtures->filter(fn($m) => $m->played);
@@ -26,6 +27,7 @@ class ShowCalendar
             'game' => $game,
             'calendar' => $calendar,
             'seasonStats' => $seasonStats,
+            'nextMatchId' => $nextMatchId,
         ]);
     }
 

@@ -3,12 +3,13 @@
     'game',
     'showScore' => true,
     'highlightNext' => true,
+    'nextMatchId' => null,
 ])
 
 @php
     $isHome = $match->home_team_id === $game->team_id;
     $opponent = $isHome ? $match->awayTeam : $match->homeTeam;
-    $isNextMatch = $highlightNext && !$match->played && $game->next_match?->id === $match->id;
+    $isNextMatch = $highlightNext && !$match->played && $nextMatchId !== null && $nextMatchId === $match->id;
 
     // Calculate result styling
     $resultClass = '';
