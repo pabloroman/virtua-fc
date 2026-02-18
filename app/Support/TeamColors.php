@@ -11,7 +11,6 @@ class TeamColors
     private const TAILWIND_HEX = [
         'white' => '#FFFFFF',
         'black' => '#000000',
-        'slate-900' => '#0F172A',
         'gray-900' => '#111827',
         'red-500' => '#EF4444',
         'red-600' => '#DC2626',
@@ -35,7 +34,6 @@ class TeamColors
         'blue-700' => '#1D4ED8',
         'blue-800' => '#1E40AF',
         'blue-900' => '#1E3A8A',
-        'indigo-600' => '#4F46E5',
         'purple-600' => '#9333EA',
         'purple-700' => '#7E22CE',
         'purple-800' => '#6B21A8',
@@ -53,7 +51,7 @@ class TeamColors
             'pattern' => 'solid',
             'primary' => 'white',
             'secondary' => 'white',
-            'number' => 'slate-900',
+            'number' => 'purple-800',
         ],
         'FC Barcelona' => [
             'pattern' => 'stripes',
@@ -65,22 +63,22 @@ class TeamColors
             'pattern' => 'stripes',
             'primary' => 'red-600',
             'secondary' => 'white',
-            'number' => 'blue-900',
+            'number' => 'blue-700',
         ],
         'Athletic Bilbao' => [
             'pattern' => 'stripes',
             'primary' => 'red-600',
             'secondary' => 'white',
-            'number' => 'slate-900',
+            'number' => 'black',
         ],
         'Real Betis Balompié' => [
             'pattern' => 'stripes',
             'primary' => 'green-600',
             'secondary' => 'white',
-            'number' => 'slate-900',
+            'number' => 'white',
         ],
         'Real Sociedad' => [
-            'pattern' => 'hoops',
+            'pattern' => 'stripes',
             'primary' => 'blue-700',
             'secondary' => 'white',
             'number' => 'white',
@@ -95,7 +93,7 @@ class TeamColors
             'pattern' => 'solid',
             'primary' => 'white',
             'secondary' => 'orange-500',
-            'number' => 'slate-900',
+            'number' => 'black',
         ],
         'Villarreal CF' => [
             'pattern' => 'solid',
@@ -111,7 +109,7 @@ class TeamColors
         ],
         'RCD Espanyol Barcelona' => [
             'pattern' => 'stripes',
-            'primary' => 'blue-600',
+            'primary' => 'blue-700',
             'secondary' => 'white',
             'number' => 'white',
         ],
@@ -129,18 +127,18 @@ class TeamColors
         ],
         'RCD Mallorca' => [
             'pattern' => 'solid',
-            'primary' => 'red-600',
+            'primary' => 'red-700',
             'secondary' => 'black',
-            'number' => 'white',
+            'number' => 'black',
         ],
         'Rayo Vallecano' => [
             'pattern' => 'sash',
             'primary' => 'white',
             'secondary' => 'red-500',
-            'number' => 'slate-900',
+            'number' => 'black',
         ],
         'Deportivo Alavés' => [
-            'pattern' => 'solid',
+            'pattern' => 'stripes',
             'primary' => 'blue-700',
             'secondary' => 'white',
             'number' => 'white',
@@ -152,13 +150,13 @@ class TeamColors
             'number' => 'red-600',
         ],
         'Levante UD' => [
-            'pattern' => 'halves',
-            'primary' => 'blue-700',
-            'secondary' => 'red-600',
-            'number' => 'white',
+            'pattern' => 'stripes',
+            'primary' => 'blue-900',
+            'secondary' => 'rose-800',
+            'number' => 'yellow-400',
         ],
         'Elche CF' => [
-            'pattern' => 'stripes',
+            'pattern' => 'hoops',
             'primary' => 'green-600',
             'secondary' => 'white',
             'number' => 'white',
@@ -193,19 +191,19 @@ class TeamColors
             'pattern' => 'stripes',
             'primary' => 'red-600',
             'secondary' => 'white',
-            'number' => 'slate-900',
+            'number' => 'black',
         ],
         'Real Valladolid CF' => [
-            'pattern' => 'halves',
+            'pattern' => 'stripes',
             'primary' => 'purple-700',
             'secondary' => 'white',
             'number' => 'white',
         ],
         'Racing Santander' => [
-            'pattern' => 'stripes',
-            'primary' => 'green-700',
+            'pattern' => 'solid',
+            'primary' => 'white',
             'secondary' => 'black',
-            'number' => 'white',
+            'number' => 'green-700',
         ],
         'Córdoba CF' => [
             'pattern' => 'stripes',
@@ -217,7 +215,7 @@ class TeamColors
             'pattern' => 'solid',
             'primary' => 'yellow-400',
             'secondary' => 'blue-700',
-            'number' => 'blue-900',
+            'number' => 'blue-700',
         ],
         'Real Zaragoza' => [
             'pattern' => 'solid',
@@ -226,13 +224,13 @@ class TeamColors
             'number' => 'blue-700',
         ],
         'Granada CF' => [
-            'pattern' => 'stripes',
+            'pattern' => 'hoops',
             'primary' => 'red-600',
             'secondary' => 'white',
             'number' => 'red-600',
         ],
         'UD Almería' => [
-            'pattern' => 'solid',
+            'pattern' => 'stripes',
             'primary' => 'red-600',
             'secondary' => 'white',
             'number' => 'white',
@@ -241,19 +239,19 @@ class TeamColors
             'pattern' => 'solid',
             'primary' => 'white',
             'secondary' => 'white',
-            'number' => 'slate-900',
+            'number' => 'black',
         ],
         'CD Castellón' => [
-            'pattern' => 'solid',
+            'pattern' => 'stripes',
             'primary' => 'black',
             'secondary' => 'white',
-            'number' => 'white',
+            'number' => 'black',
         ],
         'Cultural Leonesa' => [
             'pattern' => 'solid',
             'primary' => 'white',
-            'secondary' => 'green-600',
-            'number' => 'slate-900',
+            'secondary' => 'red-700',
+            'number' => 'red-700',
         ],
         'CD Leganés' => [
             'pattern' => 'stripes',
@@ -263,9 +261,9 @@ class TeamColors
         ],
         'Burgos CF' => [
             'pattern' => 'solid',
-            'primary' => 'black',
-            'secondary' => 'purple-600',
-            'number' => 'white',
+            'primary' => 'white',
+            'secondary' => 'black',
+            'number' => 'black',
         ],
         'SD Huesca' => [
             'pattern' => 'stripes',
@@ -275,30 +273,30 @@ class TeamColors
         ],
         'SD Eibar' => [
             'pattern' => 'stripes',
-            'primary' => 'blue-700',
-            'secondary' => 'red-600',
+            'primary' => 'blue-900',
+            'secondary' => 'rose-800',
             'number' => 'white',
         ],
         'AD Ceuta FC' => [
             'pattern' => 'solid',
-            'primary' => 'green-600',
-            'secondary' => 'white',
-            'number' => 'white',
+            'primary' => 'white',
+            'secondary' => 'black',
+            'number' => 'black',
         ],
         'CD Mirandés' => [
             'pattern' => 'solid',
-            'primary' => 'red-600',
-            'secondary' => 'red-600',
-            'number' => 'white',
+            'primary' => 'red-700',
+            'secondary' => 'red-700',
+            'number' => 'black',
         ],
         'FC Andorra' => [
             'pattern' => 'solid',
-            'primary' => 'blue-600',
+            'primary' => 'blue-800',
             'secondary' => 'yellow-400',
-            'number' => 'white',
+            'number' => 'yellow-400',
         ],
         'Real Sociedad B' => [
-            'pattern' => 'hoops',
+            'pattern' => 'stripes',
             'primary' => 'blue-700',
             'secondary' => 'white',
             'number' => 'white',
@@ -319,6 +317,19 @@ class TeamColors
     public static function get(string $teamName): array
     {
         return self::TEAMS[$teamName] ?? self::DEFAULT_COLORS;
+    }
+
+    /**
+     * Get all teams with hex colors for preview/testing.
+     */
+    public static function all(): array
+    {
+        $result = [];
+        foreach (self::TEAMS as $name => $colors) {
+            $result[$name] = self::toHex($colors);
+        }
+
+        return $result;
     }
 
     /**

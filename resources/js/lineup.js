@@ -289,9 +289,9 @@ export default function lineupManager(config) {
 
             switch (tc.pattern) {
                 case 'stripes':
-                    return `background: repeating-linear-gradient(90deg, ${p} 0px, ${p} 5px, ${s} 5px, ${s} 10px)`;
+                    return `background: repeating-linear-gradient(90deg, ${p} 0px, ${p} 6px, ${s} 6px, ${s} 12px)`;
                 case 'hoops':
-                    return `background: repeating-linear-gradient(0deg, ${p} 0px, ${p} 5px, ${s} 5px, ${s} 10px)`;
+                    return `background: repeating-linear-gradient(0deg, ${p} 0px, ${p} 6px, ${s} 6px, ${s} 12px)`;
                 case 'sash':
                     return `background: linear-gradient(135deg, ${p} 0%, ${p} 35%, ${s} 35%, ${s} 65%, ${p} 65%, ${p} 100%)`;
                 case 'halves':
@@ -301,10 +301,39 @@ export default function lineupManager(config) {
             }
         },
 
-        // Get the number/text color for a player badge
-        getNumberColor(role) {
-            if (role === 'Goalkeeper') return '#FFFFFF';
-            return this.teamColors?.number || '#FFFFFF';
+        // Get the complete inline style for the player number including backdrop for patterned shirts
+        getNumberStyle(role) {
+            if (role === 'Goalkeeper') {
+                return 'color: #FFFFFF; text-shadow: 0 1px 2px rgba(0,0,0,0.5)';
+            }
+            const tc = this.teamColors;
+            if (!tc) return 'color: #FFFFFF; text-shadow: 0 1px 2px rgba(0,0,0,0.5)';
+
+            const color = tc.number || '#FFFFFF';
+
+            if (tc.pattern !== 'solid') {
+                // For patterned shirts, add a semi-transparent circular backdrop
+                const backdrop = this._getBackdropColor(tc);
+                return `color: ${color}; background: ${backdrop}CC; text-shadow: 0 1px 2px rgba(0,0,0,0.15)`;
+            }
+
+            return `color: ${color}; text-shadow: 0 1px 2px rgba(0,0,0,0.2)`;
+        },
+
+        // Pick the team color (primary or secondary) that best contrasts with the number color
+        _getBackdropColor(tc) {
+            const numLum = this._hexLuminance(tc.number);
+            const priLum = this._hexLuminance(tc.primary);
+            const secLum = this._hexLuminance(tc.secondary);
+            return Math.abs(numLum - priLum) >= Math.abs(numLum - secLum) ? tc.primary : tc.secondary;
+        },
+
+        _hexLuminance(hex) {
+            if (!hex || hex.length < 7) return 0.5;
+            const r = parseInt(hex.slice(1, 3), 16) / 255;
+            const g = parseInt(hex.slice(3, 5), 16) / 255;
+            const b = parseInt(hex.slice(5, 7), 16) / 255;
+            return 0.299 * r + 0.587 * g + 0.114 * b;
         },
 
         // Get the compatibility display for a player in the currently selected slot
