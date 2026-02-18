@@ -82,7 +82,7 @@ export default function lineupManager(config) {
                 return aCompat - bCompat;
             });
 
-            // First pass: assign players with compatibility > 0 (cross-group allowed)
+            // First pass: assign players with acceptable compatibility (>= 40)
             sortedEmpty.forEach(slot => {
                 let bestPlayer = null;
                 let bestScore = -1;
@@ -91,7 +91,7 @@ export default function lineupManager(config) {
                     if (assigned.has(player.id)) return;
 
                     const compatibility = this.getSlotCompatibility(player.position, slot.label);
-                    if (compatibility === 0) return;
+                    if (compatibility < 40) return;
 
                     // Weighted score: 70% player rating, 30% compatibility
                     const weightedScore = (player.overallScore * 0.7) + (compatibility * 0.3);
@@ -177,6 +177,13 @@ export default function lineupManager(config) {
             const slotId = this.selectedSlot;
             const slot = this.currentSlots.find(s => s.id === slotId);
             if (!slot) return;
+
+            // Enforce minimum 40 compatibility for manual assignments
+            const player = this.playersData[playerId];
+            if (player) {
+                const compatibility = this.getSlotCompatibility(player.position, slot.label);
+                if (compatibility < 40) return;
+            }
 
             // If this player is already manually assigned elsewhere, remove old assignment
             this._removePlayerFromManualAssignments(playerId);

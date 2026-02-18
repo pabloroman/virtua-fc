@@ -148,7 +148,7 @@
                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                             {{-- Pitch Visualization --}}
 
-                            <div class="col-span-1" :class="{ 'hidden lg:block': activeLineupTab !== 'pitch' }">
+                            <div class="col-span-1 lg:sticky lg:top-4 lg:self-start" :class="{ 'hidden lg:block': activeLineupTab !== 'pitch' }">
                                 <div class="bg-emerald-600 rounded-lg p-4 relative" style="aspect-ratio: 3/4;">
                                     {{-- Pitch markings --}}
                                     <div class="absolute inset-4 border-2 border-emerald-400/50 rounded">
@@ -368,7 +368,7 @@
                                                             @endif"
                                                         :class="{
                                                             'bg-sky-50': isSelected('{{ $player->id }}') && selectedSlot === null,
-                                                            'bg-sky-100 ring-1 ring-sky-300': selectedSlot !== null && !{{ $isUnavailable ? 'true' : 'false' }} && getSelectedSlotCompatibility('{{ $player->position }}')?.score >= 60,
+                                                            'bg-sky-100 ring-1 ring-sky-300': selectedSlot !== null && !{{ $isUnavailable ? 'true' : 'false' }} && getSelectedSlotCompatibility('{{ $player->position }}')?.score >= 40,
                                                             'opacity-50': !isSelected('{{ $player->id }}') && selectedCount >= 11 && selectedSlot === null && !{{ $isUnavailable ? 'true' : 'false' }}
                                                         }"
                                                     >
