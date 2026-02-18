@@ -20,6 +20,7 @@ $groups = [
     ],
     'Game' => [
         ['id' => 'game-components', 'label' => 'Game Components'],
+        ['id' => 'shirt-badges', 'label' => 'Shirt Badges'],
     ],
     'Patterns' => [
         ['id' => 'layout-patterns', 'label' => 'Layout Patterns'],

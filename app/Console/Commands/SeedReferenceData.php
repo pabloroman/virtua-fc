@@ -7,6 +7,7 @@ use App\Game\Services\GamePlayerTemplateService;
 use App\Game\Services\PlayerValuationService;
 use App\Models\User;
 use App\Support\Money;
+use App\Support\TeamColors;
 use Carbon\Carbon;
 use Database\Seeders\ClubProfilesSeeder;
 use Illuminate\Console\Command;
@@ -442,8 +443,14 @@ class SeedReferenceData extends Command
                 ->where('transfermarkt_id', $transfermarktId)
                 ->first();
 
+            $colors = TeamColors::get($club['name']);
+
             if ($existingTeam) {
                 $teamId = $existingTeam->id;
+                // Update colors for existing teams
+                DB::table('teams')->where('id', $teamId)->update([
+                    'colors' => json_encode($colors),
+                ]);
             } else {
                 $teamId = Str::uuid()->toString();
 
@@ -460,6 +467,7 @@ class SeedReferenceData extends Command
                     'image' => $club['image'] ?? null,
                     'stadium_name' => $club['stadiumName'] ?? null,
                     'stadium_seats' => $stadiumSeats,
+                    'colors' => json_encode($colors),
                 ]);
             }
 

@@ -10,6 +10,7 @@ use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Support\PositionMapper;
 use App\Support\PositionSlotMapper;
+use App\Support\TeamColors;
 
 class ShowLineup
 {
@@ -111,6 +112,9 @@ class ShowLineup
         // Get opponent scouting data
         $opponentData = $this->getOpponentData($gameId, $opponent->id, $matchDate, $competitionId);
 
+        // Team shirt colors for pitch visualization
+        $teamColorsHex = TeamColors::toHex($game->team->colors ?? TeamColors::get($game->team->getRawOriginal('name')));
+
         return view('lineup', [
             'game' => $game,
             'match' => $match,
@@ -135,6 +139,7 @@ class ShowLineup
             'formationSlots' => $formationSlots,
             'slotCompatibility' => $slotCompatibility,
             'opponentData' => $opponentData,
+            'teamColors' => $teamColorsHex,
         ]);
     }
 

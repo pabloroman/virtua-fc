@@ -18,6 +18,7 @@
         formationSlots: @js($formationSlots),
         slotCompatibility: @js($slotCompatibility),
         autoLineupUrl: '{{ route('game.lineup.auto', [$game->id, $match->id]) }}',
+        teamColors: @js($teamColors),
         translations: {
             natural: '{{ __('squad.natural') }}',
             veryGood: '{{ __('squad.very_good') }}',
@@ -192,15 +193,13 @@
                                             >
                                                 {{-- Main player badge --}}
                                                 <div
-                                                    class="relative w-11 h-11 rounded-xl bg-gradient-to-br shadow-lg transform transition-all duration-200 hover:scale-110 hover:shadow-xl"
-                                                    :class="[
-                                                        getPositionGradient(slot.role),
-                                                        selectedSlot === slot.id ? 'ring-2 ring-white ring-offset-1 ring-offset-emerald-600 scale-110' : ''
-                                                    ]"
+                                                    class="relative w-11 h-11 rounded-xl shadow-lg border border-white/20 transform transition-all duration-200 hover:scale-110 hover:shadow-xl"
+                                                    :class="selectedSlot === slot.id ? 'ring-2 ring-white ring-offset-1 ring-offset-emerald-600 scale-110' : ''"
+                                                    :style="getShirtStyle(slot.role)"
                                                 >
                                                     {{-- Number or Initials --}}
                                                     <div class="absolute inset-0 flex items-center justify-center">
-                                                        <span class="text-white font-semibold text-sm tracking-tight drop-shadow-sm" x-text="slot.player?.number || getInitials(slot.player?.name)"></span>
+                                                        <span class="font-bold text-xs leading-none inline-flex items-center justify-center w-7 h-7 rounded-full" :style="getNumberStyle(slot.role)" x-text="slot.player?.number || getInitials(slot.player?.name)"></span>
                                                     </div>
                                                     {{-- Compatibility indicator dot --}}
                                                     <div
@@ -214,21 +213,14 @@
                                                         }"
                                                         x-show="getCompatibilityDisplay(slot.player?.position, slot.label).score < 100"
                                                     ></div>
-                                                    {{-- Manual assignment indicator --}}
-                                                    <div
-                                                        x-show="slot.isManual"
-                                                        class="absolute -top-0.5 -left-0.5 w-3 h-3 rounded-full bg-sky-400 border-2 border-emerald-600"
-                                                        title="{{ __('squad.manual_assignment') }}"
-                                                    ></div>
-                                                    {{-- Overall rating badge --}}
-                                                    <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 px-1.5 py-0.5 bg-slate-900/80 rounded text-[9px] font-semibold text-white shadow-sm">
-                                                        <span x-text="slot.player?.overallScore"></span>
-                                                    </div>
                                                 </div>
 
                                                 {{-- Hover tooltip --}}
                                                 <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-slate-900/95 backdrop-blur-sm text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-20 shadow-xl">
-                                                    <div class="font-semibold" x-text="slot.player?.name"></div>
+                                                    <div class="flex items-center gap-2">
+                                                        <span class="font-semibold" x-text="slot.player?.name"></span>
+                                                        <span class="px-1.5 py-0.5 bg-white/15 rounded font-bold text-[10px]" x-text="slot.player?.overallScore"></span>
+                                                    </div>
                                                     <div class="flex items-center gap-2 mt-1 text-slate-300">
                                                         <span x-text="slot.displayLabel"></span>
                                                         <span class="text-slate-500">·</span>

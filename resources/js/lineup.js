@@ -19,6 +19,7 @@ export default function lineupManager(config) {
         formationSlots: config.formationSlots,
         slotCompatibility: config.slotCompatibility,
         autoLineupUrl: config.autoLineupUrl,
+        teamColors: config.teamColors,
         translations: config.translations,
 
         // Computed
@@ -247,15 +248,6 @@ export default function lineupManager(config) {
             }
         },
 
-        getPositionColor(role) {
-            return {
-                'Goalkeeper': 'bg-amber-500',
-                'Defender': 'bg-blue-600',
-                'Midfielder': 'bg-emerald-600',
-                'Forward': 'bg-red-600',
-            }[role] || 'bg-slate-500';
-        },
-
         removeFromSlot(playerId) {
             this.selectedPlayers = this.selectedPlayers.filter(p => p !== playerId);
             this._removePlayerFromManualAssignments(playerId);
@@ -282,13 +274,66 @@ export default function lineupManager(config) {
             return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
         },
 
-        getPositionGradient(role) {
-            return {
-                'Goalkeeper': 'from-amber-400 to-amber-600',
-                'Defender': 'from-blue-500 to-blue-700',
-                'Midfielder': 'from-emerald-500 to-emerald-700',
-                'Forward': 'from-red-500 to-red-700',
-            }[role] || 'from-slate-400 to-slate-600';
+        // Generate inline CSS for the player badge background based on team shirt
+        getShirtStyle(role) {
+            // Goalkeeper always gets a distinct amber kit
+            if (role === 'Goalkeeper') {
+                return 'background: linear-gradient(to bottom right, #FBBF24, #D97706)';
+            }
+
+            const tc = this.teamColors;
+            if (!tc) return 'background: linear-gradient(to bottom right, #3B82F6, #1D4ED8)';
+
+            const p = tc.primary;
+            const s = tc.secondary;
+
+            switch (tc.pattern) {
+                case 'stripes':
+                    return `background: repeating-linear-gradient(90deg, ${p} 0px, ${p} 6px, ${s} 6px, ${s} 12px)`;
+                case 'hoops':
+                    return `background: repeating-linear-gradient(0deg, ${p} 0px, ${p} 6px, ${s} 6px, ${s} 12px)`;
+                case 'sash':
+                    return `background: linear-gradient(135deg, ${p} 0%, ${p} 35%, ${s} 35%, ${s} 65%, ${p} 65%, ${p} 100%)`;
+                case 'halves':
+                    return `background: linear-gradient(90deg, ${p} 50%, ${s} 50%)`;
+                default:
+                    return `background: ${p}`;
+            }
+        },
+
+        // Get the complete inline style for the player number including backdrop for patterned shirts
+        getNumberStyle(role) {
+            if (role === 'Goalkeeper') {
+                return 'color: #FFFFFF; text-shadow: 0 1px 2px rgba(0,0,0,0.5)';
+            }
+            const tc = this.teamColors;
+            if (!tc) return 'color: #FFFFFF; text-shadow: 0 1px 2px rgba(0,0,0,0.5)';
+
+            const color = tc.number || '#FFFFFF';
+
+            if (tc.pattern !== 'solid') {
+                // For patterned shirts, add a semi-transparent circular backdrop
+                const backdrop = this._getBackdropColor(tc);
+                return `color: ${color}; background: ${backdrop}CC; text-shadow: 0 1px 2px rgba(0,0,0,0.15)`;
+            }
+
+            return `color: ${color}; text-shadow: 0 1px 2px rgba(0,0,0,0.2)`;
+        },
+
+        // Pick the team color (primary or secondary) that best contrasts with the number color
+        _getBackdropColor(tc) {
+            const numLum = this._hexLuminance(tc.number);
+            const priLum = this._hexLuminance(tc.primary);
+            const secLum = this._hexLuminance(tc.secondary);
+            return Math.abs(numLum - priLum) >= Math.abs(numLum - secLum) ? tc.primary : tc.secondary;
+        },
+
+        _hexLuminance(hex) {
+            if (!hex || hex.length < 7) return 0.5;
+            const r = parseInt(hex.slice(1, 3), 16) / 255;
+            const g = parseInt(hex.slice(3, 5), 16) / 255;
+            const b = parseInt(hex.slice(5, 7), 16) / 255;
+            return 0.299 * r + 0.587 * g + 0.114 * b;
         },
 
         // Get the compatibility display for a player in the currently selected slot

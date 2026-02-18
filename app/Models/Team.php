@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property string|null $image
  * @property string|null $stadium_name
  * @property int $stadium_seats
+ * @property array|null $colors
  * @property-read \App\Models\ClubProfile|null $clubProfile
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Competition> $competitions
  * @property-read int|null $competitions_count
@@ -45,18 +46,16 @@ class Team extends Model
         'transfermarkt_id',
         'type',
         'name',
-        'official_name',
         'country',
         'image',
         'stadium_name',
         'stadium_seats',
         'colors',
-        'current_market_value',
-        'founded_on',
     ];
 
     protected $casts = [
         'stadium_seats' => 'integer',
+        'colors' => 'array',
     ];
 
     public function competitions(): BelongsToMany
