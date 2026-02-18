@@ -26,33 +26,26 @@ Three changes: manual slot assignment with persistence, cross-group flexibility 
 
 ### Part 2: Persist slot assignments
 
-Follow the existing pattern: defaults on `games`, per-match on `game_matches`.
+Slot assignments don't affect match simulation, so we only need to store the user's preference as a default on the `games` table (same as `default_formation`, `default_lineup`, `default_mentality`). No per-match columns on `game_matches` — the simulator doesn't use them.
 
 **Migration:**
 
 8. Add `default_slot_assignments` (JSON, nullable) to `games` table
-9. Add `home_slot_assignments` and `away_slot_assignments` (JSON, nullable) to `game_matches` table
 
 **Model changes:**
 
-10. `Game` — add `default_slot_assignments` to `$fillable` and `$casts` (as `array`)
-11. `GameMatch` — add `home_slot_assignments`, `away_slot_assignments` to `$fillable` and `$casts` (as `array`)
+9. `Game` — add `default_slot_assignments` to `$fillable` and `$casts` (as `array`)
 
 **Backend (`SaveLineup.php`):**
 
-12. Accept `slot_assignments` from the form (JSON map `{slotLabel: playerId}`, e.g. `{"CB": "uuid-1", "LB": "uuid-2", ...}`)
-13. Validate: every player in slot_assignments must have compatibility > 0 for their assigned slot (via `PositionSlotMapper`)
-14. Save to `game_matches` (home or away based on team side)
-15. Save to `game.default_slot_assignments` as the new default
+10. Accept `slot_assignments` from the form (JSON map of slot `id` → player UUID)
+11. Validate: every player in slot_assignments must have compatibility > 0 for their assigned slot (via `PositionSlotMapper`)
+12. Save to `game.default_slot_assignments` as the new default
 
 **Backend (`ShowLineup.php`):**
 
-16. Load saved slot assignments (from match first, fall back to game defaults)
-17. Pass to the template as `savedSlotAssignments` for Alpine.js to initialize `manualAssignments`
-
-**Backend (`LineupService.php`):**
-
-18. Add `saveSlotAssignments($match, $teamId, $slotAssignments)` method following the same pattern as `saveLineup`/`saveFormation`/`saveMentality`
+13. Load saved slot assignments from game defaults
+14. Pass to the template as `savedSlotAssignments` for Alpine.js to initialize `manualAssignments`
 
 ### Part 3: Cross-group flexibility
 
@@ -60,14 +53,14 @@ The `PositionSlotMapper::SLOT_COMPATIBILITY` matrix already defines cross-group 
 
 **Frontend (`lineup.blade.php`):**
 
-19. In the auto-assignment algorithm, keep the position-group preference as a tiebreaker but don't hard-filter on it — any player with compatibility > 0 for a slot can be auto-assigned there
-20. In "placement mode" (click-to-assign), show ALL slots where the player has compatibility > 0, regardless of position group, with color-coded indicators (already exists via `getCompatibilityDisplay`)
+15. In the auto-assignment algorithm, keep the position-group preference as a tiebreaker but don't hard-filter on it — any player with compatibility > 0 for a slot can be auto-assigned there
+16. In "placement mode" (click-to-assign), show ALL slots where the player has compatibility > 0, regardless of position group, with color-coded indicators (already exists via `getCompatibilityDisplay`)
 
 **Backend validation (`LineupService.php`):**
 
-21. When `slot_assignments` are provided: validate each player has compatibility > 0 for their assigned slot (via `PositionSlotMapper::getCompatibilityScore`). This replaces the strict position-group count check.
-22. When NO slot assignments are provided (legacy/auto path): keep existing position-group validation unchanged for backwards compatibility
-23. Always require exactly 1 Goalkeeper (non-negotiable safety check)
+17. When `slot_assignments` are provided: validate each player has compatibility > 0 for their assigned slot (via `PositionSlotMapper::getCompatibilityScore`). This replaces the strict position-group count check.
+18. When NO slot assignments are provided (legacy/auto path): keep existing position-group validation unchanged for backwards compatibility
+19. Always require exactly 1 Goalkeeper (non-negotiable safety check)
 
 ### Not in scope: Match simulation
 
@@ -77,10 +70,9 @@ The match simulator (`MatchSimulator.php`) continues to use `$player->position` 
 
 | File | Changes |
 |------|---------|
-| `database/migrations/new` | Add `default_slot_assignments` to `games`, `home/away_slot_assignments` to `game_matches` |
+| `database/migrations/new` | Add `default_slot_assignments` to `games` |
 | `app/Models/Game.php` | Add to `$fillable` and `$casts` |
-| `app/Models/GameMatch.php` | Add to `$fillable` and `$casts` |
-| `app/Game/Services/LineupService.php` | Add `saveSlotAssignments()`, update `validateLineup()` for slot-based validation |
+| `app/Game/Services/LineupService.php` | Update `validateLineup()` for slot-based validation |
 | `app/Http/Actions/SaveLineup.php` | Accept, validate, and persist `slot_assignments` |
 | `app/Http/Views/ShowLineup.php` | Load and pass saved slot assignments |
 | `resources/views/lineup.blade.php` | Manual assignment state, click-to-assign/swap UI, cross-group slot compatibility |
@@ -88,25 +80,7 @@ The match simulator (`MatchSimulator.php`) continues to use `$player->position` 
 
 ## Data Format
 
-Slot assignments stored as JSON map of slot label → player UUID:
-
-```json
-{
-  "GK": "uuid-keeper",
-  "LB": "uuid-leftback",
-  "CB": "uuid-centreback-1",
-  "CB": "uuid-centreback-2",
-  "RB": "uuid-rightback",
-  "CM": "uuid-midfielder-1",
-  "CM": "uuid-midfielder-2",
-  "LW": "uuid-leftwinger",
-  "AM": "uuid-attackingmid",
-  "RW": "uuid-rightwinger",
-  "CF": "uuid-striker"
-}
-```
-
-Note: Formations can have duplicate slot labels (e.g., two CBs). The key should use the slot `id` (0-10) instead to guarantee uniqueness:
+Slot assignments stored as JSON map of slot `id` (0-10) → player UUID, keyed by slot id to guarantee uniqueness (formations can have duplicate labels like two CBs):
 
 ```json
 {
@@ -114,6 +88,12 @@ Note: Formations can have duplicate slot labels (e.g., two CBs). The key should 
   "1": "uuid-leftback",
   "2": "uuid-centreback-1",
   "3": "uuid-centreback-2",
-  ...
+  "4": "uuid-rightback",
+  "5": "uuid-midfielder-1",
+  "6": "uuid-midfielder-2",
+  "7": "uuid-leftwinger",
+  "8": "uuid-attackingmid",
+  "9": "uuid-rightwinger",
+  "10": "uuid-striker"
 }
 ```
