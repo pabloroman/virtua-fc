@@ -526,20 +526,31 @@ class SeedReferenceData extends Command
                 $position = $player['position'] ?? 'Central Midfield';
                 [$technical, $physical] = $valuationService->marketValueToAbilities($marketValueCents, $position, $age ?? 25);
 
-                // Insert player
-                DB::table('players')->updateOrInsert(
-                    ['transfermarkt_id' => $player['id']],
-                    [
-                        'id' => Str::uuid()->toString(),
-                        'name' => $player['name'],
-                        'date_of_birth' => $dateOfBirth,
-                        'nationality' => json_encode($player['nationality'] ?? []),
-                        'height' => $player['height'] ?? null,
-                        'foot' => $foot,
-                        'technical_ability' => $technical,
-                        'physical_ability' => $physical,
-                    ]
-                );
+                // Insert or update player (never change the id on update)
+                $playerValues = [
+                    'name' => $player['name'],
+                    'date_of_birth' => $dateOfBirth,
+                    'nationality' => json_encode($player['nationality'] ?? []),
+                    'height' => $player['height'] ?? null,
+                    'foot' => $foot,
+                    'technical_ability' => $technical,
+                    'physical_ability' => $physical,
+                ];
+
+                $exists = DB::table('players')
+                    ->where('transfermarkt_id', $player['id'])
+                    ->exists();
+
+                if ($exists) {
+                    DB::table('players')
+                        ->where('transfermarkt_id', $player['id'])
+                        ->update($playerValues);
+                } else {
+                    DB::table('players')->insert(array_merge(
+                        ['id' => Str::uuid()->toString(), 'transfermarkt_id' => $player['id']],
+                        $playerValues
+                    ));
+                }
 
                 $count++;
             }
