@@ -56,7 +56,7 @@ return new class extends Migration
         Schema::create('competition_teams', function (Blueprint $table) {
             $table->string('competition_id', 10);
             $table->uuid('team_id');
-            $table->string('season', 10)->default('2024');
+            $table->string('season', 10)->default('2025');
             $table->primary(['competition_id', 'team_id', 'season']);
 
             $table->foreign('competition_id')->references('id')->on('competitions');
@@ -67,7 +67,7 @@ return new class extends Migration
         Schema::create('fixture_templates', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('competition_id', 10);
-            $table->string('season', 10)->default('2024');
+            $table->string('season', 10)->default('2025');
             $table->unsignedSmallInteger('round_number');
             $table->unsignedSmallInteger('match_number')->nullable();
             $table->uuid('home_team_id');
@@ -92,7 +92,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained();
             $table->string('player_name');
             $table->uuid('team_id');
-            $table->string('season', 10)->default('2024');
+            $table->string('season', 10)->default('2025');
             $table->date('current_date')->nullable();
             $table->unsignedSmallInteger('current_matchday')->default(0);
             $table->timestamps();

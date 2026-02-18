@@ -24,6 +24,7 @@ return [
     'details' => 'Detalles',
     'back' => 'Volver',
     'view_all' => 'Ver Todo',
+    'view_details' => 'Ver detalles',
 
     // Authentication
     'log_out' => 'Cerrar Sesión',

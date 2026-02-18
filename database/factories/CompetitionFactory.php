@@ -20,7 +20,7 @@ class CompetitionFactory extends Factory
             'role' => Competition::ROLE_PRIMARY,
             'scope' => Competition::SCOPE_DOMESTIC,
             'handler_type' => 'league',
-            'season' => '2024',
+            'season' => '2025',
         ];
     }
 

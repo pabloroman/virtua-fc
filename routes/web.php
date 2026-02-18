@@ -41,6 +41,7 @@ use App\Http\Views\ShowLiveMatch;
 use App\Http\Views\ShowMatchResults;
 use App\Http\Views\ShowSquad;
 use App\Http\Views\ShowScouting;
+use App\Http\Views\ShowScoutReportResults;
 use App\Http\Views\ShowSeasonEnd;
 use App\Http\Views\ShowSquadDevelopment;
 use App\Http\Actions\EvaluateAcademy;
@@ -112,6 +113,7 @@ Route::middleware('auth')->group(function () {
 
         // Scouting
         Route::get('/game/{gameId}/scouting', ShowScouting::class)->name('game.scouting');
+        Route::get('/game/{gameId}/scouting/{reportId}/results', ShowScoutReportResults::class)->name('game.scouting.results');
         Route::post('/game/{gameId}/scouting/search', SubmitScoutSearch::class)->name('game.scouting.search');
         Route::post('/game/{gameId}/scouting/cancel', CancelScoutSearch::class)->name('game.scouting.cancel');
         Route::post('/game/{gameId}/scouting/{playerId}/bid', SubmitTransferBid::class)->name('game.scouting.bid');

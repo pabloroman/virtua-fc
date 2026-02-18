@@ -240,8 +240,8 @@
     </div>
 
     {{-- Actions --}}
-    @if($showActions)
-        <div class="mt-6 pt-4 border-t border-slate-200 flex flex-wrap gap-2">
+    @if($showActions || $canRenew || $renewalNegotiation)
+        <div class="mt-6 pt-4 border-t border-slate-200 flex flex-wrap items-center gap-2">
             @if(!$isListed && $canManage)
                 <form method="POST" action="{{ route('game.transfers.list', [$game->id, $gamePlayer->id]) }}">
                     @csrf
@@ -260,7 +260,7 @@
                     </button>
                 </form>
             @endif
-            @if($isTransferWindow && $canManage)
+            @if($canManage)
                 <form method="POST" action="{{ route('game.loans.out', [$game->id, $gamePlayer->id]) }}">
                     @csrf
                     <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border border-amber-200 text-amber-700 bg-amber-50 hover:bg-amber-100 transition-colors min-h-[44px]">
@@ -268,6 +268,24 @@
                         {{ __('squad.loan_out') }}
                     </button>
                 </form>
+            @endif
+            @if($canRenew)
+                <x-renewal-modal
+                    :game="$game"
+                    :game-player="$gamePlayer"
+                    :renewal-demand="$renewalDemand"
+                    :renewal-midpoint="$renewalMidpoint"
+                    :renewal-mood="$renewalMood"
+                />
+            @elseif($renewalNegotiation)
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium
+                    {{ $renewalNegotiation->isPending() ? 'bg-amber-100 text-amber-700' : 'bg-orange-100 text-orange-700' }}">
+                    <span class="w-1.5 h-1.5 rounded-full {{ $renewalNegotiation->isPending() ? 'bg-amber-500 animate-pulse' : 'bg-orange-500' }}"></span>
+                    {{ $renewalNegotiation->isPending() ? __('transfers.negotiating') : __('transfers.player_countered') }}
+                </span>
+                <a href="{{ route('game.transfers', $game->id) }}" class="text-xs text-slate-500 hover:text-slate-700 underline underline-offset-2">
+                    {{ __('app.view_details') }} →
+                </a>
             @endif
         </div>
     @endif

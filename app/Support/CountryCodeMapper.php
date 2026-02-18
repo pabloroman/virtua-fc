@@ -78,6 +78,7 @@ class CountryCodeMapper
         'Cook Islands' => 'ck',
         'Costa Rica' => 'cr',
         "Côte d'Ivoire" => 'ci',
+        "Cote d'Ivoire" => 'ci',
         'Ivory Coast' => 'ci',
         'Croatia' => 'hr',
         'Cuba' => 'cu',

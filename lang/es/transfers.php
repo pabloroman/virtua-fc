@@ -21,12 +21,16 @@ return [
 
     // Section headers
     'pre_contract_offers_received' => 'Ofertas de Precontrato Recibidas',
+    'pre_contract_offers_help' => 'Jugadores en último año de contrato con ofertas de otros clubes',
     'players_leaving_free' => 'Jugadores que Se Van Libres',
+    'players_leaving_free_help' => 'Jugadores que han firmado precontrato con otro club',
     'expiring_contracts_section' => 'Jugadores en Último Año de Contrato',
     'pending_renewals_section' => 'Renovaciones Pendientes',
     'loans_out_section' => 'Cesiones Activas (Salidas)',
     'loan_searches_section' => 'Buscando Destino de Cesión',
+    'loan_searches_help' => 'Jugadores buscando un club para ser cedidos',
     'counter_offers_received' => 'Contraoferta(s) Recibida(s)',
+    'counter_offers_help' => 'Los clubes han respondido con un precio diferente al que ofreciste',
 
     // Legacy keys kept for compatibility
     'market' => 'Mercado',
@@ -35,6 +39,7 @@ return [
 
     // Pending bids
     'your_pending_bids' => 'Tus Ofertas Pendientes',
+    'pending_bids_help' => 'Ofertas enviadas que están esperando respuesta del club vendedor',
     'awaiting_response' => 'esperando respuesta',
     'loan_request' => 'Solicitud de Cesión',
     'loan_no_fee' => 'Cesión (sin coste)',
@@ -52,11 +57,13 @@ return [
 
     // Unsolicited offers
     'unsolicited_offers' => 'Ofertas No Solicitadas',
+    'unsolicited_offers_help' => 'Otros clubes quieren fichar a tus jugadores',
     'clubs_want_your_players' => 'clubes quieren a tus jugadores',
     'wants' => 'quiere a',
 
     // Offers received
     'offers_received' => 'Ofertas Recibidas',
+    'offers_received_help' => 'Ofertas recibidas por jugadores que has puesto en venta',
     'offers_for' => 'ofrece por',
     'expires_in_days' => 'Expira en :days días',
     'from' => 'de',
@@ -70,6 +77,7 @@ return [
 
     // Listed players
     'listed_players' => 'Jugadores en Venta',
+    'listed_players_help' => 'Jugadores que has puesto en el mercado de traspasos',
     'list_more_from_squad' => 'Poner más jugadores en venta desde Plantilla',
     'no_players_listed' => 'Ningún jugador en venta.',
     'go_to_squad' => 'Ir a Plantilla para poner jugadores en venta',
@@ -183,7 +191,7 @@ return [
     'searching_destination' => 'Buscando club...',
     'loan_player' => 'Ceder Jugador',
     'returns' => 'Regresa',
-    'years' => 'años',
+    'years' => ':count año|:count años',
     'year_abbr' => 'año',
 
     // Position names moved to lang/es/positions.php
@@ -205,6 +213,11 @@ return [
 
     // Empty states
     'no_outgoing_activity' => 'No hay actividad de salida',
+    'no_incoming_activity' => 'Sin actividad de fichajes',
+
+    // Scout search button
+    'new_scout_search' => 'Nueva Búsqueda',
+    'scout_search_in_progress' => 'Búsqueda en curso',
 
     // Counter-offer detail
     'your_bid_amount' => 'Tu oferta: :amount',
@@ -236,6 +249,7 @@ return [
     // Renewal negotiation
     'negotiate' => 'Negociar',
     'negotiating' => 'Negociando...',
+    'player_countered' => 'El jugador ha contraofertado',
     'your_offer' => 'Tu oferta (euros/año)',
     'duration' => 'Duración',
     'offer_button' => 'Ofrecer',
@@ -256,4 +270,5 @@ return [
     'mood_reluctant' => 'Reticente',
     'year_singular' => 'año',
     'years_plural' => 'años',
+    'contract_duration' => 'Duración del contrato',
 ];

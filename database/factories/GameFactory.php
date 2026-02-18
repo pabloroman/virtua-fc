@@ -18,7 +18,7 @@ class GameFactory extends Factory
             'user_id' => User::factory(),
             'team_id' => Team::factory(),
             'competition_id' => Competition::factory()->league(),
-            'season' => '2024',
+            'season' => '2025',
             'player_name' => $this->faker->name(),
             'current_date' => '2024-08-15',
             'current_matchday' => 1,

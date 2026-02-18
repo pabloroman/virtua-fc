@@ -26,47 +26,10 @@ class ShowScouting
         $searchingReport = $this->scoutingService->getActiveReport($game);
         $searchHistory = $this->scoutingService->getSearchHistory($game);
 
-        // Determine what to show based on query params
-        $showForm = false;
-        $selectedReport = null;
-
-        if ($request->has('new')) {
-            $showForm = true;
-        } elseif ($request->has('report')) {
-            $selectedReport = ScoutReport::where('game_id', $game->id)
-                ->where('id', $request->query('report'))
-                ->where('status', ScoutReport::STATUS_COMPLETED)
-                ->first();
-            if (!$selectedReport) {
-                $showForm = true;
-            }
-        } elseif ($searchingReport) {
-            // Active search in progress — show progress
-        } elseif ($searchHistory->isNotEmpty()) {
-            $selectedReport = $searchHistory->first();
-        } else {
-            $showForm = true;
-        }
-
         // Load player data for the selected report
         $scoutedPlayers = collect();
         $playerDetails = [];
         $existingOffers = [];
-
-        if ($selectedReport && $selectedReport->isCompleted()) {
-            $scoutedPlayers = $selectedReport->players;
-
-            foreach ($scoutedPlayers as $player) {
-                $playerDetails[$player->id] = $this->scoutingService->getPlayerScoutingDetail($player, $game);
-
-                $existingOffers[$player->id] = TransferOffer::where('game_id', $gameId)
-                    ->where('game_player_id', $player->id)
-                    ->where('direction', TransferOffer::DIRECTION_INCOMING)
-                    ->whereIn('status', [TransferOffer::STATUS_PENDING, TransferOffer::STATUS_AGREED])
-                    ->orderByDesc('game_date')
-                    ->first();
-            }
-        }
 
         // Incoming transfer data (moved from ShowTransfers)
         $pendingBids = TransferOffer::with(['gamePlayer.player', 'gamePlayer.team', 'sellingTeam'])
@@ -133,8 +96,6 @@ class ShowScouting
         return view('scouting', [
             'game' => $game,
             'searchingReport' => $searchingReport,
-            'selectedReport' => $selectedReport,
-            'showForm' => $showForm,
             'searchHistory' => $searchHistory,
             'scoutedPlayers' => $scoutedPlayers,
             'playerDetails' => $playerDetails,
