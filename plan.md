@@ -10,19 +10,30 @@ The current lineup system frustrates users in two ways:
 
 ## Solution
 
-Three changes: manual slot assignment with persistence, cross-group flexibility in the frontend/validation, and no match simulation changes.
+Four parts: extract JS to a dedicated file, manual slot assignment with persistence, cross-group flexibility, and no match simulation changes.
+
+### Part 0: Extract lineup JS to a dedicated file (preliminary refactor)
+
+Follow the existing `live-match.js` pattern: export an Alpine data function, register it in `app.js`.
+
+1. Create `resources/js/lineup.js` — extract all Alpine.js logic from `lineup.blade.php`'s `x-data` block into an exported function `lineupManager(config)` that receives server data as a config object
+2. Register in `resources/js/app.js` — `Alpine.data('lineupManager', lineupManager)`
+3. Update `lineup.blade.php` — replace inline `x-data="{...}"` with `x-data="lineupManager({...})"`, passing server data (playersData, formationSlots, slotCompatibility, currentLineup, etc.) as the config object
+4. Translation strings that are currently inlined in JS (e.g., `{{ __('squad.natural') }}`) get passed via the config object as a `translations` map
+
+This is a pure refactor — no behavior changes. Keeps the Blade template focused on markup and the JS logic testable and manageable.
 
 ### Part 1: Manual slot assignment with click-to-swap
 
-**Frontend (`lineup.blade.php`):**
+**`resources/js/lineup.js`:**
 
-1. Add `manualAssignments` state (`{slotId: playerId}`) that overrides the auto-algorithm
-2. When a user clicks a player in the squad list, enter "placement mode" — highlight compatible pitch slots (compatibility > 0) the player can go into
-3. Clicking a highlighted empty slot assigns the player there
-4. Clicking a filled slot swaps the two players
-5. Clicking an assigned player on the pitch without a pending placement removes them
-6. The `slotAssignments` getter respects manual overrides first, then auto-fills remaining slots
-7. "Reset positions" button clears all manual assignments and reverts to auto
+5. Add `manualAssignments` state (`{slotId: playerId}`) that overrides the auto-algorithm
+6. When a user clicks a player in the squad list, enter "placement mode" — highlight compatible pitch slots (compatibility > 0) the player can go into
+7. Clicking a highlighted empty slot assigns the player there
+8. Clicking a filled slot swaps the two players
+9. Clicking an assigned player on the pitch without a pending placement removes them
+10. The `slotAssignments` getter respects manual overrides first, then auto-fills remaining slots
+11. "Reset positions" button clears all manual assignments and reverts to auto
 
 ### Part 2: Persist slot assignments
 
@@ -30,37 +41,37 @@ Slot assignments don't affect match simulation, so we only need to store the use
 
 **Migration:**
 
-8. Add `default_slot_assignments` (JSON, nullable) to `games` table
+12. Add `default_slot_assignments` (JSON, nullable) to `games` table
 
 **Model changes:**
 
-9. `Game` — add `default_slot_assignments` to `$fillable` and `$casts` (as `array`)
+13. `Game` — add `default_slot_assignments` to `$fillable` and `$casts` (as `array`)
 
 **Backend (`SaveLineup.php`):**
 
-10. Accept `slot_assignments` from the form (JSON map of slot `id` → player UUID)
-11. Validate: every player in slot_assignments must have compatibility > 0 for their assigned slot (via `PositionSlotMapper`)
-12. Save to `game.default_slot_assignments` as the new default
+14. Accept `slot_assignments` from the form (JSON map of slot `id` → player UUID)
+15. Validate: every player in slot_assignments must have compatibility > 0 for their assigned slot (via `PositionSlotMapper`)
+16. Save to `game.default_slot_assignments` as the new default
 
 **Backend (`ShowLineup.php`):**
 
-13. Load saved slot assignments from game defaults
-14. Pass to the template as `savedSlotAssignments` for Alpine.js to initialize `manualAssignments`
+17. Load saved slot assignments from game defaults
+18. Pass to the template as `savedSlotAssignments` for Alpine.js to initialize `manualAssignments`
 
 ### Part 3: Cross-group flexibility
 
 The `PositionSlotMapper::SLOT_COMPATIBILITY` matrix already defines cross-group scores (DM→CB=50, LW→LB=20, etc.). We leverage this as the single source of truth.
 
-**Frontend (`lineup.blade.php`):**
+**`resources/js/lineup.js`:**
 
-15. In the auto-assignment algorithm, keep the position-group preference as a tiebreaker but don't hard-filter on it — any player with compatibility > 0 for a slot can be auto-assigned there
-16. In "placement mode" (click-to-assign), show ALL slots where the player has compatibility > 0, regardless of position group, with color-coded indicators (already exists via `getCompatibilityDisplay`)
+19. In the auto-assignment algorithm, keep the position-group preference as a tiebreaker but don't hard-filter on it — any player with compatibility > 0 for a slot can be auto-assigned there
+20. In "placement mode" (click-to-assign), show ALL slots where the player has compatibility > 0, regardless of position group, with color-coded indicators (already exists via `getCompatibilityDisplay`)
 
 **Backend validation (`LineupService.php`):**
 
-17. When `slot_assignments` are provided: validate each player has compatibility > 0 for their assigned slot (via `PositionSlotMapper::getCompatibilityScore`). This replaces the strict position-group count check.
-18. When NO slot assignments are provided (legacy/auto path): keep existing position-group validation unchanged for backwards compatibility
-19. Always require exactly 1 Goalkeeper (non-negotiable safety check)
+21. When `slot_assignments` are provided: validate each player has compatibility > 0 for their assigned slot (via `PositionSlotMapper::getCompatibilityScore`). This replaces the strict position-group count check.
+22. When NO slot assignments are provided (legacy/auto path): keep existing position-group validation unchanged for backwards compatibility
+23. Always require exactly 1 Goalkeeper (non-negotiable safety check)
 
 ### Not in scope: Match simulation
 
@@ -70,12 +81,14 @@ The match simulator (`MatchSimulator.php`) continues to use `$player->position` 
 
 | File | Changes |
 |------|---------|
+| `resources/js/lineup.js` | **New file** — extracted Alpine.js logic + new manual assignment/swap/placement features |
+| `resources/js/app.js` | Register `lineupManager` Alpine data component |
+| `resources/views/lineup.blade.php` | Replace inline JS with `x-data="lineupManager({...})"`, markup-only |
 | `database/migrations/new` | Add `default_slot_assignments` to `games` |
 | `app/Models/Game.php` | Add to `$fillable` and `$casts` |
 | `app/Game/Services/LineupService.php` | Update `validateLineup()` for slot-based validation |
 | `app/Http/Actions/SaveLineup.php` | Accept, validate, and persist `slot_assignments` |
 | `app/Http/Views/ShowLineup.php` | Load and pass saved slot assignments |
-| `resources/views/lineup.blade.php` | Manual assignment state, click-to-assign/swap UI, cross-group slot compatibility |
 | `lang/es/squad.php` | New translation keys (placement mode hints, reset button) |
 
 ## Data Format
