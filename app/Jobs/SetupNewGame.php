@@ -25,6 +25,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class SetupNewGame implements ShouldQueue
@@ -32,6 +33,8 @@ class SetupNewGame implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public int $tries = 1;
+
+    private bool $usedTemplates = false;
 
     public function __construct(
         public string $gameId,
@@ -69,8 +72,8 @@ class SetupNewGame implements ShouldQueue
         // Step 3: Initialize standings
         $this->initializeStandings($standingsCalculator);
 
-        // Step 4: Initialize game players for all leagues
-        $this->initializeGamePlayers($allTeams, $allPlayers, $contractService, $developmentService);
+        // Step 4: Initialize game players (template-based or fallback)
+        $this->initializeGamePlayersFromTemplates($allTeams, $allPlayers, $contractService, $developmentService);
 
         // Step 5: Career-mode only extras
         if ($this->gameMode === Game::MODE_CAREER) {
@@ -122,6 +125,145 @@ class SetupNewGame implements ShouldQueue
     }
 
     /**
+     * Initialize game players from pre-computed templates, falling back to
+     * the old per-player computation if templates don't exist.
+     */
+    private function initializeGamePlayersFromTemplates(
+        Collection $allTeams,
+        Collection $allPlayers,
+        ContractService $contractService,
+        PlayerDevelopmentService $developmentService,
+    ): void {
+        // Idempotency: skip if players already exist
+        if (GamePlayer::where('game_id', $this->gameId)->exists()) {
+            $this->usedTemplates = true; // assume templates if players exist
+            return;
+        }
+
+        $hasTemplates = DB::table('game_player_templates')
+            ->where('season', $this->season)
+            ->exists();
+
+        if (!$hasTemplates) {
+            // Fallback to old behavior
+            $this->initializeGamePlayers($allTeams, $allPlayers, $contractService, $developmentService);
+            return;
+        }
+
+        $this->usedTemplates = true;
+
+        $templates = DB::table('game_player_templates')
+            ->where('season', $this->season)
+            ->get();
+
+        $rows = [];
+
+        foreach ($templates as $t) {
+            $rows[] = [
+                'id' => Str::uuid()->toString(),
+                'game_id' => $this->gameId,
+                'player_id' => $t->player_id,
+                'team_id' => $t->team_id,
+                'number' => $t->number,
+                'position' => $t->position,
+                'market_value' => $t->market_value,
+                'market_value_cents' => $t->market_value_cents,
+                'contract_until' => $t->contract_until,
+                'annual_wage' => $t->annual_wage,
+                'fitness' => $t->fitness,
+                'morale' => $t->morale,
+                'durability' => $t->durability,
+                'game_technical_ability' => $t->game_technical_ability,
+                'game_physical_ability' => $t->game_physical_ability,
+                'potential' => $t->potential,
+                'potential_low' => $t->potential_low,
+                'potential_high' => $t->potential_high,
+                'season_appearances' => 0,
+            ];
+        }
+
+        foreach (array_chunk($rows, 500) as $chunk) {
+            GamePlayer::insert($chunk);
+        }
+    }
+
+    private function initializeSwissFormatCompetitions(
+        Collection $allTeams,
+        Collection $allPlayers,
+        ContractService $contractService,
+        PlayerDevelopmentService $developmentService,
+        SeasonInitializationService $seasonInitService,
+    ): void {
+        $countryConfig = app(CountryConfig::class);
+        $game = Game::find($this->gameId);
+        $countryCode = $game->country ?? 'ES';
+
+        $swissIds = $countryConfig->swissFormatCompetitionIds($countryCode);
+
+        foreach ($swissIds as $competitionId) {
+            $teamsFilePath = base_path("data/{$this->season}/{$competitionId}/teams.json");
+            if (!file_exists($teamsFilePath)) {
+                continue;
+            }
+            $teamsData = json_decode(file_get_contents($teamsFilePath), true);
+            $clubs = $teamsData['clubs'] ?? [];
+
+            // Build pot data from JSON for first season
+            $drawTeams = $this->buildDrawTeamsFromJson($clubs, $allTeams);
+
+            // Idempotency: skip if fixtures already exist
+            // (participation check is handled inside the service)
+            if (!GameMatch::where('game_id', $this->gameId)->where('competition_id', $competitionId)->exists()) {
+                $seasonInitService->initializeSwissCompetition(
+                    $this->gameId,
+                    $this->teamId,
+                    $competitionId,
+                    $this->season,
+                    $drawTeams,
+                );
+            }
+
+            // Skip player initialization if templates were used (all players already loaded)
+            if (!$this->usedTemplates) {
+                $this->initializeSwissFormatPlayersFromData($competitionId, $clubs, $allTeams, $allPlayers, $contractService, $developmentService);
+            }
+        }
+    }
+
+    /**
+     * Build draw teams array from JSON club data (first season only).
+     *
+     * @return array<array{id: string, pot: int, country: string}>
+     */
+    private function buildDrawTeamsFromJson(array $clubs, Collection $allTeams): array
+    {
+        $drawTeams = [];
+        foreach ($clubs as $club) {
+            $transfermarktId = $club['id'] ?? null;
+            if (!$transfermarktId) {
+                continue;
+            }
+
+            $team = $allTeams->get($transfermarktId);
+            if (!$team) {
+                continue;
+            }
+
+            $drawTeams[] = [
+                'id' => $team->id,
+                'pot' => $club['pot'] ?? 4,
+                'country' => $club['country'] ?? 'XX',
+            ];
+        }
+
+        return $drawTeams;
+    }
+
+    // =====================================================================
+    // Fallback methods — used when game_player_templates table is empty
+    // =====================================================================
+
+    /**
      * Initialize game players for all teams, following the config-driven
      * dependency order: playable tiers → transfer pool → continental.
      */
@@ -131,25 +273,15 @@ class SetupNewGame implements ShouldQueue
         ContractService $contractService,
         PlayerDevelopmentService $developmentService,
     ): void {
-        // Idempotency: skip if players already exist
-        if (GamePlayer::where('game_id', $this->gameId)->exists()) {
-            return;
-        }
-
         $countryConfig = app(CountryConfig::class);
         $game = Game::find($this->gameId);
         $countryCode = $game->country ?? 'ES';
 
-        // Get competitions in dependency order from country config
         $competitionIds = $countryConfig->playerInitializationOrder($countryCode);
-
-        // Continental competitions (e.g., UCL) are handled separately —
-        // they reuse rosters from tiers + transfer pool
         $continentalIds = $countryConfig->continentalSupportIds($countryCode);
 
         foreach ($competitionIds as $competitionId) {
             if (in_array($competitionId, $continentalIds)) {
-                // Continental: skip here, handled in initializeSwissFormatCompetitions
                 continue;
             }
 
@@ -209,75 +341,6 @@ class SetupNewGame implements ShouldQueue
         foreach (array_chunk($playerRows, 100) as $chunk) {
             GamePlayer::insert($chunk);
         }
-    }
-
-    private function initializeSwissFormatCompetitions(
-        Collection $allTeams,
-        Collection $allPlayers,
-        ContractService $contractService,
-        PlayerDevelopmentService $developmentService,
-        SeasonInitializationService $seasonInitService,
-    ): void {
-        $countryConfig = app(CountryConfig::class);
-        $game = Game::find($this->gameId);
-        $countryCode = $game->country ?? 'ES';
-
-        $swissIds = $countryConfig->swissFormatCompetitionIds($countryCode);
-
-        foreach ($swissIds as $competitionId) {
-            $teamsFilePath = base_path("data/{$this->season}/{$competitionId}/teams.json");
-            if (!file_exists($teamsFilePath)) {
-                continue;
-            }
-            $teamsData = json_decode(file_get_contents($teamsFilePath), true);
-            $clubs = $teamsData['clubs'] ?? [];
-
-            // Build pot data from JSON for first season
-            $drawTeams = $this->buildDrawTeamsFromJson($clubs, $allTeams);
-
-            // Idempotency: skip if fixtures already exist
-            // (participation check is handled inside the service)
-            if (!GameMatch::where('game_id', $this->gameId)->where('competition_id', $competitionId)->exists()) {
-                $seasonInitService->initializeSwissCompetition(
-                    $this->gameId,
-                    $this->teamId,
-                    $competitionId,
-                    $this->season,
-                    $drawTeams,
-                );
-            }
-
-            $this->initializeSwissFormatPlayersFromData($competitionId, $clubs, $allTeams, $allPlayers, $contractService, $developmentService);
-        }
-    }
-
-    /**
-     * Build draw teams array from JSON club data (first season only).
-     *
-     * @return array<array{id: string, pot: int, country: string}>
-     */
-    private function buildDrawTeamsFromJson(array $clubs, Collection $allTeams): array
-    {
-        $drawTeams = [];
-        foreach ($clubs as $club) {
-            $transfermarktId = $club['id'] ?? null;
-            if (!$transfermarktId) {
-                continue;
-            }
-
-            $team = $allTeams->get($transfermarktId);
-            if (!$team) {
-                continue;
-            }
-
-            $drawTeams[] = [
-                'id' => $team->id,
-                'pot' => $club['pot'] ?? 4,
-                'country' => $club['country'] ?? 'XX',
-            ];
-        }
-
-        return $drawTeams;
     }
 
     private function initializeSwissFormatPlayersFromData(
