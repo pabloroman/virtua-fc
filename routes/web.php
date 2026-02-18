@@ -62,7 +62,9 @@ Route::get('/', function () {
 });
 
 Route::get('/legal', fn () => view('legal'))->name('legal');
-Route::get('/design-system', fn () => view('design-system.index'))->name('design-system');
+Route::get('/design-system', fn () => view('design-system.index', [
+    'allTeams' => \App\Support\TeamColors::all(),
+]))->name('design-system');
 
 Route::middleware('auth')->group(function () {
     // Dashboard & Game Creation

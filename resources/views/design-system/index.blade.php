@@ -12,5 +12,6 @@
     @include('design-system.sections.modals')
     @include('design-system.sections.data-viz')
     @include('design-system.sections.game-components')
+    @include('design-system.sections.shirt-badges')
     @include('design-system.sections.layout-patterns')
 </x-design-system.layout>
