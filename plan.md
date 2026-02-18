@@ -1,76 +1,119 @@
 # Plan: Flexible Player Position Assignment
 
-## Problem Analysis
+## Problem
 
-The current lineup system has two rigidity issues that frustrate players:
+The current lineup system frustrates users in two ways:
 
-### Issue 1: Automated slot assignment with no manual override
-When users select 11 players, the `slotAssignments` algorithm (in `lineup.blade.php:35-104`) automatically decides which player goes in which pitch slot. There is **no way for the user to manually drag/swap players between slots**. The greedy algorithm sorts slots by priority, then assigns the "best" player per slot using a 70/30 weighted score. If the user disagrees with the assignment (e.g., wants a specific CB on the left side rather than the right), they have no recourse.
+1. **No manual control over pitch positions.** The `slotAssignments` algorithm (`lineup.blade.php:35-104`) auto-assigns players to slots. Users can't swap two centre-backs, put a specific winger on the left vs right, etc.
 
-### Issue 2: Strict position-group enforcement prevents cross-group flexibility
-The validation layer (`LineupService.php:139-158`) enforces that the selected players' position groups **exactly match** formation requirements. A 4-4-2 demands exactly 4 Defenders, 4 Midfielders, 2 Forwards, 1 Goalkeeper. The UI slot assignment algorithm also hard-filters: `if (player.positionGroup !== slot.role) return;` (`lineup.blade.php:67`).
+2. **Strict position-group enforcement blocks valid tactical choices.** Validation (`LineupService.php:139-158`) demands exact group counts (e.g., 4-4-2 = 4 DEF, 4 MID, 2 FWD). The UI also hard-filters `positionGroup !== slot.role` (`lineup.blade.php:67`). This prevents playing a DM at CB even though `PositionSlotMapper` scores DM→CB at 50 (acceptable).
 
-This means a user **cannot** play a Defensive Midfielder (position_group=Midfielder) at Centre-Back, even though `PositionSlotMapper` gives DM→CB a compatibility score of 50 (acceptable). The compatibility matrix acknowledges cross-group versatility, but the validation and UI ignore it.
+## Solution
 
-## Proposed Solution: Manual Slot Assignment with Cross-Group Flexibility
+Three changes: manual slot assignment with persistence, cross-group flexibility in the frontend/validation, and no match simulation changes.
 
-### Part 1: Allow manual player-to-slot assignment on the pitch (drag & swap)
+### Part 1: Manual slot assignment with click-to-swap
 
-**Frontend changes (`lineup.blade.php`):**
+**Frontend (`lineup.blade.php`):**
 
-1. Add a `manualAssignments` state object (`{slotId: playerId}`) that overrides the automatic algorithm
-2. When a user clicks a player in the squad list, highlight compatible pitch slots they can be placed into
-3. When a user clicks a highlighted slot, assign the player to that slot (storing in `manualAssignments`)
-4. Allow clicking a filled slot to swap/remove its player
-5. Modify `slotAssignments` getter: if a manual assignment exists for a slot, use it; otherwise fall back to the automatic algorithm
-6. Add a "Reset positions" button that clears `manualAssignments` and reverts to auto
+1. Add `manualAssignments` state (`{slotId: playerId}`) that overrides the auto-algorithm
+2. When a user clicks a player in the squad list, enter "placement mode" — highlight compatible pitch slots (compatibility > 0) the player can go into
+3. Clicking a highlighted empty slot assigns the player there
+4. Clicking a filled slot swaps the two players
+5. Clicking an assigned player on the pitch without a pending placement removes them
+6. The `slotAssignments` getter respects manual overrides first, then auto-fills remaining slots
+7. "Reset positions" button clears all manual assignments and reverts to auto
 
-**Backend changes:**
+### Part 2: Persist slot assignments
 
-7. Add `slot_assignments` field to the form submission (JSON map of `{slotLabel: playerId}`)
-8. Store slot assignments on `GameMatch` (new JSON column `slot_assignments`) alongside the existing lineup
-9. Update `SaveLineup` action to accept and persist slot assignments
-10. Update `ShowLineup` view to load saved slot assignments and pass them as `manualAssignments` initial state
+Follow the existing pattern: defaults on `games`, per-match on `game_matches`.
 
-### Part 2: Relax position-group validation to allow cross-group placement
+**Migration:**
 
-**Backend changes (`LineupService.php`):**
+8. Add `default_slot_assignments` (JSON, nullable) to `games` table
+9. Add `home_slot_assignments` and `away_slot_assignments` (JSON, nullable) to `game_matches` table
 
-11. Replace strict position-group count validation with a softer check: each player must have a non-zero compatibility score for *some* slot in the formation, rather than requiring exact group counts
-12. If slot assignments are provided, validate that each player has compatibility > 0 for their assigned slot
+**Model changes:**
 
-**Frontend changes (`lineup.blade.php`):**
+10. `Game` — add `default_slot_assignments` to `$fillable` and `$casts` (as `array`)
+11. `GameMatch` — add `home_slot_assignments`, `away_slot_assignments` to `$fillable` and `$casts` (as `array`)
 
-13. Remove the hard `positionGroup !== slot.role` filter in the slot assignment algorithm
-14. Instead, use the full `PositionSlotMapper` compatibility matrix — any player with compatibility > 0 for a slot can be placed there
-15. Color-code slots by compatibility when placing a player (green = natural, yellow = acceptable, red = poor) — this already exists via `getCompatibilityDisplay`
+**Backend (`SaveLineup.php`):**
 
-### Part 3: Wire slot assignments into match simulation
+12. Accept `slot_assignments` from the form (JSON map `{slotLabel: playerId}`, e.g. `{"CB": "uuid-1", "LB": "uuid-2", ...}`)
+13. Validate: every player in slot_assignments must have compatibility > 0 for their assigned slot (via `PositionSlotMapper`)
+14. Save to `game_matches` (home or away based on team side)
+15. Save to `game.default_slot_assignments` as the new default
 
-**Backend changes (`MatchSimulator.php`):**
+**Backend (`ShowLineup.php`):**
 
-16. When slot assignments are saved, use the **assigned slot's position** (not the player's natural position) for goal scoring weights, assist weights, card weights, and striker bonus calculations
-17. Apply the `PositionSlotMapper::getEffectiveRating()` penalty to the player's contribution when they're playing out of position — this already exists but isn't currently used in match simulation
+16. Load saved slot assignments (from match first, fall back to game defaults)
+17. Pass to the template as `savedSlotAssignments` for Alpine.js to initialize `manualAssignments`
 
-This means playing a Defensive Midfielder at CB will work but they'll be slightly less effective (50 compatibility = ~25% penalty), and they won't get forward goal-scoring weights because they're assigned to a CB slot.
+**Backend (`LineupService.php`):**
+
+18. Add `saveSlotAssignments($match, $teamId, $slotAssignments)` method following the same pattern as `saveLineup`/`saveFormation`/`saveMentality`
+
+### Part 3: Cross-group flexibility
+
+The `PositionSlotMapper::SLOT_COMPATIBILITY` matrix already defines cross-group scores (DM→CB=50, LW→LB=20, etc.). We leverage this as the single source of truth.
+
+**Frontend (`lineup.blade.php`):**
+
+19. In the auto-assignment algorithm, keep the position-group preference as a tiebreaker but don't hard-filter on it — any player with compatibility > 0 for a slot can be auto-assigned there
+20. In "placement mode" (click-to-assign), show ALL slots where the player has compatibility > 0, regardless of position group, with color-coded indicators (already exists via `getCompatibilityDisplay`)
+
+**Backend validation (`LineupService.php`):**
+
+21. When `slot_assignments` are provided: validate each player has compatibility > 0 for their assigned slot (via `PositionSlotMapper::getCompatibilityScore`). This replaces the strict position-group count check.
+22. When NO slot assignments are provided (legacy/auto path): keep existing position-group validation unchanged for backwards compatibility
+23. Always require exactly 1 Goalkeeper (non-negotiable safety check)
+
+### Not in scope: Match simulation
+
+The match simulator (`MatchSimulator.php`) continues to use `$player->position` (natural position) for all event weights, strength calculations, and striker bonuses. No changes needed. This means a DM manually placed at CB will simulate as a DM — the flexibility is a user-facing tactical preference, not a simulation mechanic (yet). This can be wired in as a future enhancement.
 
 ## Files to Modify
 
 | File | Changes |
 |------|---------|
-| `resources/views/lineup.blade.php` | Add manual assignment state, click-to-assign UI, relax group filter |
-| `app/Http/Actions/SaveLineup.php` | Accept & persist `slot_assignments` |
-| `app/Http/Views/ShowLineup.php` | Load & pass saved slot assignments |
-| `app/Game/Services/LineupService.php` | Relax position-group validation, add slot-based validation |
-| `app/Game/Services/MatchSimulator.php` | Use assigned slot positions for event weights |
-| `app/Models/GameMatch.php` | Add `slot_assignments` to casts/fillable |
-| Migration | Add `slot_assignments` JSON column to `game_matches` |
-| `lang/es/*.php` | New translation keys for UI labels |
+| `database/migrations/new` | Add `default_slot_assignments` to `games`, `home/away_slot_assignments` to `game_matches` |
+| `app/Models/Game.php` | Add to `$fillable` and `$casts` |
+| `app/Models/GameMatch.php` | Add to `$fillable` and `$casts` |
+| `app/Game/Services/LineupService.php` | Add `saveSlotAssignments()`, update `validateLineup()` for slot-based validation |
+| `app/Http/Actions/SaveLineup.php` | Accept, validate, and persist `slot_assignments` |
+| `app/Http/Views/ShowLineup.php` | Load and pass saved slot assignments |
+| `resources/views/lineup.blade.php` | Manual assignment state, click-to-assign/swap UI, cross-group slot compatibility |
+| `lang/es/squad.php` | New translation keys (placement mode hints, reset button) |
 
-## Scope & Complexity
+## Data Format
 
-This is a significant feature touching frontend (Alpine.js interactivity), backend validation, data persistence, and match simulation. The riskiest parts are:
+Slot assignments stored as JSON map of slot label → player UUID:
 
-- **Match simulation changes** — must ensure out-of-position penalties are balanced
-- **Validation relaxation** — must prevent nonsensical lineups (e.g., 11 goalkeepers) while allowing reasonable flexibility
-- **UI interaction model** — click-to-assign needs to be intuitive on both desktop and mobile
+```json
+{
+  "GK": "uuid-keeper",
+  "LB": "uuid-leftback",
+  "CB": "uuid-centreback-1",
+  "CB": "uuid-centreback-2",
+  "RB": "uuid-rightback",
+  "CM": "uuid-midfielder-1",
+  "CM": "uuid-midfielder-2",
+  "LW": "uuid-leftwinger",
+  "AM": "uuid-attackingmid",
+  "RW": "uuid-rightwinger",
+  "CF": "uuid-striker"
+}
+```
+
+Note: Formations can have duplicate slot labels (e.g., two CBs). The key should use the slot `id` (0-10) instead to guarantee uniqueness:
+
+```json
+{
+  "0": "uuid-keeper",
+  "1": "uuid-leftback",
+  "2": "uuid-centreback-1",
+  "3": "uuid-centreback-2",
+  ...
+}
+```
