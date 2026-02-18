@@ -91,7 +91,7 @@ class CalendarService
     public function groupByMonth(Collection $fixtures): Collection
     {
         return $fixtures->groupBy(function ($match) {
-            return $match->scheduled_date->format('F Y');
+            return ucfirst($match->scheduled_date->locale(app()->getLocale())->translatedFormat('F Y'));
         });
     }
 

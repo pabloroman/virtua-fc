@@ -582,6 +582,19 @@ class TransferService
             'transfer_listed_at' => null,
         ]);
 
+        // For loan-out offers, create a loan record so the player returns at season end
+        if ($offer->offer_type === TransferOffer::TYPE_LOAN_OUT) {
+            Loan::create([
+                'game_id' => $game->id,
+                'game_player_id' => $player->id,
+                'parent_team_id' => $game->team_id,
+                'loan_team_id' => $offer->offering_team_id,
+                'started_at' => $game->current_date,
+                'return_at' => $game->getSeasonEndDate(),
+                'status' => Loan::STATUS_ACTIVE,
+            ]);
+        }
+
         // Update transfer budget and record the transaction
         $investment = $game->currentInvestment;
         if ($offer->transfer_fee > 0) {

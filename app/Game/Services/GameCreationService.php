@@ -34,7 +34,7 @@ class GameCreationService
             $countryConfig = app(CountryConfig::class);
             $competitionId = $countryConfig->competitionForTier($team->country ?? 'ES', 1);
         }
-        $season = $competitionTeam->season ?? '2024';
+        $season = $competitionTeam->season ?? '2025';
 
         // Load matchday calendar for initial current_date
         $matchdays = LeagueFixtureGenerator::loadMatchdays($competitionId, $season);
