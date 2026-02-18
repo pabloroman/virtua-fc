@@ -19,6 +19,7 @@ export default function lineupManager(config) {
         formationSlots: config.formationSlots,
         slotCompatibility: config.slotCompatibility,
         autoLineupUrl: config.autoLineupUrl,
+        teamColors: config.teamColors,
         translations: config.translations,
 
         // Computed
@@ -247,15 +248,6 @@ export default function lineupManager(config) {
             }
         },
 
-        getPositionColor(role) {
-            return {
-                'Goalkeeper': 'bg-amber-500',
-                'Defender': 'bg-blue-600',
-                'Midfielder': 'bg-emerald-600',
-                'Forward': 'bg-red-600',
-            }[role] || 'bg-slate-500';
-        },
-
         removeFromSlot(playerId) {
             this.selectedPlayers = this.selectedPlayers.filter(p => p !== playerId);
             this._removePlayerFromManualAssignments(playerId);
@@ -282,13 +274,37 @@ export default function lineupManager(config) {
             return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
         },
 
-        getPositionGradient(role) {
-            return {
-                'Goalkeeper': 'from-amber-400 to-amber-600',
-                'Defender': 'from-blue-500 to-blue-700',
-                'Midfielder': 'from-emerald-500 to-emerald-700',
-                'Forward': 'from-red-500 to-red-700',
-            }[role] || 'from-slate-400 to-slate-600';
+        // Generate inline CSS for the player badge background based on team shirt
+        getShirtStyle(role) {
+            // Goalkeeper always gets a distinct amber kit
+            if (role === 'Goalkeeper') {
+                return 'background: linear-gradient(to bottom right, #FBBF24, #D97706)';
+            }
+
+            const tc = this.teamColors;
+            if (!tc) return 'background: linear-gradient(to bottom right, #3B82F6, #1D4ED8)';
+
+            const p = tc.primary;
+            const s = tc.secondary;
+
+            switch (tc.pattern) {
+                case 'stripes':
+                    return `background: repeating-linear-gradient(90deg, ${p} 0px, ${p} 5px, ${s} 5px, ${s} 10px)`;
+                case 'hoops':
+                    return `background: repeating-linear-gradient(0deg, ${p} 0px, ${p} 5px, ${s} 5px, ${s} 10px)`;
+                case 'sash':
+                    return `background: linear-gradient(135deg, ${p} 0%, ${p} 35%, ${s} 35%, ${s} 65%, ${p} 65%, ${p} 100%)`;
+                case 'halves':
+                    return `background: linear-gradient(90deg, ${p} 50%, ${s} 50%)`;
+                default:
+                    return `background: ${p}`;
+            }
+        },
+
+        // Get the number/text color for a player badge
+        getNumberColor(role) {
+            if (role === 'Goalkeeper') return '#FFFFFF';
+            return this.teamColors?.number || '#FFFFFF';
         },
 
         // Get the compatibility display for a player in the currently selected slot

@@ -18,6 +18,7 @@
         formationSlots: @js($formationSlots),
         slotCompatibility: @js($slotCompatibility),
         autoLineupUrl: '{{ route('game.lineup.auto', [$game->id, $match->id]) }}',
+        teamColors: @js($teamColors),
         translations: {
             natural: '{{ __('squad.natural') }}',
             veryGood: '{{ __('squad.very_good') }}',
@@ -192,15 +193,13 @@
                                             >
                                                 {{-- Main player badge --}}
                                                 <div
-                                                    class="relative w-11 h-11 rounded-xl bg-gradient-to-br shadow-lg transform transition-all duration-200 hover:scale-110 hover:shadow-xl"
-                                                    :class="[
-                                                        getPositionGradient(slot.role),
-                                                        selectedSlot === slot.id ? 'ring-2 ring-white ring-offset-1 ring-offset-emerald-600 scale-110' : ''
-                                                    ]"
+                                                    class="relative w-11 h-11 rounded-xl shadow-lg border border-white/20 transform transition-all duration-200 hover:scale-110 hover:shadow-xl"
+                                                    :class="selectedSlot === slot.id ? 'ring-2 ring-white ring-offset-1 ring-offset-emerald-600 scale-110' : ''"
+                                                    :style="getShirtStyle(slot.role)"
                                                 >
                                                     {{-- Number or Initials --}}
                                                     <div class="absolute inset-0 flex items-center justify-center">
-                                                        <span class="text-white font-semibold text-sm tracking-tight drop-shadow-sm" x-text="slot.player?.number || getInitials(slot.player?.name)"></span>
+                                                        <span class="font-semibold text-sm tracking-tight drop-shadow-sm" :style="'color: ' + getNumberColor(slot.role)" x-text="slot.player?.number || getInitials(slot.player?.name)"></span>
                                                     </div>
                                                     {{-- Compatibility indicator dot --}}
                                                     <div
