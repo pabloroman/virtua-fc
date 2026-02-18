@@ -13,6 +13,7 @@
         currentFormation: @js($currentFormation),
         currentMentality: @js($currentMentality),
         autoLineup: @js($autoLineup ?? []),
+        currentSlotAssignments: @js($currentSlotAssignments ?? (object) []),
         playersData: @js($playersData),
         formationSlots: @js($formationSlots),
         slotCompatibility: @js($slotCompatibility),
@@ -27,7 +28,7 @@
         },
     })">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-white shadow-sm sm:rounded-lg">
                 <div class="p-6 sm:p-8">
                     {{-- Errors --}}
                     @if ($errors->any())
@@ -49,6 +50,10 @@
                         </template>
                         <input type="hidden" name="formation" :value="selectedFormation">
                         <input type="hidden" name="mentality" :value="selectedMentality">
+                        {{-- Slot assignment hidden inputs --}}
+                        <template x-for="slot in slotAssignments" :key="'sa-' + slot.id">
+                            <input x-show="slot.player" type="hidden" :name="'slot_assignments[' + slot.id + ']'" :value="slot.player?.id">
+                        </template>
 
                         {{-- Top Bar: Formation, Stats, Actions --}}
                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-6 p-4 bg-slate-50 rounded-lg sticky top-0 z-10">
@@ -143,7 +148,7 @@
                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                             {{-- Pitch Visualization --}}
 
-                            <div class="col-span-1" :class="{ 'hidden lg:block': activeLineupTab !== 'pitch' }">
+                            <div class="col-span-1 lg:sticky lg:top-[100px] lg:self-start" :class="{ 'hidden lg:block': activeLineupTab !== 'pitch' }">
                                 <div class="bg-emerald-600 rounded-lg p-4 relative" style="aspect-ratio: 3/4;">
                                     {{-- Pitch markings --}}
                                     <div class="absolute inset-4 border-2 border-emerald-400/50 rounded">
@@ -167,24 +172,31 @@
                                             class="absolute transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300"
                                             :style="`left: ${slot.x}%; top: ${100 - slot.y}%`"
                                         >
-                                            {{-- Empty Slot --}}
+                                            {{-- Empty Slot (clickable for assignment) --}}
                                             <div
                                                 x-show="!slot.player"
-                                                class="w-11 h-11 rounded-full border-2 border-dashed border-white/40 flex items-center justify-center backdrop-blur-sm bg-white/5"
+                                                @click="selectSlot(slot.id)"
+                                                class="w-11 h-11 rounded-full border-2 flex items-center justify-center backdrop-blur-sm cursor-pointer transition-all duration-200"
+                                                :class="selectedSlot === slot.id
+                                                    ? 'border-white bg-white/30 ring-2 ring-white/60 scale-110'
+                                                    : 'border-dashed border-white/40 bg-white/5 hover:border-white/70 hover:bg-white/15'"
                                             >
-                                                <span class="text-[10px] text-white/60 font-semibold tracking-wide" x-text="slot.displayLabel"></span>
+                                                <span class="text-[10px] font-semibold tracking-wide" :class="selectedSlot === slot.id ? 'text-white' : 'text-white/60'" x-text="slot.displayLabel"></span>
                                             </div>
 
-                                            {{-- Filled Slot - Modern card style --}}
+                                            {{-- Filled Slot (clickable for reassignment) --}}
                                             <div
                                                 x-show="slot.player"
                                                 class="group relative cursor-pointer"
-                                                @click="removeFromSlot(slot.player?.id)"
+                                                @click="handleSlotClick(slot.id, slot.player?.id)"
                                             >
                                                 {{-- Main player badge --}}
                                                 <div
                                                     class="relative w-11 h-11 rounded-xl bg-gradient-to-br shadow-lg transform transition-all duration-200 hover:scale-110 hover:shadow-xl"
-                                                    :class="getPositionGradient(slot.role)"
+                                                    :class="[
+                                                        getPositionGradient(slot.role),
+                                                        selectedSlot === slot.id ? 'ring-2 ring-white ring-offset-1 ring-offset-emerald-600 scale-110' : ''
+                                                    ]"
                                                 >
                                                     {{-- Number or Initials --}}
                                                     <div class="absolute inset-0 flex items-center justify-center">
@@ -201,6 +213,12 @@
                                                             'bg-red-400': getCompatibilityDisplay(slot.player?.position, slot.label).score < 20,
                                                         }"
                                                         x-show="getCompatibilityDisplay(slot.player?.position, slot.label).score < 100"
+                                                    ></div>
+                                                    {{-- Manual assignment indicator --}}
+                                                    <div
+                                                        x-show="slot.isManual"
+                                                        class="absolute -top-0.5 -left-0.5 w-3 h-3 rounded-full bg-sky-400 border-2 border-emerald-600"
+                                                        title="{{ __('squad.manual_assignment') }}"
                                                     ></div>
                                                     {{-- Overall rating badge --}}
                                                     <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 px-1.5 py-0.5 bg-slate-900/80 rounded text-[9px] font-semibold text-white shadow-sm">
@@ -222,6 +240,19 @@
                                             </div>
                                         </div>
                                     </template>
+
+                                    {{-- Selected slot indicator banner --}}
+                                    <div
+                                        x-show="selectedSlot !== null"
+                                        x-cloak
+                                        class="absolute bottom-2 left-1/2 -translate-x-1/2 px-4 py-2 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg text-xs font-medium text-slate-700 flex items-center gap-2 z-20"
+                                    >
+                                        <span class="w-2 h-2 rounded-full bg-sky-500 animate-pulse"></span>
+                                        {{ __('squad.select_player_for_slot') }}
+                                        <button type="button" @click="selectedSlot = null" class="ml-1 text-slate-400 hover:text-slate-600">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                        </button>
+                                    </div>
                                 </div>
 
                                 {{-- Opponent Scout Card --}}
@@ -336,8 +367,9 @@
                                                                 cursor-pointer hover:bg-slate-50
                                                             @endif"
                                                         :class="{
-                                                            'bg-sky-50': isSelected('{{ $player->id }}'),
-                                                            'opacity-50': !isSelected('{{ $player->id }}') && selectedCount >= 11 && !{{ $isUnavailable ? 'true' : 'false' }}
+                                                            'bg-sky-50': isSelected('{{ $player->id }}') && selectedSlot === null,
+                                                            'bg-sky-100 ring-1 ring-sky-300': selectedSlot !== null && !{{ $isUnavailable ? 'true' : 'false' }} && getSelectedSlotCompatibility('{{ $player->position }}')?.score >= 40,
+                                                            'opacity-50': !isSelected('{{ $player->id }}') && selectedCount >= 11 && selectedSlot === null && !{{ $isUnavailable ? 'true' : 'false' }}
                                                         }"
                                                     >
                                                         {{-- Checkbox --}}
@@ -372,9 +404,20 @@
                                                                 <div class="text-xs text-red-500">{{ $unavailabilityReason }}</div>
                                                             @endif
                                                         </td>
-                                                        {{-- Compatibility indicator (only when selected, shows assigned slot) --}}
+                                                        {{-- Compatibility indicator --}}
                                                         <td class="py-2 text-right">
-                                                            <template x-if="isSelected('{{ $player->id }}') && getPlayerSlot('{{ $player->id }}')">
+                                                            {{-- When a slot is selected: show compatibility with that slot --}}
+                                                            @if(!$isUnavailable)
+                                                                <template x-if="selectedSlot !== null && getSelectedSlotCompatibility('{{ $player->position }}')">
+                                                                    <span
+                                                                        class="text-xs font-medium px-1.5 py-0.5 rounded whitespace-nowrap"
+                                                                        :class="getSelectedSlotCompatibility('{{ $player->position }}').class"
+                                                                        x-text="getSelectedSlotCompatibility('{{ $player->position }}').label"
+                                                                    ></span>
+                                                                </template>
+                                                            @endif
+                                                            {{-- When no slot selected: show assigned slot info --}}
+                                                            <template x-if="selectedSlot === null && isSelected('{{ $player->id }}') && getPlayerSlot('{{ $player->id }}')">
                                                                 <span
                                                                     class="text-xs font-medium px-1.5 py-0.5 rounded whitespace-nowrap"
                                                                     :class="getCompatibilityDisplay('{{ $player->position }}', getPlayerSlot('{{ $player->id }}')).class"

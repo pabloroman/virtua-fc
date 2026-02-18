@@ -55,6 +55,7 @@ class ShowLineup
             $currentLineup = $previous['lineup'];
             // Use previous formation if available, otherwise default
             $currentFormation = $currentFormation ?? $previous['formation'] ?? $defaultFormation;
+            $currentSlotAssignments = $game->default_slot_assignments;
         }
 
         $currentFormation = $currentFormation ?? $defaultFormation;
@@ -122,6 +123,7 @@ class ShowLineup
             'midfielders' => $playersByGroup['midfielders'],
             'forwards' => $playersByGroup['forwards'],
             'currentLineup' => $currentLineup,
+            'currentSlotAssignments' => $game->default_slot_assignments,
             'autoLineup' => $autoLineup,
             'formations' => Formation::cases(),
             'currentFormation' => $currentFormation,

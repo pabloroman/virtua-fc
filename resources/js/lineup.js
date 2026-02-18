@@ -7,6 +7,13 @@ export default function lineupManager(config) {
         selectedMentality: config.currentMentality,
         autoLineup: config.autoLineup || [],
 
+        // Manual slot assignments: { slotId: playerId }
+        // When a user explicitly assigns a player to a slot, it's tracked here.
+        manualAssignments: config.currentSlotAssignments || {},
+
+        // Currently selected slot for manual assignment (null = no slot selected)
+        selectedSlot: null,
+
         // Server data
         playersData: config.playersData,
         formationSlots: config.formationSlots,
@@ -17,6 +24,7 @@ export default function lineupManager(config) {
         // Computed
         get selectedCount() { return this.selectedPlayers.length },
         get currentSlots() { return this.formationSlots[this.selectedFormation] || [] },
+        get hasManualAssignments() { return Object.keys(this.manualAssignments).length > 0 },
 
         get teamAverage() {
             if (this.selectedPlayers.length === 0) return 0;
@@ -30,8 +38,7 @@ export default function lineupManager(config) {
         },
 
         get slotAssignments() {
-            // Map selected players to slots based on slot compatibility scores
-            const slots = this.currentSlots.map(slot => ({ ...slot, player: null, compatibility: 0 }));
+            const slots = this.currentSlots.map(slot => ({ ...slot, player: null, compatibility: 0, isManual: false }));
             const assigned = new Set();
 
             // Get all selected players
@@ -39,32 +46,52 @@ export default function lineupManager(config) {
                 .map(id => this.playersData[id])
                 .filter(p => p);
 
+            // First: honor manual assignments
+            for (const [slotId, playerId] of Object.entries(this.manualAssignments)) {
+                const slot = slots.find(s => s.id === parseInt(slotId));
+                const player = selectedPlayerData.find(p => p.id === playerId);
+                if (slot && player && !assigned.has(player.id)) {
+                    const compatibility = this.getSlotCompatibility(player.position, slot.label);
+                    slot.player = { ...player, compatibility };
+                    slot.compatibility = compatibility;
+                    slot.isManual = true;
+                    assigned.add(player.id);
+                }
+            }
+
+            // Auto-assign remaining players to remaining slots
+            const emptySlots = slots.filter(s => !s.player);
+            const unassignedPlayers = selectedPlayerData.filter(p => !assigned.has(p.id));
+
+            if (emptySlots.length > 0 && unassignedPlayers.length > 0) {
+                this._autoAssignToSlots(emptySlots, unassignedPlayers, assigned, slots);
+            }
+
+            return slots;
+        },
+
+        // Auto-assign players to empty slots (cross-group flexible)
+        _autoAssignToSlots(emptySlots, unassignedPlayers, assigned, allSlots) {
             const rolePriority = { 'Goalkeeper': 0, 'Forward': 1, 'Defender': 2, 'Midfielder': 3 };
-            const sortedSlots = [...slots].sort((a, b) => {
+            const sortedEmpty = [...emptySlots].sort((a, b) => {
                 const aPriority = rolePriority[a.role] ?? 99;
                 const bPriority = rolePriority[b.role] ?? 99;
                 if (aPriority !== bPriority) return aPriority - bPriority;
-
-                // Within same role, sort by specificity (fewer compatible positions first)
                 const aCompat = Object.keys(this.slotCompatibility[a.label] || {}).length;
                 const bCompat = Object.keys(this.slotCompatibility[b.label] || {}).length;
                 return aCompat - bCompat;
             });
 
-            // First pass: assign players with matching position group and compatibility > 0
-            sortedSlots.forEach(slot => {
+            // First pass: assign players with acceptable compatibility (>= 40)
+            sortedEmpty.forEach(slot => {
                 let bestPlayer = null;
                 let bestScore = -1;
 
-                selectedPlayerData.forEach(player => {
+                unassignedPlayers.forEach(player => {
                     if (assigned.has(player.id)) return;
 
-                    // Only consider players whose position group matches the slot's role
-                    // (Defenders in defense, Midfielders in midfield, etc.)
-                    if (player.positionGroup !== slot.role) return;
-
                     const compatibility = this.getSlotCompatibility(player.position, slot.label);
-                    if (compatibility === 0) return;
+                    if (compatibility < 40) return;
 
                     // Weighted score: 70% player rating, 30% compatibility
                     const weightedScore = (player.overallScore * 0.7) + (compatibility * 0.3);
@@ -75,8 +102,7 @@ export default function lineupManager(config) {
                     }
                 });
 
-                // Find the original slot and assign
-                const originalSlot = slots.find(s => s.id === slot.id);
+                const originalSlot = allSlots.find(s => s.id === slot.id);
                 if (originalSlot && bestPlayer) {
                     originalSlot.player = bestPlayer;
                     originalSlot.compatibility = bestPlayer.compatibility;
@@ -84,20 +110,18 @@ export default function lineupManager(config) {
                 }
             });
 
-            // Second pass: fill any remaining empty slots with unassigned players (even with 0 compatibility)
-            const emptySlots = slots.filter(s => !s.player);
-            const unassignedPlayers = selectedPlayerData.filter(p => !assigned.has(p.id));
+            // Second pass: fill remaining empty slots with leftover players
+            const stillEmpty = allSlots.filter(s => !s.player);
+            const stillUnassigned = unassignedPlayers.filter(p => !assigned.has(p.id));
 
-            emptySlots.forEach((slot, index) => {
-                if (unassignedPlayers[index]) {
-                    const player = unassignedPlayers[index];
+            stillEmpty.forEach((slot, index) => {
+                if (stillUnassigned[index]) {
+                    const player = stillUnassigned[index];
                     const compatibility = this.getSlotCompatibility(player.position, slot.label);
                     slot.player = { ...player, compatibility };
                     slot.compatibility = compatibility;
                 }
             });
-
-            return slots;
         },
 
         // Methods
@@ -117,17 +141,98 @@ export default function lineupManager(config) {
 
         isSelected(id) { return this.selectedPlayers.includes(id) },
 
+        // Toggle player selection (from player list)
         toggle(id, isUnavailable) {
             if (isUnavailable) return;
+
+            // If a slot is selected, assign this player to that slot instead of toggling
+            if (this.selectedSlot !== null) {
+                this.assignPlayerToSelectedSlot(id, isUnavailable);
+                return;
+            }
+
             if (this.isSelected(id)) {
                 this.selectedPlayers = this.selectedPlayers.filter(p => p !== id);
+                // Remove any manual assignments for this player
+                this._removePlayerFromManualAssignments(id);
             } else if (this.selectedCount < 11) {
                 this.selectedPlayers.push(id);
             }
         },
 
-        quickSelect() { this.selectedPlayers = [...this.autoLineup] },
-        clearSelection() { this.selectedPlayers = [] },
+        // Select a slot on the pitch for manual assignment
+        selectSlot(slotId) {
+            if (this.selectedSlot === slotId) {
+                // Clicking same slot again deselects
+                this.selectedSlot = null;
+            } else {
+                this.selectedSlot = slotId;
+            }
+        },
+
+        // Assign a player to the currently selected slot
+        assignPlayerToSelectedSlot(playerId, isUnavailable) {
+            if (isUnavailable || this.selectedSlot === null) return;
+
+            const slotId = this.selectedSlot;
+            const slot = this.currentSlots.find(s => s.id === slotId);
+            if (!slot) return;
+
+            // Enforce minimum 40 compatibility for manual assignments
+            const player = this.playersData[playerId];
+            if (player) {
+                const compatibility = this.getSlotCompatibility(player.position, slot.label);
+                if (compatibility < 40) return;
+            }
+
+            // If this player is already manually assigned elsewhere, remove old assignment
+            this._removePlayerFromManualAssignments(playerId);
+
+            // If this slot already has a manual assignment, remove it
+            const previousPlayerId = this.manualAssignments[slotId];
+
+            // Set the manual assignment
+            this.manualAssignments = { ...this.manualAssignments, [slotId]: playerId };
+
+            // Ensure the player is in the selected 11
+            if (!this.isSelected(playerId)) {
+                if (this.selectedCount >= 11) {
+                    // Remove the player who was in this slot (if manually assigned) to make room
+                    if (previousPlayerId && this.isSelected(previousPlayerId)) {
+                        this.selectedPlayers = this.selectedPlayers.filter(p => p !== previousPlayerId);
+                        this._removePlayerFromManualAssignments(previousPlayerId);
+                    }
+                }
+                if (this.selectedCount < 11) {
+                    this.selectedPlayers.push(playerId);
+                }
+            }
+
+            this.selectedSlot = null;
+        },
+
+        // Click on a filled slot on the pitch
+        handleSlotClick(slotId, playerId) {
+            if (this.selectedSlot === slotId) {
+                // Clicking the already-selected slot deselects it
+                this.selectedSlot = null;
+            } else {
+                // Select this slot for reassignment
+                this.selectedSlot = slotId;
+            }
+        },
+
+        quickSelect() {
+            this.selectedPlayers = [...this.autoLineup];
+            this.manualAssignments = {};
+            this.selectedSlot = null;
+        },
+
+        clearSelection() {
+            this.selectedPlayers = [];
+            this.manualAssignments = {};
+            this.selectedSlot = null;
+        },
 
         async updateAutoLineup() {
             try {
@@ -135,6 +240,8 @@ export default function lineupManager(config) {
                 const data = await response.json();
                 this.autoLineup = data.autoLineup;
                 this.selectedPlayers = [...this.autoLineup];
+                this.manualAssignments = {};
+                this.selectedSlot = null;
             } catch (e) {
                 console.error('Failed to fetch auto lineup', e);
             }
@@ -151,6 +258,7 @@ export default function lineupManager(config) {
 
         removeFromSlot(playerId) {
             this.selectedPlayers = this.selectedPlayers.filter(p => p !== playerId);
+            this._removePlayerFromManualAssignments(playerId);
         },
 
         // Find which slot a player is assigned to (internal code for compatibility lookup)
@@ -169,14 +277,11 @@ export default function lineupManager(config) {
             if (!name) return '??';
             const parts = name.trim().split(/\s+/);
             if (parts.length === 1) {
-                // Single name: take first 2 characters
                 return parts[0].substring(0, 2).toUpperCase();
             }
-            // Multiple names: first letter of first name + first letter of last name
             return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
         },
 
-        // Get gradient colors for position
         getPositionGradient(role) {
             return {
                 'Goalkeeper': 'from-amber-400 to-amber-600',
@@ -184,6 +289,25 @@ export default function lineupManager(config) {
                 'Midfielder': 'from-emerald-500 to-emerald-700',
                 'Forward': 'from-red-500 to-red-700',
             }[role] || 'from-slate-400 to-slate-600';
+        },
+
+        // Get the compatibility display for a player in the currently selected slot
+        getSelectedSlotCompatibility(position) {
+            if (this.selectedSlot === null) return null;
+            const slot = this.currentSlots.find(s => s.id === this.selectedSlot);
+            if (!slot) return null;
+            return this.getCompatibilityDisplay(position, slot.label);
+        },
+
+        // Remove a player from all manual assignments
+        _removePlayerFromManualAssignments(playerId) {
+            const newAssignments = {};
+            for (const [slotId, pid] of Object.entries(this.manualAssignments)) {
+                if (pid !== playerId) {
+                    newAssignments[slotId] = pid;
+                }
+            }
+            this.manualAssignments = newAssignments;
         },
     };
 }

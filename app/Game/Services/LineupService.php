@@ -102,7 +102,9 @@ class LineupService
     }
 
     /**
-     * Validate lineup: 11 players, all available, correct positions for formation.
+     * Validate lineup: 11 players, all available.
+     * When slot assignments are provided, position group restrictions are relaxed
+     * (players can be assigned to any slot regardless of their position group).
      */
     public function validateLineup(
         array $playerIds,
@@ -110,10 +112,10 @@ class LineupService
         string $teamId,
         Carbon $matchDate,
         string $competitionId,
-        ?Formation $formation = null
+        ?Formation $formation = null,
+        ?array $slotAssignments = null
     ): array {
         $formation = $formation ?? Formation::F_4_4_2;
-        $requirements = $formation->requirements();
         $errors = [];
 
         if (count($playerIds) !== 11) {
@@ -136,7 +138,28 @@ class LineupService
             }
         }
 
-        // Validate position requirements for the formation
+        // When slot assignments are provided, skip position group validation
+        // (the user has explicitly chosen where each player plays)
+        if (!empty($slotAssignments)) {
+            // Validate slot assignments reference valid players and slots
+            $slots = $formation->pitchSlots();
+            $slotIds = array_column($slots, 'id');
+            foreach ($slotAssignments as $slotId => $playerId) {
+                if (!in_array((int) $slotId, $slotIds, true)) {
+                    $errors[] = 'Invalid slot assignment.';
+                    break;
+                }
+                if (!in_array($playerId, $playerIds, true)) {
+                    $errors[] = 'Slot assigned to player not in lineup.';
+                    break;
+                }
+            }
+
+            return $errors;
+        }
+
+        // Without slot assignments, enforce position requirements for the formation
+        $requirements = $formation->requirements();
         $selectedPlayers = $availablePlayers->filter(fn ($p) => in_array($p->id, $playerIds));
         $positionCounts = $selectedPlayers->groupBy('position_group')->map->count();
 
