@@ -214,6 +214,22 @@ return [
     'academy_phase_glimpse' => 'Habilidades visibles',
     'academy_phase_verdict' => 'Potencial revelado',
 
+    // Academy help text
+    'academy_help_toggle' => '¿Cómo funciona la cantera?',
+    'academy_help_development' => 'Los canteranos mejoran progresivamente a lo largo de la temporada. Sus habilidades son inicialmente desconocidas y se revelan en dos momentos clave.',
+    'academy_help_phases_title' => 'Revelación de habilidades',
+    'academy_help_phase_0' => 'Inicio de temporada: solo identidad visible (nombre, posición, edad). Decide por intuición.',
+    'academy_help_phase_1' => 'Primera vuelta: se revelan la técnica y la física.',
+    'academy_help_phase_2' => 'Mercado de invierno: se revela el rango de potencial. ¡El momento de la verdad!',
+    'academy_help_evaluations_title' => 'Evaluaciones obligatorias',
+    'academy_help_evaluation_desc' => 'En el mercado de invierno y al final de temporada debes decidir qué hacer con cada canterano:',
+    'academy_help_keep' => 'Mantener — sigue en la cantera y continúa mejorando',
+    'academy_help_promote' => 'Subir — se incorpora al primer equipo con contrato profesional',
+    'academy_help_loan' => 'Ceder — mejora 1.5× más rápido fuera y regresa al final de temporada',
+    'academy_help_dismiss' => 'Descartar — abandona el club de forma permanente',
+    'academy_help_age_rule' => 'Los jugadores de 21 o más años no pueden seguir en la cantera: debes subirlos o descartarlos.',
+    'academy_help_capacity_rule' => 'Si superas la capacidad, debes liberar plazas antes de poder continuar la temporada.',
+
     'academy_tier_0' => 'Sin Cantera',
     'academy_tier_1' => 'Cantera Básica',
     'academy_tier_2' => 'Buena Cantera',

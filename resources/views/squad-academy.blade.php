@@ -9,8 +9,6 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-4 md:p-8">
-                    <h3 class="font-semibold text-xl text-slate-900 mb-6">{{ __('squad.title', ['team' => $game->team->name]) }}</h3>
-
                     <x-section-nav :items="[
                         ['href' => route('game.squad', $game->id), 'label' => __('squad.squad'), 'active' => false],
                         ['href' => route('game.squad.development', $game->id), 'label' => __('squad.development'), 'active' => false],
@@ -20,37 +18,87 @@
 
                     <div class="mt-6"></div>
 
-                    {{-- Academy tier + capacity info --}}
-                    <div class="mb-6 flex flex-col md:flex-row md:items-center gap-3 md:gap-6">
-                        <div class="flex items-center gap-2">
-                            <span class="text-sm text-slate-500">{{ __('squad.academy_tier') }}:</span>
-                            <span class="text-sm font-semibold @if($tier >= 3) text-green-600 @elseif($tier >= 1) text-sky-600 @else text-slate-400 @endif">
-                                {{ $tierDescription }}
-                            </span>
+                    {{-- Academy tier + capacity info + help toggle --}}
+                    <div x-data="{ open: false }" class="mb-6">
+                        <div class="flex flex-col md:flex-row md:items-center gap-3 md:gap-6">
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm text-slate-500">{{ __('squad.academy_tier') }}:</span>
+                                <span class="text-sm font-semibold @if($tier >= 3) text-green-600 @elseif($tier >= 1) text-sky-600 @else text-slate-400 @endif">
+                                    {{ $tierDescription }}
+                                </span>
+                            </div>
+
+                            @if($capacity > 0)
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm text-slate-500">{{ __('squad.academy_capacity') }}:</span>
+                                    <span class="text-sm font-semibold {{ $academyCount > $capacity ? 'text-red-600' : 'text-slate-700' }}">
+                                        {{ $academyCount }}/{{ $capacity }}
+                                    </span>
+                                    <div class="w-16 h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                                        <div class="h-full rounded-full {{ $academyCount > $capacity ? 'bg-red-500' : ($academyCount >= $capacity - 1 ? 'bg-amber-500' : 'bg-emerald-500') }}"
+                                             style="width: {{ min(100, ($academyCount / max($capacity, 1)) * 100) }}%"></div>
+                                    </div>
+                                </div>
+                            @endif
+
+                            {{-- Reveal phase indicator --}}
+                            <div class="flex items-center gap-2">
+                                @if($revealPhase === 0)
+                                    <span class="text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded-full">{{ __('squad.academy_phase_unknown') }}</span>
+                                @elseif($revealPhase === 1)
+                                    <span class="text-xs bg-sky-100 text-sky-600 px-2 py-1 rounded-full">{{ __('squad.academy_phase_glimpse') }}</span>
+                                @else
+                                    <span class="text-xs bg-emerald-100 text-emerald-600 px-2 py-1 rounded-full">{{ __('squad.academy_phase_verdict') }}</span>
+                                @endif
+                            </div>
+
+                            {{-- How it works toggle --}}
+                            <button @click="open = !open" class="ml-auto flex items-center gap-2 text-sm text-slate-500 hover:text-slate-700 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-slate-400 shrink-0">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-7-4a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM9 9a.75.75 0 0 0 0 1.5h.253a.25.25 0 0 1 .244.304l-.459 2.066A1.75 1.75 0 0 0 10.747 15H11a.75.75 0 0 0 0-1.5h-.253a.25.25 0 0 1-.244-.304l.459-2.066A1.75 1.75 0 0 0 9.253 9H9Z" clip-rule="evenodd" />
+                                </svg>
+                                <span>{{ __('squad.academy_help_toggle') }}</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 transition-transform" :class="open ? 'rotate-180' : ''">
+                                    <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
                         </div>
 
-                        @if($capacity > 0)
-                            <div class="flex items-center gap-2">
-                                <span class="text-sm text-slate-500">{{ __('squad.academy_capacity') }}:</span>
-                                <span class="text-sm font-semibold {{ $academyCount > $capacity ? 'text-red-600' : 'text-slate-700' }}">
-                                    {{ $academyCount }}/{{ $capacity }}
-                                </span>
-                                <div class="w-16 h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                                    <div class="h-full rounded-full {{ $academyCount > $capacity ? 'bg-red-500' : ($academyCount >= $capacity - 1 ? 'bg-amber-500' : 'bg-emerald-500') }}"
-                                         style="width: {{ min(100, ($academyCount / max($capacity, 1)) * 100) }}%"></div>
-                                </div>
+                        <div x-show="open" x-transition class="mt-3 bg-slate-50 border border-slate-200 rounded-lg p-4 text-sm">
+                            <p class="text-slate-600 mb-4">{{ __('squad.academy_help_development') }}</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            {{-- Reveal phases --}}
+                            <div>
+                                <p class="font-semibold text-slate-700 mb-2">{{ __('squad.academy_help_phases_title') }}</p>
+                                <ul class="space-y-2">
+                                    <li class="flex gap-2">
+                                        <span class="mt-0.5 shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-300 text-slate-600 text-xs font-bold">0</span>
+                                        <span class="text-slate-600">{{ __('squad.academy_help_phase_0') }}</span>
+                                    </li>
+                                    <li class="flex gap-2">
+                                        <span class="mt-0.5 shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full bg-sky-200 text-sky-700 text-xs font-bold">1</span>
+                                        <span class="text-slate-600">{{ __('squad.academy_help_phase_1') }}</span>
+                                    </li>
+                                    <li class="flex gap-2">
+                                        <span class="mt-0.5 shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-200 text-emerald-700 text-xs font-bold">2</span>
+                                        <span class="text-slate-600">{{ __('squad.academy_help_phase_2') }}</span>
+                                    </li>
+                                </ul>
                             </div>
-                        @endif
 
-                        {{-- Reveal phase indicator --}}
-                        <div class="flex items-center gap-2">
-                            @if($revealPhase === 0)
-                                <span class="text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded-full">{{ __('squad.academy_phase_unknown') }}</span>
-                            @elseif($revealPhase === 1)
-                                <span class="text-xs bg-sky-100 text-sky-600 px-2 py-1 rounded-full">{{ __('squad.academy_phase_glimpse') }}</span>
-                            @else
-                                <span class="text-xs bg-emerald-100 text-emerald-600 px-2 py-1 rounded-full">{{ __('squad.academy_phase_verdict') }}</span>
-                            @endif
+                            {{-- Evaluations --}}
+                            <div>
+                                <p class="font-semibold text-slate-700 mb-2">{{ __('squad.academy_help_evaluations_title') }}</p>
+                                <p class="text-slate-500 mb-2">{{ __('squad.academy_help_evaluation_desc') }}</p>
+                                <ul class="space-y-1 text-slate-600">
+                                    <li class="flex gap-2"><span class="text-emerald-500 shrink-0">↑</span> {{ __('squad.academy_help_promote') }}</li>
+                                    <li class="flex gap-2"><span class="text-sky-500 shrink-0">⇄</span> {{ __('squad.academy_help_loan') }}</li>
+                                    <li class="flex gap-2"><span class="text-slate-400 shrink-0">✓</span> {{ __('squad.academy_help_keep') }}</li>
+                                    <li class="flex gap-2"><span class="text-red-400 shrink-0">✕</span> {{ __('squad.academy_help_dismiss') }}</li>
+                                </ul>
+                                <p class="mt-3 text-xs text-slate-400">{{ __('squad.academy_help_age_rule') }} {{ __('squad.academy_help_capacity_rule') }}</p>
+                            </div>
+                            </div>{{-- grid --}}
                         </div>
                     </div>
 
