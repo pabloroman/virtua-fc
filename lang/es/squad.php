@@ -99,6 +99,8 @@ return [
 
     // Lineup editor
     'pitch' => 'Campo',
+    'select_player_for_slot' => 'Selecciona un jugador para esta posición',
+    'manual_assignment' => 'Asignación manual',
 
     // Opponent scout
     'team_rating' => 'Rating del Equipo',

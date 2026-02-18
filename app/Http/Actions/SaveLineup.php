@@ -26,11 +26,14 @@ class SaveLineup
             'players.*' => 'required|string|uuid',
             'formation' => ['required', 'string', new Enum(Formation::class)],
             'mentality' => ['required', 'string', new Enum(Mentality::class)],
+            'slot_assignments' => 'nullable|array',
+            'slot_assignments.*' => 'nullable|string|uuid',
         ]);
 
         $playerIds = array_values(array_filter($validated['players']));
         $formation = Formation::from($validated['formation']);
         $mentality = Mentality::from($validated['mentality']);
+        $slotAssignments = $validated['slot_assignments'] ?? null;
 
         // Get match details for validation
         $matchDate = $match->scheduled_date;
@@ -43,7 +46,8 @@ class SaveLineup
             $game->team_id,
             $matchDate,
             $competitionId,
-            $formation
+            $formation,
+            $slotAssignments
         );
 
         if (!empty($errors)) {
@@ -53,14 +57,16 @@ class SaveLineup
                 ->withInput(['players' => $playerIds, 'formation' => $formation->value, 'mentality' => $mentality->value]);
         }
 
-        // Save the lineup, formation, and mentality for this match
+        // Save the lineup, slot assignments, formation, and mentality for this match
         $this->lineupService->saveLineup($match, $game->team_id, $playerIds);
+        $this->lineupService->saveSlotAssignments($match, $game->team_id, $slotAssignments);
         $this->lineupService->saveFormation($match, $game->team_id, $formation->value);
         $this->lineupService->saveMentality($match, $game->team_id, $mentality->value);
 
-        // Always save lineup, formation, and mentality as defaults for future matches
+        // Always save lineup, formation, mentality, and slot assignments as defaults
         $game->update([
             'default_lineup' => $playerIds,
+            'default_slot_assignments' => $slotAssignments,
             'default_formation' => $formation->value,
             'default_mentality' => $mentality->value,
         ]);

@@ -38,6 +38,7 @@ class ShowLineup
 
         // Get current lineup if any
         $currentLineup = $this->lineupService->getLineup($match, $game->team_id);
+        $currentSlotAssignments = $this->lineupService->getSlotAssignments($match, $game->team_id);
 
         // Get formation
         $defaultFormation = $game->default_formation ?? '4-4-2';
@@ -55,6 +56,8 @@ class ShowLineup
             $currentLineup = $previous['lineup'];
             // Use previous formation if available, otherwise default
             $currentFormation = $currentFormation ?? $previous['formation'] ?? $defaultFormation;
+            // Fall back to default slot assignments when no match-specific ones exist
+            $currentSlotAssignments = $currentSlotAssignments ?? $game->default_slot_assignments;
         }
 
         $currentFormation = $currentFormation ?? $defaultFormation;
@@ -122,6 +125,7 @@ class ShowLineup
             'midfielders' => $playersByGroup['midfielders'],
             'forwards' => $playersByGroup['forwards'],
             'currentLineup' => $currentLineup,
+            'currentSlotAssignments' => $currentSlotAssignments,
             'autoLineup' => $autoLineup,
             'formations' => Formation::cases(),
             'currentFormation' => $currentFormation,
