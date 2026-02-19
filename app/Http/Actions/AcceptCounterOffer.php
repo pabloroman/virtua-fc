@@ -2,7 +2,7 @@
 
 namespace App\Http\Actions;
 
-use App\Game\Services\TransferService;
+use App\Modules\Transfer\Services\TransferService;
 use App\Models\Game;
 use App\Models\TransferOffer;
 

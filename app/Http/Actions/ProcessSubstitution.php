@@ -2,7 +2,7 @@
 
 namespace App\Http\Actions;
 
-use App\Game\Services\SubstitutionService;
+use App\Modules\Lineup\Services\SubstitutionService;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;

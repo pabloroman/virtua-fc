@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Game\DTO\GeneratedPlayerData;
-use App\Game\Services\PlayerGeneratorService;
+use App\Modules\Squad\DTOs\GeneratedPlayerData;
+use App\Modules\Squad\Services\PlayerGeneratorService;
 use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GamePlayer;

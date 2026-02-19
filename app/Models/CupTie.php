@@ -106,10 +106,10 @@ class CupTie extends Model
     /**
      * Get the round config for this tie from schedule.json.
      */
-    public function getRoundConfig(): ?\App\Game\DTO\PlayoffRoundConfig
+    public function getRoundConfig(): ?\App\Modules\Competition\DTOs\PlayoffRoundConfig
     {
         $competition = $this->competition ?? Competition::find($this->competition_id);
-        $rounds = \App\Game\Services\LeagueFixtureGenerator::loadKnockoutRounds(
+        $rounds = \App\Modules\Competition\Services\LeagueFixtureGenerator::loadKnockoutRounds(
             $this->competition_id,
             $competition->season ?? '2025',
         );

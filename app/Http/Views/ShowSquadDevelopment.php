@@ -2,8 +2,8 @@
 
 namespace App\Http\Views;
 
-use App\Game\Services\DevelopmentCurve;
-use App\Game\Services\PlayerDevelopmentService;
+use App\Modules\Squad\Services\DevelopmentCurve;
+use App\Modules\Squad\Services\PlayerDevelopmentService;
 use App\Models\AcademyPlayer;
 use App\Models\Game;
 use App\Models\GamePlayer;

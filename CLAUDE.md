@@ -53,9 +53,29 @@ Authentication is handled by Laravel Breeze controllers in `App\Http\Controllers
 
 Example: `ShowGame` → `views/game.blade.php`, `AdvanceMatchday` handles playing matches.
 
+### Modular Monolith Architecture
+
+The codebase follows a **modular monolith** pattern. Domain logic is organized into 9 modules under `app/Modules/`, each with its own services, contracts, DTOs, and events:
+
+| Module | Purpose | Key services |
+|--------|---------|-------------|
+| **Match** | Match simulation engine | `MatchSimulator`, `MatchdayService`, `CupTieResolver`, handlers |
+| **Lineup** | Tactical layer | `LineupService`, `SubstitutionService`, `FormationRecommender` |
+| **Squad** | Player management | `PlayerDevelopmentService`, `PlayerGeneratorService`, `InjuryService` |
+| **Transfer** | Market operations | `TransferService`, `ContractService`, `LoanService`, `ScoutingService` |
+| **Competition** | Structure & config | `CountryConfig`, `StandingsCalculator`, `CupDrawService`, handlers config |
+| **Finance** | Economic model | `BudgetProjectionService`, `SeasonSimulationService` |
+| **Season** | Lifecycle orchestration | `SeasonEndPipeline`, `GameCreationService`, all 19 processors |
+| **Notification** | In-game messaging | `NotificationService`, event listeners |
+| **Academy** | Youth development | `YouthAcademyService` |
+
+**Dependency direction:** Season (orchestrator) → Match, Transfer, Finance → Squad, Competition → Notification (leaf). No circular dependencies.
+
+Models stay in `app/Models/` (shared). The HTTP layer (`Actions/Views`) stays in `app/Http/` as thin orchestrators.
+
 ### Pluggable Competition Handlers
 
-Different competition types use handlers implementing `App\Game\Contracts\CompetitionHandler`:
+Different competition types use handlers implementing `App\Modules\Competition\Contracts\CompetitionHandler`:
 
 - `LeagueHandler` - standard league with standings
 - `KnockoutCupHandler` - Copa del Rey bracket/draws
@@ -64,13 +84,13 @@ Different competition types use handlers implementing `App\Game\Contracts\Compet
 
 Resolved via `CompetitionHandlerResolver` based on competition's `handler_type` field.
 
-Competition-specific configuration (revenue rates, commercial per seat, etc.) lives in `App\Game\Competitions\*`:
+Competition-specific configuration (revenue rates, commercial per seat, etc.) lives in `App\Modules\Competition\Configs\*`:
 - `LaLigaConfig`, `LaLiga2Config`, `DefaultLeagueConfig`
 - `ChampionsLeagueConfig`, `EuropaLeagueConfig`, `ConferenceLeagueConfig`
 
 ### Season End Pipeline
 
-End-of-season processing uses ordered processors implementing `App\Game\Contracts\SeasonEndProcessor`:
+End-of-season processing uses ordered processors implementing `App\Modules\Season\Contracts\SeasonEndProcessor`:
 
 ```php
 // Processors run in priority order (lower = earlier)
@@ -116,16 +136,16 @@ Revenue rates (commercial per seat, matchday per seat) are defined per competiti
 
 | Purpose | Location |
 |---------|----------|
-| Game creation | `app/Game/Services/GameCreationService.php` |
-| Match simulator | `app/Game/Services/MatchSimulator.php` |
+| Game creation | `app/Modules/Season/Services/GameCreationService.php` |
+| Match simulator | `app/Modules/Match/Services/MatchSimulator.php` |
 | Simulation config | `config/match_simulation.php` |
-| Season end pipeline | `app/Game/Services/SeasonEndPipeline.php` |
+| Season end pipeline | `app/Modules/Season/Services/SeasonEndPipeline.php` |
 | Financial config | `config/finances.php` |
-| Transfer service | `app/Game/Services/TransferService.php` |
-| Player development | `app/Game/Services/PlayerDevelopmentService.php` |
-| Scouting service | `app/Game/Services/ScoutingService.php` |
-| Youth academy | `app/Game/Services/YouthAcademyService.php` |
-| Loan service | `app/Game/Services/LoanService.php` |
+| Transfer service | `app/Modules/Transfer/Services/TransferService.php` |
+| Player development | `app/Modules/Squad/Services/PlayerDevelopmentService.php` |
+| Scouting service | `app/Modules/Transfer/Services/ScoutingService.php` |
+| Youth academy | `app/Modules/Academy/Services/YouthAcademyService.php` |
+| Loan service | `app/Modules/Transfer/Services/LoanService.php` |
 | Routes | `routes/web.php` |
 
 ## Directory Structure
@@ -133,25 +153,51 @@ Revenue rates (commercial per seat, matchday per seat) are defined per competiti
 ```
 app/
 ├── Console/Commands/     # Artisan commands (seed, simulate, beta invites)
-├── Game/
-│   ├── Competitions/     # Per-league config classes (LaLigaConfig, etc.)
-│   ├── Contracts/        # Interfaces (CompetitionHandler, SeasonEndProcessor, etc.)
-│   ├── DTO/              # Data Transfer Objects (MatchResult, SeasonTransitionData, etc.)
-│   ├── Enums/            # PHP enums (Formation, Mentality)
-│   ├── Handlers/         # Competition handlers
-│   ├── Playoffs/         # Playoff generation logic
-│   ├── Processors/       # Season end processors (18 classes)
-│   ├── Promotions/       # Promotion/relegation rules
-│   └── Services/         # Business logic (30+ services)
+├── Modules/
+│   ├── Match/            # Match simulation engine
+│   │   ├── Services/     # MatchSimulator, MatchdayService, CupTieResolver, etc.
+│   │   ├── Handlers/     # LeagueHandler, KnockoutCupHandler, SwissFormatHandler
+│   │   ├── Events/       # MatchFinalized, CupTieResolved
+│   │   ├── Listeners/    # UpdateLeagueStandings, AwardCupPrizeMoney, etc.
+│   │   └── DTOs/         # MatchResult, MatchEventData, ResimulationResult
+│   ├── Lineup/           # Tactical layer
+│   │   ├── Services/     # LineupService, SubstitutionService, TacticalChangeService
+│   │   └── Enums/        # Formation, Mentality
+│   ├── Squad/            # Player management
+│   │   ├── Services/     # PlayerDevelopmentService, PlayerGeneratorService, InjuryService
+│   │   └── DTOs/         # GeneratedPlayerData
+│   ├── Transfer/         # Market operations
+│   │   └── Services/     # TransferService, ContractService, LoanService, ScoutingService
+│   ├── Competition/      # Structure & configuration
+│   │   ├── Services/     # CountryConfig, StandingsCalculator, CupDrawService, etc.
+│   │   ├── Contracts/    # CompetitionHandler, CompetitionConfig, PlayoffGenerator
+│   │   ├── Configs/      # LaLigaConfig, ChampionsLeagueConfig, etc.
+│   │   ├── Playoffs/     # ESP2PlayoffGenerator, PlayoffGeneratorFactory
+│   │   ├── Promotions/   # ConfigDrivenPromotionRule, PromotionRelegationFactory
+│   │   └── DTOs/         # PlayoffRoundConfig
+│   ├── Finance/          # Economic model
+│   │   └── Services/     # BudgetProjectionService, SeasonSimulationService
+│   ├── Season/           # Lifecycle orchestration
+│   │   ├── Services/     # SeasonEndPipeline, GameCreationService, etc.
+│   │   ├── Processors/   # 19 season-end processors
+│   │   ├── Contracts/    # SeasonEndProcessor
+│   │   ├── DTOs/         # SeasonTransitionData
+│   │   └── Jobs/         # SetupNewGame, SetupTournamentGame
+│   ├── Notification/     # In-game messaging
+│   │   ├── Services/     # NotificationService
+│   │   └── Listeners/    # SendMatchNotifications, SendCupTieNotifications
+│   └── Academy/          # Youth development
+│       ├── Services/     # YouthAcademyService
+│       └── Listeners/    # GenerateInitialAcademyBatch
 ├── Http/
-│   ├── Actions/          # Form handlers (invokable, 21 classes)
+│   ├── Actions/          # Form handlers (invokable, 32 classes)
 │   ├── Controllers/Auth/ # Laravel Breeze auth controllers
 │   ├── Middleware/        # EnsureGameOwnership, RequireInviteForRegistration
 │   ├── Requests/         # Form requests (LoginRequest, ProfileUpdateRequest)
-│   └── Views/            # View data preparation (invokable, 19 classes)
+│   └── Views/            # View data preparation (invokable, 24 classes)
 ├── Jobs/                 # Background jobs (beta feedback)
 ├── Mail/                 # Mailable classes (beta invites)
-├── Models/               # Eloquent models (25 models)
+├── Models/               # Eloquent models (27 models, shared across modules)
 ├── Providers/            # Service providers (App, Horizon, Telescope)
 ├── Support/              # Utilities (Money, PositionMapper, PositionSlotMapper, CountryCodeMapper)
 └── View/Components/      # Blade layout components

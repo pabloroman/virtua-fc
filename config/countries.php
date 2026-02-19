@@ -25,13 +25,13 @@ return [
                 'competition' => 'ESP1',
                 'teams' => 20,
                 'handler' => 'league',
-                'config_class' => \App\Game\Competitions\LaLigaConfig::class,
+                'config_class' => \App\Modules\Competition\Configs\LaLigaConfig::class,
             ],
             2 => [
                 'competition' => 'ESP2',
                 'teams' => 22,
                 'handler' => 'league_with_playoff',
-                'config_class' => \App\Game\Competitions\LaLiga2Config::class,
+                'config_class' => \App\Modules\Competition\Configs\LaLiga2Config::class,
             ],
         ],
 
@@ -59,7 +59,7 @@ return [
                 'relegated_positions' => [18, 19, 20],
                 'direct_promotion_positions' => [1, 2],
                 'playoff_positions' => [3, 4, 5, 6],
-                'playoff_generator' => \App\Game\Playoffs\ESP2PlayoffGenerator::class,
+                'playoff_generator' => \App\Modules\Competition\Playoffs\ESP2PlayoffGenerator::class,
             ],
         ],
 
@@ -79,13 +79,13 @@ return [
 
         'continental_competitions' => [
             'UCL' => [
-                'config_class' => \App\Game\Competitions\ChampionsLeagueConfig::class,
+                'config_class' => \App\Modules\Competition\Configs\ChampionsLeagueConfig::class,
             ],
             'UEL' => [
-                'config_class' => \App\Game\Competitions\EuropaLeagueConfig::class,
+                'config_class' => \App\Modules\Competition\Configs\EuropaLeagueConfig::class,
             ],
             'UECL' => [
-                'config_class' => \App\Game\Competitions\ConferenceLeagueConfig::class,
+                'config_class' => \App\Modules\Competition\Configs\ConferenceLeagueConfig::class,
             ],
         ],
 

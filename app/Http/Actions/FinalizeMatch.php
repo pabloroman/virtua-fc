@@ -2,9 +2,9 @@
 
 namespace App\Http\Actions;
 
-use App\Game\Events\CupTieResolved;
-use App\Game\Events\MatchFinalized;
-use App\Game\Services\CupTieResolver;
+use App\Modules\Match\Events\CupTieResolved;
+use App\Modules\Match\Events\MatchFinalized;
+use App\Modules\Match\Services\CupTieResolver;
 use App\Models\Competition;
 use App\Models\CupTie;
 use App\Models\Game;

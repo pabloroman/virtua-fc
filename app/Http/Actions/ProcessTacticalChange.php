@@ -2,9 +2,9 @@
 
 namespace App\Http\Actions;
 
-use App\Game\Enums\Formation;
-use App\Game\Enums\Mentality;
-use App\Game\Services\TacticalChangeService;
+use App\Modules\Lineup\Enums\Formation;
+use App\Modules\Lineup\Enums\Mentality;
+use App\Modules\Lineup\Services\TacticalChangeService;
 use App\Models\Game;
 use App\Models\GameMatch;
 use Illuminate\Http\JsonResponse;

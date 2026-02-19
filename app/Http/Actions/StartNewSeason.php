@@ -3,7 +3,7 @@
 namespace App\Http\Actions;
 
 use App\Events\SeasonStarted;
-use App\Game\Services\SeasonEndPipeline;
+use App\Modules\Season\Services\SeasonEndPipeline;
 use App\Models\Game;
 
 class StartNewSeason

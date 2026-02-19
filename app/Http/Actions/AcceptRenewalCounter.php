@@ -2,7 +2,7 @@
 
 namespace App\Http\Actions;
 
-use App\Game\Services\ContractService;
+use App\Modules\Transfer\Services\ContractService;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\RenewalNegotiation;

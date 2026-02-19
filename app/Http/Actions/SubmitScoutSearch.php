@@ -2,7 +2,7 @@
 
 namespace App\Http\Actions;
 
-use App\Game\Services\ScoutingService;
+use App\Modules\Transfer\Services\ScoutingService;
 use App\Models\Game;
 use Illuminate\Http\Request;
 

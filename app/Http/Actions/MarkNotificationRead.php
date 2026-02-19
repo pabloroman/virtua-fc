@@ -2,7 +2,7 @@
 
 namespace App\Http\Actions;
 
-use App\Game\Services\NotificationService;
+use App\Modules\Notification\Services\NotificationService;
 use App\Models\GameNotification;
 use Illuminate\Http\Request;
 

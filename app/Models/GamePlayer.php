@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Game\Services\InjuryService;
+use App\Modules\Squad\Services\InjuryService;
 use App\Support\CountryCodeMapper;
 use App\Support\Money;
 use App\Support\PositionMapper;

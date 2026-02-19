@@ -123,7 +123,7 @@
 
                         @foreach($players as $prospect)
                             @php
-                                $mustDecide = \App\Game\Services\YouthAcademyService::mustDecide($prospect);
+                                $mustDecide = \App\Modules\Academy\Services\YouthAcademyService::mustDecide($prospect);
                             @endphp
                             <div class="rounded-lg border border-slate-200 hover:border-slate-300 transition-colors {{ $mustDecide ? 'bg-amber-50/50 border-amber-200' : '' }}">
                                 <input type="hidden" name="decisions[{{ $prospect->id }}]" :value="decisions['{{ $prospect->id }}'] || ''" />

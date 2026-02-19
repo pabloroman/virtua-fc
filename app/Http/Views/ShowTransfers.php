@@ -2,9 +2,9 @@
 
 namespace App\Http\Views;
 
-use App\Game\Services\ContractService;
-use App\Game\Services\LoanService;
-use App\Game\Services\TransferService;
+use App\Modules\Transfer\Services\ContractService;
+use App\Modules\Transfer\Services\LoanService;
+use App\Modules\Transfer\Services\TransferService;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\RenewalNegotiation;

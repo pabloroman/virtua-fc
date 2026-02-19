@@ -2,9 +2,9 @@
 
 namespace App\Http\Views;
 
-use App\Game\Services\CountryConfig;
-use App\Game\Services\PlayerDevelopmentService;
-use App\Game\Services\SeasonGoalService;
+use App\Modules\Competition\Services\CountryConfig;
+use App\Modules\Squad\Services\PlayerDevelopmentService;
+use App\Modules\Season\Services\SeasonGoalService;
 use App\Models\Competition;
 use App\Models\CupTie;
 use App\Models\CompetitionEntry;

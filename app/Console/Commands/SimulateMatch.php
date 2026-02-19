@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Game\Enums\Formation;
-use App\Game\Enums\Mentality;
-use App\Game\Services\MatchSimulator;
+use App\Modules\Lineup\Enums\Formation;
+use App\Modules\Lineup\Enums\Mentality;
+use App\Modules\Match\Services\MatchSimulator;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\Team;

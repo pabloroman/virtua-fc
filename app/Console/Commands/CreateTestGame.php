@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Game\Services\GameCreationService;
+use App\Modules\Season\Services\GameCreationService;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Console\Command;

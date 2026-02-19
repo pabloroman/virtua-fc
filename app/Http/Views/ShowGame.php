@@ -2,8 +2,8 @@
 
 namespace App\Http\Views;
 
-use App\Game\Services\CalendarService;
-use App\Game\Services\NotificationService;
+use App\Modules\Competition\Services\CalendarService;
+use App\Modules\Notification\Services\NotificationService;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GameStanding;

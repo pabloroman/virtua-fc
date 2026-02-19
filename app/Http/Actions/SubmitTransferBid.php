@@ -2,8 +2,8 @@
 
 namespace App\Http\Actions;
 
-use App\Game\Services\ScoutingService;
-use App\Game\Services\TransferService;
+use App\Modules\Transfer\Services\ScoutingService;
+use App\Modules\Transfer\Services\TransferService;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\TransferOffer;

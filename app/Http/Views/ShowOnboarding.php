@@ -2,9 +2,9 @@
 
 namespace App\Http\Views;
 
-use App\Game\Services\BudgetProjectionService;
-use App\Game\Services\SeasonGoalService;
-use App\Jobs\SetupNewGame;
+use App\Modules\Finance\Services\BudgetProjectionService;
+use App\Modules\Season\Services\SeasonGoalService;
+use App\Modules\Season\Jobs\SetupNewGame;
 use App\Models\Competition;
 use App\Models\CompetitionEntry;
 use App\Models\Game;

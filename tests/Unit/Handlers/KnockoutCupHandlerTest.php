@@ -2,9 +2,9 @@
 
 namespace Tests\Unit\Handlers;
 
-use App\Game\Handlers\KnockoutCupHandler;
-use App\Game\Services\CupDrawService;
-use App\Game\Services\CupTieResolver;
+use App\Modules\Match\Handlers\KnockoutCupHandler;
+use App\Modules\Competition\Services\CupDrawService;
+use App\Modules\Match\Services\CupTieResolver;
 use App\Models\Competition;
 use App\Models\CupTie;
 use App\Models\Game;

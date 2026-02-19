@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Game\Services\NotificationService;
+use App\Modules\Notification\Services\NotificationService;
 use App\Models\Game;
 use App\Models\GameNotification;
 use App\Models\GamePlayer;

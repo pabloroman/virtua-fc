@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Game\Services\CountryConfig;
-use App\Game\Services\GamePlayerTemplateService;
-use App\Game\Services\PlayerValuationService;
+use App\Modules\Competition\Services\CountryConfig;
+use App\Modules\Season\Services\GamePlayerTemplateService;
+use App\Modules\Squad\Services\PlayerValuationService;
 use App\Models\User;
 use App\Support\Money;
 use App\Support\TeamColors;

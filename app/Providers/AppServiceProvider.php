@@ -2,19 +2,19 @@
 
 namespace App\Providers;
 
-use App\Game\Events\CupTieResolved;
-use App\Game\Events\MatchFinalized;
-use App\Game\Handlers\KnockoutCupHandler;
-use App\Game\Handlers\LeagueHandler;
-use App\Game\Handlers\LeagueWithPlayoffHandler;
-use App\Game\Handlers\SwissFormatHandler;
-use App\Game\Listeners\AwardCupPrizeMoney;
-use App\Game\Listeners\ConductNextCupRoundDraw;
-use App\Game\Listeners\SendCupTieNotifications;
-use App\Game\Listeners\SendMatchNotifications;
-use App\Game\Listeners\UpdateGoalkeeperStats;
-use App\Game\Listeners\UpdateLeagueStandings;
-use App\Game\Services\CompetitionHandlerResolver;
+use App\Modules\Match\Events\CupTieResolved;
+use App\Modules\Match\Events\MatchFinalized;
+use App\Modules\Match\Handlers\KnockoutCupHandler;
+use App\Modules\Match\Handlers\LeagueHandler;
+use App\Modules\Match\Handlers\LeagueWithPlayoffHandler;
+use App\Modules\Match\Handlers\SwissFormatHandler;
+use App\Modules\Match\Listeners\AwardCupPrizeMoney;
+use App\Modules\Match\Listeners\ConductNextCupRoundDraw;
+use App\Modules\Notification\Listeners\SendCupTieNotifications;
+use App\Modules\Notification\Listeners\SendMatchNotifications;
+use App\Modules\Match\Listeners\UpdateGoalkeeperStats;
+use App\Modules\Match\Listeners\UpdateLeagueStandings;
+use App\Modules\Competition\Services\CompetitionHandlerResolver;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
