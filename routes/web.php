@@ -45,6 +45,7 @@ use App\Http\Views\ShowSquad;
 use App\Http\Views\ShowScouting;
 use App\Http\Views\ShowScoutReportResults;
 use App\Http\Views\ShowSeasonEnd;
+use App\Http\Views\ShowTournamentEnd;
 use App\Http\Views\ShowSquadDevelopment;
 use App\Http\Actions\EvaluateAcademy;
 use App\Http\Views\ShowAcademy;
@@ -134,6 +135,9 @@ Route::middleware('auth')->group(function () {
         // Season End
         Route::get('/game/{gameId}/season-end', ShowSeasonEnd::class)->name('game.season-end');
         Route::post('/game/{gameId}/start-new-season', StartNewSeason::class)->name('game.start-new-season');
+
+        // Tournament End
+        Route::get('/game/{gameId}/tournament-end', ShowTournamentEnd::class)->name('game.tournament-end');
 
         // Budget Allocation
         Route::get('/game/{gameId}/budget', ShowBudgetAllocation::class)->name('game.budget');

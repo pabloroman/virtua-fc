@@ -249,16 +249,25 @@
                 </div>
             </div>
             @else
-            {{-- Season Complete State --}}
+            {{-- Season / Tournament Complete State --}}
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 sm:p-8 text-center">
                     <div class="text-6xl mb-4">&#127942;</div>
-                    <h2 class="text-3xl font-bold text-slate-900 mb-2">{{ __('game.season_complete') }}</h2>
-                    <p class="text-slate-500 mb-8">{{ __('game.season_complete_congrats', ['season' => $game->formatted_season]) }}</p>
-                    <a href="{{ route('game.season-end', $game->id) }}"
-                       class="inline-flex items-center px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors">
-                        {{ __('game.view_season_summary') }}
-                    </a>
+                    @if($game->isTournamentMode())
+                        <h2 class="text-3xl font-bold text-slate-900 mb-2">{{ __('game.tournament_complete') }}</h2>
+                        <p class="text-slate-500 mb-8">{{ __('game.tournament_complete_desc') }}</p>
+                        <a href="{{ route('game.tournament-end', $game->id) }}"
+                           class="inline-flex items-center px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors min-h-[44px]">
+                            {{ __('game.view_tournament_summary') }}
+                        </a>
+                    @else
+                        <h2 class="text-3xl font-bold text-slate-900 mb-2">{{ __('game.season_complete') }}</h2>
+                        <p class="text-slate-500 mb-8">{{ __('game.season_complete_congrats', ['season' => $game->formatted_season]) }}</p>
+                        <a href="{{ route('game.season-end', $game->id) }}"
+                           class="inline-flex items-center px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors min-h-[44px]">
+                            {{ __('game.view_season_summary') }}
+                        </a>
+                    @endif
                 </div>
             </div>
             @endif

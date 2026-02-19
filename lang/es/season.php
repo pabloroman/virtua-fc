@@ -78,4 +78,27 @@ return [
     // Start new season
     'start_new_season' => 'Comenzar Temporada :season',
     'new_season_coming_soon' => 'La próxima temporada estará disponible próximamente.',
+
+    // Tournament end
+    'tournament_champion' => '¡Campeones del Mundo!',
+    'tournament_complete' => 'Torneo Finalizado',
+    'tournament_not_complete' => 'El torneo aún no ha terminado.',
+    'your_tournament' => 'Tu Torneo',
+    'your_journey' => 'Tu Recorrido',
+    'group_stage_standings' => 'Clasificación Fase de Grupos',
+    'group_label' => 'Grupo :group',
+    'finished_position' => ':position° en el grupo',
+    'played_abbr' => 'PJ',
+    'pts_abbr' => 'Pts',
+    'goal_diff_abbr' => 'DG',
+    'tournament_awards' => 'Premios del Torneo',
+    'golden_boot' => 'Bota de Oro',
+    'golden_glove' => 'Guante de Oro',
+    'top_scorers' => 'Máximos Goleadores',
+    'your_squad_performance' => 'Rendimiento de tu Plantilla',
+    'your_goal_scorers' => 'Tus Goleadores',
+    'squad_appearances' => 'Presencias',
+    'aet_abbr' => 'PR',
+    'pens_abbr' => 'PEN',
+    'back_to_dashboard' => 'Volver al Inicio',
 ];
