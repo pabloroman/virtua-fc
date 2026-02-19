@@ -91,15 +91,16 @@ class PromotionRelegationProcessor implements SeasonEndProcessor
     ): void {
         $promotedIds = array_column($promoted, 'teamId');
         $relegatedIds = array_column($relegated, 'teamId');
+        $playerTeamId = Game::where('id', $gameId)->value('team_id');
 
         // Move relegated teams: top → bottom
         foreach ($relegatedIds as $teamId) {
-            $this->moveTeam($teamId, $topDivision, $bottomDivision, $gameId, $newSeason);
+            $this->moveTeam($teamId, $topDivision, $bottomDivision, $gameId, $newSeason, $playerTeamId);
         }
 
         // Move promoted teams: bottom → top
         foreach ($promotedIds as $teamId) {
-            $this->moveTeam($teamId, $bottomDivision, $topDivision, $gameId, $newSeason);
+            $this->moveTeam($teamId, $bottomDivision, $topDivision, $gameId, $newSeason, $playerTeamId);
         }
 
         // Re-sort positions in both divisions
@@ -116,6 +117,7 @@ class PromotionRelegationProcessor implements SeasonEndProcessor
         string $toDivision,
         string $gameId,
         string $newSeason,
+        string $playerTeamId,
     ): void {
         // Update competition_entries
         CompetitionEntry::where('game_id', $gameId)
@@ -143,9 +145,7 @@ class PromotionRelegationProcessor implements SeasonEndProcessor
             ->where('competition_id', $toDivision)
             ->exists();
 
-        $isPlayerTeam = Game::where('id', $gameId)
-            ->where('team_id', $teamId)
-            ->exists();
+        $isPlayerTeam = $teamId === $playerTeamId;
 
         if ($targetHasStandings) {
             // Target division already has real standings — just add this team
@@ -187,9 +187,10 @@ class PromotionRelegationProcessor implements SeasonEndProcessor
             ->pluck('team_id')
             ->toArray();
 
+        $rows = [];
         $position = 1;
         foreach ($teamIds as $teamId) {
-            GameStanding::create([
+            $rows[] = [
                 'game_id' => $gameId,
                 'competition_id' => $competitionId,
                 'team_id' => $teamId,
@@ -201,7 +202,11 @@ class PromotionRelegationProcessor implements SeasonEndProcessor
                 'goals_for' => 0,
                 'goals_against' => 0,
                 'points' => 0,
-            ]);
+            ];
+        }
+
+        if (!empty($rows)) {
+            GameStanding::insert($rows);
         }
     }
 

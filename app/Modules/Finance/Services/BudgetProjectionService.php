@@ -98,14 +98,25 @@ class BudgetProjectionService
     /**
      * Calculate squad strengths for all teams in a league.
      * Returns array of [team_id => strength] sorted by strength descending.
+     *
+     * Loads all players across all teams in one query to avoid N+1.
      */
     public function calculateLeagueStrengths(Game $game, Competition $league): array
     {
         $teams = $league->teams;
-        $strengths = [];
+        $teamIds = $teams->pluck('id')->toArray();
 
+        // Load ALL players across all teams in one query, grouped by team
+        $playersByTeam = GamePlayer::where('game_id', $game->id)
+            ->whereIn('team_id', $teamIds)
+            ->with('player')
+            ->get()
+            ->groupBy('team_id');
+
+        $strengths = [];
         foreach ($teams as $team) {
-            $strengths[$team->id] = $this->calculateSquadStrength($game, $team);
+            $teamPlayers = $playersByTeam->get($team->id, collect());
+            $strengths[$team->id] = $this->calculateStrengthFromPlayers($teamPlayers);
         }
 
         // Sort by strength descending
@@ -123,9 +134,18 @@ class BudgetProjectionService
         $players = GamePlayer::where('game_id', $game->id)
             ->where('team_id', $team->id)
             ->with('player')
-            ->get()
-            ->map(function ($player) {
-                // Calculate overall as average of technical + physical + fitness + morale
+            ->get();
+
+        return $this->calculateStrengthFromPlayers($players);
+    }
+
+    /**
+     * Calculate strength from a pre-loaded collection of players.
+     * Uses average OVR of best 18 players.
+     */
+    private function calculateStrengthFromPlayers($players): float
+    {
+        $scores = $players->map(function ($player) {
                 $technical = $player->game_technical_ability ?? $player->player->technical_ability;
                 $physical = $player->game_physical_ability ?? $player->player->physical_ability;
                 $fitness = $player->fitness ?? 70;
@@ -136,11 +156,11 @@ class BudgetProjectionService
             ->sortDesc()
             ->take(18);
 
-        if ($players->isEmpty()) {
+        if ($scores->isEmpty()) {
             return 0;
         }
 
-        return round($players->avg(), 1);
+        return round($scores->avg(), 1);
     }
 
     /**

@@ -8,6 +8,7 @@ use App\Models\Game;
 use App\Models\GameNotification;
 use App\Models\GamePlayer;
 use App\Models\PlayerSuspension;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Resets player and game stats for the new season.
@@ -22,32 +23,27 @@ class StatsResetProcessor implements SeasonEndProcessor
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData
     {
-        // Reset all player stats for the game
-        // We need to iterate because fitness/morale need random values
-        $players = GamePlayer::where('game_id', $game->id)->get();
-        $playerIds = $players->pluck('id')->toArray();
+        // Clear all competition-specific suspensions for this game's players
+        PlayerSuspension::whereIn('game_player_id', function ($query) use ($game) {
+            $query->select('id')->from('game_players')->where('game_id', $game->id);
+        })->delete();
 
-        // Clear all competition-specific suspensions
-        PlayerSuspension::whereIn('game_player_id', $playerIds)->delete();
-
-        foreach ($players as $player) {
-            $player->update([
-                'appearances' => 0,
-                'goals' => 0,
-                'own_goals' => 0,
-                'assists' => 0,
-                'yellow_cards' => 0,
-                'red_cards' => 0,
-                'goals_conceded' => 0,
-                'clean_sheets' => 0,
-                'season_appearances' => 0,
-                'suspended_until_matchday' => null, // Legacy field, clear just in case
-                'injury_until' => null,
-                'injury_type' => null,
-                'fitness' => rand(90, 100),
-                'morale' => rand(65, 80),
-            ]);
-        }
+        GamePlayer::where('game_id', $game->id)->update([
+            'appearances' => 0,
+            'goals' => 0,
+            'own_goals' => 0,
+            'assists' => 0,
+            'yellow_cards' => 0,
+            'red_cards' => 0,
+            'goals_conceded' => 0,
+            'clean_sheets' => 0,
+            'season_appearances' => 0,
+            'suspended_until_matchday' => null,
+            'injury_until' => null,
+            'injury_type' => null,
+            'fitness' => 80,
+            'morale' => 80,
+        ]);
 
         // Mark all previous-season notifications as read so the new season starts clean
         GameNotification::where('game_id', $game->id)

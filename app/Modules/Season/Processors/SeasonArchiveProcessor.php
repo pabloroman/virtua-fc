@@ -10,7 +10,6 @@ use App\Models\GamePlayer;
 use App\Models\GameStanding;
 use App\Models\MatchEvent;
 use App\Models\SeasonArchive;
-use App\Models\Team;
 
 /**
  * Archives season data before stats are reset.
@@ -71,14 +70,13 @@ class SeasonArchiveProcessor implements SeasonEndProcessor
     private function captureStandings(Game $game): array
     {
         return GameStanding::where('game_id', $game->id)
+            ->with('team')
             ->orderBy('position')
             ->get()
             ->map(function ($standing) {
-                $team = Team::find($standing->team_id);
-
                 return [
                     'team_id' => $standing->team_id,
-                    'team_name' => $team->name ?? 'Unknown',
+                    'team_name' => $standing->team->name ?? 'Unknown',
                     'position' => $standing->position,
                     'played' => $standing->played,
                     'won' => $standing->won,

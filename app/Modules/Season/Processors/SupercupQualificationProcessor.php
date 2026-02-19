@@ -154,14 +154,16 @@ class SupercupQualificationProcessor implements SeasonEndProcessor
             ->where('competition_id', $supercupId)
             ->delete();
 
-        // Insert new qualifiers
-        foreach ($teamIds as $teamId) {
-            CompetitionEntry::create([
+        // Insert new qualifiers in batch
+        if (!empty($teamIds)) {
+            $rows = array_map(fn ($teamId) => [
                 'game_id' => $gameId,
                 'competition_id' => $supercupId,
                 'team_id' => $teamId,
                 'entry_round' => 1,
-            ]);
+            ], $teamIds);
+
+            CompetitionEntry::insert($rows);
         }
     }
 }

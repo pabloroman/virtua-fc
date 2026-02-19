@@ -97,10 +97,15 @@ class PlayerRetirementProcessor implements SeasonEndProcessor
      */
     private function processAnnouncements(Game $game, SeasonTransitionData $data): array
     {
-        // Find players old enough to consider retirement who haven't announced yet
+        // Find players old enough to consider retirement who haven't announced yet.
+        // Pre-filter by minimum retirement age (33 for outfield) to reduce the candidate
+        // set from ~500 to ~20-40 before PHP-side probability evaluation.
+        $minRetirementCutoff = now()->subYears(33);
+
         $candidates = GamePlayer::with(['player', 'team'])
             ->where('game_id', $game->id)
             ->whereNull('retiring_at_season')
+            ->whereHas('player', fn ($q) => $q->where('date_of_birth', '<=', $minRetirementCutoff))
             ->get()
             ->filter(fn (GamePlayer $player) => $this->retirementService->shouldRetire($player));
 

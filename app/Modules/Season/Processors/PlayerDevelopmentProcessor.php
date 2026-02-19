@@ -31,21 +31,13 @@ class PlayerDevelopmentProcessor implements SeasonEndProcessor
         $players = GamePlayer::where('game_id', $game->id)->get();
 
         $allChanges = [];
+        $upsertRows = [];
 
         foreach ($players as $player) {
             $change = $this->developmentService->calculateDevelopment($player);
 
             $previousAbility = (int) round(($change['techBefore'] + $change['physBefore']) / 2);
             $previousMarketValue = $player->market_value_cents ?? 0;
-
-            if ($change['techChange'] !== 0 || $change['physChange'] !== 0) {
-                // Apply development changes immediately
-                $this->developmentService->applyDevelopment(
-                    $player,
-                    $change['techAfter'],
-                    $change['physAfter']
-                );
-            }
 
             // Recalculate market value for ALL players (even if ability didn't change,
             // age increased by 1 which affects value)
@@ -55,7 +47,18 @@ class PlayerDevelopmentProcessor implements SeasonEndProcessor
                 $player->age,
                 $previousAbility
             );
-            $player->update(['market_value_cents' => $newMarketValue]);
+
+            // Collect row for batch upsert (includes abilities + market value in one operation)
+            $upsertRows[] = [
+                'id' => $player->id,
+                'game_id' => $player->game_id,
+                'player_id' => $player->player_id,
+                'team_id' => $player->team_id,
+                'position' => $player->position,
+                'game_technical_ability' => $change['techAfter'],
+                'game_physical_ability' => $change['physAfter'],
+                'market_value_cents' => $newMarketValue,
+            ];
 
             if ($change['techChange'] !== 0 || $change['physChange'] !== 0 || $newMarketValue !== $previousMarketValue) {
                 $allChanges[] = [
@@ -72,6 +75,17 @@ class PlayerDevelopmentProcessor implements SeasonEndProcessor
                     'marketValueBefore' => $previousMarketValue,
                     'marketValueAfter' => $newMarketValue,
                 ];
+            }
+        }
+
+        // Batch upsert all development changes + market values in one query
+        if (!empty($upsertRows)) {
+            foreach (array_chunk($upsertRows, 500) as $chunk) {
+                GamePlayer::upsert($chunk, ['id'], [
+                    'game_technical_ability',
+                    'game_physical_ability',
+                    'market_value_cents',
+                ]);
             }
         }
 

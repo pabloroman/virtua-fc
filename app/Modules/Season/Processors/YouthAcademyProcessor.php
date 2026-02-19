@@ -42,22 +42,17 @@ class YouthAcademyProcessor implements SeasonEndProcessor
         }
 
         // 3. Mark non-loaned players as needing evaluation
-        $totalPlayers = AcademyPlayer::where('game_id', $game->id)
+        $updated = AcademyPlayer::where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->where('is_on_loan', false)
-            ->count();
+            ->update(['evaluation_needed' => true]);
 
-        if ($totalPlayers > 0) {
-            AcademyPlayer::where('game_id', $game->id)
-                ->where('team_id', $game->team_id)
-                ->where('is_on_loan', false)
-                ->update(['evaluation_needed' => true]);
-
+        if ($updated > 0) {
             $game->addPendingAction('academy_evaluation', 'game.squad.academy.evaluate');
             $this->notificationService->notifyAcademyEvaluation($game);
         }
 
-        $data->setMetadata('academy_players_count', $totalPlayers);
+        $data->setMetadata('academy_players_count', $updated);
 
         return $data;
     }

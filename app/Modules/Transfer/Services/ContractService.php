@@ -10,6 +10,7 @@ use App\Models\Team;
 use App\Models\TransferOffer;
 use App\Support\Money;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class ContractService
 {
@@ -370,16 +371,21 @@ class ContractService
      */
     public function applyPendingWages(Game $game): Collection
     {
+        // Fetch affected players first (for return value / metadata)
         $players = GamePlayer::where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->whereNotNull('pending_annual_wage')
             ->get();
 
-        foreach ($players as $player) {
-            $player->update([
-                'annual_wage' => $player->pending_annual_wage,
-                'pending_annual_wage' => null,
-            ]);
+        // Single bulk update: copy pending_annual_wage → annual_wage, then clear
+        if ($players->isNotEmpty()) {
+            GamePlayer::where('game_id', $game->id)
+                ->where('team_id', $game->team_id)
+                ->whereNotNull('pending_annual_wage')
+                ->update([
+                    'annual_wage' => DB::raw('pending_annual_wage'),
+                    'pending_annual_wage' => null,
+                ]);
         }
 
         return $players;
