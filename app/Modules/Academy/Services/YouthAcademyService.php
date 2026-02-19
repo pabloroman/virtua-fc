@@ -301,6 +301,13 @@ class YouthAcademyService
     }
 
     /**
+     * Teams whose academy only produces Spanish players (cantera philosophy).
+     */
+    private const SPANISH_ONLY_TEAMS = [
+        'Athletic Bilbao',
+    ];
+
+    /**
      * Create an academy prospect record.
      */
     private function createAcademyProspect(
@@ -323,7 +330,8 @@ class YouthAcademyService
         $potentialLow = max($potential - $potentialVariance, max($technical, $physical));
         $potentialHigh = min($potential + $potentialVariance, 99);
 
-        $identity = $this->playerGenerator->pickRandomIdentity();
+        $nationalityFilter = in_array($game->team->name, self::SPANISH_ONLY_TEAMS) ? 'Spain' : null;
+        $identity = $this->playerGenerator->pickRandomIdentity($nationalityFilter);
 
         return AcademyPlayer::create([
             'id' => Str::uuid()->toString(),

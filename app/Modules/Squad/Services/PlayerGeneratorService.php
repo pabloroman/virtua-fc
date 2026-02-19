@@ -127,9 +127,17 @@ class PlayerGeneratorService
     /**
      * Pick a random identity (name + nationality) from the pool.
      */
-    public function pickRandomIdentity(): array
+    public function pickRandomIdentity(?string $nationality = null): array
     {
         $pool = $this->getIdentityPool();
+
+        if ($nationality !== null) {
+            $filtered = array_filter($pool, fn (array $entry) => in_array($nationality, $entry['nationality']));
+
+            if (! empty($filtered)) {
+                return $filtered[array_rand($filtered)];
+            }
+        }
 
         return $pool[array_rand($pool)];
     }
