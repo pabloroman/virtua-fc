@@ -74,10 +74,10 @@ class GameNotification extends Model
 
     // Navigation targets
     private const NAVIGATION_MAP = [
-        self::TYPE_PLAYER_INJURED => 'squad',
-        self::TYPE_PLAYER_SUSPENDED => 'squad',
-        self::TYPE_PLAYER_RECOVERED => 'squad',
-        self::TYPE_LOW_FITNESS => 'squad',
+        self::TYPE_PLAYER_INJURED => 'lineup',
+        self::TYPE_PLAYER_SUSPENDED => 'lineup',
+        self::TYPE_PLAYER_RECOVERED => 'lineup',
+        self::TYPE_LOW_FITNESS => 'lineup',
         self::TYPE_TRANSFER_OFFER_RECEIVED => 'transfers',
         self::TYPE_TRANSFER_OFFER_EXPIRING => 'transfers',
         self::TYPE_SCOUT_REPORT_COMPLETE => 'scouting',
@@ -201,10 +201,12 @@ class GameNotification extends Model
         $target = self::NAVIGATION_MAP[$this->type] ?? 'squad';
 
         return match ($target) {
+            'lineup' => 'game.lineup',
             'squad' => 'game.squad',
             'transfers' => 'game.transfers',
             'scouting' => 'game.scouting',
             'competition' => 'game.competition',
+            'academy' => 'game.academy',
             default => 'game.squad.academy',
         };
     }
