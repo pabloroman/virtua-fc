@@ -71,7 +71,7 @@
         <div><a class="hover:text-slate-300 @if(Route::currentRouteName() == 'show-game') text-white @endif" href="{{ route('show-game', $game->id) }}">{{ __('app.dashboard') }}</a></div>
         <div><a class="hover:text-slate-300 @if(Str::startsWith(Route::currentRouteName(), 'game.squad')) text-white @endif" href="{{ route('game.squad', $game->id) }}">{{ __('app.squad') }}</a></div>
         @if($nextMatch)
-        <div><a class="hover:text-slate-300 @if(Route::currentRouteName() == 'game.lineup') text-white @endif" href="{{ route('game.lineup', [$game->id, $nextMatch->id]) }}">{{ __('app.starting_xi') }}</a></div>
+        <div><a class="hover:text-slate-300 @if(Route::currentRouteName() == 'game.lineup') text-white @endif" href="{{ route('game.lineup', $game->id) }}">{{ __('app.starting_xi') }}</a></div>
         @endif
         @if($game->isCareerMode())
         <div><a class="hover:text-slate-300 @if(Route::currentRouteName() == 'game.finances') text-white @endif" href="{{ route('game.finances', $game->id) }}">{{ __('app.finances') }}</a></div>
@@ -203,7 +203,7 @@
                     {{ __('app.squad') }}
                 </x-responsive-nav-link>
                 @if($nextMatch)
-                <x-responsive-nav-link :href="route('game.lineup', [$game->id, $nextMatch->id])" :active="Route::currentRouteName() == 'game.lineup'">
+                <x-responsive-nav-link :href="route('game.lineup', $game->id)" :active="Route::currentRouteName() == 'game.lineup'">
                     {{ __('app.starting_xi') }}
                 </x-responsive-nav-link>
                 @endif

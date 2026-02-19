@@ -6,7 +6,6 @@ use App\Modules\Lineup\Enums\Formation;
 use App\Modules\Lineup\Enums\Mentality;
 use App\Modules\Lineup\Services\LineupService;
 use App\Models\Game;
-use App\Models\GameMatch;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Enum;
 
@@ -16,10 +15,12 @@ class SaveLineup
         private readonly LineupService $lineupService,
     ) {}
 
-    public function __invoke(Request $request, string $gameId, string $matchId)
+    public function __invoke(Request $request, string $gameId)
     {
         $game = Game::findOrFail($gameId);
-        $match = GameMatch::where('game_id', $gameId)->findOrFail($matchId);
+        $match = $game->next_match;
+
+        abort_unless($match, 404);
 
         $validated = $request->validate([
             'players' => 'required|array|min:1',
@@ -52,7 +53,7 @@ class SaveLineup
 
         if (!empty($errors)) {
             return redirect()
-                ->route('game.lineup', [$gameId, $matchId])
+                ->route('game.lineup', $gameId)
                 ->withErrors($errors)
                 ->withInput(['players' => $playerIds, 'formation' => $formation->value, 'mentality' => $mentality->value]);
         }

@@ -122,7 +122,7 @@
 
                             {{-- Set Lineup Button --}}
                             <div class="mt-6 text-center">
-                                <a href="{{ route('game.lineup', [$game->id, $nextMatch->id]) }}"
+                                <a href="{{ route('game.lineup', $game->id) }}"
                                    class="inline-flex items-center gap-2 px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg transition-colors">
                                     {{ __('game.set_lineup') }}
                                 </a>

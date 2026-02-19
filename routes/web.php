@@ -101,12 +101,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/game/{gameId}/competition/{competitionId}', ShowCompetition::class)->name('game.competition');
         Route::get('/game/{gameId}/results/{competition}/{matchday}', ShowMatchResults::class)->name('game.results');
         Route::get('/game/{gameId}/live/{matchId}', ShowLiveMatch::class)->name('game.live-match');
-        Route::get('/game/{gameId}/lineup/{matchId}', ShowLineup::class)->name('game.lineup');
+        Route::get('/game/{gameId}/lineup', ShowLineup::class)->name('game.lineup');
 
         // Game Actions
         Route::post('/game/{gameId}/advance', AdvanceMatchday::class)->name('game.advance');
-        Route::post('/game/{gameId}/lineup/{matchId}', SaveLineup::class)->name('game.lineup.save');
-        Route::get('/game/{gameId}/lineup/{matchId}/auto', GetAutoLineup::class)->name('game.lineup.auto');
+        Route::post('/game/{gameId}/lineup', SaveLineup::class)->name('game.lineup.save');
+        Route::get('/game/{gameId}/lineup/auto', GetAutoLineup::class)->name('game.lineup.auto');
         Route::post('/game/{gameId}/match/{matchId}/substitute', ProcessSubstitution::class)->name('game.match.substitute');
         Route::post('/game/{gameId}/match/{matchId}/tactics', ProcessTacticalChange::class)->name('game.match.tactics')->middleware('throttle:10,1');
         Route::post('/game/{gameId}/finalize-match', FinalizeMatch::class)->name('game.finalize-match');

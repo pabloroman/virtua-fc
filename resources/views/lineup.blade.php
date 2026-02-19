@@ -17,7 +17,7 @@
         playersData: @js($playersData),
         formationSlots: @js($formationSlots),
         slotCompatibility: @js($slotCompatibility),
-        autoLineupUrl: '{{ route('game.lineup.auto', [$game->id, $match->id]) }}',
+        autoLineupUrl: '{{ route('game.lineup.auto', $game->id) }}',
         teamColors: @js($teamColors),
         translations: {
             natural: '{{ __('squad.natural') }}',
@@ -42,7 +42,7 @@
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('game.lineup.save', [$game->id, $match->id]) }}">
+                    <form method="POST" action="{{ route('game.lineup.save', $game->id) }}">
                         @csrf
 
                         {{-- Hidden inputs --}}

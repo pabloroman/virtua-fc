@@ -18,12 +18,14 @@ class ShowLineup
         private readonly LineupService $lineupService,
     ) {}
 
-    public function __invoke(string $gameId, string $matchId)
+    public function __invoke(string $gameId)
     {
         $game = Game::with('team')->findOrFail($gameId);
-        $match = GameMatch::with(['homeTeam', 'awayTeam', 'competition'])
-            ->where('game_id', $gameId)
-            ->findOrFail($matchId);
+        $match = $game->next_match;
+
+        abort_unless($match, 404);
+
+        $match->load(['homeTeam', 'awayTeam', 'competition']);
 
         // Determine if user is home or away
         $isHome = $match->home_team_id === $game->team_id;
@@ -49,7 +51,7 @@ class ShowLineup
             $previous = $this->lineupService->getPreviousLineup(
                 $gameId,
                 $game->team_id,
-                $matchId,
+                $match->id,
                 $matchDate,
                 $competitionId
             );

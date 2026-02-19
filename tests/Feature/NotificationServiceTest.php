@@ -120,9 +120,9 @@ class NotificationServiceTest extends TestCase
     public function test_notification_navigation_routes(): void
     {
         $types = [
-            GameNotification::TYPE_PLAYER_INJURED => 'game.squad',
-            GameNotification::TYPE_PLAYER_SUSPENDED => 'game.squad',
-            GameNotification::TYPE_LOW_FITNESS => 'game.squad',
+            GameNotification::TYPE_PLAYER_INJURED => 'game.lineup',
+            GameNotification::TYPE_PLAYER_SUSPENDED => 'game.lineup',
+            GameNotification::TYPE_LOW_FITNESS => 'game.lineup',
             GameNotification::TYPE_TRANSFER_OFFER_RECEIVED => 'game.transfers',
             GameNotification::TYPE_SCOUT_REPORT_COMPLETE => 'game.scouting',
             GameNotification::TYPE_CONTRACT_EXPIRING => 'game.transfers',

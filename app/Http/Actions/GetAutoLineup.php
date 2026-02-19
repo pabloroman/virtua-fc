@@ -5,7 +5,6 @@ namespace App\Http\Actions;
 use App\Modules\Lineup\Enums\Formation;
 use App\Modules\Lineup\Services\LineupService;
 use App\Models\Game;
-use App\Models\GameMatch;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -15,10 +14,12 @@ class GetAutoLineup
         private readonly LineupService $lineupService,
     ) {}
 
-    public function __invoke(Request $request, string $gameId, string $matchId): JsonResponse
+    public function __invoke(Request $request, string $gameId): JsonResponse
     {
         $game = Game::findOrFail($gameId);
-        $match = GameMatch::where('game_id', $gameId)->findOrFail($matchId);
+        $match = $game->next_match;
+
+        abort_unless($match, 404);
 
         // Get formation from request, default to 4-4-2
         $formationValue = $request->input('formation', '4-4-2');
