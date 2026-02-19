@@ -171,6 +171,29 @@ class SwissDrawServiceTest extends TestCase
         }
     }
 
+    public function test_no_same_country_matchups(): void
+    {
+        $teams = $this->makeTeams();
+        $teamCountry = [];
+        foreach ($teams as $team) {
+            $teamCountry[$team['id']] = $team['country'];
+        }
+
+        for ($i = 0; $i < 10; $i++) {
+            $fixtures = $this->service->generateFixtures($teams, $this->makeMatchdayDates());
+
+            foreach ($fixtures as $fixture) {
+                $homeCountry = $teamCountry[$fixture['homeTeamId']];
+                $awayCountry = $teamCountry[$fixture['awayTeamId']];
+                $this->assertNotEquals(
+                    $homeCountry,
+                    $awayCountry,
+                    "Same-country matchup: {$fixture['homeTeamId']} ({$homeCountry}) vs {$fixture['awayTeamId']} ({$awayCountry})"
+                );
+            }
+        }
+    }
+
     /**
      * Run multiple iterations to catch non-deterministic failures.
      */

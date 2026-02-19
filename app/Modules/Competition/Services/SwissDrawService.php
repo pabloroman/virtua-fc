@@ -7,7 +7,8 @@ namespace App\Modules\Competition\Services;
  *
  * 36 teams in 4 pots of 9. Each team plays 8 matches (4 home, 4 away):
  * - 2 opponents from each pot (1 home, 1 away)
- * - Country protection: max 2 opponents from same country
+ * - Country protection: teams from the same country never face each other
+ * - Diversity cap: max 2 opponents from any single foreign country
  *
  * Two-phase approach:
  * 1. Opponent assignment: pot-by-pot with bidirectional tracking
@@ -41,7 +42,7 @@ class SwissDrawService
         }
 
         // Retry full pipeline: different random seeds produce different assignments
-        for ($attempt = 0; $attempt < 200; $attempt++) {
+        for ($attempt = 0; $attempt < 500; $attempt++) {
             $matches = $this->tryAssignMatches($teams, $pots);
             if ($matches === null) {
                 continue;
@@ -109,7 +110,12 @@ class SwissDrawService
                             : "{$c['id']}|{$team['id']}";
                         if (isset($paired[$key])) return false;
 
+                        // Same-country teams never face each other
+                        if ($team['country'] === $c['country']) return false;
+
+                        // Max 2 opponents from any single foreign country
                         if (($countryCount[$team['id']][$c['country']] ?? 0) >= 2) return false;
+                        if (($countryCount[$c['id']][$team['country']] ?? 0) >= 2) return false;
 
                         return true;
                     })
