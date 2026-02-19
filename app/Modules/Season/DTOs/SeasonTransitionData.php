@@ -11,6 +11,7 @@ final class SeasonTransitionData
         public readonly string $oldSeason,
         public readonly string $newSeason,
         public string $competitionId,
+        public readonly bool $isInitialSeason = false,
         public array $playerChanges = [],
         public array $metadata = [],
     ) {}
