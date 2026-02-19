@@ -24,7 +24,6 @@ class AdvanceMatchday
                 'gameId' => $gameId,
                 'matchId' => $result->matchId,
             ]),
-            'results' => redirect()->to($result->redirectUrl),
             'done' => redirect()->route('show-game', $gameId),
         };
     }

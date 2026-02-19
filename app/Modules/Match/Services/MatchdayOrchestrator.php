@@ -61,44 +61,34 @@ class MatchdayOrchestrator
         // Mark all existing notifications as read before processing new matchday
         $this->notificationService->markAllAsRead($game->id);
 
-        // Get next batch of matches to play
-        $batch = $this->matchdayService->getNextMatchBatch($game);
+        // Process batches until one involves the player's team or the season ends
+        while ($batch = $this->matchdayService->getNextMatchBatch($game)) {
+            $result = $this->processBatch($game, $batch);
 
-        if (! $batch) {
-            return MatchdayAdvanceResult::seasonComplete();
+            if ($result['playerMatch']) {
+                $this->autoSimulateRemainingBatches($game);
+
+                return MatchdayAdvanceResult::liveMatch($result['playerMatch']->id);
+            }
+
+            // AI-only batch — check if the player still has upcoming matches
+            $playerHasMoreMatches = GameMatch::where('game_id', $game->id)
+                ->where('played', false)
+                ->where(fn ($q) => $q->where('home_team_id', $game->team_id)
+                    ->orWhere('away_team_id', $game->team_id))
+                ->exists();
+
+            if (! $playerHasMoreMatches) {
+                $this->autoSimulateRemainingBatches($game);
+
+                return MatchdayAdvanceResult::done();
+            }
+
+            // Player has matches coming but not in this batch — continue silently
+            $game->refresh()->setRelations([]);
         }
 
-        // Process the current batch
-        $result = $this->processBatch($game, $batch);
-
-        // If the player's team played, check for remaining matches and auto-simulate
-        if ($result['playerMatch']) {
-            $this->autoSimulateRemainingBatches($game);
-
-            return MatchdayAdvanceResult::liveMatch($result['playerMatch']->id);
-        }
-
-        // AI-only batch mid-season — check if player still has upcoming matches
-        $playerHasMoreMatches = GameMatch::where('game_id', $game->id)
-            ->where('played', false)
-            ->where(fn ($q) => $q->where('home_team_id', $game->team_id)
-                ->orWhere('away_team_id', $game->team_id))
-            ->exists();
-
-        if ($playerHasMoreMatches) {
-            // Mid-season AI-only day — return results redirect URL
-            $handlers = $batch['handlers'];
-            $primaryHandler = reset($handlers);
-
-            return MatchdayAdvanceResult::results(
-                $primaryHandler->getRedirectRoute($game, $batch['matches'], $batch['matchday'])
-            );
-        }
-
-        // Player has no more matches — simulate all remaining AI batches
-        $this->autoSimulateRemainingBatches($game);
-
-        return MatchdayAdvanceResult::done();
+        return MatchdayAdvanceResult::seasonComplete();
     }
 
     /**
