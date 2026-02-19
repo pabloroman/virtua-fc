@@ -120,6 +120,7 @@
                         @foreach($players as $prospect)
                             @php
                                 $mustDecide = \App\Modules\Academy\Services\YouthAcademyService::mustDecide($prospect);
+                                $playerReveal = $prospect->seasons_in_academy > 1 ? 2 : $revealPhase;
                             @endphp
                             <div class="rounded-lg border border-slate-200 hover:border-slate-300 transition-colors {{ $mustDecide ? 'bg-amber-50/50 border-amber-200' : '' }}">
                                 <input type="hidden" name="decisions[{{ $prospect->id }}]" :value="decisions['{{ $prospect->id }}'] || ''" />
@@ -134,7 +135,7 @@
                                     {{-- Name + info --}}
                                     <div class="col-span-3">
                                         <div class="flex items-center gap-2">
-                                            <button x-data @click="$dispatch('show-player-detail', '{{ route('game.academy.detail', [$game->id, $prospect->id]) }}')" class="p-1 text-slate-300 rounded hover:text-slate-400 shrink-0">
+                                            <button type="button" x-data @click="$dispatch('show-player-detail', '{{ route('game.academy.detail', [$game->id, $prospect->id]) }}')" class="p-1 text-slate-300 rounded hover:text-slate-400 shrink-0">
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="w-5 h-5">
                                                     <path fill-rule="evenodd" d="M19.5 21a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3h-5.379a.75.75 0 0 1-.53-.22L11.47 3.66A2.25 2.25 0 0 0 9.879 3H4.5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h15Zm-6.75-10.5a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V10.5Z" clip-rule="evenodd" />
                                                 </svg>
@@ -156,23 +157,23 @@
                                     <div class="col-span-1 text-center text-sm">{{ $prospect->age }}</div>
 
                                     {{-- Technical --}}
-                                    <div class="col-span-1 text-center text-sm @if($revealPhase >= 1) @if($prospect->technical_ability >= 80) text-green-600 @elseif($prospect->technical_ability >= 70) text-lime-600 @elseif($prospect->technical_ability < 60) text-slate-400 @endif @endif">
-                                        {{ $revealPhase >= 1 ? $prospect->technical_ability : '?' }}
+                                    <div class="col-span-1 text-center text-sm @if($playerReveal >= 1) @if($prospect->technical_ability >= 80) text-green-600 @elseif($prospect->technical_ability >= 70) text-lime-600 @elseif($prospect->technical_ability < 60) text-slate-400 @endif @endif">
+                                        {{ $playerReveal >= 1 ? $prospect->technical_ability : '?' }}
                                     </div>
 
                                     {{-- Physical --}}
-                                    <div class="col-span-1 text-center text-sm @if($revealPhase >= 1) @if($prospect->physical_ability >= 80) text-green-600 @elseif($prospect->physical_ability >= 70) text-lime-600 @elseif($prospect->physical_ability < 60) text-slate-400 @endif @endif">
-                                        {{ $revealPhase >= 1 ? $prospect->physical_ability : '?' }}
+                                    <div class="col-span-1 text-center text-sm @if($playerReveal >= 1) @if($prospect->physical_ability >= 80) text-green-600 @elseif($prospect->physical_ability >= 70) text-lime-600 @elseif($prospect->physical_ability < 60) text-slate-400 @endif @endif">
+                                        {{ $playerReveal >= 1 ? $prospect->physical_ability : '?' }}
                                     </div>
 
                                     {{-- Potential --}}
                                     <div class="col-span-1 text-center text-xs text-slate-500">
-                                        {{ $revealPhase >= 2 ? $prospect->potential_range : '?' }}
+                                        {{ $playerReveal >= 2 ? $prospect->potential_range : '?' }}
                                     </div>
 
                                     {{-- Overall --}}
                                     <div class="col-span-1 flex justify-center">
-                                        @if($revealPhase >= 1)
+                                        @if($playerReveal >= 1)
                                             <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold
                                                 @if($prospect->overall >= 80) bg-emerald-500 text-white
                                                 @elseif($prospect->overall >= 70) bg-lime-500 text-white
@@ -225,7 +226,7 @@
                                 {{-- Mobile card --}}
                                 <div class="md:hidden p-3">
                                     <div class="flex items-center gap-2 mb-2">
-                                        <button x-data @click="$dispatch('show-player-detail', '{{ route('game.academy.detail', [$game->id, $prospect->id]) }}')" class="p-1 text-slate-300 rounded hover:text-slate-400 shrink-0">
+                                        <button type="button" x-data @click="$dispatch('show-player-detail', '{{ route('game.academy.detail', [$game->id, $prospect->id]) }}')" class="p-1 text-slate-300 rounded hover:text-slate-400 shrink-0">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="w-5 h-5">
                                                 <path fill-rule="evenodd" d="M19.5 21a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3h-5.379a.75.75 0 0 1-.53-.22L11.47 3.66A2.25 2.25 0 0 0 9.879 3H4.5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h15Zm-6.75-10.5a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V10.5Z" clip-rule="evenodd" />
                                             </svg>
@@ -245,10 +246,10 @@
                                     @endif
 
                                     <div class="flex items-center gap-4 text-xs text-slate-500 mb-3">
-                                        <span>{{ __('squad.technical') }}: <strong class="text-slate-700">{{ $revealPhase >= 1 ? $prospect->technical_ability : '?' }}</strong></span>
-                                        <span>{{ __('squad.physical') }}: <strong class="text-slate-700">{{ $revealPhase >= 1 ? $prospect->physical_ability : '?' }}</strong></span>
-                                        <span>{{ __('squad.pot') }}: <strong class="text-slate-700">{{ $revealPhase >= 2 ? $prospect->potential_range : '?' }}</strong></span>
-                                        @if($revealPhase >= 1)
+                                        <span>{{ __('squad.technical') }}: <strong class="text-slate-700">{{ $playerReveal >= 1 ? $prospect->technical_ability : '?' }}</strong></span>
+                                        <span>{{ __('squad.physical') }}: <strong class="text-slate-700">{{ $playerReveal >= 1 ? $prospect->physical_ability : '?' }}</strong></span>
+                                        <span>{{ __('squad.pot') }}: <strong class="text-slate-700">{{ $playerReveal >= 2 ? $prospect->potential_range : '?' }}</strong></span>
+                                        @if($playerReveal >= 1)
                                             <span class="inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold
                                                 @if($prospect->overall >= 80) bg-emerald-500 text-white
                                                 @elseif($prospect->overall >= 70) bg-lime-500 text-white

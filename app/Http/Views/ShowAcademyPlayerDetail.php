@@ -16,10 +16,14 @@ class ShowAcademyPlayerDetail
             ->where('team_id', $game->team_id)
             ->findOrFail($playerId);
 
+        $revealPhase = $academyPlayer->seasons_in_academy > 1
+            ? 2
+            : YouthAcademyService::getRevealPhase($game);
+
         return view('partials.academy-player-detail', [
             'game' => $game,
             'academyPlayer' => $academyPlayer,
-            'revealPhase' => YouthAcademyService::getRevealPhase($game),
+            'revealPhase' => $revealPhase,
         ]);
     }
 }
