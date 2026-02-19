@@ -31,11 +31,12 @@ class BudgetProjectionProcessor implements SeasonEndProcessor
         $competition = Competition::find($game->competition_id);
         $seasonGoal = $this->seasonGoalService->determineGoalForTeam($game->team, $competition);
 
-        // Update the game's season and goal
-        $game->update([
-            'season' => $data->newSeason,
-            'season_goal' => $seasonGoal,
-        ]);
+        // Update season goal (and advance season year on season transitions)
+        $updates = ['season_goal' => $seasonGoal];
+        if (!$data->isInitialSeason) {
+            $updates['season'] = $data->newSeason;
+        }
+        $game->update($updates);
 
         // Generate projections for the new season
         $finances = $this->projectionService->generateProjections($game);

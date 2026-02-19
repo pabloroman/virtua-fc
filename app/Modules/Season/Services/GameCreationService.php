@@ -8,17 +8,10 @@ use App\Models\Competition;
 use App\Models\CompetitionTeam;
 use App\Models\Game;
 use App\Models\Team;
-use Carbon\Carbon;
 use Ramsey\Uuid\Uuid;
-use App\Modules\Competition\Services\LeagueFixtureGenerator;
-use App\Modules\Season\Services\SeasonGoalService;
 
 class GameCreationService
 {
-    public function __construct(
-        private readonly SeasonGoalService $seasonGoalService,
-    ) {}
-
     public function create(string $userId, string $playerName, string $teamId, string $gameMode = 'career'): Game
     {
         $gameId = Uuid::uuid4()->toString();
@@ -39,16 +32,10 @@ class GameCreationService
         }
         $season = $competitionTeam->season ?? '2025';
 
-        // Load matchday calendar for initial current_date
-        $matchdays = LeagueFixtureGenerator::loadMatchdays($competitionId, $season);
-        $firstDate = Carbon::parse($matchdays[0]['date']);
-
-        // Determine initial season goal based on team reputation
-        $team = Team::with('clubProfile')->find($teamId);
-        $competition = Competition::find($competitionId);
-        $seasonGoal = $this->seasonGoalService->determineGoalForTeam($team, $competition);
+        $team = Team::find($teamId);
 
         // Create game record (setup not yet complete)
+        // current_date and season_goal are set by processors during SetupNewGame
         $game = Game::create([
             'id' => $gameId,
             'user_id' => $userId,
@@ -58,9 +45,9 @@ class GameCreationService
             'team_id' => $teamId,
             'competition_id' => $competitionId,
             'season' => $season,
-            'current_date' => $firstDate->toDateString(),
+            'current_date' => null,
             'current_matchday' => 0,
-            'season_goal' => $seasonGoal,
+            'season_goal' => null,
             'setup_completed_at' => null,
         ]);
 

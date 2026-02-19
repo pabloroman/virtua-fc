@@ -50,12 +50,18 @@ class ContinentalAndCupInitProcessor implements SeasonEndProcessor
     private function initializeSwissCompetitions(Game $game, SeasonTransitionData $data, string $countryCode): void
     {
         $swissIds = $this->countryConfig->swissFormatCompetitionIds($countryCode);
+        $swissPotData = $data->getMetadata(SeasonTransitionData::META_SWISS_POT_DATA, []);
 
         foreach ($swissIds as $competitionId) {
             // Delete stale standings from previous season (teams may have changed)
+            // On initial season the table is empty so this is a no-op
             GameStanding::where('game_id', $game->id)
                 ->where('competition_id', $competitionId)
                 ->delete();
+
+            // Use explicit pot data when available (initial season from JSON),
+            // otherwise null triggers auto-assignment by market value
+            $teamsWithPots = $swissPotData[$competitionId] ?? null;
 
             // Initialize Swiss fixtures + standings (skips if team doesn't participate)
             $this->service->initializeSwissCompetition(
@@ -63,6 +69,7 @@ class ContinentalAndCupInitProcessor implements SeasonEndProcessor
                 $game->team_id,
                 $competitionId,
                 $data->newSeason,
+                $teamsWithPots,
             );
         }
     }
