@@ -8,18 +8,17 @@ use App\Modules\Competition\Services\CountryConfig;
 use App\Modules\Season\Services\SeasonInitializationService;
 use App\Models\Game;
 use App\Models\GameMatch;
-use App\Models\GameStanding;
 
 /**
- * Initializes Swiss format competitions (UCL) and conducts cup draws
- * after qualification processors have determined the new season's participants.
+ * Initializes all non-league competitions: Swiss format (UCL, UEL, UECL)
+ * and domestic knockout cups (Copa del Rey, Supercopa).
  *
- * Also finalizes current_date to the earliest fixture across all competitions
- * (league fixtures are already created by LeagueFixtureProcessor at priority 30).
+ * Runs after qualification processors have determined participants.
+ * Also finalizes current_date to the earliest fixture across all competitions.
  *
  * Priority: 106 (runs after UefaQualificationProcessor at 105)
  */
-class ContinentalAndCupInitProcessor implements SeasonEndProcessor
+class SecondaryCompetitionInitProcessor implements SeasonEndProcessor
 {
     public function __construct(
         private SeasonInitializationService $service,
@@ -53,12 +52,6 @@ class ContinentalAndCupInitProcessor implements SeasonEndProcessor
         $swissPotData = $data->getMetadata(SeasonTransitionData::META_SWISS_POT_DATA, []);
 
         foreach ($swissIds as $competitionId) {
-            // Delete stale standings from previous season (teams may have changed)
-            // On initial season the table is empty so this is a no-op
-            GameStanding::where('game_id', $game->id)
-                ->where('competition_id', $competitionId)
-                ->delete();
-
             // Use explicit pot data when available (initial season from JSON),
             // otherwise null triggers auto-assignment by market value
             $teamsWithPots = $swissPotData[$competitionId] ?? null;
@@ -76,7 +69,7 @@ class ContinentalAndCupInitProcessor implements SeasonEndProcessor
 
     /**
      * Set the game's current_date to the earliest fixture across all competitions.
-     * This runs after all fixture generation (league at priority 30, Swiss/cup here at 106).
+     * This runs after all fixture generation (primary at priority 30, secondary here at 106).
      */
     private function finalizeCurrentDate(Game $game): void
     {
