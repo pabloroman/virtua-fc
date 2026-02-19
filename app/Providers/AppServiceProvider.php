@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Events\SeasonStarted;
+use App\Modules\Academy\Listeners\GenerateInitialAcademyBatch;
 use App\Modules\Match\Events\CupTieResolved;
 use App\Modules\Match\Events\MatchFinalized;
 use App\Modules\Match\Handlers\KnockoutCupHandler;
@@ -56,5 +58,7 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(CupTieResolved::class, AwardCupPrizeMoney::class);
         Event::listen(CupTieResolved::class, ConductNextCupRoundDraw::class);
         Event::listen(CupTieResolved::class, SendCupTieNotifications::class);
+
+        Event::listen(SeasonStarted::class, GenerateInitialAcademyBatch::class);
     }
 }
