@@ -195,6 +195,11 @@ class SetupTournamentGame implements ShouldQueue
                 continue;
             }
 
+            // Skip user's team — their players are created during squad selection onboarding
+            if ($team->id === $this->teamId) {
+                continue;
+            }
+
             foreach ($data['players'] ?? [] as $playerData) {
                 $transfermarktId = $playerData['id'] ?? null;
                 if (!$transfermarktId) {
