@@ -7,10 +7,13 @@ namespace App\Modules\Season\DTOs;
  */
 final class SeasonTransitionData
 {
+    public const META_SWISS_POT_DATA = 'swissPotData';
+
     public function __construct(
         public readonly string $oldSeason,
         public readonly string $newSeason,
         public string $competitionId,
+        public readonly bool $isInitialSeason = false,
         public array $playerChanges = [],
         public array $metadata = [],
     ) {}
