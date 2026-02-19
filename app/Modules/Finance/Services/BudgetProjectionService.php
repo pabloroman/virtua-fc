@@ -4,6 +4,7 @@ namespace App\Modules\Finance\Services;
 
 use App\Models\ClubProfile;
 use App\Models\Competition;
+use App\Models\CompetitionEntry;
 use App\Models\Game;
 use App\Models\GameFinances;
 use App\Models\GameInvestment;
@@ -103,8 +104,12 @@ class BudgetProjectionService
      */
     public function calculateLeagueStrengths(Game $game, Competition $league): array
     {
-        $teams = $league->teams;
-        $teamIds = $teams->pluck('id')->toArray();
+        $teamIds = CompetitionEntry::where('game_id', $game->id)
+            ->where('competition_id', $league->id)
+            ->pluck('team_id')
+            ->toArray();
+
+        $teams = Team::whereIn('id', $teamIds)->get();
 
         // Load ALL players across all teams in one query, grouped by team
         $playersByTeam = GamePlayer::where('game_id', $game->id)
