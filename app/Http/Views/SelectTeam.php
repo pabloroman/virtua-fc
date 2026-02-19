@@ -2,7 +2,7 @@
 
 namespace App\Http\Views;
 
-use App\Game\Services\CountryConfig;
+use App\Modules\Competition\Services\CountryConfig;
 use App\Models\Competition;
 use App\Models\Game;
 use App\Models\Team;

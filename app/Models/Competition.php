@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use App\Game\Competitions\DefaultLeagueConfig;
-use App\Game\Contracts\CompetitionConfig;
-use App\Game\Services\CountryConfig;
+use App\Modules\Competition\Configs\DefaultLeagueConfig;
+use App\Modules\Competition\Contracts\CompetitionConfig;
+use App\Modules\Competition\Services\CountryConfig;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;

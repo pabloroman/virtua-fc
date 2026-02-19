@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use App\Game\Services\LeagueFixtureGenerator;
+use App\Modules\Competition\Services\LeagueFixtureGenerator;
 use PHPUnit\Framework\TestCase;
 
 class LeagueFixtureGeneratorTest extends TestCase

@@ -2,7 +2,7 @@
 
 namespace App\Http\Actions;
 
-use App\Game\Services\GameDeletionService;
+use App\Modules\Season\Services\GameDeletionService;
 use App\Models\Game;
 use Illuminate\Http\Request;
 

@@ -2,8 +2,8 @@
 
 namespace App\Http\Views;
 
-use App\Game\Services\LoanService;
-use App\Game\Services\ScoutingService;
+use App\Modules\Transfer\Services\LoanService;
+use App\Modules\Transfer\Services\ScoutingService;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\ScoutReport;

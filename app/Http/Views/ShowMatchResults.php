@@ -2,7 +2,7 @@
 
 namespace App\Http\Views;
 
-use App\Game\Services\CalendarService;
+use App\Modules\Competition\Services\CalendarService;
 use App\Models\Game;
 
 class ShowMatchResults

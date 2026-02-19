@@ -2,8 +2,8 @@
 
 namespace App\Http\Views;
 
-use App\Game\Services\ContractService;
-use App\Game\Services\LineupService;
+use App\Modules\Transfer\Services\ContractService;
+use App\Modules\Lineup\Services\LineupService;
 use App\Models\AcademyPlayer;
 use App\Models\Game;
 use App\Models\TransferOffer;

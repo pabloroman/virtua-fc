@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Handlers;
 
-use App\Game\Handlers\LeagueHandler;
+use App\Modules\Match\Handlers\LeagueHandler;
 use App\Models\Competition;
 use App\Models\CupTie;
 use App\Models\Game;

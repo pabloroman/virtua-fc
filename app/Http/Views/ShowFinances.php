@@ -2,7 +2,7 @@
 
 namespace App\Http\Views;
 
-use App\Game\Services\BudgetProjectionService;
+use App\Modules\Finance\Services\BudgetProjectionService;
 use App\Models\FinancialTransaction;
 use App\Models\Game;
 use App\Models\GamePlayer;

@@ -2,7 +2,7 @@
 
 namespace App\Http\Views;
 
-use App\Game\Services\LeagueFixtureGenerator;
+use App\Modules\Competition\Services\LeagueFixtureGenerator;
 use App\Models\Competition;
 use App\Models\CompetitionEntry;
 use App\Models\CupTie;

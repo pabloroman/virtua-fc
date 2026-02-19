@@ -2,8 +2,8 @@
 
 namespace App\Http\Actions;
 
-use App\Game\Services\GameCreationService;
-use App\Game\Services\TournamentCreationService;
+use App\Modules\Season\Services\GameCreationService;
+use App\Modules\Season\Services\TournamentCreationService;
 use App\Models\Game;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;

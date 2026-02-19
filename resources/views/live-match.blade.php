@@ -333,7 +333,7 @@
                                     @foreach($injuries as $injury)
                                         <div class="text-xs text-orange-700">
                                             {{ $injury['playerName'] }} &mdash;
-                                            {{ __(App\Game\Services\InjuryService::INJURY_TRANSLATION_MAP[$injury['metadata']['injury_type']] ?? 'game.live_injury') }}
+                                            {{ __(App\Modules\Squad\Services\InjuryService::INJURY_TRANSLATION_MAP[$injury['metadata']['injury_type']] ?? 'game.live_injury') }}
                                             @if(isset($injury['metadata']['weeks_out']))
                                                 ({{ trans_choice('game.live_weeks_out', $injury['metadata']['weeks_out'], ['count' => $injury['metadata']['weeks_out']]) }})
                                             @endif

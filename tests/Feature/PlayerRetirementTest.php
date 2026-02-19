@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Game\DTO\SeasonTransitionData;
-use App\Game\Processors\PlayerRetirementProcessor;
-use App\Game\Services\PlayerRetirementService;
+use App\Modules\Season\DTOs\SeasonTransitionData;
+use App\Modules\Season\Processors\PlayerRetirementProcessor;
+use App\Modules\Squad\Services\PlayerRetirementService;
 use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GamePlayer;

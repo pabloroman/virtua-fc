@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use App\Game\Services\SwissDrawService;
+use App\Modules\Competition\Services\SwissDrawService;
 use Carbon\Carbon;
 use PHPUnit\Framework\TestCase;
 

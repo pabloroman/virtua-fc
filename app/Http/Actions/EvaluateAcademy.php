@@ -2,7 +2,7 @@
 
 namespace App\Http\Actions;
 
-use App\Game\Services\YouthAcademyService;
+use App\Modules\Academy\Services\YouthAcademyService;
 use App\Models\AcademyPlayer;
 use App\Models\Game;
 use Illuminate\Http\Request;
