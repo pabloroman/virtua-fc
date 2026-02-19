@@ -187,6 +187,7 @@ return [
     'sub_error_already_on_pitch' => 'El jugador ya está en el campo',
     'sub_error_player_sent_off' => 'No se puede sustituir a un jugador expulsado',
     'sub_error_player_suspended' => 'El jugador está sancionado en esta competición',
+    'sub_error_player_injured' => 'El jugador está lesionado',
     'sub_event' => 'Sustitución',
 
     'match_not_in_progress' => 'Este partido ya no está en juego',

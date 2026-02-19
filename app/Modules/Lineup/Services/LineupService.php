@@ -491,12 +491,39 @@ class LineupService
     ): void {
         $lineupField = $side . '_lineup';
         $teamIdField = $side . '_team_id';
+        $teamId = $match->$teamIdField;
 
+        // Re-validate existing lineups: if any player is injured/suspended,
+        // the user didn't actively set this lineup — regenerate from scratch.
         if (!empty($match->$lineupField)) {
-            return;
+            $existingLineup = $match->$lineupField;
+
+            if ($allPlayersGrouped !== null) {
+                $teamPlayers = $allPlayersGrouped->get($teamId, collect());
+                $hasUnavailable = $teamPlayers
+                    ->filter(fn ($p) => in_array($p->id, $existingLineup))
+                    ->contains(function ($player) use ($matchDate, $suspendedPlayerIds) {
+                        return in_array($player->id, $suspendedPlayerIds)
+                            || ($player->injury_until && $player->injury_until->gt($matchDate));
+                    });
+            } else {
+                $availableIds = $this->getAvailablePlayers($game->id, $teamId, $matchDate, $competitionId)
+                    ->pluck('id')->toArray();
+                $hasUnavailable = collect($existingLineup)->contains(fn ($id) => !in_array($id, $availableIds));
+            }
+
+            if (!$hasUnavailable) {
+                return; // All players still available, no changes needed
+            }
+
+            // Clear the lineup so it gets regenerated below
+            if ($match->home_team_id === $teamId) {
+                $match->home_lineup = null;
+            } else {
+                $match->away_lineup = null;
+            }
         }
 
-        $teamId = $match->$teamIdField;
         $isPlayerTeam = $teamId === $game->team_id;
 
         // Use pre-loaded players if available, otherwise load (backward compatibility)

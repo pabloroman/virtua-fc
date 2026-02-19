@@ -128,6 +128,11 @@ class ProcessSubstitution
                 return response()->json(['error' => __('game.sub_error_player_suspended')], 422);
             }
 
+            // Prevent substituting in an injured player
+            if ($playerIn->isInjured($match->scheduled_date)) {
+                return response()->json(['error' => __('game.sub_error_player_injured')], 422);
+            }
+
             // Check not already used in this batch
             if (in_array($playerInId, $batchInIds)) {
                 return response()->json(['error' => __('game.sub_error_already_on_pitch')], 422);

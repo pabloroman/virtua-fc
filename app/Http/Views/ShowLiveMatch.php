@@ -131,13 +131,17 @@ class ShowLiveMatch
             ->pluck('game_player_id')
             ->toArray();
 
-        // Bench players (all squad players NOT in the starting lineup, not suspended)
+        // Bench players (all squad players NOT in the starting lineup, not suspended, not injured)
+        $matchDate = $playerMatch->scheduled_date;
         $benchPlayers = GamePlayer::with('player')
             ->where('game_id', $gameId)
             ->where('team_id', $game->team_id)
             ->whereNotIn('id', $userLineupIds)
             ->whereNotIn('id', $suspendedPlayerIds)
-            ->whereNull('injury_until')
+            ->where(function ($q) use ($matchDate) {
+                $q->whereNull('injury_until')
+                    ->orWhere('injury_until', '<=', $matchDate);
+            })
             ->get()
             ->map(fn ($p) => [
                 'id' => $p->id,
