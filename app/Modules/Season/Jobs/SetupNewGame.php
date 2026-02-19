@@ -8,8 +8,8 @@ use App\Modules\Season\Services\SeasonSetupRunner;
 use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Squad\Services\InjuryService;
 use App\Modules\Squad\Services\PlayerDevelopmentService;
-use App\Modules\Season\Processors\LeagueFixtureProcessor;
-use App\Modules\Season\Processors\StandingsResetProcessor;
+use App\Modules\Season\Processors\PrimaryCompetitionInitProcessor;
+use App\Modules\Season\Processors\SeasonDataCleanupProcessor;
 use App\Support\Money;
 use App\Models\CompetitionEntry;
 use App\Models\CompetitionTeam;
@@ -47,8 +47,8 @@ class SetupNewGame implements ShouldQueue
         ContractService $contractService,
         PlayerDevelopmentService $developmentService,
         SeasonSetupRunner $setupRunner,
-        LeagueFixtureProcessor $fixtureProcessor,
-        StandingsResetProcessor $standingsProcessor,
+        SeasonDataCleanupProcessor $cleanupProcessor,
+        PrimaryCompetitionInitProcessor $primaryProcessor,
     ): void {
         // Idempotency: skip if already set up
         $game = Game::find($this->gameId);
@@ -94,8 +94,8 @@ class SetupNewGame implements ShouldQueue
                 isInitialSeason: true,
             );
 
-            $fixtureProcessor->process($game, $data);
-            $standingsProcessor->process($game, $data);
+            $cleanupProcessor->process($game, $data);
+            $primaryProcessor->process($game, $data);
         }
 
         // Mark setup as complete

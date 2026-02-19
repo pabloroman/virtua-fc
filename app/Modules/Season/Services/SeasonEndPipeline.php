@@ -7,20 +7,20 @@ use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Season\Processors\BudgetProjectionProcessor;
 use App\Modules\Season\Processors\ContractExpirationProcessor;
 use App\Modules\Season\Processors\ContractRenewalProcessor;
-use App\Modules\Season\Processors\LeagueFixtureProcessor;
 use App\Modules\Season\Processors\LoanReturnProcessor;
 use App\Modules\Season\Processors\PlayerDevelopmentProcessor;
 use App\Modules\Season\Processors\PlayerRetirementProcessor;
 use App\Modules\Season\Processors\PreContractTransferProcessor;
+use App\Modules\Season\Processors\PrimaryCompetitionInitProcessor;
 use App\Modules\Season\Processors\PromotionRelegationProcessor;
 use App\Modules\Season\Processors\SeasonArchiveProcessor;
+use App\Modules\Season\Processors\SeasonDataCleanupProcessor;
 use App\Modules\Season\Processors\SeasonSettlementProcessor;
 use App\Modules\Season\Processors\SeasonSimulationProcessor;
-use App\Modules\Season\Processors\StandingsResetProcessor;
+use App\Modules\Season\Processors\SecondaryCompetitionInitProcessor;
 use App\Modules\Season\Processors\StatsResetProcessor;
 use App\Modules\Season\Processors\SupercupQualificationProcessor;
 use App\Modules\Season\Processors\UefaQualificationProcessor;
-use App\Modules\Season\Processors\ContinentalAndCupInitProcessor;
 use App\Modules\Season\Processors\OnboardingResetProcessor;
 use App\Modules\Season\Processors\YouthAcademyProcessor;
 use App\Models\Game;
@@ -47,11 +47,11 @@ class SeasonEndPipeline
         UefaQualificationProcessor $uefaQualification,
         SeasonSimulationProcessor $seasonSimulation,
         PromotionRelegationProcessor $promotionRelegation,
-        LeagueFixtureProcessor $fixtureGeneration,
-        StandingsResetProcessor $standingsReset,
+        SeasonDataCleanupProcessor $seasonDataCleanup,
+        PrimaryCompetitionInitProcessor $primaryCompetitionInit,
         BudgetProjectionProcessor $budgetProjection,
         YouthAcademyProcessor $youthAcademy,
-        ContinentalAndCupInitProcessor $competitionInitialization,
+        SecondaryCompetitionInitProcessor $secondaryCompetitionInit,
         OnboardingResetProcessor $onboardingReset,
     ) {
         $this->processors = [
@@ -68,11 +68,11 @@ class SeasonEndPipeline
             $uefaQualification,
             $seasonSimulation,
             $promotionRelegation,
-            $fixtureGeneration,
-            $standingsReset,
+            $seasonDataCleanup,
+            $primaryCompetitionInit,
             $budgetProjection,
             $youthAcademy,
-            $competitionInitialization,
+            $secondaryCompetitionInit,
             $onboardingReset,
         ];
 
