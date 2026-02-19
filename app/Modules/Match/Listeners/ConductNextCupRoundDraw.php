@@ -13,6 +13,13 @@ class ConductNextCupRoundDraw
 
     public function handle(CupTieResolved $event): void
     {
+        // Swiss format competitions use SwissFormatHandler::maybeGenerateKnockoutRound
+        // with seeded brackets. CupDrawService doesn't handle Swiss-specific entry
+        // logic (top 8 entering directly at R16).
+        if ($event->competition?->handler_type === 'swiss_format') {
+            return;
+        }
+
         $nextRound = $this->cupDrawService->getNextRoundNeedingDraw(
             $event->game->id,
             $event->match->competition_id,
