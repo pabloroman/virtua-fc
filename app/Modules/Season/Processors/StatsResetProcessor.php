@@ -5,6 +5,7 @@ namespace App\Modules\Season\Processors;
 use App\Modules\Season\Contracts\SeasonEndProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Models\Game;
+use App\Models\GameNotification;
 use App\Models\GamePlayer;
 use App\Models\PlayerSuspension;
 
@@ -47,6 +48,11 @@ class StatsResetProcessor implements SeasonEndProcessor
                 'morale' => rand(65, 80),
             ]);
         }
+
+        // Mark all previous-season notifications as read so the new season starts clean
+        GameNotification::where('game_id', $game->id)
+            ->unread()
+            ->update(['read_at' => now()]);
 
         // Reset game state
         $game->update([
