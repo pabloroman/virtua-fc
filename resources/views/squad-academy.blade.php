@@ -141,6 +141,7 @@
                                                     </td>
                                                 </tr>
                                                 @foreach($group['players'] as $prospect)
+                                                    @php $playerReveal = $prospect->seasons_in_academy > 1 ? 2 : $revealPhase; @endphp
                                                     <tr class="border-b border-slate-200 hover:bg-slate-50">
                                                         {{-- Position --}}
                                                         <td class="py-2 text-center">
@@ -170,7 +171,7 @@
                                                         <td class="py-2 text-center hidden md:table-cell">{{ $prospect->age }}</td>
                                                         {{-- Technical --}}
                                                         <td class="border-l border-slate-200 py-2 pl-3 text-center hidden md:table-cell">
-                                                            @if($revealPhase >= 1)
+                                                            @if($playerReveal >= 1)
                                                                 <x-ability-bar :value="$prospect->technical_ability" size="sm" class="text-xs font-medium justify-center @if($prospect->technical_ability >= 80) text-green-600 @elseif($prospect->technical_ability >= 70) text-lime-600 @elseif($prospect->technical_ability < 60) text-slate-400 @endif" />
                                                             @else
                                                                 <span class="text-slate-300">?</span>
@@ -178,19 +179,19 @@
                                                         </td>
                                                         {{-- Physical --}}
                                                         <td class="py-2 text-center hidden md:table-cell">
-                                                            @if($revealPhase >= 1)
+                                                            @if($playerReveal >= 1)
                                                                 <x-ability-bar :value="$prospect->physical_ability" size="sm" class="text-xs font-medium justify-center @if($prospect->physical_ability >= 80) text-green-600 @elseif($prospect->physical_ability >= 70) text-lime-600 @elseif($prospect->physical_ability < 60) text-slate-400 @endif" />
                                                             @else
                                                                 <span class="text-slate-300">?</span>
                                                             @endif
                                                         </td>
                                                         {{-- Potential range --}}
-                                                        <td class="py-2 text-center text-xs hidden md:table-cell {{ $revealPhase >= 2 ? 'text-slate-500' : 'text-slate-300' }}">
-                                                            {{ $revealPhase >= 2 ? $prospect->potential_range : '?' }}
+                                                        <td class="py-2 text-center text-xs hidden md:table-cell {{ $playerReveal >= 2 ? 'text-slate-500' : 'text-slate-300' }}">
+                                                            {{ $playerReveal >= 2 ? $prospect->potential_range : '?' }}
                                                         </td>
                                                         {{-- Overall --}}
                                                         <td class="py-2 text-center">
-                                                            @if($revealPhase >= 1)
+                                                            @if($playerReveal >= 1)
                                                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold
                                                                     @if($prospect->overall >= 80) bg-emerald-500 text-white
                                                                     @elseif($prospect->overall >= 70) bg-lime-500 text-white

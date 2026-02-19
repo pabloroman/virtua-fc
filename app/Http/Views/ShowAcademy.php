@@ -57,6 +57,8 @@ class ShowAcademy
 
     private function sortOrder($player): string
     {
+        // Returning players (more seasons) first, then by position, then by potential desc
+        $seasons = str_pad((string) (99 - $player->seasons_in_academy), 2, '0', STR_PAD_LEFT);
         $positionOrder = match ($player->position_group) {
             'Goalkeeper' => '1',
             'Defender' => '2',
@@ -66,6 +68,6 @@ class ShowAcademy
         };
         $potential = str_pad((string) (99 - $player->potential), 2, '0', STR_PAD_LEFT);
 
-        return "{$positionOrder}-{$potential}";
+        return "{$seasons}-{$positionOrder}-{$potential}";
     }
 }
