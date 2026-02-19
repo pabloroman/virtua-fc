@@ -13,6 +13,8 @@ export default function lineupManager(config) {
 
         // Currently selected slot for manual assignment (null = no slot selected)
         selectedSlot: null,
+        // Player currently occupying the selected slot (for replacement tracking)
+        selectedSlotPlayer: null,
 
         // Server data
         playersData: config.playersData,
@@ -161,13 +163,14 @@ export default function lineupManager(config) {
             }
         },
 
-        // Select a slot on the pitch for manual assignment
+        // Select an empty slot on the pitch for manual assignment
         selectSlot(slotId) {
             if (this.selectedSlot === slotId) {
-                // Clicking same slot again deselects
                 this.selectedSlot = null;
+                this.selectedSlotPlayer = null;
             } else {
                 this.selectedSlot = slotId;
+                this.selectedSlotPlayer = null;
             }
         },
 
@@ -189,20 +192,18 @@ export default function lineupManager(config) {
             // If this player is already manually assigned elsewhere, remove old assignment
             this._removePlayerFromManualAssignments(playerId);
 
-            // If this slot already has a manual assignment, remove it
-            const previousPlayerId = this.manualAssignments[slotId];
+            // Find who currently occupies this slot (manual or auto-assigned)
+            const previousPlayerId = this.selectedSlotPlayer || this.manualAssignments[slotId];
 
             // Set the manual assignment
             this.manualAssignments = { ...this.manualAssignments, [slotId]: playerId };
 
             // Ensure the player is in the selected 11
             if (!this.isSelected(playerId)) {
-                if (this.selectedCount >= 11) {
-                    // Remove the player who was in this slot (if manually assigned) to make room
-                    if (previousPlayerId && this.isSelected(previousPlayerId)) {
-                        this.selectedPlayers = this.selectedPlayers.filter(p => p !== previousPlayerId);
-                        this._removePlayerFromManualAssignments(previousPlayerId);
-                    }
+                if (this.selectedCount >= 11 && previousPlayerId && this.isSelected(previousPlayerId)) {
+                    // Remove the current occupant to make room
+                    this.selectedPlayers = this.selectedPlayers.filter(p => p !== previousPlayerId);
+                    this._removePlayerFromManualAssignments(previousPlayerId);
                 }
                 if (this.selectedCount < 11) {
                     this.selectedPlayers.push(playerId);
@@ -210,16 +211,17 @@ export default function lineupManager(config) {
             }
 
             this.selectedSlot = null;
+            this.selectedSlotPlayer = null;
         },
 
         // Click on a filled slot on the pitch
         handleSlotClick(slotId, playerId) {
             if (this.selectedSlot === slotId) {
-                // Clicking the already-selected slot deselects it
                 this.selectedSlot = null;
+                this.selectedSlotPlayer = null;
             } else {
-                // Select this slot for reassignment
                 this.selectedSlot = slotId;
+                this.selectedSlotPlayer = playerId || null;
             }
         },
 
@@ -227,12 +229,14 @@ export default function lineupManager(config) {
             this.selectedPlayers = [...this.autoLineup];
             this.manualAssignments = {};
             this.selectedSlot = null;
+            this.selectedSlotPlayer = null;
         },
 
         clearSelection() {
             this.selectedPlayers = [];
             this.manualAssignments = {};
             this.selectedSlot = null;
+            this.selectedSlotPlayer = null;
         },
 
         async updateAutoLineup() {
@@ -243,6 +247,7 @@ export default function lineupManager(config) {
                 this.selectedPlayers = [...this.autoLineup];
                 this.manualAssignments = {};
                 this.selectedSlot = null;
+                this.selectedSlotPlayer = null;
             } catch (e) {
                 console.error('Failed to fetch auto lineup', e);
             }
