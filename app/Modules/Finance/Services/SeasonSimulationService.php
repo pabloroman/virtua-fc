@@ -28,11 +28,8 @@ class SeasonSimulationService
 
         $teams = Team::whereIn('id', $teamIds)->get();
 
-        // Calculate squad strength for each team (0-100 scale)
-        $strengths = [];
-        foreach ($teams as $team) {
-            $strengths[$team->id] = $this->budgetService->calculateSquadStrength($game, $team);
-        }
+        // Calculate squad strength for each team (0-100 scale) in one bulk query
+        $strengths = $this->budgetService->calculateLeagueStrengths($game, $competition);
 
         // Initialize standings
         $standings = [];
