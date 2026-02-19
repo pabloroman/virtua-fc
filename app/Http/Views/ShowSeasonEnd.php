@@ -86,13 +86,13 @@ class ShowSeasonEnd
 
         // Find the lower-tier league for promotion display (tier = current tier + 1)
         $lowerTierLeague = Competition::where('country', $competition->country)
-            ->where('role', Competition::ROLE_PRIMARY)
+            ->where('role', Competition::ROLE_LEAGUE)
             ->where('tier', $competition->tier + 1)
             ->first();
 
         // Find the higher-tier league for relegation context (tier = current tier - 1)
         $higherTierLeague = Competition::where('country', $competition->country)
-            ->where('role', Competition::ROLE_PRIMARY)
+            ->where('role', Competition::ROLE_LEAGUE)
             ->where('tier', $competition->tier - 1)
             ->first();
 

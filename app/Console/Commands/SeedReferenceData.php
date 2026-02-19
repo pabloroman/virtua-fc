@@ -105,7 +105,7 @@ class SeedReferenceData extends Command
                 'tier' => $tier,
                 'handler' => $tierConfig['handler'] ?? 'league',
                 'country' => $countryCode,
-                'role' => 'primary',
+                'role' => 'league',
             ]);
         }
 
@@ -140,7 +140,7 @@ class SeedReferenceData extends Command
                 'tier' => 1,
                 'handler' => $poolConfig['handler'] ?? 'league',
                 'country' => $poolConfig['country'] ?? 'EU',
-                'role' => $poolConfig['role'] ?? 'foreign',
+                'role' => $poolConfig['role'] ?? 'league',
             ]);
         }
 
@@ -199,7 +199,7 @@ class SeedReferenceData extends Command
         $tier = $config['tier'];
         $handler = $config['handler'] ?? 'league';
         $country = $config['country'] ?? 'ES';
-        $role = $config['role'] ?? 'foreign';
+        $role = $config['role'] ?? 'league';
         $configName = $config['name'] ?? null;
 
         $isCup = in_array($handler, ['knockout_cup', 'group_stage_cup']);
@@ -219,7 +219,7 @@ class SeedReferenceData extends Command
         }
     }
 
-    private function seedLeagueCompetition(string $basePath, string $code, int $tier, string $handler, string $country, string $role = 'foreign', ?string $configName = null): void
+    private function seedLeagueCompetition(string $basePath, string $code, int $tier, string $handler, string $country, string $role = 'league', ?string $configName = null): void
     {
         $teamsData = $this->loadJson("{$basePath}/teams.json");
 
@@ -400,7 +400,7 @@ class SeedReferenceData extends Command
         return $teamIdMap;
     }
 
-    private function seedCompetitionRecord(string $code, array $data, int $tier, string $type, string $handler, string $country, string $role = 'foreign'): void
+    private function seedCompetitionRecord(string $code, array $data, int $tier, string $type, string $handler, string $country, string $role = 'league'): void
     {
         $season = $data['seasonID'] ?? '2025';
         $scope = ($role === 'european') ? 'continental' : 'domestic';

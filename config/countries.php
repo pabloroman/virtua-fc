@@ -103,13 +103,13 @@ return [
         */
         'support' => [
             'transfer_pool' => [
-                // Foreign leagues — full rosters from JSON, eagerly loaded at game setup
-                'ENG1' => ['role' => 'foreign', 'handler' => 'league', 'country' => 'EN'],
-                'DEU1' => ['role' => 'foreign', 'handler' => 'league', 'country' => 'DE'],
-                'FRA1' => ['role' => 'foreign', 'handler' => 'league', 'country' => 'FR'],
-                'ITA1' => ['role' => 'foreign', 'handler' => 'league', 'country' => 'IT'],
+                // Other top-flight leagues — full rosters from JSON, eagerly loaded at game setup
+                'ENG1' => ['role' => 'league', 'handler' => 'league', 'country' => 'EN'],
+                'DEU1' => ['role' => 'league', 'handler' => 'league', 'country' => 'DE'],
+                'FRA1' => ['role' => 'league', 'handler' => 'league', 'country' => 'FR'],
+                'ITA1' => ['role' => 'league', 'handler' => 'league', 'country' => 'IT'],
                 // EUR club pool — individual team files, includes NLD/POR teams
-                'EUR'  => ['role' => 'foreign', 'handler' => 'team_pool', 'country' => 'EU'],
+                'EUR'  => ['role' => 'team_pool', 'handler' => 'team_pool', 'country' => 'EU'],
             ],
             'continental' => [
                 // Teams needed for European competitions — rosters reused from

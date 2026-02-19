@@ -86,6 +86,7 @@ class UefaQualificationProcessor implements SeasonEndProcessor
         if ($cupWinnerConfig && !empty($standings)) {
             $this->applyCupWinnerCascade(
                 $game->id,
+                $countryCode,
                 $cupWinnerConfig,
                 $qualifications,
                 $standings,
@@ -102,12 +103,13 @@ class UefaQualificationProcessor implements SeasonEndProcessor
      */
     private function applyCupWinnerCascade(
         string $gameId,
+        string $countryCode,
         array $cupWinnerConfig,
         array &$qualifications,
         array $standings,
         array $slots,
     ): void {
-        $cupWinnerId = $this->getCupWinner($gameId, $cupWinnerConfig['cup']);
+        $cupWinnerId = $this->getCupWinner($gameId, $countryCode, $cupWinnerConfig['cup']);
         if (!$cupWinnerId) {
             return;
         }
@@ -140,11 +142,11 @@ class UefaQualificationProcessor implements SeasonEndProcessor
     }
 
     /**
-     * Find the Copa del Rey winner from the final cup tie.
+     * Find the domestic cup winner from the final cup tie.
      */
-    private function getCupWinner(string $gameId, string $cupId): ?string
+    private function getCupWinner(string $gameId, string $countryCode, string $cupId): ?string
     {
-        $supercupConfig = config("countries.ES.supercup");
+        $supercupConfig = $this->countryConfig->supercup($countryCode);
         $finalRound = $supercupConfig['cup_final_round'] ?? null;
 
         if (!$finalRound) {

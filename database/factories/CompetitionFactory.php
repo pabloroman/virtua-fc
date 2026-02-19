@@ -17,7 +17,7 @@ class CompetitionFactory extends Factory
             'country' => 'ES',
             'tier' => 1,
             'type' => 'league',
-            'role' => Competition::ROLE_PRIMARY,
+            'role' => Competition::ROLE_LEAGUE,
             'scope' => Competition::SCOPE_DOMESTIC,
             'handler_type' => 'league',
             'season' => '2025',
@@ -28,7 +28,7 @@ class CompetitionFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'type' => 'league',
-            'role' => Competition::ROLE_PRIMARY,
+            'role' => Competition::ROLE_LEAGUE,
             'scope' => Competition::SCOPE_DOMESTIC,
             'handler_type' => 'league',
         ]);

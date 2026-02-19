@@ -221,7 +221,7 @@ class PromotionRelegationProcessor implements SeasonEndProcessor
         }
 
         $leagues = Competition::where('country', $userCompetition->country)
-            ->where('role', Competition::ROLE_PRIMARY)
+            ->where('role', Competition::ROLE_LEAGUE)
             ->where('id', '!=', $userCompetition->id)
             ->get();
 
