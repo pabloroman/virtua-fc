@@ -15,6 +15,8 @@ export default function lineupManager(config) {
         selectedSlot: null,
         // Player currently occupying the selected slot (for replacement tracking)
         selectedSlotPlayer: null,
+        // Player being hovered in the list (for pitch highlight)
+        hoveredPlayerId: null,
 
         // Server data
         playersData: config.playersData,

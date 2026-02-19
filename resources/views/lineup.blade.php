@@ -194,25 +194,16 @@
                                                 {{-- Main player badge --}}
                                                 <div
                                                     class="relative w-11 h-11 rounded-xl shadow-lg border border-white/20 transform transition-all duration-200 hover:scale-110 hover:shadow-xl"
-                                                    :class="selectedSlot === slot.id ? 'ring-2 ring-white ring-offset-1 ring-offset-emerald-600 scale-110' : ''"
+                                                    :class="{
+                                                        'ring-2 ring-white ring-offset-1 ring-offset-emerald-600 scale-110': selectedSlot === slot.id,
+                                                        'ring-2 ring-white/70 scale-110 shadow-xl': hoveredPlayerId && hoveredPlayerId === slot.player?.id && selectedSlot !== slot.id,
+                                                    }"
                                                     :style="getShirtStyle(slot.role)"
                                                 >
                                                     {{-- Number or Initials --}}
                                                     <div class="absolute inset-0 flex items-center justify-center">
                                                         <span class="font-bold text-xs leading-none inline-flex items-center justify-center w-7 h-7 rounded-full" :style="getNumberStyle(slot.role)" x-text="slot.player?.number || getInitials(slot.player?.name)"></span>
                                                     </div>
-                                                    {{-- Compatibility indicator dot --}}
-                                                    <div
-                                                        class="absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-emerald-600"
-                                                        :class="{
-                                                            'bg-green-400': getCompatibilityDisplay(slot.player?.position, slot.label).score >= 100,
-                                                            'bg-lime-400': getCompatibilityDisplay(slot.player?.position, slot.label).score >= 60 && getCompatibilityDisplay(slot.player?.position, slot.label).score < 100,
-                                                            'bg-yellow-400': getCompatibilityDisplay(slot.player?.position, slot.label).score >= 40 && getCompatibilityDisplay(slot.player?.position, slot.label).score < 60,
-                                                            'bg-orange-400': getCompatibilityDisplay(slot.player?.position, slot.label).score >= 20 && getCompatibilityDisplay(slot.player?.position, slot.label).score < 40,
-                                                            'bg-red-400': getCompatibilityDisplay(slot.player?.position, slot.label).score < 20,
-                                                        }"
-                                                        x-show="getCompatibilityDisplay(slot.player?.position, slot.label).score < 100"
-                                                    ></div>
                                                 </div>
 
                                                 {{-- Hover tooltip --}}
@@ -352,6 +343,8 @@
                                                     @endphp
                                                     <tr
                                                         @click="toggle('{{ $player->id }}', {{ $isUnavailable ? 'true' : 'false' }})"
+                                                        @mouseenter="hoveredPlayerId = '{{ $player->id }}'"
+                                                        @mouseleave="hoveredPlayerId = null"
                                                         class="border-b border-slate-200 transition-colors
                                                             @if($isUnavailable)
                                                                 text-slate-400 cursor-not-allowed
