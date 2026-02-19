@@ -32,7 +32,11 @@
                         @foreach($games as $game)
                             <li class="col-span-1 flex flex-col rounded-lg bg-white text-center shadow" x-data="{ confirmDelete: false }">
                                 <div class="flex flex-1 flex-col p-8 space-y-3" x-show="!confirmDelete">
-                                    <img class="mx-auto h-20 w-20 flex-shrink-0" src="{{ $game->team->image }}" alt="">
+                                    @if($game->isTournamentMode())
+                                        <img class="rounded-md object-cover mx-auto h-18 w-24 flex-shrink-0" src="{{ $game->team->image }}" alt="">
+                                    @else
+                                        <img class="object-cover mx-auto h-20 w-20 flex-shrink-0" src="{{ $game->team->image }}" alt="">
+                                    @endif
                                     <h3 class="text-xl font-semibold leading-tight text-slate-900">{{ $game->team->name }}</h3>
                                     <dl class="flex flex-col justify-between">
                                         @if($game->isTournamentMode())

@@ -14,7 +14,7 @@ $tabs = [
     <div x-data="{
         selectedIds: [],
         activeTab: 'goalkeepers',
-        players: @json($candidatesByGroup),
+        players: @js($candidatesByGroup),
         maxPlayers: 26,
 
         togglePlayer(id) {

@@ -1,0 +1,698 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/3806.png",
+  "name": "South Africa",
+  "players": [
+    {
+      "contract": "Mar 5, 2014",
+      "dateOfBirth": "Jan 21, 1992",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "175577",
+      "marketValue": "€1.00m",
+      "name": "Ronwen Williams",
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Sep 10, 2024",
+      "dateOfBirth": "Dec 14, 1996",
+      "height": "1,81m",
+      "id": "453370",
+      "marketValue": "€700k",
+      "name": "Sipho Chaine",
+      "number": "16",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Oct 8, 2020",
+      "dateOfBirth": "Apr 2, 1994",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "258304",
+      "marketValue": "€700k",
+      "name": "Ricardo Goss",
+      "number": "22",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 6, 2025",
+      "dateOfBirth": "Feb 12, 1998",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "512979",
+      "marketValue": "€300k",
+      "name": "Renaldo Leaner",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Aug 4, 2019",
+      "dateOfBirth": "Mar 30, 1998",
+      "id": "553452",
+      "marketValue": "€25k",
+      "name": "Andile Mbanjwa",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Aug 8, 2025",
+      "dateOfBirth": "Feb 2, 2001",
+      "id": "889365",
+      "marketValue": "€25k",
+      "name": "Samukelo Xulu",
+      "position": "Goalkeeper"
+    },
+    {
+      "dateOfBirth": "Oct 30, 1999",
+      "height": "1,75m",
+      "id": "579077",
+      "name": "Kopano Thuntsane",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 7, 2024",
+      "dateOfBirth": "Jul 15, 1997",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "445610",
+      "marketValue": "€2.20m",
+      "name": "Siyabonga Ngezana",
+      "number": "21",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 10, 2021",
+      "dateOfBirth": "Sep 22, 1995",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "399068",
+      "marketValue": "€1.40m",
+      "name": "Nkosinathi Sibisi",
+      "number": "19",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 6, 2025",
+      "dateOfBirth": "Feb 24, 1999",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "579124",
+      "marketValue": "€650k",
+      "name": "Thabo Moloisane",
+      "number": "28",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 9, 2022",
+      "dateOfBirth": "Oct 31, 1992",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "43030",
+      "marketValue": "€600k",
+      "name": "Grant Kekana",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Nov 30, 2014",
+      "dateOfBirth": "Sep 25, 1993",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "234019",
+      "marketValue": "€250k",
+      "name": "Kwanda Mngonyama",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 4, 2016",
+      "dateOfBirth": "Feb 1, 1990",
+      "foot": "right",
+      "id": "110303",
+      "marketValue": "€150k",
+      "name": "Ramahlwe Mphahlele",
+      "position": "Centre-Back"
+    },
+    {
+      "dateOfBirth": "Mar 15, 2000",
+      "foot": "left",
+      "id": "984304",
+      "marketValue": "€100k",
+      "name": "Thabang Molaoa",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Aug 11, 2025",
+      "dateOfBirth": "Feb 13, 1995",
+      "foot": "right",
+      "id": "553453",
+      "name": "Harold Majadibodu",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Aug 8, 2025",
+      "dateOfBirth": "Mar 16, 2004",
+      "height": "1,91m",
+      "id": "1317634",
+      "name": "Malibongwe Khoza",
+      "position": "Centre-Back"
+    },
+    {
+      "dateOfBirth": "May 9, 2005",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "1245612",
+      "name": "Tylon Smith",
+      "number": "2",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 6, 2025",
+      "dateOfBirth": "Feb 5, 2004",
+      "foot": "right",
+      "id": "1283140",
+      "name": "Khulumani Ndamane",
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 10, 2025",
+      "dateOfBirth": "Sep 19, 2005",
+      "foot": "left",
+      "height": "1,77m",
+      "id": "1378320",
+      "name": "Mbekezeli Mbokazi",
+      "number": "14",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 18, 2016",
+      "dateOfBirth": "Jul 22, 1995",
+      "foot": "left",
+      "height": "1,67m",
+      "id": "353432",
+      "marketValue": "€1.60m",
+      "name": "Aubrey Modiba",
+      "number": "6",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Nov 15, 2024",
+      "dateOfBirth": "Dec 23, 1996",
+      "foot": "left",
+      "id": "478520",
+      "marketValue": "€1.20m",
+      "name": "Fawaaz Basadien",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Oct 9, 2021",
+      "dateOfBirth": "Jun 28, 1996",
+      "foot": "left",
+      "height": "1,72m",
+      "id": "538416",
+      "marketValue": "€550k",
+      "name": "Terrence Mashego",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 10, 2025",
+      "dateOfBirth": "Mar 15, 2004",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "1175086",
+      "marketValue": "€200k",
+      "name": "Samukele Kabini",
+      "number": "18",
+      "position": "Left-Back"
+    },
+    {
+      "dateOfBirth": "Aug 8, 2003",
+      "id": "1279745",
+      "name": "Vuyo Letlapa",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Mar 25, 2022",
+      "dateOfBirth": "Apr 26, 1995",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "450806",
+      "marketValue": "€1.40m",
+      "name": "Khuliso Mudau",
+      "number": "20",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Mar 25, 2015",
+      "dateOfBirth": "Aug 6, 1993",
+      "foot": "right",
+      "height": "1,70m",
+      "id": "297509",
+      "marketValue": "€1.20m",
+      "name": "Thapelo Morena",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Aug 4, 2019",
+      "dateOfBirth": "Sep 11, 1994",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "435086",
+      "marketValue": "€1.20m",
+      "name": "Nyiko Mobbie",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 6, 2025",
+      "dateOfBirth": "Nov 24, 1996",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "514175",
+      "marketValue": "€1.20m",
+      "name": "Deano Van Rooyen",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jul 13, 2022",
+      "dateOfBirth": "Mar 31, 2001",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "659775",
+      "marketValue": "€850k",
+      "name": "Kegan Johannes",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Sep 9, 2023",
+      "dateOfBirth": "Apr 30, 2000",
+      "foot": "right",
+      "height": "1,67m",
+      "id": "579037",
+      "marketValue": "€750k",
+      "name": "Thabiso Monyane",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Sep 5, 2025",
+      "dateOfBirth": "Jun 6, 1999",
+      "height": "1,74m",
+      "id": "801354",
+      "marketValue": "€700k",
+      "name": "Zuko Mdunyelwa",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Nov 15, 2025",
+      "dateOfBirth": "Jan 14, 1999",
+      "id": "1109254",
+      "marketValue": "€400k",
+      "name": "Thabang Matuludi",
+      "number": "25",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Aug 8, 2025",
+      "dateOfBirth": "Sep 27, 1991",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "282407",
+      "marketValue": "€100k",
+      "name": "Wayde Jooste",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Mar 24, 2018",
+      "dateOfBirth": "Jan 24, 1997",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "436372",
+      "marketValue": "€2.40m",
+      "name": "Teboho Mokoena",
+      "number": "4",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 17, 2023",
+      "dateOfBirth": "May 14, 1995",
+      "height": "1,80m",
+      "id": "495271",
+      "marketValue": "€500k",
+      "name": "Bathusi Aubaas",
+      "number": "15",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jul 22, 2017",
+      "dateOfBirth": "Mar 22, 1998",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "436374",
+      "marketValue": "€800k",
+      "name": "Sipho Mbule",
+      "number": "17",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Sep 24, 2022",
+      "dateOfBirth": "Mar 10, 2000",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "467616",
+      "marketValue": "€700k",
+      "name": "Luke Le Roux",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Sep 6, 2024",
+      "dateOfBirth": "Mar 6, 2000",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "735697",
+      "marketValue": "€350k",
+      "name": "Thalente Mbatha",
+      "number": "5",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 9, 2022",
+      "dateOfBirth": "Mar 3, 1999",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "401736",
+      "marketValue": "€275k",
+      "name": "Yaya Sithole",
+      "number": "13",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 10, 2025",
+      "dateOfBirth": "Oct 22, 1999",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "746535",
+      "marketValue": "€250k",
+      "name": "Ndamulelo Maphangule",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Aug 11, 2025",
+      "dateOfBirth": "Apr 30, 2004",
+      "height": "1,73m",
+      "id": "1041478",
+      "marketValue": "€50k",
+      "name": "Ntando Nkosi",
+      "position": "Central Midfield"
+    },
+    {
+      "dateOfBirth": "Aug 23, 2001",
+      "foot": "right",
+      "id": "1210357",
+      "name": "Masindi Nemtajela",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 6, 2025",
+      "dateOfBirth": "Feb 19, 2005",
+      "id": "1404746",
+      "name": "Simphiwe Selepe",
+      "position": "Central Midfield"
+    },
+    {
+      "dateOfBirth": "Jan 1, 2004",
+      "id": "1430687",
+      "name": "Momelezi Dlambewu",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Mar 2, 2025",
+      "dateOfBirth": "Dec 1, 1995",
+      "foot": "left",
+      "height": "1,67m",
+      "id": "560463",
+      "marketValue": "€1.50m",
+      "name": "Neo Maema",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Mar 21, 2024",
+      "dateOfBirth": "Apr 4, 1998",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "555606",
+      "marketValue": "€1.40m",
+      "name": "Patrick Maswanganyi",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jan 21, 2024",
+      "dateOfBirth": "May 5, 2001",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "804472",
+      "marketValue": "€1.00m",
+      "name": "Jayden Adams",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Aug 8, 2025",
+      "dateOfBirth": "May 28, 1995",
+      "foot": "right",
+      "height": "1,61m",
+      "id": "636981",
+      "marketValue": "€850k",
+      "name": "Ndabayithethwa Ndlondlo",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Nov 20, 2018",
+      "dateOfBirth": "May 13, 1993",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "370663",
+      "marketValue": "€750k",
+      "name": "Fortune Makaringe",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Oct 14, 2025",
+      "dateOfBirth": "Jan 20, 2004",
+      "id": "965991",
+      "marketValue": "€550k",
+      "name": "Mduduzi Shabalala",
+      "number": "26",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Oct 11, 2020",
+      "dateOfBirth": "Jul 3, 1993",
+      "foot": "right",
+      "height": "1,63m",
+      "id": "417536",
+      "marketValue": "€400k",
+      "name": "Thabiso Kutumela",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Oct 11, 2024",
+      "dateOfBirth": "Feb 15, 2000",
+      "id": "1106548",
+      "marketValue": "€150k",
+      "name": "Sinoxolo Kwayiba",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 11, 2024",
+      "dateOfBirth": "Oct 23, 2004",
+      "foot": "right",
+      "height": "1,66m",
+      "id": "1125037",
+      "marketValue": "€800k",
+      "name": "Relebohile Mofokeng",
+      "number": "10",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Dec 26, 2025",
+      "dateOfBirth": "Jul 15, 2005",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "1159786",
+      "marketValue": "€800k",
+      "name": "Shandre Campbell",
+      "number": "24",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Sep 5, 2014",
+      "dateOfBirth": "Jan 22, 1993",
+      "foot": "left",
+      "height": "1,70m",
+      "id": "234006",
+      "marketValue": "€600k",
+      "name": "Keagan Dolly",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Nov 21, 2023",
+      "dateOfBirth": "Aug 25, 2001",
+      "foot": "right",
+      "height": "1,71m",
+      "id": "673381",
+      "marketValue": "€600k",
+      "name": "Oswin Appollis",
+      "number": "7",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 6, 2025",
+      "dateOfBirth": "Oct 2, 2000",
+      "id": "844485",
+      "marketValue": "€350k",
+      "name": "Tshepang Moremi",
+      "number": "8",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Aug 8, 2025",
+      "dateOfBirth": "Dec 21, 1994",
+      "foot": "left",
+      "height": "1,70m",
+      "id": "466249",
+      "marketValue": "€300k",
+      "name": "Tebogo Tlolane",
+      "position": "Left Winger"
+    },
+    {
+      "dateOfBirth": "Jan 3, 1997",
+      "foot": "right",
+      "height": "1,70m",
+      "id": "436370",
+      "name": "Keletso Makgalwa",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Mar 25, 2017",
+      "dateOfBirth": "May 13, 1994",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "312239",
+      "marketValue": "€1.50m",
+      "name": "Percy Tau",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Mar 21, 2024",
+      "dateOfBirth": "Sep 8, 1999",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "968496",
+      "marketValue": "€900k",
+      "name": "Elias Mokwana",
+      "number": "12",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Aug 8, 2025",
+      "dateOfBirth": "Sep 17, 1996",
+      "foot": "right",
+      "height": "1,66m",
+      "id": "353057",
+      "marketValue": "€550k",
+      "name": "Thamsanqa Masiya",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Sep 5, 2025",
+      "dateOfBirth": "Jul 21, 2002",
+      "id": "994370",
+      "marketValue": "€550k",
+      "name": "Kamogelo Sebelebele",
+      "position": "Right Winger"
+    },
+    {
+      "dateOfBirth": "Apr 15, 1993",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "217498",
+      "marketValue": "€350k",
+      "name": "Menzi Masuku",
+      "position": "Right Winger"
+    },
+    {
+      "dateOfBirth": "Jan 23, 2003",
+      "id": "1439952",
+      "name": "Siyabonga Mashinini",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 6, 2025",
+      "dateOfBirth": "Nov 9, 2004",
+      "foot": "left",
+      "height": "1,67m",
+      "id": "1236525",
+      "name": "Mohau Nkota",
+      "number": "11",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Oct 8, 2020",
+      "dateOfBirth": "Sep 3, 2000",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "467623",
+      "marketValue": "€9.00m",
+      "name": "Lyle Foster",
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Mar 21, 2024",
+      "dateOfBirth": "Dec 19, 1995",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "337884",
+      "marketValue": "€1.80m",
+      "name": "Iqraam Rayners",
+      "number": "27",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Sep 24, 2022",
+      "dateOfBirth": "Mar 19, 1997",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "596913",
+      "marketValue": "€650k",
+      "name": "Zakhele Lepasa",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 10, 2021",
+      "dateOfBirth": "Jun 5, 2000",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "746781",
+      "marketValue": "€650k",
+      "name": "Evidence Makgopa",
+      "number": "23",
+      "position": "Centre-Forward"
+    },
+    {
+      "dateOfBirth": "May 5, 2001",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "844350",
+      "marketValue": "€500k",
+      "name": "Ashley Cupido",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 10, 2025",
+      "dateOfBirth": "Feb 23, 2002",
+      "id": "1028883",
+      "marketValue": "€500k",
+      "name": "Yanela Mbuthuma",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": null,
+  "stadiumSeats": null,
+  "transfermarktId": "3806"
+}

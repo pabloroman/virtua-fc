@@ -22,10 +22,10 @@
                     @php
                         $squadNavItems = [
                             ['href' => route('game.squad', $game->id), 'label' => __('squad.squad'), 'active' => false],
-                            ['href' => route('game.squad.development', $game->id), 'label' => __('squad.development'), 'active' => false],
                             ['href' => route('game.squad.stats', $game->id), 'label' => __('squad.stats'), 'active' => true],
                         ];
                         if ($game->isCareerMode()) {
+                            $squadNavItems[] = ['href' => route('game.squad.development', $game->id), 'label' => __('squad.development'), 'active' => false];
                             $squadNavItems[] = ['href' => route('game.squad.academy', $game->id), 'label' => __('squad.academy'), 'active' => false];
                         }
                     @endphp

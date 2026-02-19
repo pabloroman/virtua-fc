@@ -1,0 +1,579 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/3589.png",
+  "name": "South Korea",
+  "players": [
+    {
+      "contract": "Jul 24, 2022",
+      "dateOfBirth": "Oct 15, 1997",
+      "foot": "right",
+      "height": "1,94m",
+      "id": "508237",
+      "marketValue": "€850k",
+      "name": "Bum-keun Song",
+      "number": "12",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Nov 14, 2017",
+      "dateOfBirth": "Sep 25, 1991",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "260171",
+      "marketValue": "€850k",
+      "name": "Hyeon-woo Jo",
+      "number": "21",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Aug 14, 2013",
+      "dateOfBirth": "Sep 30, 1990",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "92076",
+      "marketValue": "€700k",
+      "name": "Seung-gyu Kim",
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Nov 17, 2020",
+      "dateOfBirth": "Aug 30, 1993",
+      "height": "1,86m",
+      "id": "132532",
+      "marketValue": "€600k",
+      "name": "Chang-geun Lee",
+      "position": "Goalkeeper"
+    },
+    {
+      "dateOfBirth": "Mar 3, 1997",
+      "height": "1,86m",
+      "id": "652530",
+      "marketValue": "€500k",
+      "name": "Dong-heon Kim",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Aug 31, 2017",
+      "dateOfBirth": "Nov 15, 1996",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "503482",
+      "marketValue": "€45.00m",
+      "name": "Min-jae Kim",
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jul 20, 2022",
+      "dateOfBirth": "Nov 17, 1996",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "561212",
+      "marketValue": "€2.00m",
+      "name": "Yu-min Cho",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 6, 2024",
+      "dateOfBirth": "May 7, 1997",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "658776",
+      "marketValue": "€1.00m",
+      "name": "Seung-wook Park",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 10, 2025",
+      "dateOfBirth": "Jun 17, 2002",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "706963",
+      "marketValue": "€1.00m",
+      "name": "Han-beom Lee",
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jul 24, 2022",
+      "dateOfBirth": "Dec 12, 2000",
+      "foot": "left",
+      "height": "1,89m",
+      "id": "568633",
+      "marketValue": "€850k",
+      "name": "Ju-sung Kim",
+      "number": "14",
+      "position": "Centre-Back"
+    },
+    {
+      "dateOfBirth": "Dec 24, 2004",
+      "foot": "both",
+      "height": "1,92m",
+      "id": "709767",
+      "marketValue": "€600k",
+      "name": "Ji-soo Kim",
+      "number": "25",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jul 11, 2025",
+      "dateOfBirth": "Sep 17, 2000",
+      "foot": "left",
+      "height": "1,87m",
+      "id": "645847",
+      "marketValue": "€600k",
+      "name": "Tae-hyeon Kim",
+      "number": "26",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Oct 7, 2017",
+      "dateOfBirth": "Jan 31, 1992",
+      "foot": "left",
+      "height": "1,89m",
+      "id": "260189",
+      "marketValue": "€500k",
+      "name": "Kyung-won Kwon",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jul 11, 2025",
+      "dateOfBirth": "Nov 30, 2001",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "784335",
+      "marketValue": "€350k",
+      "name": "Jun-soo Byeon",
+      "number": "20",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jul 11, 2025",
+      "dateOfBirth": "Nov 23, 2002",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "1087486",
+      "marketValue": "€325k",
+      "name": "Myeong-kwan Seo",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Nov 14, 2024",
+      "dateOfBirth": "Jul 28, 2002",
+      "foot": "left",
+      "height": "1,74m",
+      "id": "639027",
+      "marketValue": "€650k",
+      "name": "Tae-seok Lee",
+      "number": "13",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Mar 21, 2024",
+      "dateOfBirth": "Nov 4, 1993",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "314773",
+      "marketValue": "€600k",
+      "name": "Myung-jae Lee",
+      "number": "2",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jul 11, 2025",
+      "dateOfBirth": "Dec 19, 1996",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "508366",
+      "marketValue": "€550k",
+      "name": "Tae-hyeon Kim",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jul 11, 2025",
+      "dateOfBirth": "Aug 2, 2001",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "677469",
+      "marketValue": "€400k",
+      "name": "Hyun-taek Cho",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 20, 2023",
+      "dateOfBirth": "Dec 5, 1998",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "639414",
+      "marketValue": "€2.00m",
+      "name": "Young-woo Seol",
+      "number": "22",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Sep 7, 2018",
+      "dateOfBirth": "Aug 1, 1995",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "524592",
+      "marketValue": "€850k",
+      "name": "Moon-hwan Kim",
+      "number": "15",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 5, 2025",
+      "dateOfBirth": "Apr 17, 1999",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "630167",
+      "marketValue": "€700k",
+      "name": "Jun Choi",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 6, 2024",
+      "dateOfBirth": "Aug 16, 2002",
+      "height": "1,80m",
+      "id": "970944",
+      "marketValue": "€650k",
+      "name": "Jae-won Hwang",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Sep 7, 2018",
+      "dateOfBirth": "Sep 20, 1996",
+      "foot": "both",
+      "height": "1,77m",
+      "id": "365394",
+      "marketValue": "€12.00m",
+      "name": "In-beom Hwang",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 16, 2023",
+      "dateOfBirth": "Sep 10, 1993",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "374076",
+      "marketValue": "€1.30m",
+      "name": "Yong-woo Park",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Nov 14, 2020",
+      "dateOfBirth": "Nov 18, 1997",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "429696",
+      "marketValue": "€900k",
+      "name": "Du-jae Won",
+      "number": "5",
+      "position": "Defensive Midfield"
+    },
+    {
+      "dateOfBirth": "Mar 13, 2001",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "550957",
+      "marketValue": "€750k",
+      "name": "Hyeok-kyu Kwon",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Nov 21, 2023",
+      "dateOfBirth": "Oct 23, 1995",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "557469",
+      "marketValue": "€650k",
+      "name": "Jin-seob Park",
+      "number": "16",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jul 7, 2025",
+      "dateOfBirth": "Mar 12, 1998",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "730142",
+      "marketValue": "€600k",
+      "name": "Min-woo Seo",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Sep 6, 2025",
+      "dateOfBirth": "Jul 29, 2003",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "613192",
+      "marketValue": "€3.00m",
+      "name": "Jens Castrop",
+      "number": "23",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 11, 2019",
+      "dateOfBirth": "Mar 17, 1997",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "282689",
+      "marketValue": "€1.20m",
+      "name": "Seung-ho Paik",
+      "number": "8",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jul 7, 2025",
+      "dateOfBirth": "Dec 26, 1999",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "782763",
+      "marketValue": "€900k",
+      "name": "Bong-soo Kim",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jan 15, 2022",
+      "dateOfBirth": "Feb 24, 1997",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "365377",
+      "marketValue": "€800k",
+      "name": "Jin-gyu Kim",
+      "number": "24",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jul 7, 2025",
+      "dateOfBirth": "May 31, 2004",
+      "foot": "right",
+      "height": "1,71m",
+      "id": "711708",
+      "marketValue": "€300k",
+      "name": "Sang-yun Kang",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Sep 5, 2019",
+      "dateOfBirth": "Feb 19, 2001",
+      "foot": "left",
+      "height": "1,73m",
+      "id": "557149",
+      "marketValue": "€30.00m",
+      "name": "Kang-in Lee",
+      "number": "18",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Mar 27, 2015",
+      "dateOfBirth": "Aug 10, 1992",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "314398",
+      "marketValue": "€2.50m",
+      "name": "Jae-sung Lee",
+      "number": "10",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 6, 2024",
+      "dateOfBirth": "Aug 21, 2003",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "912081",
+      "marketValue": "€1.50m",
+      "name": "Jun-ho Bae",
+      "number": "17",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Sep 5, 2019",
+      "dateOfBirth": "Sep 20, 1997",
+      "foot": "left",
+      "height": "1,76m",
+      "id": "558086",
+      "marketValue": "€1.20m",
+      "name": "Dong-gyeong Lee",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jul 7, 2025",
+      "dateOfBirth": "Mar 6, 2003",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "839460",
+      "marketValue": "€200k",
+      "name": "Seung-won Lee",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Dec 30, 2010",
+      "dateOfBirth": "Jul 8, 1992",
+      "foot": "both",
+      "height": "1,84m",
+      "id": "91845",
+      "marketValue": "€38.00m",
+      "name": "Heung-min Son",
+      "number": "7",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jan 15, 2022",
+      "dateOfBirth": "May 9, 2002",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "706968",
+      "marketValue": "€1.20m",
+      "name": "Ji-sung Eom",
+      "number": "20",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Nov 17, 2018",
+      "dateOfBirth": "Aug 12, 1996",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "508381",
+      "marketValue": "€900k",
+      "name": "Sang-ho Na",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "May 28, 2018",
+      "dateOfBirth": "Jun 9, 1992",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "225342",
+      "marketValue": "€550k",
+      "name": "Seon-min Moon",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Mar 25, 2025",
+      "dateOfBirth": "Apr 16, 2006",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "1004327",
+      "marketValue": "€3.50m",
+      "name": "Min-hyeok Yang",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Sep 7, 2023",
+      "dateOfBirth": "May 25, 2002",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "853110",
+      "marketValue": "€2.00m",
+      "name": "Hyun-jun Yang",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jul 11, 2025",
+      "dateOfBirth": "Feb 27, 1997",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "497440",
+      "marketValue": "€650k",
+      "name": "Seung-won Jeong",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jul 7, 2025",
+      "dateOfBirth": "Sep 24, 1996",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "528052",
+      "marketValue": "€450k",
+      "name": "Jae-hyeon Mo",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 5, 2025",
+      "dateOfBirth": "Sep 9, 1999",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "560797",
+      "marketValue": "€375k",
+      "name": "Jin-woo Jeon",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Sep 1, 2016",
+      "dateOfBirth": "Jan 26, 1996",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "292246",
+      "marketValue": "€22.00m",
+      "name": "Hee-chan Hwang",
+      "number": "11",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Sep 7, 2021",
+      "dateOfBirth": "Jan 25, 1998",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "652537",
+      "marketValue": "€4.50m",
+      "name": "Gue-sung Cho",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Nov 11, 2022",
+      "dateOfBirth": "Apr 12, 2001",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "639246",
+      "marketValue": "€3.00m",
+      "name": "Hyeon-gyu Oh",
+      "number": "19",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 9, 2021",
+      "dateOfBirth": "Apr 1, 2002",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "638571",
+      "marketValue": "€3.00m",
+      "name": "Sang-bin Jeong",
+      "number": "25",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Mar 21, 2024",
+      "dateOfBirth": "Apr 13, 1990",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "264082",
+      "marketValue": "€800k",
+      "name": "Min-kyu Joo",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 6, 2024",
+      "dateOfBirth": "Jan 15, 1999",
+      "foot": "left",
+      "height": "1,93m",
+      "id": "402167",
+      "marketValue": "€800k",
+      "name": "Se-hun Oh",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jul 7, 2025",
+      "dateOfBirth": "Oct 14, 2000",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "545501",
+      "marketValue": "€450k",
+      "name": "Ho-jae Lee",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": null,
+  "stadiumSeats": null,
+  "transfermarktId": "3589"
+}
