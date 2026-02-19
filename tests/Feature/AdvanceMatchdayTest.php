@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use App\Http\Actions\AdvanceMatchday;
-use App\Http\Actions\FinalizeMatch;
+use App\Modules\Match\Services\MatchFinalizationService;
 use App\Models\Competition;
 use App\Models\CupTie;
 use App\Models\Game;
@@ -123,7 +123,7 @@ class AdvanceMatchdayTest extends TestCase
 
         // Finalize the user's match (standings are deferred until finalization)
         $this->game->refresh();
-        app(FinalizeMatch::class)->finalizeMatch(
+        app(MatchFinalizationService::class)->finalize(
             GameMatch::find($this->game->pending_finalization_match_id),
             $this->game,
         );
@@ -174,7 +174,7 @@ class AdvanceMatchdayTest extends TestCase
 
         // Finalize the user's match (standings are deferred until finalization)
         $this->game->refresh();
-        app(FinalizeMatch::class)->finalizeMatch(
+        app(MatchFinalizationService::class)->finalize(
             GameMatch::find($this->game->pending_finalization_match_id),
             $this->game,
         );
@@ -268,7 +268,7 @@ class AdvanceMatchdayTest extends TestCase
 
         // Cup tie resolution is deferred until match finalization
         $this->game->refresh();
-        app(FinalizeMatch::class)->finalizeMatch(
+        app(MatchFinalizationService::class)->finalize(
             GameMatch::find($this->game->pending_finalization_match_id),
             $this->game,
         );
