@@ -41,6 +41,11 @@ class ShowOnboarding
             return redirect()->route('show-game', $gameId);
         }
 
+        // Tournament mode uses squad selection instead of budget allocation
+        if ($game->isTournamentMode()) {
+            return redirect()->route('game.squad-selection', $gameId);
+        }
+
         // Ensure we have financial projections
         $finances = $game->currentFinances;
         if (!$finances) {

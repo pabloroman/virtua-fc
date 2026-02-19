@@ -24,6 +24,8 @@ use App\Http\Actions\SubmitRenewalOffer;
 use App\Http\Actions\RejectTransferOffer;
 use App\Http\Actions\RequestLoan;
 use App\Http\Actions\SaveLineup;
+use App\Http\Actions\SaveSquadSelection;
+use App\Http\Views\ShowSquadSelection;
 use App\Http\Actions\SubmitScoutSearch;
 use App\Http\Actions\SubmitPreContractOffer;
 use App\Http\Actions\SubmitTransferBid;
@@ -140,6 +142,10 @@ Route::middleware('auth')->group(function () {
         // Onboarding
         Route::get('/game/{gameId}/onboarding', ShowOnboarding::class)->name('game.onboarding');
         Route::post('/game/{gameId}/onboarding', CompleteOnboarding::class)->name('game.onboarding.complete');
+
+        // Squad Selection (Tournament mode onboarding)
+        Route::get('/game/{gameId}/squad-selection', ShowSquadSelection::class)->name('game.squad-selection');
+        Route::post('/game/{gameId}/squad-selection', SaveSquadSelection::class)->name('game.squad-selection.save');
 
         // Game Setup Status (polling endpoint)
         Route::get('/game/{gameId}/setup-status', GameSetupStatus::class)->name('game.setup-status');

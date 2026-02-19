@@ -13,11 +13,18 @@ return [
     'defenders' => 'Defensas',
     'midfielders' => 'Centrocampistas',
     'forwards' => 'Delanteros',
+    'goalkeepers_short' => 'PO',
+    'defenders_short' => 'DEF',
+    'midfielders_short' => 'MC',
+    'forwards_short' => 'DEL',
 
     // Columns
     'number_short' => '#',
     'technical' => 'TEC',
     'physical' => 'FIS',
+    'technical_abbr' => 'TEC',
+    'physical_abbr' => 'FIS',
+    'years_abbr' => 'años',
     'fitness' => 'FOR',
     'morale' => 'MOR',
     'overall' => 'MED',
@@ -236,4 +243,11 @@ return [
     'academy_tier_3' => 'Cantera de Élite',
     'academy_tier_4' => 'Cantera de Clase Mundial',
     'academy_tier_unknown' => 'Desconocido',
+
+    // Squad selection (tournament onboarding)
+    'squad_selection_title' => 'Selecciona tu convocatoria',
+    'squad_selection_subtitle' => 'Elige 26 jugadores para el torneo',
+    'confirm_squad' => 'Confirmar convocatoria',
+    'squad_confirmed' => '¡Convocatoria confirmada!',
+    'invalid_selection' => 'Selección inválida. Verifica los jugadores seleccionados.',
 ];

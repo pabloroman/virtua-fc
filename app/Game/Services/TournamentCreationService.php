@@ -26,7 +26,7 @@ class TournamentCreationService
             'season' => '2025',
             'current_date' => '2026-06-11',
             'current_matchday' => 0,
-            'needs_onboarding' => false,
+            'needs_onboarding' => true,
             'setup_completed_at' => null,
         ]);
 
