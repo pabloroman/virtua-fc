@@ -531,6 +531,13 @@ class TransferService
             ->where('status', TransferOffer::STATUS_PENDING)
             ->update(['status' => TransferOffer::STATUS_REJECTED, 'resolved_at' => $game->current_date]);
 
+        // Pre-contract transfers always wait until end of season — the player's
+        // current contract is still valid until June regardless of window status.
+        if ($offer->isPreContract()) {
+            $offer->update(['status' => TransferOffer::STATUS_AGREED, 'resolved_at' => $game->current_date]);
+            return false;
+        }
+
         // If transfer window is open, complete immediately
         if ($game->isTransferWindowOpen()) {
             $this->completeTransfer($offer, $game);
