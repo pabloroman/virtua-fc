@@ -49,6 +49,7 @@ export default function liveMatch(config) {
         // Tactical panel state
         tacticalPanelOpen: false,
         tacticalTab: 'substitutions',
+        injuryAlertPlayer: null, // Name of the player that triggered auto-open
 
         // Substitution state
         selectedPlayerOut: null,
@@ -159,7 +160,8 @@ export default function liveMatch(config) {
 
             // Auto-open tactical panel on substitutions tab when user's player gets injured
             if (event.type === 'injury' && event.teamId === this.userTeamId && this.canSubstitute && this.hasWindowsLeft) {
-                this.openTacticalPanel('substitutions');
+                this.injuryAlertPlayer = event.playerName;
+                this.openTacticalPanel('substitutions', true);
                 // Pre-select the injured player as "player out"
                 const injured = this.availableLineupForPicker.find(p => p.id === event.gamePlayerId);
                 if (injured) {
@@ -259,7 +261,7 @@ export default function liveMatch(config) {
         // Tactical panel methods
         // =============================
 
-        openTacticalPanel(tab = 'substitutions') {
+        openTacticalPanel(tab = 'substitutions', keepInjuryAlert = false) {
             this.tacticalTab = tab;
             this.tacticalPanelOpen = true;
             this.selectedPlayerOut = null;
@@ -267,6 +269,9 @@ export default function liveMatch(config) {
             this.pendingSubs = [];
             this.pendingFormation = null;
             this.pendingMentality = null;
+            if (!keepInjuryAlert) {
+                this.injuryAlertPlayer = null;
+            }
             document.body.classList.add('overflow-y-hidden');
         },
 
@@ -277,6 +282,7 @@ export default function liveMatch(config) {
             this.pendingSubs = [];
             this.pendingFormation = null;
             this.pendingMentality = null;
+            this.injuryAlertPlayer = null;
             document.body.classList.remove('overflow-y-hidden');
         },
 

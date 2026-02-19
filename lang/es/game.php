@@ -162,6 +162,7 @@ return [
     'live_other_results' => 'Otros',
     'live_continue_results' => 'Ver Resultados Completos',
     'live_continue_dashboard' => 'Continuar',
+    'live_injury_alert' => 'se ha lesionado. Realiza una sustitución.',
     'live_injuries_report' => 'Parte de Lesiones',
     'live_weeks_out' => ':count semana de baja|:count semanas de baja',
 
