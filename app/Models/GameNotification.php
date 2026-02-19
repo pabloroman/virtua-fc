@@ -206,7 +206,7 @@ class GameNotification extends Model
             'transfers' => 'game.transfers',
             'scouting' => 'game.scouting',
             'competition' => 'game.competition',
-            'academy' => 'game.academy',
+            'academy' => 'game.squad.academy',
             default => 'game.squad.academy',
         };
     }
