@@ -6,7 +6,7 @@ Redesign the youth academy from a passive slot machine into an active management
 
 **Current state:** Investment is set at season start, prospects randomly spawn with full stats revealed, only action is "Promote to First Team."
 
-**New state:** Batch of prospects arrives at season start with hidden stats, stats reveal gradually, players develop toward their potential over matchdays, and two mandatory evaluation moments force decisions (dismiss / loan / keep / promote) under limited capacity pressure.
+**New state:** Batch of prospects arrives at season start with hidden stats, stats reveal gradually, players develop toward their potential over matchdays, and a mandatory end-of-season evaluation forces decisions (dismiss / loan / keep / promote) under limited capacity pressure.
 
 ---
 
@@ -22,19 +22,17 @@ SEASON START (after budget allocation)
 ├── Matchday ~10: FIRST REVEAL → Technical & Physical abilities become visible
 ├── Matchdays 10-18: You see who can play. Anticipation builds.
 │
-├── Matchday 19: MID-SEASON EVALUATION ──────────────────────────────┐
-│   SECOND REVEAL → Potential range now visible                      │
-│   For each player, you MUST choose:                                │
-│   • Keep in academy (continues developing)                         │
-│   • Promote to first team (joins squad immediately)                │
-│   • Loan out (develops 1.5× faster, returns end of season)         │
-│   • Dismiss (gone forever)                                         │
-│                                                                    │
+├── Matchday 19: SECOND REVEAL → Potential range now visible
+│
 ├── Matchdays 20-38: Remaining players develop. Loaned ones grow faster off-screen.
 │
-└── SEASON END: END-OF-SEASON EVALUATION ────────────────────────────┐
+└── SEASON END: EVALUATION ──────────────────────────────────────────┐
     Loaned players return (occupying seats again)                    │
-    For each player, same 4 choices                                  │
+    For each player, you MUST choose:                                │
+    • Keep in academy (continues developing)                         │
+    • Promote to first team (joins squad immediately)                │
+    • Loan out (develops 1.5× faster, returns end of season)         │
+    • Dismiss (gone forever)                                         │
     BUT: next season's batch is coming → need to free seats          │
     AND: players aged 21+ MUST be promoted or dismissed              │
 ```
@@ -116,7 +114,7 @@ Loaned players develop 1.5× faster but are invisible until they return at seaso
 
 ## Evaluation Screens
 
-At matchday 19 and season end, a **mandatory evaluation screen** appears. The user cannot advance matchdays until every academy player has been assigned an action. This uses the `pending_actions` blocking mechanism.
+At season end, a **mandatory evaluation screen** appears. The user cannot advance matchdays until every academy player has been assigned an action. This uses the `pending_actions` blocking mechanism.
 
 **The evaluation screen shows:**
 - All academy players with their currently-revealed stats
@@ -130,7 +128,7 @@ At matchday 19 and season end, a **mandatory evaluation screen** appears. The us
 
 | Action  | Effect | Seat Impact |
 |---------|--------|-------------|
-| Keep    | Stays in academy, continues developing next half/season | Keeps seat |
+| Keep    | Stays in academy, continues developing next season | Keeps seat |
 | Promote | Joins first team with 2-year contract | Frees seat |
 | Loan    | Leaves academy, develops 1.5× faster, returns end of season | Frees seat now, takes seat later |
 | Dismiss | Permanently removed | Frees seat |
@@ -143,7 +141,7 @@ Deliberately simple — no destination team, no negotiation:
 - Player disappears from academy (frees a seat)
 - Develops at 1.5× rate off-screen
 - Automatically returns at season end (occupies a seat again)
-- Only available at mid-season and end-of-season evaluations
+- Only available at end-of-season evaluation
 - Loaning is a **development accelerator** that costs future capacity pressure
 
 ---
@@ -182,8 +180,7 @@ No `reveal_phase` column needed — computed from `$game->current_matchday`:
 
 ### Season Pipeline Changes
 
-- **YouthAcademyProcessor** (season end): Return loaned players, increment `seasons_in_academy`, generate new batch for next season, add `academy_evaluation` pending action if over capacity
-- **New trigger in AdvanceMatchday**: At matchday 19, add `academy_evaluation` pending action
+- **YouthAcademyProcessor** (season end): Return loaned players, increment `seasons_in_academy`, generate new batch for next season, add `academy_evaluation` pending action if players exist
 
 ### New Actions
 

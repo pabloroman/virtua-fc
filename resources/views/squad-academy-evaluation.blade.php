@@ -13,11 +13,7 @@
                     <div>
                         <h3 class="font-semibold text-xl text-slate-900">{{ __('squad.academy_evaluation') }}</h3>
                         <p class="text-sm text-slate-500 mt-1">
-                            @if($isSeasonEnd)
-                                {{ __('squad.academy_explanation') }}
-                            @else
-                                {{ __('squad.academy_phase_verdict') }}
-                            @endif
+                            {{ __('squad.academy_explanation') }}
                         </p>
                     </div>
 
@@ -40,14 +36,14 @@
 
                 {{-- Info cards --}}
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
-                    @if($loanedCount > 0 && $isSeasonEnd)
+                    @if($loanedCount > 0)
                         <div class="flex items-center gap-2 bg-sky-50 border border-sky-200 rounded-lg px-3 py-2">
                             <svg class="w-4 h-4 text-sky-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 17l-4 4m0 0l-4-4m4 4V3"/></svg>
                             <span class="text-sm text-sky-700">{{ trans_choice('squad.academy_returning_loans', $loanedCount, ['count' => $loanedCount]) }}</span>
                         </div>
                     @endif
 
-                    @if($arrivalsRange['max'] > 0 && $isSeasonEnd)
+                    @if($arrivalsRange['max'] > 0)
                         <div class="flex items-center gap-2 bg-lime-50 border border-lime-200 rounded-lg px-3 py-2">
                             <svg class="w-4 h-4 text-lime-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                             <span class="text-sm text-lime-700">{{ __('squad.academy_incoming', ['min' => $arrivalsRange['min'], 'max' => $arrivalsRange['max']]) }}</span>
@@ -208,7 +204,7 @@
                                             {{ __('squad.academy_promote') }}
                                         </button>
 
-                                        @unless($isSeasonEnd && $mustDecide)
+                                        @unless($mustDecide)
                                             <button type="button"
                                                 @click="setDecision('{{ $prospect->id }}', 'loan')"
                                                 :class="decisions['{{ $prospect->id }}'] === 'loan' ? 'bg-indigo-600 text-white ring-2 ring-indigo-300' : 'bg-slate-100 text-slate-600 hover:bg-indigo-50 hover:text-indigo-700'"
@@ -281,7 +277,7 @@
                                             {{ __('squad.academy_promote') }}
                                         </button>
 
-                                        @unless($isSeasonEnd && $mustDecide)
+                                        @unless($mustDecide)
                                             <button type="button"
                                                 @click="setDecision('{{ $prospect->id }}', 'loan')"
                                                 :class="decisions['{{ $prospect->id }}'] === 'loan' ? 'bg-indigo-600 text-white ring-2 ring-indigo-300' : 'bg-slate-100 text-slate-600'"
@@ -335,7 +331,7 @@
                     }
                     // Players without a decision yet count as kept
                     const undecided = this.playerCount - Object.values(this.decisions).filter(v => v).length;
-                    return kept + undecided + {{ $isSeasonEnd ? $loanedCount : 0 }};
+                    return kept + undecided + {{ $loanedCount }};
                 },
 
                 get allDecided() {

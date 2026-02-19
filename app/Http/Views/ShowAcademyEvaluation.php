@@ -29,7 +29,6 @@ class ShowAcademyEvaluation
             ->count();
 
         $revealPhase = YouthAcademyService::getRevealPhase($game);
-        $isSeasonEnd = !$game->isWinterWindowOpen() && !$game->isStartOfWinterWindow();
 
         return view('squad-academy-evaluation', [
             'game' => $game,
@@ -40,7 +39,6 @@ class ShowAcademyEvaluation
             'arrivalsRange' => $arrivalsRange,
             'revealPhase' => $revealPhase,
             'tier' => $tier,
-            'isSeasonEnd' => $isSeasonEnd,
         ]);
     }
 

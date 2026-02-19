@@ -67,11 +67,8 @@ class EvaluateAcademy
             ->where('is_on_loan', true)
             ->count();
 
-        // At mid-season evaluation, loans free seats; at season end, returning loans take seats
-        $isSeasonEnd = !$game->isWinterWindowOpen() && !$game->isStartOfWinterWindow();
-        if ($isSeasonEnd) {
-            $seatsAfter += $loanedCount;
-        }
+        // Returning loans take seats at season end
+        $seatsAfter += $loanedCount;
 
         if ($seatsAfter > $capacity && $capacity > 0) {
             $excess = $seatsAfter - $capacity;

@@ -364,16 +364,7 @@ class MatchdayOrchestrator
         // Develop academy players each matchday
         $this->youthAcademyService->developPlayers($game);
 
-        // Mark players for evaluation at winter window start
-        if ($game->isStartOfWinterWindow()) {
-            AcademyPlayer::where('game_id', $game->id)
-                ->where('team_id', $game->team_id)
-                ->where('is_on_loan', false)
-                ->where('evaluation_needed', false)
-                ->update(['evaluation_needed' => true]);
-        }
-
-        // Add pending action if any players still need evaluation
+        // Add pending action if any players still need evaluation (from season-end)
         $needsEval = AcademyPlayer::where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->where('evaluation_needed', true)
