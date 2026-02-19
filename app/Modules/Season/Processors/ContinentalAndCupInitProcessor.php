@@ -50,7 +50,7 @@ class ContinentalAndCupInitProcessor implements SeasonEndProcessor
     private function initializeSwissCompetitions(Game $game, SeasonTransitionData $data, string $countryCode): void
     {
         $swissIds = $this->countryConfig->swissFormatCompetitionIds($countryCode);
-        $swissPotData = $data->getMetadata('swissPotData', []);
+        $swissPotData = $data->getMetadata(SeasonTransitionData::META_SWISS_POT_DATA, []);
 
         foreach ($swissIds as $competitionId) {
             // Delete stale standings from previous season (teams may have changed)

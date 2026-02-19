@@ -8,7 +8,6 @@ use App\Modules\Season\Services\SeasonSetupRunner;
 use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Squad\Services\InjuryService;
 use App\Modules\Squad\Services\PlayerDevelopmentService;
-use App\Modules\Season\Services\SeasonInitializationService;
 use App\Modules\Season\Processors\LeagueFixtureProcessor;
 use App\Modules\Season\Processors\StandingsResetProcessor;
 use App\Support\Money;
@@ -48,7 +47,6 @@ class SetupNewGame implements ShouldQueue
         ContractService $contractService,
         PlayerDevelopmentService $developmentService,
         SeasonSetupRunner $setupRunner,
-        SeasonInitializationService $seasonInitService,
         LeagueFixtureProcessor $fixtureProcessor,
         StandingsResetProcessor $standingsProcessor,
     ): void {
@@ -78,7 +76,7 @@ class SetupNewGame implements ShouldQueue
                 newSeason: $this->season,
                 competitionId: $this->competitionId,
                 isInitialSeason: true,
-                metadata: $swissPotData ? ['swissPotData' => $swissPotData] : [],
+                metadata: $swissPotData ? [SeasonTransitionData::META_SWISS_POT_DATA => $swissPotData] : [],
             );
 
             $setupRunner->run($game->refresh(), $data);
