@@ -57,9 +57,11 @@ class PlayerGeneratorService
             'transfermarkt_id' => 'gen-' . Str::uuid()->toString(),
             'name' => $name,
             'nationality' => $nationality,
-            'date_of_birth' => $data->dateOfBirth,
+            'date_of_birth' => $data->dateOfBirth->format('Y-m-d'),
             'technical_ability' => $data->technical,
             'physical_ability' => $data->physical,
+            'height' => $identity['height'] ?? null,
+            'foot' => $identity['foot'] ?? null,
         ]);
 
         // Determine market value
@@ -106,22 +108,6 @@ class PlayerGeneratorService
             'potential_high' => $potentialHigh,
             'season_appearances' => 0,
         ]);
-    }
-
-    /**
-     * Generate a name from the identity pool.
-     */
-    public function generateName(): string
-    {
-        return $this->pickRandomIdentity()['name'];
-    }
-
-    /**
-     * Select a nationality from the identity pool.
-     */
-    public function selectNationality(): array
-    {
-        return $this->pickRandomIdentity()['nationality'];
     }
 
     /**
