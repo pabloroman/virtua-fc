@@ -1,4 +1,6 @@
 {
+  "id": "FRA1",
+  "name": "Ligue 1",
   "clubs": [
     {
       "image": "https://tmssl.akamaized.net/images/wappen/big/244.png",
@@ -7038,7 +7040,5 @@
       "stadiumSeats": "15220",
       "transfermarktId": "3911"
     }
-  ],
-  "id": "FR1",
-  "updatedAt": "2026-02-08T15:24:45.381Z"
+  ]
 }

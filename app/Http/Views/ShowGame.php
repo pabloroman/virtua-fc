@@ -4,6 +4,7 @@ namespace App\Http\Views;
 
 use App\Modules\Competition\Services\CalendarService;
 use App\Modules\Notification\Services\NotificationService;
+use App\Modules\Season\Jobs\ProcessSeasonTransition;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GameStanding;
@@ -27,6 +28,15 @@ class ShowGame
         // Redirect to onboarding if setup or onboarding not completed
         if (!$game->isSetupComplete() || $game->needsOnboarding()) {
             return redirect()->route('game.onboarding', $gameId);
+        }
+
+        // Show loading screen while season transition runs in background
+        if ($game->isTransitioningSeason()) {
+            // Re-dispatch if stuck for > 2 minutes
+            if ($game->season_transitioning_at->lt(now()->subMinutes(2))) {
+                ProcessSeasonTransition::dispatch($game->id);
+            }
+            return view('game-setup-loading', ['game' => $game]);
         }
 
         $nextMatch = $this->loadNextMatch($game);

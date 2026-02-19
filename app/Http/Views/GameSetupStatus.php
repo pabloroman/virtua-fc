@@ -12,7 +12,7 @@ class GameSetupStatus
         $game = Game::findOrFail($gameId);
 
         return response()->json([
-            'ready' => $game->isSetupComplete(),
+            'ready' => $game->isSetupComplete() && !$game->isTransitioningSeason(),
         ]);
     }
 }

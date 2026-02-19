@@ -46,7 +46,9 @@ class TeamColors
      * Patterns: solid, stripes, hoops, sash, halves
      */
     private const TEAMS = [
-        // La Liga
+        // =============================================
+        // Spain — La Liga (ESP1)
+        // =============================================
         'Real Madrid' => [
             'pattern' => 'solid',
             'primary' => 'white',
@@ -168,7 +170,9 @@ class TeamColors
             'number' => 'white',
         ],
 
-        // Segunda División
+        // =============================================
+        // Spain — Segunda División (ESP2)
+        // =============================================
         'Deportivo de La Coruña' => [
             'pattern' => 'stripes',
             'primary' => 'blue-600',
@@ -300,6 +304,758 @@ class TeamColors
             'primary' => 'blue-700',
             'secondary' => 'white',
             'number' => 'white',
+        ],
+
+        // =============================================
+        // England — Premier League (ENG1)
+        // =============================================
+        'Manchester City' => [
+            'pattern' => 'solid',
+            'primary' => 'sky-400',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        'Liverpool FC' => [
+            'pattern' => 'solid',
+            'primary' => 'red-600',
+            'secondary' => 'red-600',
+            'number' => 'white',
+        ],
+        'Arsenal FC' => [
+            'pattern' => 'solid',
+            'primary' => 'red-600',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        'Chelsea FC' => [
+            'pattern' => 'solid',
+            'primary' => 'blue-700',
+            'secondary' => 'blue-700',
+            'number' => 'white',
+        ],
+        'Manchester United' => [
+            'pattern' => 'solid',
+            'primary' => 'red-600',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        'Tottenham Hotspur' => [
+            'pattern' => 'solid',
+            'primary' => 'white',
+            'secondary' => 'blue-900',
+            'number' => 'blue-900',
+        ],
+        'Newcastle United' => [
+            'pattern' => 'stripes',
+            'primary' => 'black',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        'Aston Villa' => [
+            'pattern' => 'solid',
+            'primary' => 'purple-800',
+            'secondary' => 'sky-400',
+            'number' => 'sky-400',
+        ],
+        'West Ham United' => [
+            'pattern' => 'solid',
+            'primary' => 'red-800',
+            'secondary' => 'sky-400',
+            'number' => 'sky-400',
+        ],
+        'Nottingham Forest' => [
+            'pattern' => 'solid',
+            'primary' => 'red-600',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        'Everton FC' => [
+            'pattern' => 'solid',
+            'primary' => 'blue-700',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        'Brighton & Hove Albion' => [
+            'pattern' => 'stripes',
+            'primary' => 'blue-600',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        'Crystal Palace' => [
+            'pattern' => 'stripes',
+            'primary' => 'red-600',
+            'secondary' => 'blue-700',
+            'number' => 'white',
+        ],
+        'Wolverhampton Wanderers' => [
+            'pattern' => 'solid',
+            'primary' => 'amber-500',
+            'secondary' => 'black',
+            'number' => 'black',
+        ],
+        'Leeds United' => [
+            'pattern' => 'solid',
+            'primary' => 'white',
+            'secondary' => 'white',
+            'number' => 'blue-700',
+        ],
+        'Fulham FC' => [
+            'pattern' => 'solid',
+            'primary' => 'white',
+            'secondary' => 'black',
+            'number' => 'black',
+        ],
+        'Brentford FC' => [
+            'pattern' => 'stripes',
+            'primary' => 'red-600',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        'AFC Bournemouth' => [
+            'pattern' => 'stripes',
+            'primary' => 'red-600',
+            'secondary' => 'black',
+            'number' => 'white',
+        ],
+        'Sunderland AFC' => [
+            'pattern' => 'stripes',
+            'primary' => 'red-600',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        'Burnley FC' => [
+            'pattern' => 'solid',
+            'primary' => 'red-800',
+            'secondary' => 'sky-400',
+            'number' => 'sky-400',
+        ],
+
+        // =============================================
+        // Germany — Bundesliga (DEU1)
+        // =============================================
+        'Bayern Munich' => [
+            'pattern' => 'solid',
+            'primary' => 'red-700',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        'Borussia Dortmund' => [
+            'pattern' => 'solid',
+            'primary' => 'yellow-400',
+            'secondary' => 'black',
+            'number' => 'black',
+        ],
+        'Bayer 04 Leverkusen' => [
+            'pattern' => 'solid',
+            'primary' => 'red-600',
+            'secondary' => 'black',
+            'number' => 'white',
+        ],
+        'RB Leipzig' => [
+            'pattern' => 'solid',
+            'primary' => 'white',
+            'secondary' => 'red-600',
+            'number' => 'red-600',
+        ],
+        'Eintracht Frankfurt' => [
+            'pattern' => 'solid',
+            'primary' => 'black',
+            'secondary' => 'red-600',
+            'number' => 'white',
+        ],
+        'VfB Stuttgart' => [
+            'pattern' => 'solid',
+            'primary' => 'white',
+            'secondary' => 'red-600',
+            'number' => 'red-600',
+        ],
+        'SC Freiburg' => [
+            'pattern' => 'solid',
+            'primary' => 'red-700',
+            'secondary' => 'black',
+            'number' => 'white',
+        ],
+        'Borussia Mönchengladbach' => [
+            'pattern' => 'solid',
+            'primary' => 'white',
+            'secondary' => 'green-600',
+            'number' => 'green-600',
+        ],
+        'SV Werder Bremen' => [
+            'pattern' => 'solid',
+            'primary' => 'green-600',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        'VfL Wolfsburg' => [
+            'pattern' => 'solid',
+            'primary' => 'green-700',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        '1.FC Köln' => [
+            'pattern' => 'solid',
+            'primary' => 'white',
+            'secondary' => 'red-600',
+            'number' => 'red-600',
+        ],
+        'Hamburger SV' => [
+            'pattern' => 'solid',
+            'primary' => 'white',
+            'secondary' => 'blue-700',
+            'number' => 'blue-700',
+        ],
+        '1.FC Union Berlin' => [
+            'pattern' => 'solid',
+            'primary' => 'red-700',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        '1.FSV Mainz 05' => [
+            'pattern' => 'solid',
+            'primary' => 'red-600',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        'TSG 1899 Hoffenheim' => [
+            'pattern' => 'solid',
+            'primary' => 'blue-600',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        'FC Augsburg' => [
+            'pattern' => 'solid',
+            'primary' => 'white',
+            'secondary' => 'red-600',
+            'number' => 'green-600',
+        ],
+        'FC St. Pauli' => [
+            'pattern' => 'solid',
+            'primary' => 'amber-600',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        '1.FC Heidenheim 1846' => [
+            'pattern' => 'solid',
+            'primary' => 'red-600',
+            'secondary' => 'blue-700',
+            'number' => 'white',
+        ],
+
+        // =============================================
+        // France — Ligue 1 (FRA1)
+        // =============================================
+        'Paris Saint-Germain' => [
+            'pattern' => 'bar',
+            'primary' => 'blue-900',
+            'secondary' => 'red-600',
+            'number' => 'white',
+        ],
+        'Olympique Marseille' => [
+            'pattern' => 'solid',
+            'primary' => 'white',
+            'secondary' => 'sky-400',
+            'number' => 'sky-400',
+        ],
+        'AS Monaco' => [
+            'pattern' => 'halves',
+            'primary' => 'red-600',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        'Olympique Lyon' => [
+            'pattern' => 'solid',
+            'primary' => 'white',
+            'secondary' => 'blue-700',
+            'number' => 'blue-700',
+        ],
+        'LOSC Lille' => [
+            'pattern' => 'solid',
+            'primary' => 'red-700',
+            'secondary' => 'blue-900',
+            'number' => 'white',
+        ],
+        'OGC Nice' => [
+            'pattern' => 'stripes',
+            'primary' => 'red-600',
+            'secondary' => 'black',
+            'number' => 'white',
+        ],
+        'Stade Rennais FC' => [
+            'pattern' => 'solid',
+            'primary' => 'red-600',
+            'secondary' => 'black',
+            'number' => 'white',
+        ],
+        'RC Lens' => [
+            'pattern' => 'stripes',
+            'primary' => 'yellow-400',
+            'secondary' => 'red-600',
+            'number' => 'red-600',
+        ],
+        'FC Nantes' => [
+            'pattern' => 'solid',
+            'primary' => 'yellow-400',
+            'secondary' => 'green-600',
+            'number' => 'green-600',
+        ],
+        'FC Toulouse' => [
+            'pattern' => 'solid',
+            'primary' => 'purple-600',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        'RC Strasbourg Alsace' => [
+            'pattern' => 'solid',
+            'primary' => 'blue-600',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        'FC Metz' => [
+            'pattern' => 'solid',
+            'primary' => 'red-800',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        'Le Havre AC' => [
+            'pattern' => 'solid',
+            'primary' => 'sky-400',
+            'secondary' => 'blue-900',
+            'number' => 'white',
+        ],
+        'Stade Brestois 29' => [
+            'pattern' => 'solid',
+            'primary' => 'red-600',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        'AJ Auxerre' => [
+            'pattern' => 'solid',
+            'primary' => 'white',
+            'secondary' => 'blue-600',
+            'number' => 'blue-600',
+        ],
+        'Angers SCO' => [
+            'pattern' => 'solid',
+            'primary' => 'black',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        'Paris FC' => [
+            'pattern' => 'solid',
+            'primary' => 'blue-800',
+            'secondary' => 'red-600',
+            'number' => 'white',
+        ],
+        'FC Lorient' => [
+            'pattern' => 'solid',
+            'primary' => 'orange-500',
+            'secondary' => 'black',
+            'number' => 'black',
+        ],
+
+        // =============================================
+        // Italy — Serie A (ITA1)
+        // =============================================
+        'Inter Milan' => [
+            'pattern' => 'stripes',
+            'primary' => 'blue-900',
+            'secondary' => 'black',
+            'number' => 'white',
+        ],
+        'Juventus FC' => [
+            'pattern' => 'stripes',
+            'primary' => 'black',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        'AC Milan' => [
+            'pattern' => 'stripes',
+            'primary' => 'red-600',
+            'secondary' => 'black',
+            'number' => 'white',
+        ],
+        'SSC Napoli' => [
+            'pattern' => 'solid',
+            'primary' => 'sky-400',
+            'secondary' => 'sky-400',
+            'number' => 'white',
+        ],
+        'Atalanta BC' => [
+            'pattern' => 'stripes',
+            'primary' => 'blue-800',
+            'secondary' => 'black',
+            'number' => 'white',
+        ],
+        'AS Roma' => [
+            'pattern' => 'solid',
+            'primary' => 'red-800',
+            'secondary' => 'amber-500',
+            'number' => 'amber-500',
+        ],
+        'SS Lazio' => [
+            'pattern' => 'solid',
+            'primary' => 'sky-400',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        'ACF Fiorentina' => [
+            'pattern' => 'solid',
+            'primary' => 'purple-600',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        'Bologna FC 1909' => [
+            'pattern' => 'stripes',
+            'primary' => 'red-700',
+            'secondary' => 'blue-900',
+            'number' => 'white',
+        ],
+        'Torino FC' => [
+            'pattern' => 'solid',
+            'primary' => 'red-800',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        'Genoa CFC' => [
+            'pattern' => 'halves',
+            'primary' => 'red-700',
+            'secondary' => 'blue-900',
+            'number' => 'white',
+        ],
+        'Udinese Calcio' => [
+            'pattern' => 'stripes',
+            'primary' => 'white',
+            'secondary' => 'black',
+            'number' => 'black',
+        ],
+        'US Lecce' => [
+            'pattern' => 'stripes',
+            'primary' => 'yellow-400',
+            'secondary' => 'red-600',
+            'number' => 'red-600',
+        ],
+        'Parma Calcio 1913' => [
+            'pattern' => 'solid',
+            'primary' => 'white',
+            'secondary' => 'blue-700',
+            'number' => 'blue-700',
+        ],
+        'Cagliari Calcio' => [
+            'pattern' => 'solid',
+            'primary' => 'red-700',
+            'secondary' => 'blue-800',
+            'number' => 'white',
+        ],
+        'Hellas Verona' => [
+            'pattern' => 'stripes',
+            'primary' => 'yellow-400',
+            'secondary' => 'blue-800',
+            'number' => 'white',
+        ],
+        'US Sassuolo' => [
+            'pattern' => 'stripes',
+            'primary' => 'green-700',
+            'secondary' => 'black',
+            'number' => 'white',
+        ],
+        'Como 1907' => [
+            'pattern' => 'solid',
+            'primary' => 'blue-700',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        'US Cremonese' => [
+            'pattern' => 'stripes',
+            'primary' => 'red-700',
+            'secondary' => 'gray-900',
+            'number' => 'white',
+        ],
+        'Pisa Sporting Club' => [
+            'pattern' => 'stripes',
+            'primary' => 'blue-700',
+            'secondary' => 'black',
+            'number' => 'white',
+        ],
+
+        // =============================================
+        // European transfer pool (EUR)
+        // =============================================
+
+        // Portugal
+        'SL Benfica' => [
+            'pattern' => 'solid',
+            'primary' => 'red-600',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        'FC Porto' => [
+            'pattern' => 'stripes',
+            'primary' => 'blue-700',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        'Sporting CP' => [
+            'pattern' => 'stripes',
+            'primary' => 'green-600',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        'SC Braga' => [
+            'pattern' => 'solid',
+            'primary' => 'red-600',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+
+        // Netherlands
+        'Ajax Amsterdam' => [
+            'pattern' => 'bar',
+            'primary' => 'white',
+            'secondary' => 'red-600',
+            'number' => 'red-600',
+        ],
+        'Feyenoord Rotterdam' => [
+            'pattern' => 'halves',
+            'primary' => 'red-600',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        'PSV Eindhoven' => [
+            'pattern' => 'stripes',
+            'primary' => 'red-600',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        'FC Utrecht' => [
+            'pattern' => 'solid',
+            'primary' => 'red-600',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        'Go Ahead Eagles' => [
+            'pattern' => 'stripes',
+            'primary' => 'red-600',
+            'secondary' => 'yellow-400',
+            'number' => 'yellow-400',
+        ],
+
+        // Turkey
+        'Galatasaray' => [
+            'pattern' => 'halves',
+            'primary' => 'yellow-400',
+            'secondary' => 'red-600',
+            'number' => 'red-600',
+        ],
+        'Fenerbahce' => [
+            'pattern' => 'stripes',
+            'primary' => 'yellow-400',
+            'secondary' => 'blue-900',
+            'number' => 'blue-900',
+        ],
+
+        // Scotland
+        'Celtic FC' => [
+            'pattern' => 'hoops',
+            'primary' => 'green-600',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        'Rangers FC' => [
+            'pattern' => 'solid',
+            'primary' => 'blue-700',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+
+        // Austria
+        'Red Bull Salzburg' => [
+            'pattern' => 'solid',
+            'primary' => 'red-700',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        'SK Sturm Graz' => [
+            'pattern' => 'stripes',
+            'primary' => 'black',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+
+        // Belgium
+        'Club Brugge KV' => [
+            'pattern' => 'stripes',
+            'primary' => 'blue-700',
+            'secondary' => 'black',
+            'number' => 'white',
+        ],
+        'KRC Genk' => [
+            'pattern' => 'solid',
+            'primary' => 'blue-600',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        'Union Saint-Gilloise' => [
+            'pattern' => 'stripes',
+            'primary' => 'yellow-400',
+            'secondary' => 'blue-800',
+            'number' => 'blue-800',
+        ],
+
+        // Greece
+        'Olympiacos Piraeus' => [
+            'pattern' => 'stripes',
+            'primary' => 'red-600',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        'PAOK Thessaloniki' => [
+            'pattern' => 'stripes',
+            'primary' => 'black',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        'Panathinaikos FC' => [
+            'pattern' => 'solid',
+            'primary' => 'green-600',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+
+        // Denmark
+        'FC Copenhagen' => [
+            'pattern' => 'solid',
+            'primary' => 'white',
+            'secondary' => 'blue-700',
+            'number' => 'blue-700',
+        ],
+        'FC Midtjylland' => [
+            'pattern' => 'solid',
+            'primary' => 'red-600',
+            'secondary' => 'black',
+            'number' => 'white',
+        ],
+
+        // Switzerland
+        'FC Basel 1893' => [
+            'pattern' => 'halves',
+            'primary' => 'red-600',
+            'secondary' => 'blue-700',
+            'number' => 'white',
+        ],
+        'BSC Young Boys' => [
+            'pattern' => 'solid',
+            'primary' => 'yellow-400',
+            'secondary' => 'black',
+            'number' => 'black',
+        ],
+
+        // Serbia
+        'Red Star Belgrade' => [
+            'pattern' => 'stripes',
+            'primary' => 'red-600',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+
+        // Czech Republic
+        'SK Slavia Prague' => [
+            'pattern' => 'halves',
+            'primary' => 'red-700',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+        'FC Viktoria Plzen' => [
+            'pattern' => 'stripes',
+            'primary' => 'red-700',
+            'secondary' => 'blue-800',
+            'number' => 'white',
+        ],
+
+        // Hungary
+        'Ferencvárosi TC' => [
+            'pattern' => 'stripes',
+            'primary' => 'green-600',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+
+        // Croatia
+        'GNK Dinamo Zagreb' => [
+            'pattern' => 'solid',
+            'primary' => 'blue-700',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+
+        // Sweden
+        'Malmö FF' => [
+            'pattern' => 'solid',
+            'primary' => 'sky-400',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+
+        // Norway
+        'FK Bodø/Glimt' => [
+            'pattern' => 'solid',
+            'primary' => 'yellow-400',
+            'secondary' => 'black',
+            'number' => 'black',
+        ],
+        'SK Brann' => [
+            'pattern' => 'solid',
+            'primary' => 'red-600',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+
+        // Romania
+        'FCSB' => [
+            'pattern' => 'stripes',
+            'primary' => 'red-600',
+            'secondary' => 'blue-700',
+            'number' => 'white',
+        ],
+
+        // Bulgaria
+        'Ludogorets Razgrad' => [
+            'pattern' => 'solid',
+            'primary' => 'green-600',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+
+        // Israel
+        'Maccabi Tel Aviv' => [
+            'pattern' => 'solid',
+            'primary' => 'yellow-400',
+            'secondary' => 'blue-700',
+            'number' => 'blue-700',
+        ],
+
+        // Azerbaijan
+        'Qarabağ FK' => [
+            'pattern' => 'solid',
+            'primary' => 'black',
+            'secondary' => 'white',
+            'number' => 'white',
+        ],
+
+        // Cyprus
+        'Pafos FC' => [
+            'pattern' => 'solid',
+            'primary' => 'blue-600',
+            'secondary' => 'yellow-400',
+            'number' => 'yellow-400',
+        ],
+
+        // Kazakhstan
+        'Kairat Almaty' => [
+            'pattern' => 'solid',
+            'primary' => 'yellow-400',
+            'secondary' => 'black',
+            'number' => 'black',
         ],
     ];
 

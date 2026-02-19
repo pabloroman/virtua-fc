@@ -10,6 +10,7 @@ use App\Models\CompetitionEntry;
 use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameStanding;
+use App\Models\SimulatedSeason;
 use App\Models\Team;
 
 /**
@@ -60,11 +61,7 @@ class UefaQualificationProcessor implements SeasonEndProcessor
         $standings = [];      // position => teamId (from the relevant league)
 
         foreach ($slots as $leagueId => $continentalAllocations) {
-            $leagueStandings = GameStanding::where('game_id', $game->id)
-                ->where('competition_id', $leagueId)
-                ->orderBy('position')
-                ->pluck('team_id', 'position')
-                ->toArray();
+            $leagueStandings = $this->getLeagueStandings($game, $leagueId);
 
             if (empty($leagueStandings)) {
                 continue;
@@ -139,6 +136,43 @@ class UefaQualificationProcessor implements SeasonEndProcessor
                 $qualifications[$nextTeam] = 'UECL';
             }
         }
+    }
+
+    /**
+     * Get league standings: real standings first, then simulated results as fallback.
+     *
+     * @return array<int, string> position => teamId
+     */
+    private function getLeagueStandings(Game $game, string $leagueId): array
+    {
+        // Try real standings first
+        $standings = GameStanding::where('game_id', $game->id)
+            ->where('competition_id', $leagueId)
+            ->orderBy('position')
+            ->pluck('team_id', 'position')
+            ->toArray();
+
+        if (!empty($standings)) {
+            return $standings;
+        }
+
+        // Fall back to simulated season results
+        $simulated = SimulatedSeason::where('game_id', $game->id)
+            ->where('season', $game->season)
+            ->where('competition_id', $leagueId)
+            ->first();
+
+        if (!$simulated || empty($simulated->results)) {
+            return [];
+        }
+
+        // Convert 0-indexed results array to 1-indexed position => teamId map
+        $standings = [];
+        foreach ($simulated->results as $index => $teamId) {
+            $standings[$index + 1] = $teamId;
+        }
+
+        return $standings;
     }
 
     /**

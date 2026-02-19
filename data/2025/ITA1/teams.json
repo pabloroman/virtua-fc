@@ -1,4 +1,6 @@
 {
+  "id": "ITA1",
+  "name": "Serie A",
   "clubs": [
     {
       "image": "https://tmssl.akamaized.net/images/wappen/big/5.png",
@@ -7871,7 +7873,5 @@
       "stadiumSeats": "12039",
       "transfermarktId": "1047"
     }
-  ],
-  "id": "IT1",
-  "updatedAt": "2026-02-08T15:22:37.312Z"
+  ]
 }

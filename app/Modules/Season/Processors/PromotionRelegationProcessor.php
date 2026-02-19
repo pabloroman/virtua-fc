@@ -4,9 +4,8 @@ namespace App\Modules\Season\Processors;
 
 use App\Modules\Season\Contracts\SeasonEndProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
+use App\Modules\Season\Processors\SeasonSimulationProcessor;
 use App\Modules\Competition\Promotions\PromotionRelegationFactory;
-use App\Modules\Finance\Services\SeasonSimulationService;
-use App\Models\Competition;
 use App\Models\Game;
 use App\Models\CompetitionEntry;
 use App\Models\GameStanding;
@@ -23,7 +22,7 @@ class PromotionRelegationProcessor implements SeasonEndProcessor
 {
     public function __construct(
         private PromotionRelegationFactory $ruleFactory,
-        private SeasonSimulationService $simulationService,
+        private SeasonSimulationProcessor $simulationProcessor,
     ) {}
 
     public function priority(): int
@@ -215,26 +214,7 @@ class PromotionRelegationProcessor implements SeasonEndProcessor
      */
     private function resimulateNonPlayedLeagues(Game $game): void
     {
-        $userCompetition = Competition::find($game->competition_id);
-        if (!$userCompetition) {
-            return;
-        }
-
-        $leagues = Competition::where('country', $userCompetition->country)
-            ->where('role', Competition::ROLE_LEAGUE)
-            ->where('id', '!=', $userCompetition->id)
-            ->get();
-
-        foreach ($leagues as $league) {
-            $hasRealStandings = GameStanding::where('game_id', $game->id)
-                ->where('competition_id', $league->id)
-                ->where('played', '>', 0)
-                ->exists();
-
-            if (!$hasRealStandings) {
-                $this->simulationService->simulateLeague($game, $league);
-            }
-        }
+        $this->simulationProcessor->simulateNonPlayedLeagues($game);
     }
 
     /**

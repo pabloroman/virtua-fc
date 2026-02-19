@@ -27,6 +27,11 @@ class ShowSeasonEnd
         $game = Game::with('team')->findOrFail($gameId);
         abort_if($game->isTournamentMode(), 404);
 
+        // Redirect if season transition is already in progress
+        if ($game->isTransitioningSeason()) {
+            return redirect()->route('show-game', $gameId);
+        }
+
         // Check if season is actually complete (only matches involving the player's team)
         $unplayedMatches = $game->matches()
             ->where('played', false)

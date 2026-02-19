@@ -21,15 +21,21 @@ class GamePlayerTemplateService
     ) {}
 
     /**
+     * Delete all templates for a season (call once before generating for multiple countries).
+     */
+    public function clearTemplates(string $season): void
+    {
+        DB::table('game_player_templates')->where('season', $season)->delete();
+    }
+
+    /**
      * Generate pre-computed game_player_templates for a season and country.
-     * Truncates existing templates for the season first.
+     * Additive — call clearTemplates() first if a fresh start is needed.
      *
      * @return int Number of template rows generated
      */
     public function generateTemplates(string $season, string $countryCode): int
     {
-        DB::table('game_player_templates')->where('season', $season)->delete();
-
         $allTeams = Team::whereNotNull('transfermarkt_id')->get()->keyBy('transfermarkt_id');
         $allPlayers = Player::all()->keyBy('transfermarkt_id');
 
@@ -38,7 +44,14 @@ class GamePlayerTemplateService
         $continentalIds = $countryConfig->continentalSupportIds($countryCode);
 
         $templateRows = [];
-        $processedTeamIds = [];
+
+        // Track already-processed teams (including from prior country runs)
+        $processedTeamIds = DB::table('game_player_templates')
+            ->where('season', $season)
+            ->distinct()
+            ->pluck('team_id')
+            ->flip()
+            ->toArray();
 
         // Process tier + transfer pool competitions
         foreach ($competitionIds as $competitionId) {
@@ -46,7 +59,7 @@ class GamePlayerTemplateService
                 continue;
             }
 
-            $rows = $this->generateForCompetition($competitionId, $season, $allTeams, $allPlayers);
+            $rows = $this->generateForCompetition($competitionId, $season, $allTeams, $allPlayers, $processedTeamIds);
             foreach ($rows as $row) {
                 $templateRows[] = $row;
                 $processedTeamIds[$row['team_id']] = true;
@@ -78,6 +91,7 @@ class GamePlayerTemplateService
         string $season,
         Collection $allTeams,
         Collection $allPlayers,
+        array $processedTeamIds = [],
     ): array {
         $basePath = base_path("data/{$season}/{$competitionId}");
         $teamsFilePath = "{$basePath}/teams.json";
@@ -103,6 +117,11 @@ class GamePlayerTemplateService
 
             $team = $allTeams->get($transfermarktId);
             if (!$team) {
+                continue;
+            }
+
+            // Skip teams already processed by a prior country run
+            if (isset($processedTeamIds[$team->id])) {
                 continue;
             }
 

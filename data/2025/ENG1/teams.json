@@ -1,4 +1,6 @@
 {
+  "id": "ENG1",
+  "name": "Premier League",
   "clubs": [
     {
       "image": "https://tmssl.akamaized.net/images/wappen/big/985.png",
@@ -7758,7 +7760,5 @@
       "stadiumSeats": "11307",
       "transfermarktId": "989"
     }
-  ],
-  "id": "GB1",
-  "updatedAt": "2026-02-08T15:21:08.095Z"
+  ]
 }

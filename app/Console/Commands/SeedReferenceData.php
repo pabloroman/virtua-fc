@@ -667,6 +667,8 @@ class SeedReferenceData extends Command
         $season = '2025';
         $totalCount = 0;
 
+        $templateService->clearTemplates($season);
+
         foreach ($countryCodes as $countryCode) {
             $count = $templateService->generateTemplates($season, $countryCode);
             $this->line("  {$countryCode}: {$count} player templates");
