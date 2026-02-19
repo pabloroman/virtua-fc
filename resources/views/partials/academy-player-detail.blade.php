@@ -139,6 +139,20 @@
                     {{ __('squad.promote_to_first_team') }}
                 </button>
             </form>
+            <form method="POST" action="{{ route('game.academy.loan', [$game->id, $academyPlayer->id]) }}">
+                @csrf
+                <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border border-indigo-200 text-indigo-700 bg-indigo-50 hover:bg-indigo-100 transition-colors min-h-[44px]">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
+                    {{ __('squad.academy_loan_out') }}
+                </button>
+            </form>
+            <form method="POST" action="{{ route('game.academy.dismiss', [$game->id, $academyPlayer->id]) }}" x-data x-on:submit="if (!confirm('{{ __('squad.academy_dismiss_confirm') }}')) $event.preventDefault()">
+                @csrf
+                <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border border-red-200 text-red-700 bg-red-50 hover:bg-red-100 transition-colors min-h-[44px]">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    {{ __('squad.academy_dismiss') }}
+                </button>
+            </form>
         </div>
     @endunless
 </div>

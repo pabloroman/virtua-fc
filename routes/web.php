@@ -47,7 +47,9 @@ use App\Http\Views\ShowScoutReportResults;
 use App\Http\Views\ShowSeasonEnd;
 use App\Http\Views\ShowTournamentEnd;
 use App\Http\Views\ShowSquadDevelopment;
+use App\Http\Actions\DismissAcademyPlayer;
 use App\Http\Actions\EvaluateAcademy;
+use App\Http\Actions\LoanAcademyPlayer;
 use App\Http\Views\ShowAcademy;
 use App\Http\Views\ShowAcademyEvaluation;
 use App\Http\Views\GameSetupStatus;
@@ -89,6 +91,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/game/{gameId}/player/{playerId}/detail', ShowPlayerDetail::class)->name('game.player.detail');
         Route::get('/game/{gameId}/academy/{playerId}/detail', ShowAcademyPlayerDetail::class)->name('game.academy.detail');
         Route::post('/game/{gameId}/academy/{playerId}/promote', PromoteAcademyPlayer::class)->name('game.academy.promote');
+        Route::post('/game/{gameId}/academy/{playerId}/loan', LoanAcademyPlayer::class)->name('game.academy.loan');
+        Route::post('/game/{gameId}/academy/{playerId}/dismiss', DismissAcademyPlayer::class)->name('game.academy.dismiss');
         Route::get('/game/{gameId}/squad/academy/evaluate', ShowAcademyEvaluation::class)->name('game.squad.academy.evaluate');
         Route::post('/game/{gameId}/squad/academy/evaluate', EvaluateAcademy::class)->name('game.squad.academy.evaluate.submit');
         Route::get('/game/{gameId}/finances', ShowFinances::class)->name('game.finances');

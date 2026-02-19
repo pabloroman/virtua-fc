@@ -204,6 +204,7 @@ return [
     'academy_keep' => 'Mantener',
     'academy_keep_desc' => 'El jugador sigue en la cantera y se desarrolla la próxima temporada.',
     'academy_dismiss' => 'Descartar',
+    'academy_dismiss_confirm' => '¿Estás seguro? El jugador será liberado de forma permanente.',
     'academy_dismiss_desc' => 'El jugador es liberado del club de forma permanente.',
     'academy_loan_out' => 'Ceder',
     'academy_loan_desc' => 'El jugador sale cedido con desarrollo acelerado (1.5x) y regresa a final de temporada.',
