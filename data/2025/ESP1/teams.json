@@ -1,8 +1,6 @@
 {
   "id": "ES1",
-  "code": "laliga-2025",
   "name": "LaLiga",
-  "seasonID": "2025",
   "clubs": [
     {
       "image": "https://tmssl.akamaized.net/images/wappen/big/418.png",

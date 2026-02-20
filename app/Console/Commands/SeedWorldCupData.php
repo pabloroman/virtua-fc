@@ -61,7 +61,7 @@ class SeedWorldCupData extends Command
                 'country' => 'INT',
                 'tier' => 0,
                 'type' => 'league',
-                'role' => 'primary',
+                'role' => 'league',
                 'scope' => 'continental',
                 'handler_type' => 'league',
                 'season' => self::SEASON,

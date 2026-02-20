@@ -103,17 +103,70 @@ return [
         */
         'support' => [
             'transfer_pool' => [
-                // Foreign leagues — full rosters from JSON, eagerly loaded at game setup
-                'ENG1' => ['role' => 'foreign', 'handler' => 'league', 'country' => 'EN'],
-                'DEU1' => ['role' => 'foreign', 'handler' => 'league', 'country' => 'DE'],
-                'FRA1' => ['role' => 'foreign', 'handler' => 'league', 'country' => 'FR'],
-                'ITA1' => ['role' => 'foreign', 'handler' => 'league', 'country' => 'IT'],
+                // Other top-flight leagues — full rosters from JSON, eagerly loaded at game setup
+                'ENG1' => ['role' => 'league', 'handler' => 'league', 'country' => 'EN'],
+                'DEU1' => ['role' => 'league', 'handler' => 'league', 'country' => 'DE'],
+                'FRA1' => ['role' => 'league', 'handler' => 'league', 'country' => 'FR'],
+                'ITA1' => ['role' => 'league', 'handler' => 'league', 'country' => 'IT'],
                 // EUR club pool — individual team files, includes NLD/POR teams
-                'EUR'  => ['role' => 'foreign', 'handler' => 'team_pool', 'country' => 'EU'],
+                'EUR'  => ['role' => 'team_pool', 'handler' => 'team_pool', 'country' => 'EU'],
             ],
             'continental' => [
                 // Teams needed for European competitions — rosters reused from
                 // tiers + transfer_pool where possible, gaps filled from EUR pool
+                'UCL' => ['handler' => 'swiss_format', 'country' => 'EU'],
+                'UEL' => ['handler' => 'swiss_format', 'country' => 'EU'],
+            ],
+        ],
+    ],
+
+    'EN' => [
+        'name' => 'England',
+        'flag' => 'gb-eng',
+
+        'tiers' => [
+            1 => [
+                'competition' => 'ENG1',
+                'teams' => 20,
+                'handler' => 'league',
+                'config_class' => \App\Modules\Competition\Configs\PremierLeagueConfig::class,
+            ],
+        ],
+
+        'domestic_cups' => [],
+        'promotions' => [],
+
+        'continental_slots' => [
+            'ENG1' => [
+                'UCL' => [1, 2, 3, 4],
+                'UEL' => [5],
+                'UECL' => [6],
+            ],
+        ],
+
+        'cup_winner_slot' => null,
+
+        'continental_competitions' => [
+            'UCL' => [
+                'config_class' => \App\Modules\Competition\Configs\ChampionsLeagueConfig::class,
+            ],
+            'UEL' => [
+                'config_class' => \App\Modules\Competition\Configs\EuropaLeagueConfig::class,
+            ],
+            'UECL' => [
+                'config_class' => \App\Modules\Competition\Configs\ConferenceLeagueConfig::class,
+            ],
+        ],
+
+        'support' => [
+            'transfer_pool' => [
+                'ESP1' => ['role' => 'league', 'handler' => 'league', 'country' => 'ES'],
+                'DEU1' => ['role' => 'league', 'handler' => 'league', 'country' => 'DE'],
+                'FRA1' => ['role' => 'league', 'handler' => 'league', 'country' => 'FR'],
+                'ITA1' => ['role' => 'league', 'handler' => 'league', 'country' => 'IT'],
+                'EUR'  => ['role' => 'team_pool', 'handler' => 'team_pool', 'country' => 'EU'],
+            ],
+            'continental' => [
                 'UCL' => ['handler' => 'swiss_format', 'country' => 'EU'],
                 'UEL' => ['handler' => 'swiss_format', 'country' => 'EU'],
             ],

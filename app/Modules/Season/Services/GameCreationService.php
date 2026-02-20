@@ -18,7 +18,7 @@ class GameCreationService
 
         // Find competition for the selected team (prefer primary league, then any)
         $competitionTeam = CompetitionTeam::where('team_id', $teamId)
-            ->whereHas('competition', fn($q) => $q->where('role', Competition::ROLE_PRIMARY)->where('tier', 1))
+            ->whereHas('competition', fn($q) => $q->where('role', Competition::ROLE_LEAGUE)->where('tier', 1))
             ->first()
             ?? CompetitionTeam::where('team_id', $teamId)
                 ->whereHas('competition', fn($q) => $q->where('role', Competition::ROLE_PRIMARY))

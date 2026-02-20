@@ -1,4 +1,6 @@
 {
+  "id": "DEU1",
+  "name": "Bundesliga",
   "clubs": [
     {
       "image": "https://tmssl.akamaized.net/images/wappen/big/16.png",
@@ -7605,7 +7607,5 @@
       "stadiumSeats": "15000",
       "transfermarktId": "2036"
     }
-  ],
-  "id": "L1",
-  "updatedAt": "2026-02-08T15:26:04.461Z"
+  ]
 }

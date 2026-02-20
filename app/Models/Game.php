@@ -128,6 +128,7 @@ class Game extends Model
         'needs_welcome',
         'pending_actions',
         'setup_completed_at',
+        'season_transitioning_at',
         'pending_finalization_match_id',
     ];
 
@@ -143,6 +144,7 @@ class Game extends Model
         'needs_welcome' => 'boolean',
         'pending_actions' => 'array',
         'setup_completed_at' => 'datetime',
+        'season_transitioning_at' => 'datetime',
     ];
 
     // ==========================================
@@ -162,6 +164,11 @@ class Game extends Model
     public function isSetupComplete(): bool
     {
         return $this->setup_completed_at !== null;
+    }
+
+    public function isTransitioningSeason(): bool
+    {
+        return $this->season_transitioning_at !== null;
     }
 
     // ==========================================
