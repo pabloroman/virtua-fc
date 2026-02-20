@@ -21,11 +21,15 @@
                         {{-- League Champion --}}
                         <div class="text-center py-6 bg-gradient-to-b from-amber-50 to-white rounded-lg border border-amber-200">
                             <div class="text-amber-600 font-semibold text-sm uppercase tracking-wide mb-2">{{ __('season.league_champion', ['league' => $competition->name]) }}</div>
-                            <div class="flex justify-center items-center gap-3 mb-2">
-                                <img src="{{ $champion->team->image }}" class="w-14 h-14">
-                            </div>
-                            <div class="text-xl font-bold text-slate-900">{{ $champion->team->name }}</div>
-                            <div class="text-sm text-slate-600">{{ $champion->points }} pts</div>
+                            @if($champion && $champion->team)
+                                <div class="flex justify-center items-center gap-3 mb-2">
+                                    <img src="{{ $champion->team->image }}" class="w-14 h-14">
+                                </div>
+                                <div class="text-xl font-bold text-slate-900">{{ $champion->team->name }}</div>
+                                <div class="text-sm text-slate-600">{{ $champion->points }} pts</div>
+                            @else
+                                <div class="text-slate-400 py-4">{{ __('season.competition_in_progress') }}</div>
+                            @endif
                         </div>
 
                         {{-- Cup Winner --}}
@@ -187,6 +191,7 @@
                         {{-- Team Awards --}}
                         <div class="grid grid-cols-2 gap-4">
                             {{-- Best Attack --}}
+                            @if($bestAttack && $bestAttack->team)
                             <div class="bg-slate-50 rounded-lg p-3 flex items-center gap-3">
                                 <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-sm">
                                     &#9917;
@@ -203,8 +208,10 @@
                                     <div class="text-xs text-slate-400">{{ __('season.goals') }}</div>
                                 </div>
                             </div>
+                            @endif
 
                             {{-- Best Defense --}}
+                            @if($bestDefense && $bestDefense->team)
                             <div class="bg-slate-50 rounded-lg p-3 flex items-center gap-3">
                                 <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-sm">
                                     &#128737;
@@ -221,6 +228,7 @@
                                     <div class="text-xs text-slate-400">{{ __('season.conceded') }}</div>
                                 </div>
                             </div>
+                            @endif
                         </div>
                     </div>
 
