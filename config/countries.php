@@ -173,6 +173,165 @@ return [
         ],
     ],
 
+    'DE' => [
+        'name' => 'Deutschland',
+        'flag' => 'de',
+
+        'tiers' => [
+            1 => [
+                'competition' => 'DEU1',
+                'teams' => 18,
+                'handler' => 'league',
+                'config_class' => \App\Modules\Competition\Configs\BundesligaConfig::class,
+            ],
+        ],
+
+        'domestic_cups' => [],
+        'promotions' => [],
+
+        'continental_slots' => [
+            'DEU1' => [
+                'UCL' => [1, 2, 3, 4],
+                'UEL' => [5, 6],
+                'UECL' => [7],
+            ],
+        ],
+
+        'cup_winner_slot' => null,
+
+        'continental_competitions' => [
+            'UCL' => [
+                'config_class' => \App\Modules\Competition\Configs\ChampionsLeagueConfig::class,
+            ],
+            'UEL' => [
+                'config_class' => \App\Modules\Competition\Configs\EuropaLeagueConfig::class,
+            ],
+            'UECL' => [
+                'config_class' => \App\Modules\Competition\Configs\ConferenceLeagueConfig::class,
+            ],
+        ],
+
+        'support' => [
+            'transfer_pool' => [
+                'ESP1' => ['role' => 'league', 'handler' => 'league', 'country' => 'ES'],
+                'ENG1' => ['role' => 'league', 'handler' => 'league', 'country' => 'EN'],
+                'FRA1' => ['role' => 'league', 'handler' => 'league', 'country' => 'FR'],
+                'ITA1' => ['role' => 'league', 'handler' => 'league', 'country' => 'IT'],
+                'EUR'  => ['role' => 'team_pool', 'handler' => 'team_pool', 'country' => 'EU'],
+            ],
+            'continental' => [
+                'UCL' => ['handler' => 'swiss_format', 'country' => 'EU'],
+                'UEL' => ['handler' => 'swiss_format', 'country' => 'EU'],
+            ],
+        ],
+    ],
+
+    'IT' => [
+        'name' => 'Italia',
+        'flag' => 'it',
+
+        'tiers' => [
+            1 => [
+                'competition' => 'ITA1',
+                'teams' => 20,
+                'handler' => 'league',
+                'config_class' => \App\Modules\Competition\Configs\SerieAConfig::class,
+            ],
+        ],
+
+        'domestic_cups' => [],
+        'promotions' => [],
+
+        'continental_slots' => [
+            'ITA1' => [
+                'UCL' => [1, 2, 3, 4, 5],
+                'UEL' => [6],
+                'UECL' => [7],
+            ],
+        ],
+
+        'cup_winner_slot' => null,
+
+        'continental_competitions' => [
+            'UCL' => [
+                'config_class' => \App\Modules\Competition\Configs\ChampionsLeagueConfig::class,
+            ],
+            'UEL' => [
+                'config_class' => \App\Modules\Competition\Configs\EuropaLeagueConfig::class,
+            ],
+            'UECL' => [
+                'config_class' => \App\Modules\Competition\Configs\ConferenceLeagueConfig::class,
+            ],
+        ],
+
+        'support' => [
+            'transfer_pool' => [
+                'ESP1' => ['role' => 'league', 'handler' => 'league', 'country' => 'ES'],
+                'ENG1' => ['role' => 'league', 'handler' => 'league', 'country' => 'EN'],
+                'DEU1' => ['role' => 'league', 'handler' => 'league', 'country' => 'DE'],
+                'FRA1' => ['role' => 'league', 'handler' => 'league', 'country' => 'FR'],
+                'EUR'  => ['role' => 'team_pool', 'handler' => 'team_pool', 'country' => 'EU'],
+            ],
+            'continental' => [
+                'UCL' => ['handler' => 'swiss_format', 'country' => 'EU'],
+                'UEL' => ['handler' => 'swiss_format', 'country' => 'EU'],
+            ],
+        ],
+    ],
+
+    'FR' => [
+        'name' => 'France',
+        'flag' => 'fr',
+
+        'tiers' => [
+            1 => [
+                'competition' => 'FRA1',
+                'teams' => 18,
+                'handler' => 'league',
+                'config_class' => \App\Modules\Competition\Configs\Ligue1Config::class,
+            ],
+        ],
+
+        'domestic_cups' => [],
+        'promotions' => [],
+
+        'continental_slots' => [
+            'FRA1' => [
+                'UCL' => [1, 2, 3],
+                'UEL' => [4],
+                'UECL' => [5],
+            ],
+        ],
+
+        'cup_winner_slot' => null,
+
+        'continental_competitions' => [
+            'UCL' => [
+                'config_class' => \App\Modules\Competition\Configs\ChampionsLeagueConfig::class,
+            ],
+            'UEL' => [
+                'config_class' => \App\Modules\Competition\Configs\EuropaLeagueConfig::class,
+            ],
+            'UECL' => [
+                'config_class' => \App\Modules\Competition\Configs\ConferenceLeagueConfig::class,
+            ],
+        ],
+
+        'support' => [
+            'transfer_pool' => [
+                'ESP1' => ['role' => 'league', 'handler' => 'league', 'country' => 'ES'],
+                'ENG1' => ['role' => 'league', 'handler' => 'league', 'country' => 'EN'],
+                'DEU1' => ['role' => 'league', 'handler' => 'league', 'country' => 'DE'],
+                'ITA1' => ['role' => 'league', 'handler' => 'league', 'country' => 'IT'],
+                'EUR'  => ['role' => 'team_pool', 'handler' => 'team_pool', 'country' => 'EU'],
+            ],
+            'continental' => [
+                'UCL' => ['handler' => 'swiss_format', 'country' => 'EU'],
+                'UEL' => ['handler' => 'swiss_format', 'country' => 'EU'],
+            ],
+        ],
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | World Cup (Tournament Mode)
