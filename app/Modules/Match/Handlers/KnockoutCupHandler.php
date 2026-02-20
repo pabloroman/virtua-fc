@@ -145,13 +145,11 @@ class KnockoutCupHandler implements CompetitionHandler
         $competition = Competition::find($competitionId);
         $competitionName = $competition->name ?? 'Cup';
 
-        $roundName = "Round $roundNumber";
-
         FinancialTransaction::recordIncome(
             gameId: $game->id,
             category: FinancialTransaction::CATEGORY_CUP_BONUS,
             amount: $amount,
-            description: "{$competitionName} - {$roundName} advancement",
+            description: __('finances.tx_cup_advancement', ['competition' => $competitionName, 'round' => $roundNumber]),
             transactionDate: $game->current_date->toDateString(),
         );
     }

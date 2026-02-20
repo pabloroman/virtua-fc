@@ -19,6 +19,7 @@ use Illuminate\Notifications\Notifiable;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $feedback_requested_at
  * @property bool $is_admin
+ * @property string $locale
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Game> $games
  * @property-read int|null $games_count
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
@@ -55,6 +56,7 @@ class User extends Authenticatable
         'password',
         'feedback_requested_at',
         'is_admin',
+        'locale',
     ];
 
     /**

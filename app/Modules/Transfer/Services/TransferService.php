@@ -504,7 +504,7 @@ class TransferService
             gameId: $game->id,
             category: FinancialTransaction::CATEGORY_TRANSFER_IN,
             amount: 0,
-            description: "{$playerName} left on free transfer to {$buyerName}",
+            description: __('finances.tx_free_transfer_out', ['player' => $playerName, 'team' => $buyerName]),
             transactionDate: $game->current_date,
             relatedPlayerId: $player->id,
         );
@@ -615,7 +615,7 @@ class TransferService
                 gameId: $game->id,
                 category: FinancialTransaction::CATEGORY_TRANSFER_IN,
                 amount: $offer->transfer_fee,
-                description: "Sold {$playerName} to {$buyerName}",
+                description: __('finances.tx_player_sold', ['player' => $playerName, 'team' => $buyerName]),
                 transactionDate: $game->current_date,
                 relatedPlayerId: $player->id,
             );
@@ -990,7 +990,7 @@ class TransferService
                 gameId: $game->id,
                 category: FinancialTransaction::CATEGORY_TRANSFER_OUT,
                 amount: $offer->transfer_fee,
-                description: "Signed {$playerName} from {$sellerName}",
+                description: __('finances.tx_player_signed', ['player' => $playerName, 'team' => $sellerName]),
                 transactionDate: $game->current_date,
                 relatedPlayerId: $player->id,
             );

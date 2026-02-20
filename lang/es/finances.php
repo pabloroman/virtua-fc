@@ -170,5 +170,13 @@ return [
     'category_matchday' => 'Día de Partido',
     'category_commercial' => 'Comercial',
     'category_cup_bonus' => 'Bonificación Copa',
+    'category_performance_bonus' => 'Bonus de Rendimiento',
+    'category_signing_bonus' => 'Prima de Fichaje',
     'category_infrastructure' => 'Infraestructura',
+
+    // Transaction descriptions
+    'tx_free_transfer_out' => ':player se fue libre a :team',
+    'tx_player_sold' => ':player vendido a :team',
+    'tx_player_signed' => ':player fichado de :team',
+    'tx_cup_advancement' => ':competition - Ronda :round superada',
 ];
