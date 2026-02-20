@@ -6,6 +6,7 @@ use App\Http\Views\AdminUsers;
 use App\Http\Actions\DeleteGame;
 use App\Http\Actions\AcceptCounterOffer;
 use App\Http\Actions\CompleteOnboarding;
+use App\Http\Actions\CompleteWelcome;
 use App\Http\Actions\AcceptTransferOffer;
 use App\Http\Actions\DeclineRenewal;
 use App\Http\Actions\ReconsiderRenewal;
@@ -38,6 +39,7 @@ use App\Http\Views\ShowCalendar;
 use App\Http\Views\ShowFinances;
 use App\Http\Views\ShowGame;
 use App\Http\Views\ShowOnboarding;
+use App\Http\Views\ShowWelcome;
 use App\Http\Views\ShowCompetition;
 use App\Http\Views\ShowLiveMatch;
 use App\Http\Views\ShowMatchResults;
@@ -147,7 +149,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/game/{gameId}/budget', ShowBudgetAllocation::class)->name('game.budget');
         Route::post('/game/{gameId}/budget', SaveBudgetAllocation::class)->name('game.budget.save');
 
-        // Onboarding
+        // Welcome Tutorial (new games only)
+        Route::get('/game/{gameId}/welcome', ShowWelcome::class)->name('game.welcome');
+        Route::post('/game/{gameId}/welcome', CompleteWelcome::class)->name('game.welcome.complete');
+
+        // Onboarding (season budget allocation)
         Route::get('/game/{gameId}/onboarding', ShowOnboarding::class)->name('game.onboarding');
         Route::post('/game/{gameId}/onboarding', CompleteOnboarding::class)->name('game.onboarding.complete');
 
