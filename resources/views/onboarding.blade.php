@@ -10,7 +10,7 @@
 /** @var \Illuminate\Support\Collection<App\Models\Competition> $competitions */
 @endphp
 
-<x-app-layout>
+<x-app-layout :hide-footer="true">
     <div class="min-h-screen py-8">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 
@@ -72,7 +72,7 @@
             </div>
 
             {{-- Budget Allocation --}}
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-20">
                 <div class="flex items-center justify-between mb-6">
                     <div>
                         <h2 class="text-lg font-semibold text-slate-900">{{ __('finances.season_budget', ['season' => $game->formatted_season]) }}</h2>

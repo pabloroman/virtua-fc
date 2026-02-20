@@ -3,7 +3,7 @@
 /** @var App\Models\Competition|null $competition */
 @endphp
 
-<x-app-layout>
+<x-app-layout :hide-footer="true">
     <div class="min-h-screen py-8 md:py-16">
         <div class="max-w-2xl mx-auto px-4 sm:px-6">
 
