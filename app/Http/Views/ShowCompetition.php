@@ -35,6 +35,10 @@ class ShowCompetition
             return $this->showSwissFormat($game, $competition);
         }
 
+        if ($competition->handler_type === 'group_stage_cup') {
+            return $this->showGroupStageCup($game, $competition);
+        }
+
         if ($competition->isLeague()) {
             return $this->showLeague($game, $competition);
         }
@@ -165,6 +169,81 @@ class ShowCompetition
             'playerTie' => $playerTie,
             'cupStatus' => $cupStatus,
             'playerRoundName' => $playerRoundName,
+        ]);
+    }
+
+    private function showGroupStageCup(Game $game, Competition $competition)
+    {
+        // Group standings
+        $standings = GameStanding::with('team')
+            ->where('game_id', $game->id)
+            ->where('competition_id', $competition->id)
+            ->orderBy('group_label')
+            ->orderBy('position')
+            ->get();
+
+        $teamForms = $this->getTeamForms($game->id, $competition->id, $standings->pluck('team_id'));
+        $topScorers = $this->getCompetitionTopScorers($game->id, $competition->id);
+
+        $groupedStandings = $standings->whereNotNull('group_label')->isNotEmpty()
+            ? $standings->groupBy('group_label')
+            : null;
+
+        // Check if group stage is complete
+        $groupStageComplete = !GameMatch::where('game_id', $game->id)
+            ->where('competition_id', $competition->id)
+            ->whereNull('cup_tie_id')
+            ->where('played', false)
+            ->exists() && $standings->first()?->played > 0;
+
+        // Knockout bracket
+        $knockoutRounds = collect(LeagueFixtureGenerator::loadKnockoutRounds($competition->id, $competition->season, $game->season));
+
+        $knockoutTies = CupTie::with(['homeTeam', 'awayTeam', 'winner', 'firstLegMatch', 'competition'])
+            ->where('game_id', $game->id)
+            ->where('competition_id', $competition->id)
+            ->get()
+            ->groupBy('round_number');
+
+        // Find player's knockout tie (latest round)
+        $playerTie = null;
+        foreach ($knockoutRounds->reverse() as $round) {
+            $ties = $knockoutTies->get($round->round, collect());
+            $playerTie = $ties->first(fn ($tie) => $tie->involvesTeam($game->team_id));
+            if ($playerTie) {
+                break;
+            }
+        }
+
+        // Player's knockout status
+        $maxRound = $knockoutRounds->max('round');
+        $knockoutStatus = 'group_stage';
+
+        if ($playerTie) {
+            if (!$playerTie->completed) {
+                $knockoutStatus = 'active';
+            } elseif ($playerTie->winner_id === $game->team_id) {
+                $knockoutStatus = ($playerTie->round_number === $maxRound) ? 'champion' : 'advanced';
+            } else {
+                $knockoutStatus = 'eliminated';
+            }
+        } elseif ($groupStageComplete) {
+            // Group stage done but no knockout tie = eliminated in groups
+            $playerStanding = $standings->firstWhere('team_id', $game->team_id);
+            $knockoutStatus = ($playerStanding && $playerStanding->position <= 2) ? 'qualified' : 'eliminated';
+        }
+
+        return view('group-stage-cup', [
+            'game' => $game,
+            'competition' => $competition,
+            'groupedStandings' => $groupedStandings,
+            'teamForms' => $teamForms,
+            'topScorers' => $topScorers,
+            'groupStageComplete' => $groupStageComplete,
+            'knockoutRounds' => $knockoutRounds,
+            'knockoutTies' => $knockoutTies,
+            'playerTie' => $playerTie,
+            'knockoutStatus' => $knockoutStatus,
         ]);
     }
 
