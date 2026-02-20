@@ -34,7 +34,7 @@ class RejectTransferOffer
         $this->transferService->rejectOffer($offer);
 
         return redirect()
-            ->route('game.transfers', $gameId)
+            ->route('game.transfers.outgoing', $gameId)
             ->with('success', __('messages.offer_rejected', ['team_de' => $team->nameWithDe()]));
     }
 }

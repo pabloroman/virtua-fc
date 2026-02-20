@@ -203,7 +203,7 @@ class GameNotification extends Model
         return match ($target) {
             'lineup' => 'game.lineup',
             'squad' => 'game.squad',
-            'transfers' => 'game.transfers',
+            'transfers' => 'game.transfers.outgoing',
             'scouting' => 'game.scouting',
             'competition' => 'game.competition',
             'academy' => 'game.squad.academy',

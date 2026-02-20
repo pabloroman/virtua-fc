@@ -16,14 +16,14 @@ class SubmitPreContractOffer
 
         // Guard: pre-contract period
         if (!$game->isPreContractPeriod()) {
-            return redirect()->route('game.scouting', $gameId)
+            return redirect()->route('game.transfers', $gameId)
                 ->with('error', __('messages.pre_contract_not_available'));
         }
 
         // Guard: player must have expiring contract
         $seasonEnd = $game->getSeasonEndDate();
         if (!$player->contract_until || !$player->contract_until->lte($seasonEnd)) {
-            return redirect()->route('game.scouting', $gameId)
+            return redirect()->route('game.transfers', $gameId)
                 ->with('error', __('messages.player_not_expiring'));
         }
 
@@ -36,7 +36,7 @@ class SubmitPreContractOffer
             ->exists();
 
         if ($existingOffer) {
-            return redirect()->route('game.scouting', $gameId)
+            return redirect()->route('game.transfers', $gameId)
                 ->with('error', __('transfers.already_bidding'));
         }
 
@@ -61,7 +61,7 @@ class SubmitPreContractOffer
             'game_date' => $game->current_date,
         ]);
 
-        return redirect()->route('game.scouting', $gameId)
+        return redirect()->route('game.transfers', $gameId)
             ->with('success', __('messages.pre_contract_submitted'));
     }
 }

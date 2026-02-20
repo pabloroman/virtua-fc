@@ -30,7 +30,7 @@ class SubmitTransferBid
         // Budget validation
         $investment = $game->currentInvestment;
         if ($investment && $bidAmountCents > $investment->transfer_budget) {
-            return redirect()->route('game.scouting', $gameId)
+            return redirect()->route('game.transfers', $gameId)
                 ->with('error', __('messages.bid_exceeds_budget'));
         }
 
@@ -59,12 +59,12 @@ class SubmitTransferBid
             $completedImmediately = $this->transferService->acceptIncomingOffer($offer);
 
             if ($completedImmediately) {
-                return redirect()->route('game.scouting', $gameId)
+                return redirect()->route('game.transfers', $gameId)
                     ->with('success', __('messages.transfer_complete', ['player' => $player->player->name]));
             }
 
             $nextWindow = $game->getNextWindowName();
-            return redirect()->route('game.scouting', $gameId)
+            return redirect()->route('game.transfers', $gameId)
                 ->with('success', __('messages.transfer_agreed', ['message' => $evaluation['message'], 'window' => $nextWindow]));
         }
 
@@ -85,12 +85,12 @@ class SubmitTransferBid
                 'game_date' => $game->current_date,
             ]);
 
-            return redirect()->route('game.scouting', $gameId)
+            return redirect()->route('game.transfers', $gameId)
                 ->with('success', $evaluation['message']);
         }
 
         // Rejected
-        return redirect()->route('game.scouting', $gameId)
+        return redirect()->route('game.transfers', $gameId)
             ->with('error', $evaluation['message']);
     }
 }

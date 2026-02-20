@@ -52,7 +52,7 @@ class AcceptTransferOffer
         }
 
         return redirect()
-            ->route('game.transfers', $gameId)
+            ->route('game.transfers.outgoing', $gameId)
             ->with('success', $message);
     }
 }

@@ -25,8 +25,9 @@
 
                     {{-- Tab Navigation --}}
                     <x-section-nav :items="[
-                        ['href' => route('game.transfers', $game->id), 'label' => __('transfers.outgoing'), 'active' => false, 'badge' => $salidaBadgeCount > 0 ? $salidaBadgeCount : null],
-                        ['href' => route('game.scouting', $game->id), 'label' => __('transfers.incoming'), 'active' => true, 'badge' => $counterOffers->count() > 0 ? $counterOffers->count() : null],
+                        ['href' => route('game.transfers', $game->id), 'label' => __('transfers.incoming'), 'active' => true, 'badge' => $counterOfferCount > 0 ? $counterOfferCount : null],
+                        ['href' => route('game.transfers.outgoing', $game->id), 'label' => __('transfers.outgoing'), 'active' => false, 'badge' => $salidaBadgeCount > 0 ? $salidaBadgeCount : null],
+                        ['href' => route('game.scouting', $game->id), 'label' => __('transfers.scouting_tab'), 'active' => false],
                     ]" />
 
                     @php
@@ -37,13 +38,7 @@
                             || $rejectedBids->isNotEmpty();
                     @endphp
 
-                    {{-- 2-Column Grid --}}
-                    <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-
-                        {{-- ============================== --}}
-                        {{-- LEFT COLUMN (2/3) — Action Items --}}
-                        {{-- ============================== --}}
-                        <div class="md:col-span-2 space-y-6">
+                    <div class="mt-6 space-y-6">
 
                             @if(!$hasLeftContent)
                             <div class="text-center py-12 text-slate-400">
@@ -259,97 +254,6 @@
                             </div>
                             @endif
 
-                        </div>
-
-                        {{-- ============================== --}}
-                        {{-- RIGHT COLUMN (1/3) — Scouting --}}
-                        {{-- ============================== --}}
-                        <div class="space-y-6">
-
-                            @if($searchingReport)
-                                {{-- Searching State --}}
-                                <div class="border rounded-lg p-5 bg-sky-50">
-                                    <div class="text-center">
-                                        <svg class="w-10 h-10 mx-auto mb-3 text-sky-500 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                                        </svg>
-                                        <h4 class="font-semibold text-slate-900 mb-1">{{ __('transfers.scout_searching') }}</h4>
-                                        <p class="text-sm text-slate-600 mb-1">
-                                            {{ trans_choice('game.weeks_remaining', $searchingReport->weeks_remaining, ['count' => $searchingReport->weeks_remaining]) }}
-                                        </p>
-                                        <p class="text-xs text-slate-500 mb-4">
-                                            {{ __('transfers.looking_for') }}: <span class="font-medium">{{ \App\Support\PositionMapper::filterToDisplayName($searchingReport->filters['position']) }}</span>
-                                            @if(isset($searchingReport->filters['scope']) && count($searchingReport->filters['scope']) === 1)
-                                                — <span class="font-medium">{{ in_array('domestic', $searchingReport->filters['scope']) ? __('transfers.scope_domestic') : __('transfers.scope_international') }}</span>
-                                            @endif
-                                        </p>
-                                        <div class="w-full bg-slate-200 rounded-full h-2 mb-4">
-                                            @php $progress = (($searchingReport->weeks_total - $searchingReport->weeks_remaining) / $searchingReport->weeks_total) * 100; @endphp
-                                            <div class="bg-sky-500 h-2 rounded-full transition-all" style="width: {{ $progress }}%"></div>
-                                        </div>
-                                        <form method="post" action="{{ route('game.scouting.cancel', $game->id) }}">
-                                            @csrf
-                                            <x-ghost-button type="submit" class="text-sm text-center">
-                                                {{ __('transfers.cancel_search') }}
-                                            </x-ghost-button>
-                                        </form>
-                                    </div>
-                                </div>
-                            @else
-                                {{-- New Search Button --}}
-                                <div x-data>
-                                    <button @click="$dispatch('open-modal', 'scout-search')"
-                                        class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg transition-colors min-h-[44px]">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                                        </svg>
-                                        {{ __('transfers.new_scout_search') }}
-                                    </button>
-                                </div>
-                            @endif
-
-                            {{-- Search History --}}
-                            @if($searchHistory->isNotEmpty())
-                            <div class="border rounded-lg overflow-hidden">
-                                <div class="px-5 py-3 bg-slate-50 border-b">
-                                    <h4 class="font-semibold text-sm text-slate-900 flex items-center gap-2">
-                                        {{ __('transfers.search_history') }}
-                                        <span class="text-xs font-normal text-slate-400">({{ $searchHistory->count() }})</span>
-                                    </h4>
-                                </div>
-                                <div class="overflow-x-auto">
-                                    <table class="w-full text-sm">
-                                        <tbody>
-                                            @foreach($searchHistory as $historyReport)
-                                                @php
-                                                    $filters = $historyReport->filters;
-                                                    $histScopeLabel = isset($filters['scope']) && count($filters['scope']) === 1
-                                                        ? (in_array('domestic', $filters['scope']) ? __('transfers.scope_domestic') : __('transfers.scope_international'))
-                                                        : __('transfers.scope_domestic') . ' + ' . __('transfers.scope_international');
-                                                    $resultCount = is_array($historyReport->player_ids) ? count($historyReport->player_ids) : 0;
-                                                @endphp
-                                                <tr class="border-t border-slate-100">
-                                                    <td class="py-2.5 pl-3">
-                                                        <span class="font-medium text-slate-900">{{ isset($filters['position']) ? \App\Support\PositionMapper::filterToDisplayName($filters['position']) : '-' }}</span>
-                                                        <div class="text-xs text-slate-400 md:hidden">{{ $histScopeLabel }}</div>
-                                                    </td>
-                                                    <td class="py-2.5 text-slate-600 hidden md:table-cell">{{ $histScopeLabel }}</td>
-                                                    <td class="py-2.5 text-center text-slate-600 tabular-nums">{{ __('transfers.results_count', ['count' => $resultCount]) }}</td>
-                                                    <td class="py-2.5 text-right pr-3">
-                                                        <button x-data @click="$dispatch('show-scout-results', '{{ route('game.scouting.results', [$game->id, $historyReport->id]) }}')"
-                                                           class="inline-flex items-center px-2.5 py-1 text-xs font-semibold text-sky-600 hover:text-sky-800 border border-sky-200 hover:bg-sky-50 rounded-lg transition-colors min-h-[44px] sm:min-h-0">
-                                                            {{ __('transfers.view_results') }}
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            @endif
-
-                        </div>
                     </div>
 
                 </div>
@@ -357,7 +261,6 @@
         </div>
     </div>
 
-    <x-scout-search-modal :game="$game" :can-search-internationally="$canSearchInternationally" />
     <x-scout-results-modal />
 
 </x-app-layout>

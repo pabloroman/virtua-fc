@@ -75,7 +75,7 @@
         @endif
         @if($game->isCareerMode())
         <div><a class="hover:text-slate-300 @if(Route::currentRouteName() == 'game.finances') text-white @endif" href="{{ route('game.finances', $game->id) }}">{{ __('app.finances') }}</a></div>
-        <div><a class="hover:text-slate-300 @if(in_array(Route::currentRouteName(), ['game.transfers', 'game.scouting'])) text-white @endif" href="{{ route('game.transfers', $game->id) }}">{{ __('app.transfers') }}</a></div>
+        <div><a class="hover:text-slate-300 @if(in_array(Route::currentRouteName(), ['game.transfers', 'game.transfers.outgoing', 'game.scouting'])) text-white @endif" href="{{ route('game.transfers', $game->id) }}">{{ __('app.transfers') }}</a></div>
         @endif
         <div><a class="hover:text-slate-300 @if(Route::currentRouteName() == 'game.calendar') text-white @endif" href="{{ route('game.calendar', $game->id) }}">{{ __('app.calendar') }}</a></div>
         <div class="relative" x-data="{ open: false }" @click.outside="open = false">
@@ -211,7 +211,7 @@
                 <x-responsive-nav-link :href="route('game.finances', $game->id)" :active="Route::currentRouteName() == 'game.finances'">
                     {{ __('app.finances') }}
                 </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('game.transfers', $game->id)" :active="in_array(Route::currentRouteName(), ['game.transfers', 'game.scouting'])">
+                <x-responsive-nav-link :href="route('game.transfers', $game->id)" :active="in_array(Route::currentRouteName(), ['game.transfers', 'game.transfers.outgoing', 'game.scouting'])">
                     {{ __('app.transfers') }}
                 </x-responsive-nav-link>
                 @endif

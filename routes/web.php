@@ -45,6 +45,7 @@ use App\Http\Views\ShowLiveMatch;
 use App\Http\Views\ShowMatchResults;
 use App\Http\Views\ShowSquad;
 use App\Http\Views\ShowScouting;
+use App\Http\Views\ShowScoutingHub;
 use App\Http\Views\ShowScoutReportResults;
 use App\Http\Views\ShowSeasonEnd;
 use App\Http\Views\ShowTournamentEnd;
@@ -98,7 +99,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/game/{gameId}/squad/academy/evaluate', ShowAcademyEvaluation::class)->name('game.squad.academy.evaluate');
         Route::post('/game/{gameId}/squad/academy/evaluate', EvaluateAcademy::class)->name('game.squad.academy.evaluate.submit');
         Route::get('/game/{gameId}/finances', ShowFinances::class)->name('game.finances');
-        Route::get('/game/{gameId}/transfers', ShowTransfers::class)->name('game.transfers');
+        Route::get('/game/{gameId}/transfers', ShowScouting::class)->name('game.transfers');
+        Route::get('/game/{gameId}/transfers/outgoing', ShowTransfers::class)->name('game.transfers.outgoing');
         Route::get('/game/{gameId}/calendar', ShowCalendar::class)->name('game.calendar');
         Route::get('/game/{gameId}/competition/{competitionId}', ShowCompetition::class)->name('game.competition');
         Route::get('/game/{gameId}/results/{competition}/{matchday}', ShowMatchResults::class)->name('game.results');
@@ -123,7 +125,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/game/{gameId}/transfers/reconsider-renewal/{playerId}', ReconsiderRenewal::class)->name('game.transfers.reconsider-renewal');
 
         // Scouting
-        Route::get('/game/{gameId}/scouting', ShowScouting::class)->name('game.scouting');
+        Route::get('/game/{gameId}/scouting', ShowScoutingHub::class)->name('game.scouting');
         Route::get('/game/{gameId}/scouting/{reportId}/results', ShowScoutReportResults::class)->name('game.scouting.results');
         Route::post('/game/{gameId}/scouting/search', SubmitScoutSearch::class)->name('game.scouting.search');
         Route::post('/game/{gameId}/scouting/cancel', CancelScoutSearch::class)->name('game.scouting.cancel');
@@ -134,7 +136,7 @@ Route::middleware('auth')->group(function () {
 
         // Loans (redirect old URL to transfers)
         Route::get('/game/{gameId}/loans', function (string $gameId) {
-            return redirect()->route('game.transfers', $gameId);
+            return redirect()->route('game.transfers.outgoing', $gameId);
         })->name('game.loans');
         Route::post('/game/{gameId}/loans/out/{playerId}', RequestLoan::class)->name('game.loans.out');
 

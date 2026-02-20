@@ -21,12 +21,12 @@ class ReconsiderRenewal
             ->findOrFail($playerId);
 
         if (!$player->hasDeclinedRenewal()) {
-            return redirect()->route('game.transfers', $gameId);
+            return redirect()->route('game.transfers.outgoing', $gameId);
         }
 
         $this->contractService->reconsiderRenewal($player);
 
-        return redirect()->route('game.transfers', $gameId)
+        return redirect()->route('game.transfers.outgoing', $gameId)
             ->with('success', __('messages.renewal_reconsidered', ['player' => $player->name]));
     }
 }

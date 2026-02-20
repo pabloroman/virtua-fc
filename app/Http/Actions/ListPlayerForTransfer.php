@@ -26,7 +26,7 @@ class ListPlayerForTransfer
         $this->transferService->listPlayer($player);
 
         return redirect()
-            ->route('game.transfers', $gameId)
+            ->route('game.transfers.outgoing', $gameId)
             ->with('success', __('messages.player_listed', ['player' => $player->player->name]));
     }
 }
