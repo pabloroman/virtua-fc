@@ -20,10 +20,10 @@ class ClubProfilesSeeder extends Seeder
         // La Liga - Contenders
         'Atlético de Madrid' => ClubProfile::REPUTATION_CONTENDERS,
         'Athletic Bilbao' => ClubProfile::REPUTATION_CONTENDERS,
-        'Real Betis Balompié' => ClubProfile::REPUTATION_CONTENDERS,
         'Villarreal CF' => ClubProfile::REPUTATION_CONTENDERS,
 
         // La Liga - Continental
+        'Real Betis Balompié' => ClubProfile::REPUTATION_CONTINENTAL,
         'Sevilla FC' => ClubProfile::REPUTATION_CONTINENTAL,
         'Valencia CF' => ClubProfile::REPUTATION_CONTINENTAL,
         'Real Sociedad' => ClubProfile::REPUTATION_CONTINENTAL,
