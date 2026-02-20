@@ -10,15 +10,15 @@
 /** @var \Illuminate\Support\Collection<App\Models\Competition> $competitions */
 @endphp
 
-<x-app-layout>
+<x-app-layout :hide-footer="true">
     <div class="min-h-screen py-8">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
 
-            {{-- Welcome Header --}}
+            {{-- Season Header --}}
             <div class="text-center mb-8">
                 <img src="{{ $game->team->image }}" alt="{{ $game->team->name }}" class="w-20 h-20 mx-auto mb-4">
-                <h1 class="text-3xl font-bold text-white mb-1">{{ __('game.welcome_to_team', ['team' => $game->team->name]) }}, {{ $game->player_name }}</h1>
-                <p class="text-slate-500">{{ __('game.season_n', ['season' => $game->formatted_season]) }}</p>
+                <h1 class="text-3xl font-bold text-white mb-1">{{ __('game.season_n', ['season' => $game->formatted_season]) }}</h1>
+                <p class="text-slate-500">{{ $game->team->name }}</p>
             </div>
 
             {{-- Flash Messages --}}
@@ -72,7 +72,7 @@
             </div>
 
             {{-- Budget Allocation --}}
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-20">
                 <div class="flex items-center justify-between mb-6">
                     <div>
                         <h2 class="text-lg font-semibold text-slate-900">{{ __('finances.season_budget', ['season' => $game->formatted_season]) }}</h2>

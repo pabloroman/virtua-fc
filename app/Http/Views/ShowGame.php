@@ -19,6 +19,11 @@ class ShowGame
     {
         $game = Game::with('team')->findOrFail($gameId);
 
+        // Redirect to welcome tutorial if not yet completed (new games only)
+        if ($game->needsWelcome()) {
+            return redirect()->route('game.welcome', $gameId);
+        }
+
         // Redirect to onboarding if setup or onboarding not completed
         if (!$game->isSetupComplete() || $game->needsOnboarding()) {
             return redirect()->route('game.onboarding', $gameId);

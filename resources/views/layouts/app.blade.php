@@ -53,6 +53,7 @@
             <main class="text-slate-700">
                 {{ $slot }}
             </main>
+            @unless($hideFooter ?? false)
             <footer>
                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                     <div class="flex flex-col md:flex-row gap-2 md:gap-0 md:space-x-4">
@@ -75,6 +76,7 @@
                     </div>
                 </div>
             </footer>
+            @endunless
         </div>
     </body>
 </html>

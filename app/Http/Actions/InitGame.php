@@ -47,6 +47,6 @@ class InitGame
             gameMode: $gameMode,
         );
 
-        return redirect()->route('game.onboarding', $game->id);
+        return redirect()->route('game.welcome', $game->id);
     }
 }

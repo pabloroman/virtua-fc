@@ -128,6 +128,20 @@ return [
     'season_start' => 'Inicio de Temporada',
     'expires' => 'Expira: :date',
 
+    // Welcome Tutorial
+    'welcome_name' => 'Bienvenido, :name',
+    'welcome_appointed' => 'Has sido nombrado nuevo entrenador del :team',
+    'welcome_how_it_works' => '¿Cómo funciona?',
+    'welcome_step_matches' => 'Juega los partidos',
+    'welcome_step_matches_desc' => 'Elige tu alineación, formación y mentalidad antes de cada partido. Observa el partido en directo y haz sustituciones tácticas.',
+    'welcome_step_squad' => 'Gestiona tu plantilla',
+    'welcome_step_squad_desc' => 'Controla la forma física, el desarrollo y la moral de tus jugadores. La cantera produce jóvenes talentos cada temporada.',
+    'welcome_step_transfers' => 'Ficha y vende jugadores',
+    'welcome_step_transfers_desc' => 'Usa ojeadores para encontrar talento, negocia fichajes en las ventanas de verano e invierno, y gestiona las cesiones.',
+    'welcome_step_finances' => 'Administra las finanzas',
+    'welcome_step_finances_desc' => 'Asigna el presupuesto entre fichajes, cantera, cuerpo médico e instalaciones. Tu rendimiento afecta los ingresos futuros.',
+    'welcome_start_journey' => 'Comenzar',
+
     // Onboarding
     'welcome_to_team' => 'Bienvenido a :team',
     'season_preview' => 'Previa de Temporada',
