@@ -225,7 +225,7 @@
             <div class="border-t border-slate-200 px-4 py-3 bg-slate-50 flex items-center justify-between">
                 <div>
                     <div class="text-xs font-medium text-slate-700">Transparent background</div>
-                    <div class="text-[10px] text-slate-400">560 &times; 128 &middot; PNG</div>
+                    <div class="text-[10px] text-slate-400">354 &times; 94 (1x) &middot; PNG</div>
                 </div>
                 <div class="flex gap-2">
                     <a href="/img/brand/logo.png" download class="text-[10px] font-medium text-sky-600 hover:text-sky-800 px-2 py-1 bg-sky-50 rounded transition-colors">1x</a>
@@ -242,7 +242,7 @@
             <div class="border-t border-slate-700 px-4 py-3 bg-slate-800 flex items-center justify-between">
                 <div>
                     <div class="text-xs font-medium text-slate-200">Dark background</div>
-                    <div class="text-[10px] text-slate-400">640 &times; 208 &middot; PNG</div>
+                    <div class="text-[10px] text-slate-400">434 &times; 174 (1x) &middot; PNG</div>
                 </div>
                 <div class="flex gap-2">
                     <a href="/img/brand/logo-dark.png" download class="text-[10px] font-medium text-sky-400 hover:text-sky-300 px-2 py-1 bg-sky-900/30 rounded transition-colors">1x</a>
