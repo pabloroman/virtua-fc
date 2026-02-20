@@ -16,10 +16,13 @@ class GameCreationService
     {
         $gameId = Uuid::uuid4()->toString();
 
-        // Find competition for the selected team (prefer tier 1 league)
+        // Find competition for the selected team (prefer primary league, then any)
         $competitionTeam = CompetitionTeam::where('team_id', $teamId)
             ->whereHas('competition', fn($q) => $q->where('role', Competition::ROLE_PRIMARY)->where('tier', 1))
             ->first()
+            ?? CompetitionTeam::where('team_id', $teamId)
+                ->whereHas('competition', fn($q) => $q->where('role', Competition::ROLE_PRIMARY))
+                ->first()
             ?? CompetitionTeam::where('team_id', $teamId)->first();
 
         // Resolve competition ID: use competition_team lookup, fall back to
