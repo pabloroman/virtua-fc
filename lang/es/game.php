@@ -129,10 +129,8 @@ return [
     'expires' => 'Expira: :date',
 
     // Welcome Tutorial
-    'welcome_new_manager' => 'Bienvenido, Míster',
+    'welcome_name' => 'Bienvenido, :name',
     'welcome_appointed' => 'Has sido nombrado nuevo entrenador del :team',
-    'welcome_manager_of' => 'Entrenador del :team',
-    'welcome_league' => 'Liga',
     'welcome_how_it_works' => '¿Cómo funciona?',
     'welcome_step_matches' => 'Juega los partidos',
     'welcome_step_matches_desc' => 'Elige tu alineación, formación y mentalidad antes de cada partido. Observa el partido en directo y haz sustituciones tácticas.',

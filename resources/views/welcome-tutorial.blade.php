@@ -10,36 +10,8 @@
             {{-- Welcome Header --}}
             <div class="text-center mb-10">
                 <img src="{{ $game->team->image }}" alt="{{ $game->team->name }}" class="w-24 h-24 md:w-32 md:h-32 mx-auto mb-6 drop-shadow-lg">
-                <h1 class="text-3xl md:text-4xl font-bold text-white mb-2">{{ __('game.welcome_new_manager') }}</h1>
+                <h1 class="text-3xl md:text-4xl font-bold text-white mb-2">{{ __('game.welcome_name', ['name' => $game->player_name]) }}</h1>
                 <p class="text-lg text-slate-400">{{ __('game.welcome_appointed', ['team' => $game->team->name]) }}</p>
-            </div>
-
-            {{-- Manager Card --}}
-            <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 md:p-8 mb-8">
-                <div class="flex items-center gap-4 mb-4">
-                    <div class="w-12 h-12 rounded-xl bg-teal-500/20 flex items-center justify-center shrink-0">
-                        <svg class="w-6 h-6 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <h2 class="text-lg font-bold text-white">{{ $game->player_name }}</h2>
-                        <p class="text-sm text-slate-400">{{ __('game.welcome_manager_of', ['team' => $game->team->name]) }}</p>
-                    </div>
-                </div>
-
-                <div class="border-t border-white/10 pt-4 mt-4">
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <div class="text-xs text-slate-500 uppercase tracking-wide">{{ __('game.season') }}</div>
-                            <div class="text-white font-semibold mt-1">{{ $game->formatted_season }}</div>
-                        </div>
-                        <div>
-                            <div class="text-xs text-slate-500 uppercase tracking-wide">{{ __('game.welcome_league') }}</div>
-                            <div class="text-white font-semibold mt-1">{{ $competition?->name ?? '-' }}</div>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             {{-- How it works --}}
