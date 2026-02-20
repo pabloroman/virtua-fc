@@ -5,6 +5,7 @@ namespace App\Http\Views;
 use App\Modules\Competition\Services\CalendarService;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Season\Jobs\ProcessSeasonTransition;
+use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GameStanding;
@@ -45,7 +46,7 @@ class ShowGame
         $notifications = $this->notificationService->getNotifications($game->id, true, 15);
         $groupedNotifications = $notifications->groupBy(fn ($n) => $n->game_date?->format('Y-m-d') ?? 'unknown');
 
-        return view('game', [
+        $viewData = [
             'game' => $game,
             'nextMatch' => $nextMatch,
             'hasRemainingMatches' => $hasRemainingMatches,
@@ -56,7 +57,14 @@ class ShowGame
             'upcomingFixtures' => $this->calendarService->getUpcomingFixtures($game),
             'groupedNotifications' => $groupedNotifications,
             'unreadNotificationCount' => $this->notificationService->getUnreadCount($game->id),
-        ]);
+        ];
+
+        // Add knockout progress for tournament mode
+        if ($game->isTournamentMode()) {
+            $viewData['tournamentTie'] = $this->getPlayerTournamentTie($game);
+        }
+
+        return view('game', $viewData);
     }
 
     private function loadNextMatch(Game $game): ?GameMatch
@@ -99,5 +107,16 @@ class ShowGame
             : $nextMatch->home_team_id;
 
         return $this->calendarService->getTeamForm($game->id, $opponentId);
+    }
+
+    private function getPlayerTournamentTie(Game $game): ?CupTie
+    {
+        return CupTie::with(['homeTeam', 'awayTeam', 'winner', 'firstLegMatch'])
+            ->where('game_id', $game->id)
+            ->where('competition_id', $game->competition_id)
+            ->where(fn ($q) => $q->where('home_team_id', $game->team_id)
+                ->orWhere('away_team_id', $game->team_id))
+            ->orderByDesc('round_number')
+            ->first();
     }
 }

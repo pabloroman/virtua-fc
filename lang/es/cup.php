@@ -38,4 +38,8 @@ return [
     'swiss_eliminated' => 'Eliminado en la fase de liga',
     'direct_promotion' => 'Ascenso directo asegurado',
     'promotion_playoff' => 'Clasificado para el playoff de ascenso',
+
+    // Group stage cup progress
+    'group_stage_qualified' => '¡Clasificado del Grupo :group a la fase eliminatoria!',
+    'group_stage_eliminated' => 'Eliminado en la fase de grupos (Grupo :group)',
 ];
