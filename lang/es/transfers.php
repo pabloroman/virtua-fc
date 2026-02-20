@@ -11,6 +11,7 @@ return [
     // Tab labels
     'outgoing' => 'Salidas',
     'incoming' => 'Fichajes',
+    'scouting_tab' => 'Ojeadores',
 
     // Window countdown
     'window_closes_in' => ':window cierra en :matchdays jornada(s)',
