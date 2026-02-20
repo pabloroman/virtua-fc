@@ -209,4 +209,83 @@
         text-anchor="middle"&gt;Virtua FC&lt;/text&gt;
 &lt;/svg&gt;</code></pre>
     </div>
+
+    {{-- Downloadable Assets (PNG) --}}
+    <h3 class="text-lg font-semibold text-slate-900 mt-10 mb-3">Downloadable Assets (PNG)</h3>
+    <p class="text-sm text-slate-500 mb-4">Pre-rendered PNG versions for use in presentations, documents, and contexts where SVG is not supported. All assets are in <code class="text-[10px] bg-slate-100 px-1 py-0.5 rounded">/img/brand/</code>.</p>
+
+    {{-- Wordmark PNGs --}}
+    <h4 class="text-sm font-semibold text-slate-700 mb-3">Wordmark</h4>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        {{-- Light variant --}}
+        <div class="border border-slate-200 rounded-lg overflow-hidden">
+            <div class="p-6 flex items-center justify-center bg-white min-h-[120px]">
+                <img src="/img/brand/logo.png" alt="VirtuaFC logo" class="h-12">
+            </div>
+            <div class="border-t border-slate-200 px-4 py-3 bg-slate-50 flex items-center justify-between">
+                <div>
+                    <div class="text-xs font-medium text-slate-700">Transparent background</div>
+                    <div class="text-[10px] text-slate-400">560 &times; 128 &middot; PNG</div>
+                </div>
+                <div class="flex gap-2">
+                    <a href="/img/brand/logo.png" download class="text-[10px] font-medium text-sky-600 hover:text-sky-800 px-2 py-1 bg-sky-50 rounded transition-colors">1x</a>
+                    <a href="/img/brand/logo@2x.png" download class="text-[10px] font-medium text-sky-600 hover:text-sky-800 px-2 py-1 bg-sky-50 rounded transition-colors">2x</a>
+                    <a href="/img/brand/logo.svg" download class="text-[10px] font-medium text-sky-600 hover:text-sky-800 px-2 py-1 bg-sky-50 rounded transition-colors">SVG</a>
+                </div>
+            </div>
+        </div>
+        {{-- Dark variant --}}
+        <div class="border border-slate-700 rounded-lg overflow-hidden">
+            <div class="p-6 flex items-center justify-center bg-slate-900 min-h-[120px]">
+                <img src="/img/brand/logo-dark.png" alt="VirtuaFC logo on dark background" class="h-16">
+            </div>
+            <div class="border-t border-slate-700 px-4 py-3 bg-slate-800 flex items-center justify-between">
+                <div>
+                    <div class="text-xs font-medium text-slate-200">Dark background</div>
+                    <div class="text-[10px] text-slate-400">640 &times; 208 &middot; PNG</div>
+                </div>
+                <div class="flex gap-2">
+                    <a href="/img/brand/logo-dark.png" download class="text-[10px] font-medium text-sky-400 hover:text-sky-300 px-2 py-1 bg-sky-900/30 rounded transition-colors">1x</a>
+                    <a href="/img/brand/logo-dark@2x.png" download class="text-[10px] font-medium text-sky-400 hover:text-sky-300 px-2 py-1 bg-sky-900/30 rounded transition-colors">2x</a>
+                    <a href="/img/brand/logo-dark.svg" download class="text-[10px] font-medium text-sky-400 hover:text-sky-300 px-2 py-1 bg-sky-900/30 rounded transition-colors">SVG</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Icon PNGs --}}
+    <h4 class="text-sm font-semibold text-slate-700 mb-3">App Icon</h4>
+    <div class="border border-slate-200 rounded-lg overflow-hidden mb-4">
+        <div class="p-6 bg-white">
+            <div class="flex flex-wrap items-end gap-6">
+                @foreach([
+                    ['file' => 'icon-512.png', 'display' => 80, 'label' => '512px'],
+                    ['file' => 'icon-256.png', 'display' => 56, 'label' => '256px'],
+                    ['file' => 'icon-128.png', 'display' => 40, 'label' => '128px'],
+                    ['file' => 'icon-64.png', 'display' => 28, 'label' => '64px'],
+                    ['file' => 'icon-32.png', 'display' => 20, 'label' => '32px'],
+                ] as $icon)
+                <div class="text-center">
+                    <div class="mb-1.5 inline-flex items-center justify-center">
+                        <img src="/img/brand/{{ $icon['file'] }}" alt="VirtuaFC icon {{ $icon['label'] }}" style="width: {{ $icon['display'] }}px; height: {{ $icon['display'] }}px;" class="rounded">
+                    </div>
+                    <div class="text-[10px] text-slate-400">{{ $icon['label'] }}</div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+        <div class="border-t border-slate-200 px-4 py-3 bg-slate-50 flex flex-wrap items-center gap-2">
+            <span class="text-xs text-slate-500 mr-2">Download:</span>
+            @foreach([
+                ['file' => 'icon-512.png', 'label' => '512px'],
+                ['file' => 'icon-256.png', 'label' => '256px'],
+                ['file' => 'icon-128.png', 'label' => '128px'],
+                ['file' => 'icon-64.png', 'label' => '64px'],
+                ['file' => 'icon-32.png', 'label' => '32px'],
+                ['file' => 'icon.svg', 'label' => 'SVG'],
+            ] as $dl)
+            <a href="/img/brand/{{ $dl['file'] }}" download class="text-[10px] font-medium text-sky-600 hover:text-sky-800 px-2 py-1 bg-sky-50 rounded transition-colors">{{ $dl['label'] }}</a>
+            @endforeach
+        </div>
+    </div>
 </section>
