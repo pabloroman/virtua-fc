@@ -64,11 +64,12 @@ class KnockoutCupHandler implements CompetitionHandler
     {
         $firstMatch = $matches->first();
 
-        return route('game.results', [
+        return route('game.results', array_filter([
             'gameId' => $game->id,
             'competition' => $firstMatch->competition_id ?? $game->competition_id,
             'matchday' => $firstMatch->round_number ?? $matchday,
-        ]);
+            'round' => $firstMatch?->round_name,
+        ]));
     }
 
     /**

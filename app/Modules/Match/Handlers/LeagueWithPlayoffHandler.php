@@ -76,11 +76,14 @@ class LeagueWithPlayoffHandler implements CompetitionHandler
 
     public function getRedirectRoute(Game $game, Collection $matches, int $matchday): string
     {
-        return route('game.results', [
+        $firstMatch = $matches->first();
+
+        return route('game.results', array_filter([
             'gameId' => $game->id,
-            'competition' => $matches->first()->competition_id ?? $game->competition_id,
-            'matchday' => $matches->first()->round_number ?? $matchday,
-        ]);
+            'competition' => $firstMatch->competition_id ?? $game->competition_id,
+            'matchday' => $firstMatch->round_number ?? $matchday,
+            'round' => $firstMatch?->round_name,
+        ]));
     }
 
     /**
