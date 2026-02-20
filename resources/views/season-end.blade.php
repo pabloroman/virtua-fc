@@ -37,7 +37,7 @@
                                 </div>
                                 <div class="text-xl font-bold text-slate-900">{{ $cupWinner->name }}</div>
                                 <div class="text-sm text-slate-500">
-                                    {{ __('season.beat', ['team' => $cupRunnerUp?->name ?? 'opponent']) }}
+                                    {{ __('season.beat', ['team_a' => $cupRunnerUp ? $cupRunnerUp->nameWithA() : 'al rival']) }}
                                 </div>
                             @else
                                 <div class="text-slate-400 py-4">{{ __('season.competition_in_progress') }}</div>

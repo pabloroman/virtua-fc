@@ -2,7 +2,7 @@
 
 return [
     // Page title
-    'title' => 'Plantilla de :team',
+    'title' => 'Plantilla :team_de',
     'squad' => 'Plantilla',
     'contracts' => 'Contratos',
     'development' => 'Desarrollo',

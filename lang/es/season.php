@@ -5,7 +5,7 @@ return [
     'season_honours' => 'Honores Temporada :season',
     'league_champion' => 'Campeón de :league',
     'cup_winner' => 'Campeón de Copa',
-    'beat' => 'Venció a :team',
+    'beat' => 'Venció :team_a',
     'competition_in_progress' => 'Competición en curso',
     'other_league_results' => 'Otras Ligas',
 

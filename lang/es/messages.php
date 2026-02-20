@@ -9,8 +9,8 @@ return [
     'bid_exceeds_budget' => 'La oferta supera tu presupuesto de fichajes.',
     'player_listed' => ':player puesto a la venta. Las ofertas pueden llegar tras la próxima jornada.',
     'player_unlisted' => ':player retirado de la lista de fichajes.',
-    'offer_rejected' => 'Oferta de :team rechazada.',
-    'offer_accepted_sale' => ':player vendido a :team por :fee.',
+    'offer_rejected' => 'Oferta :team_de rechazada.',
+    'offer_accepted_sale' => ':player vendido :team_a por :fee.',
     'offer_accepted_pre_contract' => '¡Acuerdo cerrado! :player fichará por :team por :fee cuando abra la ventana de :window.',
 
     // Counter offer
@@ -19,7 +19,7 @@ return [
     'counter_offer_expired' => 'Esta oferta ya no está disponible.',
 
     // Loan messages
-    'loan_complete' => ':player ha sido cedido a :team.',
+    'loan_complete' => ':player ha sido cedido :team_a.',
     'loan_agreed' => ':message La cesión comenzará cuando abra la ventana de :window.',
     'loan_in_complete' => ':message La cesión ya está activa.',
     'loan_failed' => ':message',
@@ -62,7 +62,7 @@ return [
     'budget_minimum_tier' => 'Todas las áreas de infraestructura deben ser al menos Nivel 1.',
 
     // Onboarding
-    'welcome_to_team' => '¡Bienvenido a :team! Tu temporada te espera.',
+    'welcome_to_team' => '¡Bienvenido :team_a! Tu temporada te espera.',
 
     // Season
     'season_not_complete' => 'No se puede iniciar una nueva temporada - la temporada actual no ha terminado.',

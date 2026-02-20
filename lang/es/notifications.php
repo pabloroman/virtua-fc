@@ -34,19 +34,19 @@ return [
     'player_recovered_message' => ':player se ha recuperado y está disponible para jugar.',
 
     // Transfer offers
-    'transfer_offer_title' => 'Oferta de :team',
+    'transfer_offer_title' => 'Oferta :team_de',
     'transfer_offer_message' => ':team ha ofrecido :fee por :player.',
     'free_transfer' => 'Traspaso Libre',
 
     // Transfer complete
     'transfer_complete_incoming_title' => ':player fichado',
-    'transfer_complete_incoming_message' => ':player se ha unido a tu plantilla procedente de :team por :fee.',
+    'transfer_complete_incoming_message' => ':player se ha unido a tu plantilla procedente :team_de por :fee.',
     'transfer_complete_outgoing_title' => ':player vendido',
-    'transfer_complete_outgoing_message' => ':player ha sido traspasado a :team por :fee.',
+    'transfer_complete_outgoing_message' => ':player ha sido traspasado :team_a por :fee.',
 
     // Expiring offers
     'offer_expiring_title' => 'Oferta por :player expira pronto',
-    'offer_expiring_message' => 'La oferta de :team por :player expira en :days días.',
+    'offer_expiring_message' => 'La oferta :team_de por :player expira en :days días.',
 
     // Scout
     'scout_complete_title' => 'Informe de Ojeador Listo',
@@ -58,7 +58,7 @@ return [
 
     // Loan returns
     'loan_return_title' => ':player regresa de cesión',
-    'loan_return_message' => ':player ha regresado de su cesión en :team.',
+    'loan_return_message' => ':player ha regresado de su cesión :team_en.',
 
     // Low fitness
     'low_fitness_title' => ':player con baja forma física',
@@ -66,8 +66,8 @@ return [
 
     // Loan search
     'loan_destination_found_title' => 'Destino encontrado para :player',
-    'loan_destination_found_message' => ':player ha sido cedido a :team.',
-    'loan_destination_found_waiting' => ':player será cedido a :team cuando abra la ventana de fichajes.',
+    'loan_destination_found_message' => ':player ha sido cedido :team_a.',
+    'loan_destination_found_waiting' => ':player será cedido :team_a cuando abra la ventana de fichajes.',
     'loan_search_failed_title' => 'Búsqueda de cesión fallida',
     'loan_search_failed_message' => 'No se encontró un club interesado en ceder a :player. El jugador vuelve a estar disponible.',
 
