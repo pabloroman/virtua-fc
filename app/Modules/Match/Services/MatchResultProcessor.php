@@ -70,7 +70,7 @@ class MatchResultProcessor
             ? array_filter($matchResults, fn ($r) => $r['matchId'] !== $deferMatchId)
             : $matchResults;
         $gkMatches = $deferMatchId
-            ? $matches->except($deferMatchId)
+            ? $matches->except($deferMatchId)->keyBy('id')
             : $matches;
         $this->batchUpdateGoalkeeperStats($gkMatches, $gkResults);
 

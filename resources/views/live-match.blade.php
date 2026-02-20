@@ -61,7 +61,7 @@
 
                         <div class="relative px-2 md:px-6">
                             {{-- Score --}}
-                            <div class="text-3xl md:text-5xl font-bold text-slate-900 tabular-nums transition-transform duration-200"
+                            <div class="text-3xl whitespace-nowrap md:text-5xl font-bold text-slate-900 tabular-nums transition-transform duration-200"
                                  :class="goalFlash ? 'scale-125' : 'scale-100'">
                                 <span x-text="homeScore">0</span>
                                 <span class="text-slate-300 mx-1">-</span>
