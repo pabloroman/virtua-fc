@@ -28,7 +28,7 @@ class AcceptRenewalCounter
         $success = $this->contractService->acceptCounterOffer($negotiation);
 
         if ($success) {
-            return redirect()->route('game.transfers', $gameId)
+            return redirect()->route('game.transfers.outgoing', $gameId)
                 ->with('success', __('messages.renewal_agreed', [
                     'player' => $player->name,
                     'years' => $negotiation->fresh()->contract_years,
@@ -36,7 +36,7 @@ class AcceptRenewalCounter
                 ]));
         }
 
-        return redirect()->route('game.transfers', $gameId)
+        return redirect()->route('game.transfers.outgoing', $gameId)
             ->with('error', __('messages.renewal_failed'));
     }
 }

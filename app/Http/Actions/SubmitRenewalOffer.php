@@ -27,7 +27,7 @@ class SubmitRenewalOffer
         $offerWageCents = $offerWageEuros * 100;
 
         if ($offerWageCents <= 0) {
-            return redirect()->route('game.transfers', $gameId)
+            return redirect()->route('game.transfers.outgoing', $gameId)
                 ->with('error', __('messages.renewal_invalid_offer'));
         }
 
@@ -40,7 +40,7 @@ class SubmitRenewalOffer
             // Submit new round offer
             $this->contractService->submitNewOffer($existingNegotiation, $offerWageCents, $offeredYears);
 
-            return redirect()->route('game.transfers', $gameId)
+            return redirect()->route('game.transfers.outgoing', $gameId)
                 ->with('success', __('messages.renewal_offer_submitted', [
                     'player' => $player->name,
                     'wage' => Money::format($offerWageCents),
@@ -49,13 +49,13 @@ class SubmitRenewalOffer
 
         // New negotiation
         if (!$player->canBeOfferedRenewal()) {
-            return redirect()->route('game.transfers', $gameId)
+            return redirect()->route('game.transfers.outgoing', $gameId)
                 ->with('error', __('messages.cannot_renew'));
         }
 
         $this->contractService->initiateNegotiation($player, $offerWageCents, $offeredYears);
 
-        return redirect()->route('game.transfers', $gameId)
+        return redirect()->route('game.transfers.outgoing', $gameId)
             ->with('success', __('messages.renewal_offer_submitted', [
                 'player' => $player->name,
                 'wage' => Money::format($offerWageCents),

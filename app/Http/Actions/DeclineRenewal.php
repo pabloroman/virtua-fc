@@ -21,7 +21,7 @@ class DeclineRenewal
             ->findOrFail($playerId);
 
         if (!$player->isContractExpiring() || $player->isRetiring() || $player->hasRenewalAgreed()) {
-            return redirect()->route('game.transfers', $gameId)
+            return redirect()->route('game.transfers.outgoing', $gameId)
                 ->with('error', __('messages.cannot_renew'));
         }
 
@@ -36,7 +36,7 @@ class DeclineRenewal
             $this->contractService->declineWithoutNegotiation($player);
         }
 
-        return redirect()->route('game.transfers', $gameId)
+        return redirect()->route('game.transfers.outgoing', $gameId)
             ->with('success', __('messages.renewal_declined', ['player' => $player->name]));
     }
 }

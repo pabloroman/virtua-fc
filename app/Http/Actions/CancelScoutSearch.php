@@ -21,7 +21,7 @@ class CancelScoutSearch
             $this->scoutingService->cancelSearch($report);
         }
 
-        return redirect()->route('game.scouting.hub', $gameId)
+        return redirect()->route('game.scouting', $gameId)
             ->with('success', __('messages.scout_search_cancelled'));
     }
 }

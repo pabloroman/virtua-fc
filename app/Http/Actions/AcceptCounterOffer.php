@@ -18,7 +18,7 @@ class AcceptCounterOffer
         $offer = TransferOffer::with('gamePlayer.player')->where('game_id', $gameId)->findOrFail($offerId);
 
         if (!$offer->isPending() || !$offer->isIncoming()) {
-            return redirect()->route('game.scouting', $gameId)
+            return redirect()->route('game.transfers', $gameId)
                 ->with('error', __('messages.counter_offer_expired'));
         }
 
@@ -31,12 +31,12 @@ class AcceptCounterOffer
         $completedImmediately = $this->transferService->acceptIncomingOffer($offer);
 
         if ($completedImmediately) {
-            return redirect()->route('game.scouting', $gameId)
+            return redirect()->route('game.transfers', $gameId)
                 ->with('success', __('messages.counter_offer_accepted_immediate', ['player' => $playerName]));
         }
 
         $nextWindow = $game->getNextWindowName();
-        return redirect()->route('game.scouting', $gameId)
+        return redirect()->route('game.transfers', $gameId)
             ->with('success', __('messages.counter_offer_accepted', ['player' => $playerName, 'window' => $nextWindow]));
     }
 }

@@ -25,7 +25,7 @@ class UnlistPlayerFromTransfer
         $this->transferService->unlistPlayer($player);
 
         return redirect()
-            ->route('game.transfers', $gameId)
+            ->route('game.transfers.outgoing', $gameId)
             ->with('success', __('messages.player_unlisted', ['player' => $player->player->name]));
     }
 }

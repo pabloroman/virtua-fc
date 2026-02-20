@@ -19,7 +19,7 @@ class SubmitScoutSearch
         // Check no search currently in progress
         $searching = $this->scoutingService->getActiveReport($game);
         if ($searching) {
-            return redirect()->route('game.scouting.hub', $gameId)
+            return redirect()->route('game.scouting', $gameId)
                 ->with('error', __('messages.scout_already_searching'));
         }
 
@@ -50,7 +50,7 @@ class SubmitScoutSearch
 
         $this->scoutingService->startSearch($game, $filters);
 
-        return redirect()->route('game.scouting.hub', $gameId)
+        return redirect()->route('game.scouting', $gameId)
             ->with('success', __('messages.scout_search_started'));
     }
 }

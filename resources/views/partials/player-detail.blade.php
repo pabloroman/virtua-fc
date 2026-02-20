@@ -283,7 +283,7 @@
                     <span class="w-1.5 h-1.5 rounded-full {{ $renewalNegotiation->isPending() ? 'bg-amber-500 animate-pulse' : 'bg-orange-500' }}"></span>
                     {{ $renewalNegotiation->isPending() ? __('transfers.negotiating') : __('transfers.player_countered') }}
                 </span>
-                <a href="{{ route('game.transfers', $game->id) }}" class="text-xs text-slate-500 hover:text-slate-700 underline underline-offset-2">
+                <a href="{{ route('game.transfers.outgoing', $game->id) }}" class="text-xs text-slate-500 hover:text-slate-700 underline underline-offset-2">
                     {{ __('app.view_details') }} →
                 </a>
             @endif
