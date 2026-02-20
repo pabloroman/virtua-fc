@@ -221,7 +221,7 @@ class NotificationService
         return $this->create(
             game: $game,
             type: GameNotification::TYPE_TRANSFER_OFFER_RECEIVED,
-            title: __('notifications.transfer_offer_title', ['team' => $offer->offeringTeam->name]),
+            title: __('notifications.transfer_offer_title', ['team_de' => $offer->offeringTeam->nameWithDe()]),
             message: __('notifications.transfer_offer_message', [
                 'team' => $offer->offeringTeam->name,
                 'player' => $player->name,
@@ -249,7 +249,7 @@ class NotificationService
             type: GameNotification::TYPE_TRANSFER_OFFER_EXPIRING,
             title: __('notifications.offer_expiring_title', ['player' => $player->name]),
             message: __('notifications.offer_expiring_message', [
-                'team' => $offer->offeringTeam->name,
+                'team_de' => $offer->offeringTeam->nameWithDe(),
                 'player' => $player->name,
                 'days' => $offer->days_until_expiry,
             ]),
@@ -271,7 +271,7 @@ class NotificationService
         $isIncoming = $offer->direction === TransferOffer::DIRECTION_INCOMING;
 
         if ($isIncoming) {
-            $fromTeam = $offer->sellingTeam->name ?? $player->team->name ?? '';
+            $fromTeam = $offer->sellingTeam ?? $player->team;
             $fee = $offer->transfer_fee > 0
                 ? $offer->formatted_transfer_fee
                 : __('notifications.free_transfer');
@@ -279,14 +279,14 @@ class NotificationService
             $title = __('notifications.transfer_complete_incoming_title', ['player' => $player->name]);
             $message = __('notifications.transfer_complete_incoming_message', [
                 'player' => $player->name,
-                'team' => $fromTeam,
+                'team_de' => $fromTeam?->nameWithDe() ?? '',
                 'fee' => $fee,
             ]);
         } else {
             $title = __('notifications.transfer_complete_outgoing_title', ['player' => $player->name]);
             $message = __('notifications.transfer_complete_outgoing_message', [
                 'player' => $player->name,
-                'team' => $offer->offeringTeam->name,
+                'team_a' => $offer->offeringTeam->nameWithA(),
                 'fee' => $offer->formatted_transfer_fee,
             ]);
         }
@@ -387,7 +387,7 @@ class NotificationService
     /**
      * Create a loan return notification.
      */
-    public function notifyLoanReturn(Game $game, GamePlayer $player, string $fromTeam): GameNotification
+    public function notifyLoanReturn(Game $game, GamePlayer $player, Team $fromTeam): GameNotification
     {
         return $this->create(
             game: $game,
@@ -395,12 +395,12 @@ class NotificationService
             title: __('notifications.loan_return_title', ['player' => $player->name]),
             message: __('notifications.loan_return_message', [
                 'player' => $player->name,
-                'team' => $fromTeam,
+                'team_en' => $fromTeam->nameWithEn(),
             ]),
             priority: GameNotification::PRIORITY_INFO,
             metadata: [
                 'player_id' => $player->id,
-                'from_team' => $fromTeam,
+                'from_team' => $fromTeam->name,
             ],
         );
     }
@@ -411,8 +411,8 @@ class NotificationService
     public function notifyLoanDestinationFound(Game $game, GamePlayer $player, Team $destination, bool $windowOpen): GameNotification
     {
         $message = $windowOpen
-            ? __('notifications.loan_destination_found_message', ['player' => $player->name, 'team' => $destination->name])
-            : __('notifications.loan_destination_found_waiting', ['player' => $player->name, 'team' => $destination->name]);
+            ? __('notifications.loan_destination_found_message', ['player' => $player->name, 'team_a' => $destination->nameWithA()])
+            : __('notifications.loan_destination_found_waiting', ['player' => $player->name, 'team_a' => $destination->nameWithA()]);
 
         return $this->create(
             game: $game,

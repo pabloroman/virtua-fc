@@ -130,7 +130,7 @@ return [
 
     // Welcome Tutorial
     'welcome_name' => 'Bienvenido, :name',
-    'welcome_appointed' => 'Has sido nombrado nuevo entrenador del :team',
+    'welcome_appointed' => 'Has sido nombrado nuevo entrenador :team_de',
     'welcome_how_it_works' => '¿Cómo funciona?',
     'welcome_step_matches' => 'Juega los partidos',
     'welcome_step_matches_desc' => 'Elige tu alineación, formación y mentalidad antes de cada partido. Observa el partido en directo y haz sustituciones tácticas.',
@@ -143,7 +143,7 @@ return [
     'welcome_start_journey' => 'Comenzar',
 
     // Onboarding
-    'welcome_to_team' => 'Bienvenido a :team',
+    'welcome_to_team' => 'Bienvenido :team_a',
     'season_preview' => 'Previa de Temporada',
     'season_objective' => 'Objetivo de Temporada',
     'your_competitions' => 'Tus Competiciones',

@@ -2,7 +2,7 @@
 
 return [
     // Page title
-    'title' => 'Finanzas de :team - Temporada :season',
+    'title' => 'Finanzas :team_de - Temporada :season',
 
     // Overview cards
     'projected_position' => 'Posición Proyectada',
