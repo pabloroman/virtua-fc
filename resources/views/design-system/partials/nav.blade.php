@@ -2,6 +2,7 @@
 $groups = [
     'Foundation' => [
         ['id' => 'overview', 'label' => 'Overview'],
+        ['id' => 'logo-brand', 'label' => 'Logo & Brand'],
         ['id' => 'colors', 'label' => 'Colors'],
         ['id' => 'typography', 'label' => 'Typography'],
     ],
