@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 104" width="640" height="208">
+  <rect fill="#0f172a" width="320" height="104" rx="4"/>
+  <rect fill="#dc2626" x="28" y="26" width="264" height="52" rx="2" transform="skewX(-12)"/>
+  <text fill="#fff" font-family="'Barlow Semi Condensed', 'Arial Black', sans-serif" font-weight="700" font-size="38" x="160" y="66" text-anchor="middle">Virtua FC</text>
+</svg>
