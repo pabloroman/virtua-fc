@@ -29,12 +29,12 @@ class RejectTransferOffer
             abort(403, 'You can only reject offers for your own players.');
         }
 
-        $teamName = $offer->offeringTeam->name;
+        $team = $offer->offeringTeam;
 
         $this->transferService->rejectOffer($offer);
 
         return redirect()
             ->route('game.transfers.outgoing', $gameId)
-            ->with('success', __('messages.offer_rejected', ['team' => $teamName]));
+            ->with('success', __('messages.offer_rejected', ['team_de' => $team->nameWithDe()]));
     }
 }

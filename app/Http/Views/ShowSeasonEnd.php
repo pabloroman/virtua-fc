@@ -3,7 +3,6 @@
 namespace App\Http\Views;
 
 use App\Modules\Competition\Services\CountryConfig;
-use App\Modules\Squad\Services\PlayerDevelopmentService;
 use App\Modules\Season\Services\SeasonGoalService;
 use App\Models\Competition;
 use App\Models\CupTie;
@@ -17,7 +16,6 @@ use App\Models\Team;
 class ShowSeasonEnd
 {
     public function __construct(
-        private readonly PlayerDevelopmentService $developmentService,
         private readonly SeasonGoalService $seasonGoalService,
         private readonly CountryConfig $countryConfig,
     ) {}
@@ -26,6 +24,11 @@ class ShowSeasonEnd
     {
         $game = Game::with('team')->findOrFail($gameId);
         abort_if($game->isTournamentMode(), 404);
+
+        // Redirect if season transition is already in progress
+        if ($game->isTransitioningSeason()) {
+            return redirect()->route('show-game', $gameId);
+        }
 
         // Check if season is actually complete (only matches involving the player's team)
         $unplayedMatches = $game->matches()
@@ -86,13 +89,13 @@ class ShowSeasonEnd
 
         // Find the lower-tier league for promotion display (tier = current tier + 1)
         $lowerTierLeague = Competition::where('country', $competition->country)
-            ->where('role', Competition::ROLE_PRIMARY)
+            ->where('role', Competition::ROLE_LEAGUE)
             ->where('tier', $competition->tier + 1)
             ->first();
 
         // Find the higher-tier league for relegation context (tier = current tier - 1)
         $higherTierLeague = Competition::where('country', $competition->country)
-            ->where('role', Competition::ROLE_PRIMARY)
+            ->where('role', Competition::ROLE_LEAGUE)
             ->where('tier', $competition->tier - 1)
             ->first();
 
@@ -271,31 +274,6 @@ class ShowSeasonEnd
             ->where('retiring_at_season', $game->season)
             ->get();
 
-        // Get development preview for player's squad
-        $squadPlayers = GamePlayer::with('player')
-            ->where('game_id', $gameId)
-            ->where('team_id', $game->team_id)
-            ->get()
-            ->map(function ($player) {
-                $change = $this->developmentService->calculateDevelopment($player);
-                $overallBefore = (int) round(($change['techBefore'] + $change['physBefore']) / 2);
-                $overallAfter = (int) round(($change['techAfter'] + $change['physAfter']) / 2);
-                $overallChange = $overallAfter - $overallBefore;
-
-                return [
-                    'player' => $player,
-                    'age' => $player->age,
-                    'overallBefore' => $overallBefore,
-                    'overallAfter' => $overallAfter,
-                    'overallChange' => $overallChange,
-                    'status' => $player->development_status,
-                ];
-            })
-            ->filter(fn ($item) => $item['overallChange'] !== 0)
-            ->sortByDesc(fn ($item) => abs($item['overallChange']))
-            ->take(10)
-            ->values();
-
         return view('season-end', [
             'game' => $game,
             'competition' => $competition,
@@ -307,10 +285,10 @@ class ShowSeasonEnd
             'topAssisters' => $topAssisters,
             'bestGoalkeeper' => $bestGoalkeeper,
             'playerTeamStats' => $playerTeamStats,
-            'developmentPreview' => $squadPlayers,
             'finances' => $game->currentFinances,
             'investment' => $game->currentInvestment,
             // New data for enhanced season review
+            'cupCompetition' => $cupCompetition,
             'cupWinner' => $cupWinner,
             'cupRunnerUp' => $cupRunnerUp,
             'cupName' => $cupName,

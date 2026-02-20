@@ -165,7 +165,7 @@ class ContractService
         $league = Competition::whereHas('teams', function ($query) use ($team) {
             $query->where('teams.id', $team->id);
         })
-            ->where('role', Competition::ROLE_PRIMARY)
+            ->where('role', Competition::ROLE_LEAGUE)
             ->first();
 
         return $this->minimumWageCache[$team->id] = self::MINIMUM_WAGES[$league?->tier] ?? self::DEFAULT_MINIMUM_WAGE;

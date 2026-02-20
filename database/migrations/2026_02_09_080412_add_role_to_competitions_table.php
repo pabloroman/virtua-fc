@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('competitions', function (Blueprint $table) {
-            $table->string('role', 20)->default('foreign')->after('type');
+            $table->string('role', 20)->default('league')->after('type');
             $table->dropColumn('minimum_annual_wage');
         });
     }

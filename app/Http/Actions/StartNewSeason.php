@@ -2,16 +2,11 @@
 
 namespace App\Http\Actions;
 
-use App\Events\SeasonStarted;
-use App\Modules\Season\Services\SeasonEndPipeline;
+use App\Modules\Season\Jobs\ProcessSeasonTransition;
 use App\Models\Game;
 
 class StartNewSeason
 {
-    public function __construct(
-        private readonly SeasonEndPipeline $pipeline,
-    ) {}
-
     public function __invoke(string $gameId)
     {
         $game = Game::findOrFail($gameId);
@@ -23,19 +18,16 @@ class StartNewSeason
                 ->with('error', __('messages.season_not_complete'));
         }
 
-        // Run the season end pipeline
-        $data = $this->pipeline->run($game);
-
-        // Set current date to the first match of the new season
-        $game->refresh()->setRelations([]);
-        $firstMatch = $game->getFirstCompetitiveMatch();
-        if ($firstMatch) {
-            $game->update(['current_date' => $firstMatch->scheduled_date]);
+        // Prevent double-dispatch
+        if ($game->isTransitioningSeason()) {
+            return redirect()->route('show-game', $gameId);
         }
 
-        event(new SeasonStarted($game));
+        // Mark as transitioning and dispatch background job
+        $game->update(['season_transitioning_at' => now()]);
 
-        return redirect()->route('show-game', $gameId)
-            ->with('message', __('messages.new_season_started', ['season' => Game::formatSeason($data->newSeason)]));
+        ProcessSeasonTransition::dispatch($game->id);
+
+        return redirect()->route('show-game', $gameId);
     }
 }

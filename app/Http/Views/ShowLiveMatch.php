@@ -58,11 +58,18 @@ class ShowLiveMatch
         }, $events);
 
         // Load other matches from the same competition/matchday for the ticker
+        // For Swiss-format competitions, round_number overlaps between league phase
+        // and knockout phase, so also filter by round_name to avoid mixing results.
         $otherMatches = GameMatch::with(['homeTeam', 'awayTeam', 'events'])
             ->where('game_id', $gameId)
             ->where('competition_id', $playerMatch->competition_id)
             ->where('round_number', $playerMatch->round_number)
             ->where('id', '!=', $playerMatch->id)
+            ->when(
+                $playerMatch->round_name,
+                fn ($q) => $q->where('round_name', $playerMatch->round_name),
+                fn ($q) => $q->whereNull('round_name'),
+            )
             ->get()
             ->map(fn ($m) => [
                 'homeTeam' => $m->homeTeam->name,
@@ -86,11 +93,12 @@ class ShowLiveMatch
             ->all();
 
         // Build the results URL for the "Continue" button
-        $resultsUrl = route('game.results', [
+        $resultsUrl = route('game.results', array_filter([
             'gameId' => $game->id,
             'competition' => $playerMatch->competition_id,
             'matchday' => $playerMatch->round_number,
-        ]);
+            'round' => $playerMatch->round_name,
+        ]));
 
         // Load bench players for substitutions (user's team only)
         $isUserHome = $playerMatch->isHomeTeam($game->team_id);

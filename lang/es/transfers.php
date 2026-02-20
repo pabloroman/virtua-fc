@@ -129,7 +129,7 @@ return [
     // Scouting player page
     'scouting_report' => 'Informe de Ojeador',
     'back_to_results' => 'Volver a Resultados',
-    'from_team' => 'de :team',
+    'from_team' => ':team_de',
     'estimated_ability' => 'Habilidad Estimada',
     'market_value' => 'Valor de Mercado',
     'contract_until' => 'Contrato hasta',
@@ -180,11 +180,11 @@ return [
     // Loans page
     'loans_title' => 'Cesiones',
     'active_loans_out' => 'Cesiones Activas (Salidas)',
-    'loaned_to' => 'Cedido a :team',
+    'loaned_to' => 'Cedido :team_a',
     'until' => 'Hasta',
     'end_of_season' => 'Fin de Temporada',
     'active_loans_in' => 'Cesiones Activas (Entradas)',
-    'loaned_from' => 'Cedido de :team',
+    'loaned_from' => 'Cedido :team_de',
     'no_active_loans' => 'Sin cesiones activas.',
     'no_loans_in' => 'Ningún jugador cedido a tu club actualmente.',
     'no_loans_out' => 'Ningún jugador cedido desde tu club.',

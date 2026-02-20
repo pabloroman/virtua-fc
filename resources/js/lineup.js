@@ -301,6 +301,8 @@ export default function lineupManager(config) {
                     return `background: repeating-linear-gradient(0deg, ${p} 0px, ${p} 6px, ${s} 6px, ${s} 12px)`;
                 case 'sash':
                     return `background: linear-gradient(135deg, ${p} 0%, ${p} 35%, ${s} 35%, ${s} 65%, ${p} 65%, ${p} 100%)`;
+                case 'bar':
+                    return `background: linear-gradient(90deg, ${p} 0%, ${p} 35%, ${s} 35%, ${s} 65%, ${p} 65%, ${p} 100%)`;
                 case 'halves':
                     return `background: linear-gradient(90deg, ${p} 50%, ${s} 50%)`;
                 default:

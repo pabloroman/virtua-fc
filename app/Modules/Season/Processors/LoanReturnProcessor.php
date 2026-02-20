@@ -43,7 +43,7 @@ class LoanReturnProcessor implements SeasonEndProcessor
                 $this->notificationService->notifyLoanReturn(
                     $game,
                     $loan->gamePlayer,
-                    $loan->loanTeam->name
+                    $loan->loanTeam
                 );
             }
         }

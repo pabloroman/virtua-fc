@@ -108,4 +108,62 @@ class Team extends Model
     {
         return 0; // Placeholder for team-level stats
     }
+
+    /**
+     * Get the Spanish grammatical article for this team name.
+     *
+     * Most teams use "el" (masculine): "del Real Madrid", "al Barcelona"
+     * Some use "la" (feminine): "de la Real Sociedad", "a la UD Almería"
+     * Some use no article: "de Osasuna", "a Osasuna"
+     */
+    public function getArticleAttribute(): ?string
+    {
+        $name = $this->attributes['name'] ?? '';
+
+        if ($name === 'CA Osasuna') {
+            return null;
+        }
+
+        if (str_starts_with($name, 'UD ') || str_starts_with($name, 'Real Sociedad') || $name === 'Cultural Leonesa') {
+            return 'la';
+        }
+
+        return 'el';
+    }
+
+    /**
+     * Team name with "de" preposition: "del Real Madrid", "de la Real Sociedad", "de Osasuna"
+     */
+    public function nameWithDe(): string
+    {
+        return match ($this->article) {
+            'la' => 'de la ' . $this->name,
+            null => 'de ' . $this->name,
+            default => 'del ' . $this->name,
+        };
+    }
+
+    /**
+     * Team name with "a" preposition: "al Real Madrid", "a la Real Sociedad", "a Osasuna"
+     */
+    public function nameWithA(): string
+    {
+        return match ($this->article) {
+            'la' => 'a la ' . $this->name,
+            null => 'a ' . $this->name,
+            default => 'al ' . $this->name,
+        };
+    }
+
+    /**
+     * Team name with "en" preposition: "en el Real Madrid", "en la Real Sociedad", "en Osasuna"
+     */
+    public function nameWithEn(): string
+    {
+        return match ($this->article) {
+            'la' => 'en la ' . $this->name,
+            null => 'en ' . $this->name,
+            default => 'en el ' . $this->name,
+        };
+    }
 }

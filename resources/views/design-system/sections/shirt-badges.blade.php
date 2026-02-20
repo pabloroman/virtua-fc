@@ -5,7 +5,7 @@
     <div x-data="shirtBadgePreview()" class="space-y-6">
         {{-- Pattern legend --}}
         <div class="flex flex-wrap gap-3 text-xs">
-            <template x-for="p in ['solid', 'stripes', 'hoops', 'sash', 'halves']" :key="p">
+            <template x-for="p in ['solid', 'stripes', 'hoops', 'sash', 'bar', 'halves']" :key="p">
                 <span class="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-full font-medium uppercase tracking-wide" x-text="p"></span>
             </template>
         </div>
@@ -59,6 +59,8 @@
                             return `background: repeating-linear-gradient(0deg, ${p} 0px, ${p} 6px, ${s} 6px, ${s} 12px)`;
                         case 'sash':
                             return `background: linear-gradient(135deg, ${p} 0%, ${p} 35%, ${s} 35%, ${s} 65%, ${p} 65%, ${p} 100%)`;
+                        case 'bar':
+                            return `background: linear-gradient(90deg, ${p} 0%, ${p} 35%, ${s} 35%, ${s} 65%, ${p} 65%, ${p} 100%)`;
                         case 'halves':
                             return `background: linear-gradient(90deg, ${p} 50%, ${s} 50%)`;
                         default:

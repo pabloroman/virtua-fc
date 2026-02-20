@@ -38,7 +38,7 @@ class SeasonInitializationService
     public function generateLeagueFixtures(string $gameId, string $competitionId, string $season): void
     {
         $competition = Competition::find($competitionId);
-        if (!$competition) {
+        if (!$competition || !$competition->isLeague()) {
             return;
         }
 

@@ -25,6 +25,7 @@ use Illuminate\Database\Eloquent\Builder;
  * @property array<array-key, mixed>|null $default_lineup
  * @property string $default_mentality
  * @property bool $needs_onboarding
+ * @property bool $needs_welcome
  * @property string|null $season_goal
  * @property string $competition_id
  * @property string $game_mode
@@ -124,8 +125,10 @@ class Game extends Model
         'default_mentality',
         'season_goal',
         'needs_onboarding',
+        'needs_welcome',
         'pending_actions',
         'setup_completed_at',
+        'season_transitioning_at',
         'pending_finalization_match_id',
     ];
 
@@ -138,8 +141,10 @@ class Game extends Model
         'default_mentality' => 'string',
         'season_goal' => 'string',
         'needs_onboarding' => 'boolean',
+        'needs_welcome' => 'boolean',
         'pending_actions' => 'array',
         'setup_completed_at' => 'datetime',
+        'season_transitioning_at' => 'datetime',
     ];
 
     // ==========================================
@@ -159,6 +164,11 @@ class Game extends Model
     public function isSetupComplete(): bool
     {
         return $this->setup_completed_at !== null;
+    }
+
+    public function isTransitioningSeason(): bool
+    {
+        return $this->season_transitioning_at !== null;
     }
 
     // ==========================================
@@ -663,11 +673,27 @@ class Game extends Model
     }
 
     // ==========================================
-    // Onboarding
+    // Welcome & Onboarding
     // ==========================================
 
     /**
-     * Check if the game needs onboarding (first-time setup).
+     * Check if the game needs the welcome tutorial (new games only).
+     */
+    public function needsWelcome(): bool
+    {
+        return $this->needs_welcome ?? false;
+    }
+
+    /**
+     * Complete the welcome tutorial.
+     */
+    public function completeWelcome(): void
+    {
+        $this->update(['needs_welcome' => false]);
+    }
+
+    /**
+     * Check if the game needs onboarding (season budget allocation).
      */
     public function needsOnboarding(): bool
     {
