@@ -38,7 +38,7 @@ class SendBetaFeedbackRequests extends Command
 
         foreach ($users as $user) {
             SendBetaFeedbackRequest::dispatch($user);
-            sleep(1);
+            sleep(3);
             $this->line("  Dispatched feedback request for: {$user->email}");
         }
 
