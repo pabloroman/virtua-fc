@@ -2,6 +2,8 @@
 /** @var App\Models\Game $game */
 /** @var App\Models\Competition $competition */
 /** @var \Illuminate\Support\Collection $groupStandings */
+/** @var \Illuminate\Support\Collection $knockoutTies */
+/** @var string|null $championTeamId */
 /** @var \Illuminate\Support\Collection $yourMatches */
 /** @var App\Models\GameStanding|null $playerStanding */
 /** @var array $yourRecord */
@@ -10,7 +12,7 @@
 /** @var App\Models\GamePlayer|null $bestGoalkeeper */
 /** @var \Illuminate\Support\Collection $yourSquadStats */
 
-$isChampion = $playerStanding && $playerStanding->position === 1;
+$isChampion = $championTeamId === $game->team_id;
 $yourGoalScorers = $yourSquadStats->where('goals', '>', 0)->sortByDesc('goals');
 $yourAppearances = $yourSquadStats->where('appearances', '>', 0)->sortByDesc('appearances');
 @endphp
@@ -229,6 +231,65 @@ $yourAppearances = $yourSquadStats->where('appearances', '>', 0)->sortByDesc('ap
                                     @endforeach
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
+            {{-- Knockout Bracket --}}
+            @if($knockoutTies->isNotEmpty())
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-8 mb-6">
+                <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-5 text-center">{{ __('game.knockout_phase') }}</h2>
+
+                <div class="space-y-6">
+                    @foreach($knockoutTies as $roundNumber => $ties)
+                    @php
+                        $roundName = $ties->first()->firstLegMatch->round_name ?? __('cup.round_n', ['round' => $roundNumber]);
+                    @endphp
+                    <div>
+                        <h3 class="text-xs font-semibold text-slate-500 uppercase mb-3">{{ $roundName }}</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            @foreach($ties as $tie)
+                            @php
+                                $match = $tie->firstLegMatch;
+                                $homeScore = $match?->home_score ?? 0;
+                                $awayScore = $match?->away_score ?? 0;
+                                $involvesPlayer = $tie->home_team_id === $game->team_id || $tie->away_team_id === $game->team_id;
+                                $isHomeWinner = $tie->winner_id === $tie->home_team_id;
+                                $isAwayWinner = $tie->winner_id === $tie->away_team_id;
+                            @endphp
+                            <div class="border rounded-lg p-3 {{ $involvesPlayer ? 'border-amber-300 bg-amber-50/50' : 'border-slate-200' }}">
+                                <div class="flex items-center justify-between gap-2">
+                                    {{-- Home team --}}
+                                    <div class="flex items-center gap-2 flex-1 min-w-0 {{ $isHomeWinner ? 'font-semibold' : '' }}">
+                                        <img src="{{ $tie->homeTeam->image }}" class="w-5 h-5 shrink-0">
+                                        <span class="text-sm truncate {{ $isHomeWinner ? 'text-slate-900' : 'text-slate-500' }}">{{ $tie->homeTeam->name }}</span>
+                                    </div>
+
+                                    {{-- Score --}}
+                                    <div class="shrink-0 text-center">
+                                        <span class="text-sm font-bold text-slate-900">{{ $homeScore }} - {{ $awayScore }}</span>
+                                        @if($match?->is_extra_time)
+                                        <div class="text-[10px] text-slate-400">
+                                            @if($match->home_score_penalties !== null)
+                                                {{ __('season.pens_abbr') }} {{ $match->home_score_penalties }}-{{ $match->away_score_penalties }}
+                                            @else
+                                                {{ __('season.aet_abbr') }}
+                                            @endif
+                                        </div>
+                                        @endif
+                                    </div>
+
+                                    {{-- Away team --}}
+                                    <div class="flex items-center gap-2 flex-1 min-w-0 justify-end {{ $isAwayWinner ? 'font-semibold' : '' }}">
+                                        <span class="text-sm truncate text-right {{ $isAwayWinner ? 'text-slate-900' : 'text-slate-500' }}">{{ $tie->awayTeam->name }}</span>
+                                        <img src="{{ $tie->awayTeam->image }}" class="w-5 h-5 shrink-0">
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
                         </div>
                     </div>
                     @endforeach

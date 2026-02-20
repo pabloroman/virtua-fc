@@ -3,6 +3,7 @@
 namespace App\Http\Views;
 
 use App\Models\Competition;
+use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
@@ -47,11 +48,23 @@ class ShowTournamentEnd
             $m->home_team_id === $game->team_id || $m->away_team_id === $game->team_id
         )->values();
 
-        // Your team's standing
+        // Your team's group standing
         $playerStanding = GameStanding::where('game_id', $gameId)
             ->where('competition_id', $game->competition_id)
             ->where('team_id', $game->team_id)
             ->first();
+
+        // Knockout bracket (cup ties grouped by round)
+        $knockoutTies = CupTie::with(['homeTeam', 'awayTeam', 'winner', 'firstLegMatch'])
+            ->where('game_id', $gameId)
+            ->where('competition_id', $game->competition_id)
+            ->orderBy('round_number')
+            ->get()
+            ->groupBy('round_number');
+
+        // Detect champion from the final cup tie
+        $finalTie = $knockoutTies->flatten()->sortByDesc('round_number')->first();
+        $championTeamId = $finalTie?->winner_id;
 
         // Compute your team's record from matches
         $yourRecord = $this->computeTeamRecord($yourMatches, $game->team_id);
@@ -95,6 +108,8 @@ class ShowTournamentEnd
             'game' => $game,
             'competition' => $competition,
             'groupStandings' => $groupStandings,
+            'knockoutTies' => $knockoutTies,
+            'championTeamId' => $championTeamId,
             'yourMatches' => $yourMatches,
             'playerStanding' => $playerStanding,
             'yourRecord' => $yourRecord,
