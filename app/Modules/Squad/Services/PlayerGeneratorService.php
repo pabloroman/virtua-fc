@@ -25,7 +25,7 @@ use App\Modules\Squad\Services\PlayerValuationService;
  */
 class PlayerGeneratorService
 {
-    /** @var array<array{name: string, nationality: array}> Cached identity pool */
+    /** @var array<array{name: string, nationality: string}> Cached identity pool */
     private ?array $identityPool = null;
 
     public function __construct(
@@ -111,21 +111,82 @@ class PlayerGeneratorService
     }
 
     /**
-     * Pick a random identity (name + nationality) from the pool.
+     * Country code → nationality string mapping for weighted selection.
      */
-    public function pickRandomIdentity(?string $nationality = null): array
+    private const COUNTRY_TO_NATIONALITY = [
+        'ES' => 'Spain',
+        'EN' => 'England',
+        'FR' => 'France',
+        'DE' => 'Germany',
+        'IT' => 'Italy',
+    ];
+
+    /**
+     * Pick a random identity (name + nationality + height + foot) from the pool.
+     *
+     * @param  string|null  $nationality   Exact nationality filter (100% match, e.g. for Athletic Bilbao)
+     * @param  string|null  $teamCountry   Country code for weighted selection (75% domestic / 25% any)
+     */
+    public function pickRandomIdentity(?string $nationality = null, ?string $teamCountry = null): array
     {
         $pool = $this->getIdentityPool();
 
+        // Exact nationality filter takes priority (e.g. Athletic Bilbao → 100% Spanish)
         if ($nationality !== null) {
-            $filtered = array_filter($pool, fn (array $entry) => in_array($nationality, $entry['nationality']));
+            $filtered = array_filter($pool, fn (array $entry) => $entry['nationality'] === $nationality);
 
             if (! empty($filtered)) {
-                return $filtered[array_rand($filtered)];
+                return $this->withGeneratedAttributes($filtered[array_rand($filtered)]);
             }
         }
 
-        return $pool[array_rand($pool)];
+        // Weighted selection: 75% domestic, 25% any
+        if ($teamCountry !== null && isset(self::COUNTRY_TO_NATIONALITY[$teamCountry])) {
+            $domesticNationality = self::COUNTRY_TO_NATIONALITY[$teamCountry];
+
+            if (rand(1, 100) <= 75) {
+                $filtered = array_filter($pool, fn (array $entry) => $entry['nationality'] === $domesticNationality);
+
+                if (! empty($filtered)) {
+                    return $this->withGeneratedAttributes($filtered[array_rand($filtered)]);
+                }
+            }
+        }
+
+        return $this->withGeneratedAttributes($pool[array_rand($pool)]);
+    }
+
+    /**
+     * Add randomly generated height and foot, and wrap nationality as array for DB storage.
+     */
+    private function withGeneratedAttributes(array $entry): array
+    {
+        $entry['nationality'] = (array) $entry['nationality'];
+        $entry['height'] = $entry['height'] ?? $this->generateHeight();
+        $entry['foot'] = $entry['foot'] ?? $this->generateFoot();
+
+        return $entry;
+    }
+
+    /**
+     * Generate a realistic height string (e.g. "1,78m").
+     * Distribution centered around 180cm (range 168–196).
+     */
+    private function generateHeight(): string
+    {
+        $cm = rand(168, 196);
+        $meters = intdiv($cm, 100);
+        $remainder = $cm % 100;
+
+        return sprintf('%d,%02dm', $meters, $remainder);
+    }
+
+    /**
+     * Generate a preferred foot (70% right, 30% left).
+     */
+    private function generateFoot(): string
+    {
+        return rand(1, 100) <= 70 ? 'right' : 'left';
     }
 
     /**
