@@ -102,6 +102,80 @@ class CalendarService
     }
 
     /**
+     * Calculate season stats from played matches for a team.
+     */
+    public function calculateSeasonStats(Collection $playedMatches, string $teamId): array
+    {
+        $wins = 0;
+        $draws = 0;
+        $losses = 0;
+        $goalsFor = 0;
+        $goalsAgainst = 0;
+        $home = ['wins' => 0, 'draws' => 0, 'losses' => 0, 'goalsFor' => 0, 'goalsAgainst' => 0];
+        $away = ['wins' => 0, 'draws' => 0, 'losses' => 0, 'goalsFor' => 0, 'goalsAgainst' => 0];
+        $form = [];
+
+        foreach ($playedMatches as $match) {
+            $isHome = $match->home_team_id === $teamId;
+            $yourScore = $isHome ? $match->home_score : $match->away_score;
+            $oppScore = $isHome ? $match->away_score : $match->home_score;
+            $venue = $isHome ? 'home' : 'away';
+
+            $goalsFor += $yourScore;
+            $goalsAgainst += $oppScore;
+            $$venue['goalsFor'] += $yourScore;
+            $$venue['goalsAgainst'] += $oppScore;
+
+            if ($yourScore > $oppScore) {
+                $result = 'W';
+                $wins++;
+                $$venue['wins']++;
+            } elseif ($yourScore < $oppScore) {
+                $result = 'L';
+                $losses++;
+                $$venue['losses']++;
+            } else {
+                $result = 'D';
+                $draws++;
+                $$venue['draws']++;
+            }
+
+            $form[] = $result;
+        }
+
+        $totalMatches = $wins + $draws + $losses;
+
+        return [
+            'played' => $totalMatches,
+            'wins' => $wins,
+            'draws' => $draws,
+            'losses' => $losses,
+            'winPercent' => $totalMatches > 0 ? round(($wins / $totalMatches) * 100) : 0,
+            'goalsFor' => $goalsFor,
+            'goalsAgainst' => $goalsAgainst,
+            'form' => array_slice(array_reverse($form), 0, 5),
+            'home' => [
+                'played' => $home['wins'] + $home['draws'] + $home['losses'],
+                'wins' => $home['wins'],
+                'draws' => $home['draws'],
+                'losses' => $home['losses'],
+                'points' => ($home['wins'] * 3) + $home['draws'],
+                'goalsFor' => $home['goalsFor'],
+                'goalsAgainst' => $home['goalsAgainst'],
+            ],
+            'away' => [
+                'played' => $away['wins'] + $away['draws'] + $away['losses'],
+                'wins' => $away['wins'],
+                'draws' => $away['draws'],
+                'losses' => $away['losses'],
+                'points' => ($away['wins'] * 3) + $away['draws'],
+                'goalsFor' => $away['goalsFor'],
+                'goalsAgainst' => $away['goalsAgainst'],
+            ],
+        ];
+    }
+
+    /**
      * Get match result for a team (W/D/L).
      */
     private function getMatchResult(GameMatch $match, string $teamId): string
