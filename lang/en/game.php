@@ -174,6 +174,7 @@ return [
     'tactical_subs_made' => 'Substitutions made',
     'tactical_apply' => 'Apply changes',
     'tactical_no_changes' => 'No tactical changes to apply.',
+    'tactical_unsaved_changes' => 'You have unsubmitted changes. Close anyway?',
 
     // Results page
     'matchday_results' => ':name Results',

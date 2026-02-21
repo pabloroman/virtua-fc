@@ -174,6 +174,7 @@ return [
     'tactical_subs_made' => 'Sustituciones realizadas',
     'tactical_apply' => 'Aplicar cambios',
     'tactical_no_changes' => 'No hay cambios tácticos que aplicar.',
+    'tactical_unsaved_changes' => 'Tienes cambios sin confirmar. ¿Cerrar de todos modos?',
 
     // Results page
     'matchday_results' => 'Resultados :name',

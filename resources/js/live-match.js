@@ -25,6 +25,7 @@ export default function liveMatch(config) {
         availableFormations: config.availableFormations || [],
         availableMentalities: config.availableMentalities || [],
         tacticsUrl: config.tacticsUrl || '',
+        translations: config.translations || {},
 
         // Tactical change state
         pendingFormation: null,
@@ -284,6 +285,21 @@ export default function liveMatch(config) {
             this.pendingMentality = null;
             this.injuryAlertPlayer = null;
             document.body.classList.remove('overflow-y-hidden');
+        },
+
+        get hasPendingChanges() {
+            return this.pendingSubs.length > 0
+                || (this.selectedPlayerOut !== null && this.selectedPlayerIn !== null)
+                || this.hasTacticalChanges;
+        },
+
+        safeCloseTacticalPanel() {
+            if (this.hasPendingChanges) {
+                if (!confirm(this.translations?.unsavedTacticalChanges ?? 'You have unsubmitted changes. Close anyway?')) {
+                    return;
+                }
+            }
+            this.closeTacticalPanel();
         },
 
         get mentalityLabel() {

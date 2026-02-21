@@ -39,6 +39,9 @@
                 availableFormations: {{ Js::from($availableFormations) }},
                 availableMentalities: {{ Js::from($availableMentalities) }},
                 tacticsUrl: '{{ $tacticsUrl }}',
+                translations: {
+                    unsavedTacticalChanges: '{{ __('game.tactical_unsaved_changes') }}',
+                },
              })"
              x-on:keydown.escape.window="if (!tacticalPanelOpen) skipToEnd()"
         >

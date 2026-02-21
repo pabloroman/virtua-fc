@@ -5,13 +5,13 @@
     x-show="tacticalPanelOpen"
     x-cloak
     class="fixed inset-0 z-50 overflow-y-auto"
-    x-on:keydown.escape.window="if (tacticalPanelOpen && !subProcessing && !tacticsProcessing) closeTacticalPanel()"
+    x-on:keydown.escape.window="if (tacticalPanelOpen && !subProcessing && !tacticsProcessing) safeCloseTacticalPanel()"
 >
     {{-- Backdrop --}}
     <div
         x-show="tacticalPanelOpen"
         class="fixed inset-0 transform transition-all"
-        x-on:click="if (!subProcessing && !tacticsProcessing) closeTacticalPanel()"
+        x-on:click="if (!subProcessing && !tacticsProcessing) safeCloseTacticalPanel()"
         x-transition:enter="ease-out duration-300"
         x-transition:enter-start="opacity-0"
         x-transition:enter-end="opacity-100"
@@ -58,7 +58,7 @@
                         </div>
                         {{-- Close button --}}
                         <button
-                            @click="closeTacticalPanel()"
+                            @click="safeCloseTacticalPanel()"
                             class="p-1.5 rounded-lg hover:bg-white/10 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
                             :disabled="subProcessing || tacticsProcessing"
                         >
@@ -421,7 +421,7 @@
             {{-- Footer: resume match --}}
             <div class="border-t border-slate-200 bg-slate-50 px-4 py-3 sm:px-6 sm:py-4">
                 <button
-                    @click="closeTacticalPanel()"
+                    @click="safeCloseTacticalPanel()"
                     :disabled="subProcessing || tacticsProcessing"
                     class="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold text-slate-600 hover:text-slate-800 rounded-lg hover:bg-slate-100 transition-colors min-h-[44px]"
                 >
