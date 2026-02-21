@@ -137,6 +137,12 @@ return [
     'live_injury_alert' => 'has been injured. Make a substitution.',
     'live_injuries_report' => 'Injury Report',
     'live_weeks_out' => ':count week out|:count weeks out',
+    'live_extra_time' => 'Extra Time',
+    'live_et_abbr' => 'ET',
+    'live_et_half_time' => 'ET Half Time',
+    'live_penalties' => 'Penalties',
+    'live_pen_abbr' => 'pen',
+    'live_aet' => 'AET',
 
     // Substitutions
     'sub_title' => 'Substitutions',

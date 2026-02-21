@@ -137,6 +137,12 @@ return [
     'live_injury_alert' => 'se ha lesionado. Realiza una sustitución.',
     'live_injuries_report' => 'Parte de Lesiones',
     'live_weeks_out' => ':count semana de baja|:count semanas de baja',
+    'live_extra_time' => 'Prórroga',
+    'live_et_abbr' => 'PR',
+    'live_et_half_time' => 'Descanso Prórroga',
+    'live_penalties' => 'Penaltis',
+    'live_pen_abbr' => 'pen',
+    'live_aet' => 'DET',
 
     // Substitutions
     'sub_title' => 'Sustituciones',

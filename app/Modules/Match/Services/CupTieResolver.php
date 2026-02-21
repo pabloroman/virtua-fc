@@ -58,27 +58,33 @@ class CupTieResolver
             return $winnerId;
         }
 
-        // Draw - need extra time. Use eager-loaded relations or fall back to query.
-        $homePlayers = $allPlayers->get($match->home_team_id, collect());
-        $awayPlayers = $allPlayers->get($match->away_team_id, collect());
-        $homeTeam = $match->relationLoaded('homeTeam') ? $match->homeTeam : Team::find($match->home_team_id);
-        $awayTeam = $match->relationLoaded('awayTeam') ? $match->awayTeam : Team::find($match->away_team_id);
+        // Check if ET was already simulated during the live match
+        if ($match->is_extra_time) {
+            $homeScoreEt = $match->home_score_et ?? 0;
+            $awayScoreEt = $match->away_score_et ?? 0;
+        } else {
+            // Draw - need extra time. Use eager-loaded relations or fall back to query.
+            $homePlayers = $allPlayers->get($match->home_team_id, collect());
+            $awayPlayers = $allPlayers->get($match->away_team_id, collect());
+            $homeTeam = $match->relationLoaded('homeTeam') ? $match->homeTeam : Team::find($match->home_team_id);
+            $awayTeam = $match->relationLoaded('awayTeam') ? $match->awayTeam : Team::find($match->away_team_id);
 
-        $extraTimeResult = $this->matchSimulator->simulateExtraTime(
-            $homeTeam,
-            $awayTeam,
-            $homePlayers,
-            $awayPlayers
-        );
+            $extraTimeResult = $this->matchSimulator->simulateExtraTime(
+                $homeTeam,
+                $awayTeam,
+                $homePlayers,
+                $awayPlayers
+            );
 
-        $homeScoreEt = $extraTimeResult->homeScore;
-        $awayScoreEt = $extraTimeResult->awayScore;
+            $homeScoreEt = $extraTimeResult->homeScore;
+            $awayScoreEt = $extraTimeResult->awayScore;
 
-        $match->update([
-            'is_extra_time' => true,
-            'home_score_et' => $homeScoreEt,
-            'away_score_et' => $awayScoreEt,
-        ]);
+            $match->update([
+                'is_extra_time' => true,
+                'home_score_et' => $homeScoreEt,
+                'away_score_et' => $awayScoreEt,
+            ]);
+        }
 
         $totalHome = $homeScore + $homeScoreEt;
         $totalAway = $awayScore + $awayScoreEt;
@@ -92,13 +98,21 @@ class CupTieResolver
             return $winnerId;
         }
 
-        // Still tied - penalties
-        [$homePens, $awayPens] = $this->matchSimulator->simulatePenalties($homePlayers, $awayPlayers);
+        // Check if penalties were already simulated during the live match
+        if ($match->home_score_penalties !== null) {
+            $homePens = $match->home_score_penalties;
+            $awayPens = $match->away_score_penalties;
+        } else {
+            $homePlayers = $homePlayers ?? $allPlayers->get($match->home_team_id, collect());
+            $awayPlayers = $awayPlayers ?? $allPlayers->get($match->away_team_id, collect());
 
-        $match->update([
-            'home_score_penalties' => $homePens,
-            'away_score_penalties' => $awayPens,
-        ]);
+            [$homePens, $awayPens] = $this->matchSimulator->simulatePenalties($homePlayers, $awayPlayers);
+
+            $match->update([
+                'home_score_penalties' => $homePens,
+                'away_score_penalties' => $awayPens,
+            ]);
+        }
 
         $winnerId = $homePens > $awayPens ? $match->home_team_id : $match->away_team_id;
         $this->completeTie($tie, $winnerId, [
@@ -137,28 +151,37 @@ class CupTieResolver
         }
 
         // Tied on aggregate - extra time in second leg
-        $homePlayers = $allPlayers->get($secondLeg->home_team_id, collect());
-        $awayPlayers = $allPlayers->get($secondLeg->away_team_id, collect());
-        $homeTeam = $secondLeg->relationLoaded('homeTeam') ? $secondLeg->homeTeam : Team::find($secondLeg->home_team_id);
-        $awayTeam = $secondLeg->relationLoaded('awayTeam') ? $secondLeg->awayTeam : Team::find($secondLeg->away_team_id);
+        // Check if ET was already simulated during the live match
+        if ($secondLeg->is_extra_time) {
+            $homeScoreEt = $secondLeg->home_score_et ?? 0;
+            $awayScoreEt = $secondLeg->away_score_et ?? 0;
+        } else {
+            $homePlayers = $allPlayers->get($secondLeg->home_team_id, collect());
+            $awayPlayers = $allPlayers->get($secondLeg->away_team_id, collect());
+            $homeTeam = $secondLeg->relationLoaded('homeTeam') ? $secondLeg->homeTeam : Team::find($secondLeg->home_team_id);
+            $awayTeam = $secondLeg->relationLoaded('awayTeam') ? $secondLeg->awayTeam : Team::find($secondLeg->away_team_id);
 
-        $extraTimeResult = $this->matchSimulator->simulateExtraTime(
-            $homeTeam,
-            $awayTeam,
-            $homePlayers,
-            $awayPlayers
-        );
+            $extraTimeResult = $this->matchSimulator->simulateExtraTime(
+                $homeTeam,
+                $awayTeam,
+                $homePlayers,
+                $awayPlayers
+            );
 
-        $secondLeg->update([
-            'is_extra_time' => true,
-            'home_score_et' => $extraTimeResult->homeScore,
-            'away_score_et' => $extraTimeResult->awayScore,
-        ]);
+            $homeScoreEt = $extraTimeResult->homeScore;
+            $awayScoreEt = $extraTimeResult->awayScore;
+
+            $secondLeg->update([
+                'is_extra_time' => true,
+                'home_score_et' => $homeScoreEt,
+                'away_score_et' => $awayScoreEt,
+            ]);
+        }
 
         // Extra time goals affect aggregate
         // Second leg home team = tie's away team
-        $homeTotal += $extraTimeResult->awayScore; // Tie's home team was away in 2nd leg
-        $awayTotal += $extraTimeResult->homeScore; // Tie's away team was home in 2nd leg
+        $homeTotal += $awayScoreEt; // Tie's home team was away in 2nd leg
+        $awayTotal += $homeScoreEt; // Tie's away team was home in 2nd leg
 
         if ($homeTotal !== $awayTotal) {
             $winnerId = $homeTotal > $awayTotal ? $tie->home_team_id : $tie->away_team_id;
@@ -169,13 +192,21 @@ class CupTieResolver
             return $winnerId;
         }
 
-        // Penalties
-        [$homePens, $awayPens] = $this->matchSimulator->simulatePenalties($homePlayers, $awayPlayers);
+        // Check if penalties were already simulated during the live match
+        if ($secondLeg->home_score_penalties !== null) {
+            $homePens = $secondLeg->home_score_penalties;
+            $awayPens = $secondLeg->away_score_penalties;
+        } else {
+            $homePlayers = $homePlayers ?? $allPlayers->get($secondLeg->home_team_id, collect());
+            $awayPlayers = $awayPlayers ?? $allPlayers->get($secondLeg->away_team_id, collect());
 
-        $secondLeg->update([
-            'home_score_penalties' => $homePens,
-            'away_score_penalties' => $awayPens,
-        ]);
+            [$homePens, $awayPens] = $this->matchSimulator->simulatePenalties($homePlayers, $awayPlayers);
+
+            $secondLeg->update([
+                'home_score_penalties' => $homePens,
+                'away_score_penalties' => $awayPens,
+            ]);
+        }
 
         // Second leg home team = tie's away team
         $tieHomeWins = $awayPens > $homePens;
