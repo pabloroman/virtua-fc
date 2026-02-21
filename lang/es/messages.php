@@ -4,8 +4,6 @@ return [
     // Transfer messages
     'transfer_complete' => '¡Fichaje completado! :player se ha unido a tu plantilla.',
     'transfer_agreed' => ':message El fichaje se completará cuando abra la ventana de :window.',
-    'transfer_bid_sent' => ':message',
-    'transfer_bid_failed' => ':message',
     'bid_exceeds_budget' => 'La oferta supera tu presupuesto de fichajes.',
     'player_listed' => ':player puesto a la venta. Las ofertas pueden llegar tras la próxima jornada.',
     'player_unlisted' => ':player retirado de la lista de fichajes.',
@@ -19,12 +17,9 @@ return [
     'counter_offer_expired' => 'Esta oferta ya no está disponible.',
 
     // Loan messages
-    'loan_complete' => ':player ha sido cedido :team_a.',
     'loan_agreed' => ':message La cesión comenzará cuando abra la ventana de :window.',
     'loan_in_complete' => ':message La cesión ya está activa.',
-    'loan_failed' => ':message',
     'already_on_loan' => ':player ya está cedido.',
-    'no_suitable_club' => 'No se encontró un club adecuado para la cesión.',
     'loan_search_started' => 'Se ha iniciado la búsqueda de destino para :player. Se te notificará cuando se encuentre un club.',
     'loan_search_active' => ':player ya tiene una búsqueda de cesión activa.',
 
@@ -36,7 +31,6 @@ return [
     'cannot_renew' => 'Este jugador no puede recibir una oferta de renovación.',
     'renewal_offer_submitted' => 'Oferta de renovación enviada a :player por :wage/año. Respuesta en la próxima jornada.',
     'renewal_invalid_offer' => 'La oferta debe ser mayor que cero.',
-    'renewal_counter_accepted' => ':player ha aceptado la contraoferta.',
 
     // Pre-contract messages
     'pre_contract_accepted' => '¡:player ha aceptado tu oferta de precontrato! Se unirá a tu equipo al final de la temporada.',
@@ -57,7 +51,6 @@ return [
     'budget_no_projections' => 'No se encontraron proyecciones financieras.',
 
     // Season messages
-    'new_season_started' => '¡Bienvenido a la temporada :season!',
     'budget_exceeds_surplus' => 'La asignación total supera el superávit disponible.',
     'budget_minimum_tier' => 'Todas las áreas de infraestructura deben ser al menos Nivel 1.',
 
@@ -67,14 +60,8 @@ return [
     // Season
     'season_not_complete' => 'No se puede iniciar una nueva temporada - la temporada actual no ha terminado.',
 
-    // Lineup
-    'lineup_confirmed' => 'Alineación confirmada.',
-    'lineup_invalid' => 'La alineación debe tener exactamente 11 jugadores.',
-    'lineup_unavailable_players' => 'Algunos jugadores seleccionados no están disponibles.',
-
     // Academy
     'academy_player_promoted' => ':player ha sido subido al primer equipo.',
-    'academy_player_not_found' => 'Jugador no encontrado en la cantera.',
     'academy_evaluation_required' => 'Debes evaluar a los canteranos antes de continuar.',
     'academy_evaluation_complete' => 'Evaluación de cantera completada.',
     'academy_player_dismissed' => ':player ha sido despedido de la cantera.',

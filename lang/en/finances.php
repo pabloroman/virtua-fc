@@ -1,11 +1,8 @@
 <?php
 
 return [
-    // Page title
-    'title' => ':team_de Finances - Season :season',
 
     // Overview cards
-    'projected_position' => 'Projected Position',
     'squad_value' => 'Squad Value',
     'annual_wage_bill' => 'Annual Wage Bill',
     'transfer_budget' => 'Transfer Budget',
@@ -20,7 +17,6 @@ return [
     'total_revenue' => 'Total Revenue',
 
     // Surplus calculation
-    'surplus_calculation' => 'Surplus Calculation',
     'projected_wages' => 'Projected Wages',
     'projected_surplus' => 'Projected Surplus',
     'operating_expenses' => 'Operating Expenses',
@@ -29,7 +25,6 @@ return [
     'available_surplus' => 'Available Surplus',
 
     // Season results
-    'season_results' => 'Season Results',
     'actual_revenue' => 'Actual Revenue',
     'actual_surplus' => 'Actual Surplus',
     'variance' => 'Variance',
@@ -43,11 +38,6 @@ return [
 
     // Tiers
     'youth_academy' => 'Youth Academy',
-    'youth_tier_0' => 'No youth development programme',
-    'youth_tier_1' => 'Basic academy - occasional prospects',
-    'youth_tier_2' => 'Good academy - regular youth pipeline',
-    'youth_tier_3' => 'Elite academy - high-potential youngsters',
-    'youth_tier_4' => 'World class - homegrown stars',
 
     'medical' => 'Medical',
     'medical_tier_0' => 'No medical staff',
@@ -101,7 +91,6 @@ return [
 
     // Budget setup
     'setup_season_budget' => 'Set Up Season Budget',
-    'allocate_surplus' => 'Allocate your surplus to infrastructure and transfers.',
 
     // Transaction history
     'transaction_history' => 'Transaction History',
@@ -116,13 +105,8 @@ return [
     // Budget allocation page
     'budget_allocation' => 'Budget Allocation',
     'season_budget' => 'Season :season Budget',
-    'surplus_info' => 'You have :amount of projected surplus to invest.',
-    'remaining_unallocated' => 'Remaining Unallocated',
-    'allocation_exceeds' => 'Allocation exceeds available surplus',
-    'all_tiers_minimum' => 'All areas must be at least Tier 1',
     'tier' => 'Tier :level',
     'tier_n' => 'Tier',
-    'save_allocation' => 'Save Allocation',
     'confirm_budget_allocation' => 'Confirm Budget Allocation',
     'after_debt_deduction' => 'After :amount debt deduction',
 
@@ -167,12 +151,9 @@ return [
     'category_transfer_out' => 'Sale',
     'category_wage' => 'Wages',
     'category_tv' => 'TV Rights',
-    'category_matchday' => 'Matchday',
-    'category_commercial' => 'Commercial',
     'category_cup_bonus' => 'Cup Bonus',
     'category_performance_bonus' => 'Performance Bonus',
     'category_signing_bonus' => 'Signing Bonus',
-    'category_infrastructure' => 'Infrastructure',
 
     // Transaction descriptions
     'tx_free_transfer_out' => ':player left on free transfer to :team',

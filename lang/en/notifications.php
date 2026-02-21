@@ -4,7 +4,6 @@ return [
     // Inbox
     'inbox' => 'Notifications',
     'mark_all_read' => 'Mark all as read',
-    'no_notifications' => 'No notifications',
     'all_caught_up' => 'You\'re all caught up',
 
     // Injury types
@@ -78,8 +77,6 @@ return [
     'competition_elimination_message' => ':stage',
 
     // Academy
-    'academy_prospect_title' => 'New academy prospect: :player',
-    'academy_prospect_message' => ':player (:position, :age years old) has emerged from the academy.',
     'academy_batch_title' => 'New academy prospects',
     'academy_batch_message' => ':count new players have arrived at the academy.',
     'academy_evaluation_title' => 'Academy evaluation',

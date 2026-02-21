@@ -4,8 +4,6 @@ return [
     // Transfer messages
     'transfer_complete' => 'Transfer complete! :player has joined your squad.',
     'transfer_agreed' => ':message The transfer will be completed when the :window window opens.',
-    'transfer_bid_sent' => ':message',
-    'transfer_bid_failed' => ':message',
     'bid_exceeds_budget' => 'The bid exceeds your transfer budget.',
     'player_listed' => ':player listed for sale. Offers may arrive after the next matchday.',
     'player_unlisted' => ':player removed from the transfer list.',
@@ -19,12 +17,9 @@ return [
     'counter_offer_expired' => 'This offer is no longer available.',
 
     // Loan messages
-    'loan_complete' => ':player has been loaned :team_a.',
     'loan_agreed' => ':message The loan will begin when the :window window opens.',
     'loan_in_complete' => ':message The loan is now active.',
-    'loan_failed' => ':message',
     'already_on_loan' => ':player is already on loan.',
-    'no_suitable_club' => 'No suitable club found for the loan.',
     'loan_search_started' => 'A loan destination search has started for :player. You will be notified when a club is found.',
     'loan_search_active' => ':player already has an active loan search.',
 
@@ -36,7 +31,6 @@ return [
     'cannot_renew' => 'This player cannot receive a renewal offer.',
     'renewal_offer_submitted' => 'Renewal offer sent to :player for :wage/yr. Response on the next matchday.',
     'renewal_invalid_offer' => 'The offer must be greater than zero.',
-    'renewal_counter_accepted' => ':player has accepted the counter offer.',
 
     // Pre-contract messages
     'pre_contract_accepted' => ':player has accepted your pre-contract offer! They will join your team at the end of the season.',
@@ -57,7 +51,6 @@ return [
     'budget_no_projections' => 'No financial projections found.',
 
     // Season messages
-    'new_season_started' => 'Welcome to season :season!',
     'budget_exceeds_surplus' => 'Total allocation exceeds available surplus.',
     'budget_minimum_tier' => 'All infrastructure areas must be at least Tier 1.',
 
@@ -67,14 +60,8 @@ return [
     // Season
     'season_not_complete' => 'Cannot start a new season - the current season has not ended.',
 
-    // Lineup
-    'lineup_confirmed' => 'Lineup confirmed.',
-    'lineup_invalid' => 'The lineup must have exactly 11 players.',
-    'lineup_unavailable_players' => 'Some selected players are not available.',
-
     // Academy
     'academy_player_promoted' => ':player has been promoted to the first team.',
-    'academy_player_not_found' => 'Player not found in the academy.',
     'academy_evaluation_required' => 'You must evaluate academy players before continuing.',
     'academy_evaluation_complete' => 'Academy evaluation complete.',
     'academy_player_dismissed' => ':player has been dismissed from the academy.',
