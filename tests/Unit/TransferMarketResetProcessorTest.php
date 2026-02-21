@@ -9,20 +9,20 @@ use App\Models\ShortlistedPlayer;
 use App\Models\Team;
 use App\Models\TransferOffer;
 use App\Modules\Season\DTOs\SeasonTransitionData;
-use App\Modules\Season\Processors\ScoutDataResetProcessor;
+use App\Modules\Season\Processors\TransferMarketResetProcessor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class ScoutDataResetProcessorTest extends TestCase
+class TransferMarketResetProcessorTest extends TestCase
 {
     use RefreshDatabase;
 
-    private ScoutDataResetProcessor $processor;
+    private TransferMarketResetProcessor $processor;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->processor = new ScoutDataResetProcessor();
+        $this->processor = new TransferMarketResetProcessor();
     }
 
     public function test_deletes_all_scout_reports_for_game(): void

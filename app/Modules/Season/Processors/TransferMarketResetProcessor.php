@@ -14,7 +14,7 @@ use App\Models\Game;
  * Clears scouting and transfer market data for the new season.
  * Priority: 20 (runs after settlement so transfer offer history is available for wage calculations)
  */
-class ScoutDataResetProcessor implements SeasonEndProcessor
+class TransferMarketResetProcessor implements SeasonEndProcessor
 {
     public function priority(): int
     {
