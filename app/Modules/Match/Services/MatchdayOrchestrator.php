@@ -81,6 +81,19 @@ class MatchdayOrchestrator
             if (! $playerHasMoreMatches) {
                 $this->autoSimulateRemainingBatches($game);
 
+                // Re-check: new matches (e.g. playoffs) may have been generated
+                $playerNowHasMatches = GameMatch::where('game_id', $game->id)
+                    ->where('played', false)
+                    ->where(fn ($q) => $q->where('home_team_id', $game->team_id)
+                        ->orWhere('away_team_id', $game->team_id))
+                    ->exists();
+
+                if ($playerNowHasMatches) {
+                    $game->refresh()->setRelations([]);
+
+                    continue;
+                }
+
                 return MatchdayAdvanceResult::done();
             }
 
@@ -153,22 +166,21 @@ class MatchdayOrchestrator
     }
 
     /**
-     * Auto-simulate all remaining AI batches when the player has no more matches.
+     * Auto-simulate remaining AI-only batches. Stops if a batch involves
+     * the player's team (e.g. newly generated playoff matches).
      */
     private function autoSimulateRemainingBatches(Game $game): void
     {
-        $playerHasMoreMatches = GameMatch::where('game_id', $game->id)
-            ->where('played', false)
-            ->where(fn ($q) => $q->where('home_team_id', $game->team_id)
-                ->orWhere('away_team_id', $game->team_id))
-            ->exists();
-
-        if ($playerHasMoreMatches) {
-            return;
-        }
-
-        // Simulate all remaining AI-only batches
         while ($nextBatch = $this->matchdayService->getNextMatchBatch($game)) {
+            // Stop if this batch involves the player — they need to play it
+            $involvesPlayer = $nextBatch['matches']->contains(
+                fn ($m) => $m->involvesTeam($game->team_id)
+            );
+
+            if ($involvesPlayer) {
+                return;
+            }
+
             $this->processBatch($game, $nextBatch);
             $game->refresh()->setRelations([]);
         }
