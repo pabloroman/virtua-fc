@@ -17,7 +17,7 @@ use App\Modules\Competition\Services\SwissDrawService;
 
 /**
  * Shared season initialization operations used by both initial game setup
- * (SetupNewGame) and subsequent season transitions (ContinentalAndCupInitProcessor).
+ * (SetupNewGame) and subsequent season transitions (SecondaryCompetitionInitProcessor).
  *
  * This service has NO idempotency checks — callers are responsible for ensuring
  * operations are not run twice.
