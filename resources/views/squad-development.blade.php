@@ -23,49 +23,21 @@
 
                     <div class="mt-6"></div>
 
-                    {{-- Filter tabs --}}
-                    <div class="flex gap-2 mb-6 overflow-x-auto scrollbar-hide">
-                        <a href="{{ route('game.squad.development', ['gameId' => $game->id, 'filter' => 'high_potential']) }}"
-                           class="px-4 py-2 rounded-full text-sm font-medium transition-colors
-                                  {{ $filter === 'high_potential' ? 'bg-sky-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' }}">
-                            {{ __('squad.high_potential') }}
-                            <span class="ml-1 text-xs opacity-75">({{ $stats['high_potential'] }})</span>
-                        </a>
-                        <a href="{{ route('game.squad.development', ['gameId' => $game->id, 'filter' => 'growing']) }}"
-                           class="px-4 py-2 rounded-full text-sm font-medium transition-colors
-                                  {{ $filter === 'growing' ? 'bg-green-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' }}">
-                            {{ __('squad.growing') }}
-                            <span class="ml-1 text-xs opacity-75">({{ $stats['growing'] }})</span>
-                        </a>
-                        <a href="{{ route('game.squad.development', ['gameId' => $game->id, 'filter' => 'declining']) }}"
-                           class="px-4 py-2 rounded-full text-sm font-medium transition-colors
-                                  {{ $filter === 'declining' ? 'bg-red-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' }}">
-                            {{ __('squad.declining') }}
-                            <span class="ml-1 text-xs opacity-75">({{ $stats['declining'] }})</span>
-                        </a>
-                        <a href="{{ route('game.squad.development', $game->id) }}"
-                           class="px-4 py-2 rounded-full text-sm font-medium transition-colors
-                                  {{ $filter === 'all' ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200' }}">
-                            {{ __('squad.all') }}
-                            <span class="ml-1 text-xs opacity-75">({{ $stats['all'] }})</span>
-                        </a>
-                    </div>
-
-                    @if($players->isEmpty())
-                        <div class="text-center py-12 text-slate-500">
-                            {{ __('squad.no_players_match_filter') }}
-                        </div>
-                    @else
-                        <div class="overflow-x-auto">
-                        <table class="w-full text-sm">
+                    <div class="overflow-x-auto">
+                        <table class="w-full table-fixed text-sm">
                             <thead class="text-left border-b border-slate-300">
                                 <tr>
-                                    <th class="font-semibold py-2 pl-2">{{ __('app.player') }}</th>
-                                    <th class="font-semibold py-2 text-center w-14">{{ __('app.age') }}</th>
-                                    <th class="font-semibold py-2 pl-2" style="min-width: 180px">{{ __('squad.ability') }}</th>
+                                    <th class="font-semibold py-2 w-10"></th>
+                                    <th class="font-semibold py-2 text-center w-8 text-slate-400 hidden md:table-cell">#</th>
+                                    <th class="font-semibold py-2 w-1/2">{{ __('app.name') }}</th>
+                                    <th class="py-2 w-6"></th>
+                                    <th class="font-semibold py-2 text-center w-12 hidden md:table-cell">{{ __('app.country') }}</th>
+                                    <th class="font-semibold py-2 text-center w-12 hidden md:table-cell">{{ __('app.age') }}</th>
+                                    <th class="py-2"></th>
+                                    <th class="font-semibold py-2 pl-3 w-44">{{ __('squad.ability') }}</th>
                                     <th class="font-semibold py-2 text-center w-24">{{ __('app.status') }}</th>
                                     <th class="font-semibold py-2 text-center w-24 hidden md:table-cell">{{ __('squad.playing_time') }}</th>
-                                    <th class="font-semibold py-2 text-center" style="min-width: 120px">{{ __('squad.projection') }}</th>
+                                    <th class="font-semibold py-2 text-center w-32">{{ __('squad.projection') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -76,45 +48,47 @@
                                         $hasStarterBonus = $player->season_appearances >= 15;
                                         $projectedAbility = $currentAbility + ($player->projection ?? 0);
                                     @endphp
-                                    <tr class="border-b border-slate-100 hover:bg-slate-50">
-                                        {{-- Player: badge + name + position --}}
-                                        <td class="py-3 pl-2">
-                                            <div class="flex items-center gap-3">
-                                                <x-position-badge :position="$player->position" />
+                                    <tr class="border-b border-slate-200 hover:bg-slate-50">
+                                        {{-- Position --}}
+                                        <td class="py-2 text-center">
+                                            <x-position-badge :position="$player->position" :tooltip="\App\Support\PositionMapper::toDisplayName($player->position)" class="cursor-help" />
+                                        </td>
+                                        {{-- Number --}}
+                                        <td class="py-2 text-center text-slate-400 text-xs hidden md:table-cell">{{ $player->number ?? '-' }}</td>
+                                        {{-- Name --}}
+                                        <td class="py-2">
+                                            <div class="flex items-center space-x-2">
                                                 <button x-data @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $player->id]) }}')" class="p-1.5 text-slate-300 rounded hover:text-slate-400">
                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="w-5 h-5">
                                                         <path fill-rule="evenodd" d="M19.5 21a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3h-5.379a.75.75 0 0 1-.53-.22L11.47 3.66A2.25 2.25 0 0 0 9.879 3H4.5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h15Zm-6.75-10.5a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V10.5Z" clip-rule="evenodd" />
                                                     </svg>
                                                 </button>
-                                                <div class="flex items-center gap-1.5">
-                                                    <span class="font-medium text-slate-900">{{ $player->name }}</span>
-                                                    {{-- Development arrow --}}
-                                                    @if($player->development_status === 'growing')
-                                                        <svg class="w-3.5 h-3.5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/>
-                                                        </svg>
-                                                    @elseif($player->development_status === 'declining')
-                                                        <svg class="w-3.5 h-3.5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
-                                                        </svg>
-                                                    @else
-                                                        <svg class="w-3.5 h-3.5 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14"/>
-                                                        </svg>
-                                                    @endif
+                                                <div>
+                                                    <div class="font-medium text-slate-900 truncate">
+                                                        {{ $player->name }}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </td>
-
+                                        {{-- Development arrow --}}
+                                        <td class="py-2 text-center">
+                                        </td>
+                                        {{-- Nationality --}}
+                                        <td class="py-2 text-center hidden md:table-cell">
+                                            @if($player->nationality_flag)
+                                                <img src="/flags/{{ $player->nationality_flag['code'] }}.svg" class="w-5 h-4 mx-auto rounded shadow-sm" title="{{ $player->nationality_flag['name'] }}">
+                                            @endif
+                                        </td>
                                         {{-- Age --}}
-                                        <td class="py-3 text-center">
-                                            <span class="font-medium @if($player->age <= 23) text-green-600 @elseif($player->age >= 30) text-orange-500 @else text-slate-700 @endif">
+                                        <td class="py-2 text-center hidden md:table-cell">
+                                            <span class="@if($player->age <= 23) text-green-600 @elseif($player->age >= 30) text-orange-500 @endif">
                                                 {{ $player->age }}
                                             </span>
                                         </td>
+                                        <td class="py-2"></td>
 
-                                        {{-- Ability: potential bar (replaces POT + CUR) --}}
-                                        <td class="py-3 pl-2">
+                                        {{-- Ability: potential bar --}}
+                                        <td class="py-3 pl-3">
                                             <x-potential-bar
                                                 :current-ability="$currentAbility"
                                                 :potential-low="$player->potential_low"
@@ -191,7 +165,6 @@
                             </tbody>
                         </table>
                         </div>
-                    @endif
 
                     {{-- Legend --}}
                     <div class="mt-8 pt-6 border-t">

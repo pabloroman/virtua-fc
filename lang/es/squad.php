@@ -103,12 +103,9 @@ return [
     // Development page
     'ability' => 'Habilidad',
     'playing_time' => 'Minutos',
-    'high_potential' => 'Alto Potencial',
     'growing' => 'Creciendo',
     'declining' => 'Declinando',
     'peak' => 'En su Pico',
-    'all' => 'Todos',
-    'no_players_match_filter' => 'Ningún jugador coincide con el filtro seleccionado.',
     'pot' => 'POT',
     'apps' => 'Part',
     'projection' => 'Proyección',

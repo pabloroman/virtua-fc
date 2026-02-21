@@ -54,22 +54,26 @@
                         }
                     }">
                         <div class="overflow-x-auto">
-                        <table class="w-full text-sm" id="stats-table">
+                        <table class="w-full table-fixed text-sm" id="stats-table">
                             <thead class="text-left border-b border-slate-300">
                                 <tr>
                                     <th class="font-semibold py-2 w-10 sticky left-0 bg-white z-10"></th>
-                                    <th class="font-semibold py-2 cursor-pointer hover:text-sky-600 select-none sticky left-10 bg-white z-10" @click="sortAsc = sortColumn === 'name' ? !sortAsc : true; sortColumn = 'name'; sortTable('name', sortAsc)">
+                                    <th class="font-semibold py-2 text-center w-8 text-slate-400 hidden md:table-cell">#</th>
+                                    <th class="font-semibold py-2 w-1/2 cursor-pointer hover:text-sky-600 select-none sticky left-10 bg-white z-10" @click="sortAsc = sortColumn === 'name' ? !sortAsc : true; sortColumn = 'name'; sortTable('name', sortAsc)">
                                         <span class="flex items-center gap-1">
-                                            {{ __('app.player') }}
+                                            {{ __('app.name') }}
                                             <span x-show="sortColumn === 'name'" x-text="sortAsc ? '↑' : '↓'" class="text-sky-600"></span>
                                         </span>
                                     </th>
-                                    <th class="font-semibold py-2 text-center w-12 cursor-pointer hover:text-sky-600 select-none" @click="sortAsc = sortColumn === 'age' ? !sortAsc : true; sortColumn = 'age'; sortTable('age', sortAsc)">
+                                    <th class="py-2 w-6"></th>
+                                    <th class="font-semibold py-2 text-center w-12 hidden md:table-cell">{{ __('app.country') }}</th>
+                                    <th class="font-semibold py-2 text-center w-12 cursor-pointer hover:text-sky-600 select-none hidden md:table-cell" @click="sortAsc = sortColumn === 'age' ? !sortAsc : true; sortColumn = 'age'; sortTable('age', sortAsc)">
                                         <span class="flex items-center justify-center gap-1">
                                             {{ __('app.age') }}
                                             <span x-show="sortColumn === 'age'" x-text="sortAsc ? '↑' : '↓'" class="text-sky-600"></span>
                                         </span>
                                     </th>
+                                    <th class="py-2"></th>
                                     <th class="font-semibold py-2 text-center w-12 cursor-pointer hover:text-sky-600 select-none" @click="sortAsc = sortColumn === 'appearances' ? !sortAsc : false; sortColumn = 'appearances'; sortTable('appearances', sortAsc)" title="{{ __('squad.appearances') }}">
                                         <span class="flex items-center justify-center gap-1">
                                             {{ __('squad.apps') }}
@@ -137,7 +141,7 @@
                                         $isTopAppearances = $maxAppearances > 0 && $player->appearances === $maxAppearances;
                                         $isTopCleanSheets = $maxCleanSheets > 0 && $player->position === 'Goalkeeper' && $player->clean_sheets === $maxCleanSheets;
                                     @endphp
-                                    <tr class="border-b border-slate-100 hover:bg-slate-50 player-row"
+                                    <tr class="border-b border-slate-200 hover:bg-slate-50 player-row"
                                         data-name="{{ strtolower($player->name) }}"
                                         data-age="{{ $player->age }}"
                                         data-appearances="{{ $player->appearances }}"
@@ -150,25 +154,35 @@
                                         data-red="{{ $player->red_cards }}"
                                         data-clean_sheets="{{ $player->clean_sheets }}">
                                         {{-- Position --}}
-                                        <td class="py-2.5 text-center sticky left-0 bg-white z-10">
-                                            <x-position-badge :position="$player->position" :tooltip="\App\Support\PositionMapper::toDisplayName($player->position)" />
+                                        <td class="py-2 text-center sticky left-0 bg-white z-10">
+                                            <x-position-badge :position="$player->position" :tooltip="\App\Support\PositionMapper::toDisplayName($player->position)" class="cursor-help" />
                                         </td>
+                                        {{-- Number --}}
+                                        <td class="py-2 text-center text-slate-400 text-xs hidden md:table-cell">{{ $player->number ?? '-' }}</td>
                                         {{-- Name --}}
-                                        <td class="py-2.5 sticky left-10 bg-white z-10">
-                                            <div class="flex items-center gap-2">
+                                        <td class="py-2 sticky left-10 bg-white z-10">
+                                            <div class="flex items-center space-x-2">
                                                 <button @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $player->id]) }}')" class="p-1.5 text-slate-300 rounded hover:text-slate-400">
                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="w-5 h-5">
                                                         <path fill-rule="evenodd" d="M19.5 21a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3h-5.379a.75.75 0 0 1-.53-.22L11.47 3.66A2.25 2.25 0 0 0 9.879 3H4.5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h15Zm-6.75-10.5a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V10.5Z" clip-rule="evenodd" />
                                                     </svg>
                                                 </button>
-                                                @if($player->number)
-                                                    <span class="text-xs text-slate-400 w-4 text-right">{{ $player->number }}</span>
-                                                @endif
-                                                <span class="font-medium text-slate-900">{{ $player->name }}</span>
+                                                <div>
+                                                    <div class="font-medium text-slate-900 truncate">{{ $player->name }}</div>
+                                                </div>
                                             </div>
                                         </td>
+                                        {{-- Status (empty) --}}
+                                        <td class="py-2"></td>
+                                        {{-- Nationality --}}
+                                        <td class="py-2 text-center hidden md:table-cell">
+                                            @if($player->nationality_flag)
+                                                <img src="/flags/{{ $player->nationality_flag['code'] }}.svg" class="w-5 h-4 mx-auto rounded shadow-sm" title="{{ $player->nationality_flag['name'] }}">
+                                            @endif
+                                        </td>
                                         {{-- Age --}}
-                                        <td class="py-2.5 text-center text-slate-600">{{ $player->age }}</td>
+                                        <td class="py-2 text-center hidden md:table-cell">{{ $player->age }}</td>
+                                        <td class="py-2"></td>
                                         {{-- Appearances --}}
                                         <td class="py-2.5 text-center {{ $isTopAppearances ? 'bg-amber-50' : '' }}">
                                             <span class="{{ $player->appearances > 0 ? 'font-medium text-slate-900' : 'text-slate-300' }}">{{ $player->appearances > 0 ? $player->appearances : '-' }}</span>

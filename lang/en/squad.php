@@ -103,12 +103,9 @@ return [
     // Development page
     'ability' => 'Ability',
     'playing_time' => 'Minutes',
-    'high_potential' => 'High Potential',
     'growing' => 'Growing',
     'declining' => 'Declining',
     'peak' => 'Peak',
-    'all' => 'All',
-    'no_players_match_filter' => 'No players match the selected filter.',
     'pot' => 'POT',
     'apps' => 'Apps',
     'projection' => 'Projection',

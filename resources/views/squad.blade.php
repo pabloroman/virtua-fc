@@ -36,15 +36,16 @@
                     @endif
 
                     <div class="overflow-x-auto">
-                    <table class="w-full text-sm">
-                        <thead class="text-left border-b">
+                    <table class="w-full table-fixed text-sm">
+                        <thead class="text-left border-b border-slate-300">
                             <tr>
                                 <th class="font-semibold py-2 w-10"></th>
                                 <th class="font-semibold py-2 text-center w-8 text-slate-400 hidden md:table-cell">#</th>
-                                <th class="font-semibold py-2">{{ __('app.name') }}</th>
+                                <th class="font-semibold py-2 w-1/2">{{ __('app.name') }}</th>
                                 <th class="py-2 w-6"></th>
                                 <th class="font-semibold py-2 text-center w-12 hidden md:table-cell">{{ __('app.country') }}</th>
                                 <th class="font-semibold py-2 text-center w-12 hidden md:table-cell">{{ __('app.age') }}</th>
+                                <th class="py-2"></th>
 
                                 @if($game->isCareerMode())
                                 <th class="font-semibold py-2 pl-3 pr-4 text-right border-l border-slate-200 w-24 hidden md:table-cell">{{ __('app.value') }}</th>
@@ -94,7 +95,7 @@
                                                         </svg>
                                                     </button>
                                                     <div>
-                                                    <div class="font-medium text-slate-900 @if($isUnavailable) text-slate-400 @endif">
+                                                    <div class="font-medium text-slate-900 truncate @if($isUnavailable) text-slate-400 @endif">
                                                         {{ $gamePlayer->player->name }}
                                                     </div>
                                                     @if($unavailabilityReason)
@@ -154,6 +155,7 @@
                                             </td>
                                             {{-- Age --}}
                                             <td class="py-2 text-center hidden md:table-cell">{{ $gamePlayer->player->age }}</td>
+                                            <td class="py-2"></td>
 
                                             @if($game->isCareerMode())
                                             {{-- Market Value --}}
