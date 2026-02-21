@@ -10,12 +10,11 @@ use App\Models\GamePlayer;
 use Carbon\Carbon;
 
 /**
- * Handles players whose contracts have expired.
+ * Releases players whose contracts have expired.
  * Priority: 5 (runs early, before contract renewals are applied)
  *
- * Players with contract_until <= June 30 of the ending season:
- * - User's team: released (removed from squad)
- * - AI teams: auto-renewed for 2 years to maintain roster stability
+ * Players with contract_until <= June 30 of the ending season are released.
+ * For AI teams, SquadReplenishmentProcessor (priority 8) fills any resulting roster gaps.
  */
 class ContractExpirationProcessor implements SeasonEndProcessor
 {
@@ -43,36 +42,22 @@ class ContractExpirationProcessor implements SeasonEndProcessor
             ->get();
 
         $releasedPlayers = [];
-        $autoRenewedPlayers = [];
 
         foreach ($expiredPlayers as $player) {
-            if ($player->team_id === $game->team_id) {
-                // User's team: release the player
-                $releasedPlayers[] = [
-                    'playerId' => $player->id,
-                    'playerName' => $player->name,
-                    'teamId' => $player->team_id,
-                    'teamName' => $player->team->name,
-                ];
+            // Store info before releasing
+            $releasedPlayers[] = [
+                'playerId' => $player->id,
+                'playerName' => $player->name,
+                'teamId' => $player->team_id,
+                'teamName' => $player->team->name,
+                'wasUserTeam' => $player->team_id === $game->team_id,
+            ];
 
-                $player->delete();
-            } else {
-                // AI team: auto-renew for 2 years
-                $newContractEnd = Carbon::createFromDate($seasonYear + 3, 6, 30);
-
-                $player->update(['contract_until' => $newContractEnd]);
-
-                $autoRenewedPlayers[] = [
-                    'playerId' => $player->id,
-                    'playerName' => $player->name,
-                    'teamId' => $player->team_id,
-                    'teamName' => $player->team->name,
-                ];
-            }
+            // Delete the player from the game (contract expired = no longer playing)
+            $player->delete();
         }
 
-        // Store metadata
-        return $data->setMetadata('expiredContracts', $releasedPlayers)
-            ->setMetadata('autoRenewedContracts', $autoRenewedPlayers);
+        // Store released players info in metadata
+        return $data->setMetadata('expiredContracts', $releasedPlayers);
     }
 }

@@ -2,11 +2,7 @@
 
 namespace App\Modules\Squad\Services;
 
-use App\Modules\Squad\DTOs\GeneratedPlayerData;
-use App\Models\Game;
 use App\Models\GamePlayer;
-use Carbon\Carbon;
-use App\Modules\Squad\Services\PlayerGeneratorService;
 
 class PlayerRetirementService
 {
@@ -60,10 +56,6 @@ class PlayerRetirementService
      */
     private const LOW_APPEARANCES = 5;
 
-    public function __construct(
-        private readonly PlayerGeneratorService $playerGenerator,
-    ) {}
-
     /**
      * Evaluate whether a player decides to announce retirement.
      *
@@ -103,44 +95,6 @@ class PlayerRetirementService
         $finalProbability = max(0.0, min(1.0, $finalProbability));
 
         return (mt_rand(1, 1000) / 1000) <= $finalProbability;
-    }
-
-    /**
-     * Generate a replacement player for a retiring player on an AI team.
-     *
-     * The replacement has:
-     * - Same position
-     * - Younger age (22-28)
-     * - Slightly lower ability (70-90% of retiring player)
-     * - 3-year contract
-     */
-    public function generateReplacementPlayer(Game $game, GamePlayer $retiringPlayer, string $newSeason): GamePlayer
-    {
-        $retiringAbility = (int) round(
-            ($retiringPlayer->current_technical_ability + $retiringPlayer->current_physical_ability) / 2
-        );
-
-        // Replacement ability: 70-90% of retiring player
-        $abilityFraction = (mt_rand(70, 90) / 100);
-        $replacementAbility = max(35, (int) round($retiringAbility * $abilityFraction));
-
-        // Split ability between technical and physical with some variance
-        $techBias = mt_rand(-5, 5);
-        $technical = max(30, min(95, $replacementAbility + $techBias));
-        $physical = max(30, min(95, $replacementAbility - $techBias));
-
-        $seasonYear = (int) $newSeason;
-        $age = mt_rand(22, 28);
-        $dateOfBirth = Carbon::createFromDate($seasonYear - $age, mt_rand(1, 12), mt_rand(1, 28));
-
-        return $this->playerGenerator->create($game, new GeneratedPlayerData(
-            teamId: $retiringPlayer->team_id,
-            position: $retiringPlayer->position,
-            technical: $technical,
-            physical: $physical,
-            dateOfBirth: $dateOfBirth,
-            contractYears: 3,
-        ));
     }
 
     /**

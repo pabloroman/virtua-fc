@@ -89,9 +89,9 @@ class SquadReplenishmentTest extends TestCase
         $this->assertEmpty($generated);
     }
 
-    public function test_ai_team_above_minimum_is_not_touched(): void
+    public function test_ai_team_above_minimum_with_balanced_squad_is_not_touched(): void
     {
-        // Create an AI team with 25 players (above minimum)
+        // Create an AI team with 25 players (above minimum) and balanced positions
         $this->createSquadForTeam($this->aiTeam, 25);
 
         $processor = app(SquadReplenishmentProcessor::class);
@@ -103,6 +103,49 @@ class SquadReplenishmentTest extends TestCase
             ->where('team_id', $this->aiTeam->id)
             ->count();
         $this->assertEquals(25, $finalCount);
+    }
+
+    public function test_ai_team_above_minimum_but_missing_goalkeepers_gets_them(): void
+    {
+        // Simulate the scenario: user bought all goalkeepers from an AI team
+        // Team has 24 outfield players but 0 goalkeepers
+        $outfieldPositions = [
+            'Centre-Back', 'Centre-Back', 'Centre-Back', 'Centre-Back',
+            'Left-Back', 'Left-Back', 'Right-Back', 'Right-Back',
+            'Defensive Midfield', 'Defensive Midfield',
+            'Central Midfield', 'Central Midfield', 'Central Midfield',
+            'Attacking Midfield', 'Attacking Midfield',
+            'Left Midfield', 'Right Midfield',
+            'Left Winger', 'Right Winger',
+            'Centre-Forward', 'Centre-Forward', 'Centre-Forward',
+            'Second Striker', 'Second Striker',
+        ];
+
+        foreach ($outfieldPositions as $position) {
+            $this->createGamePlayer($this->aiTeam, $position);
+        }
+
+        $this->assertEquals(24, GamePlayer::where('game_id', $this->game->id)
+            ->where('team_id', $this->aiTeam->id)
+            ->count());
+
+        $gkBefore = GamePlayer::where('game_id', $this->game->id)
+            ->where('team_id', $this->aiTeam->id)
+            ->where('position', 'Goalkeeper')
+            ->count();
+        $this->assertEquals(0, $gkBefore);
+
+        $processor = app(SquadReplenishmentProcessor::class);
+        $data = new SeasonTransitionData(oldSeason: '2024', newSeason: '2025', competitionId: 'ESP1');
+
+        $processor->process($this->game, $data);
+
+        // Should have generated at least 2 goalkeepers (group minimum)
+        $gkAfter = GamePlayer::where('game_id', $this->game->id)
+            ->where('team_id', $this->aiTeam->id)
+            ->where('position', 'Goalkeeper')
+            ->count();
+        $this->assertGreaterThanOrEqual(2, $gkAfter);
     }
 
     public function test_user_team_is_never_replenished(): void

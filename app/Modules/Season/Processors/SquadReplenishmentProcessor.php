@@ -11,13 +11,18 @@ use App\Models\GamePlayer;
 use Carbon\Carbon;
 
 /**
- * Ensures every AI team maintains a minimum squad size after season-end attrition.
+ * Centralised AI roster maintenance: ensures every AI team has a viable squad.
  *
- * Contract expirations and retirements can shrink AI rosters below functional levels.
- * This processor fills gaps with generated players, prioritising the most depleted
- * position groups so that every AI team can field a competitive lineup.
+ * Runs after contract expirations (5), retirements (7), and before player
+ * development (10). Fills gaps caused by any source of attrition: retirements,
+ * expired contracts, transfers, or any other mechanism that removes players.
  *
- * Priority: 8 (runs after retirement replacements, before player development)
+ * Two rules are enforced:
+ * 1. Position group minimums (2 GK, 5 DEF, 5 MID, 3 FWD) — always, even if
+ *    total squad size is sufficient (e.g. user buys all AI team's goalkeepers).
+ * 2. Minimum squad size of 22 — fill remaining gaps by position target priority.
+ *
+ * Priority: 8
  */
 class SquadReplenishmentProcessor implements SeasonEndProcessor
 {
@@ -96,17 +101,11 @@ class SquadReplenishmentProcessor implements SeasonEndProcessor
             ->groupBy('team_id');
 
         foreach ($teamRosters as $teamId => $players) {
-            $currentCount = $players->count();
-
-            if ($currentCount >= self::MIN_SQUAD_SIZE) {
-                continue;
-            }
-
-            $deficit = self::MIN_SQUAD_SIZE - $currentCount;
             $teamAvgAbility = $this->calculateTeamAverageAbility($players);
             $positionCounts = $players->groupBy('position')->map->count();
 
-            $positionsToFill = $this->determinePositionsToFill($positionCounts, $deficit);
+            // Determine positions needed: both squad size deficit and group minimum gaps
+            $positionsToFill = $this->determinePositionsToFill($positionCounts, $players->count());
 
             foreach ($positionsToFill as $position) {
                 $newPlayer = $this->generatePlayer(
@@ -130,60 +129,113 @@ class SquadReplenishmentProcessor implements SeasonEndProcessor
     }
 
     /**
-     * Determine which positions to fill based on group and position deficits.
+     * Determine which positions to fill based on two rules:
      *
-     * Positions are selected by finding the largest gap between the target count
-     * and the current count for each position, prioritising group minimums first.
+     * 1. Group minimums are always enforced (e.g. 2 GK, 5 DEF) regardless of total squad size.
+     *    This prevents situations like a team having 25 players but 0 goalkeepers.
+     * 2. If total squad size is below MIN_SQUAD_SIZE, additional players are generated
+     *    to reach the minimum, prioritised by position target gaps.
      *
      * @param  \Illuminate\Support\Collection  $positionCounts  Current player counts keyed by position
-     * @param  int  $deficit  Number of players to generate
+     * @param  int  $currentSquadSize  Current total number of players on the team
      * @return string[]  Positions to fill
      */
-    private function determinePositionsToFill($positionCounts, int $deficit): array
+    private function determinePositionsToFill($positionCounts, int $currentSquadSize): array
     {
         $positions = [];
 
-        // Build a priority queue: positions sorted by how far below target they are
-        $gaps = [];
-        foreach (self::POSITION_TARGETS as $position => $target) {
-            $current = $positionCounts->get($position, 0);
-            $gap = $target - $current;
+        // Phase 1: Always enforce group minimums (e.g. must have 2 GK even if squad is full)
+        foreach (self::GROUP_MINIMUMS as $group => $groupMin) {
+            $groupCurrent = $this->countGroupPlayers($positionCounts, $group);
+            $groupDeficit = max(0, $groupMin - $groupCurrent);
 
-            if ($gap > 0) {
-                // Weight group-minimum violations higher
-                $group = self::POSITION_TO_GROUP[$position];
-                $groupCurrent = $this->countGroupPlayers($positionCounts, $group);
-                $groupMin = self::GROUP_MINIMUMS[$group];
-                $groupDeficit = max(0, $groupMin - $groupCurrent);
+            if ($groupDeficit > 0) {
+                // Pick the most-depleted positions within this group
+                $groupPositions = $this->getMostDepletedPositionsInGroup($positionCounts, $group, $groupDeficit);
+                $positions = array_merge($positions, $groupPositions);
+            }
+        }
 
-                // Positions in groups below minimum get priority (higher score)
-                $priority = $groupDeficit > 0 ? $gap + 100 : $gap;
+        // Update counts to account for phase 1 additions
+        $updatedPositionCounts = clone $positionCounts;
+        foreach ($positions as $pos) {
+            $updatedPositionCounts[$pos] = ($updatedPositionCounts->get($pos, 0)) + 1;
+        }
 
-                for ($i = 0; $i < $gap; $i++) {
-                    $gaps[] = ['position' => $position, 'priority' => $priority - $i];
+        // Phase 2: Fill up to MIN_SQUAD_SIZE using position target gaps
+        $totalAfterPhase1 = $currentSquadSize + count($positions);
+        $squadDeficit = max(0, self::MIN_SQUAD_SIZE - $totalAfterPhase1);
+
+        if ($squadDeficit > 0) {
+            $gaps = [];
+            foreach (self::POSITION_TARGETS as $position => $target) {
+                $current = $updatedPositionCounts->get($position, 0);
+                $gap = $target - $current;
+
+                for ($i = 0; $i < max(0, $gap); $i++) {
+                    $gaps[] = ['position' => $position, 'priority' => $gap - $i];
+                }
+            }
+
+            // Sort by biggest gap first
+            usort($gaps, fn ($a, $b) => $b['priority'] <=> $a['priority']);
+
+            foreach (array_slice($gaps, 0, $squadDeficit) as $entry) {
+                $positions[] = $entry['position'];
+            }
+
+            // If still short (all positions at target), use fallback rotation
+            if (count($positions) < (self::MIN_SQUAD_SIZE - $currentSquadSize)) {
+                $remaining = (self::MIN_SQUAD_SIZE - $currentSquadSize) - count($positions);
+                $fallbackPositions = ['Central Midfield', 'Centre-Back', 'Centre-Forward', 'Goalkeeper'];
+
+                for ($i = 0; $i < $remaining; $i++) {
+                    $positions[] = $fallbackPositions[$i % count($fallbackPositions)];
                 }
             }
         }
 
-        // Sort by priority descending (biggest gaps first)
-        usort($gaps, fn ($a, $b) => $b['priority'] <=> $a['priority']);
+        return $positions;
+    }
 
-        // Take the top N positions
-        foreach (array_slice($gaps, 0, $deficit) as $entry) {
-            $positions[] = $entry['position'];
-        }
-
-        // If we still need more players (all positions at target), spread across groups below minimum
-        if (count($positions) < $deficit) {
-            $remaining = $deficit - count($positions);
-            $fallbackPositions = ['Central Midfield', 'Centre-Back', 'Centre-Forward', 'Goalkeeper'];
-
-            for ($i = 0; $i < $remaining; $i++) {
-                $positions[] = $fallbackPositions[$i % count($fallbackPositions)];
+    /**
+     * Pick the most-depleted positions within a group to fill.
+     *
+     * @return string[]
+     */
+    private function getMostDepletedPositionsInGroup($positionCounts, string $group, int $count): array
+    {
+        $candidates = [];
+        foreach (self::POSITION_TARGETS as $position => $target) {
+            if (self::POSITION_TO_GROUP[$position] !== $group) {
+                continue;
+            }
+            $current = $positionCounts->get($position, 0);
+            $gap = $target - $current;
+            if ($gap > 0) {
+                for ($i = 0; $i < $gap; $i++) {
+                    $candidates[] = ['position' => $position, 'priority' => $gap - $i];
+                }
             }
         }
 
-        return $positions;
+        usort($candidates, fn ($a, $b) => $b['priority'] <=> $a['priority']);
+
+        $result = [];
+        foreach (array_slice($candidates, 0, $count) as $entry) {
+            $result[] = $entry['position'];
+        }
+
+        // If not enough candidates from targets (e.g. all positions at target but group still short),
+        // pick the first position in the group
+        if (count($result) < $count) {
+            $firstInGroup = array_search($group, self::POSITION_TO_GROUP);
+            for ($i = count($result); $i < $count; $i++) {
+                $result[] = $firstInGroup;
+            }
+        }
+
+        return $result;
     }
 
     /**
