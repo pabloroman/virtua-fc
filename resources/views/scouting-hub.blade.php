@@ -30,6 +30,54 @@
                         ['href' => route('game.scouting', $game->id), 'label' => __('transfers.scouting_tab'), 'active' => true],
                     ]" />
 
+                    {{-- How it works toggle --}}
+                    <div x-data="{ open: false }" class="mt-4">
+                        <button @click="open = !open" class="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-700 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-slate-400 shrink-0">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-7-4a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM9 9a.75.75 0 0 0 0 1.5h.253a.25.25 0 0 1 .244.304l-.459 2.066A1.75 1.75 0 0 0 10.747 15H11a.75.75 0 0 0 0-1.5h-.253a.25.25 0 0 1-.244-.304l.459-2.066A1.75 1.75 0 0 0 9.253 9H9Z" clip-rule="evenodd" />
+                            </svg>
+                            <span>{{ __('transfers.scouting_help_toggle') }}</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 transition-transform" :class="open ? 'rotate-180' : ''">
+                                <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+
+                        <div x-show="open" x-transition class="mt-3 bg-slate-50 border border-slate-200 rounded-lg p-4 text-sm">
+                            <p class="text-slate-600 mb-4">{{ __('transfers.scouting_help_intro') }}</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                {{-- Scout searches --}}
+                                <div>
+                                    <p class="font-semibold text-slate-700 mb-2">{{ __('transfers.scouting_help_search_title') }}</p>
+                                    <ul class="space-y-2">
+                                        <li class="flex gap-2">
+                                            <span class="mt-0.5 shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full bg-sky-200 text-sky-700 text-xs font-bold">1</span>
+                                            <span class="text-slate-600">{{ __('transfers.scouting_help_search_filters') }}</span>
+                                        </li>
+                                        <li class="flex gap-2">
+                                            <span class="mt-0.5 shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full bg-sky-200 text-sky-700 text-xs font-bold">2</span>
+                                            <span class="text-slate-600">{{ __('transfers.scouting_help_search_time') }}</span>
+                                        </li>
+                                        <li class="flex gap-2">
+                                            <span class="mt-0.5 shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full bg-sky-200 text-sky-700 text-xs font-bold">3</span>
+                                            <span class="text-slate-600">{{ __('transfers.scouting_help_search_scope') }}</span>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                {{-- Shortlist & Offers --}}
+                                <div>
+                                    <p class="font-semibold text-slate-700 mb-2">{{ __('transfers.scouting_help_shortlist_title') }}</p>
+                                    <ul class="space-y-1 text-slate-600">
+                                        <li class="flex gap-2"><span class="text-amber-500 shrink-0">&#9733;</span> {{ __('transfers.scouting_help_shortlist_star') }}</li>
+                                        <li class="flex gap-2"><span class="text-sky-500 shrink-0">&#8594;</span> {{ __('transfers.scouting_help_shortlist_bid') }}</li>
+                                        <li class="flex gap-2"><span class="text-emerald-500 shrink-0">&#8644;</span> {{ __('transfers.scouting_help_shortlist_loan') }}</li>
+                                        <li class="flex gap-2"><span class="text-slate-400 shrink-0">&#10003;</span> {{ __('transfers.scouting_help_shortlist_precontract') }}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
 
                         {{-- ============================== --}}

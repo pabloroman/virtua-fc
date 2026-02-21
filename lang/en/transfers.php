@@ -168,6 +168,33 @@ return [
     'your_bid_amount' => 'Your bid: :amount',
     'they_ask' => 'They ask: :amount',
 
+    // Transfers help text
+    'transfers_help_toggle' => 'How do transfers work?',
+    'transfers_help_intro' => 'Manage your outgoing transfers, contracts and loans. Offers arrive each matchday based on market conditions.',
+    'transfers_help_selling_title' => 'Selling players',
+    'transfers_help_selling_list' => 'List players for sale from the Squad page. Other clubs will make offers based on the player\'s value.',
+    'transfers_help_selling_unsolicited' => 'You may also receive unsolicited offers for unlisted players — especially high-value ones.',
+    'transfers_help_selling_accept' => 'Accepted transfers complete when the next transfer window opens.',
+    'transfers_help_contracts_title' => 'Contracts & Renewals',
+    'transfers_help_contracts_expiring' => 'Players in their final year of contract can be signed for free by other clubs via pre-contract from January.',
+    'transfers_help_contracts_renew' => 'Renew players before it\'s too late. Negotiations happen over matchdays — the player may accept, counter, or decline.',
+    'transfers_help_contracts_wages' => 'Keep an eye on your wage bill. Higher wages attract better players but reduce your transfer budget.',
+    'transfers_help_loans_title' => 'Loans',
+    'transfers_help_loans_out' => 'Loan out young or surplus players. They will develop while playing for another club and return at end of season.',
+
+    // Scouting help text
+    'scouting_help_toggle' => 'How does scouting work?',
+    'scouting_help_intro' => 'Use your scouts to find players on the transfer market. The better your scouting infrastructure, the better your results.',
+    'scouting_help_search_title' => 'Scout searches',
+    'scouting_help_search_filters' => 'Set filters (position, age, ability, value) and your scout will search for matching players.',
+    'scouting_help_search_time' => 'Each search takes a few matchdays to complete. You can only run one search at a time.',
+    'scouting_help_search_scope' => 'Domestic searches find players in your league. International searches require scouting level 3+.',
+    'scouting_help_shortlist_title' => 'Shortlist & Offers',
+    'scouting_help_shortlist_star' => 'Star players from scout results to add them to your shortlist for easy comparison.',
+    'scouting_help_shortlist_bid' => 'Submit a bid from the shortlist. The selling club responds next matchday — they may accept, reject, or counter.',
+    'scouting_help_shortlist_loan' => 'You can also request a loan instead of a permanent transfer.',
+    'scouting_help_shortlist_precontract' => 'Players in their final year of contract can be signed for free via pre-contract from January.',
+
     // Decline renewal
     'reconsider_renewal' => 'Reconsider',
     'declined_renewals' => 'Declined Renewals',
