@@ -30,7 +30,7 @@ class AwardCupPrizeMoney
             gameId: $event->game->id,
             category: FinancialTransaction::CATEGORY_CUP_BONUS,
             amount: $amount,
-            description: "{$competitionName} - Round {$roundNumber} advancement",
+            description: __('finances.tx_cup_advancement', ['competition' => $competitionName, 'round' => $roundNumber]),
             transactionDate: $event->game->current_date->toDateString(),
         );
     }
