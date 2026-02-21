@@ -22,7 +22,10 @@ class JoinWaitlist
             ], 400);
         }
 
-        $existing = WaitlistEntry::where('email', $validator->validated()['email'])->first();
+        $validated = $validator->validated();
+        $validated['email'] = strtolower($validated['email']);
+
+        $existing = WaitlistEntry::where('email', $validated['email'])->first();
 
         if ($existing) {
             return response()->json([
@@ -30,7 +33,7 @@ class JoinWaitlist
             ], 200);
         }
 
-        WaitlistEntry::create($validator->validated());
+        WaitlistEntry::create($validated);
 
         return response()->json([
             'message' => __('waitlist.success'),
