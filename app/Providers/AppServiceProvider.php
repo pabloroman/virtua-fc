@@ -6,6 +6,7 @@ use App\Events\SeasonStarted;
 use App\Modules\Academy\Listeners\GenerateInitialAcademyBatch;
 use App\Modules\Match\Events\CupTieResolved;
 use App\Modules\Match\Events\MatchFinalized;
+use App\Modules\Match\Handlers\GroupStageCupHandler;
 use App\Modules\Match\Handlers\KnockoutCupHandler;
 use App\Modules\Match\Handlers\LeagueHandler;
 use App\Modules\Match\Handlers\LeagueWithPlayoffHandler;
@@ -41,6 +42,7 @@ class AppServiceProvider extends ServiceProvider
             $resolver->register($app->make(LeagueWithPlayoffHandler::class));
             $resolver->register($app->make(KnockoutCupHandler::class));
             $resolver->register($app->make(SwissFormatHandler::class));
+            $resolver->register($app->make(GroupStageCupHandler::class));
 
             return $resolver;
         });

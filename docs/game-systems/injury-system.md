@@ -172,7 +172,6 @@ When evaluating players, durability is hidden but impactful. A player with low d
 
 | File | Purpose |
 |------|---------|
-| `app/Game/Services/InjuryService.php` | Core injury probability and generation logic |
-| `app/Game/Services/MatchSimulator.php` | Integrates injury checks into match simulation |
-| `database/migrations/*_add_durability_to_game_players.php` | Durability column |
-| `app/Console/Commands/BackfillPlayerDurability.php` | Utility to regenerate durability values |
+| `app/Modules/Squad/Services/InjuryService.php` | Core injury probability and generation logic |
+| `app/Modules/Match/Services/MatchSimulator.php` | Integrates injury checks into match simulation |
+| `config/match_simulation.php` | Injury event probabilities |

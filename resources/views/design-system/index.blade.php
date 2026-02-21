@@ -1,5 +1,6 @@
 <x-design-system.layout>
     @include('design-system.sections.overview')
+    @include('design-system.sections.logo-brand')
     @include('design-system.sections.colors')
     @include('design-system.sections.typography')
     @include('design-system.sections.buttons')

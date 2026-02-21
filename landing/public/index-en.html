@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtua FC — Football Manager Simulator</title>
+    <meta name="description" content="The first football manager built with AI. Manage real La Liga and Segunda División squads. Compete in League, Copa del Rey, Champions League and more. Open source project.">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="alternate" hreflang="es" href="/index.html">
+    <link rel="alternate" hreflang="en" href="/index-en.html">
+    <link rel="alternate" hreflang="x-default" href="/index.html">
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=barlow-semi-condensed:400,600,800" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                fontSize: {
+                    xs: '0.8rem',
+                    sm: '1rem',
+                    base: '1.25rem',
+                    xl: '1.563rem',
+                    '2xl': '1.953rem',
+                    '3xl': '2.441rem',
+                    '4xl': '3.052rem',
+                },
+                extend: {
+                    fontFamily: {
+                        sans: ['"Barlow Semi Condensed"', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        html { scroll-behavior: smooth; }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-bl from-slate-900 via-cyan-950 to-teal-950 font-sans text-white antialiased">
+
+    <!-- Nav -->
+    <nav class="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
+        <div class="-skew-x-12 bg-red-600 px-3 sm:px-4 py-1">
+            <span class="skew-x-12 inline-block text-xl sm:text-3xl font-bold text-white tracking-tight">Virtua FC</span>
+        </div>
+        <div class="flex items-center gap-2 sm:gap-4">
+            <a href="/index.html" class="text-xs font-semibold text-slate-400 hover:text-white transition uppercase tracking-wider">ES</a>
+            <span class="text-slate-600">|</span>
+            <a href="/index-en.html" class="text-xs font-semibold text-white transition uppercase tracking-wider">EN</a>
+            <a href="https://app.virtuafc.com/login" class="text-sm font-semibold text-white bg-white/10 border border-white/20 hover:bg-white/20 px-3 sm:px-5 py-2 rounded-md transition">Log in</a>
+        </div>
+    </nav>
+
+    <!-- Hero + Form (above the fold) -->
+    <section class="relative max-w-7xl mx-auto px-6 pt-12 pb-24 sm:pt-20 sm:pb-32 overflow-hidden">
+        <!-- Decorative background element -->
+        <div class="absolute -bottom-32 -left-32 w-[400px] h-[400px] bg-teal-500/5 rounded-full blur-3xl pointer-events-none"></div>
+        <div>
+            <div class="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-1.5 mb-6">
+                <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                <span class="text-xs font-semibold text-slate-300 uppercase tracking-wider">In active development</span>
+            </div>
+            <h1 class="text-3xl sm:text-[3.5rem] font-bold leading-tight tracking-tight">
+                The first football manager
+                <span class="text-red-500">built with AI.</span>
+            </h1>
+            <p class="mt-6 text-sm sm:text-xl text-slate-300 leading-relaxed">
+                Manage real squads from 5 European countries. <br>Sign players, negotiate transfers, develop youth prospects and compete across 10 domestic and European competitions.
+            </p>
+
+            <!-- Inline waitlist -->
+            <form id="waitlist-form" class="mt-8 flex flex-col sm:flex-row gap-3 max-w-xl">
+                <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    required
+                    placeholder="Your name"
+                    class="sm:w-40 px-4 py-3 rounded-md bg-white/10 border border-white/20 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent transition text-sm"
+                >
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    required
+                    placeholder="you@email.com"
+                    class="flex-1 px-4 py-3 rounded-md bg-white/10 border border-white/20 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent transition text-sm"
+                >
+                <button
+                    type="submit"
+                    id="submit-btn"
+                    class="bg-red-600 hover:bg-red-700 active:bg-red-900 text-white px-6 py-3 rounded-md font-semibold uppercase tracking-wide text-xs whitespace-nowrap transition ease-in-out duration-150"
+                >
+                    Early Access
+                </button>
+            </form>
+            <div id="form-message" class="hidden text-xs mt-3"></div>
+            <p id="waitlist" class="mt-3 text-xs text-slate-500">Join the waitlist. No spam.</p>
+
+            <!-- Stats -->
+            <div class="mt-10 flex divide-x divide-white/10 max-w-md">
+                <div class="text-center flex-1 px-2">
+                    <div class="text-2xl font-extrabold text-white tracking-tight">5</div>
+                    <div class="text-xs text-slate-500 uppercase tracking-wider font-semibold">Countries</div>
+                </div>
+                <div class="text-center flex-1 px-2">
+                    <div class="text-2xl font-extrabold text-white tracking-tight">10</div>
+                    <div class="text-xs text-slate-500 uppercase tracking-wider font-semibold">Compet.</div>
+                </div>
+                <div class="text-center flex-1 px-2">
+                    <div class="text-2xl font-extrabold text-white tracking-tight">232</div>
+                    <div class="text-xs text-slate-500 uppercase tracking-wider font-semibold">Teams</div>
+                </div>
+                <div class="text-center flex-1 px-2">
+                    <div class="text-2xl font-extrabold text-white tracking-tight">4,255</div>
+                    <div class="text-xs text-slate-500 uppercase tracking-wider font-semibold">Players</div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="max-w-7xl mx-auto px-6 py-20">
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+
+            <div class="bg-white/5 backdrop-blur border border-white/10 rounded-lg p-8">
+                <div class="flex">
+                    <div class="w-10 h-10 bg-red-600 flex items-center justify-center mb-4 mr-4 -skew-x-12">
+                        <svg class="w-5 h-5 text-white skew-x-12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Live Match</h3>
+                </div>
+                <p class="text-sm text-slate-400 leading-relaxed">Watch every match unfold in real time. Make up to 5 substitutions, switch formation and adjust your team's mentality mid-game. Every tactical call impacts what happens on the pitch.</p>
+            </div>
+
+            <div class="bg-white/5 backdrop-blur border border-white/10 rounded-lg p-8">
+                <div class="flex">
+                    <div class="w-10 h-10 bg-sky-600 flex items-center justify-center mb-4 mr-4 -skew-x-12">
+                        <svg class="w-5 h-5 text-white skew-x-12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Transfers & Scouting</h3>
+                </div>
+                <p class="text-sm text-slate-400 leading-relaxed">Send scouts to uncover talent, negotiate transfers with counter-offers, loan players in and out, or sign pre-contracts with free agents. Stay on top of renewals and expiring deals.</p>
+            </div>
+
+            <div class="bg-white/5 backdrop-blur border border-white/10 rounded-lg p-8">
+                <div class="flex">
+                    <div class="w-10 h-10 bg-teal-600 flex items-center justify-center mb-4 mr-4 -skew-x-12">
+                        <svg class="w-5 h-5 text-white skew-x-12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Youth Academy</h3>
+                </div>
+                <p class="text-sm text-slate-400 leading-relaxed">New prospects arrive every season with hidden attributes that are gradually revealed. At the end of each season, decide who earns a first-team spot, goes out on loan, or gets released.</p>
+            </div>
+
+            <div class="bg-white/5 backdrop-blur border border-white/10 rounded-lg p-8">
+                <div class="flex">
+                    <div class="w-10 h-10 bg-amber-600 flex items-center justify-center mb-4 mr-4 -skew-x-12">
+                        <svg class="w-5 h-5 text-white skew-x-12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">10 Competitions</h3>
+                </div>
+                <p class="text-sm text-slate-400 leading-relaxed">Domestic leagues, cups, Supercopa, Champions League, Europa League and Conference League. Full promotion, relegation and playoff systems across 5 countries.</p>
+            </div>
+
+            <div class="bg-white/5 backdrop-blur border border-white/10 rounded-lg p-8">
+                <div class="flex">
+                    <div class="w-10 h-10 bg-green-600 flex items-center justify-center mb-4 mr-4 -skew-x-12">
+                        <svg class="w-5 h-5 text-white skew-x-12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Club Economy</h3>
+                </div>
+                <p class="text-sm text-slate-400 leading-relaxed">Split your budget across transfers, youth academy, medical staff, scouting and facilities. Higher investment tiers give you a real edge. On-pitch results drive next season's revenue.</p>
+            </div>
+
+            <div class="bg-white/5 backdrop-blur border border-white/10 rounded-lg p-8">
+                <div class="flex">
+                    <div class="w-10 h-10 bg-purple-600 flex items-center justify-center mb-4 mr-4 -skew-x-12">
+                        <svg class="w-5 h-5 text-white skew-x-12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/></svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Real 2025/26 Data</h3>
+                </div>
+                <p class="text-sm text-slate-400 leading-relaxed">232 real teams and 4,255 players from 5 European countries. Ratings derived from real market values and age. Players develop, peak and decline realistically over time.</p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Screenshots -->
+    <section class="max-w-7xl mx-auto px-6 py-20">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold mb-3">The Game in Action</h2>
+            <p class="text-sm text-slate-400 max-w-2xl mx-auto">Manage every aspect of your club: tactics, transfers, youth academy, finances and European competitions.</p>
+        </div>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <button data-gallery="1" class="group block overflow-hidden rounded-lg border border-white/10 hover:border-white/25 transition">
+                <img src="/screenshots/dashboard.png" alt="Virtua FC Dashboard" class="w-full group-hover:scale-[1.02] transition duration-300" loading="lazy">
+                <div class="bg-white/5 px-4 py-3">
+                    <p class="text-sm font-semibold text-slate-300">Dashboard</p>
+                </div>
+            </button>
+            <button data-gallery="2" class="group block overflow-hidden rounded-lg border border-white/10 hover:border-white/25 transition">
+                <img src="/screenshots/lineup.png" alt="Tactics Management" class="w-full group-hover:scale-[1.02] transition duration-300" loading="lazy">
+                <div class="bg-white/5 px-4 py-3">
+                    <p class="text-sm font-semibold text-slate-300">Tactics Management</p>
+                </div>
+            </button>
+            <button data-gallery="3" class="group block overflow-hidden rounded-lg border border-white/10 hover:border-white/25 transition">
+                <img src="/screenshots/match.png" alt="Live Match" class="w-full group-hover:scale-[1.02] transition duration-300" loading="lazy">
+                <div class="bg-white/5 px-4 py-3">
+                    <p class="text-sm font-semibold text-slate-300">Live Match</p>
+                </div>
+            </button>
+            <button data-gallery="4" class="group block overflow-hidden rounded-lg border border-white/10 hover:border-white/25 transition">
+                <img src="/screenshots/squad.png" alt="Squad" class="w-full group-hover:scale-[1.02] transition duration-300" loading="lazy">
+                <div class="bg-white/5 px-4 py-3">
+                    <p class="text-sm font-semibold text-slate-300">Squad</p>
+                </div>
+            </button>
+            <button data-gallery="5" class="group block overflow-hidden rounded-lg border border-white/10 hover:border-white/25 transition">
+                <img src="/screenshots/standings.png" alt="League Standings" class="w-full group-hover:scale-[1.02] transition duration-300" loading="lazy">
+                <div class="bg-white/5 px-4 py-3">
+                    <p class="text-sm font-semibold text-slate-300">League Standings</p>
+                </div>
+            </button>
+            <button data-gallery="6" class="group block overflow-hidden rounded-lg border border-white/10 hover:border-white/25 transition">
+                <img src="/screenshots/finances.png" alt="Club Finances" class="w-full group-hover:scale-[1.02] transition duration-300" loading="lazy">
+                <div class="bg-white/5 px-4 py-3">
+                    <p class="text-sm font-semibold text-slate-300">Club Finances</p>
+                </div>
+            </button>
+        </div>
+    </section>
+
+    <!-- Open Source + Creator -->
+    <section class="max-w-7xl mx-auto px-6 py-20">
+        <div class="grid lg:grid-cols-2 gap-8">
+            <!-- Open Source -->
+            <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-white/10 rounded-2xl p-8 sm:p-10">
+                <div class="flex items-center gap-3 mb-4">
+                    <svg class="w-8 h-8 text-green-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                    <h2 class="text-2xl font-bold">Open Source Project</h2>
+                </div>
+                <div class="space-y-3 mb-6">
+                    <div class="flex items-start gap-3">
+                        <div class="w-6 h-6 bg-green-600/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <svg class="w-3 h-3 text-green-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+                        </div>
+                        <div>
+                            <span class="font-semibold">Full source code</span>
+                            <span class="text-sm text-slate-400"> — Browse, study and learn from the entire codebase.</span>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="w-6 h-6 bg-green-600/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <svg class="w-3 h-3 text-green-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+                        </div>
+                        <div>
+                            <span class="font-semibold">Transparent development</span>
+                            <span class="text-sm text-slate-400"> — Follow along with every commit and design decision.</span>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="w-6 h-6 bg-green-600/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <svg class="w-3 h-3 text-green-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+                        </div>
+                        <div>
+                            <span class="font-semibold">Open community</span>
+                            <span class="text-sm text-slate-400"> — Suggest features, report bugs or contribute code.</span>
+                        </div>
+                    </div>
+                </div>
+                <a href="https://github.com/pabloroman/virtua-fc" target="_blank" rel="noopener" class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white px-6 py-3 rounded-md font-semibold text-sm transition">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                    View on GitHub
+                </a>
+            </div>
+
+            <!-- Creator -->
+            <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-white/10 rounded-2xl p-8 sm:p-10 flex flex-col items-center text-center">
+                <img src="https://pabloroman.es/images/pablo-2x.jpg" class="border border-white/20 rounded-full w-24 h-24 mb-6">
+                <h2 class="text-2xl font-bold mb-2">Created by Pablo Román</h2>
+                <p class="text-slate-400 mb-6">
+                    Software engineer and football fan. Virtua FC is a personal project exploring game development with AI.
+                </p>
+                <div class="flex items-center justify-center gap-4 mt-auto">
+                    <a href="mailto:pabloroman@gmail.com" class="flex items-center gap-2 text-sm text-slate-400 hover:text-white transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        Email
+                    </a>
+                    <a href="https://linkedin.com/in/pabloroman" target="_blank" rel="noopener" class="flex items-center gap-2 text-sm text-slate-400 hover:text-white transition">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                        LinkedIn
+                    </a>
+                    <a href="https://github.com/pabloroman" target="_blank" rel="noopener" class="flex items-center gap-2 text-sm text-slate-400 hover:text-white transition">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                        GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bottom CTA -->
+    <section class="max-w-7xl mx-auto px-6 py-20 text-center">
+        <h2 class="text-3xl font-bold mb-4">Ready to manage your club?</h2>
+        <p class="text-sm text-slate-400 mb-8">Join the waitlist and be the first to know when we launch.</p>
+        <a href="#waitlist" class="inline-block bg-red-600 hover:bg-red-700 active:bg-red-900 text-white px-10 py-3 rounded-md font-semibold uppercase tracking-wide text-sm transition ease-in-out duration-150">
+            Join the Waitlist
+        </a>
+    </section>
+
+    <!-- Screenshot Gallery Modal -->
+    <div id="gallery-modal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true" aria-label="Screenshot gallery">
+        <!-- Backdrop -->
+        <div id="gallery-backdrop" class="absolute inset-0 bg-black/90 backdrop-blur-sm transition-opacity duration-300 opacity-0"></div>
+
+        <!-- Close button -->
+        <button id="gallery-close" class="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition" aria-label="Close gallery">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+
+        <!-- Counter -->
+        <div id="gallery-counter" class="absolute top-5 left-1/2 -translate-x-1/2 text-sm text-slate-400 z-10"></div>
+
+        <!-- Content area -->
+        <div class="absolute inset-0 flex items-center justify-center px-4 sm:px-16">
+            <!-- Prev button -->
+            <button id="gallery-prev" class="absolute left-2 sm:left-4 z-10 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition" aria-label="Previous">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
+            </button>
+
+            <!-- Image + Caption -->
+            <div class="max-w-5xl w-full transition-opacity duration-200" id="gallery-content">
+                <img id="gallery-img" src="" alt="" class="w-full rounded-lg shadow-2xl">
+                <p id="gallery-caption" class="text-center text-sm text-slate-300 mt-4 font-semibold"></p>
+            </div>
+
+            <!-- Next button -->
+            <button id="gallery-next" class="absolute right-2 sm:right-4 z-10 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition" aria-label="Next">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto px-6 py-12 border-t border-white/10">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="-skew-x-12 bg-red-600 px-3 py-1">
+                <span class="skew-x-12 inline-block text-xl font-bold text-white tracking-tight">Virtua FC</span>
+            </div>
+            <div class="text-xs text-slate-500">
+                © 2026 Pablo Román · Open Source Project · <a href="https://app.virtuafc.com/legal" class="hover:text-slate-400">Legal Notice</a> · <a href="https://github.com/pabloroman/virtua-fc" target="_blank" class="hover:text-slate-400">GitHub</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const form = document.getElementById('waitlist-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const formMessage = document.getElementById('form-message');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const name = form.name.value.trim();
+            const email = form.email.value.trim();
+
+            if (!name || !email) return;
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Sending...';
+            formMessage.classList.add('hidden');
+
+            try {
+                const res = await fetch('https://app.virtuafc.com/api/waitlist', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email }),
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    formMessage.textContent = "You're on the list! We'll notify you soon.";
+                    formMessage.className = 'text-xs mt-3 text-green-400';
+                    formMessage.classList.remove('hidden');
+                    form.reset();
+                } else {
+                    formMessage.textContent = data.error || 'Something went wrong. Please try again.';
+                    formMessage.className = 'text-xs mt-3 text-red-400';
+                    formMessage.classList.remove('hidden');
+                }
+            } catch (err) {
+                formMessage.textContent = 'Connection error. Please try again.';
+                formMessage.className = 'text-xs mt-3 text-red-400';
+                formMessage.classList.remove('hidden');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Early Access';
+            }
+        });
+    </script>
+
+    <script>
+        const gallery = {
+            modal: document.getElementById('gallery-modal'),
+            backdrop: document.getElementById('gallery-backdrop'),
+            img: document.getElementById('gallery-img'),
+            caption: document.getElementById('gallery-caption'),
+            counter: document.getElementById('gallery-counter'),
+            content: document.getElementById('gallery-content'),
+            current: 0,
+            items: [],
+
+            init() {
+                const buttons = document.querySelectorAll('[data-gallery]');
+                this.items = Array.from(buttons).map(btn => ({
+                    src: btn.querySelector('img').src,
+                    alt: btn.querySelector('img').alt,
+                    caption: btn.querySelector('p').textContent,
+                }));
+
+                buttons.forEach(btn => {
+                    btn.addEventListener('click', () => this.open(parseInt(btn.dataset.gallery)));
+                });
+
+                document.getElementById('gallery-close').addEventListener('click', () => this.close());
+                document.getElementById('gallery-prev').addEventListener('click', () => this.prev());
+                document.getElementById('gallery-next').addEventListener('click', () => this.next());
+                this.backdrop.addEventListener('click', () => this.close());
+                this.content.addEventListener('click', (e) => e.stopPropagation());
+
+                document.addEventListener('keydown', (e) => {
+                    if (this.modal.classList.contains('hidden')) return;
+                    if (e.key === 'Escape') this.close();
+                    if (e.key === 'ArrowLeft') this.prev();
+                    if (e.key === 'ArrowRight') this.next();
+                });
+            },
+
+            open(index) {
+                this.current = index;
+                this.show();
+                this.modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+                requestAnimationFrame(() => {
+                    this.backdrop.classList.remove('opacity-0');
+                    this.content.classList.remove('opacity-0');
+                });
+            },
+
+            close() {
+                this.backdrop.classList.add('opacity-0');
+                this.content.classList.add('opacity-0');
+                setTimeout(() => {
+                    this.modal.classList.add('hidden');
+                    document.body.style.overflow = '';
+                }, 300);
+            },
+
+            prev() {
+                this.current = (this.current - 1 + this.items.length) % this.items.length;
+                this.transition();
+            },
+
+            next() {
+                this.current = (this.current + 1) % this.items.length;
+                this.transition();
+            },
+
+            transition() {
+                this.content.classList.add('opacity-0');
+                setTimeout(() => {
+                    this.show();
+                    this.content.classList.remove('opacity-0');
+                }, 200);
+            },
+
+            show() {
+                const item = this.items[this.current];
+                this.img.src = item.src;
+                this.img.alt = item.alt;
+                this.caption.textContent = item.caption;
+                this.counter.textContent = `${this.current + 1} / ${this.items.length}`;
+            },
+        };
+
+        gallery.init();
+    </script>
+
+</body>
+</html>

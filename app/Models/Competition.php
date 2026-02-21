@@ -43,10 +43,15 @@ class Competition extends Model
     protected $keyType = 'string';
     public $timestamps = false;
 
-    public const ROLE_PRIMARY = 'primary';
+    public const ROLE_LEAGUE = 'league';
     public const ROLE_DOMESTIC_CUP = 'domestic_cup';
     public const ROLE_EUROPEAN = 'european';
-    public const ROLE_FOREIGN = 'foreign';
+    public const ROLE_TEAM_POOL = 'team_pool';
+
+    /** @deprecated Use ROLE_LEAGUE instead — kept only for migration compatibility */
+    public const ROLE_PRIMARY = 'league';
+    /** @deprecated Use ROLE_LEAGUE instead — kept only for migration compatibility */
+    public const ROLE_FOREIGN = 'league';
 
     public const SCOPE_DOMESTIC = 'domestic';
     public const SCOPE_CONTINENTAL = 'continental';
@@ -76,12 +81,21 @@ class Competition extends Model
 
     public function isLeague(): bool
     {
-        return in_array($this->handler_type, ['league', 'league_with_playoff', 'swiss_format']);
+        return in_array($this->handler_type, ['league', 'league_with_playoff', 'swiss_format', 'group_stage_cup']);
     }
 
     public function isCup(): bool
     {
         return !$this->isLeague();
+    }
+
+    /**
+     * Whether this is a domestic tier league (tier >= 1).
+     * Replaces the old ROLE_PRIMARY / ROLE_FOREIGN distinction.
+     */
+    public function isTierLeague(): bool
+    {
+        return $this->role === self::ROLE_LEAGUE && $this->tier >= 1;
     }
 
     /**

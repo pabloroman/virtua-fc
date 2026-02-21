@@ -2,9 +2,7 @@
 
 return [
     // Page title
-    'title' => 'Plantilla de :team',
     'squad' => 'Plantilla',
-    'contracts' => 'Contratos',
     'development' => 'Desarrollo',
     'stats' => 'Estadísticas',
 
@@ -19,7 +17,6 @@ return [
     'forwards_short' => 'DEL',
 
     // Columns
-    'number_short' => '#',
     'technical' => 'TEC',
     'physical' => 'FIS',
     'technical_abbr' => 'TEC',
@@ -49,41 +46,13 @@ return [
     'low' => 'bajo',
 
     // Contract management
-    'contract_management' => 'Gestión de Contratos',
-    'back_to_squad' => 'Volver a Plantilla',
-    'pre_contract_offers' => 'Ofertas de Precontrato Recibidas',
-    'other_clubs_want_players' => 'otros clubes quieren a tus jugadores',
     'free_transfer' => 'Libre',
     'let_go' => 'Dejar Ir',
-    'leaving_on_free' => 'Se Va Libre',
-    'at_end_of_season' => 'al final de la temporada',
     'pre_contract_signed' => 'Precontrato firmado',
-    'renewals_agreed' => 'Renovaciones Acordadas',
-    'new_wages_next_season' => 'nuevos salarios en vigor desde la próxima temporada',
     'new_wage_from_next' => 'Nuevo salario desde próxima temporada',
-    'expiring_contracts' => 'jugador(es) en último año de contrato',
-    'offer_renewals_hint' => 'ofrece renovaciones o arriesga perder jugadores',
-    'expires' => 'Expira',
     'has_pre_contract_offers' => '¡Tiene ofertas de precontrato!',
-    'wants' => 'Quiere',
     'renew' => 'Renovar',
-    'highest_earners' => 'Mayores Salarios',
-    'most_valuable' => 'Jugadores Más Valiosos',
-    'total_wage_bill' => 'Masa Salarial Total',
-    'total_squad_value' => 'Valor Total de la Plantilla',
-    'no_players_found' => 'No se encontraron jugadores.',
-    'contract_overview' => 'Resumen de Contratos',
-    'players_count' => ':count jugador(es)',
-    'more' => 'más',
-    'no_contract_actions' => 'No hay acciones de contrato necesarias en este momento.',
-    'expiring_contracts_hint' => 'Los jugadores en último año de contrato aparecerán aquí cuando necesiten renovación.',
-    'team_wants_player' => ':team quiere a :player',
-    'contract_expires' => 'Contrato expira',
-    'contract_until' => 'Contrato hasta',
     'expires_in_days' => 'Expira en :days días',
-    'current_wage' => 'Actual',
-    'for_years' => 'por :years año(s)',
-    'pre_contract_offers_count' => 'oferta de precontrato|ofertas de precontrato',
 
     // Lineup validation
     'formation_position_mismatch' => 'La formación :formation requiere :required :position, pero seleccionaste :actual.',
@@ -107,7 +76,6 @@ return [
     // Lineup editor
     'pitch' => 'Campo',
     'select_player_for_slot' => 'Selecciona un jugador para esta posición',
-    'manual_assignment' => 'Asignación manual',
 
     // Opponent scout
     'team_rating' => 'Rating del Equipo',
@@ -135,7 +103,6 @@ return [
     // Development page
     'ability' => 'Habilidad',
     'playing_time' => 'Minutos',
-    'squad_development' => 'Desarrollo de Plantilla',
     'high_potential' => 'Alto Potencial',
     'growing' => 'Creciendo',
     'declining' => 'Declinando',
@@ -143,19 +110,14 @@ return [
     'all' => 'Todos',
     'no_players_match_filter' => 'Ningún jugador coincide con el filtro seleccionado.',
     'pot' => 'POT',
-    'cur' => 'ACT',
     'apps' => 'Part',
     'projection' => 'Proyección',
-    'current_ability' => 'Habilidad Actual',
     'potential_range' => 'Rango de Potencial',
-    'season_appearances' => 'Partidos de la Temporada',
     'starter_bonus' => 'bonus de titular',
     'needs_appearances' => 'Necesita :count+ partidos para bonus de titular',
     'qualifies_starter_bonus' => 'Cualifica para bonus de titular (+50% desarrollo)',
 
     // Stats page
-    'squad_statistics' => 'Estadísticas de Plantilla',
-    'squad_totals' => 'Totales de Plantilla',
     'goals' => 'G',
     'assists' => 'A',
     'goal_contributions' => 'G+A',
@@ -167,7 +129,6 @@ return [
     'appearances' => 'Partidos',
     'bookings' => 'Amonestaciones',
     'click_to_sort' => 'Haz clic en las cabeceras de columna para ordenar',
-    'gk_only' => 'solo PO',
 
     // Stats highlights
     'top_in_squad' => 'Máximo en plantilla',
@@ -186,9 +147,7 @@ return [
     'physical_full' => 'Física',
     'fitness_full' => 'Forma Física',
     'morale_full' => 'Moral',
-    'phase' => 'Fase',
     'season_stats' => 'Estadísticas de Temporada',
-    'cards' => 'Tarjetas',
     'clean_sheets_full' => 'Porterías a Cero',
     'goals_conceded_full' => 'Goles Encajados',
     'discovered' => 'Descubierto',
@@ -215,8 +174,6 @@ return [
     'academy_returning_loans' => ':count jugador regresa de cesión|:count jugadores regresan de cesión',
     'academy_incoming' => ':min-:max nuevos canteranos esperados',
     'academy_on_loan' => 'Cedido',
-    'academy_hidden_stats' => '?',
-    'academy_age_limit' => 'Límite de edad alcanzado',
     'academy_seasons' => ':count temporada|:count temporadas',
     'academy_phase_unknown' => 'Habilidades desconocidas',
     'academy_phase_glimpse' => 'Habilidades visibles',

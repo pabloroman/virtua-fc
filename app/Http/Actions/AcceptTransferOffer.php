@@ -30,7 +30,7 @@ class AcceptTransferOffer
         }
 
         $playerName = $offer->gamePlayer->player->name;
-        $teamName = $offer->offeringTeam->name;
+        $team = $offer->offeringTeam;
         $fee = $offer->formatted_transfer_fee;
 
         $completedImmediately = $this->transferService->acceptOffer($offer);
@@ -38,14 +38,14 @@ class AcceptTransferOffer
         if ($completedImmediately) {
             $message = __('messages.offer_accepted_sale', [
                 'player' => $playerName,
-                'team' => $teamName,
+                'team_a' => $team->nameWithA(),
                 'fee' => $fee,
             ]);
         } else {
             $nextWindow = $game->getNextWindowName();
             $message = __('messages.offer_accepted_pre_contract', [
                 'player' => $playerName,
-                'team' => $teamName,
+                'team' => $team->name,
                 'fee' => $fee,
                 'window' => $nextWindow,
             ]);

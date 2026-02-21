@@ -164,13 +164,15 @@ Variable based on cup and European runs.
 
 *Cumulative — winning the cup = ~€19M total*
 
-**European Competition (future):**
+**European Competitions:**
 
-| Competition | Group Stage | Final |
-|-------------|-------------|-------|
-| Champions League | €15M | €100M+ |
-| Europa League | €4M | €30M |
-| Conference League | €2M | €10M |
+| Competition | Base Prize | Winner |
+|-------------|-----------|--------|
+| Champions League | €9M–€80M (by Swiss format position) | €80M+ |
+| Europa League | €5M base + bonuses | €30M |
+| Conference League | €2.5M base + bonuses | €10M |
+
+European competition prize money is configured in each competition's config class (`ChampionsLeagueConfig`, `EuropaLeagueConfig`, `ConferenceLeagueConfig`). Champions League uses a 36-position Swiss format with prize tiers by finishing position.
 
 ### 3. Matchday Revenue
 
@@ -626,12 +628,12 @@ The system naturally creates different club identities based on consistent choic
 - [x] Calculate variance (actual surplus − projected surplus)
 - [x] Handle positive variance (bonus for next season)
 - [x] Handle negative variance (debt carried forward)
-- [ ] Show season financial summary with projected vs actual comparison
+- [x] Show season financial summary with projected vs actual comparison
 
 ### Phase 5: Investment Effects
-- [ ] Youth Academy: Modify youth prospect generation based on tier
-- [ ] Medical: Modify injury service for tier multipliers (injury rate, recovery, fitness)
-- [ ] Scouting: Modify scouting service for geographic restrictions + hidden gems
+- [x] Youth Academy: Prospect generation based on tier (batch size, potential range, starting ability)
+- [x] Medical: Injury service modified for tier multipliers (injury rate, recovery, fitness decay)
+- [x] Scouting: Geographic restrictions by tier + hidden gems at Tier 4
 - [x] Facilities: Apply matchday multiplier in revenue calculation
 
 ### Phase 6: Season Flow Integration

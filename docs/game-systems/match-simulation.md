@@ -233,9 +233,28 @@ return [
 ];
 ```
 
+## Live Match
+
+Matches are played in a **live match view** where users can make decisions during the game:
+
+### Substitutions
+- Up to **5 substitutions** per match in **3 windows** (matching real football rules)
+- Select a player from the bench to replace a starter
+- Substituted players retain their match stats
+
+### Tactical Changes
+- **Formation changes** mid-match (e.g., switch from 4-4-2 to 3-5-2)
+- **Mentality changes** (defensive, balanced, attacking)
+- Changes take effect for the remaining match simulation
+
+### Match Phases
+- Pre-match → First half → Half-time → Second half → Full-time
+- Extra time (cup matches): 30 minutes with fatigue modifier
+- Penalty shootouts for drawn cup ties
+
 ## Implementation
 
-See `app/Game/Services/MatchSimulator.php`:
+See `app/Modules/Match/Services/MatchSimulator.php`:
 - `simulate()` - Main match simulation
 - `simulateRemainder()` - Resume from a given minute (substitution support)
 - `calculateTeamStrength()` - Lineup strength calculation (ability-dominant weights)
@@ -244,7 +263,7 @@ See `app/Game/Services/MatchSimulator.php`:
 - `poissonRandom()` - Score generation
 - `simulateExtraTime()` - Extra time with fatigue
 
-See `app/Game/Services/SeasonSimulationService.php`:
+See `app/Modules/Finance/Services/SeasonSimulationService.php`:
 - `simulateLeague()` - Full match-by-match season simulation
 - `simulateMatchResult()` - Single match using ratio-based xG + Poisson
 

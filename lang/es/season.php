@@ -5,7 +5,7 @@ return [
     'season_honours' => 'Honores Temporada :season',
     'league_champion' => 'Campeón de :league',
     'cup_winner' => 'Campeón de Copa',
-    'beat' => 'Venció a :team',
+    'beat' => 'Venció :team_a',
     'competition_in_progress' => 'Competición en curso',
     'other_league_results' => 'Otras Ligas',
 
@@ -45,6 +45,12 @@ return [
     'assists' => 'asistencias',
     'zamora' => 'Zamora (Mejor Portero)',
     'best_goalkeeper' => 'Mejor Portero',
+    'torjaegerkanone' => 'Torjägerkanone (Máximo Goleador)',
+    'best_goalkeeper_bundesliga' => 'Mejor Portero de la Bundesliga',
+    'capocannoniere' => 'Capocannoniere (Máximo Goleador)',
+    'best_goalkeeper_serie_a' => 'Mejor Portero de la Serie A',
+    'top_scorer_ligue1' => 'Máximo Goleador de la Ligue 1',
+    'best_goalkeeper_ligue1' => 'Mejor Portero de la Ligue 1',
     'clean_sheets' => 'porterías a cero',
     'goals_per_game' => 'goles/partido',
     'no_goals_scored' => 'Sin goles marcados',
@@ -61,12 +67,6 @@ return [
     'promoted_to' => 'Ascendidos a :league',
     'relegated_to' => 'Descendidos a :league',
     'playoff_winner' => 'Ganador del playoff',
-
-    // Player development
-    'player_development' => 'Desarrollo de Jugadores',
-    'growing' => 'Creciendo',
-    'peak' => 'En su Pico',
-    'declining' => 'Declinando',
 
     // Retirements
     'retirements' => 'Retiradas',

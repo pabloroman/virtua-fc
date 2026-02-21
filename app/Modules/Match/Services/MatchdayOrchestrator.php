@@ -509,6 +509,7 @@ class MatchdayOrchestrator
         $this->checkResolvedKnockoutTies($game, $matches);
         $this->checkSwissLeaguePhaseCompletion($game, $matches, $handlers);
         $this->checkLeagueWithPlayoffSeasonEnd($game, $matches, $handlers);
+        $this->checkGroupStageCompletion($game, $matches, $handlers);
     }
 
     /**
@@ -666,6 +667,62 @@ class MatchdayOrchestrator
                 $this->notificationService->notifyCompetitionAdvancement(
                     $game, $competitionId, $competition->name,
                     __('cup.promotion_playoff'),
+                );
+            }
+        }
+    }
+
+    /**
+     * Check if a group_stage_cup group phase just completed.
+     */
+    private function checkGroupStageCompletion(Game $game, $matches, array $handlers): void
+    {
+        foreach ($handlers as $competitionId => $handler) {
+            if ($handler->getType() !== 'group_stage_cup') {
+                continue;
+            }
+
+            // Only check if group-stage matches were played (not knockout ties)
+            $groupMatches = $matches->filter(
+                fn ($m) => $m->competition_id === $competitionId && $m->cup_tie_id === null
+            );
+
+            if ($groupMatches->isEmpty()) {
+                continue;
+            }
+
+            // Check if any unplayed group-stage matches remain
+            $hasUnplayed = GameMatch::where('game_id', $game->id)
+                ->where('competition_id', $competitionId)
+                ->whereNull('cup_tie_id')
+                ->where('played', false)
+                ->exists();
+
+            if ($hasUnplayed) {
+                continue;
+            }
+
+            // Group stage just completed — check player's team position
+            $standing = GameStanding::where('game_id', $game->id)
+                ->where('competition_id', $competitionId)
+                ->where('team_id', $game->team_id)
+                ->first();
+
+            if (! $standing) {
+                continue;
+            }
+
+            $competition = Competition::find($competitionId);
+
+            if ($standing->position <= 2) {
+                $this->notificationService->notifyCompetitionAdvancement(
+                    $game, $competitionId, $competition->name,
+                    __('cup.group_stage_qualified', ['group' => $standing->group_label]),
+                );
+            } else {
+                $this->notificationService->notifyCompetitionElimination(
+                    $game, $competitionId, $competition->name,
+                    __('cup.group_stage_eliminated', ['group' => $standing->group_label]),
                 );
             }
         }

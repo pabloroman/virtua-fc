@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Virtua FC — Simulador de Manager de Fútbol</title>
-    <meta name="description" content="El primer manager de fútbol creado con IA. Gestiona plantillas reales de La Liga y Segunda División con datos de la temporada 2025/2026. Proyecto open source.">
+    <meta name="description" content="El primer manager de fútbol creado con IA. Gestiona plantillas reales de La Liga y Segunda División. Compite en Liga, Copa del Rey, Champions League y más. Proyecto open source.">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="alternate" hreflang="es" href="/index.html">
+    <link rel="alternate" hreflang="en" href="/index-en.html">
+    <link rel="alternate" hreflang="x-default" href="/index.html">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=barlow-semi-condensed:400,600,800" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -37,10 +40,15 @@
 
     <!-- Nav -->
     <nav class="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
-        <div class="-skew-x-12 bg-red-600 px-4 py-1">
-            <span class="skew-x-12 inline-block text-3xl font-bold text-white tracking-tight">Virtua FC</span>
+        <div class="-skew-x-12 bg-red-600 px-3 sm:px-4 py-1">
+            <span class="skew-x-12 inline-block text-xl sm:text-3xl font-bold text-white tracking-tight">Virtua FC</span>
         </div>
-        <a href="https://app.virtuafc.com/login" class="text-sm font-semibold text-white bg-white/10 border border-white/20 hover:bg-white/20 px-5 py-2 rounded-md transition">Iniciar sesión</a>
+        <div class="flex items-center gap-2 sm:gap-4">
+            <a href="/index.html" class="text-xs font-semibold text-white transition uppercase tracking-wider">ES</a>
+            <span class="text-slate-600">|</span>
+            <a href="/index-en.html" class="text-xs font-semibold text-slate-400 hover:text-white transition uppercase tracking-wider">EN</a>
+            <a href="https://app.virtuafc.com/login" class="text-sm font-semibold text-white bg-white/10 border border-white/20 hover:bg-white/20 px-3 sm:px-5 py-2 rounded-md transition">Iniciar sesión</a>
+        </div>
     </nav>
 
     <!-- Hero + Form (above the fold) -->
@@ -52,12 +60,12 @@
                 <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
                 <span class="text-xs font-semibold text-slate-300 uppercase tracking-wider">En desarrollo activo</span>
             </div>
-            <h1 class="text-4xl sm:text-[3.5rem] font-bold leading-tight tracking-tight">
+            <h1 class="text-3xl sm:text-[3.5rem] font-bold leading-tight tracking-tight">
                 El primer manager de fútbol
                 <span class="text-red-500">creado con IA.</span>
             </h1>
-            <p class="mt-6 text-xl text-slate-300 leading-relaxed">
-                Gestiona plantillas reales de La Liga y Segunda División con datos actualizados a la temporada 2025/2026.<br>Ficha, desarrolla jugadores y compite por el título.
+            <p class="mt-6 text-sm sm:text-xl text-slate-300 leading-relaxed">
+                Gestiona equipos reales de 5 países europeos. <br>Ficha jugadores, negocia traspasos, desarrolla canteranos y compite en 10 competiciones nacionales y europeas.
             </p>
 
             <!-- Inline waitlist -->
@@ -88,6 +96,26 @@
             </form>
             <div id="form-message" class="hidden text-xs mt-3"></div>
             <p id="waitlist" class="mt-3 text-xs text-slate-500">Apúntate a la lista de espera. Sin spam.</p>
+
+            <!-- Stats -->
+            <div class="mt-10 flex divide-x divide-white/10 max-w-md">
+                <div class="text-center flex-1 px-2">
+                    <div class="text-2xl font-extrabold text-white tracking-tight">5</div>
+                    <div class="text-xs text-slate-500 uppercase tracking-wider font-semibold">Países</div>
+                </div>
+                <div class="text-center flex-1 px-2">
+                    <div class="text-2xl font-extrabold text-white tracking-tight">10</div>
+                    <div class="text-xs text-slate-500 uppercase tracking-wider font-semibold">Compet.</div>
+                </div>
+                <div class="text-center flex-1 px-2">
+                    <div class="text-2xl font-extrabold text-white tracking-tight">232</div>
+                    <div class="text-xs text-slate-500 uppercase tracking-wider font-semibold">Equipos</div>
+                </div>
+                <div class="text-center flex-1 px-2">
+                    <div class="text-2xl font-extrabold text-white tracking-tight">4.255</div>
+                    <div class="text-xs text-slate-500 uppercase tracking-wider font-semibold">Jugadores</div>
+                </div>
+            </div>
         </div>
         </div>
     </section>
@@ -99,62 +127,61 @@
             <div class="bg-white/5 backdrop-blur border border-white/10 rounded-lg p-8">
                 <div class="flex">
                     <div class="w-10 h-10 bg-red-600 flex items-center justify-center mb-4 mr-4 -skew-x-12">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        <svg class="w-5 h-5 text-white skew-x-12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                     </div>
-                    <h3 class="text-xl font-semibold mb-2">Motor de Partidos Realista</h3>
+                    <h3 class="text-xl font-semibold mb-2">Partido en Vivo</h3>
                 </div>
-
-                <p class="text-sm text-slate-400 leading-relaxed">La táctica, la formación y la calidad de tus jugadores determinan el resultado. Los mejores equipos ganan más — a lo largo de la temporada, la calidad importa.</p>
+                <p class="text-sm text-slate-400 leading-relaxed">Vive cada partido en tiempo real. Haz hasta 5 sustituciones, cambia de formación y ajusta la mentalidad del equipo durante el partido. Cada decisión táctica tiene consecuencias en el campo.</p>
             </div>
 
             <div class="bg-white/5 backdrop-blur border border-white/10 rounded-lg p-8">
                 <div class="flex">
                     <div class="w-10 h-10 bg-sky-600 flex items-center justify-center mb-4 mr-4 -skew-x-12">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+                        <svg class="w-5 h-5 text-white skew-x-12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     </div>
-                    <h3 class="text-xl font-semibold mb-2">Desarrollo de Jugadores</h3>
+                    <h3 class="text-xl font-semibold mb-2">Fichajes y Scouting</h3>
                 </div>
-                <p class="text-sm text-slate-400 leading-relaxed">Los jóvenes mejoran, los veteranos declinan. El potencial, la edad y los minutos jugados moldean cada carrera. Encuentra promesas, desarróllalas y véndelas en el momento justo.</p>
+                <p class="text-sm text-slate-400 leading-relaxed">Envía ojeadores a buscar jugadores, negocia fichajes con contraofertas, cede y toma prestados, o firma pre-contratos con agentes libres. Gestiona renovaciones y contratos.</p>
             </div>
 
             <div class="bg-white/5 backdrop-blur border border-white/10 rounded-lg p-8">
                 <div class="flex">
-                <div class="w-10 h-10 bg-teal-600 flex items-center justify-center mb-4 mr-4 -skew-x-12">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                </div>
-                <h3 class="text-xl font-semibold mb-2">Finanzas del Club</h3>
+                    <div class="w-10 h-10 bg-teal-600 flex items-center justify-center mb-4 mr-4 -skew-x-12">
+                        <svg class="w-5 h-5 text-white skew-x-12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                     </div>
-                <p class="text-sm text-slate-400 leading-relaxed">Gestiona contratos, negocia fichajes, controla la masa salarial. Cada fichaje tiene un impacto financiero — gasta con cabeza o enfrenta las consecuencias.</p>
+                    <h3 class="text-xl font-semibold mb-2">La Cantera</h3>
+                </div>
+                <p class="text-sm text-slate-400 leading-relaxed">Recibe nuevas promesas cada temporada con estadísticas ocultas que se revelan progresivamente. Al final de temporada, decide quién sube al primer equipo, sale cedido o es descartado.</p>
             </div>
 
             <div class="bg-white/5 backdrop-blur border border-white/10 rounded-lg p-8">
                 <div class="flex">
-                <div class="w-10 h-10 bg-amber-600 flex items-center justify-center mb-4 mr-4 -skew-x-12">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-                </div>
-                <h3 class="text-xl font-semibold mb-2">Profundidad Táctica</h3>
+                    <div class="w-10 h-10 bg-amber-600 flex items-center justify-center mb-4 mr-4 -skew-x-12">
+                        <svg class="w-5 h-5 text-white skew-x-12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
                     </div>
-                <p class="text-sm text-slate-400 leading-relaxed">Elige formaciones del 4-4-2 al 3-5-2. Define la mentalidad del equipo. Cada decisión cambia el equilibrio entre ataque y defensa con consecuencias reales en el campo.</p>
+                    <h3 class="text-xl font-semibold mb-2">10 Competiciones</h3>
+                </div>
+                <p class="text-sm text-slate-400 leading-relaxed">Ligas nacionales, copas, Supercopa, Champions League, Europa League y Conference League. Ascensos, descensos y playoffs de promoción en 5 países.</p>
             </div>
 
             <div class="bg-white/5 backdrop-blur border border-white/10 rounded-lg p-8">
                 <div class="flex">
-                <div class="w-10 h-10 bg-green-600 flex items-center justify-center mb-4  mr-4 -skew-x-12">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                </div>
-                <h3 class="text-xl font-semibold mb-2">Calendario Completo</h3>
+                    <div class="w-10 h-10 bg-green-600 flex items-center justify-center mb-4 mr-4 -skew-x-12">
+                        <svg class="w-5 h-5 text-white skew-x-12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </div>
-                <p class="text-sm text-slate-400 leading-relaxed">Juega La Liga, Segunda División y Copa del Rey. Gestiona la acumulación de partidos, rota tu plantilla y pelea por el ascenso o el título.</p>
+                    <h3 class="text-xl font-semibold mb-2">Economía del Club</h3>
+                </div>
+                <p class="text-sm text-slate-400 leading-relaxed">Reparte tu presupuesto entre fichajes, cantera, cuerpo médico, ojeadores e instalaciones. Cada nivel de inversión desbloquea ventajas reales. Tu rendimiento determina los ingresos de la siguiente temporada.</p>
             </div>
 
             <div class="bg-white/5 backdrop-blur border border-white/10 rounded-lg p-8">
                 <div class="flex">
-                <div class="w-10 h-10 bg-purple-600 flex items-center justify-center mb-4 mr-4 -skew-x-12">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/></svg>
-                </div>
-                <h3 class="text-xl font-semibold mb-2">Datos Reales 2025/26</h3>
+                    <div class="w-10 h-10 bg-purple-600 flex items-center justify-center mb-4 mr-4 -skew-x-12">
+                        <svg class="w-5 h-5 text-white skew-x-12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/></svg>
                     </div>
-                <p class="text-sm text-slate-400 leading-relaxed">Plantillas reales de La Liga y Segunda División. Jugadores con estadísticas basadas en su valor de mercado y edad. Base de datos actualizada cada temporada.</p>
+                    <h3 class="text-xl font-semibold mb-2">Datos Reales 2025/26</h3>
+                </div>
+                <p class="text-sm text-slate-400 leading-relaxed">232 equipos reales y 4.255 jugadores de 5 países europeos. Habilidades basadas en valor de mercado y edad. Desarrollo, potencial y declive realista cada temporada.</p>
             </div>
 
         </div>
@@ -164,7 +191,7 @@
     <section class="max-w-7xl mx-auto px-6 py-20">
         <div class="text-center mb-12">
             <h2 class="text-3xl font-bold mb-3">El Juego en Acción</h2>
-            <p class="text-sm text-slate-400 max-w-2xl mx-auto">Gestiona todos los aspectos de tu club: alineaciones, fichajes, finanzas y competiciones.</p>
+            <p class="text-sm text-slate-400 max-w-2xl mx-auto">Gestiona todos los aspectos de tu club: tácticas, fichajes, cantera, finanzas y competiciones europeas.</p>
         </div>
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <button data-gallery="1" class="group block overflow-hidden rounded-lg border border-white/10 hover:border-white/25 transition">
@@ -180,24 +207,30 @@
                 </div>
             </button>
             <button data-gallery="3" class="group block overflow-hidden rounded-lg border border-white/10 hover:border-white/25 transition">
-                <img src="/screenshots/match.png" alt="Resultado del Partido" class="w-full group-hover:scale-[1.02] transition duration-300" loading="lazy">
+                <img src="/screenshots/match.png" alt="Partido en Vivo" class="w-full group-hover:scale-[1.02] transition duration-300" loading="lazy">
                 <div class="bg-white/5 px-4 py-3">
-                    <p class="text-sm font-semibold text-slate-300">Resultado del Partido</p>
+                    <p class="text-sm font-semibold text-slate-300">Partido en Vivo</p>
                 </div>
             </button>
             <button data-gallery="4" class="group block overflow-hidden rounded-lg border border-white/10 hover:border-white/25 transition">
+                <img src="/screenshots/squad.png" alt="Plantilla" class="w-full group-hover:scale-[1.02] transition duration-300" loading="lazy">
+                <div class="bg-white/5 px-4 py-3">
+                    <p class="text-sm font-semibold text-slate-300">Plantilla</p>
+                </div>
+            </button>
+            <button data-gallery="5" class="group block overflow-hidden rounded-lg border border-white/10 hover:border-white/25 transition">
                 <img src="/screenshots/standings.png" alt="Clasificación de Liga" class="w-full group-hover:scale-[1.02] transition duration-300" loading="lazy">
                 <div class="bg-white/5 px-4 py-3">
                     <p class="text-sm font-semibold text-slate-300">Clasificación de Liga</p>
                 </div>
             </button>
-            <button data-gallery="5" class="group block overflow-hidden rounded-lg border border-white/10 hover:border-white/25 transition">
-                <img src="/screenshots/scouting.png" alt="Fichajes y Traspasos" class="w-full group-hover:scale-[1.02] transition duration-300" loading="lazy">
+            <button data-gallery="6" class="group block overflow-hidden rounded-lg border border-white/10 hover:border-white/25 transition">
+                <img src="/screenshots/scouting.png" alt="Scouting y Fichajes" class="w-full group-hover:scale-[1.02] transition duration-300" loading="lazy">
                 <div class="bg-white/5 px-4 py-3">
-                    <p class="text-sm font-semibold text-slate-300">Fichajes y Traspasos</p>
+                    <p class="text-sm font-semibold text-slate-300">Scouting y Fichajes</p>
                 </div>
             </button>
-            <button data-gallery="6" class="group block overflow-hidden rounded-lg border border-white/10 hover:border-white/25 transition">
+            <button data-gallery="7" class="group block overflow-hidden rounded-lg border border-white/10 hover:border-white/25 transition">
                 <img src="/screenshots/finances.png" alt="Finanzas del Club" class="w-full group-hover:scale-[1.02] transition duration-300" loading="lazy">
                 <div class="bg-white/5 px-4 py-3">
                     <p class="text-sm font-semibold text-slate-300">Finanzas del Club</p>

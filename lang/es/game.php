@@ -15,7 +15,6 @@ return [
     'other_competitions_in_progress' => 'Otras competiciones en curso',
     'other_competitions_desc' => 'Tu equipo ha terminado la temporada, pero aún quedan partidos en otras competiciones.',
     'advance_other_matches' => 'Simular Partidos Restantes',
-    'start_season' => 'Comenzar Temporada :season',
 
     // Match
     'next' => 'Próximo',
@@ -34,9 +33,7 @@ return [
     'group_stage' => 'Fase de Grupos',
 
     // Standings
-    'standings' => 'Clasificación',
     'pts' => 'pts',
-    'position_suffix' => ':position°',
     'played_abbr' => 'PJ',
     'won_abbr' => 'G',
     'drawn_abbr' => 'E',
@@ -54,10 +51,6 @@ return [
     'promotion_playoff' => 'Playoff de Ascenso',
     'top_scorers' => 'Máximos Goleadores',
     'no_goals_yet' => 'Aún no se han marcado goles',
-
-    // Notifications
-    'notifications' => 'Notificaciones',
-    'squad_status' => 'Estado de la Plantilla',
 
     // Mentality
     'mentality_defensive' => 'Defensiva',
@@ -81,30 +74,11 @@ return [
 
     // Alerts
     'injured' => 'Lesionado',
-    'suspended' => 'Sancionado',
-    'low_fitness' => 'Baja Forma',
-    'card_risk' => 'Riesgo Tarjeta',
-    'yellow_cards' => 'TA',
 
     // Scout
-    'scout_report_ready' => 'Informe del Ojeador Listo',
-    'scout_searching' => 'Ojeador Buscando...',
-    'players_to_review' => ':count jugadores disponibles para revisar.',
     'weeks_remaining' => ':count semana restante|:count semanas restantes',
 
-    // Transfer alerts
-    'transfer_offers' => 'Ofertas de Fichaje',
-    'expires_in' => 'Expira en :days días',
-
-    // Club finances
-    'club_finances' => 'Finanzas del Club',
-    'projected_position' => 'Posición Proyectada',
-    'transfer_budget' => 'Presupuesto de Fichajes',
-    'carried_debt' => 'Deuda Arrastrada',
-
     // Calendar
-    'season_calendar' => 'Calendario de Temporada',
-    'record' => 'Récord',
     'win_rate' => ':percent% victorias',
     'goals' => 'Goles',
     'scored' => 'Marcados',
@@ -112,24 +86,24 @@ return [
     'home_vs_away' => 'Casa vs Fuera',
 
     // Youth & Loans
-    'youth_academy_prospects' => 'Promesas de la Cantera',
-    'youth_prospects_desc' => 'Nuevos talentos promocionados de la cantera esta temporada.',
     'potential' => 'Potencial',
-    'loan_returns' => 'Cesiones que Regresan',
-    'loan_returns_desc' => 'Jugadores que regresan de cesión.',
-    'returned_from' => 'Regresó de',
-    'completed_this_window' => 'Completados en esta Ventana',
-    'in' => 'ENTRA',
-    'out' => 'SALE',
-    'loan' => 'Cesión',
 
-    // Calendar labels
-    'july_1' => '1 de Julio',
-    'season_start' => 'Inicio de Temporada',
-    'expires' => 'Expira: :date',
+    // Welcome Tutorial
+    'welcome_name' => 'Bienvenido, :name',
+    'welcome_appointed' => 'Has sido nombrado nuevo entrenador :team_de',
+    'welcome_how_it_works' => '¿Cómo funciona?',
+    'welcome_step_matches' => 'Juega los partidos',
+    'welcome_step_matches_desc' => 'Elige tu alineación, formación y mentalidad antes de cada partido. Observa el partido en directo y haz sustituciones tácticas.',
+    'welcome_step_squad' => 'Gestiona tu plantilla',
+    'welcome_step_squad_desc' => 'Controla la forma física, el desarrollo y la moral de tus jugadores. La cantera produce jóvenes talentos cada temporada.',
+    'welcome_step_transfers' => 'Ficha y vende jugadores',
+    'welcome_step_transfers_desc' => 'Usa ojeadores para encontrar talento, negocia fichajes en las ventanas de verano e invierno, y gestiona las cesiones.',
+    'welcome_step_finances' => 'Administra las finanzas',
+    'welcome_step_finances_desc' => 'Asigna el presupuesto entre fichajes, cantera, cuerpo médico e instalaciones. Tu rendimiento afecta los ingresos futuros.',
+    'welcome_start_journey' => 'Comenzar',
 
     // Onboarding
-    'welcome_to_team' => 'Bienvenido a :team',
+    'welcome_to_team' => 'Bienvenido :team_a',
     'season_preview' => 'Previa de Temporada',
     'season_objective' => 'Objetivo de Temporada',
     'your_competitions' => 'Tus Competiciones',
@@ -158,9 +132,7 @@ return [
     'live_assist' => 'Asist.',
     'live_speed' => 'Velocidad',
     'live_skip' => 'Saltar',
-    'live_skip_match' => 'Ir a resultados',
     'live_other_results' => 'Otros',
-    'live_continue_results' => 'Ver Resultados Completos',
     'live_continue_dashboard' => 'Continuar',
     'live_injury_alert' => 'se ha lesionado. Realiza una sustitución.',
     'live_injuries_report' => 'Parte de Lesiones',
@@ -168,12 +140,9 @@ return [
 
     // Substitutions
     'sub_title' => 'Sustituciones',
-    'sub_count' => ':used/:max',
-    'sub_pause_and_substitute' => 'Pausar y Sustituir',
     'sub_player_out' => 'Sale',
     'sub_player_in' => 'Entra',
     'sub_confirm' => 'Confirmar',
-    'sub_cancel' => 'Cancelar',
     'sub_reset' => 'Restablecer',
     'sub_processing' => 'Procesando...',
     'sub_limit_reached' => 'Límite de sustituciones alcanzado',
@@ -189,7 +158,6 @@ return [
     'sub_error_player_sent_off' => 'No se puede sustituir a un jugador expulsado',
     'sub_error_player_suspended' => 'El jugador está sancionado en esta competición',
     'sub_error_player_injured' => 'El jugador está lesionado',
-    'sub_event' => 'Sustitución',
 
     'match_not_in_progress' => 'Este partido ya no está en juego',
 
@@ -206,10 +174,8 @@ return [
     'tactical_subs_made' => 'Sustituciones realizadas',
     'tactical_apply' => 'Aplicar cambios',
     'tactical_no_changes' => 'No hay cambios tácticos que aplicar.',
-    'energy' => 'Energía',
 
     // Results page
-    'results' => 'Resultados',
     'matchday_results' => 'Resultados :name',
     'og' => 'PP',
 
@@ -226,7 +192,6 @@ return [
     'mode_career_desc' => 'Dirige un club a través de múltiples temporadas',
     'mode_tournament' => 'Copa del Mundo',
     'mode_tournament_desc' => 'Dirige una selección en el Mundial',
-    'mode_career_badge' => 'Carrera',
     'mode_tournament_badge' => 'Copa del Mundo',
 
     // Season Goals
@@ -238,6 +203,13 @@ return [
     'goal_promotion' => 'Ascenso directo',
     'goal_playoff' => 'Clasificarse para el playoff de ascenso',
     'board_expects_position' => 'La directiva espera que alcances la posición :position',
+
+    // No data
+    'no_standings_yet' => 'Aún no hay clasificación disponible.',
+    'knockout_not_started' => 'La fase eliminatoria aún no ha comenzado',
+    'knockout_not_started_desc' => 'La fase eliminatoria se generará automáticamente al terminar la fase de grupos.',
+    'knockout_generating' => 'Generando cuadro eliminatorio...',
+    'knockout_qualified' => 'Clasificado a eliminatorias',
 
     // UEFA Swiss Format - League Phase
     'league_phase' => 'Fase de Liga',
@@ -264,11 +236,6 @@ return [
     'uecl_direct_knockout' => 'Clasificación directa a octavos',
     'uecl_knockout_playoff' => 'Playoff de eliminación',
     'uecl_eliminated' => 'Eliminado',
-
-    // Knockout tie legs
-    'first_leg' => 'Ida',
-    'second_leg' => 'Vuelta',
-    'aggregate' => 'Global',
 
     // UEFA Swiss Format - Season Goals
     'goal_ucl_title' => 'Ganar la Champions League',

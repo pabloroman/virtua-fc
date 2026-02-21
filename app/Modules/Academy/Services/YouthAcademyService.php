@@ -301,10 +301,11 @@ class YouthAcademyService
     }
 
     /**
-     * Teams whose academy only produces Spanish players (cantera philosophy).
+     * Teams whose academy only produces domestic players (cantera philosophy).
+     * Maps team name → exact nationality filter (overrides weighted selection).
      */
-    private const SPANISH_ONLY_TEAMS = [
-        'Athletic Bilbao',
+    private const CANTERA_TEAMS = [
+        'Athletic Bilbao' => 'Spain',
     ];
 
     /**
@@ -321,7 +322,7 @@ class YouthAcademyService
         $technical = rand($minAbility, $maxAbility);
         $physical = rand($minAbility, $maxAbility);
 
-        $age = rand(16, 18);
+        $age = rand(16, 19);
         $currentYear = (int) $game->season;
         $dateOfBirth = Carbon::createFromDate($currentYear - $age, rand(1, 12), rand(1, 28));
 
@@ -330,8 +331,10 @@ class YouthAcademyService
         $potentialLow = max($potential - $potentialVariance, max($technical, $physical));
         $potentialHigh = min($potential + $potentialVariance, 99);
 
-        $nationalityFilter = in_array($game->team->name, self::SPANISH_ONLY_TEAMS) ? 'Spain' : null;
-        $identity = $this->playerGenerator->pickRandomIdentity($nationalityFilter);
+        $teamName = $game->team->name;
+        $nationalityFilter = self::CANTERA_TEAMS[$teamName] ?? null;
+        $teamCountry = $nationalityFilter ? null : $game->team->country;
+        $identity = $this->playerGenerator->pickRandomIdentity($nationalityFilter, $teamCountry);
 
         return AcademyPlayer::create([
             'id' => Str::uuid()->toString(),

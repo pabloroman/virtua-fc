@@ -20,10 +20,11 @@ VirtuaFC aims to simulate football management with these guiding principles:
 | [Player Potential](player-potential.md) | How potential is generated and influences development |
 | [Player Development](player-development.md) | How players grow and decline over seasons |
 | [Market Value Dynamics](market-value-dynamics.md) | How market value evolves with player performance |
-| [Match Simulation](match-simulation.md) | How match results are determined |
+| [Match Simulation](match-simulation.md) | How match results are determined (live match, substitutions, tactical changes) |
 | [Injury System](injury-system.md) | Injury probability, durability, and recovery times |
-| [Club Economy System](club-economy-system.md) | Contracts, wages, finances overview (implementation roadmap) |
-| [Transfer Market](transfer-market.md) | Selling players, contract renewals, pre-contract offers, free transfers |
+| [Club Economy System](club-economy-system.md) | Budget allocation, investment tiers, projected vs actual revenue |
+| [Transfer Market](transfer-market.md) | Scouting, buying, selling, loans, contract renewals, pre-contracts |
+| [Youth Academy](academy-redesign.md) | La Cantera: phased stat reveals, development, end-of-season evaluations |
 
 ## The Unified Loop
 
@@ -67,12 +68,18 @@ All systems work together in a coherent feedback loop:
 | File | Purpose |
 |------|---------|
 | `app/Console/Commands/SeedReferenceData.php` | Initial ability calculation from market value |
-| `app/Game/Services/PlayerDevelopmentService.php` | Development, potential, and market value updates |
-| `app/Game/Services/DevelopmentCurve.php` | Age-based development multipliers |
-| `app/Game/Services/MatchSimulator.php` | Match result simulation |
-| `app/Game/Services/InjuryService.php` | Injury probability and generation |
-| `app/Game/Services/ContractService.php` | Wage calculation with age modifiers |
+| `app/Modules/Squad/Services/PlayerDevelopmentService.php` | Development, potential, and market value updates |
+| `app/Modules/Match/Services/MatchSimulator.php` | Match result simulation |
+| `app/Modules/Squad/Services/InjuryService.php` | Injury probability and generation |
+| `app/Modules/Transfer/Services/ContractService.php` | Wage calculation with age modifiers |
+| `app/Modules/Transfer/Services/TransferService.php` | Transfer operations (buying, selling) |
+| `app/Modules/Transfer/Services/ScoutingService.php` | Player scouting and search system |
+| `app/Modules/Transfer/Services/LoanService.php` | Loan operations (in and out) |
+| `app/Modules/Finance/Services/BudgetProjectionService.php` | Revenue projections and budget planning |
+| `app/Modules/Academy/Services/YouthAcademyService.php` | Youth academy management |
+| `app/Modules/Season/Services/SeasonEndPipeline.php` | Season-end processing orchestration |
 | `config/match_simulation.php` | Tunable match simulation parameters |
+| `config/finances.php` | Financial system configuration |
 
 ## Design Decisions
 

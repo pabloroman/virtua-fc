@@ -84,6 +84,6 @@ class CompleteOnboarding
         event(new SeasonStarted($game));
 
         return redirect()->route('show-game', $gameId)
-            ->with('success', __('messages.welcome_to_team', ['team' => $game->team->name]));
+            ->with('success', __('messages.welcome_to_team', ['team_a' => $game->team->nameWithA()]));
     }
 }

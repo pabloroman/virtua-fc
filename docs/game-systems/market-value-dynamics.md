@@ -133,7 +133,7 @@ Consider Selling/Replacing
 
 ## Implementation
 
-See `app/Game/Services/PlayerDevelopmentService.php`:
+See `app/Modules/Squad/Services/PlayerDevelopmentService.php`:
 - `calculateMarketValue()` - Full calculation
 - `getAgeValueMultiplier()` - Age-based discount/premium
 - `getPerformanceTrendMultiplier()` - Trend bonus/penalty

@@ -10,6 +10,7 @@ use App\Models\CompetitionEntry;
 use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameStanding;
+use App\Models\SimulatedSeason;
 use App\Models\Team;
 
 /**
@@ -60,11 +61,7 @@ class UefaQualificationProcessor implements SeasonEndProcessor
         $standings = [];      // position => teamId (from the relevant league)
 
         foreach ($slots as $leagueId => $continentalAllocations) {
-            $leagueStandings = GameStanding::where('game_id', $game->id)
-                ->where('competition_id', $leagueId)
-                ->orderBy('position')
-                ->pluck('team_id', 'position')
-                ->toArray();
+            $leagueStandings = $this->getLeagueStandings($game, $leagueId);
 
             if (empty($leagueStandings)) {
                 continue;
@@ -86,6 +83,7 @@ class UefaQualificationProcessor implements SeasonEndProcessor
         if ($cupWinnerConfig && !empty($standings)) {
             $this->applyCupWinnerCascade(
                 $game->id,
+                $countryCode,
                 $cupWinnerConfig,
                 $qualifications,
                 $standings,
@@ -102,12 +100,13 @@ class UefaQualificationProcessor implements SeasonEndProcessor
      */
     private function applyCupWinnerCascade(
         string $gameId,
+        string $countryCode,
         array $cupWinnerConfig,
         array &$qualifications,
         array $standings,
         array $slots,
     ): void {
-        $cupWinnerId = $this->getCupWinner($gameId, $cupWinnerConfig['cup']);
+        $cupWinnerId = $this->getCupWinner($gameId, $countryCode, $cupWinnerConfig['cup']);
         if (!$cupWinnerId) {
             return;
         }
@@ -140,11 +139,48 @@ class UefaQualificationProcessor implements SeasonEndProcessor
     }
 
     /**
-     * Find the Copa del Rey winner from the final cup tie.
+     * Get league standings: real standings first, then simulated results as fallback.
+     *
+     * @return array<int, string> position => teamId
      */
-    private function getCupWinner(string $gameId, string $cupId): ?string
+    private function getLeagueStandings(Game $game, string $leagueId): array
     {
-        $supercupConfig = config("countries.ES.supercup");
+        // Try real standings first
+        $standings = GameStanding::where('game_id', $game->id)
+            ->where('competition_id', $leagueId)
+            ->orderBy('position')
+            ->pluck('team_id', 'position')
+            ->toArray();
+
+        if (!empty($standings)) {
+            return $standings;
+        }
+
+        // Fall back to simulated season results
+        $simulated = SimulatedSeason::where('game_id', $game->id)
+            ->where('season', $game->season)
+            ->where('competition_id', $leagueId)
+            ->first();
+
+        if (!$simulated || empty($simulated->results)) {
+            return [];
+        }
+
+        // Convert 0-indexed results array to 1-indexed position => teamId map
+        $standings = [];
+        foreach ($simulated->results as $index => $teamId) {
+            $standings[$index + 1] = $teamId;
+        }
+
+        return $standings;
+    }
+
+    /**
+     * Find the domestic cup winner from the final cup tie.
+     */
+    private function getCupWinner(string $gameId, string $countryCode, string $cupId): ?string
+    {
+        $supercupConfig = $this->countryConfig->supercup($countryCode);
         $finalRound = $supercupConfig['cup_final_round'] ?? null;
 
         if (!$finalRound) {

@@ -205,7 +205,7 @@
                                                 <div class="font-medium text-sm text-slate-900 truncate">{{ $loan->gamePlayer->name }}</div>
                                                 <div class="text-xs text-slate-500">
                                                     {{ $loan->gamePlayer->position_name }} &middot; {{ $loan->gamePlayer->age }} {{ __('app.years') }}
-                                                    &middot; {{ __('transfers.loaned_from', ['team' => $loan->parentTeam->name]) }}
+                                                    &middot; {{ __('transfers.loaned_from', ['team_de' => $loan->parentTeam->nameWithDe()]) }}
                                                 </div>
                                                 <div class="text-xs text-slate-400 mt-0.5">
                                                     {{ __('transfers.returns') }}: {{ $loan->return_at->format('M j, Y') }}

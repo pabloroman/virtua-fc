@@ -16,12 +16,18 @@ class BudgetProjectionService
     /**
      * UEFA and RFEF solidarity funds (€250K)
      */
-    private const SOLIDARITY_FUNDS = 25_000_000; // €250K in cents
+    private const SOLIDARITY_FUNDS = 100_000_000; // €1M in cents
 
     /**
      * Minimum transfer budget guaranteed after mandatory infrastructure.
      */
-    private const MINIMUM_TRANSFER_BUDGET = 20_000_000; // €200K in cents
+    private const MINIMUM_TRANSFER_BUDGET = 100_000_000; // €1M in cents
+
+    /**
+     * Maximum stadium seats used for commercial revenue calculation.
+     * Prevents oversized stadiums from generating disproportionate commercial income.
+     */
+    private const MAX_COMMERCIAL_SEATS = 80_000;
 
     /**
      * Generate season projections for a game.
@@ -274,10 +280,11 @@ class BudgetProjectionService
             return $previousFinances->actual_commercial_revenue;
         }
 
-        // First season: calculate from stadium seats × config rate
+        // First season: calculate from stadium seats × config rate (capped)
         $reputation = $team->clubProfile->reputation_level ?? ClubProfile::REPUTATION_MODEST;
+        $seats = min($team->stadium_seats, self::MAX_COMMERCIAL_SEATS);
 
-        $base = $team->stadium_seats * config("finances.commercial_per_seat.{$reputation}", 80_000);
+        $base = $seats * config("finances.commercial_per_seat.{$reputation}", 80_000);
 
         // Reduce commercial revenue for lower tiers
         if ($league->tier > 1) {

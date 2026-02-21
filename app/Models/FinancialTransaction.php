@@ -104,13 +104,13 @@ class FinancialTransaction extends Model
     public function getCategoryLabelAttribute(): string
     {
         return match ($this->category) {
-            self::CATEGORY_TRANSFER_IN => 'Player Sale',
-            self::CATEGORY_TRANSFER_OUT => 'Player Purchase',
-            self::CATEGORY_WAGE => 'Wages',
-            self::CATEGORY_TV_RIGHTS => 'TV Rights',
-            self::CATEGORY_PERFORMANCE_BONUS => 'Performance Bonus',
-            self::CATEGORY_CUP_BONUS => 'Cup Prize Money',
-            self::CATEGORY_SIGNING_BONUS => 'Signing Bonus',
+            self::CATEGORY_TRANSFER_IN => __('finances.category_transfer_in'),
+            self::CATEGORY_TRANSFER_OUT => __('finances.category_transfer_out'),
+            self::CATEGORY_WAGE => __('finances.category_wage'),
+            self::CATEGORY_TV_RIGHTS => __('finances.category_tv'),
+            self::CATEGORY_PERFORMANCE_BONUS => __('finances.category_performance_bonus'),
+            self::CATEGORY_CUP_BONUS => __('finances.category_cup_bonus'),
+            self::CATEGORY_SIGNING_BONUS => __('finances.category_signing_bonus'),
             default => ucfirst(str_replace('_', ' ', $this->category)),
         };
     }

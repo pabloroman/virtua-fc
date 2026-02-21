@@ -63,13 +63,19 @@ class CalendarService
 
     /**
      * Get all matches for a specific matchday/round.
+     *
+     * For Swiss-format competitions, round_number overlaps between the league
+     * phase and knockout phase, so $roundName disambiguates them.
      */
-    public function getMatchdayResults(string $gameId, string $competitionId, int $matchday): Collection
+    public function getMatchdayResults(string $gameId, string $competitionId, int $matchday, ?string $roundName = null): Collection
     {
         return GameMatch::with(['homeTeam', 'awayTeam', 'events.gamePlayer.player', 'competition'])
             ->where('game_id', $gameId)
             ->where('competition_id', $competitionId)
             ->where('round_number', $matchday)
+            ->when($roundName !== null, function ($q) use ($roundName) {
+                $q->where('round_name', $roundName);
+            })
             ->orderBy('scheduled_date')
             ->get();
     }

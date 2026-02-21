@@ -1,9 +1,6 @@
 @php /** @var App\Models\Game $game **/ @endphp
 
-<x-app-layout>
-    <x-slot name="header">
-        <x-game-header :game="$game" :next-match="null"></x-game-header>
-    </x-slot>
+<x-app-layout :hide-footer="true">
 
     <div>
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 py-8">
@@ -17,18 +14,23 @@
                     </div>
 
                     {{-- Major Trophies Grid --}}
-                    <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="grid {{ $cupCompetition ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1' }} gap-4 mb-6">
                         {{-- League Champion --}}
                         <div class="text-center py-6 bg-gradient-to-b from-amber-50 to-white rounded-lg border border-amber-200">
                             <div class="text-amber-600 font-semibold text-sm uppercase tracking-wide mb-2">{{ __('season.league_champion', ['league' => $competition->name]) }}</div>
-                            <div class="flex justify-center items-center gap-3 mb-2">
-                                <img src="{{ $champion->team->image }}" class="w-14 h-14">
-                            </div>
-                            <div class="text-xl font-bold text-slate-900">{{ $champion->team->name }}</div>
-                            <div class="text-sm text-slate-600">{{ $champion->points }} pts</div>
+                            @if($champion && $champion->team)
+                                <div class="flex justify-center items-center gap-3 mb-2">
+                                    <img src="{{ $champion->team->image }}" class="w-14 h-14">
+                                </div>
+                                <div class="text-xl font-bold text-slate-900">{{ $champion->team->name }}</div>
+                                <div class="text-sm text-slate-600">{{ $champion->points }} pts</div>
+                            @else
+                                <div class="text-slate-400 py-4">{{ __('season.competition_in_progress') }}</div>
+                            @endif
                         </div>
 
                         {{-- Cup Winner --}}
+                        @if($cupCompetition)
                         <div class="text-center py-6 bg-gradient-to-b from-sky-50 to-white rounded-lg border border-sky-200">
                             <div class="text-sky-600 font-semibold text-sm uppercase tracking-wide mb-2">{{ $cupName }}</div>
                             @if($cupWinner)
@@ -37,12 +39,13 @@
                                 </div>
                                 <div class="text-xl font-bold text-slate-900">{{ $cupWinner->name }}</div>
                                 <div class="text-sm text-slate-500">
-                                    {{ __('season.beat', ['team' => $cupRunnerUp?->name ?? 'opponent']) }}
+                                    {{ __('season.beat', ['team_a' => $cupRunnerUp ? $cupRunnerUp->nameWithA() : 'al rival']) }}
                                 </div>
                             @else
                                 <div class="text-slate-400 py-4">{{ __('season.competition_in_progress') }}</div>
                             @endif
                         </div>
+                        @endif
                     </div>
 
                     {{-- Other League Champion --}}
@@ -187,6 +190,7 @@
                         {{-- Team Awards --}}
                         <div class="grid grid-cols-2 gap-4">
                             {{-- Best Attack --}}
+                            @if($bestAttack && $bestAttack->team)
                             <div class="bg-slate-50 rounded-lg p-3 flex items-center gap-3">
                                 <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-sm">
                                     &#9917;
@@ -203,8 +207,10 @@
                                     <div class="text-xs text-slate-400">{{ __('season.goals') }}</div>
                                 </div>
                             </div>
+                            @endif
 
                             {{-- Best Defense --}}
+                            @if($bestDefense && $bestDefense->team)
                             <div class="bg-slate-50 rounded-lg p-3 flex items-center gap-3">
                                 <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-sm">
                                     &#128737;
@@ -221,6 +227,7 @@
                                     <div class="text-xs text-slate-400">{{ __('season.conceded') }}</div>
                                 </div>
                             </div>
+                            @endif
                         </div>
                     </div>
 
@@ -272,53 +279,6 @@
                                 </div>
                             </div>
                             @endif
-                        </div>
-                    </div>
-                    @endif
-
-                    {{-- Player Development Preview --}}
-                    @if($developmentPreview->isNotEmpty())
-                    <div class="border-t pt-6">
-                        <div class="text-center text-slate-500 font-semibold text-sm uppercase tracking-wide mb-4">{{ __('season.player_development') }}</div>
-
-                        <div class="space-y-2">
-                            @foreach($developmentPreview as $item)
-                                @php
-                                    $change = $item['overallChange'];
-                                    $icon = $change > 0 ? '&#9650;' : ($change < 0 ? '&#9660;' : '&#8212;');
-                                    $colorClass = $change > 0 ? 'text-green-600' : ($change < 0 ? 'text-red-600' : 'text-slate-400');
-                                    $statusLabel = match($item['status']) {
-                                        'growing' => __('season.growing'),
-                                        'peak' => __('season.peak'),
-                                        'declining' => __('season.declining'),
-                                        default => '',
-                                    };
-                                    $statusClass = match($item['status']) {
-                                        'growing' => 'text-green-600',
-                                        'peak' => 'text-slate-600',
-                                        'declining' => 'text-orange-600',
-                                        default => '',
-                                    };
-                                @endphp
-                                <div class="flex items-center justify-between py-2 px-3 rounded {{ $loop->even ? 'bg-slate-50' : '' }}">
-                                    <div class="flex items-center gap-2">
-                                        <span class="{{ $colorClass }}">{!! $icon !!}</span>
-                                        <span class="font-medium">{{ $item['player']->name }}</span>
-                                        <span class="text-slate-400 text-sm">({{ $item['age'] }})</span>
-                                    </div>
-                                    <div class="flex items-center gap-4">
-                                        <div class="text-sm">
-                                            <span class="text-slate-500">{{ $item['overallBefore'] }}</span>
-                                            <span class="text-slate-400 mx-1">&#8594;</span>
-                                            <span class="font-semibold">{{ $item['overallAfter'] }}</span>
-                                            <span class="{{ $colorClass }} font-medium ml-1">
-                                                ({{ $change > 0 ? '+' : '' }}{{ $change }})
-                                            </span>
-                                        </div>
-                                        <span class="text-xs {{ $statusClass }}">{{ $statusLabel }}</span>
-                                    </div>
-                                </div>
-                            @endforeach
                         </div>
                     </div>
                     @endif

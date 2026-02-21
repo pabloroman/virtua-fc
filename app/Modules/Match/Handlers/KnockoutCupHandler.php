@@ -64,11 +64,12 @@ class KnockoutCupHandler implements CompetitionHandler
     {
         $firstMatch = $matches->first();
 
-        return route('game.results', [
+        return route('game.results', array_filter([
             'gameId' => $game->id,
             'competition' => $firstMatch->competition_id ?? $game->competition_id,
             'matchday' => $firstMatch->round_number ?? $matchday,
-        ]);
+            'round' => $firstMatch?->round_name,
+        ]));
     }
 
     /**
@@ -144,13 +145,11 @@ class KnockoutCupHandler implements CompetitionHandler
         $competition = Competition::find($competitionId);
         $competitionName = $competition->name ?? 'Cup';
 
-        $roundName = "Round $roundNumber";
-
         FinancialTransaction::recordIncome(
             gameId: $game->id,
             category: FinancialTransaction::CATEGORY_CUP_BONUS,
             amount: $amount,
-            description: "{$competitionName} - {$roundName} advancement",
+            description: __('finances.tx_cup_advancement', ['competition' => $competitionName, 'round' => $roundNumber]),
             transactionDate: $game->current_date->toDateString(),
         );
     }

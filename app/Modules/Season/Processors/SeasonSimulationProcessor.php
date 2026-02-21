@@ -6,6 +6,7 @@ use App\Modules\Season\Contracts\SeasonEndProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Finance\Services\SeasonSimulationService;
 use App\Models\Competition;
+use App\Models\CompetitionEntry;
 use App\Models\Game;
 use App\Models\GameStanding;
 
@@ -30,16 +31,25 @@ class SeasonSimulationProcessor implements SeasonEndProcessor
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData
     {
-        $userCompetition = Competition::find($game->competition_id);
+        $this->simulateNonPlayedLeagues($game);
 
-        if (!$userCompetition) {
-            return $data;
-        }
+        return $data;
+    }
 
-        // Find leagues in the same country that need simulation
-        $leagues = Competition::where('country', $userCompetition->country)
-            ->where('role', Competition::ROLE_PRIMARY)
-            ->where('id', '!=', $userCompetition->id)
+    /**
+     * Simulate all league competitions the game has entries for,
+     * except the player's own league and Swiss-format competitions.
+     */
+    public function simulateNonPlayedLeagues(Game $game): void
+    {
+        $leagueIds = CompetitionEntry::where('game_id', $game->id)
+            ->pluck('competition_id')
+            ->unique();
+
+        $leagues = Competition::whereIn('id', $leagueIds)
+            ->where('role', Competition::ROLE_LEAGUE)
+            ->whereIn('handler_type', ['league', 'league_with_playoff'])
+            ->where('id', '!=', $game->competition_id)
             ->get();
 
         foreach ($leagues as $league) {
@@ -53,7 +63,5 @@ class SeasonSimulationProcessor implements SeasonEndProcessor
                 $this->simulationService->simulateLeague($game, $league);
             }
         }
-
-        return $data;
     }
 }
