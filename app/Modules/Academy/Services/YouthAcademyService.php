@@ -334,7 +334,8 @@ class YouthAcademyService
         $teamName = $game->team->name;
         $nationalityFilter = self::CANTERA_TEAMS[$teamName] ?? null;
         $teamCountry = $nationalityFilter ? null : $game->team->country;
-        $identity = $this->playerGenerator->pickRandomIdentity($nationalityFilter, $teamCountry);
+        $excludedNames = $this->getExistingPlayerNames($game);
+        $identity = $this->playerGenerator->pickRandomIdentity($nationalityFilter, $teamCountry, $excludedNames);
 
         return AcademyPlayer::create([
             'id' => Str::uuid()->toString(),
@@ -355,6 +356,27 @@ class YouthAcademyService
             'initial_technical' => $technical,
             'initial_physical' => $physical,
         ]);
+    }
+
+    /**
+     * Get names of existing first-team and academy players (to prevent duplicate names).
+     *
+     * @return string[]
+     */
+    private function getExistingPlayerNames(Game $game): array
+    {
+        $firstTeamNames = GamePlayer::where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->join('players', 'game_players.player_id', '=', 'players.id')
+            ->pluck('players.name')
+            ->toArray();
+
+        $academyNames = AcademyPlayer::where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->pluck('name')
+            ->toArray();
+
+        return array_merge($firstTeamNames, $academyNames);
     }
 
     private function selectPosition(): string
