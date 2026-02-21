@@ -31,107 +31,17 @@
                 <div class="p-4 sm:p-6 md:p-8 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
                     {{-- Left Column (2/3) - Main Content --}}
                     <div class="md:col-span-2 space-y-8">
-                        {{-- Next Match --}}
-                        @php
-                            $comp = $nextMatch->competition;
-                            $accent = match(true) {
-                                ($comp->scope ?? '') === 'continental' => ['border' => 'border-l-blue-600', 'badge' => 'bg-blue-100 text-blue-800'],
-                                ($comp->type ?? '') === 'cup' => ['border' => 'border-l-emerald-500', 'badge' => 'bg-emerald-100 text-emerald-800'],
-                                default => ['border' => 'border-l-amber-500', 'badge' => 'bg-amber-100 text-amber-800'],
-                            };
-                        @endphp
-                        <div class="border-l-4 {{ $accent['border'] }} pl-6">
-                            {{-- Competition & Round Header --}}
-                            <div class="flex items-center justify-between mb-6">
-                                <h3 class="font-semibold text-xl text-slate-900">{{ __('game.next_match') }}</h3>
-                                <div class="flex items-center gap-3">
-                                    <span class="px-3 py-1 text-xs font-semibold rounded-full {{ $accent['badge'] }}">
-                                        {{ $nextMatch->competition->name ?? 'League' }}
-                                    </span>
-                                    @if($nextMatch->round_name)
-                                        <span class="text-sm text-slate-500">{{ $nextMatch->round_name }}</span>
-                                    @else
-                                        <span class="text-sm text-slate-500">{{ __('game.matchday_n', ['number' => $nextMatch->round_number]) }}</span>
-                                    @endif
-                                </div>
-                            </div>
-
-                            {{-- Teams Face-off --}}
-                            <div class="flex items-center justify-between py-4">
-                                {{-- Home Team --}}
-                                <div class="flex-1">
-                                    <div class="flex items-center gap-2 md:gap-4">
-                                        <img src="{{ $nextMatch->homeTeam->image }}" class="w-12 h-12 md:w-20 md:h-20">
-                                        <div>
-                                            <h4 class="text-xl font-bold text-slate-900">{{ $nextMatch->homeTeam->name }}</h4>
-                                            @if($homeStanding)
-                                            <div class="text-sm text-slate-500 mt-1">
-                                                {{ $homeStanding->position }}{{ $homeStanding->position == 1 ? 'st' : ($homeStanding->position == 2 ? 'nd' : ($homeStanding->position == 3 ? 'rd' : 'th')) }} &middot; {{ $homeStanding->points }} pts
-                                            </div>
-                                            @endif
-                                            <div class="flex gap-1 mt-2">
-                                                @php $homeForm = $nextMatch->home_team_id === $game->team_id ? $playerForm : $opponentForm; @endphp
-                                                @forelse($homeForm as $result)
-                                                    <span class="w-5 h-5 rounded text-xs font-bold flex items-center justify-center
-                                                        @if($result === 'W') bg-green-500 text-white
-                                                        @elseif($result === 'D') bg-slate-400 text-white
-                                                        @else bg-red-500 text-white @endif">
-                                                        {{ $result }}
-                                                    </span>
-                                                @empty
-                                                    <span class="text-slate-400 text-xs">{{ __('game.no_form') }}</span>
-                                                @endforelse
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {{-- VS --}}
-                                <div class="px-2 md:px-8 text-center">
-                                    <div class="text-xl md:text-2xl font-black text-slate-300">vs</div>
-                                </div>
-
-                                {{-- Away Team --}}
-                                <div class="flex-1">
-                                    <div class="flex items-center gap-2 md:gap-4 flex-row-reverse">
-                                        <img src="{{ $nextMatch->awayTeam->image }}" class="w-12 h-12 md:w-20 md:h-20">
-                                        <div class="text-right">
-                                            <h4 class="text-xl font-bold text-slate-900">{{ $nextMatch->awayTeam->name }}</h4>
-                                            @if($awayStanding)
-                                            <div class="text-sm text-slate-500 mt-1">
-                                                {{ $awayStanding->position }}{{ $awayStanding->position == 1 ? 'st' : ($awayStanding->position == 2 ? 'nd' : ($awayStanding->position == 3 ? 'rd' : 'th')) }} &middot; {{ $awayStanding->points }} pts
-                                            </div>
-                                            @endif
-                                            <div class="flex gap-1 mt-2 justify-end">
-                                                @php $awayForm = $nextMatch->away_team_id === $game->team_id ? $playerForm : $opponentForm; @endphp
-                                                @forelse($awayForm as $result)
-                                                    <span class="w-5 h-5 rounded text-xs font-bold flex items-center justify-center
-                                                        @if($result === 'W') bg-green-500 text-white
-                                                        @elseif($result === 'D') bg-slate-400 text-white
-                                                        @else bg-red-500 text-white @endif">
-                                                        {{ $result }}
-                                                    </span>
-                                                @empty
-                                                    <span class="text-slate-400 text-xs">{{ __('game.no_form') }}</span>
-                                                @endforelse
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {{-- Set Lineup Button --}}
-                            <div class="mt-6 text-center">
-                                <a href="{{ route('game.lineup', $game->id) }}"
-                                   class="inline-flex items-center gap-2 px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg transition-colors">
-                                    {{ __('game.set_lineup') }}
-                                </a>
-                            </div>
+                        {{-- Upcoming Fixtures Header --}}
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-semibold text-xl text-slate-900">{{ __('game.upcoming_fixtures') }}</h3>
+                            <a href="{{ route('game.calendar', $game->id) }}" class="text-sm text-sky-600 hover:text-sky-800">
+                                {{ __('game.full_calendar') }} &rarr;
+                            </a>
                         </div>
 
                         {{-- Tournament Knockout Progress --}}
                         @if($game->isTournamentMode() && isset($tournamentTie) && $tournamentTie)
-                        <div class="pt-8 border-t">
+                        <div class="pt-4 border-t">
                             @php
                                 $won = $tournamentTie->completed && $tournamentTie->winner_id === $game->team_id;
                                 $lost = $tournamentTie->completed && $tournamentTie->winner_id !== $game->team_id;
@@ -140,7 +50,7 @@
                             @endphp
 
                             <div class="flex items-center justify-between mb-4">
-                                <h3 class="font-semibold text-xl text-slate-900">{{ __('game.knockout_phase') }}</h3>
+                                <h3 class="font-semibold text-lg text-slate-900">{{ __('game.knockout_phase') }}</h3>
                                 <a href="{{ route('game.competition', [$game->id, $game->competition_id]) }}" class="text-sm text-sky-600 hover:text-sky-800">
                                     {{ __('game.full_calendar') }} &rarr;
                                 </a>
@@ -183,21 +93,99 @@
                         </div>
                         @endif
 
-                        {{-- Upcoming Fixtures --}}
-                        @if($upcomingFixtures->isNotEmpty())
-                        <div class="pt-8 border-t">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="font-semibold text-xl text-slate-900">{{ __('game.upcoming_fixtures') }}</h3>
-                                <a href="{{ route('game.calendar', $game->id) }}" class="text-sm text-sky-600 hover:text-sky-800">
-                                    {{ __('game.full_calendar') }} &rarr;
-                                </a>
+                        {{-- Highlighted Next Match Card --}}
+                        @php
+                            $comp = $nextMatch->competition;
+                            $accent = match(true) {
+                                ($comp->scope ?? '') === 'continental' => ['badge' => 'bg-blue-100 text-blue-800'],
+                                ($comp->type ?? '') === 'cup' => ['badge' => 'bg-emerald-100 text-emerald-800'],
+                                default => ['badge' => 'bg-amber-100 text-amber-800'],
+                            };
+                        @endphp
+                        <div class="rounded-lg bg-white border border-slate-200 p-4 md:p-5">
+                            {{-- Competition, Round & Date --}}
+                            <div class="text-center">
+                                <div class="flex items-center justify-center gap-2">
+                                    <span class="px-3 py-1 text-sm font-semibold rounded-full {{ $accent['badge'] }}">
+                                        {{ $nextMatch->competition->name ?? 'League' }}
+                                    </span>
+                                    @if($nextMatch->round_name)
+                                        <span class="text-sm text-slate-500">&middot; {{ $nextMatch->round_name }}</span>
+                                    @else
+                                        <span class="text-sm text-slate-500">&middot; {{ __('game.matchday_n', ['number' => $nextMatch->round_number]) }}</span>
+                                    @endif
+                                </div>
+                                <div class="text-sm text-slate-500 mt-1">
+                                    {{ $nextMatch->scheduled_date->locale(app()->getLocale())->translatedFormat('d M Y') }}
+                                </div>
                             </div>
 
-                            <div class="space-y-2">
-                                @foreach($upcomingFixtures->take(5) as $fixture)
-                                    <x-fixture-row :match="$fixture" :game="$game" :show-score="false" :highlight-next="false" />
-                                @endforeach
+                            {{-- Teams Face-off --}}
+                            <div class="flex items-start justify-around">
+                                {{-- Home Team --}}
+                                <div class="flex-1 flex flex-col items-center text-center min-w-0 px-2">
+                                    <img src="{{ $nextMatch->homeTeam->image }}" class="w-12 h-12 md:w-20 md:h-20 mb-2">
+                                    <h4 class="text-base md:text-xl font-bold text-slate-900 truncate max-w-full">{{ $nextMatch->homeTeam->name }}</h4>
+                                    @if($homeStanding)
+                                    <div class="text-sm text-slate-500 mt-0.5">
+                                        {{ $homeStanding->position }}{{ $homeStanding->position == 1 ? 'st' : ($homeStanding->position == 2 ? 'nd' : ($homeStanding->position == 3 ? 'rd' : 'th')) }} &middot; {{ $homeStanding->points }} {{ __('game.pts') }}
+                                    </div>
+                                    @endif
+                                    <div class="flex gap-1 mt-2">
+                                        @php $homeForm = $nextMatch->home_team_id === $game->team_id ? $playerForm : $opponentForm; @endphp
+                                        @forelse($homeForm as $result)
+                                            <span class="w-5 h-5 rounded text-xs font-bold flex items-center justify-center
+                                                @if($result === 'W') bg-green-500 text-white
+                                                @elseif($result === 'D') bg-slate-400 text-white
+                                                @else bg-red-500 text-white @endif">
+                                                {{ $result }}
+                                            </span>
+                                        @empty
+                                            <span class="text-slate-400 text-sm">{{ __('game.no_form') }}</span>
+                                        @endforelse
+                                    </div>
+                                </div>
+
+                                {{-- Away Team --}}
+                                <div class="flex-1 flex flex-col items-center text-center min-w-0 px-2">
+                                    <img src="{{ $nextMatch->awayTeam->image }}" class="w-12 h-12 md:w-20 md:h-20 mb-2">
+                                    <h4 class="text-base md:text-xl font-bold text-slate-900 truncate max-w-full">{{ $nextMatch->awayTeam->name }}</h4>
+                                    @if($awayStanding)
+                                    <div class="text-sm text-slate-500 mt-0.5">
+                                        {{ $awayStanding->position }}{{ $awayStanding->position == 1 ? 'st' : ($awayStanding->position == 2 ? 'nd' : ($awayStanding->position == 3 ? 'rd' : 'th')) }} &middot; {{ $awayStanding->points }} {{ __('game.pts') }}
+                                    </div>
+                                    @endif
+                                    <div class="flex gap-1 mt-2">
+                                        @php $awayForm = $nextMatch->away_team_id === $game->team_id ? $playerForm : $opponentForm; @endphp
+                                        @forelse($awayForm as $result)
+                                            <span class="w-5 h-5 rounded text-xs font-bold flex items-center justify-center
+                                                @if($result === 'W') bg-green-500 text-white
+                                                @elseif($result === 'D') bg-slate-400 text-white
+                                                @else bg-red-500 text-white @endif">
+                                                {{ $result }}
+                                            </span>
+                                        @empty
+                                            <span class="text-slate-400 text-sm">{{ __('game.no_form') }}</span>
+                                        @endforelse
+                                    </div>
+                                </div>
                             </div>
+
+                            {{-- Set Lineup Button --}}
+                            <div class="mt-4 text-center">
+                                <a href="{{ route('game.lineup', $game->id) }}"
+                                   class="inline-flex items-center gap-2 px-5 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-lg transition-colors min-h-[44px]">
+                                    {{ __('game.set_lineup') }}
+                                </a>
+                            </div>
+                        </div>
+
+                        {{-- Remaining Upcoming Fixtures --}}
+                        @if($upcomingFixtures->skip(1)->isNotEmpty())
+                        <div class="space-y-2">
+                            @foreach($upcomingFixtures->skip(1)->take(4) as $fixture)
+                                <x-fixture-row :match="$fixture" :game="$game" :show-score="false" :highlight-next="false" />
+                            @endforeach
                         </div>
                         @endif
                     </div>
@@ -283,6 +271,54 @@
                             </div>
                             @endif
                         </div>
+
+                        {{-- Abridged League Standings --}}
+                        @if($leagueStandings->isNotEmpty())
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <h4 class="font-semibold text-xl text-slate-900">{{ __('game.standings') }}</h4>
+                                <a href="{{ route('game.competition', [$game->id, $game->competition_id]) }}" class="text-sm text-sky-600 hover:text-sky-800">
+                                    {{ __('game.full_table') }} &rarr;
+                                </a>
+                            </div>
+
+                            <div class="overflow-x-auto">
+                            <table class="w-full text-sm">
+                                <thead>
+                                    <tr class="border-b border-slate-200 text-xs text-slate-500 font-semibold">
+                                        <th class="text-left py-1.5 w-6 font-semibold">#</th>
+                                        <th class="text-left py-1.5 font-semibold"></th>
+                                        <th class="text-center py-1.5 w-8 font-semibold">{{ __('game.played_abbr') }}</th>
+                                        <th class="text-center py-1.5 w-8 font-semibold">{{ __('game.goal_diff_abbr') }}</th>
+                                        <th class="text-center py-1.5 w-8 font-semibold">{{ __('game.pts_abbr') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @php $prevPosition = 0; @endphp
+                                    @foreach($leagueStandings as $standing)
+                                        @php $isPlayer = $standing->team_id === $game->team_id; @endphp
+                                        @if($standing->position > $prevPosition + 1)
+                                            <tr><td colspan="5" class="text-center text-slate-300 py-0.5 text-xs">&middot;&middot;&middot;</td></tr>
+                                        @endif
+                                        <tr class="border-b border-slate-100 {{ $isPlayer ? 'bg-amber-50 font-semibold' : '' }}">
+                                            <td class="py-1.5 text-slate-500">{{ $standing->position }}</td>
+                                            <td class="py-1.5">
+                                                <div class="flex items-center gap-2">
+                                                    <img src="{{ $standing->team->image }}" class="w-5 h-5 shrink-0">
+                                                    <span class="truncate {{ $isPlayer ? 'text-slate-900' : 'text-slate-700' }}">{{ $standing->team->name }}</span>
+                                                </div>
+                                            </td>
+                                            <td class="py-1.5 text-center text-slate-400">{{ $standing->played }}</td>
+                                            <td class="py-1.5 text-center text-slate-400">{{ $standing->goal_difference >= 0 ? '+' : '' }}{{ $standing->goal_difference }}</td>
+                                            <td class="py-1.5 text-center font-semibold text-slate-900">{{ $standing->points }}</td>
+                                        </tr>
+                                        @php $prevPosition = $standing->position; @endphp
+                                    @endforeach
+                                </tbody>
+                            </table>
+                            </div>
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>

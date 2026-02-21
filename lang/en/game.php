@@ -205,6 +205,9 @@ return [
     'goal_playoff' => 'Qualify for the promotion playoff',
     'board_expects_position' => 'The board expects you to reach position :position',
 
+    'standings' => 'Standings',
+    'full_table' => 'View full table',
+
     // No data
     'no_standings_yet' => 'No standings available yet.',
     'knockout_not_started' => 'The knockout phase has not started yet',

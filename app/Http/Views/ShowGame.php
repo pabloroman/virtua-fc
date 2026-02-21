@@ -46,6 +46,8 @@ class ShowGame
         $notifications = $this->notificationService->getNotifications($game->id, true, 15);
         $groupedNotifications = $notifications->groupBy(fn ($n) => $n->game_date?->format('Y-m-d') ?? 'unknown');
 
+        $leagueStandings = $this->getLeagueStandings($game);
+
         $viewData = [
             'game' => $game,
             'nextMatch' => $nextMatch,
@@ -57,6 +59,7 @@ class ShowGame
             'upcomingFixtures' => $this->calendarService->getUpcomingFixtures($game),
             'groupedNotifications' => $groupedNotifications,
             'unreadNotificationCount' => $this->notificationService->getUnreadCount($game->id),
+            'leagueStandings' => $leagueStandings,
         ];
 
         // Add knockout progress for tournament mode
@@ -107,6 +110,31 @@ class ShowGame
             : $nextMatch->home_team_id;
 
         return $this->calendarService->getTeamForm($game->id, $opponentId);
+    }
+
+    private function getLeagueStandings(Game $game): \Illuminate\Support\Collection
+    {
+        $standings = GameStanding::with('team')
+            ->where('game_id', $game->id)
+            ->where('competition_id', $game->competition_id)
+            ->orderBy('position')
+            ->get();
+
+        if ($standings->isEmpty()) {
+            return collect();
+        }
+
+        // Show a window around the player's team: nearby teams + top of table
+        $playerPosition = $standings->firstWhere('team_id', $game->team_id)?->position ?? 1;
+        $windowStart = max(1, $playerPosition - 2);
+        $windowEnd = min($standings->count(), $playerPosition + 2);
+
+        // Always include top 3
+        $topIds = $standings->where('position', '<=', 3)->pluck('team_id');
+        $windowIds = $standings->whereBetween('position', [$windowStart, $windowEnd])->pluck('team_id');
+        $visibleIds = $topIds->merge($windowIds)->unique();
+
+        return $standings->filter(fn ($s) => $visibleIds->contains($s->team_id));
     }
 
     private function getPlayerTournamentTie(Game $game): ?CupTie

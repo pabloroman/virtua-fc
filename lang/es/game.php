@@ -205,6 +205,9 @@ return [
     'goal_playoff' => 'Clasificarse para el playoff de ascenso',
     'board_expects_position' => 'La directiva espera que alcances la posición :position',
 
+    'standings' => 'Clasificación',
+    'full_table' => 'Ver tabla completa',
+
     // No data
     'no_standings_yet' => 'Aún no hay clasificación disponible.',
     'knockout_not_started' => 'La fase eliminatoria aún no ha comenzado',
