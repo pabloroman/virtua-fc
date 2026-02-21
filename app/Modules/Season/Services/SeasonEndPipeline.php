@@ -22,6 +22,7 @@ use App\Modules\Season\Processors\SupercupQualificationProcessor;
 use App\Modules\Season\Processors\UefaQualificationProcessor;
 use App\Modules\Season\Processors\ContinentalAndCupInitProcessor;
 use App\Modules\Season\Processors\OnboardingResetProcessor;
+use App\Modules\Season\Processors\TransferMarketResetProcessor;
 use App\Modules\Season\Processors\YouthAcademyProcessor;
 use App\Models\Game;
 
@@ -51,6 +52,7 @@ class SeasonEndPipeline
         StandingsResetProcessor $standingsReset,
         BudgetProjectionProcessor $budgetProjection,
         YouthAcademyProcessor $youthAcademy,
+        TransferMarketResetProcessor $transferMarketReset,
         ContinentalAndCupInitProcessor $competitionInitialization,
         OnboardingResetProcessor $onboardingReset,
     ) {
@@ -72,6 +74,7 @@ class SeasonEndPipeline
             $standingsReset,
             $budgetProjection,
             $youthAcademy,
+            $transferMarketReset,
             $competitionInitialization,
             $onboardingReset,
         ];
