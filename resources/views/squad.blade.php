@@ -30,7 +30,7 @@
                             ['href' => route('game.squad', $game->id), 'label' => __('squad.squad'), 'active' => true],
                         ];
                         if ($isCareer) {
-                            $squadNavItems[] = ['href' => route('game.squad.academy', $game->id), 'label' => __('squad.academy'), 'active' => false, 'badge' => $academyCount > 0 ? $academyCount : null];
+                            $squadNavItems[] = ['href' => route('game.squad.academy', $game->id), 'label' => __('squad.academy'), 'active' => false];
                         }
                     @endphp
                     <x-section-nav :items="$squadNavItems" />
@@ -306,8 +306,6 @@
                                         </span>
                                     </th>
 
-                                    {{-- Detail column --}}
-                                    <th class="py-2 w-8"></th>
                                 </tr>
                             </thead>
                             <tbody x-ref="tbody">
@@ -606,12 +604,6 @@
                                             @endif
                                         </td>
 
-                                        {{-- Player detail button --}}
-                                        <td class="py-2 text-right">
-                                            <button @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $gamePlayer->id]) }}')" class="p-1.5 text-slate-400 hover:text-sky-600 rounded hover:bg-slate-100 transition-colors">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                            </button>
-                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>

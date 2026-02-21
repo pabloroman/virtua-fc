@@ -30,8 +30,6 @@ class ShowAcademy
             ->get()
             ->sortBy(fn ($p) => $this->sortOrder($p));
 
-        $grouped = $prospects->groupBy(fn ($p) => $p->position_group);
-
         $expiringContractsCount = $this->contractService->getPlayersEligibleForRenewal($game)->count();
 
         $tier = $game->currentInvestment->youth_academy_tier ?? 0;
@@ -41,10 +39,7 @@ class ShowAcademy
 
         return view('squad-academy', [
             'game' => $game,
-            'goalkeepers' => $grouped->get('Goalkeeper', collect()),
-            'defenders' => $grouped->get('Defender', collect()),
-            'midfielders' => $grouped->get('Midfielder', collect()),
-            'forwards' => $grouped->get('Forward', collect()),
+            'prospects' => $prospects,
             'loanedPlayers' => $loanedPlayers,
             'academyCount' => $prospects->count(),
             'expiringContractsCount' => $expiringContractsCount,
