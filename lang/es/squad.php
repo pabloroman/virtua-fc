@@ -6,6 +6,12 @@ return [
     'development' => 'Desarrollo',
     'stats' => 'Estadísticas',
 
+    // View mode labels
+    'view_skills' => 'Habilidades',
+    'view_development' => 'Desarrollo',
+    'view_contract' => 'Contratos',
+    'view_stats' => 'Estadísticas',
+
     // Position groups
     'goalkeepers' => 'Porteros',
     'defenders' => 'Defensas',

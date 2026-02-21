@@ -6,6 +6,12 @@ return [
     'development' => 'Development',
     'stats' => 'Stats',
 
+    // View mode labels
+    'view_skills' => 'Skills',
+    'view_development' => 'Development',
+    'view_contract' => 'Contracts',
+    'view_stats' => 'Stats',
+
     // Position groups
     'goalkeepers' => 'Goalkeepers',
     'defenders' => 'Defenders',

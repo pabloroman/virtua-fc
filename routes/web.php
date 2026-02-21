@@ -52,7 +52,6 @@ use App\Http\Views\ShowScoutingHub;
 use App\Http\Views\ShowScoutReportResults;
 use App\Http\Views\ShowSeasonEnd;
 use App\Http\Views\ShowTournamentEnd;
-use App\Http\Views\ShowSquadDevelopment;
 use App\Http\Actions\DismissAcademyPlayer;
 use App\Http\Actions\EvaluateAcademy;
 use App\Http\Actions\LoanAcademyPlayer;
@@ -61,7 +60,6 @@ use App\Http\Views\ShowAcademyEvaluation;
 use App\Http\Views\GameSetupStatus;
 use App\Http\Views\ShowAcademyPlayerDetail;
 use App\Http\Views\ShowPlayerDetail;
-use App\Http\Views\ShowSquadStats;
 use App\Http\Views\ShowTransfers;
 use App\Http\Actions\ProcessSubstitution;
 use App\Http\Actions\ProcessTacticalChange;
@@ -91,8 +89,6 @@ Route::middleware('auth')->group(function () {
         // Game Views
         Route::get('/game/{gameId}', ShowGame::class)->name('show-game');
         Route::get('/game/{gameId}/squad', ShowSquad::class)->name('game.squad');
-        Route::get('/game/{gameId}/squad/development', ShowSquadDevelopment::class)->name('game.squad.development');
-        Route::get('/game/{gameId}/squad/stats', ShowSquadStats::class)->name('game.squad.stats');
         Route::get('/game/{gameId}/squad/academy', ShowAcademy::class)->name('game.squad.academy');
         Route::get('/game/{gameId}/player/{playerId}/detail', ShowPlayerDetail::class)->name('game.player.detail');
         Route::get('/game/{gameId}/academy/{playerId}/detail', ShowAcademyPlayerDetail::class)->name('game.academy.detail');
