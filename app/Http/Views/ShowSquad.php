@@ -4,6 +4,8 @@ namespace App\Http\Views;
 
 use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Lineup\Services\LineupService;
+use App\Modules\Squad\Services\DevelopmentCurve;
+use App\Modules\Squad\Services\PlayerDevelopmentService;
 use App\Models\AcademyPlayer;
 use App\Models\Game;
 use App\Models\TransferOffer;
@@ -13,14 +15,26 @@ class ShowSquad
     public function __construct(
         private readonly ContractService $contractService,
         private readonly LineupService $lineupService,
+        private readonly PlayerDevelopmentService $developmentService,
     ) {}
 
     public function __invoke(string $gameId)
     {
         $game = Game::with('team')->findOrFail($gameId);
 
-        // Get all players for the user's team, grouped by position
-        $players = $this->lineupService->getPlayersByPositionGroup($gameId, $game->team_id);
+        // Get all players for the user's team, sorted by position group
+        $allPlayers = $this->lineupService->getAllPlayers($gameId, $game->team_id)
+            ->sortBy(fn ($p) => LineupService::positionSortOrder($p->position))
+            ->values()
+            ->map(function ($player) {
+                $player->setAttribute('projection', $this->developmentService->getNextSeasonProjection($player));
+                $player->setAttribute('development_status', DevelopmentCurve::getStatus($player->age));
+                $player->setAttribute('goal_contributions', $player->goals + $player->assists);
+                $player->setAttribute('goals_per_game', $player->appearances > 0
+                    ? round($player->goals / $player->appearances, 2)
+                    : 0);
+                return $player;
+            });
 
         // Career-mode only: contract and transfer data
         $renewalEligiblePlayers = collect();
@@ -67,10 +81,7 @@ class ShowSquad
 
         return view('squad', [
             'game' => $game,
-            'goalkeepers' => $players['goalkeepers'],
-            'defenders' => $players['defenders'],
-            'midfielders' => $players['midfielders'],
-            'forwards' => $players['forwards'],
+            'players' => $allPlayers,
             'renewalEligiblePlayers' => $renewalEligiblePlayers,
             'renewalDemands' => $renewalDemands,
             'pendingRenewals' => $pendingRenewals,

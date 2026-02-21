@@ -1,10 +1,12 @@
 <?php
 
 return [
-    // Page title
+    // Page title / tabs
     'squad' => 'Squad',
+    'skills' => 'Skills',
     'development' => 'Development',
     'stats' => 'Stats',
+    'contract' => 'Contract',
 
     // Position groups
     'goalkeepers' => 'Goalkeepers',
