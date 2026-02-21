@@ -46,7 +46,10 @@ class PlayerGeneratorService
      */
     public function create(Game $game, GeneratedPlayerData $data): GamePlayer
     {
-        $identity = $this->pickRandomIdentity();
+        $excludedNames = ($data->name === null)
+            ? $this->getExistingTeamPlayerNames($game->id, $data->teamId)
+            : [];
+        $identity = $this->pickRandomIdentity(excludedNames: $excludedNames);
         $name = $data->name ?? $identity['name'];
         $nationality = $data->nationality ?? $identity['nationality'];
         $age = $data->dateOfBirth->age;
@@ -124,12 +127,23 @@ class PlayerGeneratorService
     /**
      * Pick a random identity (name + nationality + height + foot) from the pool.
      *
-     * @param  string|null  $nationality   Exact nationality filter (100% match, e.g. for Athletic Bilbao)
-     * @param  string|null  $teamCountry   Country code for weighted selection (75% domestic / 25% any)
+     * @param  string|null  $nationality    Exact nationality filter (100% match, e.g. for Athletic Bilbao)
+     * @param  string|null  $teamCountry    Country code for weighted selection (75% domestic / 25% any)
+     * @param  string[]     $excludedNames  Names to exclude (e.g. existing squad/academy names)
      */
-    public function pickRandomIdentity(?string $nationality = null, ?string $teamCountry = null): array
+    public function pickRandomIdentity(?string $nationality = null, ?string $teamCountry = null, array $excludedNames = []): array
     {
         $pool = $this->getIdentityPool();
+
+        // Remove names already used in the squad to prevent duplicates
+        if (! empty($excludedNames)) {
+            $excludedSet = array_flip($excludedNames);
+            $filtered = array_values(array_filter($pool, fn (array $entry) => ! isset($excludedSet[$entry['name']])));
+
+            if (! empty($filtered)) {
+                $pool = $filtered;
+            }
+        }
 
         // Exact nationality filter takes priority (e.g. Athletic Bilbao → 100% Spanish)
         if ($nationality !== null) {
@@ -187,6 +201,20 @@ class PlayerGeneratorService
     private function generateFoot(): string
     {
         return rand(1, 100) <= 70 ? 'right' : 'left';
+    }
+
+    /**
+     * Get names of existing players on a team (to prevent duplicate names in a squad).
+     *
+     * @return string[]
+     */
+    private function getExistingTeamPlayerNames(string $gameId, string $teamId): array
+    {
+        return GamePlayer::where('game_id', $gameId)
+            ->where('team_id', $teamId)
+            ->join('players', 'game_players.player_id', '=', 'players.id')
+            ->pluck('players.name')
+            ->toArray();
     }
 
     /**
