@@ -139,7 +139,7 @@ This allows the game to adjust estimates based on how players actually perform.
 
 ## Implementation
 
-See `app/Game/Services/PlayerDevelopmentService.php`:
+See `app/Modules/Squad/Services/PlayerDevelopmentService.php`:
 - `generatePotential()` - Initial potential calculation
 - `getValuePotentialBonus()` - Young player value bonus
 - `getVeteranPotentialBonus()` - Veteran proven quality bonus

@@ -157,15 +157,10 @@ At season end, for each player:
 
 ## Implementation
 
-See `app/Game/Services/PlayerDevelopmentService.php`:
+See `app/Modules/Squad/Services/PlayerDevelopmentService.php`:
 - `calculateDevelopment()` - Main development calculation
 - `calculateQualityGapBonus()` - Gap-based development bonus
 - `processSeasonEndDevelopment()` - Full season processing
-
-See `app/Game/Services/DevelopmentCurve.php`:
-- `AGE_CURVES` - Age multiplier constants
-- `calculateChange()` - Growth/decline calculation
-- `qualifiesForBonus()` - Playing time check
 
 ## Design Rationale
 
