@@ -2,14 +2,106 @@
 
 ## Overview
 
-The transfer market system allows managers to buy and sell players. It consists of two main components:
+The transfer market system allows managers to buy and sell players. It consists of five main components:
 
-1. **Transfers** - Buying and selling players for a transfer fee
-2. **Contracts** - Managing player contracts, renewals, and free transfers
+1. **Scouting** - Search and discover players from other clubs
+2. **Buying** - Bid on scouted players with counter-offer negotiation
+3. **Selling** - List players and receive offers from AI clubs
+4. **Loans** - Loan players in and out
+5. **Contracts** - Managing player contracts, renewals, pre-contracts, and free transfers
 
 ---
 
-## Phase 3a: Selling Players (Implemented)
+## Scouting System
+
+The scouting system is the primary way to find and recruit new players.
+
+### Scouting Tiers
+
+The scouting tier (determined by budget allocation) affects search speed, accuracy, and geographic scope:
+
+| Tier | Scope | Speed | Results |
+|------|-------|-------|---------|
+| Tier 1 | Your league only | Slow | 5-8 players |
+| Tier 2 | All of Spain | Normal | 5-8 players |
+| Tier 3 | Europe (top + secondary leagues) | Fast | 5-8 players |
+| Tier 4 | Global + hidden gems | Fastest | 5-8 players, more accurate estimates |
+
+### Search Flow
+
+```
+1. User selects search filters (position, age, ability, market value, scope)
+2. Search takes 1-3 weeks depending on scope and scouting tier
+3. Results return 5-8 players biased toward availability, with 1-2 "stretch targets"
+4. User can bid on any player, request a loan, or submit a pre-contract offer
+```
+
+### Search Filters
+
+- **Position** - Filter by player position
+- **Age range** - Minimum and maximum age
+- **Ability range** - Minimum and maximum ability level
+- **Market value range** - Budget-aware search
+- **Expiring contracts** - Find players available on free transfer
+- **Scope** - Domestic or international (requires higher scouting tier)
+
+---
+
+## Buying Players
+
+Players can be bought through the scouting system.
+
+### Bid Evaluation
+
+When you submit a bid, the selling club evaluates it based on:
+
+- **Player importance** (0.0–1.0): How valuable the player is to their current team
+- **Contract situation**: Players with expiring contracts are cheaper
+- **Age**: Young players command a premium
+
+### Bid Responses
+
+| Response | Condition |
+|----------|-----------|
+| **Accepted** | Bid ≥ 105% of asking price (key players) or ≥ 95% (others) |
+| **Counter-offer** | Bid in the 85-105% range of asking price |
+| **Rejected** | Bid below threshold |
+
+Counter-offers are AI-generated bids that the user can accept. This creates a natural negotiation flow.
+
+### Transfer Completion
+
+- If the **transfer window is open** → transfer completes immediately
+- If the **window is closed** → marked as "agreed", completes at next window (Summer matchday 0, Winter matchday 19)
+
+---
+
+## Loan System
+
+Bidirectional loan system for both incoming and outgoing players.
+
+### Loan Out (Your Players)
+
+```
+1. User lists a player for loan via scouting
+2. Each matchday: 50% chance of finding a destination
+3. Destination scored by: reputation match, position need, league tier, random variety
+4. Best-scoring club from top 5 candidates is selected
+5. Search expires after 21 days if no match found
+6. Player returns to your team at season end
+```
+
+### Loan In (From Other Clubs)
+
+Via the scouting system, you can request loans for scouted players. The selling club evaluates the request and may accept.
+
+### Loan Tracking
+
+Active loans show in/out status and auto-return at season end via `LoanReturnProcessor` (priority 3 in the season-end pipeline).
+
+---
+
+## Selling Players
 
 ### Features
 
@@ -48,7 +140,7 @@ Offer = Market Value × (1.00 to 1.20) × Age Adjustment
 
 ---
 
-## Phase 3b: Contract Management (Implemented)
+## Contract Management
 
 ### Features
 
@@ -121,6 +213,24 @@ Schema::create('transfer_offers', function (Blueprint $table) {
 
 ## Services
 
+### ScoutingService
+
+Handles player search, bid evaluation, and pre-contract evaluation:
+
+```php
+class ScoutingService
+{
+    // Search
+    public function submitSearch(Game $game, array $filters): ScoutReport;
+    public function processSearch(ScoutReport $report): void;
+    public function cancelSearch(ScoutReport $report): void;
+
+    // Bid Evaluation
+    public function evaluateBid(GamePlayer $player, int $bidAmount): array;
+    public function evaluatePreContractOffer(GamePlayer $player, int $wage): array;
+}
+```
+
 ### TransferService
 
 Handles all transfer-related operations:
@@ -153,9 +263,29 @@ class TransferService
 }
 ```
 
+### LoanService
+
+Handles bidirectional loan operations:
+
+```php
+class LoanService
+{
+    // Loan Out
+    public function searchLoanDestination(GamePlayer $player): ?array;
+    public function processLoanOut(GamePlayer $player, Team $destination): Loan;
+
+    // Loan In
+    public function processLoanIn(GamePlayer $player, Game $game): Loan;
+
+    // Loan Management
+    public function returnLoans(Game $game): Collection;
+    public function getActiveLoans(Game $game): Collection;
+}
+```
+
 ### ContractService
 
-Handles contract-related operations:
+Handles contract-related operations including multi-round negotiation:
 
 ```php
 class ContractService
@@ -163,7 +293,7 @@ class ContractService
     // Wage Calculation
     public function calculateAnnualWage(int $marketValueCents, int $minimumWageCents, ?int $age): int;
 
-    // Contract Renewal
+    // Contract Renewal (with negotiation)
     public function calculateRenewalDemand(GamePlayer $player): array;
     public function processRenewal(GamePlayer $player, int $newWage, int $contractYears): bool;
     public function applyPendingWages(Game $game): Collection;
@@ -230,16 +360,29 @@ Shows:
 ## Routes
 
 ```php
-// Transfers
-Route::get('/game/{gameId}/transfers', ShowTransfers::class);
+// Scouting
+Route::get('/game/{gameId}/scouting', ShowScoutingHub::class);
+Route::get('/game/{gameId}/scouting/{reportId}/results', ShowScoutReportResults::class);
+Route::post('/game/{gameId}/scouting/search', SubmitScoutSearch::class);
+Route::post('/game/{gameId}/scouting/cancel', CancelScoutSearch::class);
+Route::post('/game/{gameId}/scouting/{playerId}/bid', SubmitTransferBid::class);
+Route::post('/game/{gameId}/scouting/{playerId}/loan', RequestLoan::class);
+Route::post('/game/{gameId}/scouting/{playerId}/pre-contract', SubmitPreContractOffer::class);
+Route::post('/game/{gameId}/scouting/counter/{offerId}/accept', AcceptCounterOffer::class);
+
+// Transfers (incoming offers, outgoing)
+Route::get('/game/{gameId}/transfers', ShowScouting::class);
+Route::get('/game/{gameId}/transfers/outgoing', ShowTransfers::class);
 Route::post('/game/{gameId}/transfers/list/{playerId}', ListPlayerForTransfer::class);
 Route::post('/game/{gameId}/transfers/unlist/{playerId}', UnlistPlayerFromTransfer::class);
 Route::post('/game/{gameId}/transfers/accept/{offerId}', AcceptTransferOffer::class);
 Route::post('/game/{gameId}/transfers/reject/{offerId}', RejectTransferOffer::class);
-Route::post('/game/{gameId}/transfers/renew/{playerId}', OfferRenewal::class);
 
-// Contracts
-Route::get('/game/{gameId}/squad/contracts', ShowContracts::class);
+// Contract Renewals (with negotiation)
+Route::post('/game/{gameId}/transfers/renew/{playerId}', SubmitRenewalOffer::class);
+Route::post('/game/{gameId}/transfers/accept-counter/{playerId}', AcceptRenewalCounter::class);
+Route::post('/game/{gameId}/transfers/decline-renewal/{playerId}', DeclineRenewal::class);
+Route::post('/game/{gameId}/transfers/reconsider-renewal/{playerId}', ReconsiderRenewal::class);
 ```
 
 ---
@@ -248,34 +391,25 @@ Route::get('/game/{gameId}/squad/contracts', ShowContracts::class);
 
 ### Completed
 
-- [x] Migration: add `transfer_status` and `transfer_listed_at` to `game_players`
-- [x] Migration: add `pending_annual_wage` to `game_players`
-- [x] Migration: create `transfer_offers` table
-- [x] Model: `TransferOffer` with relationships and helper methods
-- [x] Model: `GamePlayer` transfer and contract helper methods
+- [x] Selling: list players, receive offers (listed + unsolicited), accept/reject
+- [x] Buying: scouting hub, search with filters, bid on players, counter-offer negotiation
+- [x] Loans: loan out (destination scoring), loan in (via scouting), auto-return at season end
+- [x] Pre-contracts: user and AI can submit pre-contract offers for expiring contract players
+- [x] Contract renewals: multi-round negotiation with counter-offers, decline, reconsider
+- [x] Transfer windows (Summer matchday 0, Winter matchday 19)
+- [x] `ScoutingService` with tiered search, bid evaluation, pre-contract evaluation
 - [x] `TransferService` with all transfer methods
-- [x] `ContractService` with renewal methods
-- [x] Pricing logic for listed, unsolicited, and pre-contract offers
-- [x] AI team selection logic
-- [x] Generate offers on matchday advance (listed, unsolicited, pre-contract)
-- [x] Expire old offers on matchday advance
-- [x] Transfer windows (Summer/Winter)
+- [x] `ContractService` with negotiation logic
+- [x] `LoanService` with destination scoring and both-direction loans
 - [x] `PreContractTransferProcessor` for end of season
 - [x] `ContractRenewalProcessor` for end of season
-- [x] Squad page with list/unlist buttons and status badges
-- [x] Transfers page with all offer types
-- [x] Contracts page with renewals and pre-contracts
-- [x] Accept/Reject offer actions
-- [x] Offer renewal action
-- [x] Financial integration (transfer fees added to balance)
+- [x] `LoanReturnProcessor` for end of season
+- [x] Financial integration (transfer fees, loan savings, wage impact)
+- [x] Notification integration (transfer results, contract events)
 
 ### Not Implemented (Future)
 
-- [ ] Event sourcing for transfer actions
-- [ ] Buying players (Phase 3b)
-- [ ] Transfer negotiations (counter-offers)
 - [ ] Agent fees
-- [ ] Loan system
 - [ ] Release clauses
 - [ ] Sell-on clauses
 
@@ -308,20 +442,8 @@ const DEFAULT_RENEWAL_YEARS = 3;
 
 ## Future Improvements
 
-### Notification System Enhancement
-
-Currently, transfer notifications appear in context on the Transfers and Contracts pages. Future improvements:
-
-1. **Unified Notification System** - Dedicated `Notification` model with read/unread status
-2. **Notification Center** - Central page for all game events
-3. **In-Game News Feed** - Timeline of transfers, renewals, league news
-4. **Email-style Inbox** - Messages from board, scouts, agents
-
-### Contract Negotiations
-
-Currently, renewals are accepted automatically at the player's demanded terms. Future improvements:
-
-1. **Negotiation rounds** - Back-and-forth on wage demands
-2. **Player happiness** - Affects likelihood of accepting
-3. **Rival interest** - Other clubs can offer better terms
-4. **Contract bonuses** - Signing bonuses, performance bonuses
+- **Agent fees** - Agents taking a cut of transfer deals
+- **Release clauses** - Mandatory sale prices in contracts
+- **Sell-on clauses** - Percentage of future sale price owed to previous club
+- **Player happiness** - Affects likelihood of accepting renewal/transfer
+- **Contract bonuses** - Signing bonuses, performance bonuses
