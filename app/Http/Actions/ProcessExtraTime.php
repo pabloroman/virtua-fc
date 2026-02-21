@@ -107,27 +107,14 @@ class ProcessExtraTime
             }
         }
 
-        $penaltyResult = null;
-        if ($totalHome === $totalAway) {
-            [$homePens, $awayPens] = $this->matchSimulator->simulatePenalties($homePlayers, $awayPlayers);
-
-            $match->update([
-                'home_score_penalties' => $homePens,
-                'away_score_penalties' => $awayPens,
-            ]);
-
-            $penaltyResult = [
-                'home' => $homePens,
-                'away' => $awayPens,
-            ];
-        }
+        $needsPenalties = $totalHome === $totalAway;
 
         return response()->json([
             'needed' => true,
             'extraTimeEvents' => $frontendEvents,
             'homeScoreET' => $extraTimeResult->homeScore,
             'awayScoreET' => $extraTimeResult->awayScore,
-            'penalties' => $penaltyResult,
+            'needsPenalties' => $needsPenalties,
         ]);
     }
 

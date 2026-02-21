@@ -30,6 +30,7 @@ export default function liveMatch(config) {
         // Extra time / knockout config
         isKnockout: config.isKnockout || false,
         extraTimeUrl: config.extraTimeUrl || '',
+        penaltiesUrl: config.penaltiesUrl || '',
         twoLeggedInfo: config.twoLeggedInfo || null,
         preloadedExtraTimeData: config.extraTimeData || null,
 
@@ -64,6 +65,15 @@ export default function liveMatch(config) {
         penaltyResult: null,
         lastRevealedETIndex: -1,
         _skippingToEnd: false,
+        _needsPenalties: false,
+
+        // Penalty picker / shootout state
+        penaltyPickerOpen: false,
+        selectedPenaltyKickers: [],
+        penaltyProcessing: false,
+        penaltyKicks: [],           // All kick results from server
+        revealedPenaltyKicks: [],   // Kicks revealed so far (animated)
+        _penaltyRevealTimer: null,
 
         // Tactical panel state
         tacticalPanelOpen: false,
@@ -112,6 +122,7 @@ export default function liveMatch(config) {
                 this.etHomeScore = this.preloadedExtraTimeData.homeScoreET || 0;
                 this.etAwayScore = this.preloadedExtraTimeData.awayScoreET || 0;
                 this.penaltyResult = this.preloadedExtraTimeData.penalties || null;
+                this._needsPenalties = this.preloadedExtraTimeData.needsPenalties || false;
             }
 
             // Brief delay before kickoff
@@ -129,7 +140,7 @@ export default function liveMatch(config) {
                 return;
             }
 
-            if (this.isPaused || this.tacticalPanelOpen) {
+            if (this.isPaused || this.tacticalPanelOpen || this.penaltyPickerOpen) {
                 this._lastTick = now;
                 this._animFrame = requestAnimationFrame(this.tick.bind(this));
                 return;
@@ -360,7 +371,7 @@ export default function liveMatch(config) {
                 this.extraTimeEvents = result.extraTimeEvents || [];
                 this.etHomeScore = result.homeScoreET || 0;
                 this.etAwayScore = result.awayScoreET || 0;
-                this.penaltyResult = result.penalties || null;
+                this._needsPenalties = result.needsPenalties || false;
 
                 // Brief pause showing "Extra Time" before starting
                 setTimeout(() => this.startExtraTime(), 2000);
@@ -408,12 +419,14 @@ export default function liveMatch(config) {
             this.homeScore = this.finalHomeScore + this.etHomeScore;
             this.awayScore = this.finalAwayScore + this.etAwayScore;
 
-            if (this.penaltyResult) {
+            if (this._needsPenalties) {
                 this.phase = 'penalties';
-                // Show penalties for a moment, then transition to full_time
-                setTimeout(() => {
-                    this.enterFullTime();
-                }, 3000);
+                // Open penalty picker for user to select kickers
+                this.openPenaltyPicker();
+            } else if (this.penaltyResult) {
+                // Preloaded penalties (page refresh after they were resolved)
+                this.phase = 'penalties';
+                setTimeout(() => this.enterFullTime(), 3000);
             } else {
                 this.enterFullTime();
             }
@@ -469,6 +482,15 @@ export default function liveMatch(config) {
                 this._kickoffTimeout = null;
             }
 
+            // If penalties are being animated, fast-forward the reveal
+            if (this.phase === 'penalties' && this.penaltyKicks.length > 0
+                && this.revealedPenaltyKicks.length < this.penaltyKicks.length) {
+                clearTimeout(this._penaltyRevealTimer);
+                this.revealedPenaltyKicks = [...this.penaltyKicks];
+                setTimeout(() => this.enterFullTime(), 500);
+                return;
+            }
+
             if (this.isKnockout && !this.hasExtraTime && !this._skippingToEnd) {
                 // For knockout matches, first skip to end of regular time
                 // which will trigger ET check
@@ -480,7 +502,7 @@ export default function liveMatch(config) {
                 // If ET was triggered, wait for it and then skip through it
                 if (this.phase === 'going_to_extra_time') {
                     const waitForET = () => {
-                        if (this.extraTimeEvents.length > 0 || this.penaltyResult || this.etHomeScore > 0 || this.etAwayScore > 0) {
+                        if (this.extraTimeEvents.length > 0 || this._needsPenalties || this.etHomeScore > 0 || this.etAwayScore > 0) {
                             this.skipExtraTime();
                         } else if (this.phase === 'going_to_extra_time') {
                             setTimeout(waitForET, 100);
@@ -521,14 +543,119 @@ export default function liveMatch(config) {
             this.homeScore = this.finalHomeScore + this.etHomeScore;
             this.awayScore = this.finalAwayScore + this.etAwayScore;
 
-            if (this.penaltyResult) {
+            if (this._needsPenalties) {
                 this.phase = 'penalties';
-                setTimeout(() => {
-                    this.enterFullTime();
-                }, 2000);
+                this.openPenaltyPicker();
+            } else if (this.penaltyResult) {
+                this.phase = 'penalties';
+                setTimeout(() => this.enterFullTime(), 2000);
             } else {
                 this.enterFullTime();
             }
+        },
+
+        // =============================
+        // Penalty picker & shootout
+        // =============================
+
+        openPenaltyPicker() {
+            this.selectedPenaltyKickers = [];
+            this.penaltyPickerOpen = true;
+            document.body.classList.add('overflow-y-hidden');
+        },
+
+        get availablePenaltyPlayers() {
+            const selectedIds = this.selectedPenaltyKickers.map(k => k.id);
+            const confirmedOutIds = this.substitutionsMade.map(s => s.playerOutId);
+            const confirmedInIds = this.substitutionsMade.map(s => s.playerInId);
+            const redCarded = this.redCardedPlayerIds;
+
+            // Original lineup players still on pitch
+            const onPitch = this.lineupPlayers.filter(p =>
+                !confirmedOutIds.includes(p.id) && !redCarded.includes(p.id) && !selectedIds.includes(p.id)
+            );
+            // Players who came on via substitution
+            const subsOnPitch = this.benchPlayers.filter(p =>
+                confirmedInIds.includes(p.id) && !confirmedOutIds.includes(p.id)
+                && !redCarded.includes(p.id) && !selectedIds.includes(p.id)
+            );
+
+            return [...onPitch, ...subsOnPitch]
+                .sort((a, b) => (b.technicalAbility ?? 50) - (a.technicalAbility ?? 50));
+        },
+
+        addPenaltyKicker(player) {
+            if (this.selectedPenaltyKickers.length >= 5) return;
+            this.selectedPenaltyKickers.push({ ...player });
+        },
+
+        removePenaltyKicker(index) {
+            this.selectedPenaltyKickers.splice(index, 1);
+        },
+
+        async confirmPenaltyKickers() {
+            if (this.selectedPenaltyKickers.length < 5 || this.penaltyProcessing) return;
+            this.penaltyProcessing = true;
+
+            const kickerOrder = this.selectedPenaltyKickers.map(k => k.id);
+
+            try {
+                const response = await fetch(this.penaltiesUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': this.csrfToken,
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({ kickerOrder }),
+                });
+
+                if (!response.ok) {
+                    console.error('Penalty request failed');
+                    this.penaltyProcessing = false;
+                    return;
+                }
+
+                const result = await response.json();
+
+                this.penaltyResult = {
+                    home: result.homeScore,
+                    away: result.awayScore,
+                };
+                this.penaltyKicks = result.kicks || [];
+                this._needsPenalties = false;
+
+                // Close picker and start kick-by-kick reveal
+                this.penaltyPickerOpen = false;
+                document.body.classList.remove('overflow-y-hidden');
+                this.revealPenaltyKicks();
+            } catch (err) {
+                console.error('Penalty request failed:', err);
+            } finally {
+                this.penaltyProcessing = false;
+            }
+        },
+
+        revealPenaltyKicks() {
+            this.revealedPenaltyKicks = [];
+            let idx = 0;
+
+            const revealNext = () => {
+                if (idx >= this.penaltyKicks.length) {
+                    // All kicks revealed, transition to full time
+                    setTimeout(() => this.enterFullTime(), 2000);
+                    return;
+                }
+
+                this.revealedPenaltyKicks.push(this.penaltyKicks[idx]);
+                idx++;
+
+                // Pause between kicks for drama
+                this._penaltyRevealTimer = setTimeout(revealNext, 800);
+            };
+
+            // Start revealing after a short pause
+            this._penaltyRevealTimer = setTimeout(revealNext, 500);
         },
 
         // =============================
@@ -537,6 +664,7 @@ export default function liveMatch(config) {
 
         get hasExtraTime() {
             return this.extraTimeEvents.length > 0 || this.etHomeScore > 0 || this.etAwayScore > 0
+                || this._needsPenalties || this.penaltyResult !== null
                 || this.preloadedExtraTimeData !== null;
         },
 
@@ -1104,6 +1232,7 @@ export default function liveMatch(config) {
             }
             clearTimeout(this.pauseTimer);
             clearTimeout(this._kickoffTimeout);
+            clearTimeout(this._penaltyRevealTimer);
             document.body.classList.remove('overflow-y-hidden');
         },
     };

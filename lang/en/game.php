@@ -143,6 +143,12 @@ return [
     'live_penalties' => 'Penalties',
     'live_pen_abbr' => 'pen',
     'live_aet' => 'AET',
+    'live_pen_pick_title' => 'Select Penalty Takers',
+    'live_pen_pick_desc' => 'Choose 5 players and set the order.',
+    'live_pen_pick_confirm' => 'Start Shootout',
+    'live_pen_scored' => 'Goal',
+    'live_pen_missed' => 'Missed',
+    'live_pen_round' => 'Round :round',
 
     // Substitutions
     'sub_title' => 'Substitutions',

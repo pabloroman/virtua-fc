@@ -143,6 +143,12 @@ return [
     'live_penalties' => 'Penaltis',
     'live_pen_abbr' => 'pen',
     'live_aet' => 'DET',
+    'live_pen_pick_title' => 'Elige a los lanzadores',
+    'live_pen_pick_desc' => 'Selecciona 5 jugadores y establece el orden.',
+    'live_pen_pick_confirm' => 'Iniciar tanda',
+    'live_pen_scored' => 'Gol',
+    'live_pen_missed' => 'Fallo',
+    'live_pen_round' => 'Ronda :round',
 
     // Substitutions
     'sub_title' => 'Sustituciones',

@@ -146,6 +146,7 @@ class ShowLiveMatch
                 'positionGroup' => $p->position_group,
                 'positionSort' => LineupService::positionSortOrder($p->position),
                 'physicalAbility' => $p->physical_ability,
+                'technicalAbility' => $p->technical_ability,
                 'age' => Carbon::parse($p->player->date_of_birth)->age,
                 'minuteEntered' => $entryMinutes[$p->id] ?? 0,
             ])
@@ -179,6 +180,7 @@ class ShowLiveMatch
                 'positionGroup' => $p->position_group,
                 'positionSort' => LineupService::positionSortOrder($p->position),
                 'physicalAbility' => $p->physical_ability,
+                'technicalAbility' => $p->technical_ability,
                 'age' => Carbon::parse($p->player->date_of_birth)->age,
                 'minuteEntered' => null,
             ])
@@ -216,6 +218,7 @@ class ShowLiveMatch
             'substituteUrl' => route('game.match.substitute', ['gameId' => $game->id, 'matchId' => $playerMatch->id]),
             'tacticsUrl' => route('game.match.tactics', ['gameId' => $game->id, 'matchId' => $playerMatch->id]),
             'extraTimeUrl' => route('game.match.extra-time', ['gameId' => $game->id, 'matchId' => $playerMatch->id]),
+            'penaltiesUrl' => route('game.match.penalties', ['gameId' => $game->id, 'matchId' => $playerMatch->id]),
             'userFormation' => $userFormation,
             'userMentality' => $userMentality,
             'availableFormations' => $availableFormations,
@@ -264,6 +267,7 @@ class ShowLiveMatch
             'homeScoreET' => $match->home_score_et ?? 0,
             'awayScoreET' => $match->away_score_et ?? 0,
             'penalties' => null,
+            'needsPenalties' => false,
         ];
 
         if ($match->home_score_penalties !== null) {
@@ -271,6 +275,9 @@ class ShowLiveMatch
                 'home' => $match->home_score_penalties,
                 'away' => $match->away_score_penalties,
             ];
+        } else {
+            // ET done but penalties not yet — user needs to pick kickers
+            $data['needsPenalties'] = true;
         }
 
         return $data;

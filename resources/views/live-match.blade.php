@@ -41,6 +41,7 @@
                 tacticsUrl: '{{ $tacticsUrl }}',
                 isKnockout: {{ $isKnockout ? 'true' : 'false' }},
                 extraTimeUrl: '{{ $extraTimeUrl }}',
+                penaltiesUrl: '{{ $penaltiesUrl }}',
                 extraTimeData: {{ Js::from($extraTimeData) }},
                 twoLeggedInfo: {{ Js::from($twoLeggedInfo) }},
                 translations: {
@@ -48,6 +49,8 @@
                     extraTime: '{{ __('game.live_extra_time') }}',
                     etHalfTime: '{{ __('game.live_et_half_time') }}',
                     penalties: '{{ __('game.live_penalties') }}',
+                    penScored: '{{ __('game.live_pen_scored') }}',
+                    penMissed: '{{ __('game.live_pen_missed') }}',
                 },
              })"
              x-on:keydown.escape.window="if (!tacticalPanelOpen) skipToEnd()"
@@ -183,7 +186,7 @@
                     </div>
 
                     {{-- Speed Controls --}}
-                    <div class="flex items-center justify-center gap-2 mb-6" x-show="phase !== 'full_time' && phase !== 'penalties'">
+                    <div class="flex items-center justify-center gap-2 mb-6" x-show="phase !== 'full_time' && !penaltyPickerOpen">
                         <span class="text-xs text-slate-400 mr-2">{{ __('game.live_speed') }}</span>
                         <template x-for="s in [1, 2]" :key="s">
                             <button
@@ -263,8 +266,41 @@
                     <div class="border-t border-slate-100 pt-4">
                         <div class="space-y-1 max-h-80 overflow-y-auto" id="events-feed">
 
-                            {{-- Penalty result banner --}}
-                            <template x-if="penaltyResult && (phase === 'penalties' || phase === 'full_time')">
+                            {{-- Penalty kicks display --}}
+                            <template x-if="penaltyKicks.length > 0 && (phase === 'penalties' || phase === 'full_time')">
+                                <div class="mb-2">
+                                    {{-- Header --}}
+                                    <div class="flex items-center gap-3 py-2 px-4 rounded-t-lg bg-purple-100">
+                                        <span class="text-sm w-6 text-center shrink-0">&#127942;</span>
+                                        <div class="flex-1 text-center">
+                                            <span class="text-sm font-bold text-purple-800">{{ __('game.live_penalties') }}</span>
+                                            <span class="text-lg font-bold text-purple-900 ml-2 tabular-nums"
+                                                  x-text="penaltyHomeScore + ' - ' + penaltyAwayScore"></span>
+                                        </div>
+                                    </div>
+                                    {{-- Kick-by-kick rows --}}
+                                    <div class="bg-purple-50 rounded-b-lg px-3 py-2 space-y-0.5">
+                                        <template x-for="(kick, idx) in revealedPenaltyKicks" :key="idx">
+                                            <div class="flex items-center gap-2 py-1 text-sm"
+                                                 x-transition:enter="transition ease-out duration-300"
+                                                 x-transition:enter-start="opacity-0 -translate-y-1"
+                                                 x-transition:enter-end="opacity-100 translate-y-0">
+                                                <span class="w-5 text-right text-xs font-mono text-purple-400 shrink-0"
+                                                      x-text="kick.round"></span>
+                                                <img :src="kick.side === 'home' ? homeTeamImage : awayTeamImage"
+                                                     class="w-4 h-4 shrink-0 object-contain">
+                                                <span class="flex-1 truncate text-sm text-slate-700" x-text="kick.playerName"></span>
+                                                <span class="text-xs font-bold shrink-0 px-1.5 py-0.5 rounded"
+                                                      :class="kick.scored ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'"
+                                                      x-text="kick.scored ? translations.penScored : translations.penMissed"></span>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </template>
+
+                            {{-- Simple penalty banner fallback (preloaded without kick data) --}}
+                            <template x-if="penaltyResult && penaltyKicks.length === 0 && (phase === 'penalties' || phase === 'full_time')">
                                 <div class="flex items-center gap-3 py-3 px-4 rounded-lg bg-purple-50 mb-2">
                                     <span class="text-sm w-6 text-center shrink-0">&#127942;</span>
                                     <div class="flex-1 text-center">
@@ -430,6 +466,9 @@
 
             {{-- Tactical Control Center Modal --}}
             @include('partials.live-match.tactical-panel')
+
+            {{-- Penalty Kicker Picker Modal --}}
+            @include('partials.live-match.penalty-picker')
 
             {{-- Other Matches Ticker --}}
             @if(count($otherMatches) > 0)

@@ -19,6 +19,7 @@ use App\Http\Views\ShowBudgetAllocation;
 use App\Http\Actions\FinalizeMatch;
 use App\Http\Actions\GetAutoLineup;
 use App\Http\Actions\ProcessExtraTime;
+use App\Http\Actions\ProcessPenalties;
 use App\Http\Actions\InitGame;
 use App\Http\Actions\ListPlayerForTransfer;
 use App\Http\Actions\AcceptRenewalCounter;
@@ -114,6 +115,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/game/{gameId}/match/{matchId}/substitute', ProcessSubstitution::class)->name('game.match.substitute');
         Route::post('/game/{gameId}/match/{matchId}/tactics', ProcessTacticalChange::class)->name('game.match.tactics')->middleware('throttle:10,1');
         Route::post('/game/{gameId}/match/{matchId}/extra-time', ProcessExtraTime::class)->name('game.match.extra-time');
+        Route::post('/game/{gameId}/match/{matchId}/penalties', ProcessPenalties::class)->name('game.match.penalties');
         Route::post('/game/{gameId}/finalize-match', FinalizeMatch::class)->name('game.finalize-match');
         // Transfers
         Route::post('/game/{gameId}/transfers/list/{playerId}', ListPlayerForTransfer::class)->name('game.transfers.list');
