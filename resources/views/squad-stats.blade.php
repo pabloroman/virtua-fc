@@ -33,38 +33,6 @@
 
                     <div class="mt-6"></div>
 
-                    {{-- Season summary card --}}
-                    <div class="flex flex-wrap items-stretch gap-4 mb-6">
-                        <div class="flex items-center gap-3 px-5 py-3 bg-slate-50 rounded-lg border border-slate-200">
-                            <div class="text-2xl font-bold text-green-600">{{ $totals['goals'] }}</div>
-                            <div class="text-xs text-slate-500 leading-tight">{{ __('squad.legend_goals') }}</div>
-                        </div>
-                        <div class="flex items-center gap-3 px-5 py-3 bg-slate-50 rounded-lg border border-slate-200">
-                            <div class="text-2xl font-bold text-sky-600">{{ $totals['assists'] }}</div>
-                            <div class="text-xs text-slate-500 leading-tight">{{ __('squad.legend_assists') }}</div>
-                        </div>
-                        <div class="flex items-center gap-3 px-5 py-3 bg-slate-50 rounded-lg border border-slate-200">
-                            <div class="flex items-center gap-2">
-                                <span class="w-3 h-4 bg-yellow-400 rounded-sm"></span>
-                                <span class="text-2xl font-bold text-yellow-600">{{ $totals['yellow_cards'] }}</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span class="w-3 h-4 bg-red-500 rounded-sm"></span>
-                                <span class="text-2xl font-bold text-red-600">{{ $totals['red_cards'] }}</span>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-3 px-5 py-3 bg-slate-50 rounded-lg border border-slate-200">
-                            <div class="text-2xl font-bold text-green-600">{{ $totals['clean_sheets'] }}</div>
-                            <div class="text-xs text-slate-500 leading-tight">{{ __('squad.legend_clean_sheets') }}</div>
-                        </div>
-                        @if($totals['own_goals'] > 0)
-                        <div class="flex items-center gap-3 px-5 py-3 bg-slate-50 rounded-lg border border-slate-200">
-                            <div class="text-2xl font-bold text-red-500">{{ $totals['own_goals'] }}</div>
-                            <div class="text-xs text-slate-500 leading-tight">{{ __('squad.legend_own_goals') }}</div>
-                        </div>
-                        @endif
-                    </div>
-
                     <div x-data="{
                         sortColumn: 'appearances',
                         sortAsc: false,

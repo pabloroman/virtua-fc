@@ -28,23 +28,11 @@ class ShowSquadStats
                 return $player;
             });
 
-        // Calculate squad totals
-        $totals = [
-            'appearances' => $players->sum('appearances'),
-            'goals' => $players->sum('goals'),
-            'assists' => $players->sum('assists'),
-            'own_goals' => $players->sum('own_goals'),
-            'yellow_cards' => $players->sum('yellow_cards'),
-            'red_cards' => $players->sum('red_cards'),
-            'clean_sheets' => $players->where('position', 'Goalkeeper')->sum('clean_sheets'),
-        ];
-
         $academyCount = AcademyPlayer::where('game_id', $gameId)->where('team_id', $game->team_id)->count();
 
         return view('squad-stats', [
             'game' => $game,
             'players' => $players,
-            'totals' => $totals,
             'academyCount' => $academyCount,
         ]);
     }
