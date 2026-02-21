@@ -13,7 +13,7 @@
                         ['href' => route('game.squad', $game->id), 'label' => __('squad.squad'), 'active' => false],
                         ['href' => route('game.squad.development', $game->id), 'label' => __('squad.development'), 'active' => false],
                         ['href' => route('game.squad.stats', $game->id), 'label' => __('squad.stats'), 'active' => false],
-                        ['href' => route('game.squad.academy', $game->id), 'label' => __('squad.academy'), 'active' => true, 'badge' => $academyCount > 0 ? $academyCount : null],
+                        ['href' => route('game.squad.academy', $game->id), 'label' => __('squad.academy'), 'active' => true],
                     ]" />
 
                     <div class="mt-6"></div>

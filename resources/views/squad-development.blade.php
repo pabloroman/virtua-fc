@@ -16,7 +16,7 @@
                             ['href' => route('game.squad.stats', $game->id), 'label' => __('squad.stats'), 'active' => false],
                         ];
                         if ($game->isCareerMode()) {
-                            $squadNavItems[] = ['href' => route('game.squad.academy', $game->id), 'label' => __('squad.academy'), 'active' => false, 'badge' => $academyCount > 0 ? $academyCount : null];
+                            $squadNavItems[] = ['href' => route('game.squad.academy', $game->id), 'label' => __('squad.academy'), 'active' => false];
                         }
                     @endphp
                     <x-section-nav :items="$squadNavItems" />
@@ -66,7 +66,6 @@
                                     <th class="font-semibold py-2 text-center w-24">{{ __('app.status') }}</th>
                                     <th class="font-semibold py-2 text-center w-24 hidden md:table-cell">{{ __('squad.playing_time') }}</th>
                                     <th class="font-semibold py-2 text-center" style="min-width: 120px">{{ __('squad.projection') }}</th>
-                                    <th class="py-2 w-8"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -82,6 +81,11 @@
                                         <td class="py-3 pl-2">
                                             <div class="flex items-center gap-3">
                                                 <x-position-badge :position="$player->position" />
+                                                <button x-data @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $player->id]) }}')" class="p-1.5 text-slate-300 rounded hover:text-slate-400">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="w-5 h-5">
+                                                        <path fill-rule="evenodd" d="M19.5 21a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3h-5.379a.75.75 0 0 1-.53-.22L11.47 3.66A2.25 2.25 0 0 0 9.879 3H4.5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h15Zm-6.75-10.5a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V10.5Z" clip-rule="evenodd" />
+                                                    </svg>
+                                                </button>
                                                 <div class="flex items-center gap-1.5">
                                                     <span class="font-medium text-slate-900">{{ $player->name }}</span>
                                                     {{-- Development arrow --}}
@@ -182,12 +186,6 @@
                                             @endif
                                         </td>
 
-                                        {{-- Player detail --}}
-                                        <td class="py-3 text-right">
-                                            <button x-data @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $player->id]) }}')" class="p-1.5 text-slate-400 hover:text-sky-600 rounded hover:bg-slate-100 transition-colors">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                            </button>
-                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>

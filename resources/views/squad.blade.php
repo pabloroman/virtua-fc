@@ -16,7 +16,7 @@
                             ['href' => route('game.squad.stats', $game->id), 'label' => __('squad.stats'), 'active' => false],
                         ];
                         if ($game->isCareerMode()) {
-                            $squadNavItems[] = ['href' => route('game.squad.academy', $game->id), 'label' => __('squad.academy'), 'active' => false, 'badge' => $academyCount > 0 ? $academyCount : null];
+                            $squadNavItems[] = ['href' => route('game.squad.academy', $game->id), 'label' => __('squad.academy'), 'active' => false];
                         }
                     @endphp
                     <x-section-nav :items="$squadNavItems" />
