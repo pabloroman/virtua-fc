@@ -13,11 +13,11 @@ use App\Models\GamePlayer;
  *
  * Two phases:
  * 1. Retire players who announced retirement last season (retiring_at_season == oldSeason)
- *    - For non-user teams: generate a younger replacement of similar characteristics
- *    - For user's team: just remove (user had one season of warning)
+ *    - All retiring players are removed from the game
+ *    - SquadReplenishmentProcessor (priority 8) fills any resulting AI roster gaps
  * 2. Announce new retirements for the coming season based on probability algorithm
  *
- * Priority: 7 (after contract expiration/renewal, before player development)
+ * Priority: 7 (after contract expiration/renewal, before squad replenishment)
  */
 class PlayerRetirementProcessor implements SeasonEndProcessor
 {
@@ -57,24 +57,6 @@ class PlayerRetirementProcessor implements SeasonEndProcessor
         $retiredPlayers = [];
 
         foreach ($retiringPlayers as $player) {
-            $isUserTeam = $player->team_id === $game->team_id;
-            $replacementInfo = null;
-
-            // Generate replacement for non-user teams
-            if (!$isUserTeam) {
-                $replacement = $this->retirementService->generateReplacementPlayer(
-                    $game,
-                    $player,
-                    $data->newSeason
-                );
-                $replacementInfo = [
-                    'id' => $replacement->id,
-                    'name' => $replacement->player->name,
-                    'age' => $replacement->player->age,
-                    'position' => $replacement->position,
-                ];
-            }
-
             $retiredPlayers[] = [
                 'playerId' => $player->id,
                 'playerName' => $player->name,
@@ -82,8 +64,7 @@ class PlayerRetirementProcessor implements SeasonEndProcessor
                 'position' => $player->position,
                 'teamId' => $player->team_id,
                 'teamName' => $player->team->name,
-                'wasUserTeam' => $isUserTeam,
-                'replacement' => $replacementInfo,
+                'wasUserTeam' => $player->team_id === $game->team_id,
             ];
 
             $player->delete();

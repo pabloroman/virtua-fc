@@ -185,7 +185,7 @@ class PlayerRetirementTest extends TestCase
         $this->assertTrue($retired[0]['wasUserTeam']);
     }
 
-    public function test_processor_generates_replacement_for_ai_team(): void
+    public function test_processor_deletes_ai_team_player_on_retirement(): void
     {
         $player = $this->createGamePlayer(
             age: 37,
@@ -196,9 +196,6 @@ class PlayerRetirementTest extends TestCase
         );
         $player->update(['retiring_at_season' => '2024']);
 
-        $aiTeamPlayerCount = GamePlayer::where('team_id', $this->aiTeam->id)->count();
-        $this->assertEquals(1, $aiTeamPlayerCount);
-
         $processor = app(PlayerRetirementProcessor::class);
         $data = new SeasonTransitionData(oldSeason: '2024', newSeason: '2025', competitionId: 'ESP1');
 
@@ -207,23 +204,13 @@ class PlayerRetirementTest extends TestCase
         // Original player should be deleted
         $this->assertDatabaseMissing('game_players', ['id' => $player->id]);
 
-        // A replacement should exist for the AI team
-        $replacement = GamePlayer::where('team_id', $this->aiTeam->id)
-            ->where('game_id', $this->game->id)
-            ->first();
-
-        $this->assertNotNull($replacement);
-        $this->assertEquals('Centre-Back', $replacement->position);
-        $this->assertLessThanOrEqual(28, $replacement->player->age);
-        $this->assertGreaterThanOrEqual(22, $replacement->player->age);
-
-        // Metadata should contain replacement info
+        // Metadata should contain retired player info
         $retired = $result->getMetadata('retiredPlayers');
-        $this->assertNotNull($retired[0]['replacement']);
-        $this->assertEquals('Centre-Back', $retired[0]['replacement']['position']);
+        $this->assertCount(1, $retired);
+        $this->assertFalse($retired[0]['wasUserTeam']);
     }
 
-    public function test_processor_does_not_generate_replacement_for_user_team(): void
+    public function test_processor_deletes_user_team_player_on_retirement(): void
     {
         $player = $this->createGamePlayer(
             age: 36,
@@ -237,14 +224,14 @@ class PlayerRetirementTest extends TestCase
 
         $result = $processor->process($this->game, $data);
 
-        // No replacement for user team
+        // Player should be deleted
         $userPlayers = GamePlayer::where('team_id', $this->userTeam->id)
             ->where('game_id', $this->game->id)
             ->count();
         $this->assertEquals(0, $userPlayers);
 
         $retired = $result->getMetadata('retiredPlayers');
-        $this->assertNull($retired[0]['replacement']);
+        $this->assertTrue($retired[0]['wasUserTeam']);
     }
 
     public function test_processor_does_not_retire_players_from_different_season(): void
@@ -320,35 +307,6 @@ class PlayerRetirementTest extends TestCase
         $player->refresh();
 
         $this->assertFalse($player->canReceivePreContractOffers());
-    }
-
-    // =========================================
-    // Replacement player generation
-    // =========================================
-
-    public function test_replacement_player_has_correct_attributes(): void
-    {
-        $service = app(PlayerRetirementService::class);
-        $retiringPlayer = $this->createGamePlayer(
-            age: 37,
-            position: 'Goalkeeper',
-            team: $this->aiTeam,
-            techAbility: 80,
-            physAbility: 75,
-        );
-
-        $replacement = $service->generateReplacementPlayer($this->game, $retiringPlayer, '2025');
-
-        $this->assertEquals('Goalkeeper', $replacement->position);
-        $this->assertEquals($this->aiTeam->id, $replacement->team_id);
-        $this->assertEquals($this->game->id, $replacement->game_id);
-        $this->assertNotNull($replacement->player);
-        $this->assertGreaterThanOrEqual(22, $replacement->player->age);
-        $this->assertLessThanOrEqual(28, $replacement->player->age);
-        $this->assertNotNull($replacement->contract_until);
-        $this->assertNotNull($replacement->annual_wage);
-        $this->assertGreaterThan(0, $replacement->game_technical_ability);
-        $this->assertGreaterThan(0, $replacement->game_physical_ability);
     }
 
     // =========================================
