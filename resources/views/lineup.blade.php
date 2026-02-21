@@ -170,7 +170,7 @@
                                     {{-- Player Slots --}}
                                     <template x-for="slot in slotAssignments" :key="slot.id">
                                         <div
-                                            class="absolute transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300"
+                                            class="absolute transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 hover:z-30"
                                             :style="`left: ${slot.x}%; top: ${100 - slot.y}%`"
                                         >
                                             {{-- Empty Slot (clickable for assignment) --}}
