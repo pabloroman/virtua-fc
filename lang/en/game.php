@@ -15,7 +15,6 @@ return [
     'other_competitions_in_progress' => 'Other competitions in progress',
     'other_competitions_desc' => 'Your team has finished the season, but there are still matches in other competitions.',
     'advance_other_matches' => 'Simulate Remaining Matches',
-    'start_season' => 'Start Season :season',
 
     // Match
     'next' => 'Next',
@@ -34,9 +33,7 @@ return [
     'group_stage' => 'Group Stage',
 
     // Standings
-    'standings' => 'Standings',
     'pts' => 'pts',
-    'position_suffix' => ':positionth',
     'played_abbr' => 'P',
     'won_abbr' => 'W',
     'drawn_abbr' => 'D',
@@ -54,10 +51,6 @@ return [
     'promotion_playoff' => 'Promotion Playoff',
     'top_scorers' => 'Top Scorers',
     'no_goals_yet' => 'No goals scored yet',
-
-    // Notifications
-    'notifications' => 'Notifications',
-    'squad_status' => 'Squad Status',
 
     // Mentality
     'mentality_defensive' => 'Defensive',
@@ -81,30 +74,11 @@ return [
 
     // Alerts
     'injured' => 'Injured',
-    'suspended' => 'Suspended',
-    'low_fitness' => 'Low Fitness',
-    'card_risk' => 'Card Risk',
-    'yellow_cards' => 'YC',
 
     // Scout
-    'scout_report_ready' => 'Scout Report Ready',
-    'scout_searching' => 'Scout Searching...',
-    'players_to_review' => ':count players available to review.',
     'weeks_remaining' => ':count week remaining|:count weeks remaining',
 
-    // Transfer alerts
-    'transfer_offers' => 'Transfer Offers',
-    'expires_in' => 'Expires in :days days',
-
-    // Club finances
-    'club_finances' => 'Club Finances',
-    'projected_position' => 'Projected Position',
-    'transfer_budget' => 'Transfer Budget',
-    'carried_debt' => 'Carried Debt',
-
     // Calendar
-    'season_calendar' => 'Season Calendar',
-    'record' => 'Record',
     'win_rate' => ':percent% win rate',
     'goals' => 'Goals',
     'scored' => 'Scored',
@@ -112,21 +86,7 @@ return [
     'home_vs_away' => 'Home vs Away',
 
     // Youth & Loans
-    'youth_academy_prospects' => 'Youth Academy Prospects',
-    'youth_prospects_desc' => 'New talents promoted from the academy this season.',
     'potential' => 'Potential',
-    'loan_returns' => 'Loan Returns',
-    'loan_returns_desc' => 'Players returning from loan.',
-    'returned_from' => 'Returned from',
-    'completed_this_window' => 'Completed This Window',
-    'in' => 'IN',
-    'out' => 'OUT',
-    'loan' => 'Loan',
-
-    // Calendar labels
-    'july_1' => 'July 1',
-    'season_start' => 'Season Start',
-    'expires' => 'Expires: :date',
 
     // Welcome Tutorial
     'welcome_name' => 'Welcome, :name',
@@ -172,9 +132,7 @@ return [
     'live_assist' => 'Ast.',
     'live_speed' => 'Speed',
     'live_skip' => 'Skip',
-    'live_skip_match' => 'Skip to results',
     'live_other_results' => 'Others',
-    'live_continue_results' => 'View Full Results',
     'live_continue_dashboard' => 'Continue',
     'live_injury_alert' => 'has been injured. Make a substitution.',
     'live_injuries_report' => 'Injury Report',
@@ -182,12 +140,9 @@ return [
 
     // Substitutions
     'sub_title' => 'Substitutions',
-    'sub_count' => ':used/:max',
-    'sub_pause_and_substitute' => 'Pause & Substitute',
     'sub_player_out' => 'Off',
     'sub_player_in' => 'On',
     'sub_confirm' => 'Confirm',
-    'sub_cancel' => 'Cancel',
     'sub_reset' => 'Reset',
     'sub_processing' => 'Processing...',
     'sub_limit_reached' => 'Substitution limit reached',
@@ -203,7 +158,6 @@ return [
     'sub_error_player_sent_off' => 'Cannot substitute a player who has been sent off',
     'sub_error_player_suspended' => 'Player is suspended in this competition',
     'sub_error_player_injured' => 'Player is injured',
-    'sub_event' => 'Substitution',
 
     'match_not_in_progress' => 'This match is no longer in progress',
 
@@ -220,10 +174,8 @@ return [
     'tactical_subs_made' => 'Substitutions made',
     'tactical_apply' => 'Apply changes',
     'tactical_no_changes' => 'No tactical changes to apply.',
-    'energy' => 'Energy',
 
     // Results page
-    'results' => 'Results',
     'matchday_results' => ':name Results',
     'og' => 'OG',
 
@@ -240,7 +192,6 @@ return [
     'mode_career_desc' => 'Manage a club through multiple seasons',
     'mode_tournament' => 'World Cup',
     'mode_tournament_desc' => 'Manage a national team in the World Cup',
-    'mode_career_badge' => 'Career',
     'mode_tournament_badge' => 'World Cup',
 
     // Season Goals
@@ -252,6 +203,13 @@ return [
     'goal_promotion' => 'Direct promotion',
     'goal_playoff' => 'Qualify for the promotion playoff',
     'board_expects_position' => 'The board expects you to reach position :position',
+
+    // No data
+    'no_standings_yet' => 'No standings available yet.',
+    'knockout_not_started' => 'The knockout phase has not started yet',
+    'knockout_not_started_desc' => 'The knockout phase will be generated automatically when the group stage is finished.',
+    'knockout_generating' => 'Generating knockout bracket...',
+    'knockout_qualified' => 'Qualified for the knockout stage',
 
     // UEFA Swiss Format - League Phase
     'league_phase' => 'League Phase',
@@ -278,11 +236,6 @@ return [
     'uecl_direct_knockout' => 'Direct qualification to round of 16',
     'uecl_knockout_playoff' => 'Knockout playoff',
     'uecl_eliminated' => 'Eliminated',
-
-    // Knockout tie legs
-    'first_leg' => 'First Leg',
-    'second_leg' => 'Second Leg',
-    'aggregate' => 'Aggregate',
 
     // UEFA Swiss Format - Season Goals
     'goal_ucl_title' => 'Win the Champions League',

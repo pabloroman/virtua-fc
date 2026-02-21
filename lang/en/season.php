@@ -68,12 +68,6 @@ return [
     'relegated_to' => 'Relegated to :league',
     'playoff_winner' => 'Playoff winner',
 
-    // Player development
-    'player_development' => 'Player Development',
-    'growing' => 'Growing',
-    'peak' => 'Peak',
-    'declining' => 'Declining',
-
     // Retirements
     'retirements' => 'Retirements',
     'your_team_retirements' => 'Retiring from your team',

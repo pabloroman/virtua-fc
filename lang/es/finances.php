@@ -1,11 +1,8 @@
 <?php
 
 return [
-    // Page title
-    'title' => 'Finanzas :team_de - Temporada :season',
 
     // Overview cards
-    'projected_position' => 'Posición Proyectada',
     'squad_value' => 'Valor de la Plantilla',
     'annual_wage_bill' => 'Masa Salarial Anual',
     'transfer_budget' => 'Presupuesto de Fichajes',
@@ -20,7 +17,6 @@ return [
     'total_revenue' => 'Ingresos Totales',
 
     // Surplus calculation
-    'surplus_calculation' => 'Cálculo del Superávit',
     'projected_wages' => 'Salarios Proyectados',
     'projected_surplus' => 'Superávit Proyectado',
     'operating_expenses' => 'Gastos Operativos',
@@ -29,7 +25,6 @@ return [
     'available_surplus' => 'Superávit Disponible',
 
     // Season results
-    'season_results' => 'Resultados de la Temporada',
     'actual_revenue' => 'Ingresos Reales',
     'actual_surplus' => 'Superávit Real',
     'variance' => 'Variación',
@@ -43,11 +38,6 @@ return [
 
     // Tiers
     'youth_academy' => 'Cantera',
-    'youth_tier_0' => 'Sin programa de desarrollo juvenil',
-    'youth_tier_1' => 'Academia básica - promesas ocasionales',
-    'youth_tier_2' => 'Buena academia - cantera regular',
-    'youth_tier_3' => 'Academia de élite - jóvenes de alto potencial',
-    'youth_tier_4' => 'Clase mundial - estrellas de la casa',
 
     'medical' => 'Médico',
     'medical_tier_0' => 'Sin personal médico',
@@ -101,7 +91,6 @@ return [
 
     // Budget setup
     'setup_season_budget' => 'Configurar Presupuesto de Temporada',
-    'allocate_surplus' => 'Asigna tu superávit a infraestructura y fichajes.',
 
     // Transaction history
     'transaction_history' => 'Historial de Transacciones',
@@ -116,13 +105,8 @@ return [
     // Budget allocation page
     'budget_allocation' => 'Asignación de Presupuesto',
     'season_budget' => 'Presupuesto de Temporada :season',
-    'surplus_info' => 'Tienes :amount de superávit proyectado para invertir.',
-    'remaining_unallocated' => 'Sin Asignar Restante',
-    'allocation_exceeds' => 'La asignación supera el superávit disponible',
-    'all_tiers_minimum' => 'Todas las áreas deben ser al menos Nivel 1',
     'tier' => 'Nivel :level',
     'tier_n' => 'Nivel',
-    'save_allocation' => 'Guardar Asignación',
     'confirm_budget_allocation' => 'Confirmar Asignación de Presupuesto',
     'after_debt_deduction' => 'Después de :amount de deducción por deuda',
 
@@ -167,12 +151,9 @@ return [
     'category_transfer_out' => 'Venta',
     'category_wage' => 'Salarios',
     'category_tv' => 'Derechos TV',
-    'category_matchday' => 'Día de Partido',
-    'category_commercial' => 'Comercial',
     'category_cup_bonus' => 'Bonificación Copa',
     'category_performance_bonus' => 'Bonus de Rendimiento',
     'category_signing_bonus' => 'Prima de Fichaje',
-    'category_infrastructure' => 'Infraestructura',
 
     // Transaction descriptions
     'tx_free_transfer_out' => ':player se fue libre a :team',

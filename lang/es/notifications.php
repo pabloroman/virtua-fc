@@ -4,7 +4,6 @@ return [
     // Inbox
     'inbox' => 'Notificaciones',
     'mark_all_read' => 'Marcar todo como leído',
-    'no_notifications' => 'No hay notificaciones',
     'all_caught_up' => 'Estás al día',
 
     // Injury types
@@ -78,8 +77,6 @@ return [
     'competition_elimination_message' => ':stage',
 
     // Academy
-    'academy_prospect_title' => 'Nuevo canterano: :player',
-    'academy_prospect_message' => ':player (:position, :age años) ha surgido de la cantera.',
     'academy_batch_title' => 'Nuevos canteranos',
     'academy_batch_message' => ':count nuevos jugadores han llegado a la cantera.',
     'academy_evaluation_title' => 'Evaluación de cantera',

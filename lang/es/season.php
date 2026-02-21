@@ -68,12 +68,6 @@ return [
     'relegated_to' => 'Descendidos a :league',
     'playoff_winner' => 'Ganador del playoff',
 
-    // Player development
-    'player_development' => 'Desarrollo de Jugadores',
-    'growing' => 'Creciendo',
-    'peak' => 'En su Pico',
-    'declining' => 'Declinando',
-
     // Retirements
     'retirements' => 'Retiradas',
     'your_team_retirements' => 'Se retiran de tu equipo',

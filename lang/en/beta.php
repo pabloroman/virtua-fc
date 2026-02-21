@@ -16,7 +16,6 @@ return [
     'email_subject' => 'Your VirtuaFC invitation is ready!',
     'email_greeting' => 'You have been invited to the VirtuaFC beta!',
     'email_body' => 'You are among the first to try VirtuaFC, the AI-powered football manager. Click the button to create your account and start playing.',
-    'email_cta' => 'Create my account',
     'email_code_label' => 'Your invite code:',
     'email_warning' => 'Please note this is a beta version. The game is under active development and your progress may be reset during this period.',
     'email_thanks' => 'Thanks for being part of the beta',
@@ -26,7 +25,6 @@ return [
     'feedback_email_greeting' => 'Hi :name!',
     'feedback_email_body' => 'You have been playing VirtuaFC for a day now and your feedback is very important to me.',
     'feedback_email_questions' => 'What works well? What would you improve? Have you found any bugs? All feedback is welcome, no matter how small.',
-    'feedback_email_cta' => 'Leave feedback on GitHub',
     'feedback_email_reply_hint' => 'You can also simply reply to this email with your comments.',
     'feedback_email_thanks' => 'Thanks for helping improve the game',
 ];

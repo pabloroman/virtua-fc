@@ -2,9 +2,7 @@
 
 return [
     // Page title
-    'title' => ':team_de Squad',
     'squad' => 'Squad',
-    'contracts' => 'Contracts',
     'development' => 'Development',
     'stats' => 'Stats',
 
@@ -19,7 +17,6 @@ return [
     'forwards_short' => 'FWD',
 
     // Columns
-    'number_short' => '#',
     'technical' => 'TEC',
     'physical' => 'PHY',
     'technical_abbr' => 'TEC',
@@ -49,41 +46,13 @@ return [
     'low' => 'low',
 
     // Contract management
-    'contract_management' => 'Contract Management',
-    'back_to_squad' => 'Back to Squad',
-    'pre_contract_offers' => 'Pre-Contract Offers Received',
-    'other_clubs_want_players' => 'other clubs want your players',
     'free_transfer' => 'Free',
     'let_go' => 'Let Go',
-    'leaving_on_free' => 'Leaving on Free',
-    'at_end_of_season' => 'at end of season',
     'pre_contract_signed' => 'Pre-contract signed',
-    'renewals_agreed' => 'Renewals Agreed',
-    'new_wages_next_season' => 'new wages effective from next season',
     'new_wage_from_next' => 'New wage from next season',
-    'expiring_contracts' => 'player(s) in final year of contract',
-    'offer_renewals_hint' => 'offer renewals or risk losing players',
-    'expires' => 'Expires',
     'has_pre_contract_offers' => 'Has pre-contract offers!',
-    'wants' => 'Wants',
     'renew' => 'Renew',
-    'highest_earners' => 'Highest Earners',
-    'most_valuable' => 'Most Valuable Players',
-    'total_wage_bill' => 'Total Wage Bill',
-    'total_squad_value' => 'Total Squad Value',
-    'no_players_found' => 'No players found.',
-    'contract_overview' => 'Contract Overview',
-    'players_count' => ':count player(s)',
-    'more' => 'more',
-    'no_contract_actions' => 'No contract actions needed at this time.',
-    'expiring_contracts_hint' => 'Players in their final year of contract will appear here when they need renewal.',
-    'team_wants_player' => ':team wants :player',
-    'contract_expires' => 'Contract expires',
-    'contract_until' => 'Contract until',
     'expires_in_days' => 'Expires in :days days',
-    'current_wage' => 'Current',
-    'for_years' => 'for :years year(s)',
-    'pre_contract_offers_count' => 'pre-contract offer|pre-contract offers',
 
     // Lineup validation
     'formation_position_mismatch' => 'Formation :formation requires :required :position, but you selected :actual.',
@@ -107,7 +76,6 @@ return [
     // Lineup editor
     'pitch' => 'Pitch',
     'select_player_for_slot' => 'Select a player for this position',
-    'manual_assignment' => 'Manual assignment',
 
     // Opponent scout
     'team_rating' => 'Team Rating',
@@ -135,7 +103,6 @@ return [
     // Development page
     'ability' => 'Ability',
     'playing_time' => 'Minutes',
-    'squad_development' => 'Squad Development',
     'high_potential' => 'High Potential',
     'growing' => 'Growing',
     'declining' => 'Declining',
@@ -143,19 +110,14 @@ return [
     'all' => 'All',
     'no_players_match_filter' => 'No players match the selected filter.',
     'pot' => 'POT',
-    'cur' => 'CUR',
     'apps' => 'Apps',
     'projection' => 'Projection',
-    'current_ability' => 'Current Ability',
     'potential_range' => 'Potential Range',
-    'season_appearances' => 'Season Appearances',
     'starter_bonus' => 'starter bonus',
     'needs_appearances' => 'Needs :count+ appearances for starter bonus',
     'qualifies_starter_bonus' => 'Qualifies for starter bonus (+50% development)',
 
     // Stats page
-    'squad_statistics' => 'Squad Statistics',
-    'squad_totals' => 'Squad Totals',
     'goals' => 'G',
     'assists' => 'A',
     'goal_contributions' => 'G+A',
@@ -167,7 +129,6 @@ return [
     'appearances' => 'Appearances',
     'bookings' => 'Bookings',
     'click_to_sort' => 'Click column headers to sort',
-    'gk_only' => 'GK only',
 
     // Stats highlights
     'top_in_squad' => 'Top in squad',
@@ -186,9 +147,7 @@ return [
     'physical_full' => 'Physical',
     'fitness_full' => 'Fitness',
     'morale_full' => 'Morale',
-    'phase' => 'Phase',
     'season_stats' => 'Season Stats',
-    'cards' => 'Cards',
     'clean_sheets_full' => 'Clean Sheets',
     'goals_conceded_full' => 'Goals Conceded',
     'discovered' => 'Discovered',
@@ -215,8 +174,6 @@ return [
     'academy_returning_loans' => ':count player returning from loan|:count players returning from loan',
     'academy_incoming' => ':min-:max new academy prospects expected',
     'academy_on_loan' => 'On Loan',
-    'academy_hidden_stats' => '?',
-    'academy_age_limit' => 'Age limit reached',
     'academy_seasons' => ':count season|:count seasons',
     'academy_phase_unknown' => 'Abilities unknown',
     'academy_phase_glimpse' => 'Abilities visible',
