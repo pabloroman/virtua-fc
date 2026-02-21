@@ -3,7 +3,6 @@
 namespace App\Http\Actions;
 
 use App\Modules\Transfer\Services\LoanService;
-use App\Modules\Transfer\Services\ScoutingService;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\TransferOffer;
@@ -12,7 +11,6 @@ use Illuminate\Http\Request;
 class RequestLoan
 {
     public function __construct(
-        private readonly ScoutingService $scoutingService,
         private readonly LoanService $loanService,
     ) {}
 
@@ -33,37 +31,7 @@ class RequestLoan
 
     private function handleLoanIn(Game $game, GamePlayer $player)
     {
-        // Evaluate loan request
-        $evaluation = $this->scoutingService->evaluateLoanRequest($player);
-
-        if ($evaluation['result'] === 'rejected') {
-            return redirect()->route('game.transfers', $game->id)
-                ->with('error', $evaluation['message']);
-        }
-
-        // If window is open, complete immediately
-        if ($game->isTransferWindowOpen()) {
-            TransferOffer::create([
-                'game_id' => $game->id,
-                'game_player_id' => $player->id,
-                'offering_team_id' => $game->team_id,
-                'selling_team_id' => $player->team_id,
-                'offer_type' => TransferOffer::TYPE_LOAN_IN,
-                'direction' => TransferOffer::DIRECTION_INCOMING,
-                'transfer_fee' => 0,
-                'status' => TransferOffer::STATUS_COMPLETED,
-                'expires_at' => $game->current_date->addDays(30),
-                'game_date' => $game->current_date,
-                'resolved_at' => $game->current_date,
-            ]);
-
-            $this->loanService->processLoanIn($game, $player);
-
-            return redirect()->route('game.transfers', $game->id)
-                ->with('success', __('messages.loan_in_complete', ['message' => $evaluation['message']]));
-        }
-
-        // Create agreed loan offer record (will be processed at next window)
+        // Create a pending loan request — evaluation deferred to next matchday
         TransferOffer::create([
             'game_id' => $game->id,
             'game_player_id' => $player->id,
@@ -72,15 +40,13 @@ class RequestLoan
             'offer_type' => TransferOffer::TYPE_LOAN_IN,
             'direction' => TransferOffer::DIRECTION_INCOMING,
             'transfer_fee' => 0,
-            'status' => TransferOffer::STATUS_AGREED,
+            'status' => TransferOffer::STATUS_PENDING,
             'expires_at' => $game->current_date->addDays(30),
             'game_date' => $game->current_date,
-            'resolved_at' => $game->current_date,
         ]);
 
-        $nextWindow = $game->getNextWindowName();
         return redirect()->route('game.transfers', $game->id)
-            ->with('success', __('messages.loan_agreed', ['message' => $evaluation['message'], 'window' => $nextWindow]));
+            ->with('success', __('messages.loan_request_submitted', ['player' => $player->player->name]));
     }
 
     private function handleLoanOut(Game $game, GamePlayer $player)

@@ -331,6 +331,92 @@ class NotificationService
         );
     }
 
+    /**
+     * Create a notification for a transfer bid result.
+     */
+    public function notifyBidResult(Game $game, TransferOffer $offer, string $result): GameNotification
+    {
+        $player = $offer->gamePlayer;
+        $sellingTeam = $offer->sellingTeam ?? $player->team;
+        $teamName = $sellingTeam?->name ?? '';
+
+        return match ($result) {
+            'accepted' => $this->create(
+                game: $game,
+                type: GameNotification::TYPE_TRANSFER_BID_RESULT,
+                title: __('notifications.bid_accepted_title', ['player' => $player->name]),
+                message: __('notifications.bid_accepted', [
+                    'team' => $teamName,
+                    'player' => $player->name,
+                    'fee' => $offer->formatted_transfer_fee,
+                ]),
+                priority: GameNotification::PRIORITY_MILESTONE,
+                metadata: ['offer_id' => $offer->id, 'player_id' => $player->id, 'result' => 'accepted'],
+            ),
+            'counter' => $this->create(
+                game: $game,
+                type: GameNotification::TYPE_TRANSFER_BID_RESULT,
+                title: __('notifications.bid_counter_offer_title', ['player' => $player->name]),
+                message: __('notifications.bid_counter_offer', [
+                    'team' => $teamName,
+                    'player' => $player->name,
+                    'asking' => $offer->formatted_asking_price,
+                    'offered' => $offer->formatted_transfer_fee,
+                ]),
+                priority: GameNotification::PRIORITY_WARNING,
+                metadata: ['offer_id' => $offer->id, 'player_id' => $player->id, 'result' => 'counter'],
+            ),
+            'rejected' => $this->create(
+                game: $game,
+                type: GameNotification::TYPE_TRANSFER_BID_RESULT,
+                title: __('notifications.bid_rejected_title', ['player' => $player->name]),
+                message: __('notifications.bid_rejected', [
+                    'team' => $teamName,
+                    'player' => $player->name,
+                ]),
+                priority: GameNotification::PRIORITY_WARNING,
+                metadata: ['offer_id' => $offer->id, 'player_id' => $player->id, 'result' => 'rejected'],
+            ),
+            default => throw new \InvalidArgumentException("Unexpected bid result: {$result}"),
+        };
+    }
+
+    /**
+     * Create a notification for a loan request result.
+     */
+    public function notifyLoanRequestResult(Game $game, TransferOffer $offer, string $result): GameNotification
+    {
+        $player = $offer->gamePlayer;
+        $sellingTeam = $offer->sellingTeam ?? $player->team;
+        $teamName = $sellingTeam?->name ?? '';
+
+        return match ($result) {
+            'accepted' => $this->create(
+                game: $game,
+                type: GameNotification::TYPE_LOAN_REQUEST_RESULT,
+                title: __('notifications.loan_accepted_title', ['player' => $player->name]),
+                message: __('notifications.loan_accepted', [
+                    'team' => $teamName,
+                    'player' => $player->name,
+                ]),
+                priority: GameNotification::PRIORITY_MILESTONE,
+                metadata: ['offer_id' => $offer->id, 'player_id' => $player->id, 'result' => 'accepted'],
+            ),
+            'rejected' => $this->create(
+                game: $game,
+                type: GameNotification::TYPE_LOAN_REQUEST_RESULT,
+                title: __('notifications.loan_rejected_title', ['player' => $player->name]),
+                message: __('notifications.loan_rejected', [
+                    'team' => $teamName,
+                    'player' => $player->name,
+                ]),
+                priority: GameNotification::PRIORITY_WARNING,
+                metadata: ['offer_id' => $offer->id, 'player_id' => $player->id, 'result' => 'rejected'],
+            ),
+            default => throw new \InvalidArgumentException("Unexpected loan request result: {$result}"),
+        };
+    }
+
     // ==========================================
     // Scout Notifications
     // ==========================================
@@ -591,6 +677,8 @@ class NotificationService
             GameNotification::TYPE_RENEWAL_ACCEPTED => 'contract',
             GameNotification::TYPE_RENEWAL_COUNTERED => 'contract',
             GameNotification::TYPE_RENEWAL_REJECTED => 'contract',
+            GameNotification::TYPE_TRANSFER_BID_RESULT => 'transfer',
+            GameNotification::TYPE_LOAN_REQUEST_RESULT => 'loan',
             default => 'bell',
         };
     }

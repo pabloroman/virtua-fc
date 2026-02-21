@@ -82,6 +82,20 @@ return [
     'academy_evaluation_title' => 'Evaluación de cantera',
     'academy_evaluation_message' => 'Es momento de evaluar a tus canteranos.',
 
+    // Transfer bid results
+    'bid_accepted_title' => 'Oferta por :player aceptada',
+    'bid_accepted' => ':team ha aceptado tu oferta por :player — fichaje acordado por :fee.',
+    'bid_counter_offer_title' => 'Contraoferta por :player',
+    'bid_counter_offer' => ':team pide :asking por :player (ofreciste :offered).',
+    'bid_rejected_title' => 'Oferta por :player rechazada',
+    'bid_rejected' => ':team ha rechazado tu oferta por :player.',
+
+    // Loan request results
+    'loan_accepted_title' => 'Cesión de :player aceptada',
+    'loan_accepted' => ':team ha aceptado tu solicitud de cesión por :player.',
+    'loan_rejected_title' => 'Cesión de :player rechazada',
+    'loan_rejected' => ':team ha rechazado tu solicitud de cesión por :player.',
+
     // Priority badges
     'priority_urgent' => 'Urgente',
     'priority_attention' => 'Atención',

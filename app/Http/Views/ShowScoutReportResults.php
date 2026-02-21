@@ -32,16 +32,16 @@ class ShowScoutReportResults
                 ->where('team_id', '!=', $game->team_id)
                 ->get();
 
-            // Gather scouting details and existing offers for each player
-            $existingOfferPlayerIds = TransferOffer::where('game_id', $gameId)
-                ->whereIn('game_player_id', $players->pluck('id'))
-                ->whereIn('status', [TransferOffer::STATUS_PENDING, TransferOffer::STATUS_AGREED])
-                ->pluck('game_player_id')
-                ->toArray();
+            // Gather scouting details and existing offer statuses for each player
+            $offerStatuses = TransferOffer::getOfferStatusesForPlayers($gameId, $players->pluck('id')->toArray());
 
             foreach ($players as $player) {
                 $detail = $this->scoutingService->getPlayerScoutingDetail($player, $game);
-                $detail['has_existing_offer'] = in_array($player->id, $existingOfferPlayerIds);
+                $offerInfo = $offerStatuses[$player->id] ?? null;
+                $detail['has_existing_offer'] = $offerInfo !== null;
+                $detail['offer_status'] = $offerInfo['status'] ?? null;
+                $detail['offer_is_counter'] = $offerInfo['isCounter'] ?? false;
+                $detail['offer_type'] = $offerInfo['offerType'] ?? null;
                 $playerDetails[$player->id] = $detail;
             }
         }

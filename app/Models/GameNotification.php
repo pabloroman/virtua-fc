@@ -65,6 +65,8 @@ class GameNotification extends Model
     public const TYPE_RENEWAL_ACCEPTED = 'renewal_accepted';
     public const TYPE_RENEWAL_COUNTERED = 'renewal_countered';
     public const TYPE_RENEWAL_REJECTED = 'renewal_rejected';
+    public const TYPE_TRANSFER_BID_RESULT = 'transfer_bid_result';
+    public const TYPE_LOAN_REQUEST_RESULT = 'loan_request_result';
 
     // Priorities
     public const PRIORITY_MILESTONE = 'milestone';
@@ -94,6 +96,8 @@ class GameNotification extends Model
         self::TYPE_RENEWAL_ACCEPTED => 'transfers',
         self::TYPE_RENEWAL_COUNTERED => 'transfers',
         self::TYPE_RENEWAL_REJECTED => 'transfers',
+        self::TYPE_TRANSFER_BID_RESULT => 'scouting',
+        self::TYPE_LOAN_REQUEST_RESULT => 'scouting',
     ];
 
     protected $fillable = [
@@ -198,6 +202,12 @@ class GameNotification extends Model
      */
     public function getNavigationRoute(): string
     {
+        // Accepted/counter bid and loan results navigate to incoming transfers tab
+        if (in_array($this->type, [self::TYPE_TRANSFER_BID_RESULT, self::TYPE_LOAN_REQUEST_RESULT])) {
+            $result = $this->metadata['result'] ?? null;
+            return ($result === 'rejected') ? 'game.scouting' : 'game.transfers';
+        }
+
         $target = self::NAVIGATION_MAP[$this->type] ?? 'squad';
 
         return match ($target) {
@@ -342,6 +352,20 @@ class GameNotification extends Model
                 'border' => 'border-amber-200',
                 'text' => 'text-amber-800',
                 'icon_bg' => 'bg-amber-500',
+                'icon_text' => 'text-white',
+            ],
+            self::TYPE_TRANSFER_BID_RESULT => [
+                'bg' => 'bg-blue-50',
+                'border' => 'border-blue-200',
+                'text' => 'text-blue-800',
+                'icon_bg' => 'bg-blue-500',
+                'icon_text' => 'text-white',
+            ],
+            self::TYPE_LOAN_REQUEST_RESULT => [
+                'bg' => 'bg-purple-50',
+                'border' => 'border-purple-200',
+                'text' => 'text-purple-800',
+                'icon_bg' => 'bg-purple-500',
                 'icon_text' => 'text-white',
             ],
             default => [

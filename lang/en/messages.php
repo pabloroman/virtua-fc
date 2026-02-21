@@ -11,6 +11,10 @@ return [
     'offer_accepted_sale' => ':player sold :team_a for :fee.',
     'offer_accepted_pre_contract' => 'Deal agreed! :player will sign for :team for :fee when the :window window opens.',
 
+    // Bid/loan submission confirmations
+    'bid_submitted' => 'Your bid for :player has been submitted. You will receive a response soon.',
+    'loan_request_submitted' => 'Your loan request for :player has been submitted. You will receive a response soon.',
+
     // Counter offer
     'counter_offer_accepted' => 'Counter offer accepted! :player will join when the :window window opens.',
     'counter_offer_accepted_immediate' => 'Transfer complete! :player has joined your squad.',
@@ -45,6 +49,11 @@ return [
     'scout_search_started' => 'The scout has started searching.',
     'scout_already_searching' => 'You already have an active search. Cancel it first or wait for results.',
     'scout_search_cancelled' => 'Scout search cancelled.',
+    'scout_search_deleted' => 'Search deleted.',
+
+    // Shortlist messages
+    'shortlist_added' => ':player added to your shortlist.',
+    'shortlist_removed' => ':player removed from your shortlist.',
 
     // Budget messages
     'budget_saved' => 'Budget allocation saved.',

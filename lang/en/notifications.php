@@ -82,6 +82,20 @@ return [
     'academy_evaluation_title' => 'Academy evaluation',
     'academy_evaluation_message' => 'It\'s time to evaluate your academy players.',
 
+    // Transfer bid results
+    'bid_accepted_title' => 'Bid for :player accepted',
+    'bid_accepted' => ':team have accepted your bid for :player — transfer agreed for :fee.',
+    'bid_counter_offer_title' => 'Counter offer for :player',
+    'bid_counter_offer' => ':team want :asking for :player (you offered :offered).',
+    'bid_rejected_title' => 'Bid for :player rejected',
+    'bid_rejected' => ':team have rejected your bid for :player.',
+
+    // Loan request results
+    'loan_accepted_title' => 'Loan request for :player accepted',
+    'loan_accepted' => ':team have accepted your loan request for :player.',
+    'loan_rejected_title' => 'Loan request for :player rejected',
+    'loan_rejected' => ':team have rejected your loan request for :player.',
+
     // Priority badges
     'priority_urgent' => 'Urgent',
     'priority_attention' => 'Attention',

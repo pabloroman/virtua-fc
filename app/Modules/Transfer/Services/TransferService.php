@@ -479,6 +479,120 @@ class TransferService
     }
 
     /**
+     * Resolve pending incoming bids after the next matchday.
+     * Called each matchday; evaluates user bids that haven't been resolved yet.
+     */
+    public function resolveIncomingBids(Game $game, ScoutingService $scoutingService): Collection
+    {
+        $pendingBids = TransferOffer::with(['gamePlayer.player', 'gamePlayer.team'])
+            ->where('game_id', $game->id)
+            ->where('direction', TransferOffer::DIRECTION_INCOMING)
+            ->where('offer_type', TransferOffer::TYPE_USER_BID)
+            ->where('status', TransferOffer::STATUS_PENDING)
+            ->whereNull('resolved_at')
+            ->get();
+
+        $resolvedOffers = collect();
+
+        foreach ($pendingBids as $offer) {
+            $evaluation = $scoutingService->evaluateBid($offer->gamePlayer, $offer->transfer_fee);
+
+            if ($evaluation['result'] === 'accepted') {
+                $offer->update([
+                    'asking_price' => $evaluation['asking_price'],
+                ]);
+                $completedImmediately = $this->acceptIncomingOffer($offer);
+
+                $resolvedOffers->push([
+                    'offer' => $offer->fresh(),
+                    'result' => 'accepted',
+                    'completed' => $completedImmediately,
+                ]);
+            } elseif ($evaluation['result'] === 'counter') {
+                $offer->update([
+                    'asking_price' => $evaluation['counter_amount'],
+                    'resolved_at' => $game->current_date,
+                ]);
+
+                $resolvedOffers->push([
+                    'offer' => $offer->fresh(),
+                    'result' => 'counter',
+                    'completed' => false,
+                ]);
+            } else {
+                $offer->update([
+                    'status' => TransferOffer::STATUS_REJECTED,
+                    'asking_price' => $evaluation['asking_price'],
+                    'resolved_at' => $game->current_date,
+                ]);
+
+                $resolvedOffers->push([
+                    'offer' => $offer->fresh(),
+                    'result' => 'rejected',
+                    'completed' => false,
+                ]);
+            }
+        }
+
+        return $resolvedOffers;
+    }
+
+    /**
+     * Resolve pending incoming loan requests after the next matchday.
+     * Called each matchday; evaluates user loan requests that haven't been resolved yet.
+     */
+    public function resolveIncomingLoanRequests(Game $game, ScoutingService $scoutingService): Collection
+    {
+        $pendingLoans = TransferOffer::with(['gamePlayer.player', 'gamePlayer.team'])
+            ->where('game_id', $game->id)
+            ->where('direction', TransferOffer::DIRECTION_INCOMING)
+            ->where('offer_type', TransferOffer::TYPE_LOAN_IN)
+            ->where('status', TransferOffer::STATUS_PENDING)
+            ->whereNull('resolved_at')
+            ->get();
+
+        $resolvedOffers = collect();
+
+        foreach ($pendingLoans as $offer) {
+            $evaluation = $scoutingService->evaluateLoanRequest($offer->gamePlayer);
+
+            if ($evaluation['result'] === 'accepted') {
+                if ($game->isTransferWindowOpen()) {
+                    $this->completeLoanIn($offer, $game);
+                    $resolvedOffers->push([
+                        'offer' => $offer->fresh(),
+                        'result' => 'accepted',
+                        'completed' => true,
+                    ]);
+                } else {
+                    $offer->update([
+                        'status' => TransferOffer::STATUS_AGREED,
+                        'resolved_at' => $game->current_date,
+                    ]);
+                    $resolvedOffers->push([
+                        'offer' => $offer->fresh(),
+                        'result' => 'accepted',
+                        'completed' => false,
+                    ]);
+                }
+            } else {
+                $offer->update([
+                    'status' => TransferOffer::STATUS_REJECTED,
+                    'resolved_at' => $game->current_date,
+                ]);
+
+                $resolvedOffers->push([
+                    'offer' => $offer->fresh(),
+                    'result' => 'rejected',
+                    'completed' => false,
+                ]);
+            }
+        }
+
+        return $resolvedOffers;
+    }
+
+    /**
      * Complete a single pre-contract transfer.
      * No fee, player joins the new team.
      */

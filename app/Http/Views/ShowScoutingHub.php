@@ -7,6 +7,7 @@ use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\ShortlistedPlayer;
 use App\Models\TransferOffer;
+use App\Support\PositionMapper;
 use Illuminate\Http\Request;
 
 class ShowScoutingHub
@@ -77,19 +78,56 @@ class ShowScoutingHub
             $shortlistedPlayerIds[] = $gp->id;
         }
 
+        // Check existing offers for shortlisted players (map player_id => status details)
+        $existingOfferStatuses = TransferOffer::getOfferStatusesForPlayers($gameId, $shortlistedPlayerIds);
+
+        // Build JSON-serializable shortlist data for Alpine.js
+        $shortlistData = [];
+        foreach ($shortlistedPlayers as $entry) {
+            $gp = $entry['gamePlayer'];
+            $detail = $entry['detail'];
+            $positionDisplay = PositionMapper::getPositionDisplay($gp->position);
+            $shortlistData[] = [
+                'id' => $gp->id,
+                'name' => $gp->name,
+                'position' => $gp->position,
+                'positionAbbr' => $positionDisplay['abbreviation'],
+                'positionBg' => $positionDisplay['bg'],
+                'positionText' => $positionDisplay['text'],
+                'age' => $gp->age,
+                'teamName' => $gp->team?->name,
+                'teamImage' => $gp->team?->image,
+                'techRange' => $detail['tech_range'],
+                'formattedAskingPrice' => $detail['formatted_asking_price'],
+                'askingPrice' => $detail['asking_price'],
+                'canAffordFee' => $detail['can_afford_fee'],
+                'isExpiring' => $gp->contract_until && $gp->contract_until <= $game->getSeasonEndDate(),
+                'wageDemand' => $detail['wage_demand'],
+                'formattedWageDemand' => $detail['formatted_wage_demand'],
+                'hasExistingOffer' => isset($existingOfferStatuses[$gp->id]),
+                'offerStatus' => $existingOfferStatuses[$gp->id]['status'] ?? null,
+                'offerIsCounter' => $existingOfferStatuses[$gp->id]['isCounter'] ?? false,
+                'offerType' => $existingOfferStatuses[$gp->id]['offerType'] ?? null,
+                'bidEuros' => (int) ($detail['asking_price'] / 100),
+                'wageEuros' => (int) ($detail['wage_demand'] / 100),
+            ];
+        }
+
+        $isPreContractPeriod = $game->isPreContractPeriod();
+
         return view('scouting-hub', [
             'game' => $game,
             'searchingReport' => $searchingReport,
             'searchHistory' => $searchHistory,
             'canSearchInternationally' => $canSearchInternationally,
             'isTransferWindow' => $isTransferWindow,
+            'isPreContractPeriod' => $isPreContractPeriod,
             'currentWindow' => $currentWindow,
             'windowCountdown' => $windowCountdown,
             'totalWageBill' => $totalWageBill,
             'salidaBadgeCount' => $salidaBadgeCount,
             'counterOfferCount' => $counterOfferCount,
-            'shortlistedPlayers' => $shortlistedPlayers,
-            'shortlistedPlayerIds' => $shortlistedPlayerIds,
+            'shortlistData' => $shortlistData,
         ]);
     }
 }

@@ -11,6 +11,10 @@ return [
     'offer_accepted_sale' => ':player vendido :team_a por :fee.',
     'offer_accepted_pre_contract' => '¡Acuerdo cerrado! :player fichará por :team por :fee cuando abra la ventana de :window.',
 
+    // Bid/loan submission confirmations
+    'bid_submitted' => 'Tu oferta por :player ha sido enviada. Recibirás respuesta próximamente.',
+    'loan_request_submitted' => 'Tu solicitud de cesión por :player ha sido enviada. Recibirás respuesta próximamente.',
+
     // Counter offer
     'counter_offer_accepted' => '¡Contraoferta aceptada! :player se unirá cuando abra la ventana de :window.',
     'counter_offer_accepted_immediate' => '¡Fichaje completado! :player se ha unido a tu plantilla.',

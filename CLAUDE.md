@@ -299,23 +299,36 @@ Clear cache after changes: `php artisan config:clear`
 
 ## Internationalization (i18n)
 
-The application uses Spanish as the default language. All user-facing strings must be translatable.
+The application uses Spanish as the default language (`APP_LOCALE=es`). All user-facing strings must be translatable. **Both Spanish (`lang/es/`) and English (`lang/en/`) translations are maintained — every new translation key must be added to both languages.**
 
 ### Translation Files
 
 ```
-lang/es/
-├── app.php            # General UI (buttons, labels, navigation)
-├── auth.php           # Authentication
-├── beta.php           # Beta mode strings
-├── cup.php            # Copa del Rey / cup competition terms
-├── finances.php       # Financial terms
-├── game.php           # Game-specific terms (season, matchday, etc.)
-├── messages.php       # Flash messages (success, error, info)
-├── notifications.php  # In-game notification strings
-├── season.php         # Season end, awards, promotions
-├── squad.php          # Squad/player related
-└── transfers.php      # Transfers, scouting, contracts
+lang/
+├── es/                # Spanish (default)
+│   ├── app.php            # General UI (buttons, labels, navigation)
+│   ├── auth.php           # Authentication
+│   ├── beta.php           # Beta mode strings
+│   ├── cup.php            # Copa del Rey / cup competition terms
+│   ├── finances.php       # Financial terms
+│   ├── game.php           # Game-specific terms (season, matchday, etc.)
+│   ├── messages.php       # Flash messages (success, error, info)
+│   ├── notifications.php  # In-game notification strings
+│   ├── season.php         # Season end, awards, promotions
+│   ├── squad.php          # Squad/player related
+│   └── transfers.php      # Transfers, scouting, contracts
+└── en/                # English (mirrors es/ structure)
+    ├── app.php
+    ├── auth.php
+    ├── beta.php
+    ├── cup.php
+    ├── finances.php
+    ├── game.php
+    ├── messages.php
+    ├── notifications.php
+    ├── season.php
+    ├── squad.php
+    └── transfers.php
 ```
 
 ### Coding Standards
@@ -363,8 +376,9 @@ lang/es/
 ### Adding New Strings
 
 1. Add the key and Spanish translation to the appropriate file in `lang/es/`
-2. Use the key in your blade template or PHP code
-3. Test that the translation displays correctly
+2. Add the corresponding English translation to the matching file in `lang/en/`
+3. Use the key in your blade template or PHP code
+4. Test that the translation displays correctly in both languages
 
 ## UI/UX Guidelines
 

@@ -112,6 +112,9 @@ return [
     'physical' => 'Physical',
     'submit_bid' => 'Submit Bid',
     'bid_pending' => 'Bid Pending',
+    'bid_awaiting_response' => 'Awaiting Response',
+    'counter_offer_received' => 'Counter Offer Received',
+    'transfer_agreed' => 'Transfer Agreed',
     'accept_counter' => 'Accept Counter Offer',
     'already_bidding' => 'You already have a bid for this player',
     'scouting_assessment' => 'Scouting Assessment',
@@ -149,6 +152,10 @@ return [
     'no_search_history' => 'No previous searches.',
     'view_results' => 'View',
     'results_count' => ':count result(s)',
+
+    // Delete search
+    'delete_search' => 'Delete',
+    'delete_search_confirm' => 'Delete this search? Players on your shortlist will not be lost.',
 
     // Empty states
     'no_outgoing_activity' => 'No outgoing activity',

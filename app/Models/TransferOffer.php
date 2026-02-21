@@ -257,4 +257,38 @@ class TransferOffer extends Model
         return $query->where('status', self::STATUS_AGREED);
     }
 
+    /**
+     * Get offer status details for a set of players.
+     * Returns a map of game_player_id => ['status' => ..., 'isCounter' => bool, 'offerType' => ...].
+     * Prioritizes agreed offers over pending when multiple exist.
+     */
+    public static function getOfferStatusesForPlayers(string $gameId, array $playerIds): array
+    {
+        if (empty($playerIds)) {
+            return [];
+        }
+
+        $offers = static::where('game_id', $gameId)
+            ->where('direction', self::DIRECTION_INCOMING)
+            ->whereIn('game_player_id', $playerIds)
+            ->whereIn('status', [self::STATUS_PENDING, self::STATUS_AGREED])
+            ->get(['game_player_id', 'status', 'offer_type', 'asking_price', 'transfer_fee']);
+
+        $statuses = [];
+        foreach ($offers as $offer) {
+            $current = $statuses[$offer->game_player_id] ?? null;
+            if (!$current || $offer->status === self::STATUS_AGREED) {
+                $statuses[$offer->game_player_id] = [
+                    'status' => $offer->status,
+                    'isCounter' => $offer->status === self::STATUS_PENDING
+                        && $offer->asking_price
+                        && $offer->asking_price > $offer->transfer_fee,
+                    'offerType' => $offer->offer_type,
+                ];
+            }
+        }
+
+        return $statuses;
+    }
+
 }

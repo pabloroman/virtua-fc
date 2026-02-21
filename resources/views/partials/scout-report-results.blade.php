@@ -40,6 +40,8 @@
                 @php
                     $detail = $playerDetails[$player->id] ?? null;
                     $hasOffer = $detail['has_existing_offer'] ?? false;
+                    $offerStatus = $detail['offer_status'] ?? null;
+                    $offerIsCounter = $detail['offer_is_counter'] ?? false;
                     $askingPrice = $detail['asking_price'] ?? 0;
                     $formattedAskingPrice = $detail['formatted_asking_price'] ?? '-';
                     $wageDemand = $detail['wage_demand'] ?? 0;
@@ -51,7 +53,7 @@
                     $isExpiring = $player->contract_until && $player->contract_until <= $game->getSeasonEndDate();
                     $isShortlisted = in_array($player->id, $shortlistedPlayerIds ?? []);
                 @endphp
-                <div class="px-4 md:px-6 py-4" x-data="{ expanded: false, shortlisted: {{ $isShortlisted ? 'true' : 'false' }}, toggling: false }">
+                <div class="px-4 md:px-6 py-4" x-data="{ expanded: false, shortlisted: {{ $isShortlisted ? 'true' : 'false' }}, toggling: false }" @shortlist-toggled.window="if($event.detail.playerId === '{{ $player->id }}') { shortlisted = $event.detail.action === 'added' }">
                     {{-- Player Summary Row --}}
                     <div class="flex items-center gap-3 cursor-pointer" @click="expanded = !expanded">
                         {{-- Position + Name --}}
@@ -86,7 +88,7 @@
                             </div>
                             {{-- Shortlist toggle --}}
                             <button
-                                @click.stop="if(toggling) return; toggling = true; fetch('{{ route('game.scouting.shortlist.toggle', [$game->id, $player->id]) }}', { method: 'POST', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' } }).then(r => r.json()).then(() => { shortlisted = !shortlisted; toggling = false; }).catch(() => { toggling = false; })"
+                                @click.stop="if(toggling) return; toggling = true; fetch('{{ route('game.scouting.shortlist.toggle', [$game->id, $player->id]) }}', { method: 'POST', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' } }).then(r => r.json()).then(data => { shortlisted = !shortlisted; toggling = false; window.dispatchEvent(new CustomEvent('shortlist-toggled', { detail: { action: data.action, playerId: data.playerId, player: data.player || null } })); }).catch(() => { toggling = false; })"
                                 class="p-1.5 rounded transition-colors min-h-[44px] sm:min-h-0"
                                 :class="shortlisted ? 'text-amber-500 hover:text-amber-600' : 'text-slate-300 hover:text-amber-400'"
                                 :title="shortlisted ? '{{ __('transfers.remove_from_shortlist') }}' : '{{ __('transfers.add_to_shortlist') }}'"
@@ -172,10 +174,20 @@
 
                                     {{-- Action Buttons --}}
                                     <div class="mt-4 space-y-2">
-                                        @if($hasOffer)
+                                        @if($hasOffer && $offerStatus === 'pending' && !$offerIsCounter)
                                             <div class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-amber-50 text-amber-700 border border-amber-200">
                                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                                {{ __('transfers.bid_pending') }}
+                                                {{ __('transfers.bid_awaiting_response') }}
+                                            </div>
+                                        @elseif($hasOffer && $offerStatus === 'pending' && $offerIsCounter)
+                                            <div class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-blue-50 text-blue-700 border border-blue-200">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                                                {{ __('transfers.counter_offer_received') }}
+                                            </div>
+                                        @elseif($hasOffer && $offerStatus === 'agreed')
+                                            <div class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-green-50 text-green-700 border border-green-200">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                                {{ __('transfers.transfer_agreed') }}
                                             </div>
                                         @elseif($isExpiring && $isPreContractPeriod)
                                             {{-- Pre-contract offer form --}}
@@ -196,24 +208,20 @@
                                         @else
                                             <div class="flex flex-col sm:flex-row gap-2">
                                                 {{-- Transfer Bid --}}
-                                                @if($isTransferWindow)
-                                                    <form method="POST" action="{{ route('game.scouting.bid', [$game->id, $player->id]) }}" class="flex items-center gap-2 flex-1">
-                                                        @csrf
-                                                        <x-money-input name="bid_amount" :value="(int)($askingPrice / 100)" :min="0" size="sm" />
-                                                        <button type="submit" class="inline-flex items-center justify-center px-3 py-1.5 min-h-[36px] bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold rounded-lg transition-colors whitespace-nowrap">
-                                                            {{ __('transfers.submit_bid') }}
-                                                        </button>
-                                                    </form>
-                                                @endif
+                                                <form method="POST" action="{{ route('game.scouting.bid', [$game->id, $player->id]) }}" class="flex items-center gap-2 flex-1">
+                                                    @csrf
+                                                    <x-money-input name="bid_amount" :value="(int)($askingPrice / 100)" :min="0" size="sm" />
+                                                    <button type="submit" class="inline-flex items-center justify-center px-3 py-1.5 min-h-[36px] bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold rounded-lg transition-colors whitespace-nowrap">
+                                                        {{ __('transfers.submit_bid') }}
+                                                    </button>
+                                                </form>
                                                 {{-- Loan Request --}}
-                                                @if($isTransferWindow)
-                                                    <form method="POST" action="{{ route('game.scouting.loan', [$game->id, $player->id]) }}">
-                                                        @csrf
-                                                        <button type="submit" class="inline-flex items-center justify-center px-3 py-1.5 min-h-[36px] border border-slate-300 text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-50 transition-colors whitespace-nowrap">
-                                                            {{ __('transfers.request_loan') }}
-                                                        </button>
-                                                    </form>
-                                                @endif
+                                                <form method="POST" action="{{ route('game.scouting.loan', [$game->id, $player->id]) }}">
+                                                    @csrf
+                                                    <button type="submit" class="inline-flex items-center justify-center px-3 py-1.5 min-h-[36px] border border-slate-300 text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-50 transition-colors whitespace-nowrap">
+                                                        {{ __('transfers.request_loan') }}
+                                                    </button>
+                                                </form>
                                             </div>
                                         @endif
                                     </div>
