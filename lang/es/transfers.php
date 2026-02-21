@@ -211,6 +211,16 @@ return [
     'no_search_history' => 'Sin búsquedas anteriores.',
     'view_results' => 'Ver',
     'results_count' => ':count resultado(s)',
+    'delete_search' => 'Eliminar',
+    'delete_search_confirm' => '¿Eliminar esta búsqueda? Los jugadores en tu lista de seguimiento no se perderán.',
+
+    // Shortlist
+    'shortlist' => 'Lista de Seguimiento',
+    'shortlist_empty' => 'Añade jugadores a tu lista de seguimiento desde los informes de ojeadores.',
+    'add_to_shortlist' => 'Seguir',
+    'remove_from_shortlist' => 'Dejar de seguir',
+    'shortlisted' => 'Seguido',
+    'shortlist_players_count' => ':count jugador(es)',
 
     // Empty states
     'no_outgoing_activity' => 'No hay actividad de salida',

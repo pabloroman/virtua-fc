@@ -5,6 +5,7 @@ namespace App\Http\Views;
 use App\Modules\Transfer\Services\ScoutingService;
 use App\Models\Game;
 use App\Models\GamePlayer;
+use App\Models\ShortlistedPlayer;
 use App\Models\TransferOffer;
 use Illuminate\Http\Request;
 
@@ -55,6 +56,27 @@ class ShowScoutingHub
             ->whereColumn('asking_price', '>', 'transfer_fee')
             ->count();
 
+        // Shortlisted players with scouting details
+        $shortlistedEntries = ShortlistedPlayer::where('game_id', $gameId)
+            ->with(['gamePlayer.player', 'gamePlayer.team'])
+            ->get();
+
+        $shortlistedPlayers = [];
+        $shortlistedPlayerIds = [];
+        foreach ($shortlistedEntries as $entry) {
+            $gp = $entry->gamePlayer;
+            if (!$gp || $gp->team_id === $game->team_id) {
+                continue;
+            }
+            $detail = $this->scoutingService->getPlayerScoutingDetail($gp, $game);
+            $shortlistedPlayers[] = [
+                'gamePlayer' => $gp,
+                'detail' => $detail,
+                'added_at' => $entry->added_at,
+            ];
+            $shortlistedPlayerIds[] = $gp->id;
+        }
+
         return view('scouting-hub', [
             'game' => $game,
             'searchingReport' => $searchingReport,
@@ -66,6 +88,8 @@ class ShowScoutingHub
             'totalWageBill' => $totalWageBill,
             'salidaBadgeCount' => $salidaBadgeCount,
             'counterOfferCount' => $counterOfferCount,
+            'shortlistedPlayers' => $shortlistedPlayers,
+            'shortlistedPlayerIds' => $shortlistedPlayerIds,
         ]);
     }
 }

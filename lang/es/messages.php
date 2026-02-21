@@ -51,6 +51,11 @@ return [
     'scout_search_started' => 'El ojeador ha iniciado la búsqueda.',
     'scout_already_searching' => 'Ya tienes una búsqueda activa. Cancélala primero o espera los resultados.',
     'scout_search_cancelled' => 'Búsqueda del ojeador cancelada.',
+    'scout_search_deleted' => 'Búsqueda eliminada.',
+
+    // Shortlist messages
+    'shortlist_added' => ':player añadido a tu lista de seguimiento.',
+    'shortlist_removed' => ':player eliminado de tu lista de seguimiento.',
 
     // Budget messages
     'budget_saved' => 'Asignación de presupuesto guardada.',

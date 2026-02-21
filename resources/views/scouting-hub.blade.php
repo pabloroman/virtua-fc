@@ -33,10 +33,88 @@
                     <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
 
                         {{-- ============================== --}}
-                        {{-- LEFT COLUMN (2/3) — Search History --}}
+                        {{-- LEFT COLUMN (2/3) — Shortlist + Search History --}}
                         {{-- ============================== --}}
                         <div class="md:col-span-2 space-y-6">
 
+                            {{-- Shortlist Section --}}
+                            @if(!empty($shortlistedPlayers))
+                            <div class="border rounded-lg overflow-hidden">
+                                <div class="px-5 py-3 bg-amber-50 border-b border-amber-200">
+                                    <h4 class="font-semibold text-sm text-slate-900 flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                        </svg>
+                                        {{ __('transfers.shortlist') }}
+                                        <span class="text-xs font-normal text-slate-400">({{ count($shortlistedPlayers) }})</span>
+                                    </h4>
+                                </div>
+                                <div class="divide-y divide-slate-100">
+                                    @foreach($shortlistedPlayers as $entry)
+                                        @php
+                                            $sp = $entry['gamePlayer'];
+                                            $detail = $entry['detail'];
+                                            $techRange = $detail['tech_range'];
+                                            $canAffordFee = $detail['can_afford_fee'];
+                                            $isExpiring = $sp->contract_until && $sp->contract_until <= $game->getSeasonEndDate();
+                                        @endphp
+                                        <div class="px-4 md:px-5 py-3 flex items-center gap-3 hover:bg-slate-50/50" x-data="{ confirmRemove: false }">
+                                            <x-position-badge :position="$sp->position" />
+                                            <div class="min-w-0 flex-1">
+                                                <div class="flex items-center gap-2 flex-wrap">
+                                                    <span class="font-semibold text-slate-900 truncate">{{ $sp->name }}</span>
+                                                    <span class="text-xs text-slate-400">{{ $sp->age }} {{ __('app.years') }}</span>
+                                                    @if($isExpiring)
+                                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-100 text-amber-700">{{ __('transfers.expiring_contract') }}</span>
+                                                    @endif
+                                                </div>
+                                                <div class="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
+                                                    @if($sp->team)
+                                                        <img src="{{ $sp->team->image }}" class="w-4 h-4 shrink-0">
+                                                        <span class="truncate">{{ $sp->team->name }}</span>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                            <div class="text-right hidden sm:block shrink-0">
+                                                <div class="text-xs text-slate-400">{{ __('transfers.ability') }}</div>
+                                                <div class="text-sm font-semibold text-slate-700 tabular-nums">{{ $techRange[0] }}-{{ $techRange[1] }}</div>
+                                            </div>
+                                            <div class="text-right shrink-0">
+                                                <div class="text-xs text-slate-400">{{ __('transfers.asking_price') }}</div>
+                                                <div class="text-sm font-semibold {{ $canAffordFee ? 'text-slate-900' : 'text-red-600' }}">{{ $detail['formatted_asking_price'] }}</div>
+                                            </div>
+                                            {{-- Remove from shortlist --}}
+                                            <div class="shrink-0">
+                                                <template x-if="!confirmRemove">
+                                                    <button @click="confirmRemove = true" class="p-1.5 text-slate-300 hover:text-red-500 rounded hover:bg-red-50 transition-colors min-h-[44px] sm:min-h-0" title="{{ __('transfers.remove_from_shortlist') }}">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                        </svg>
+                                                    </button>
+                                                </template>
+                                                <template x-if="confirmRemove">
+                                                    <form method="POST" action="{{ route('game.scouting.shortlist.remove', [$game->id, $sp->id]) }}" class="inline">
+                                                        @csrf
+                                                        <button type="submit" class="px-2 py-1 text-xs font-semibold text-red-600 border border-red-200 rounded hover:bg-red-50 transition-colors min-h-[44px] sm:min-h-0">
+                                                            {{ __('transfers.remove_from_shortlist') }}
+                                                        </button>
+                                                    </form>
+                                                </template>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                            @else
+                            <div class="border border-dashed border-slate-200 rounded-lg p-6 text-center text-slate-400">
+                                <svg class="w-8 h-8 mx-auto mb-2 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                                </svg>
+                                <p class="text-sm">{{ __('transfers.shortlist_empty') }}</p>
+                            </div>
+                            @endif
+
+                            {{-- Search History --}}
                             @if($searchHistory->isNotEmpty())
                             <div class="border rounded-lg overflow-hidden">
                                 <div class="px-5 py-3 bg-slate-50 border-b">
@@ -80,10 +158,28 @@
                                                     <td class="py-3 text-slate-600 hidden md:table-cell">{{ $ageLabel ?? __('transfers.all_ages') }}</td>
                                                     <td class="py-3 text-center text-slate-600 tabular-nums">{{ __('transfers.results_count', ['count' => $resultCount]) }}</td>
                                                     <td class="py-3 text-right pr-4">
-                                                        <button x-data @click="$dispatch('show-scout-results', '{{ route('game.scouting.results', [$game->id, $historyReport->id]) }}')"
-                                                           class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-sky-600 hover:text-sky-800 border border-sky-200 hover:bg-sky-50 rounded-lg transition-colors min-h-[44px] sm:min-h-0">
-                                                            {{ __('transfers.view_results') }}
-                                                        </button>
+                                                        <div class="flex items-center justify-end gap-2" x-data="{ confirmDelete: false }">
+                                                            <button x-data @click="$dispatch('show-scout-results', '{{ route('game.scouting.results', [$game->id, $historyReport->id]) }}')"
+                                                               class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-sky-600 hover:text-sky-800 border border-sky-200 hover:bg-sky-50 rounded-lg transition-colors min-h-[44px] sm:min-h-0">
+                                                                {{ __('transfers.view_results') }}
+                                                            </button>
+                                                            <template x-if="!confirmDelete">
+                                                                <button @click="confirmDelete = true" class="p-1.5 text-slate-300 hover:text-red-500 rounded hover:bg-red-50 transition-colors min-h-[44px] sm:min-h-0" title="{{ __('transfers.delete_search') }}">
+                                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                                    </svg>
+                                                                </button>
+                                                            </template>
+                                                            <template x-if="confirmDelete">
+                                                                <form method="POST" action="{{ route('game.scouting.delete', [$game->id, $historyReport->id]) }}" class="inline">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="submit" class="inline-flex items-center px-2 py-1.5 text-xs font-semibold text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors min-h-[44px] sm:min-h-0">
+                                                                        {{ __('transfers.delete_search') }}
+                                                                    </button>
+                                                                </form>
+                                                            </template>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             @endforeach
