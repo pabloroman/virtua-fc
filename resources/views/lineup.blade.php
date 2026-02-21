@@ -42,7 +42,7 @@
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('game.lineup.save', $game->id) }}">
+                    <form method="POST" action="{{ route('game.lineup.save', $game->id) }}" @submit="_isSaving = true">
                         @csrf
 
                         {{-- Hidden inputs --}}

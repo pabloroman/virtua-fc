@@ -18,6 +18,13 @@ export default function lineupManager(config) {
         // Player being hovered in the list (for pitch highlight)
         hoveredPlayerId: null,
 
+        // Dirty tracking: snapshot of initial state to detect unsaved changes
+        _initialPlayers: null,
+        _initialFormation: null,
+        _initialMentality: null,
+        _initialAssignments: null,
+        _isSaving: false,
+
         // Server data
         playersData: config.playersData,
         formationSlots: config.formationSlots,
@@ -25,6 +32,30 @@ export default function lineupManager(config) {
         autoLineupUrl: config.autoLineupUrl,
         teamColors: config.teamColors,
         translations: config.translations,
+
+        init() {
+            // Snapshot the initial state for dirty detection
+            this._initialPlayers = [...(config.currentLineup || [])].sort();
+            this._initialFormation = config.currentFormation;
+            this._initialMentality = config.currentMentality;
+            this._initialAssignments = JSON.stringify(config.currentSlotAssignments || {});
+
+            // Warn on navigation away with unsaved changes
+            window.addEventListener('beforeunload', (e) => {
+                if (this._isSaving) return;
+                if (this.isDirty) {
+                    e.preventDefault();
+                }
+            });
+        },
+
+        get isDirty() {
+            const playersChanged = JSON.stringify([...this.selectedPlayers].sort()) !== JSON.stringify(this._initialPlayers);
+            const formationChanged = this.selectedFormation !== this._initialFormation;
+            const mentalityChanged = this.selectedMentality !== this._initialMentality;
+            const assignmentsChanged = JSON.stringify(this.manualAssignments) !== this._initialAssignments;
+            return playersChanged || formationChanged || mentalityChanged || assignmentsChanged;
+        },
 
         // Computed
         get selectedCount() { return this.selectedPlayers.length },
