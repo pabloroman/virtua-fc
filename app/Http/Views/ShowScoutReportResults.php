@@ -6,6 +6,7 @@ use App\Modules\Transfer\Services\ScoutingService;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\ScoutReport;
+use App\Models\ShortlistedPlayer;
 use App\Models\TransferOffer;
 use App\Support\PositionMapper;
 
@@ -53,6 +54,10 @@ class ShowScoutReportResults
             ? (in_array('domestic', $filters['scope']) ? __('transfers.scope_domestic') : __('transfers.scope_international'))
             : __('transfers.scope_domestic') . ' + ' . __('transfers.scope_international');
 
+        $shortlistedPlayerIds = ShortlistedPlayer::where('game_id', $gameId)
+            ->pluck('game_player_id')
+            ->toArray();
+
         return view('partials.scout-report-results', [
             'game' => $game,
             'report' => $report,
@@ -62,6 +67,7 @@ class ShowScoutReportResults
             'scopeLabel' => $scopeLabel,
             'isTransferWindow' => $game->isTransferWindowOpen(),
             'isPreContractPeriod' => $game->isPreContractPeriod(),
+            'shortlistedPlayerIds' => $shortlistedPlayerIds,
         ]);
     }
 }

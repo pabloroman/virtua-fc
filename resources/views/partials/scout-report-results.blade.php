@@ -49,8 +49,9 @@
                     $techRange = $detail['tech_range'] ?? [0, 0];
                     $physRange = $detail['phys_range'] ?? [0, 0];
                     $isExpiring = $player->contract_until && $player->contract_until <= $game->getSeasonEndDate();
+                    $isShortlisted = in_array($player->id, $shortlistedPlayerIds ?? []);
                 @endphp
-                <div class="px-4 md:px-6 py-4" x-data="{ expanded: false }">
+                <div class="px-4 md:px-6 py-4" x-data="{ expanded: false, shortlisted: {{ $isShortlisted ? 'true' : 'false' }}, toggling: false }">
                     {{-- Player Summary Row --}}
                     <div class="flex items-center gap-3 cursor-pointer" @click="expanded = !expanded">
                         {{-- Position + Name --}}
@@ -73,8 +74,8 @@
                             </div>
                         </div>
 
-                        {{-- Ability estimate + Price --}}
-                        <div class="flex items-center gap-4 shrink-0">
+                        {{-- Ability estimate + Price + Shortlist --}}
+                        <div class="flex items-center gap-3 sm:gap-4 shrink-0">
                             <div class="text-right hidden sm:block">
                                 <div class="text-xs text-slate-400">{{ __('transfers.ability') }}</div>
                                 <div class="text-sm font-semibold text-slate-700 tabular-nums">{{ $techRange[0] }}-{{ $techRange[1] }}</div>
@@ -83,6 +84,17 @@
                                 <div class="text-xs text-slate-400">{{ __('transfers.asking_price') }}</div>
                                 <div class="text-sm font-semibold {{ $canAffordFee ? 'text-slate-900' : 'text-red-600' }}">{{ $formattedAskingPrice }}</div>
                             </div>
+                            {{-- Shortlist toggle --}}
+                            <button
+                                @click.stop="if(toggling) return; toggling = true; fetch('{{ route('game.scouting.shortlist.toggle', [$game->id, $player->id]) }}', { method: 'POST', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' } }).then(r => r.json()).then(() => { shortlisted = !shortlisted; toggling = false; }).catch(() => { toggling = false; })"
+                                class="p-1.5 rounded transition-colors min-h-[44px] sm:min-h-0"
+                                :class="shortlisted ? 'text-amber-500 hover:text-amber-600' : 'text-slate-300 hover:text-amber-400'"
+                                :title="shortlisted ? '{{ __('transfers.remove_from_shortlist') }}' : '{{ __('transfers.add_to_shortlist') }}'"
+                            >
+                                <svg class="w-5 h-5" :fill="shortlisted ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                                </svg>
+                            </button>
                             <svg class="w-4 h-4 text-slate-400 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                             </svg>

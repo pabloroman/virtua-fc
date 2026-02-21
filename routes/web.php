@@ -29,6 +29,9 @@ use App\Http\Actions\SaveSquadSelection;
 use App\Http\Views\ShowSquadSelection;
 use App\Http\Actions\SubmitScoutSearch;
 use App\Http\Actions\SubmitPreContractOffer;
+use App\Http\Actions\ToggleShortlist;
+use App\Http\Actions\RemoveFromShortlist;
+use App\Http\Actions\DeleteScoutSearch;
 use App\Http\Actions\SubmitTransferBid;
 use App\Http\Actions\UnlistPlayerFromTransfer;
 use App\Http\Views\ShowLineup;
@@ -133,6 +136,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/game/{gameId}/scouting/{playerId}/loan', RequestLoan::class)->name('game.scouting.loan');
         Route::post('/game/{gameId}/scouting/{playerId}/pre-contract', SubmitPreContractOffer::class)->name('game.scouting.pre-contract');
         Route::post('/game/{gameId}/scouting/counter/{offerId}/accept', AcceptCounterOffer::class)->name('game.scouting.counter.accept');
+        Route::post('/game/{gameId}/scouting/shortlist/{playerId}', ToggleShortlist::class)->name('game.scouting.shortlist.toggle');
+        Route::post('/game/{gameId}/scouting/shortlist/{playerId}/remove', RemoveFromShortlist::class)->name('game.scouting.shortlist.remove');
+        Route::delete('/game/{gameId}/scouting/{reportId}', DeleteScoutSearch::class)->name('game.scouting.delete');
 
         // Loans (redirect old URL to transfers)
         Route::get('/game/{gameId}/loans', function (string $gameId) {
