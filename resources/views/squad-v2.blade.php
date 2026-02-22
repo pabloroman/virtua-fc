@@ -201,27 +201,27 @@
                                                 <th class="font-semibold py-2 text-center w-10"></th>
                                             </template>
                                             <template x-if="viewMode === 'overview'">
-                                                <th class="font-semibold py-2 text-center w-10">{{ __('squad.fitness') }}</th>
+                                                <th class="font-semibold py-2 text-center w-10 cursor-help" x-data x-tooltip.raw="{{ __('squad.fitness_full') }}">{{ __('squad.fitness') }}</th>
                                             </template>
                                             <template x-if="viewMode === 'overview'">
-                                                <th class="font-semibold py-2 text-center w-10">{{ __('squad.morale') }}</th>
+                                                <th class="font-semibold py-2 text-center w-10 cursor-help" x-data x-tooltip.raw="{{ __('squad.morale_full') }}">{{ __('squad.morale') }}</th>
                                             </template>
                                             <template x-if="viewMode === 'overview'">
-                                                <th class="font-semibold py-2 text-center w-10">{{ __('squad.apps') }}</th>
+                                                <th class="font-semibold py-2 text-center w-10 cursor-help" x-data x-tooltip.raw="{{ __('squad.legend_apps') }}">{{ __('squad.apps') }}</th>
                                             </template>
 
                                             {{-- Tactical headers --}}
                                             <template x-if="viewMode === 'tactical'">
-                                                <th class="font-semibold py-2 text-center w-10">{{ __('squad.technical') }}</th>
+                                                <th class="font-semibold py-2 text-center w-10 cursor-help" x-data x-tooltip.raw="{{ __('squad.technical_full') }}">{{ __('squad.technical') }}</th>
                                             </template>
                                             <template x-if="viewMode === 'tactical'">
-                                                <th class="font-semibold py-2 text-center w-10">{{ __('squad.physical') }}</th>
+                                                <th class="font-semibold py-2 text-center w-10 cursor-help" x-data x-tooltip.raw="{{ __('squad.physical_full') }}">{{ __('squad.physical') }}</th>
                                             </template>
                                             <template x-if="viewMode === 'tactical'">
-                                                <th class="font-semibold py-2 text-center w-10">{{ __('squad.fitness') }}</th>
+                                                <th class="font-semibold py-2 text-center w-10 cursor-help" x-data x-tooltip.raw="{{ __('squad.fitness_full') }}">{{ __('squad.fitness') }}</th>
                                             </template>
                                             <template x-if="viewMode === 'tactical'">
-                                                <th class="font-semibold py-2 text-center w-10">{{ __('squad.morale') }}</th>
+                                                <th class="font-semibold py-2 text-center w-10 cursor-help" x-data x-tooltip.raw="{{ __('squad.morale_full') }}">{{ __('squad.morale') }}</th>
                                             </template>
 
                                             {{-- Planning headers --}}
@@ -236,28 +236,37 @@
                                                 <th class="font-semibold py-2 text-center w-14">{{ __('app.contract') }}</th>
                                             </template>
                                             <template x-if="viewMode === 'planning'">
-                                                <th class="font-semibold py-2 text-center w-16">{{ __('squad.pot') }}</th>
+                                                <th class="font-semibold py-2 text-center w-16 cursor-help" x-data x-tooltip.raw="{{ __('squad.potential_range') }}">{{ __('squad.pot') }}</th>
                                             </template>
                                             <template x-if="viewMode === 'planning'">
-                                                <th class="font-semibold py-2 text-center w-14">{{ __('squad_v2.dev') }}</th>
+                                                <th class="font-semibold py-2 text-center w-14 cursor-help" x-data x-tooltip.raw="{{ __('squad.development') }}">{{ __('squad_v2.dev') }}</th>
                                             </template>
                                             @endif
 
                                             {{-- Stats headers --}}
                                             <template x-if="viewMode === 'stats'">
-                                                <th class="font-semibold py-2 text-center w-10">{{ __('squad.apps') }}</th>
+                                                <th class="font-semibold py-2 text-center w-10 cursor-help" x-data x-tooltip.raw="{{ __('squad.legend_apps') }}">{{ __('squad.apps') }}</th>
                                             </template>
                                             <template x-if="viewMode === 'stats'">
-                                                <th class="font-semibold py-2 text-center w-10">{{ __('squad.goals') }}</th>
+                                                <th class="font-semibold py-2 text-center w-10 cursor-help" x-data x-tooltip.raw="{{ __('squad.legend_goals') }}">{{ __('squad.goals') }}</th>
                                             </template>
                                             <template x-if="viewMode === 'stats'">
-                                                <th class="font-semibold py-2 text-center w-10">{{ __('squad.assists') }}</th>
+                                                <th class="font-semibold py-2 text-center w-10 cursor-help" x-data x-tooltip.raw="{{ __('squad.legend_assists') }}">{{ __('squad.assists') }}</th>
+                                            </template>
+                                            <template x-if="viewMode === 'stats'">
+                                                <th class="font-semibold py-2 text-center w-10 cursor-help" x-data x-tooltip.raw="{{ __('squad.clean_sheets_full') }}">{{ __('squad.clean_sheets') }}</th>
+                                            </template>
+                                            <template x-if="viewMode === 'stats'">
+                                                <th class="font-semibold py-2 text-center w-12 cursor-help" x-data x-tooltip.raw="{{ __('squad.legend_goals') }} / {{ __('squad.legend_apps') }}">{{ __('squad.goals_per_game') }}</th>
+                                            </template>
+                                            <template x-if="viewMode === 'stats'">
+                                                <th class="font-semibold py-2 text-center w-10 cursor-help" x-data x-tooltip.raw="{{ __('squad.legend_own_goals') }}">{{ __('squad.own_goals') }}</th>
                                             </template>
                                             <template x-if="viewMode === 'stats'">
                                                 <th class="font-semibold py-2 text-center w-16">{{ __('squad_v2.cards') }}</th>
                                             </template>
 
-                                            <th class="font-semibold py-2 pr-3 text-center w-12">{{ __('squad.overall') }}</th>
+                                            <th class="font-semibold py-2 pr-3 text-center w-12 cursor-help" x-data x-tooltip.raw="{{ __('squad.overall') }}">{{ __('squad.overall') }}</th>
                                         </tr>
                                     </thead>
                                     @foreach($positionGroups as $group)
@@ -405,21 +414,21 @@
                                                 <template x-if="viewMode === 'stats'">
                                                     <td class="py-2.5 text-center w-10 tabular-nums text-slate-600">{{ $gp->appearances }}</td>
                                                 </template>
-                                                @if($gp->position_group === 'Goalkeeper')
-                                                    <template x-if="viewMode === 'stats'">
-                                                        <td class="py-2.5 text-center w-10 tabular-nums font-medium">{{ $gp->clean_sheets }}</td>
-                                                    </template>
-                                                    <template x-if="viewMode === 'stats'">
-                                                        <td class="py-2.5 text-center w-10 tabular-nums text-slate-600">{{ $gp->goals_conceded }}</td>
-                                                    </template>
-                                                @else
-                                                    <template x-if="viewMode === 'stats'">
-                                                        <td class="py-2.5 text-center w-10 tabular-nums font-medium">{{ $gp->goals }}</td>
-                                                    </template>
-                                                    <template x-if="viewMode === 'stats'">
-                                                        <td class="py-2.5 text-center w-10 tabular-nums text-slate-600">{{ $gp->assists }}</td>
-                                                    </template>
-                                                @endif
+                                                <template x-if="viewMode === 'stats'">
+                                                    <td class="py-2.5 text-center w-10 tabular-nums font-medium">{{ $gp->goals }}</td>
+                                                </template>
+                                                <template x-if="viewMode === 'stats'">
+                                                    <td class="py-2.5 text-center w-10 tabular-nums text-slate-600">{{ $gp->assists }}</td>
+                                                </template>
+                                                <template x-if="viewMode === 'stats'">
+                                                    <td class="py-2.5 text-center w-10 tabular-nums text-slate-600">{{ $gp->clean_sheets }}</td>
+                                                </template>
+                                                <template x-if="viewMode === 'stats'">
+                                                    <td class="py-2.5 text-center w-12 tabular-nums text-slate-600">{{ $gp->appearances > 0 ? number_format($gp->goals / $gp->appearances, 2) : '-' }}</td>
+                                                </template>
+                                                <template x-if="viewMode === 'stats'">
+                                                    <td class="py-2.5 text-center w-10 tabular-nums text-slate-600">{{ $gp->own_goals }}</td>
+                                                </template>
                                                 <template x-if="viewMode === 'stats'">
                                                     <td class="py-2.5 text-center w-16">
                                                         <span class="inline-flex items-center gap-1">
