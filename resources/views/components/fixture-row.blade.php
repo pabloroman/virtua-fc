@@ -21,9 +21,17 @@
         $resultClass = $result === 'W' ? 'text-green-600' : ($result === 'L' ? 'text-red-600' : 'text-slate-600');
         $resultText = $yourScore . ' - ' . $oppScore;
     }
+
+    // Competition color-coded left border
+    $comp = $match->competition;
+    $borderColor = match(true) {
+        ($comp->scope ?? '') === 'continental' => 'border-l-blue-500',
+        ($comp->role ?? '') === 'domestic_cup' => 'border-l-emerald-500',
+        default => 'border-l-amber-500',
+    };
 @endphp
 
-<div class="flex items-center px-3 py-1 gap-2 md:gap-6 rounded-lg @if($isNextMatch) bg-yellow-50 ring-2 ring-yellow-400 @elseif($match->played) bg-slate-50 @else bg-white border border-slate-200 @endif">
+<div class="flex items-center px-3 py-1 gap-2 md:gap-6 rounded-lg border-l-4 {{ $borderColor }} @if($isNextMatch) bg-yellow-50 ring-2 ring-yellow-400 @elseif($match->played) bg-slate-50 @else bg-white border border-slate-200 @endif">
     {{-- Date & Competition --}}
     <div class="w-16">
         <div class="text-xs text-slate-700">{{ $match->scheduled_date->locale(app()->getLocale())->translatedFormat('d/m/Y') }}</div>

@@ -97,12 +97,12 @@
                         @php
                             $comp = $nextMatch->competition;
                             $accent = match(true) {
-                                ($comp->scope ?? '') === 'continental' => ['badge' => 'bg-blue-100 text-blue-800'],
-                                ($comp->type ?? '') === 'cup' => ['badge' => 'bg-emerald-100 text-emerald-800'],
-                                default => ['badge' => 'bg-amber-100 text-amber-800'],
+                                ($comp->scope ?? '') === 'continental' => ['badge' => 'bg-blue-100 text-blue-800', 'border' => 'border-l-blue-500'],
+                                ($comp->type ?? '') === 'cup' => ['badge' => 'bg-emerald-100 text-emerald-800', 'border' => 'border-l-emerald-500'],
+                                default => ['badge' => 'bg-amber-100 text-amber-800', 'border' => 'border-l-amber-500'],
                             };
                         @endphp
-                        <div class="rounded-lg bg-white border border-slate-200 p-4 md:p-5">
+                        <div class="rounded-lg bg-white border border-slate-200 border-l-4 {{ $accent['border'] }} p-4 md:p-5">
                             {{-- Competition, Round & Date --}}
                             <div class="text-center">
                                 <div class="flex items-center justify-center gap-2">
