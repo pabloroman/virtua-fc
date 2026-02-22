@@ -6,17 +6,6 @@ return [
     'avg_age' => 'Edad Media',
     'condition' => 'Estado',
     'squad_value' => 'Valor Plantilla',
-    'transfer_budget' => 'Presupuesto',
-    'young' => 'jóvenes',
-    'prime' => 'plenitud',
-    'veteran' => 'veteranos',
-    'injured' => 'lesionados',
-    'all_fit' => 'Todos disponibles',
-    'low_fitness' => 'baja forma',
-    'of_revenue' => 'de ingresos',
-    'window_open' => 'Mercado abierto',
-    'window_closed' => 'Mercado cerrado',
-    'in_matchdays' => 'en :count jornadas',
 
     // View modes
     'overview' => 'General',
@@ -32,11 +21,6 @@ return [
     'available' => 'Disponibles',
     'unavailable' => 'No disponibles',
     'clear_filters' => 'Limpiar filtros',
-
-    // Expanded row
-    'actions' => 'Acciones',
-    'full_profile' => 'Ver perfil completo',
-    'expiring' => 'Expira',
 
     // Sidebar
     'squad_analysis' => 'Análisis Plantilla',

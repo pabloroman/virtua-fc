@@ -5,18 +5,15 @@ namespace App\Http\Views;
 use App\Models\AcademyPlayer;
 use App\Models\Game;
 use App\Models\GamePlayer;
-use App\Modules\Lineup\Services\LineupService;
 use App\Modules\Squad\Services\DevelopmentCurve;
 use App\Modules\Squad\Services\PlayerDevelopmentService;
 use App\Modules\Transfer\Services\ContractService;
-use App\Support\Money;
 use App\Support\PositionMapper;
 
 class ShowSquadV2
 {
     public function __construct(
         private readonly ContractService $contractService,
-        private readonly LineupService $lineupService,
         private readonly PlayerDevelopmentService $developmentService,
     ) {}
 

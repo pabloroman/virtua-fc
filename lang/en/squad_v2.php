@@ -6,17 +6,6 @@ return [
     'avg_age' => 'Avg Age',
     'condition' => 'Condition',
     'squad_value' => 'Squad Value',
-    'transfer_budget' => 'Transfer Budget',
-    'young' => 'young',
-    'prime' => 'prime',
-    'veteran' => 'veteran',
-    'injured' => 'injured',
-    'all_fit' => 'All fit',
-    'low_fitness' => 'low fitness',
-    'of_revenue' => 'of revenue',
-    'window_open' => 'Window open',
-    'window_closed' => 'Window closed',
-    'in_matchdays' => 'in :count matchdays',
 
     // View modes
     'overview' => 'Overview',
@@ -32,11 +21,6 @@ return [
     'available' => 'Available',
     'unavailable' => 'Unavailable',
     'clear_filters' => 'Clear filters',
-
-    // Expanded row
-    'actions' => 'Actions',
-    'full_profile' => 'View Full Profile',
-    'expiring' => 'Expiring',
 
     // Sidebar
     'squad_analysis' => 'Squad Analysis',
