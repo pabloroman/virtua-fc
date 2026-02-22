@@ -393,6 +393,7 @@
                                                             :current-ability="$gp->overall_score"
                                                             :potential-low="$gp->potential_low"
                                                             :potential-high="$gp->potential_high"
+                                                            size="sm"
                                                         />
                                                     </td>
                                                 </template>
