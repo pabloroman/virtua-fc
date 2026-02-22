@@ -18,15 +18,16 @@ class StartNewSeason
                 ->with('error', __('messages.season_not_complete'));
         }
 
-        // Prevent double-dispatch
-        if ($game->isTransitioningSeason()) {
+        // Atomic check-and-set: only one request can win the race
+        $updated = Game::where('id', $gameId)
+            ->whereNull('season_transitioning_at')
+            ->update(['season_transitioning_at' => now()]);
+
+        if (! $updated) {
             return redirect()->route('show-game', $gameId);
         }
 
-        // Mark as transitioning and dispatch background job
-        $game->update(['season_transitioning_at' => now()]);
-
-        ProcessSeasonTransition::dispatch($game->id);
+        ProcessSeasonTransition::dispatch($gameId);
 
         return redirect()->route('show-game', $gameId);
     }
