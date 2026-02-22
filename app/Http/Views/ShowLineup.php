@@ -2,6 +2,7 @@
 
 namespace App\Http\Views;
 
+use App\Modules\Competition\Services\CalendarService;
 use App\Modules\Lineup\Enums\Formation;
 use App\Modules\Lineup\Enums\Mentality;
 use App\Modules\Lineup\Services\LineupService;
@@ -16,6 +17,7 @@ class ShowLineup
 {
     public function __construct(
         private readonly LineupService $lineupService,
+        private readonly CalendarService $calendarService,
     ) {}
 
     public function __invoke(string $gameId)
@@ -127,6 +129,9 @@ class ShowLineup
             ];
         }
 
+        // User's team form for coach assistant display
+        $playerForm = $this->calendarService->getTeamForm($gameId, $game->team_id);
+
         // Team shirt colors for pitch visualization
         $teamColorsHex = TeamColors::toHex($game->team->colors ?? TeamColors::get($game->team->getRawOriginal('name')));
 
@@ -157,6 +162,7 @@ class ShowLineup
             'teamColors' => $teamColorsHex,
             'userTeamAverage' => $userTeamAverage,
             'formationModifiers' => $formationModifiers,
+            'playerForm' => $playerForm,
         ]);
     }
 

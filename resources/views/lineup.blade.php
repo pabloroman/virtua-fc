@@ -256,22 +256,38 @@
                                         </div>
                                     </div>
 
-                                    {{-- Opponent Form --}}
-                                    @if(count($opponentData['form']) > 0)
-                                        <div class="flex items-center justify-end gap-1 mb-3">
-                                            <span class="text-[10px] text-slate-400 mr-0.5">{{ $opponent->short_name ?? $opponent->name }}</span>
-                                            <div class="flex gap-0.5">
-                                                @foreach($opponentData['form'] as $result)
-                                                    <span class="w-4 h-4 rounded-full text-[9px] font-semibold flex items-center justify-center
-                                                        @if($result === 'W') bg-green-500 text-white
-                                                        @elseif($result === 'D') bg-slate-400 text-white
-                                                        @else bg-red-500 text-white @endif">
-                                                        {{ $result }}
-                                                    </span>
-                                                @endforeach
-                                            </div>
+                                    {{-- Form (symmetrical) --}}
+                                    <div class="flex items-center justify-between gap-2 mb-3">
+                                        {{-- User Form --}}
+                                        <div class="flex gap-1">
+                                            @forelse($playerForm as $result)
+                                                <span class="w-5 h-5 rounded text-xs font-bold flex items-center justify-center
+                                                    @if($result === 'W') bg-green-500 text-white
+                                                    @elseif($result === 'D') bg-slate-400 text-white
+                                                    @else bg-red-500 text-white @endif">
+                                                    {{ $result }}
+                                                </span>
+                                            @empty
+                                                <span class="text-[10px] text-slate-400">—</span>
+                                            @endforelse
                                         </div>
-                                    @endif
+
+                                        <span class="text-[10px] text-slate-400">{{ __('game.form') }}</span>
+
+                                        {{-- Opponent Form --}}
+                                        <div class="flex gap-1">
+                                            @forelse($opponentData['form'] as $result)
+                                                <span class="w-5 h-5 rounded text-xs font-bold flex items-center justify-center
+                                                    @if($result === 'W') bg-green-500 text-white
+                                                    @elseif($result === 'D') bg-slate-400 text-white
+                                                    @else bg-red-500 text-white @endif">
+                                                    {{ $result }}
+                                                </span>
+                                            @empty
+                                                <span class="text-[10px] text-slate-400">—</span>
+                                            @endforelse
+                                        </div>
+                                    </div>
 
                                     {{-- Tips Section --}}
                                     <div class="border-t border-slate-200 pt-3">
