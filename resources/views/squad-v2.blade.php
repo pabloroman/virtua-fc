@@ -81,67 +81,39 @@
                     @endif
 
                     {{-- ===== LAYER 0: Squad Dashboard KPIs ===== --}}
-                    <div class="mt-6 grid grid-cols-2 md:grid-cols-3 {{ $isCareerMode ? 'xl:grid-cols-6' : 'xl:grid-cols-3' }} gap-3">
+                    <div class="mt-6 grid grid-cols-2 md:grid-cols-3 {{ $isCareerMode ? 'xl:grid-cols-5' : 'xl:grid-cols-3' }} gap-3">
                         {{-- Squad Size --}}
                         <div class="bg-slate-50 rounded-lg p-3 border border-slate-200">
                             <div class="text-xs text-slate-500 font-medium uppercase tracking-wide">{{ __('squad_v2.squad_size') }}</div>
-                            <div class="mt-1 flex items-end gap-2">
+                            <div class="mt-1">
                                 <span class="text-2xl font-bold text-slate-900">{{ $squadSize }}</span>
-                            </div>
-                            <div class="mt-2 flex items-center gap-1.5 text-xs">
-                                <span class="flex items-center gap-0.5">
-                                    <span class="w-2 h-2 rounded-full bg-amber-500"></span>{{ $goalkeepers->count() }}
-                                </span>
-                                <span class="flex items-center gap-0.5">
-                                    <span class="w-2 h-2 rounded-full bg-blue-600"></span>{{ $defenders->count() }}
-                                </span>
-                                <span class="flex items-center gap-0.5">
-                                    <span class="w-2 h-2 rounded-full bg-emerald-600"></span>{{ $midfielders->count() }}
-                                </span>
-                                <span class="flex items-center gap-0.5">
-                                    <span class="w-2 h-2 rounded-full bg-red-600"></span>{{ $forwards->count() }}
-                                </span>
                             </div>
                         </div>
 
                         {{-- Avg Age --}}
                         <div class="bg-slate-50 rounded-lg p-3 border border-slate-200">
                             <div class="text-xs text-slate-500 font-medium uppercase tracking-wide">{{ __('squad_v2.avg_age') }}</div>
-                            <div class="mt-1 flex items-end gap-2">
+                            <div class="mt-1">
                                 <span class="text-2xl font-bold text-slate-900">{{ $avgAge }}</span>
-                            </div>
-                            <div class="mt-2 flex items-center gap-1.5 text-xs">
-                                <span class="text-green-600">{{ $youngCount }} {{ __('squad_v2.young') }}</span>
-                                <span class="text-slate-300">&middot;</span>
-                                <span class="text-sky-600">{{ $primeCount }} {{ __('squad_v2.prime') }}</span>
-                                <span class="text-slate-300">&middot;</span>
-                                <span class="text-orange-600">{{ $veteranCount }} {{ __('squad_v2.veteran') }}</span>
                             </div>
                         </div>
 
-                        {{-- Fitness & Morale --}}
+                        {{-- Condition: Fitness, Morale, Avg Overall --}}
                         <div class="bg-slate-50 rounded-lg p-3 border border-slate-200">
                             <div class="text-xs text-slate-500 font-medium uppercase tracking-wide">{{ __('squad_v2.condition') }}</div>
                             <div class="mt-1 flex items-end gap-3">
-                                <div class="flex items-center gap-1">
+                                <div class="flex items-center gap-1 cursor-help" x-tooltip.raw="{{ __('squad_v2.tooltip_fitness') }}">
                                     <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                                     <span class="text-xl font-bold @if($avgFitness >= 85) text-green-600 @elseif($avgFitness >= 70) text-slate-900 @else text-amber-600 @endif">{{ $avgFitness }}</span>
                                 </div>
-                                <div class="flex items-center gap-1">
+                                <div class="flex items-center gap-1 cursor-help" x-tooltip.raw="{{ __('squad_v2.tooltip_morale') }}">
                                     <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                     <span class="text-xl font-bold @if($avgMorale >= 80) text-green-600 @elseif($avgMorale >= 65) text-slate-900 @else text-amber-600 @endif">{{ $avgMorale }}</span>
                                 </div>
-                            </div>
-                            <div class="mt-2 text-xs text-slate-500">
-                                @if($injuredCount > 0)
-                                    <span class="text-red-500">{{ $injuredCount }} {{ __('squad_v2.injured') }}</span>
-                                @else
-                                    <span class="text-green-600">{{ __('squad_v2.all_fit') }}</span>
-                                @endif
-                                @if($lowFitnessCount > 0)
-                                    <span class="text-slate-300 mx-0.5">&middot;</span>
-                                    <span class="text-amber-600">{{ $lowFitnessCount }} {{ __('squad_v2.low_fitness') }}</span>
-                                @endif
+                                <div class="flex items-center gap-1 cursor-help" x-tooltip.raw="{{ __('squad_v2.tooltip_avg_overall') }}">
+                                    <span class="text-xs font-semibold text-slate-400 uppercase">{{ __('squad_v2.avg_ovr') }}</span>
+                                    <span class="text-xl font-bold @if($avgOverall >= 75) text-green-600 @elseif($avgOverall >= 65) text-slate-900 @else text-amber-600 @endif">{{ $avgOverall }}</span>
+                                </div>
                             </div>
                         </div>
 
@@ -152,7 +124,6 @@
                             <div class="mt-1">
                                 <span class="text-2xl font-bold text-slate-900">{{ \App\Support\Money::format($squadValue) }}</span>
                             </div>
-                            <div class="mt-2 text-xs text-slate-500">{{ $allPlayers->count() }} {{ __('app.players') }}</div>
                         </div>
 
                         {{-- Wage Bill --}}
@@ -161,27 +132,6 @@
                             <div class="mt-1">
                                 <span class="text-2xl font-bold text-slate-900">{{ \App\Support\Money::format($wageBill) }}</span>
                                 <span class="text-sm text-slate-400">{{ __('squad.per_year') }}</span>
-                            </div>
-                            <div class="mt-2 text-xs">
-                                <span class="@if($wageRatio <= 50) text-green-600 @elseif($wageRatio <= 70) text-amber-600 @else text-red-500 @endif font-medium">{{ $wageRatio }}%</span>
-                                <span class="text-slate-400">{{ __('squad_v2.of_revenue') }}</span>
-                            </div>
-                        </div>
-
-                        {{-- Transfer Budget --}}
-                        <div class="bg-slate-50 rounded-lg p-3 border border-slate-200">
-                            <div class="text-xs text-slate-500 font-medium uppercase tracking-wide">{{ __('squad_v2.transfer_budget') }}</div>
-                            <div class="mt-1">
-                                <span class="text-2xl font-bold text-slate-900">{{ \App\Support\Money::format($transferBudget) }}</span>
-                            </div>
-                            <div class="mt-2 text-xs">
-                                @if($isTransferWindow)
-                                    <span class="text-green-600 font-medium">{{ __('squad_v2.window_open') }}</span>
-                                @elseif($windowCountdown)
-                                    <span class="text-slate-500">{{ $windowCountdown['window'] }} {{ __('squad_v2.in_matchdays', ['count' => $windowCountdown['matchdays']]) }}</span>
-                                @else
-                                    <span class="text-slate-400">{{ __('squad_v2.window_closed') }}</span>
-                                @endif
                             </div>
                         </div>
                         @endif

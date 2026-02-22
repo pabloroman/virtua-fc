@@ -72,6 +72,7 @@ class ShowSquadV2
         $avgAge = $squadSize > 0 ? round($allPlayers->avg(fn ($p) => $p->age), 1) : 0;
         $avgFitness = $squadSize > 0 ? round($allPlayers->avg('fitness')) : 0;
         $avgMorale = $squadSize > 0 ? round($allPlayers->avg('morale')) : 0;
+        $avgOverall = $squadSize > 0 ? round($allPlayers->avg('overall_score')) : 0;
         $lowFitnessCount = $allPlayers->filter(fn ($p) => $p->fitness < 70)->count();
         $lowMoraleCount = $allPlayers->filter(fn ($p) => $p->morale < 65)->count();
         $injuredCount = $allPlayers->filter(fn ($p) => $p->isInjured($game->current_date))->count();
@@ -84,20 +85,15 @@ class ShowSquadV2
         // Career mode financial data
         $squadValue = 0;
         $wageBill = 0;
-        $transferBudget = 0;
         $wageRatio = 0;
-        $isTransferWindow = false;
         $windowCountdown = null;
 
         if ($isCareerMode) {
             $squadValue = $allPlayers->sum('market_value_cents');
             $wageBill = $allPlayers->sum('annual_wage');
-            $investment = $game->currentInvestment;
-            $transferBudget = $investment->transfer_budget ?? 0;
             $finances = $game->currentFinances;
             $projectedRevenue = $finances->projected_total_revenue ?? 0;
             $wageRatio = $projectedRevenue > 0 ? round($wageBill / $projectedRevenue * 100) : 0;
-            $isTransferWindow = $game->isTransferWindowOpen();
             $windowCountdown = $game->getWindowCountdown();
         }
 
@@ -167,18 +163,14 @@ class ShowSquadV2
             'avgAge' => $avgAge,
             'avgFitness' => $avgFitness,
             'avgMorale' => $avgMorale,
-            'lowFitnessCount' => $lowFitnessCount,
-            'lowMoraleCount' => $lowMoraleCount,
+            'avgOverall' => $avgOverall,
             'injuredCount' => $injuredCount,
             'youngCount' => $youngCount,
             'primeCount' => $primeCount,
             'veteranCount' => $veteranCount,
             'squadValue' => $squadValue,
             'wageBill' => $wageBill,
-            'transferBudget' => $transferBudget,
             'wageRatio' => $wageRatio,
-            'isTransferWindow' => $isTransferWindow,
-            'windowCountdown' => $windowCountdown,
             // Sidebar data
             'depthChart' => $depthChart,
             'expiringThisSeason' => $expiringThisSeason,

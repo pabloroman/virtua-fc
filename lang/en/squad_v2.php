@@ -49,6 +49,11 @@ return [
     'no_contract_issues' => 'No contract issues',
     'highest_earners' => 'Highest earners',
 
+    // Tooltips
+    'tooltip_fitness' => 'Avg squad fitness — affects stamina and performance',
+    'tooltip_morale' => 'Avg squad morale — affects motivation and consistency',
+    'tooltip_avg_overall' => 'Avg squad overall rating',
+
     // Alerts
     'alert_many_injured' => ':count players injured — consider resting starters',
     'alert_low_morale' => ':count players with low morale',

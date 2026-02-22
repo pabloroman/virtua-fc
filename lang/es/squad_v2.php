@@ -49,6 +49,11 @@ return [
     'no_contract_issues' => 'Sin contratos pendientes',
     'highest_earners' => 'Mayores salarios',
 
+    // Tooltips
+    'tooltip_fitness' => 'Forma física media — afecta resistencia y rendimiento',
+    'tooltip_morale' => 'Moral media — afecta motivación y consistencia',
+    'tooltip_avg_overall' => 'Puntuación media de la plantilla',
+
     // Alerts
     'alert_many_injured' => ':count jugadores lesionados — considera rotar titulares',
     'alert_low_morale' => ':count jugadores con moral baja',
