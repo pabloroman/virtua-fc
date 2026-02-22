@@ -197,9 +197,6 @@
 
                                             {{-- Overview headers --}}
                                             <template x-if="viewMode === 'overview'">
-                                                <th class="font-semibold py-2 text-center w-10"></th>
-                                            </template>
-                                            <template x-if="viewMode === 'overview'">
                                                 <th class="font-semibold py-2 text-center w-10 cursor-help" x-data x-tooltip.raw="{{ __('squad.fitness_full') }}">{{ __('squad.fitness') }}</th>
                                             </template>
                                             <template x-if="viewMode === 'overview'">
@@ -265,6 +262,7 @@
                                                 <th class="font-semibold py-2 text-center w-16">{{ __('squad_v2.cards') }}</th>
                                             </template>
 
+                                            <th class="font-semibold py-2 text-center w-10"></th>
                                             <th class="font-semibold py-2 text-center w-10">{{ __('app.age') }}</th>
                                             <th class="font-semibold py-2 pr-3 text-center w-12 cursor-help" x-data x-tooltip.raw="{{ __('squad.overall') }}">{{ __('squad.overall') }}</th>
                                         </tr>
@@ -326,13 +324,6 @@
                                                 </td>
 
                                                 {{-- === Overview columns === --}}
-                                                <template x-if="viewMode === 'overview'">
-                                                    <td class="py-2.5 text-center w-10">
-                                                        @if($gp->nationality_flag)
-                                                            <img src="/flags/{{ $gp->nationality_flag['code'] }}.svg" class="w-5 h-4 mx-auto rounded shadow-sm" title="{{ $gp->nationality_flag['name'] }}">
-                                                        @endif
-                                                    </td>
-                                                </template>
                                                 <template x-if="viewMode === 'overview'">
                                                     <td class="py-2.5 text-center w-10">
                                                         <span class="@if($gp->fitness >= 90) text-green-600 @elseif($gp->fitness >= 80) text-lime-600 @elseif($gp->fitness < 50) text-red-500 font-medium @elseif($gp->fitness < 70) text-amber-600 @endif">{{ $gp->fitness }}</span>
@@ -443,6 +434,13 @@
                                                         </span>
                                                     </td>
                                                 </template>
+
+                                                {{-- Nationality flag (all modes) --}}
+                                                <td class="py-2.5 text-center w-10">
+                                                    @if($gp->nationality_flag)
+                                                        <img src="/flags/{{ $gp->nationality_flag['code'] }}.svg" class="w-5 h-4 mx-auto rounded shadow-sm" title="{{ $gp->nationality_flag['name'] }}">
+                                                    @endif
+                                                </td>
 
                                                 {{-- Age (all modes) --}}
                                                 <td class="py-2.5 text-center w-10 text-slate-600">{{ $gp->age }}</td>
