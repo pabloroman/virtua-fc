@@ -3,6 +3,7 @@
 return [
     // Page title
     'squad' => 'Plantilla',
+    'first_team' => 'Primer Equipo',
     'development' => 'Desarrollo',
     'stats' => 'Estadísticas',
 

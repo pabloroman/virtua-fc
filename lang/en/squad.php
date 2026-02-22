@@ -3,6 +3,7 @@
 return [
     // Page title
     'squad' => 'Squad',
+    'first_team' => 'First Team',
     'development' => 'Development',
     'stats' => 'Stats',
 

@@ -56,7 +56,7 @@
                     {{-- Sub-navigation --}}
                     @php
                         $squadNavItems = [
-                            ['href' => route('game.squad', $game->id), 'label' => __('squad.squad'), 'active' => true],
+                            ['href' => route('game.squad', $game->id), 'label' => $isCareerMode ? __('squad.first_team') : __('squad.squad'), 'active' => true],
                         ];
                         if ($isCareerMode) {
                             $squadNavItems[] = ['href' => route('game.squad.academy', $game->id), 'label' => __('squad.academy'), 'active' => false];

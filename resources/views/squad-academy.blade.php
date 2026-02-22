@@ -10,7 +10,7 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-4 md:p-8">
                     <x-section-nav :items="[
-                        ['href' => route('game.squad', $game->id), 'label' => __('squad.squad'), 'active' => false],
+                        ['href' => route('game.squad', $game->id), 'label' => __('squad.first_team'), 'active' => false],
                         ['href' => route('game.squad.academy', $game->id), 'label' => __('squad.academy'), 'active' => true],
                     ]" />
 
