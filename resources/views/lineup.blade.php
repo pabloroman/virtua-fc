@@ -225,46 +225,18 @@
                                 <div class="mt-4 bg-slate-50 rounded-lg p-4 border border-slate-200">
                                     <div class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">{{ __('squad.coach_assistant') }}</div>
 
-                                    {{-- Opponent Info --}}
-                                    <div class="flex items-center gap-3 mb-3">
-                                        <img src="{{ $opponent->image }}" class="w-8 h-8" alt="{{ $opponent->name }}">
-                                        <div class="min-w-0">
-                                            <div class="font-medium text-slate-900 truncate">{{ $opponent->name }}</div>
-                                            <div class="flex items-center gap-2">
-                                                <span class="text-xs text-slate-500">{{ $opponentData['teamAverage'] ?: '-' }}</span>
-                                                @if(count($opponentData['form']) > 0)
-                                                    <div class="flex gap-0.5">
-                                                        @foreach($opponentData['form'] as $result)
-                                                            <span class="w-4 h-4 rounded-full text-[9px] font-semibold flex items-center justify-center
-                                                                @if($result === 'W') bg-green-500 text-white
-                                                                @elseif($result === 'D') bg-slate-400 text-white
-                                                                @else bg-red-500 text-white @endif">
-                                                                {{ $result }}
-                                                            </span>
-                                                        @endforeach
-                                                    </div>
-                                                @endif
-                                            </div>
+                                    {{-- Face to Face Comparison --}}
+                                    <div class="flex items-center justify-between gap-2 mb-1">
+                                        {{-- User Team --}}
+                                        <div class="flex items-center gap-2 min-w-0">
+                                            <img src="{{ $game->team->image }}" class="w-7 h-7 shrink-0" alt="{{ $game->team->name }}">
+                                            <span class="text-lg font-bold text-slate-900" x-text="teamAverage || '-'"></span>
                                         </div>
-                                    </div>
 
-                                    {{-- Strength Comparison --}}
-                                    <div class="grid grid-cols-2 gap-2 mb-3">
-                                        <div class="bg-white rounded-md p-2 text-center border border-slate-200">
-                                            <div class="text-[10px] text-slate-400 uppercase tracking-wide">{{ __('squad.coach_your_team') }}</div>
-                                            <div class="text-lg font-bold text-slate-900" x-text="teamAverage || '-'"></div>
-                                        </div>
-                                        <div class="bg-white rounded-md p-2 text-center border border-slate-200">
-                                            <div class="text-[10px] text-slate-400 uppercase tracking-wide">{{ __('squad.coach_opponent') }}</div>
-                                            <div class="text-lg font-bold text-slate-900">{{ $opponentData['teamAverage'] ?: '-' }}</div>
-                                        </div>
-                                    </div>
-
-                                    {{-- Advantage Badge --}}
-                                    <template x-if="teamAverage && {{ $opponentData['teamAverage'] ?: 0 }}">
-                                        <div class="flex justify-center mb-3">
+                                        {{-- Advantage Badge --}}
+                                        <template x-if="teamAverage && {{ $opponentData['teamAverage'] ?: 0 }}">
                                             <span
-                                                class="text-xs font-semibold px-2 py-1 rounded-full"
+                                                class="text-xs font-semibold px-2 py-0.5 rounded-full shrink-0"
                                                 :class="{
                                                     'bg-green-100 text-green-700': teamAverage > {{ $opponentData['teamAverage'] ?: 0 }},
                                                     'bg-red-100 text-red-700': teamAverage < {{ $opponentData['teamAverage'] ?: 0 }},
@@ -272,8 +244,34 @@
                                                 }"
                                                 x-text="teamAverage > {{ $opponentData['teamAverage'] ?: 0 }} ? '+' + (teamAverage - {{ $opponentData['teamAverage'] ?: 0 }}) : (teamAverage < {{ $opponentData['teamAverage'] ?: 0 }} ? (teamAverage - {{ $opponentData['teamAverage'] ?: 0 }}) : '=')"
                                             ></span>
+                                        </template>
+                                        <template x-if="!teamAverage || !{{ $opponentData['teamAverage'] ?: 0 }}">
+                                            <span class="text-xs text-slate-400">vs</span>
+                                        </template>
+
+                                        {{-- Opponent Team --}}
+                                        <div class="flex items-center gap-2 min-w-0">
+                                            <span class="text-lg font-bold text-slate-900">{{ $opponentData['teamAverage'] ?: '-' }}</span>
+                                            <img src="{{ $opponent->image }}" class="w-7 h-7 shrink-0" alt="{{ $opponent->name }}">
                                         </div>
-                                    </template>
+                                    </div>
+
+                                    {{-- Opponent Form --}}
+                                    @if(count($opponentData['form']) > 0)
+                                        <div class="flex items-center justify-end gap-1 mb-3">
+                                            <span class="text-[10px] text-slate-400 mr-0.5">{{ $opponent->short_name ?? $opponent->name }}</span>
+                                            <div class="flex gap-0.5">
+                                                @foreach($opponentData['form'] as $result)
+                                                    <span class="w-4 h-4 rounded-full text-[9px] font-semibold flex items-center justify-center
+                                                        @if($result === 'W') bg-green-500 text-white
+                                                        @elseif($result === 'D') bg-slate-400 text-white
+                                                        @else bg-red-500 text-white @endif">
+                                                        {{ $result }}
+                                                    </span>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endif
 
                                     {{-- Tips Section --}}
                                     <div class="border-t border-slate-200 pt-3">
