@@ -94,6 +94,13 @@ return [
     'coach_low_fitness' => ':count jugador(es) con forma baja (<70). Rinden peor y tienen mayor riesgo de lesión.',
     'coach_low_morale' => ':count jugador(es) con moral baja. Tendrán peor rendimiento en el partido.',
     'coach_bench_frustration' => ':count jugador(es) de calidad sin jugar y perdiendo moral. Rota para mantenerlos contentos.',
+    'coach_opponent_expected_label' => 'Previsto',
+    'coach_opponent_defensive_setup' => 'Rival previsto con :formation (:mentality). Considera un enfoque ofensivo para desbloquearlos.',
+    'coach_opponent_attacking_setup' => 'Rival previsto con :formation (:mentality). Dejarán espacios — una defensa sólida puede aprovecharlos.',
+    'coach_opponent_deep_block' => 'Rival con 5 defensas. Amplitud y paciencia serán clave.',
+    'mentality_defensive' => 'Defensiva',
+    'mentality_balanced' => 'Equilibrada',
+    'mentality_attacking' => 'Ofensiva',
 
     // Unavailability reasons
     'suspended_matches' => 'Sancionado (:count partido)|Sancionado (:count partidos)',

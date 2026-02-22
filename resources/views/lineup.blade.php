@@ -21,6 +21,8 @@
         teamColors: @js($teamColors),
         formationModifiers: @js($formationModifiers),
         opponentAverage: {{ $opponentData['teamAverage'] ?: 0 }},
+        opponentFormation: @js($opponentData['formation'] ?? null),
+        opponentMentality: @js($opponentData['mentality'] ?? null),
         userTeamAverage: {{ $userTeamAverage ?: 0 }},
         isHome: @js($isHome),
         translations: {
@@ -30,15 +32,21 @@
             okay: '{{ __('squad.okay') }}',
             poor: '{{ __('squad.poor') }}',
             unsuitable: '{{ __('squad.unsuitable') }}',
-            coach_defensive_recommended: '{{ __('squad.coach_defensive_recommended') }}',
-            coach_attacking_recommended: '{{ __('squad.coach_attacking_recommended') }}',
-            coach_risky_formation: '{{ __('squad.coach_risky_formation') }}',
-            coach_home_advantage: '{{ __('squad.coach_home_advantage') }}',
-            coach_critical_fitness: '{{ __('squad.coach_critical_fitness') }}',
-            coach_low_fitness: '{{ __('squad.coach_low_fitness') }}',
-            coach_low_morale: '{{ __('squad.coach_low_morale') }}',
-            coach_bench_frustration: '{{ __('squad.coach_bench_frustration') }}',
-            coach_no_tips: '{{ __('squad.coach_no_tips') }}',
+            coach_defensive_recommended: @js(__('squad.coach_defensive_recommended')),
+            coach_attacking_recommended: @js(__('squad.coach_attacking_recommended')),
+            coach_risky_formation: @js(__('squad.coach_risky_formation')),
+            coach_home_advantage: @js(__('squad.coach_home_advantage')),
+            coach_critical_fitness: @js(__('squad.coach_critical_fitness')),
+            coach_low_fitness: @js(__('squad.coach_low_fitness')),
+            coach_low_morale: @js(__('squad.coach_low_morale')),
+            coach_bench_frustration: @js(__('squad.coach_bench_frustration')),
+            coach_no_tips: @js(__('squad.coach_no_tips')),
+            coach_opponent_defensive_setup: @js(__('squad.coach_opponent_defensive_setup')),
+            coach_opponent_attacking_setup: @js(__('squad.coach_opponent_attacking_setup')),
+            coach_opponent_deep_block: @js(__('squad.coach_opponent_deep_block')),
+            mentality_defensive: @js(__('squad.mentality_defensive')),
+            mentality_balanced: @js(__('squad.mentality_balanced')),
+            mentality_attacking: @js(__('squad.mentality_attacking')),
         },
     })">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -255,6 +263,20 @@
                                             <img src="{{ $opponent->image }}" class="w-7 h-7 shrink-0" alt="{{ $opponent->name }}">
                                         </div>
                                     </div>
+
+                                    {{-- Opponent Expected Tactics --}}
+                                    @if(!empty($opponentData['formation']))
+                                        <div class="flex items-center justify-end gap-1.5 mb-2">
+                                            <span class="text-[10px] text-slate-400 uppercase tracking-wide">{{ __('squad.coach_opponent_expected_label') }}</span>
+                                            <span class="text-xs font-semibold text-slate-700 bg-slate-100 px-1.5 py-0.5 rounded">{{ $opponentData['formation'] }}</span>
+                                            <span class="text-slate-300">&middot;</span>
+                                            <span class="text-xs font-medium
+                                                @if($opponentData['mentality'] === 'defensive') text-blue-600
+                                                @elseif($opponentData['mentality'] === 'attacking') text-red-600
+                                                @else text-slate-600
+                                                @endif">{{ __('squad.mentality_' . $opponentData['mentality']) }}</span>
+                                        </div>
+                                    @endif
 
                                     {{-- Form (symmetrical) --}}
                                     <div class="flex items-center justify-between gap-2 mb-3">

@@ -94,6 +94,13 @@ return [
     'coach_low_fitness' => ':count player(s) with low fitness (<70). They perform worse and have higher injury risk.',
     'coach_low_morale' => ':count player(s) with low morale. They\'ll perform worse in the match.',
     'coach_bench_frustration' => ':count quality player(s) not playing and losing morale. Rotate to keep them happy.',
+    'coach_opponent_expected_label' => 'Expected',
+    'coach_opponent_defensive_setup' => 'Opponent expected to play :formation (:mentality). Consider an attacking approach to break them down.',
+    'coach_opponent_attacking_setup' => 'Opponent expected to play :formation (:mentality). They\'ll leave space — a solid defense can exploit this.',
+    'coach_opponent_deep_block' => 'Opponent playing with 5 defenders. Width and patience will be key.',
+    'mentality_defensive' => 'Defensive',
+    'mentality_balanced' => 'Balanced',
+    'mentality_attacking' => 'Attacking',
 
     // Unavailability reasons
     'suspended_matches' => 'Suspended (:count match)|Suspended (:count matches)',

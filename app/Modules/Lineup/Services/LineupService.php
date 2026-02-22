@@ -3,6 +3,7 @@
 namespace App\Modules\Lineup\Services;
 
 use App\Modules\Lineup\Enums\Formation;
+use App\Modules\Lineup\Enums\Mentality;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
@@ -12,6 +13,9 @@ use Illuminate\Support\Collection;
 
 class LineupService
 {
+    public function __construct(
+        private readonly FormationRecommender $formationRecommender,
+    ) {}
 
     /**
      * Get available players (not injured/suspended) for a team.
@@ -208,10 +212,15 @@ class LineupService
      * This is the core selection algorithm used by both autoSelectLineup (for match lineups)
      * and for calculating opponent team ratings.
      */
-    public function selectBestXI(Collection $availablePlayers, ?Formation $formation = null): Collection
+    public function selectBestXI(Collection $availablePlayers, ?Formation $formation = null, bool $applyFitnessRotation = false): Collection
     {
         $formation = $formation ?? Formation::F_4_4_2;
         $requirements = $formation->requirements();
+
+        // Sort key: effective score accounts for fitness when rotation is enabled
+        $sortKey = $applyFitnessRotation
+            ? fn ($p) => $this->effectiveScore($p)
+            : fn ($p) => $p->overall_score;
 
         $selected = collect();
 
@@ -221,7 +230,7 @@ class LineupService
         // Select players for each position group
         foreach ($requirements as $positionGroup => $count) {
             $positionPlayers = ($grouped->get($positionGroup) ?? collect())
-                ->sortByDesc('overall_score')
+                ->sortByDesc($sortKey)
                 ->take($count);
 
             $selected = $selected->merge($positionPlayers);
@@ -232,7 +241,7 @@ class LineupService
             $selectedIds = $selected->pluck('id')->toArray();
             $remaining = $availablePlayers
                 ->filter(fn ($p) => !in_array($p->id, $selectedIds))
-                ->sortByDesc('overall_score');
+                ->sortByDesc($sortKey);
 
             foreach ($remaining as $player) {
                 if ($selected->count() >= 11) {
@@ -243,6 +252,74 @@ class LineupService
         }
 
         return $selected;
+    }
+
+    /**
+     * Calculate effective score for AI rotation: penalizes low-fitness players.
+     * Players at fitness >= 65 are unaffected. Below that, score degrades linearly.
+     * Example: 80-rated player at fitness 50 → effective ~71.5
+     */
+    private function effectiveScore(GamePlayer $player): float
+    {
+        $fitnessMultiplier = $player->fitness >= 65 ? 1.0 : 0.85 + $player->fitness * 0.0023;
+
+        return $player->overall_score * $fitnessMultiplier;
+    }
+
+    /**
+     * Select the best formation for an AI team based on squad composition.
+     * Uses FormationRecommender to evaluate all formations and pick the best fit.
+     */
+    public function selectAIFormation(Collection $availablePlayers): Formation
+    {
+        if ($availablePlayers->count() < 11) {
+            return Formation::F_4_4_2;
+        }
+
+        return $this->formationRecommender->getBestFormation($availablePlayers);
+    }
+
+    /**
+     * Select mentality for an AI team based on reputation, venue, and relative strength.
+     * Returns a deterministic mentality — same inputs always produce the same output.
+     */
+    public function selectAIMentality(?string $reputationLevel, bool $isHome, float $teamAvg, float $opponentAvg): Mentality
+    {
+        if ($reputationLevel === null || $opponentAvg <= 0) {
+            return Mentality::BALANCED;
+        }
+
+        $diff = $teamAvg - $opponentAvg;
+        $isStronger = $diff >= 5;
+        $isWeaker = $diff <= -5;
+
+        // Group reputations into tactical tiers
+        $tier = match ($reputationLevel) {
+            'elite', 'contenders' => 'bold',
+            'continental', 'established' => 'mid',
+            default => 'cautious', // modest, professional, local
+        };
+
+        if ($isHome) {
+            if ($isStronger) {
+                return $tier === 'cautious' ? Mentality::BALANCED : Mentality::ATTACKING;
+            }
+            if ($isWeaker) {
+                return $tier === 'bold' ? Mentality::BALANCED : Mentality::DEFENSIVE;
+            }
+            // Similar strength at home
+            return Mentality::BALANCED;
+        }
+
+        // Away
+        if ($isStronger) {
+            return $tier === 'cautious' ? Mentality::DEFENSIVE : Mentality::BALANCED;
+        }
+        if ($isWeaker) {
+            return Mentality::DEFENSIVE;
+        }
+        // Similar strength away
+        return $tier === 'bold' ? Mentality::BALANCED : Mentality::DEFENSIVE;
     }
 
     /**
@@ -422,11 +499,13 @@ class LineupService
     /**
      * Ensure all matches have lineups set (auto-select for AI teams).
      * Uses the player's preferred lineup, formation, and mentality for their team.
+     * AI teams get squad-fitted formations, reputation-driven mentality, and fitness rotation.
      *
      * @param Collection|null $allPlayersGrouped Pre-loaded players grouped by team_id (optional, for N+1 optimization)
      * @param array $suspendedPlayerIds Array of player IDs who are suspended (optional, for N+1 optimization)
+     * @param Collection|null $clubProfiles Pre-loaded ClubProfiles keyed by team_id (optional, for AI mentality)
      */
-    public function ensureLineupsForMatches($matches, Game $game, $allPlayersGrouped = null, array $suspendedPlayerIds = []): void
+    public function ensureLineupsForMatches($matches, Game $game, $allPlayersGrouped = null, array $suspendedPlayerIds = [], $clubProfiles = null): void
     {
         $playerFormation = $game->default_formation
             ? Formation::tryFrom($game->default_formation)
@@ -448,7 +527,8 @@ class LineupService
                 $playerPreferredLineup,
                 $playerMentality,
                 $allPlayersGrouped,
-                $suspendedPlayerIds
+                $suspendedPlayerIds,
+                $clubProfiles
             );
 
             $this->ensureTeamLineup(
@@ -461,7 +541,8 @@ class LineupService
                 $playerPreferredLineup,
                 $playerMentality,
                 $allPlayersGrouped,
-                $suspendedPlayerIds
+                $suspendedPlayerIds,
+                $clubProfiles
             );
 
             // Save once per match (covers lineup, formation, mentality for both sides)
@@ -476,6 +557,7 @@ class LineupService
      *
      * @param Collection|null $allPlayersGrouped Pre-loaded players grouped by team_id
      * @param array $suspendedPlayerIds Array of player IDs who are suspended
+     * @param Collection|null $clubProfiles Pre-loaded ClubProfiles keyed by team_id
      */
     private function ensureTeamLineup(
         GameMatch $match,
@@ -487,7 +569,8 @@ class LineupService
         ?array $playerPreferredLineup,
         string $playerMentality,
         $allPlayersGrouped = null,
-        array $suspendedPlayerIds = []
+        array $suspendedPlayerIds = [],
+        $clubProfiles = null
     ): void {
         $lineupField = $side . '_lineup';
         $teamIdField = $side . '_team_id';
@@ -559,9 +642,13 @@ class LineupService
                 $playerPreferredLineup,
                 $availableIds
             );
-        } else {
-            // Auto-select best XI from available players
+        } elseif ($isPlayerTeam) {
+            // Player team without preferred lineup — auto-select without fitness rotation
             $lineup = $this->selectBestXI($availablePlayers, $playerFormation)->pluck('id')->toArray();
+        } else {
+            // AI team: use squad-fitted formation with fitness rotation
+            $aiFormation = $this->selectAIFormation($availablePlayers);
+            $lineup = $this->selectBestXI($availablePlayers, $aiFormation, applyFitnessRotation: true)->pluck('id')->toArray();
         }
 
         // Set lineup in memory (save deferred to end)
@@ -572,6 +659,7 @@ class LineupService
         }
 
         if ($isPlayerTeam) {
+            // Player's team: use their chosen formation and mentality
             if ($playerFormation) {
                 if ($match->home_team_id === $teamId) {
                     $match->home_formation = $playerFormation->value;
@@ -583,6 +671,29 @@ class LineupService
                 $match->home_mentality = $playerMentality;
             } else {
                 $match->away_mentality = $playerMentality;
+            }
+        } else {
+            // AI team: set formation and reputation-driven mentality
+            $aiFormation = $aiFormation ?? $this->selectAIFormation($availablePlayers);
+            $isHome = $match->home_team_id === $teamId;
+            $opponentTeamId = $isHome ? $match->away_team_id : $match->home_team_id;
+
+            // Calculate team averages from pre-loaded data for mentality decision
+            $teamAvg = $this->calculateTeamAverage($this->selectBestXI($availablePlayers, $aiFormation));
+            $opponentPlayers = $allPlayersGrouped?->get($opponentTeamId, collect()) ?? collect();
+            $opponentAvg = $opponentPlayers->isNotEmpty()
+                ? $this->calculateTeamAverage($this->selectBestXI($opponentPlayers))
+                : 0;
+
+            $reputationLevel = $clubProfiles?->get($teamId)?->reputation_level;
+            $aiMentality = $this->selectAIMentality($reputationLevel, $isHome, $teamAvg, $opponentAvg);
+
+            if ($match->home_team_id === $teamId) {
+                $match->home_formation = $aiFormation->value;
+                $match->home_mentality = $aiMentality->value;
+            } else {
+                $match->away_formation = $aiFormation->value;
+                $match->away_mentality = $aiMentality->value;
             }
         }
     }
