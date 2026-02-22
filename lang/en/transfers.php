@@ -173,6 +173,10 @@ return [
     'declined_renewals' => 'Declined Renewals',
 
     // Renewal negotiation
+    'renewal_counter_offers' => 'Renewal Counter-Offers',
+    'renewal_counter_offers_help' => 'These players have responded to your renewal offers',
+    'renewal_offers_sent' => 'Renewals In Progress',
+    'renewal_offers_sent_help' => 'Your renewal offers are being considered',
     'negotiate' => 'Negotiate',
     'negotiating' => 'Negotiating...',
     'player_countered' => 'The player has counter-offered',
