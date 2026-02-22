@@ -833,30 +833,76 @@ class MatchSimulator
      */
     public function simulatePenalties(Collection $homePlayers, Collection $awayPlayers): array
     {
+        $result = $this->simulatePenaltyShootout($homePlayers, $awayPlayers);
+
+        return [$result['homeScore'], $result['awayScore']];
+    }
+
+    /**
+     * Simulate a detailed penalty shootout with kick-by-kick results.
+     *
+     * Accepts optional ordered player ID arrays. When provided, those players
+     * take the first 5 kicks in the given order. For sudden death or when no
+     * order is supplied, players are picked by technical ability (outfield first).
+     *
+     * @param  array<string>|null  $homeOrder  Ordered game_player IDs for home kickers
+     * @param  array<string>|null  $awayOrder  Ordered game_player IDs for away kickers
+     * @return array{homeScore: int, awayScore: int, kicks: list<array{round: int, side: string, playerId: string, playerName: string, scored: bool}>}
+     */
+    public function simulatePenaltyShootout(
+        Collection $homePlayers,
+        Collection $awayPlayers,
+        ?array $homeOrder = null,
+        ?array $awayOrder = null,
+    ): array {
+        $homeKickers = $this->buildKickerQueue($homePlayers, $homeOrder);
+        $awayKickers = $this->buildKickerQueue($awayPlayers, $awayOrder);
+
         $homeScore = 0;
         $awayScore = 0;
+        $kicks = [];
         $round = 1;
         $maxRounds = 5;
+        $homeIdx = 0;
+        $awayIdx = 0;
 
         // First 5 penalties each
         for ($i = 0; $i < $maxRounds; $i++) {
-            // Home takes
-            if ($this->penaltyScored()) {
+            $homeKicker = $homeKickers[$homeIdx % count($homeKickers)];
+            $homeScored = $this->penaltyScored($homeKicker);
+            if ($homeScored) {
                 $homeScore++;
             }
+            $kicks[] = [
+                'round' => $round,
+                'side' => 'home',
+                'playerId' => $homeKicker->id,
+                'playerName' => $homeKicker->player->name ?? '',
+                'scored' => $homeScored,
+            ];
+            $homeIdx++;
 
-            // Away takes
-            if ($this->penaltyScored()) {
+            $awayKicker = $awayKickers[$awayIdx % count($awayKickers)];
+            $awayScored = $this->penaltyScored($awayKicker);
+            if ($awayScored) {
                 $awayScore++;
             }
+            $kicks[] = [
+                'round' => $round,
+                'side' => 'away',
+                'playerId' => $awayKicker->id,
+                'playerName' => $awayKicker->player->name ?? '',
+                'scored' => $awayScored,
+            ];
+            $awayIdx++;
 
             // Check if one team has mathematically won
             $remainingRounds = $maxRounds - $round;
             if ($homeScore > $awayScore + $remainingRounds) {
-                break; // Home has won
+                break;
             }
             if ($awayScore > $homeScore + $remainingRounds) {
-                break; // Away has won
+                break;
             }
 
             $round++;
@@ -864,32 +910,103 @@ class MatchSimulator
 
         // Sudden death if still tied after 5
         while ($homeScore === $awayScore) {
-            $homeScored = $this->penaltyScored();
-            $awayScored = $this->penaltyScored();
-
+            $round++;
+            $homeKicker = $homeKickers[$homeIdx % count($homeKickers)];
+            $homeScored = $this->penaltyScored($homeKicker);
             if ($homeScored) {
                 $homeScore++;
             }
+            $kicks[] = [
+                'round' => $round,
+                'side' => 'home',
+                'playerId' => $homeKicker->id,
+                'playerName' => $homeKicker->player->name ?? '',
+                'scored' => $homeScored,
+            ];
+            $homeIdx++;
+
+            $awayKicker = $awayKickers[$awayIdx % count($awayKickers)];
+            $awayScored = $this->penaltyScored($awayKicker);
             if ($awayScored) {
                 $awayScore++;
             }
+            $kicks[] = [
+                'round' => $round,
+                'side' => 'away',
+                'playerId' => $awayKicker->id,
+                'playerName' => $awayKicker->player->name ?? '',
+                'scored' => $awayScored,
+            ];
+            $awayIdx++;
 
-            // In sudden death, if both miss or both score, continue
-            // If only one scores, they win
             if ($homeScored !== $awayScored) {
                 break;
             }
         }
 
-        return [$homeScore, $awayScore];
+        return [
+            'homeScore' => $homeScore,
+            'awayScore' => $awayScore,
+            'kicks' => $kicks,
+        ];
+    }
+
+    /**
+     * Build an ordered queue of kickers for a penalty shootout.
+     *
+     * When an explicit order is given, those players go first, followed by
+     * remaining players sorted by technical ability. Goalkeepers go last.
+     *
+     * @return list<GamePlayer>
+     */
+    private function buildKickerQueue(Collection $players, ?array $order = null): array
+    {
+        if ($order) {
+            $ordered = collect($order)
+                ->map(fn ($id) => $players->firstWhere('id', $id))
+                ->filter()
+                ->values();
+
+            $remaining = $players
+                ->reject(fn ($p) => in_array($p->id, $order))
+                ->sortByDesc(fn ($p) => $p->technical_ability)
+                ->values();
+
+            return $ordered->merge($remaining)->all();
+        }
+
+        // Default: outfield sorted by technical ability desc, GK last
+        return $players
+            ->sort(function ($a, $b) {
+                $aGk = $a->position === 'Goalkeeper' ? 1 : 0;
+                $bGk = $b->position === 'Goalkeeper' ? 1 : 0;
+                if ($aGk !== $bGk) {
+                    return $aGk - $bGk;
+                }
+
+                return $b->technical_ability - $a->technical_ability;
+            })
+            ->values()
+            ->all();
     }
 
     /**
      * Determine if a penalty is scored.
-     * Roughly 75-80% success rate.
+     * Base ~77% success rate, modified by player's technical ability and morale.
      */
-    private function penaltyScored(): bool
+    private function penaltyScored(?GamePlayer $player = null): bool
     {
-        return $this->percentChance(77);
+        $base = 77;
+
+        if ($player) {
+            // Technical ability: ±10% across full range (0-100)
+            $base += ($player->technical_ability - 50) * 0.20;
+            // Morale: ±5% across full range (0-100)
+            $base += ($player->morale - 50) * 0.10;
+            // Clamp to reasonable range
+            $base = max(55, min(95, $base));
+        }
+
+        return $this->percentChance($base);
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Views;
 use App\Modules\Lineup\Enums\Formation;
 use App\Modules\Lineup\Enums\Mentality;
 use App\Modules\Lineup\Services\LineupService;
+use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
@@ -30,8 +31,27 @@ class ShowLiveMatch
             return redirect()->route('show-game', $gameId);
         }
 
+        // Determine if this is a knockout match (cup tie) that could go to ET
+        $isKnockout = $playerMatch->cup_tie_id !== null;
+        $extraTimeData = null;
+
+        // If match already has ET data (page refresh during ET), prepare it
+        if ($isKnockout && $playerMatch->is_extra_time) {
+            $extraTimeData = $this->buildExtraTimeData($playerMatch);
+        }
+
+        // For two-legged ties, pass first leg aggregate info
+        $twoLeggedInfo = null;
+        if ($isKnockout) {
+            $twoLeggedInfo = $this->buildTwoLeggedInfo($playerMatch);
+        }
+
         // Build the events payload for the Alpine.js component
-        $events = $playerMatch->events
+        // When ET is already played, separate regular (<=93) and ET events (>93)
+        $allEvents = $playerMatch->events;
+        $regularEvents = $allEvents->filter(fn ($e) => $e->minute <= 93);
+
+        $events = $regularEvents
             ->filter(fn ($e) => $e->event_type !== 'assist')
             ->map(fn ($e) => [
                 'minute' => $e->minute,
@@ -46,7 +66,7 @@ class ShowLiveMatch
             ->all();
 
         // Pair assists with their goals
-        $assists = $playerMatch->events
+        $assists = $regularEvents
             ->filter(fn ($e) => $e->event_type === 'assist')
             ->keyBy('minute');
 
@@ -126,6 +146,7 @@ class ShowLiveMatch
                 'positionGroup' => $p->position_group,
                 'positionSort' => LineupService::positionSortOrder($p->position),
                 'physicalAbility' => $p->physical_ability,
+                'technicalAbility' => $p->technical_ability,
                 'age' => Carbon::parse($p->player->date_of_birth)->age,
                 'minuteEntered' => $entryMinutes[$p->id] ?? 0,
             ])
@@ -159,6 +180,7 @@ class ShowLiveMatch
                 'positionGroup' => $p->position_group,
                 'positionSort' => LineupService::positionSortOrder($p->position),
                 'physicalAbility' => $p->physical_ability,
+                'technicalAbility' => $p->technical_ability,
                 'age' => Carbon::parse($p->player->date_of_birth)->age,
                 'minuteEntered' => null,
             ])
@@ -195,11 +217,105 @@ class ShowLiveMatch
             'existingSubstitutions' => $existingSubstitutions,
             'substituteUrl' => route('game.match.substitute', ['gameId' => $game->id, 'matchId' => $playerMatch->id]),
             'tacticsUrl' => route('game.match.tactics', ['gameId' => $game->id, 'matchId' => $playerMatch->id]),
+            'extraTimeUrl' => route('game.match.extra-time', ['gameId' => $game->id, 'matchId' => $playerMatch->id]),
+            'penaltiesUrl' => route('game.match.penalties', ['gameId' => $game->id, 'matchId' => $playerMatch->id]),
             'userFormation' => $userFormation,
             'userMentality' => $userMentality,
             'availableFormations' => $availableFormations,
             'availableMentalities' => $availableMentalities,
+            'isKnockout' => $isKnockout,
+            'extraTimeData' => $extraTimeData,
+            'twoLeggedInfo' => $twoLeggedInfo,
         ]);
     }
 
+    /**
+     * Build ET data for page-refresh scenario (ET already simulated).
+     */
+    private function buildExtraTimeData(GameMatch $match): array
+    {
+        $etEvents = $match->events
+            ->filter(fn ($e) => $e->minute > 93);
+
+        $formattedEvents = $etEvents
+            ->filter(fn ($e) => $e->event_type !== 'assist')
+            ->map(fn ($e) => [
+                'minute' => $e->minute,
+                'type' => $e->event_type,
+                'playerName' => $e->gamePlayer->player->name ?? '',
+                'teamId' => $e->team_id,
+                'gamePlayerId' => $e->game_player_id,
+                'metadata' => $e->metadata,
+            ])
+            ->sortBy('minute')
+            ->values()
+            ->all();
+
+        $assists = $etEvents
+            ->filter(fn ($e) => $e->event_type === 'assist')
+            ->keyBy('minute');
+
+        $formattedEvents = array_map(function ($event) use ($assists) {
+            if (in_array($event['type'], ['goal', 'own_goal']) && isset($assists[$event['minute']])) {
+                $event['assistPlayerName'] = $assists[$event['minute']]->gamePlayer->player->name ?? null;
+            }
+            return $event;
+        }, $formattedEvents);
+
+        $data = [
+            'extraTimeEvents' => $formattedEvents,
+            'homeScoreET' => $match->home_score_et ?? 0,
+            'awayScoreET' => $match->away_score_et ?? 0,
+            'penalties' => null,
+            'needsPenalties' => false,
+        ];
+
+        if ($match->home_score_penalties !== null) {
+            $data['penalties'] = [
+                'home' => $match->home_score_penalties,
+                'away' => $match->away_score_penalties,
+            ];
+        } else {
+            // ET done but penalties not yet — user needs to pick kickers
+            $data['needsPenalties'] = true;
+        }
+
+        return $data;
+    }
+
+    /**
+     * Build first-leg info for two-legged ties.
+     */
+    private function buildTwoLeggedInfo(GameMatch $match): ?array
+    {
+        $cupTie = CupTie::with('firstLegMatch')->find($match->cup_tie_id);
+
+        if (! $cupTie) {
+            return null;
+        }
+
+        $roundConfig = $cupTie->getRoundConfig();
+
+        if (! $roundConfig?->twoLegged) {
+            return null;
+        }
+
+        // Only relevant for second leg
+        if ($cupTie->second_leg_match_id !== $match->id) {
+            return null;
+        }
+
+        $firstLeg = $cupTie->firstLegMatch;
+
+        if (! $firstLeg?->played) {
+            return null;
+        }
+
+        return [
+            'firstLegHomeScore' => $firstLeg->home_score,
+            'firstLegAwayScore' => $firstLeg->away_score,
+            'tieHomeTeamId' => $cupTie->home_team_id,
+            'tieAwayTeamId' => $cupTie->away_team_id,
+        ];
+    }
 }

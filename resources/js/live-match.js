@@ -27,6 +27,13 @@ export default function liveMatch(config) {
         tacticsUrl: config.tacticsUrl || '',
         translations: config.translations || {},
 
+        // Extra time / knockout config
+        isKnockout: config.isKnockout || false,
+        extraTimeUrl: config.extraTimeUrl || '',
+        penaltiesUrl: config.penaltiesUrl || '',
+        twoLeggedInfo: config.twoLeggedInfo || null,
+        preloadedExtraTimeData: config.extraTimeData || null,
+
         // Tactical change state
         pendingFormation: null,
         pendingMentality: null,
@@ -35,7 +42,10 @@ export default function liveMatch(config) {
         // Clock state
         currentMinute: 0,
         speed: 1,
-        phase: 'pre_match', // pre_match, first_half, half_time, second_half, full_time
+        // Phases: pre_match, first_half, half_time, second_half,
+        //         going_to_extra_time, extra_time_first_half, extra_time_half_time,
+        //         extra_time_second_half, penalties, full_time
+        phase: 'pre_match',
         isPaused: false,
         pauseTimer: null,
 
@@ -46,6 +56,24 @@ export default function liveMatch(config) {
         lastRevealedIndex: -1,
         goalFlash: false,
         latestEvent: null,
+
+        // Extra time state
+        extraTimeEvents: [],
+        extraTimeLoading: false,
+        etHomeScore: 0,
+        etAwayScore: 0,
+        penaltyResult: null,
+        lastRevealedETIndex: -1,
+        _skippingToEnd: false,
+        _needsPenalties: false,
+
+        // Penalty picker / shootout state
+        penaltyPickerOpen: false,
+        selectedPenaltyKickers: [],
+        penaltyProcessing: false,
+        penaltyKicks: [],           // All kick results from server
+        revealedPenaltyKicks: [],   // Kicks revealed so far (animated)
+        _penaltyRevealTimer: null,
 
         // Tactical panel state
         tacticalPanelOpen: false,
@@ -88,6 +116,15 @@ export default function liveMatch(config) {
                 awayScore: 0,
             }));
 
+            // If ET data was preloaded (page refresh during ET), set it up
+            if (this.preloadedExtraTimeData) {
+                this.extraTimeEvents = this.preloadedExtraTimeData.extraTimeEvents || [];
+                this.etHomeScore = this.preloadedExtraTimeData.homeScoreET || 0;
+                this.etAwayScore = this.preloadedExtraTimeData.awayScoreET || 0;
+                this.penaltyResult = this.preloadedExtraTimeData.penalties || null;
+                this._needsPenalties = this.preloadedExtraTimeData.needsPenalties || false;
+            }
+
             // Brief delay before kickoff
             this._kickoffTimeout = setTimeout(() => {
                 this._kickoffTimeout = null;
@@ -98,11 +135,12 @@ export default function liveMatch(config) {
         },
 
         tick(now) {
-            if (this.phase === 'full_time' || this.phase === 'pre_match') {
+            if (this.phase === 'full_time' || this.phase === 'pre_match'
+                || this.phase === 'going_to_extra_time' || this.phase === 'penalties') {
                 return;
             }
 
-            if (this.isPaused || this.tacticalPanelOpen) {
+            if (this.isPaused || this.tacticalPanelOpen || this.penaltyPickerOpen) {
                 this._lastTick = now;
                 this._animFrame = requestAnimationFrame(this.tick.bind(this));
                 return;
@@ -114,10 +152,20 @@ export default function liveMatch(config) {
             const rate = this.speedRates[this.speed] || 1.5;
             const deltaMinutes = (deltaMs / 1000) * rate;
 
-            this.currentMinute = Math.min(this.currentMinute + deltaMinutes, 93);
+            const isExtraTime = this.phase === 'extra_time_first_half' || this.phase === 'extra_time_second_half';
+
+            if (isExtraTime) {
+                this.currentMinute = Math.min(this.currentMinute + deltaMinutes, 123);
+            } else {
+                this.currentMinute = Math.min(this.currentMinute + deltaMinutes, 93);
+            }
 
             // Reveal events
-            this.processEvents();
+            if (isExtraTime) {
+                this.processETEvents();
+            } else {
+                this.processEvents();
+            }
 
             // Update other match tickers
             this.updateOtherMatches();
@@ -128,9 +176,21 @@ export default function liveMatch(config) {
                 return;
             }
 
-            // Check for full-time
+            // Check for end of regular time
             if (this.phase === 'second_half' && this.currentMinute >= 93) {
-                this.enterFullTime();
+                this.enterRegularTimeEnd();
+                return;
+            }
+
+            // Check for ET half-time
+            if (this.phase === 'extra_time_first_half' && this.currentMinute >= 105) {
+                this.enterETHalfTime();
+                return;
+            }
+
+            // Check for end of extra time
+            if (this.phase === 'extra_time_second_half' && this.currentMinute >= 123) {
+                this.enterExtraTimeEnd();
                 return;
             }
 
@@ -142,6 +202,17 @@ export default function liveMatch(config) {
                 const event = this.events[i];
                 if (event.minute <= this.currentMinute) {
                     this.revealEvent(event, i);
+                } else {
+                    break;
+                }
+            }
+        },
+
+        processETEvents() {
+            for (let i = this.lastRevealedETIndex + 1; i < this.extraTimeEvents.length; i++) {
+                const event = this.extraTimeEvents[i];
+                if (event.minute <= this.currentMinute) {
+                    this.revealETEvent(event, i);
                 } else {
                     break;
                 }
@@ -168,6 +239,18 @@ export default function liveMatch(config) {
                 if (injured) {
                     this.selectedPlayerOut = injured;
                 }
+            }
+        },
+
+        revealETEvent(event, index) {
+            this.lastRevealedETIndex = index;
+            this.revealedEvents.unshift(event);
+            this.latestEvent = event;
+
+            if (event.type === 'goal' || event.type === 'own_goal') {
+                this.updateScore(event);
+                this.triggerGoalFlash();
+                this.pauseForDrama(1500);
             }
         },
 
@@ -210,17 +293,162 @@ export default function liveMatch(config) {
             }, 1500);
         },
 
-        enterFullTime() {
+        enterRegularTimeEnd() {
             this.currentMinute = 90;
-            this.phase = 'full_time';
-            // Ensure final scores match
+
+            // Reveal any remaining regular time events
+            for (let i = this.lastRevealedIndex + 1; i < this.events.length; i++) {
+                const event = this.events[i];
+                this.lastRevealedIndex = i;
+                this.revealedEvents.unshift(event);
+                if (event.type === 'goal' || event.type === 'own_goal') {
+                    this.updateScore(event);
+                }
+            }
+
+            // Ensure regular time scores match
             this.homeScore = this.finalHomeScore;
             this.awayScore = this.finalAwayScore;
-            // Reveal any remaining events
-            for (let i = this.lastRevealedIndex + 1; i < this.events.length; i++) {
-                this.revealedEvents.unshift(this.events[i]);
+
+            // Check if this is a knockout match and we need extra time
+            if (this.isKnockout && this.needsExtraTime()) {
+                // If ET data was preloaded (page refresh), use it directly
+                if (this.preloadedExtraTimeData) {
+                    this.phase = 'going_to_extra_time';
+                    setTimeout(() => this.startExtraTime(), 2000);
+                } else {
+                    this.phase = 'going_to_extra_time';
+                    this.fetchExtraTime();
+                }
+            } else {
+                this.enterFullTime();
             }
-            this.lastRevealedIndex = this.events.length - 1;
+        },
+
+        needsExtraTime() {
+            if (this.twoLeggedInfo) {
+                // Two-legged tie: check aggregate
+                const firstLegHome = this.twoLeggedInfo.firstLegHomeScore;
+                const firstLegAway = this.twoLeggedInfo.firstLegAwayScore;
+                // In the second leg, the tie's home team plays away
+                // match.home = tie.away, match.away = tie.home
+                const tieHomeTotal = firstLegHome + this.finalAwayScore;
+                const tieAwayTotal = firstLegAway + this.finalHomeScore;
+                return tieHomeTotal === tieAwayTotal;
+            }
+
+            // Single leg: check if tied
+            return this.finalHomeScore === this.finalAwayScore;
+        },
+
+        async fetchExtraTime() {
+            this.extraTimeLoading = true;
+
+            try {
+                const response = await fetch(this.extraTimeUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': this.csrfToken,
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({}),
+                });
+
+                if (!response.ok) {
+                    console.error('Extra time request failed');
+                    this.enterFullTime();
+                    return;
+                }
+
+                const result = await response.json();
+
+                if (!result.needed) {
+                    this.enterFullTime();
+                    return;
+                }
+
+                this.extraTimeEvents = result.extraTimeEvents || [];
+                this.etHomeScore = result.homeScoreET || 0;
+                this.etAwayScore = result.awayScoreET || 0;
+                this._needsPenalties = result.needsPenalties || false;
+
+                // Brief pause showing "Extra Time" before starting
+                setTimeout(() => this.startExtraTime(), 2000);
+            } catch (err) {
+                console.error('Extra time request failed:', err);
+                this.enterFullTime();
+            } finally {
+                this.extraTimeLoading = false;
+            }
+        },
+
+        startExtraTime() {
+            this.currentMinute = 91;
+            this.phase = 'extra_time_first_half';
+            this.lastRevealedETIndex = -1;
+            this._lastTick = performance.now();
+            this._animFrame = requestAnimationFrame(this.tick.bind(this));
+        },
+
+        enterETHalfTime() {
+            this.currentMinute = 105;
+            this.phase = 'extra_time_half_time';
+
+            setTimeout(() => {
+                this.phase = 'extra_time_second_half';
+                this._lastTick = performance.now();
+                this._animFrame = requestAnimationFrame(this.tick.bind(this));
+            }, 1500);
+        },
+
+        enterExtraTimeEnd() {
+            this.currentMinute = 120;
+
+            // Reveal any remaining ET events
+            for (let i = this.lastRevealedETIndex + 1; i < this.extraTimeEvents.length; i++) {
+                const event = this.extraTimeEvents[i];
+                this.lastRevealedETIndex = i;
+                this.revealedEvents.unshift(event);
+                if (event.type === 'goal' || event.type === 'own_goal') {
+                    this.updateScore(event);
+                }
+            }
+
+            // Ensure ET scores match
+            this.homeScore = this.finalHomeScore + this.etHomeScore;
+            this.awayScore = this.finalAwayScore + this.etAwayScore;
+
+            if (this._needsPenalties) {
+                this.phase = 'penalties';
+                // Open penalty picker for user to select kickers
+                this.openPenaltyPicker();
+            } else if (this.penaltyResult) {
+                // Preloaded penalties (page refresh after they were resolved)
+                this.phase = 'penalties';
+                setTimeout(() => this.enterFullTime(), 3000);
+            } else {
+                this.enterFullTime();
+            }
+        },
+
+        enterFullTime() {
+            this.phase = 'full_time';
+
+            if (!this.hasExtraTime) {
+                this.currentMinute = 90;
+                // Ensure final scores match for regular time
+                this.homeScore = this.finalHomeScore;
+                this.awayScore = this.finalAwayScore;
+                // Reveal any remaining events
+                for (let i = this.lastRevealedIndex + 1; i < this.events.length; i++) {
+                    this.revealedEvents.unshift(this.events[i]);
+                }
+                this.lastRevealedIndex = this.events.length - 1;
+            } else {
+                this.currentMinute = 120;
+                // Scores were already set in enterExtraTimeEnd or skipExtraTime
+            }
 
             if (this._animFrame) {
                 cancelAnimationFrame(this._animFrame);
@@ -253,9 +481,229 @@ export default function liveMatch(config) {
                 clearTimeout(this._kickoffTimeout);
                 this._kickoffTimeout = null;
             }
+
+            // If penalties are being animated, fast-forward the reveal
+            if (this.phase === 'penalties' && this.penaltyKicks.length > 0
+                && this.revealedPenaltyKicks.length < this.penaltyKicks.length) {
+                clearTimeout(this._penaltyRevealTimer);
+                this.revealedPenaltyKicks = [...this.penaltyKicks];
+                setTimeout(() => this.enterFullTime(), 500);
+                return;
+            }
+
+            if (this.isKnockout && !this.hasExtraTime && !this._skippingToEnd) {
+                // For knockout matches, first skip to end of regular time
+                // which will trigger ET check
+                this._skippingToEnd = true;
+                this.currentMinute = 93;
+                this.updateOtherMatches();
+                this.enterRegularTimeEnd();
+
+                // If ET was triggered, wait for it and then skip through it
+                if (this.phase === 'going_to_extra_time') {
+                    const waitForET = () => {
+                        if (this.extraTimeEvents.length > 0 || this._needsPenalties || this.etHomeScore > 0 || this.etAwayScore > 0) {
+                            this.skipExtraTime();
+                        } else if (this.phase === 'going_to_extra_time') {
+                            setTimeout(waitForET, 100);
+                        }
+                        // If phase changed to full_time (no ET needed), we're done
+                    };
+                    waitForET();
+                }
+                return;
+            }
+
+            if (this.hasExtraTime && (this.phase === 'extra_time_first_half'
+                || this.phase === 'extra_time_second_half' || this.phase === 'extra_time_half_time')) {
+                this.skipExtraTime();
+                return;
+            }
+
             this.currentMinute = 93;
             this.updateOtherMatches();
             this.enterFullTime();
+        },
+
+        skipExtraTime() {
+            this._skippingToEnd = false;
+            this.currentMinute = 123;
+
+            // Reveal all ET events
+            for (let i = this.lastRevealedETIndex + 1; i < this.extraTimeEvents.length; i++) {
+                const event = this.extraTimeEvents[i];
+                this.lastRevealedETIndex = i;
+                this.revealedEvents.unshift(event);
+                if (event.type === 'goal' || event.type === 'own_goal') {
+                    this.updateScore(event);
+                }
+            }
+
+            // Ensure ET scores match
+            this.homeScore = this.finalHomeScore + this.etHomeScore;
+            this.awayScore = this.finalAwayScore + this.etAwayScore;
+
+            if (this._needsPenalties) {
+                this.phase = 'penalties';
+                this.openPenaltyPicker();
+            } else if (this.penaltyResult) {
+                this.phase = 'penalties';
+                setTimeout(() => this.enterFullTime(), 2000);
+            } else {
+                this.enterFullTime();
+            }
+        },
+
+        // =============================
+        // Penalty picker & shootout
+        // =============================
+
+        openPenaltyPicker() {
+            this.selectedPenaltyKickers = [];
+            this.penaltyPickerOpen = true;
+            document.body.classList.add('overflow-y-hidden');
+        },
+
+        get availablePenaltyPlayers() {
+            const selectedIds = this.selectedPenaltyKickers.map(k => k.id);
+            const confirmedOutIds = this.substitutionsMade.map(s => s.playerOutId);
+            const confirmedInIds = this.substitutionsMade.map(s => s.playerInId);
+            const redCarded = this.redCardedPlayerIds;
+
+            // Original lineup players still on pitch
+            const onPitch = this.lineupPlayers.filter(p =>
+                !confirmedOutIds.includes(p.id) && !redCarded.includes(p.id) && !selectedIds.includes(p.id)
+            );
+            // Players who came on via substitution
+            const subsOnPitch = this.benchPlayers.filter(p =>
+                confirmedInIds.includes(p.id) && !confirmedOutIds.includes(p.id)
+                && !redCarded.includes(p.id) && !selectedIds.includes(p.id)
+            );
+
+            return [...onPitch, ...subsOnPitch]
+                .sort((a, b) => (b.technicalAbility ?? 50) - (a.technicalAbility ?? 50));
+        },
+
+        addPenaltyKicker(player) {
+            if (this.selectedPenaltyKickers.length >= 5) return;
+            this.selectedPenaltyKickers.push({ ...player });
+        },
+
+        removePenaltyKicker(index) {
+            this.selectedPenaltyKickers.splice(index, 1);
+        },
+
+        async confirmPenaltyKickers() {
+            if (this.selectedPenaltyKickers.length < 5 || this.penaltyProcessing) return;
+            this.penaltyProcessing = true;
+
+            const kickerOrder = this.selectedPenaltyKickers.map(k => k.id);
+
+            try {
+                const response = await fetch(this.penaltiesUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': this.csrfToken,
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({ kickerOrder }),
+                });
+
+                if (!response.ok) {
+                    console.error('Penalty request failed');
+                    this.penaltyProcessing = false;
+                    return;
+                }
+
+                const result = await response.json();
+
+                this.penaltyResult = {
+                    home: result.homeScore,
+                    away: result.awayScore,
+                };
+                this.penaltyKicks = result.kicks || [];
+                this._needsPenalties = false;
+
+                // Close picker and start kick-by-kick reveal
+                this.penaltyPickerOpen = false;
+                document.body.classList.remove('overflow-y-hidden');
+                this.revealPenaltyKicks();
+            } catch (err) {
+                console.error('Penalty request failed:', err);
+            } finally {
+                this.penaltyProcessing = false;
+            }
+        },
+
+        revealPenaltyKicks() {
+            this.revealedPenaltyKicks = [];
+            let idx = 0;
+
+            const revealNext = () => {
+                if (idx >= this.penaltyKicks.length) {
+                    // All kicks revealed, transition to full time
+                    setTimeout(() => this.enterFullTime(), 2000);
+                    return;
+                }
+
+                this.revealedPenaltyKicks.push(this.penaltyKicks[idx]);
+                idx++;
+
+                // Pause between kicks for drama
+                this._penaltyRevealTimer = setTimeout(revealNext, 800);
+            };
+
+            // Start revealing after a short pause
+            this._penaltyRevealTimer = setTimeout(revealNext, 500);
+        },
+
+        // =============================
+        // Extra time display helpers
+        // =============================
+
+        get hasExtraTime() {
+            return this.extraTimeEvents.length > 0 || this.etHomeScore > 0 || this.etAwayScore > 0
+                || this._needsPenalties || this.penaltyResult !== null
+                || this.preloadedExtraTimeData !== null;
+        },
+
+        get isInExtraTime() {
+            return this.phase === 'going_to_extra_time'
+                || this.phase === 'extra_time_first_half'
+                || this.phase === 'extra_time_half_time'
+                || this.phase === 'extra_time_second_half';
+        },
+
+        get totalMinutes() {
+            return this.hasExtraTime || this.isInExtraTime ? 120 : 90;
+        },
+
+        get etFirstHalfEvents() {
+            return this.revealedEvents.filter(e => e.minute > 90 && e.minute <= 105);
+        },
+
+        get etSecondHalfEvents() {
+            return this.revealedEvents.filter(e => e.minute > 105);
+        },
+
+        get showETHalfTimeSeparator() {
+            return this.phase === 'extra_time_half_time'
+                || this.phase === 'extra_time_second_half'
+                || ((this.phase === 'penalties' || this.phase === 'full_time') && this.hasExtraTime);
+        },
+
+        get showExtraTimeSeparator() {
+            return this.isInExtraTime || this.phase === 'penalties'
+                || (this.phase === 'full_time' && this.hasExtraTime);
+        },
+
+        get penaltyHomeScore() {
+            return this.penaltyResult ? this.penaltyResult.home : 0;
+        },
+
+        get penaltyAwayScore() {
+            return this.penaltyResult ? this.penaltyResult.away : 0;
         },
 
         // =============================
@@ -639,16 +1087,48 @@ export default function liveMatch(config) {
             const m = Math.floor(this.currentMinute);
             if (this.phase === 'pre_match') return '0';
             if (this.phase === 'half_time') return '45';
-            if (this.phase === 'full_time') return '90';
+            if (this.phase === 'going_to_extra_time') return '90';
+            if (this.phase === 'extra_time_half_time') return '105';
+            if (this.phase === 'penalties') return '120';
+            if (this.phase === 'full_time') {
+                return this.hasExtraTime ? '120' : '90';
+            }
+            if (this.phase === 'extra_time_first_half' || this.phase === 'extra_time_second_half') {
+                return String(Math.min(m, 120));
+            }
             return String(Math.min(m, 90));
         },
 
         get timelineProgress() {
-            return Math.min((this.currentMinute / 90) * 100, 100);
+            const total = this.totalMinutes;
+            return Math.min((this.currentMinute / total) * 100, 100);
+        },
+
+        get timelineHalfMarker() {
+            return this.totalMinutes === 120 ? (45 / 120) * 100 : 50;
+        },
+
+        get timelineETMarker() {
+            return (90 / 120) * 100;
+        },
+
+        get timelineETHalfMarker() {
+            return (105 / 120) * 100;
         },
 
         get isRunning() {
-            return (this.phase === 'first_half' || this.phase === 'second_half') && !this.tacticalPanelOpen;
+            return (this.phase === 'first_half' || this.phase === 'second_half'
+                || this.phase === 'extra_time_first_half' || this.phase === 'extra_time_second_half')
+                && !this.tacticalPanelOpen;
+        },
+
+        get phaseLabel() {
+            switch (this.phase) {
+                case 'going_to_extra_time': return this.translations.extraTime || 'Extra Time';
+                case 'extra_time_half_time': return this.translations.etHalfTime || 'ET Half Time';
+                case 'penalties': return this.translations.penalties || 'Penalties';
+                default: return '';
+            }
         },
 
         getEventIcon(type) {
@@ -723,7 +1203,7 @@ export default function liveMatch(config) {
         },
 
         get secondHalfEvents() {
-            return this.revealedEvents.filter(e => e.minute > 45);
+            return this.revealedEvents.filter(e => e.minute > 45 && e.minute <= 90);
         },
 
         get firstHalfEvents() {
@@ -731,14 +1211,16 @@ export default function liveMatch(config) {
         },
 
         get showHalfTimeSeparator() {
-            return this.phase === 'half_time' || this.phase === 'second_half' || this.phase === 'full_time';
+            return this.phase === 'half_time' || this.phase === 'second_half' || this.phase === 'full_time'
+                || this.isInExtraTime || this.phase === 'going_to_extra_time' || this.phase === 'penalties';
         },
 
         getTimelineMarkers() {
+            const total = this.totalMinutes;
             return this.revealedEvents
                 .filter(e => e.type !== 'assist')
                 .map(e => ({
-                    position: Math.min((e.minute / 90) * 100, 100),
+                    position: Math.min((e.minute / total) * 100, 100),
                     type: e.type,
                     minute: e.minute,
                 }));
@@ -750,6 +1232,7 @@ export default function liveMatch(config) {
             }
             clearTimeout(this.pauseTimer);
             clearTimeout(this._kickoffTimeout);
+            clearTimeout(this._penaltyRevealTimer);
             document.body.classList.remove('overflow-y-hidden');
         },
     };

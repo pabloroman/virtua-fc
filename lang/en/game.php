@@ -137,6 +137,18 @@ return [
     'live_injury_alert' => 'has been injured. Make a substitution.',
     'live_injuries_report' => 'Injury Report',
     'live_weeks_out' => ':count week out|:count weeks out',
+    'live_extra_time' => 'Extra Time',
+    'live_et_abbr' => 'ET',
+    'live_et_half_time' => 'ET Half Time',
+    'live_penalties' => 'Penalties',
+    'live_pen_abbr' => 'pen',
+    'live_aet' => 'AET',
+    'live_pen_pick_title' => 'Select Penalty Takers',
+    'live_pen_pick_desc' => 'Choose 5 players and set the order.',
+    'live_pen_pick_confirm' => 'Start Shootout',
+    'live_pen_scored' => 'Goal',
+    'live_pen_missed' => 'Missed',
+    'live_pen_round' => 'Round :round',
 
     // Substitutions
     'sub_title' => 'Substitutions',

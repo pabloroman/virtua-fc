@@ -137,6 +137,18 @@ return [
     'live_injury_alert' => 'se ha lesionado. Realiza una sustitución.',
     'live_injuries_report' => 'Parte de Lesiones',
     'live_weeks_out' => ':count semana de baja|:count semanas de baja',
+    'live_extra_time' => 'Prórroga',
+    'live_et_abbr' => 'PR',
+    'live_et_half_time' => 'Descanso Prórroga',
+    'live_penalties' => 'Penaltis',
+    'live_pen_abbr' => 'pen',
+    'live_aet' => 'DET',
+    'live_pen_pick_title' => 'Elige a los lanzadores',
+    'live_pen_pick_desc' => 'Selecciona 5 jugadores y establece el orden.',
+    'live_pen_pick_confirm' => 'Iniciar tanda',
+    'live_pen_scored' => 'Gol',
+    'live_pen_missed' => 'Fallo',
+    'live_pen_round' => 'Ronda :round',
 
     // Substitutions
     'sub_title' => 'Sustituciones',
