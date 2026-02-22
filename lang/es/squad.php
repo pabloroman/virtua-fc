@@ -145,8 +145,8 @@ return [
     // Player detail modal
     'abilities' => 'Habilidades',
     'technical_full' => 'Técnica',
-    'physical_full' => 'Física',
-    'fitness_full' => 'Forma Física',
+    'physical_full' => 'Físico',
+    'fitness_full' => 'Forma',
     'morale_full' => 'Moral',
     'season_stats' => 'Estadísticas de Temporada',
     'clean_sheets_full' => 'Porterías a Cero',

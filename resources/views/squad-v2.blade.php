@@ -59,7 +59,7 @@
                             ['href' => route('game.squad.v2', $game->id), 'label' => __('squad.squad'), 'active' => true],
                         ];
                         if ($isCareerMode) {
-                            $squadNavItems[] = ['href' => route('game.squad.academy', $game->id), 'label' => __('squad.academy'), 'active' => false, 'badge' => $academyCount > 0 ? $academyCount : null];
+                            $squadNavItems[] = ['href' => route('game.squad.academy', $game->id), 'label' => __('squad.academy'), 'active' => false];
                         }
                     @endphp
                     <x-section-nav :items="$squadNavItems" />
@@ -194,22 +194,22 @@
 
                                             {{-- Tactical headers --}}
                                             <template x-if="viewMode === 'tactical'">
-                                                <th class="font-semibold py-2 text-center w-16 cursor-help" x-data x-tooltip.raw="{{ __('squad.technical_full') }}">{{ __('squad.technical') }}</th>
+                                                <th class="font-semibold py-2 text-center w-16">{{ __('squad.technical_full') }}</th>
                                             </template>
                                             <template x-if="viewMode === 'tactical'">
-                                                <th class="font-semibold py-2 text-center w-16 cursor-help" x-data x-tooltip.raw="{{ __('squad.physical_full') }}">{{ __('squad.physical') }}</th>
+                                                <th class="font-semibold py-2 text-center w-16">{{ __('squad.physical_full') }}</th>
                                             </template>
                                             <template x-if="viewMode === 'tactical'">
-                                                <th class="font-semibold py-2 text-center w-16 cursor-help" x-data x-tooltip.raw="{{ __('squad.fitness_full') }}">{{ __('squad.fitness') }}</th>
+                                                <th class="font-semibold py-2 text-center w-16">{{ __('squad.fitness_full') }}</th>
                                             </template>
                                             <template x-if="viewMode === 'tactical'">
-                                                <th class="font-semibold py-2 text-center w-16 cursor-help" x-data x-tooltip.raw="{{ __('squad.morale_full') }}">{{ __('squad.morale') }}</th>
+                                                <th class="font-semibold py-2 text-center w-16">{{ __('squad.morale_full') }}</th>
                                             </template>
 
                                             {{-- Planning headers --}}
                                             @if($isCareerMode)
                                             <template x-if="viewMode === 'planning'">
-                                                <th class="font-semibold py-2 text-center w-10">{{ __('app.age') }}</th>
+                                                <th class="font-semibold py-2 text-right w-10">{{ __('app.age') }}</th>
                                             </template>
                                             <template x-if="viewMode === 'planning'">
                                                 <th class="font-semibold py-2 text-right w-20 pr-2">{{ __('app.value') }}</th>
@@ -218,10 +218,10 @@
                                                 <th class="font-semibold py-2 text-right w-20 pr-2">{{ __('app.wage') }}</th>
                                             </template>
                                             <template x-if="viewMode === 'planning'">
-                                                <th class="font-semibold py-2 text-center w-14">{{ __('app.contract') }}</th>
+                                                <th class="font-semibold py-2 text-right w-20">{{ __('app.contract') }}</th>
                                             </template>
                                             <template x-if="viewMode === 'planning'">
-                                                <th class="font-semibold py-2 text-center w-40 cursor-help" x-data x-tooltip.raw="{{ __('squad.potential_range') }}">{{ __('squad.potential') }}</th>
+                                                <th class="font-semibold py-2 text-center w-24">{{ __('squad.potential') }}</th>
                                             </template>
                                             @endif
 
@@ -312,22 +312,22 @@
 
                                                 {{-- === Tactical columns === --}}
                                                 <template x-if="viewMode === 'tactical'">
-                                                    <td class="py-2.5 px-1 w-16">
+                                                    <td class="px-2 w-16">
                                                         <x-ability-bar :value="$gp->technical_ability" size="sm" class="text-xs font-medium justify-center @if($gp->technical_ability >= 80) text-green-600 @elseif($gp->technical_ability >= 70) text-lime-600 @elseif($gp->technical_ability < 60) text-slate-400 @endif" />
                                                     </td>
                                                 </template>
                                                 <template x-if="viewMode === 'tactical'">
-                                                    <td class="py-2.5 px-1 w-16">
+                                                    <td class="px-2 w-16">
                                                         <x-ability-bar :value="$gp->physical_ability" size="sm" class="text-xs font-medium justify-center @if($gp->physical_ability >= 80) text-green-600 @elseif($gp->physical_ability >= 70) text-lime-600 @elseif($gp->physical_ability < 60) text-slate-400 @endif" />
                                                     </td>
                                                 </template>
                                                 <template x-if="viewMode === 'tactical'">
-                                                    <td class="py-2.5 px-1 w-16">
+                                                    <td class="px-2 w-16">
                                                         <x-ability-bar :value="$gp->fitness" :max="100" size="sm" class="text-xs font-medium justify-center @if($gp->fitness >= 90) text-green-600 @elseif($gp->fitness >= 80) text-lime-600 @elseif($gp->fitness < 70) text-amber-600 @endif" />
                                                     </td>
                                                 </template>
                                                 <template x-if="viewMode === 'tactical'">
-                                                    <td class="py-2.5 px-1 w-16">
+                                                    <td class="px-2 pr-4 w-16">
                                                         <x-ability-bar :value="$gp->morale" :max="100" size="sm" class="text-xs font-medium justify-center @if($gp->morale >= 85) text-green-600 @elseif($gp->morale >= 75) text-lime-600 @elseif($gp->morale < 65) text-amber-600 @endif" />
                                                     </td>
                                                 </template>
@@ -335,23 +335,23 @@
                                                 {{-- === Planning columns (career only) === --}}
                                                 @if($isCareerMode)
                                                 <template x-if="viewMode === 'planning'">
-                                                    <td class="py-2.5 text-center w-10 tabular-nums text-slate-600">{{ $gp->age }}</td>
+                                                    <td class="py-2.5 text-right w-10 tabular-nums text-slate-600 pr-2">{{ $gp->age }}</td>
                                                 </template>
                                                 <template x-if="viewMode === 'planning'">
-                                                    <td class="py-2.5 text-right w-20 tabular-nums text-slate-600 pr-2">{{ $gp->formatted_market_value }}</td>
+                                                    <td class="py-2.5 text-right w-16 tabular-nums text-slate-600 pr-2">{{ $gp->formatted_market_value }}</td>
                                                 </template>
                                                 <template x-if="viewMode === 'planning'">
-                                                    <td class="py-2.5 text-right w-20 tabular-nums text-slate-600 pr-2">{{ $gp->formatted_wage }}</td>
+                                                    <td class="py-2.5 text-right w-16 tabular-nums text-slate-600 pr-2">{{ $gp->formatted_wage }}</td>
                                                 </template>
                                                 <template x-if="viewMode === 'planning'">
-                                                    <td class="py-2.5 text-center w-14 tabular-nums">
+                                                    <td class="py-2.5 text-right w-16 tabular-nums pr-2">
                                                         @if($gp->contract_until)
                                                             <span class="@if($gp->isContractExpiring($seasonEndDate)) text-red-600 font-medium @else text-slate-600 @endif">{{ $gp->contract_expiry_year }}</span>
                                                         @endif
                                                     </td>
                                                 </template>
                                                 <template x-if="viewMode === 'planning'">
-                                                    <td class="py-2.5 px-1 w-40">
+                                                    <td class="px-2 w-20">
                                                         <div class="flex items-center gap-1">
                                                             <x-potential-bar
                                                                 :current-ability="$gp->overall_score"
