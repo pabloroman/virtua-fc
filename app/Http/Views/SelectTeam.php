@@ -46,7 +46,7 @@ final class SelectTeam
         $hasTournamentMode = Competition::where('id', 'WC2026')->exists();
 
         if ($hasTournamentMode) {
-            $groupsPath = base_path('data/2025/WC/groups.json');
+            $groupsPath = base_path('data/2025/WC2026/groups.json');
             if (file_exists($groupsPath)) {
                 $groupsData = json_decode(file_get_contents($groupsPath), true);
 

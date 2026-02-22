@@ -4,9 +4,7 @@ namespace App\Modules\Season\Jobs;
 
 use App\Modules\Squad\Services\InjuryService;
 use App\Modules\Squad\Services\PlayerDevelopmentService;
-use App\Modules\Squad\Services\PlayerValuationService;
 use App\Modules\Competition\Services\StandingsCalculator;
-use App\Support\Money;
 use App\Models\CompetitionEntry;
 use App\Models\CompetitionTeam;
 use App\Models\Game;
@@ -45,14 +43,15 @@ class SetupTournamentGame implements ShouldQueue
         }
 
         // Load groups.json for fixture data and group assignments
-        $groupsPath = base_path('data/2025/WC/groups.json');
+        $groupsPath = base_path('data/2025/WC2026/groups.json');
         $groupsData = json_decode(file_get_contents($groupsPath), true);
 
-        // Build team key -> Team UUID map (team key = transfermarkt_id for national teams)
-        $teamKeyMap = Team::where('type', 'national')
-            ->whereNotNull('transfermarkt_id')
-            ->pluck('id', 'transfermarkt_id')
-            ->toArray();
+        // Build FIFA code → Team UUID map from team_mapping.json
+        $mappingPath = base_path('data/2025/WC2026/team_mapping.json');
+        $mapping = json_decode(file_get_contents($mappingPath), true);
+        $teamKeyMap = collect($mapping)->mapWithKeys(
+            fn ($data, $fifaCode) => [$fifaCode => $data['uuid']]
+        )->toArray();
 
         // Step 1: Create competition entries for all WC teams
         $this->createCompetitionEntries();
@@ -63,8 +62,8 @@ class SetupTournamentGame implements ShouldQueue
         // Step 3: Create standings with group labels
         $this->createGroupStandings($groupsData, $teamKeyMap, $standingsCalculator);
 
-        // Step 4: Create game players for all teams
-        $this->createGamePlayers($developmentService);
+        // Step 4: Create game players for teams with JSON rosters
+        $this->createGamePlayers($mapping, $developmentService);
 
         // Mark setup as complete
         Game::where('id', $this->gameId)->update(['setup_completed_at' => now()]);
@@ -167,36 +166,37 @@ class SetupTournamentGame implements ShouldQueue
         }
     }
 
-    private function createGamePlayers(PlayerDevelopmentService $developmentService): void
+    /**
+     * Create game players only for teams that have JSON roster files.
+     */
+    private function createGamePlayers(array $teamMapping, PlayerDevelopmentService $developmentService): void
     {
         if (GamePlayer::where('game_id', $this->gameId)->exists()) {
             return;
         }
 
-        // Load all team files from data directory
-        $basePath = base_path('data/2025/WC/teams');
+        $basePath = base_path('data/2025/WC2026/teams');
         $allPlayers = Player::all()->keyBy('transfermarkt_id');
-        $teamsByKey = Team::where('type', 'national')
-            ->whereNotNull('transfermarkt_id')
-            ->get()
-            ->keyBy('transfermarkt_id');
-
         $playerRows = [];
 
-        foreach (glob("{$basePath}/*.json") as $filePath) {
-            $data = json_decode(file_get_contents($filePath), true);
-            if (!$data) {
-                continue;
-            }
+        // Only process teams that have a transfermarkt_id (i.e., have JSON roster files)
+        $teamsWithRosters = collect($teamMapping)->filter(
+            fn ($data) => $data['transfermarkt_id'] !== null
+        );
 
-            $teamKey = pathinfo($filePath, PATHINFO_FILENAME);
-            $team = $teamsByKey->get($teamKey);
-            if (!$team) {
+        foreach ($teamsWithRosters as $fifaCode => $teamData) {
+            $filePath = "{$basePath}/{$teamData['transfermarkt_id']}.json";
+            if (!file_exists($filePath)) {
                 continue;
             }
 
             // Skip user's team — their players are created during squad selection onboarding
-            if ($team->id === $this->teamId) {
+            if ($teamData['uuid'] === $this->teamId) {
+                continue;
+            }
+
+            $data = json_decode(file_get_contents($filePath), true);
+            if (!$data) {
                 continue;
             }
 
@@ -223,7 +223,7 @@ class SetupTournamentGame implements ShouldQueue
                     'id' => Str::uuid()->toString(),
                     'game_id' => $this->gameId,
                     'player_id' => $player->id,
-                    'team_id' => $team->id,
+                    'team_id' => $teamData['uuid'],
                     'number' => null,
                     'position' => $playerData['position'] ?? 'Central Midfield',
                     'market_value' => null,

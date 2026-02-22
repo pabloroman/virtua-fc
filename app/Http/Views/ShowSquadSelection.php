@@ -33,7 +33,7 @@ class ShowSquadSelection
     private function loadCandidates(Game $game): array
     {
         $transfermarktId = $game->team->transfermarkt_id;
-        $jsonPath = base_path("data/2025/WC/teams/{$transfermarktId}.json");
+        $jsonPath = base_path("data/2025/WC2026/teams/{$transfermarktId}.json");
 
         if (!file_exists($jsonPath)) {
             return ['goalkeepers' => [], 'defenders' => [], 'midfielders' => [], 'forwards' => []];

@@ -19,6 +19,8 @@ use Illuminate\Support\Str;
  *
  * Group phase: teams play round-robin within groups (league-style, batched by round_number).
  * Knockout phase: single-leg ties with extra time & penalties, generated progressively.
+ *
+ * FIFA 2026 format: 48 teams, 12 groups → R32 → R16 → QF → SF → 3rd place + Final.
  */
 class GroupStageCupHandler implements CompetitionHandler
 {
@@ -111,13 +113,8 @@ class GroupStageCupHandler implements CompetitionHandler
 
         if ($currentRound === 0) {
             // No knockout rounds yet — generate the first one
-            $qualifiedCount = GameStanding::where('game_id', $game->id)
-                ->where('competition_id', $competitionId)
-                ->whereNotNull('group_label')
-                ->where('position', '<=', 2)
-                ->count();
-
-            $firstRound = $this->knockoutGenerator->getFirstKnockoutRound($qualifiedCount);
+            $qualifiedTeams = $this->knockoutGenerator->getQualifiedTeams($game->id, $competitionId);
+            $firstRound = $this->knockoutGenerator->getFirstKnockoutRound(count($qualifiedTeams));
 
             if (!$this->knockoutRoundExists($game->id, $competitionId, $firstRound)) {
                 $this->generateKnockoutRound($game, $competitionId, $firstRound);
@@ -137,7 +134,28 @@ class GroupStageCupHandler implements CompetitionHandler
             return;
         }
 
+        // After semi-finals, generate both 3rd-place match AND final
+        if ($currentRound === WorldCupKnockoutGenerator::ROUND_SEMI_FINALS) {
+            $thirdPlaceRound = WorldCupKnockoutGenerator::ROUND_THIRD_PLACE;
+            $finalRoundNum = WorldCupKnockoutGenerator::ROUND_FINAL;
+
+            if (!$this->knockoutRoundExists($game->id, $competitionId, $thirdPlaceRound)) {
+                $this->generateKnockoutRound($game, $competitionId, $thirdPlaceRound);
+            }
+            if (!$this->knockoutRoundExists($game->id, $competitionId, $finalRoundNum)) {
+                $this->generateKnockoutRound($game, $competitionId, $finalRoundNum);
+            }
+
+            return;
+        }
+
+        // For other rounds, generate the next one sequentially
         $nextRound = $currentRound + 1;
+
+        // Skip third-place round in sequential progression (it's generated with the final after SF)
+        if ($nextRound === WorldCupKnockoutGenerator::ROUND_THIRD_PLACE) {
+            return;
+        }
 
         if ($nextRound > $finalRound) {
             return;
@@ -156,8 +174,8 @@ class GroupStageCupHandler implements CompetitionHandler
         $config = $this->knockoutGenerator->getRoundConfig($round, $competitionId, $game->season);
         $matchups = $this->knockoutGenerator->generateMatchups($game, $competitionId, $round);
 
-        foreach ($matchups as [$homeTeamId, $awayTeamId]) {
-            $this->createKnockoutTie($game, $competitionId, $homeTeamId, $awayTeamId, $config);
+        foreach ($matchups as [$homeTeamId, $awayTeamId, $bracketPosition]) {
+            $this->createKnockoutTie($game, $competitionId, $homeTeamId, $awayTeamId, $config, $bracketPosition);
         }
     }
 
@@ -170,12 +188,14 @@ class GroupStageCupHandler implements CompetitionHandler
         string $homeTeamId,
         string $awayTeamId,
         PlayoffRoundConfig $config,
+        ?int $bracketPosition = null,
     ): void {
         $tie = CupTie::create([
             'id' => Str::uuid()->toString(),
             'game_id' => $game->id,
             'competition_id' => $competitionId,
             'round_number' => $config->round,
+            'bracket_position' => $bracketPosition,
             'home_team_id' => $homeTeamId,
             'away_team_id' => $awayTeamId,
         ]);
