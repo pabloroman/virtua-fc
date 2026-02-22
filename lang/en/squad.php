@@ -78,8 +78,6 @@ return [
     'select_player_for_slot' => 'Select a player for this position',
 
     // Opponent scout
-    'team_rating' => 'Team Rating',
-    'top_scorer' => 'Top scorer',
     'injured' => 'injured',
     'suspended' => 'suspended',
 
@@ -87,8 +85,6 @@ return [
     'coach_assistant' => 'Coach Assistant',
     'coach_recommendations' => 'Recommendations',
     'coach_no_tips' => 'No special recommendations for this match.',
-    'coach_your_team' => 'Your team',
-    'coach_opponent' => 'Opponent',
     'coach_defensive_recommended' => 'Opponent is stronger. Defensive mentality reduces their expected goals by 30%.',
     'coach_attacking_recommended' => 'You have the advantage. Attacking mentality can maximize your goals.',
     'coach_risky_formation' => 'Your attacking formation against a stronger opponent will give them more chances. Consider a more defensive one.',

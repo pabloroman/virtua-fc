@@ -78,8 +78,6 @@ return [
     'select_player_for_slot' => 'Selecciona un jugador para esta posición',
 
     // Opponent scout
-    'team_rating' => 'Rating del Equipo',
-    'top_scorer' => 'Máximo goleador',
     'injured' => 'lesionados',
     'suspended' => 'sancionados',
 
@@ -87,8 +85,6 @@ return [
     'coach_assistant' => 'Asistente Técnico',
     'coach_recommendations' => 'Recomendaciones',
     'coach_no_tips' => 'Sin recomendaciones especiales para este partido.',
-    'coach_your_team' => 'Tu equipo',
-    'coach_opponent' => 'Rival',
     'coach_defensive_recommended' => 'Rival más fuerte. Mentalidad defensiva reduce sus goles esperados un 30%.',
     'coach_attacking_recommended' => 'Tienes ventaja. Una mentalidad ofensiva puede maximizar tus goles.',
     'coach_risky_formation' => 'Tu formación ofensiva contra un rival superior les dará más ocasiones. Considera una más defensiva.',
