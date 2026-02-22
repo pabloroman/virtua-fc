@@ -612,7 +612,9 @@ class ScoutingService
 
         $investment = $game->currentInvestment;
         $finances = $game->currentFinances;
-        $canAffordFee = $investment ? $askingPrice <= $investment->transfer_budget : false;
+        $committedBudget = TransferOffer::committedBudget($game->id);
+        $availableBudget = ($investment->transfer_budget ?? 0) - $committedBudget;
+        $canAffordFee = $askingPrice <= $availableBudget;
         $currentWageBill = GamePlayer::where('game_id', $game->id)
             ->where('team_id', $game->team_id)
             ->sum('annual_wage');

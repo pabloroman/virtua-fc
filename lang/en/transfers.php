@@ -157,6 +157,13 @@ return [
     'delete_search' => 'Delete',
     'delete_search_confirm' => 'Delete this search? Players on your shortlist will not be lost.',
 
+    // Shortlist sorting
+    'sort_by' => 'Sort',
+    'sort_name' => 'Name',
+    'sort_age' => 'Age',
+    'sort_ability' => 'Ability',
+    'sort_price' => 'Price',
+
     // Empty states
     'no_outgoing_activity' => 'No outgoing activity',
     'no_incoming_activity' => 'No incoming activity',

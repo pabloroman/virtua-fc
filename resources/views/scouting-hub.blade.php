@@ -87,10 +87,34 @@
                             {{-- Shortlist Section (Reactive Alpine.js) --}}
                             <div x-data="{
                                 players: {{ Js::from($shortlistData) }},
+                                sortBy: 'default',
+                                sortDir: 'asc',
                                 expandedId: null,
                                 confirmRemoveId: null,
                                 isPreContractPeriod: {{ $isPreContractPeriod ? 'true' : 'false' }},
                                 csrfToken: '{{ csrf_token() }}',
+                                get sortedPlayers() {
+                                    if (this.sortBy === 'default') return this.players;
+                                    const dir = this.sortDir === 'asc' ? 1 : -1;
+                                    return [...this.players].sort((a, b) => {
+                                        switch (this.sortBy) {
+                                            case 'name': return dir * a.name.localeCompare(b.name);
+                                            case 'age': return dir * (a.age - b.age);
+                                            case 'position': return dir * a.positionAbbr.localeCompare(b.positionAbbr);
+                                            case 'ability': return dir * ((a.techRange[0] + a.techRange[1]) - (b.techRange[0] + b.techRange[1]));
+                                            case 'price': return dir * (a.askingPrice - b.askingPrice);
+                                            default: return 0;
+                                        }
+                                    });
+                                },
+                                toggleSort(field) {
+                                    if (this.sortBy === field) {
+                                        this.sortDir = this.sortDir === 'asc' ? 'desc' : 'asc';
+                                    } else {
+                                        this.sortBy = field;
+                                        this.sortDir = field === 'name' || field === 'position' ? 'asc' : 'desc';
+                                    }
+                                },
                                 handleToggle(detail) {
                                     if (detail.action === 'added' && detail.player) {
                                         if (!this.players.find(p => p.id === detail.player.id)) {
@@ -125,16 +149,37 @@
                                 {{-- Filled state --}}
                                 <div x-show="players.length > 0" class="border rounded-lg overflow-hidden">
                                     <div class="px-5 py-3 bg-amber-50 border-b border-amber-200">
-                                        <h4 class="font-semibold text-sm text-slate-900 flex items-center gap-2">
-                                            <svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
-                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                            </svg>
-                                            {{ __('transfers.shortlist') }}
-                                            <span class="text-xs font-normal text-slate-400" x-text="'(' + players.length + ')'"></span>
-                                        </h4>
+                                        <div class="flex items-center justify-between gap-2">
+                                            <h4 class="font-semibold text-sm text-slate-900 flex items-center gap-2">
+                                                <svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                                </svg>
+                                                {{ __('transfers.shortlist') }}
+                                                <span class="text-xs font-normal text-slate-400" x-text="'(' + players.length + ')'"></span>
+                                            </h4>
+                                            {{-- Sort controls --}}
+                                            <div class="flex items-center gap-1 overflow-x-auto scrollbar-hide" x-show="players.length > 1">
+                                                <span class="text-[10px] text-slate-400 shrink-0 hidden sm:inline">{{ __('transfers.sort_by') }}:</span>
+                                                <template x-for="col in [
+                                                    { key: 'name', label: '{{ __('transfers.sort_name') }}' },
+                                                    { key: 'age', label: '{{ __('transfers.sort_age') }}' },
+                                                    { key: 'ability', label: '{{ __('transfers.sort_ability') }}' },
+                                                    { key: 'price', label: '{{ __('transfers.sort_price') }}' },
+                                                ]" :key="col.key">
+                                                    <button @click="toggleSort(col.key)"
+                                                        class="inline-flex items-center gap-0.5 px-2 py-1 text-[10px] font-medium rounded-full transition-colors shrink-0"
+                                                        :class="sortBy === col.key ? 'bg-amber-200 text-amber-800' : 'bg-white/70 text-slate-500 hover:bg-white hover:text-slate-700'">
+                                                        <span x-text="col.label"></span>
+                                                        <svg x-show="sortBy === col.key" class="w-3 h-3 transition-transform" :class="sortDir === 'desc' ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+                                                        </svg>
+                                                    </button>
+                                                </template>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="divide-y divide-slate-100">
-                                        <template x-for="player in players" :key="player.id">
+                                        <template x-for="player in sortedPlayers" :key="player.id">
                                             <div class="px-4 md:px-5 py-3 hover:bg-slate-50/50">
                                                 {{-- Player Summary Row --}}
                                                 <div class="flex items-center gap-3 cursor-pointer" @click="toggleExpand(player)">

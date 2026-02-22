@@ -258,6 +258,20 @@ class TransferOffer extends Model
     }
 
     /**
+     * Calculate total committed budget: sum of transfer fees for pending + agreed incoming offers.
+     * For counter-offers (asking_price > transfer_fee), uses asking_price since that's what will be paid.
+     */
+    public static function committedBudget(string $gameId): int
+    {
+        return (int) static::where('game_id', $gameId)
+            ->where('direction', self::DIRECTION_INCOMING)
+            ->whereIn('offer_type', [self::TYPE_USER_BID, self::TYPE_LOAN_IN])
+            ->whereIn('status', [self::STATUS_PENDING, self::STATUS_AGREED])
+            ->selectRaw('COALESCE(SUM(CASE WHEN asking_price > transfer_fee THEN asking_price ELSE transfer_fee END), 0) as total')
+            ->value('total');
+    }
+
+    /**
      * Get offer status details for a set of players.
      * Returns a map of game_player_id => ['status' => ..., 'isCounter' => bool, 'offerType' => ...].
      * Prioritizes agreed offers over pending when multiple exist.

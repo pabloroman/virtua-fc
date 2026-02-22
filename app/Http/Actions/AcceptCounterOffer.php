@@ -22,20 +22,22 @@ class AcceptCounterOffer
                 ->with('error', __('messages.counter_offer_expired'));
         }
 
-        // Accept counter: update transfer_fee to counter amount (stored in asking_price)
-        $offer->update(['transfer_fee' => $offer->asking_price]);
+        $result = $this->transferService->acceptCounterOffer($game, $offer);
+
+        if (!$result) {
+            return redirect()->route('game.transfers', $gameId)
+                ->with('error', __('messages.bid_exceeds_budget'));
+        }
 
         $playerName = $offer->gamePlayer->player->name ?? 'Player';
 
-        // Complete immediately if window open, otherwise mark as agreed
-        $completedImmediately = $this->transferService->acceptIncomingOffer($offer);
-
-        if ($completedImmediately) {
+        if ($result['completed']) {
             return redirect()->route('game.transfers', $gameId)
                 ->with('success', __('messages.counter_offer_accepted_immediate', ['player' => $playerName]));
         }
 
         $nextWindow = $game->getNextWindowName();
+
         return redirect()->route('game.transfers', $gameId)
             ->with('success', __('messages.counter_offer_accepted', ['player' => $playerName, 'window' => $nextWindow]));
     }

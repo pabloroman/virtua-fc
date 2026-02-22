@@ -1074,6 +1074,13 @@ class TransferService
      */
     private function completeIncomingTransfer(TransferOffer $offer, Game $game): void
     {
+        // Safety net: reject if budget would go negative
+        $investment = $game->currentInvestment;
+        if ($offer->transfer_fee > 0 && $investment && $offer->transfer_fee > $investment->transfer_budget) {
+            $offer->update(['status' => TransferOffer::STATUS_REJECTED, 'resolved_at' => $game->current_date]);
+            return;
+        }
+
         $player = $offer->gamePlayer;
         $playerName = $player->player->name;
         $sellerName = $offer->sellingTeam->name ?? $player->team->name ?? 'Unknown';
@@ -1137,6 +1144,64 @@ class TransferService
             'number' => GamePlayer::nextAvailableNumber($game->id, $game->team_id),
         ]);
         $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
+    }
+
+    /**
+     * Calculate the available transfer budget (transfer_budget minus committed pending/agreed offers).
+     */
+    public function availableBudget(Game $game): int
+    {
+        $investment = $game->currentInvestment;
+        $committed = TransferOffer::committedBudget($game->id);
+
+        return ($investment->transfer_budget ?? 0) - $committed;
+    }
+
+    /**
+     * Submit a new bid for a player. Returns the created offer or null if budget is insufficient.
+     */
+    public function submitBid(Game $game, GamePlayer $player, int $bidAmountCents, ScoutingService $scoutingService): ?TransferOffer
+    {
+        if ($bidAmountCents > $this->availableBudget($game)) {
+            return null;
+        }
+
+        $wageDemand = $scoutingService->calculateWageDemand($player);
+
+        return TransferOffer::create([
+            'game_id' => $game->id,
+            'game_player_id' => $player->id,
+            'offering_team_id' => $game->team_id,
+            'selling_team_id' => $player->team_id,
+            'offer_type' => TransferOffer::TYPE_USER_BID,
+            'direction' => TransferOffer::DIRECTION_INCOMING,
+            'transfer_fee' => $bidAmountCents,
+            'offered_wage' => $wageDemand,
+            'status' => TransferOffer::STATUS_PENDING,
+            'expires_at' => $game->current_date->addDays(30),
+            'game_date' => $game->current_date,
+        ]);
+    }
+
+    /**
+     * Accept a counter-offer. Returns ['completed' => bool] on success or null if budget is insufficient.
+     */
+    public function acceptCounterOffer(Game $game, TransferOffer $offer): ?array
+    {
+        $counterAmount = $offer->asking_price;
+
+        // Committed budget already includes this offer's transfer_fee — subtract it to avoid double-counting
+        $available = $this->availableBudget($game) + $offer->transfer_fee;
+
+        if ($counterAmount > $available) {
+            return null;
+        }
+
+        $offer->update(['transfer_fee' => $counterAmount]);
+
+        $completedImmediately = $this->acceptIncomingOffer($offer);
+
+        return ['completed' => $completedImmediately];
     }
 
     /**
