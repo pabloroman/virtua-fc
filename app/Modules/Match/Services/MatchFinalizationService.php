@@ -2,6 +2,7 @@
 
 namespace App\Modules\Match\Services;
 
+use App\Modules\Competition\Services\CompetitionHandlerResolver;
 use App\Modules\Match\Events\CupTieResolved;
 use App\Modules\Match\Events\MatchFinalized;
 use App\Models\Competition;
@@ -14,6 +15,7 @@ class MatchFinalizationService
 {
     public function __construct(
         private readonly CupTieResolver $cupTieResolver,
+        private readonly CompetitionHandlerResolver $handlerResolver,
     ) {}
 
     /**
@@ -37,6 +39,12 @@ class MatchFinalizationService
 
         // 3. Clear the pending flag
         $game->update(['pending_finalization_match_id' => null]);
+
+        // 4. Generate any pending knockout/playoff fixtures now that standings are final
+        if ($match->cup_tie_id === null && $competition) {
+            $handler = $this->handlerResolver->resolve($competition);
+            $handler->beforeMatches($game, $game->current_date->toDateString());
+        }
     }
 
     private function resolveCupTie(GameMatch $match, Game $game, ?Competition $competition): void
