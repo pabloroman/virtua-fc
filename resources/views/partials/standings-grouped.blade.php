@@ -24,7 +24,9 @@
                             <th class="font-semibold w-6 p-1.5 text-xs hidden md:table-cell">{{ __('game.lost_abbr') }}</th>
                             <th class="font-semibold w-6 p-1.5 text-xs">{{ __('game.goal_diff_abbr') }}</th>
                             <th class="font-semibold w-6 p-1.5 text-xs">{{ __('game.pts_abbr') }}</th>
+                            @unless($game->isTournamentMode())
                             <th class="font-semibold w-6 p-1.5 text-xs text-center">{{ __('game.last_5') }}</th>
+                            @endunless
                         </tr>
                         </thead>
                         <tbody>
@@ -46,6 +48,7 @@
                                 <td class="align-middle whitespace-nowrap p-1.5 text-slate-400 hidden md:table-cell">{{ $standing->lost }}</td>
                                 <td class="align-middle whitespace-nowrap p-1.5 text-slate-400">{{ $standing->goal_difference }}</td>
                                 <td class="align-middle whitespace-nowrap p-1.5 font-semibold">{{ $standing->points }}</td>
+                                @unless($game->isTournamentMode())
                                 <td class="align-middle whitespace-nowrap p-1.5">
                                     <div class="flex justify-center">
                                         @foreach($teamForms[$standing->team_id] ?? [] as $result)
@@ -53,6 +56,7 @@
                                         @endforeach
                                     </div>
                                 </td>
+                                @endunless
                             </tr>
                         @endforeach
                         </tbody>

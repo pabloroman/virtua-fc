@@ -47,21 +47,29 @@ final class SelectTeam
 
         if ($hasTournamentMode) {
             $groupsPath = base_path('data/2025/WC2026/groups.json');
-            if (file_exists($groupsPath)) {
-                $groupsData = json_decode(file_get_contents($groupsPath), true);
+            $mappingPath = base_path('data/2025/WC2026/team_mapping.json');
 
-                // Build team key -> Team model map
-                $wcTeamModels = Team::where('type', 'national')
-                    ->whereNotNull('transfermarkt_id')
-                    ->get()
-                    ->keyBy('transfermarkt_id');
+            if (file_exists($groupsPath) && file_exists($mappingPath)) {
+                $groupsData = json_decode(file_get_contents($groupsPath), true);
+                $teamMapping = json_decode(file_get_contents($mappingPath), true);
+
+                // Collect all team UUIDs from the mapping, excluding placeholders
+                $uuids = collect($teamMapping)
+                    ->reject(fn ($entry) => $entry['is_placeholder'] ?? false)
+                    ->pluck('uuid')
+                    ->all();
+
+                $wcTeamModels = Team::whereIn('id', $uuids)->get()->keyBy('id');
 
                 foreach ($groupsData as $groupLabel => $groupInfo) {
                     $teams = collect();
-                    foreach ($groupInfo['teams'] as $teamKey) {
-                        $team = $wcTeamModels->get($teamKey);
-                        if ($team) {
-                            $teams->push($team);
+                    foreach ($groupInfo['teams'] as $fifaCode) {
+                        $mapping = $teamMapping[$fifaCode] ?? null;
+                        if ($mapping && !($mapping['is_placeholder'] ?? false)) {
+                            $team = $wcTeamModels->get($mapping['uuid']);
+                            if ($team) {
+                                $teams->push($team);
+                            }
                         }
                     }
                     if ($teams->isNotEmpty()) {

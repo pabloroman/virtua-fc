@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Modules\Squad\Services\PlayerValuationService;
 use App\Support\CountryCodeMapper;
+use App\Support\TeamColors;
 use App\Support\Money;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -183,11 +184,15 @@ class SeedWorldCupData extends Command
 
             if ($existing) {
                 $teamId = $existing->id;
-                // Update transfermarkt_id if we now have it
+                $updateData = [];
                 if ($transfermarktId && !$existing->transfermarkt_id) {
-                    DB::table('teams')->where('id', $teamId)->update([
-                        'transfermarkt_id' => $transfermarktId,
-                    ]);
+                    $updateData['transfermarkt_id'] = $transfermarktId;
+                }
+                if (!$existing->colors) {
+                    $updateData['colors'] = json_encode(TeamColors::get($team['team_name']));
+                }
+                if (!empty($updateData)) {
+                    DB::table('teams')->where('id', $teamId)->update($updateData);
                 }
             } else {
                 $teamId = Str::uuid()->toString();
@@ -196,10 +201,11 @@ class SeedWorldCupData extends Command
                     'transfermarkt_id' => $transfermarktId,
                     'type' => 'national',
                     'name' => $team['team_name'],
-                    'country' => $countryCode,
+                    'country' => $countryCode ?? 'TBD',
                     'image' => null,
                     'stadium_name' => null,
                     'stadium_seats' => 0,
+                    'colors' => json_encode(TeamColors::get($team['team_name'])),
                 ]);
             }
 
