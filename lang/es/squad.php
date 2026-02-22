@@ -202,6 +202,22 @@ return [
     'academy_tier_4' => 'Cantera de Clase Mundial',
     'academy_tier_unknown' => 'Desconocido',
 
+    // Tactical impact
+    'tactical_impact' => 'Impacto Táctico',
+    'attack' => 'Ataque',
+    'defense' => 'Defensa',
+    'your_goals' => 'Tus goles',
+    'opponent_goals' => 'Goles rival',
+    'squad_condition' => 'Estado del Equipo',
+    'condition_excellent' => 'Excelente',
+    'condition_good' => 'Bien',
+    'condition_fair' => 'Regular',
+    'condition_poor' => 'Bajo',
+    'fitness_impact' => 'Jugadores cansados rinden hasta un 40% menos',
+    'morale_impact' => 'La moral baja reduce el rendimiento en el partido',
+    'bench_warning' => 'Los suplentes habituales pierden moral cada jornada',
+    'rotation_tip' => 'Rota para mantener la forma física y la moral',
+
     // Squad selection (tournament onboarding)
     'squad_selection_title' => 'Selecciona tu convocatoria',
     'squad_selection_subtitle' => 'Elige 26 jugadores para el torneo',

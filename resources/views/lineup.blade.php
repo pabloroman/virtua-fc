@@ -19,6 +19,8 @@
         slotCompatibility: @js($slotCompatibility),
         autoLineupUrl: '{{ route('game.lineup.auto', $game->id) }}',
         teamColors: @js($teamColors),
+        formationModifiers: @js($formationModifiers),
+        mentalityModifiers: @js($mentalityModifiers),
         translations: {
             natural: '{{ __('squad.natural') }}',
             veryGood: '{{ __('squad.very_good') }}',
@@ -71,6 +73,17 @@
                                             <option value="{{ $formation->value }}">{{ $formation->label() }}</option>
                                         @endforeach
                                     </x-select-input>
+                                    {{-- Formation modifier badges --}}
+                                    <div class="hidden md:flex items-center gap-1">
+                                        <span class="text-xs font-medium px-1.5 py-0.5 rounded"
+                                            :class="currentFormationMod.attack > 1 ? 'bg-green-100 text-green-700' : currentFormationMod.attack < 1 ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-500'"
+                                            x-text="'{{ __('squad.attack') }} ' + formatMod(Math.round((currentFormationMod.attack - 1) * 100))">
+                                        </span>
+                                        <span class="text-xs font-medium px-1.5 py-0.5 rounded"
+                                            :class="currentFormationMod.defense < 1 ? 'bg-green-100 text-green-700' : currentFormationMod.defense > 1 ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-500'"
+                                            x-text="'{{ __('squad.defense') }} ' + formatMod(Math.round((currentFormationMod.defense - 1) * 100))">
+                                        </span>
+                                    </div>
                                 </div>
 
                                 {{-- Mentality Selector --}}
@@ -84,6 +97,17 @@
                                             <option value="{{ $mentality->value }}">{{ $mentality->label() }}</option>
                                         @endforeach
                                     </x-select-input>
+                                    {{-- Mentality modifier badges --}}
+                                    <div class="hidden md:flex items-center gap-1">
+                                        <span class="text-xs font-medium px-1.5 py-0.5 rounded"
+                                            :class="currentMentalityMod.ownGoals > 1 ? 'bg-green-100 text-green-700' : currentMentalityMod.ownGoals < 1 ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-500'"
+                                            x-text="'{{ __('squad.your_goals') }} ' + formatMod(Math.round((currentMentalityMod.ownGoals - 1) * 100))">
+                                        </span>
+                                        <span class="text-xs font-medium px-1.5 py-0.5 rounded"
+                                            :class="currentMentalityMod.opponentGoals < 1 ? 'bg-green-100 text-green-700' : currentMentalityMod.opponentGoals > 1 ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-500'"
+                                            x-text="'{{ __('squad.opponent_goals') }} ' + formatMod(Math.round((currentMentalityMod.opponentGoals - 1) * 100))">
+                                        </span>
+                                    </div>
                                 </div>
 
                                 {{-- Selection Count --}}
@@ -302,6 +326,79 @@
                                         @endif
                                     </div>
                                 </div>
+
+                                {{-- Tactical Impact Panel --}}
+                                <div class="mt-4 bg-slate-50 rounded-lg border border-slate-200 overflow-hidden">
+                                    <div class="px-4 py-2.5 bg-slate-100 border-b border-slate-200">
+                                        <div class="text-xs font-semibold text-slate-500 uppercase tracking-wide">{{ __('squad.tactical_impact') }}</div>
+                                    </div>
+                                    <div class="p-4 space-y-3">
+                                        {{-- Combined modifiers --}}
+                                        <div class="grid grid-cols-2 gap-3">
+                                            {{-- Attack impact --}}
+                                            <div class="text-center p-2 rounded-lg" :class="combinedAttack > 0 ? 'bg-green-50' : combinedAttack < 0 ? 'bg-red-50' : 'bg-slate-100'">
+                                                <div class="text-[10px] uppercase tracking-wide font-semibold" :class="combinedAttack > 0 ? 'text-green-600' : combinedAttack < 0 ? 'text-red-600' : 'text-slate-500'">{{ __('squad.attack') }}</div>
+                                                <div class="text-lg font-bold mt-0.5" :class="combinedAttack > 0 ? 'text-green-700' : combinedAttack < 0 ? 'text-red-700' : 'text-slate-600'" x-text="formatMod(combinedAttack)"></div>
+                                            </div>
+                                            {{-- Defense impact --}}
+                                            <div class="text-center p-2 rounded-lg" :class="combinedDefense < 0 ? 'bg-green-50' : combinedDefense > 0 ? 'bg-red-50' : 'bg-slate-100'">
+                                                <div class="text-[10px] uppercase tracking-wide font-semibold" :class="combinedDefense < 0 ? 'text-green-600' : combinedDefense > 0 ? 'text-red-600' : 'text-slate-500'">{{ __('squad.defense') }}</div>
+                                                <div class="text-lg font-bold mt-0.5" :class="combinedDefense < 0 ? 'text-green-700' : combinedDefense > 0 ? 'text-red-700' : 'text-slate-600'" x-text="formatMod(combinedDefense)"></div>
+                                            </div>
+                                        </div>
+
+                                        {{-- Squad Condition --}}
+                                        <template x-if="selectedPlayers.length > 0">
+                                            <div class="space-y-2 pt-2 border-t border-slate-200">
+                                                <div class="text-[10px] uppercase tracking-wide font-semibold text-slate-500">{{ __('squad.squad_condition') }}</div>
+
+                                                {{-- Fitness bar --}}
+                                                <div class="flex items-center gap-2">
+                                                    <span class="text-xs text-slate-500 w-8 shrink-0">{{ __('squad.fitness') }}</span>
+                                                    <div class="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
+                                                        <div class="h-full rounded-full transition-all duration-300"
+                                                            :class="avgFitness >= 80 ? 'bg-green-500' : avgFitness >= 65 ? 'bg-yellow-500' : 'bg-red-500'"
+                                                            :style="'width: ' + avgFitness + '%'">
+                                                        </div>
+                                                    </div>
+                                                    <span class="text-xs font-semibold w-7 text-right" :class="avgFitness >= 80 ? 'text-green-600' : avgFitness >= 65 ? 'text-yellow-600' : 'text-red-600'" x-text="avgFitness"></span>
+                                                </div>
+
+                                                {{-- Morale bar --}}
+                                                <div class="flex items-center gap-2">
+                                                    <span class="text-xs text-slate-500 w-8 shrink-0">{{ __('squad.morale') }}</span>
+                                                    <div class="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
+                                                        <div class="h-full rounded-full transition-all duration-300"
+                                                            :class="avgMorale >= 75 ? 'bg-green-500' : avgMorale >= 60 ? 'bg-yellow-500' : 'bg-red-500'"
+                                                            :style="'width: ' + avgMorale + '%'">
+                                                        </div>
+                                                    </div>
+                                                    <span class="text-xs font-semibold w-7 text-right" :class="avgMorale >= 75 ? 'text-green-600' : avgMorale >= 60 ? 'text-yellow-600' : 'text-red-600'" x-text="avgMorale"></span>
+                                                </div>
+
+                                                {{-- Warnings --}}
+                                                <div class="space-y-1 mt-1">
+                                                    <template x-if="lowFitnessCount > 0">
+                                                        <div class="flex items-start gap-1.5 text-xs text-amber-700 bg-amber-50 rounded px-2 py-1.5">
+                                                            <svg class="w-3.5 h-3.5 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                                            </svg>
+                                                            <span><span class="font-semibold" x-text="lowFitnessCount"></span> {{ __('squad.fitness_impact') }}</span>
+                                                        </div>
+                                                    </template>
+                                                    <template x-if="lowMoraleCount > 0">
+                                                        <div class="flex items-start gap-1.5 text-xs text-amber-700 bg-amber-50 rounded px-2 py-1.5">
+                                                            <svg class="w-3.5 h-3.5 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                                            </svg>
+                                                            <span><span class="font-semibold" x-text="lowMoraleCount"></span> {{ __('squad.morale_impact') }}</span>
+                                                        </div>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
                             </div>
 
                             {{-- Player List --}}
@@ -318,6 +415,7 @@
                                             <th class="font-semibold py-2 text-center w-8 hidden md:table-cell">{{ __('squad.physical') }}</th>
                                             <th class="font-semibold py-2 text-center w-8 hidden md:table-cell">{{ __('squad.fitness') }}</th>
                                             <th class="font-semibold py-2 text-center w-8 hidden md:table-cell">{{ __('squad.morale') }}</th>
+                                            <th class="font-semibold py-2 text-center w-10 md:hidden"></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -329,7 +427,7 @@
                                         ] as $group)
                                             @if($group['players']->isNotEmpty())
                                                 <tr class="bg-slate-200">
-                                                    <td colspan="9" class="py-2 px-2 text-xs font-semibold text-slate-600 uppercase tracking-wide">
+                                                    <td colspan="10" class="py-2 px-2 text-xs font-semibold text-slate-600 uppercase tracking-wide">
                                                         {{ $group['name'] }}
                                                         <span class="font-normal text-slate-400">
                                                             ({{ __('squad.need') }} <span x-text="currentSlots.filter(s => s.role === '{{ $group['role'] }}').length"></span>)
@@ -425,12 +523,21 @@
                                                             {{ $player->physical_ability }}
                                                         </td>
                                                         {{-- Fitness --}}
-                                                        <td class="py-2 text-center hidden md:table-cell @if($player->fitness < 70) text-yellow-500 @elseif($player->fitness < 50) text-red-500 @else text-slate-400 @endif">
+                                                        <td class="py-2 text-center hidden md:table-cell @if($player->fitness < 50) text-red-500 @elseif($player->fitness < 70) text-yellow-500 @else text-slate-400 @endif">
                                                             {{ $player->fitness }}
                                                         </td>
                                                         {{-- Morale --}}
                                                         <td class="py-2 text-center hidden md:table-cell @if($player->morale < 60) text-red-500 @elseif($player->morale < 70) text-yellow-500 @else text-slate-400 @endif">
                                                             {{ $player->morale }}
+                                                        </td>
+                                                        {{-- Mobile condition dots --}}
+                                                        <td class="py-2 text-center md:hidden">
+                                                            <div class="flex items-center justify-center gap-1">
+                                                                <span class="w-2 h-2 rounded-full @if($player->fitness < 50) bg-red-500 @elseif($player->fitness < 70) bg-yellow-500 @elseif($player->fitness >= 85) bg-green-500 @else bg-slate-300 @endif"
+                                                                    title="{{ __('squad.fitness_full') }}: {{ $player->fitness }}"></span>
+                                                                <span class="w-2 h-2 rounded-full @if($player->morale < 50) bg-red-500 @elseif($player->morale < 65) bg-yellow-500 @elseif($player->morale >= 80) bg-green-500 @else bg-slate-300 @endif"
+                                                                    title="{{ __('squad.morale_full') }}: {{ $player->morale }}"></span>
+                                                            </div>
                                                         </td>
                                                     </tr>
                                                 @endforeach

@@ -117,6 +117,24 @@ class ShowLineup
         // Team shirt colors for pitch visualization
         $teamColorsHex = TeamColors::toHex($game->team->colors ?? TeamColors::get($game->team->getRawOriginal('name')));
 
+        // Formation and mentality modifiers for tactical impact display
+        $formationModifiers = [];
+        foreach (Formation::cases() as $formation) {
+            $formationModifiers[$formation->value] = [
+                'attack' => $formation->attackModifier(),
+                'defense' => $formation->defenseModifier(),
+                'tooltip' => $formation->tooltip(),
+            ];
+        }
+        $mentalityModifiers = [];
+        foreach (Mentality::cases() as $mentality) {
+            $mentalityModifiers[$mentality->value] = [
+                'ownGoals' => $mentality->ownGoalsModifier(),
+                'opponentGoals' => $mentality->opponentGoalsModifier(),
+                'tooltip' => $mentality->tooltip(),
+            ];
+        }
+
         return view('lineup', [
             'game' => $game,
             'match' => $match,
@@ -142,6 +160,8 @@ class ShowLineup
             'slotCompatibility' => $slotCompatibility,
             'opponentData' => $opponentData,
             'teamColors' => $teamColorsHex,
+            'formationModifiers' => $formationModifiers,
+            'mentalityModifiers' => $mentalityModifiers,
         ]);
     }
 
