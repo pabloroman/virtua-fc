@@ -335,7 +335,7 @@
                                                 {{-- === Planning columns (career only) === --}}
                                                 @if($isCareerMode)
                                                 <template x-if="viewMode === 'planning'">
-                                                    <td class="py-2.5 text-center w-10 text-slate-600">{{ $gp->age }}</td>
+                                                    <td class="py-2.5 text-center w-10 tabular-nums text-slate-600">{{ $gp->age }}</td>
                                                 </template>
                                                 <template x-if="viewMode === 'planning'">
                                                     <td class="py-2.5 text-right w-20 tabular-nums text-slate-600 pr-2">{{ $gp->formatted_market_value }}</td>
@@ -344,7 +344,7 @@
                                                     <td class="py-2.5 text-right w-20 tabular-nums text-slate-600 pr-2">{{ $gp->formatted_wage }}</td>
                                                 </template>
                                                 <template x-if="viewMode === 'planning'">
-                                                    <td class="py-2.5 text-center w-14">
+                                                    <td class="py-2.5 text-center w-14 tabular-nums">
                                                         @if($gp->contract_until)
                                                             <span class="@if($gp->isContractExpiring($seasonEndDate)) text-red-600 font-medium @else text-slate-600 @endif">{{ $gp->contract_expiry_year }}</span>
                                                         @endif
