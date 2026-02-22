@@ -858,6 +858,17 @@ class MatchSimulator
         $homeKickers = $this->buildKickerQueue($homePlayers, $homeOrder);
         $awayKickers = $this->buildKickerQueue($awayPlayers, $awayOrder);
 
+        // Lower-division cup teams may have no GamePlayer records — coin-flip the result
+        if (empty($homeKickers) || empty($awayKickers)) {
+            $homeWins = (bool) random_int(0, 1);
+
+            return [
+                'homeScore' => $homeWins ? 4 : 3,
+                'awayScore' => $homeWins ? 3 : 4,
+                'kicks' => [],
+            ];
+        }
+
         $homeScore = 0;
         $awayScore = 0;
         $kicks = [];
