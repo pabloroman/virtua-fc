@@ -209,6 +209,9 @@
                                             {{-- Planning headers --}}
                                             @if($isCareerMode)
                                             <template x-if="viewMode === 'planning'">
+                                                <th class="font-semibold py-2 text-center w-10">{{ __('app.age') }}</th>
+                                            </template>
+                                            <template x-if="viewMode === 'planning'">
                                                 <th class="font-semibold py-2 text-right w-20 pr-2">{{ __('app.value') }}</th>
                                             </template>
                                             <template x-if="viewMode === 'planning'">
@@ -218,7 +221,7 @@
                                                 <th class="font-semibold py-2 text-center w-14">{{ __('app.contract') }}</th>
                                             </template>
                                             <template x-if="viewMode === 'planning'">
-                                                <th class="font-semibold py-2 text-center cursor-help" x-data x-tooltip.raw="{{ __('squad.potential_range') }}">{{ __('squad.potential_range') }}</th>
+                                                <th class="font-semibold py-2 text-center cursor-help" x-data x-tooltip.raw="{{ __('squad.potential_range') }}">{{ __('squad.potential') }}</th>
                                             </template>
                                             @endif
 
@@ -245,7 +248,6 @@
                                                 <th class="font-semibold py-2 text-center w-16">{{ __('squad_v2.cards') }}</th>
                                             </template>
 
-                                            <th class="font-semibold py-2 text-center w-10">{{ __('app.age') }}</th>
                                             <th class="py-2 pr-3 w-12"></th>
                                         </tr>
                                     </thead>
@@ -333,6 +335,9 @@
                                                 {{-- === Planning columns (career only) === --}}
                                                 @if($isCareerMode)
                                                 <template x-if="viewMode === 'planning'">
+                                                    <td class="py-2.5 text-center w-10 text-slate-600">{{ $gp->age }}</td>
+                                                </template>
+                                                <template x-if="viewMode === 'planning'">
                                                     <td class="py-2.5 text-right w-20 tabular-nums text-slate-600 pr-2">{{ $gp->formatted_market_value }}</td>
                                                 </template>
                                                 <template x-if="viewMode === 'planning'">
@@ -355,7 +360,7 @@
                                                                 size="sm"
                                                             />
                                                             @php $ds = $gp->dev_status; @endphp
-                                                            <span class="shrink-0 @if($ds === 'growing') text-green-600 @elseif($ds === 'peak') text-sky-600 @else text-orange-600 @endif" x-data x-tooltip.raw="{{ __('squad.development') }}">
+                                                            <span class="shrink-0 @if($ds === 'growing') text-green-600 @elseif($ds === 'peak') text-sky-600 @else text-orange-600 @endif" x-data x-tooltip.raw="{{ __('squad.' . $ds) }}">
                                                                 @if($ds === 'growing')
                                                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg>
                                                                 @elseif($ds === 'declining')
@@ -398,9 +403,6 @@
                                                         </span>
                                                     </td>
                                                 </template>
-
-                                                {{-- Age (all modes) --}}
-                                                <td class="py-2.5 text-center w-10 text-slate-600">{{ $gp->age }}</td>
 
                                                 {{-- Overall (always visible) --}}
                                                 <td class="py-2.5 pr-3 text-center w-12">

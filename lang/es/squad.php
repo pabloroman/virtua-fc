@@ -112,6 +112,7 @@ return [
     'pot' => 'POT',
     'apps' => 'PJ',
     'projection' => 'Proyección',
+    'potential' => 'Potencial',
     'potential_range' => 'Rango de Potencial',
     'starter_bonus' => 'bonus de titular',
     'needs_appearances' => 'Necesita :count+ partidos para bonus de titular',

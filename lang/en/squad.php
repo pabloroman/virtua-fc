@@ -112,6 +112,7 @@ return [
     'pot' => 'POT',
     'apps' => 'Apps',
     'projection' => 'Projection',
+    'potential' => 'Potential',
     'potential_range' => 'Potential Range',
     'starter_bonus' => 'starter bonus',
     'needs_appearances' => 'Needs :count+ appearances for starter bonus',
