@@ -221,7 +221,7 @@
                                                 <th class="font-semibold py-2 text-center w-14">{{ __('app.contract') }}</th>
                                             </template>
                                             <template x-if="viewMode === 'planning'">
-                                                <th class="font-semibold py-2 text-center cursor-help" x-data x-tooltip.raw="{{ __('squad.potential_range') }}">{{ __('squad.potential') }}</th>
+                                                <th class="font-semibold py-2 text-center w-40 cursor-help" x-data x-tooltip.raw="{{ __('squad.potential_range') }}">{{ __('squad.potential') }}</th>
                                             </template>
                                             @endif
 
@@ -351,7 +351,7 @@
                                                     </td>
                                                 </template>
                                                 <template x-if="viewMode === 'planning'">
-                                                    <td class="py-2.5 px-1">
+                                                    <td class="py-2.5 px-1 w-40">
                                                         <div class="flex items-center gap-1">
                                                             <x-potential-bar
                                                                 :current-ability="$gp->overall_score"
