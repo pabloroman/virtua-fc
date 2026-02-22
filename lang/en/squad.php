@@ -202,22 +202,6 @@ return [
     'academy_tier_4' => 'World-Class Academy',
     'academy_tier_unknown' => 'Unknown',
 
-    // Tactical impact
-    'tactical_impact' => 'Tactical Impact',
-    'attack' => 'Attack',
-    'defense' => 'Defense',
-    'your_goals' => 'Your goals',
-    'opponent_goals' => 'Opponent goals',
-    'squad_condition' => 'Squad Condition',
-    'condition_excellent' => 'Excellent',
-    'condition_good' => 'Good',
-    'condition_fair' => 'Fair',
-    'condition_poor' => 'Poor',
-    'fitness_impact' => 'Tired players lose up to 40% effectiveness',
-    'morale_impact' => 'Low morale reduces match-day performance',
-    'bench_warning' => 'Regular bench players lose morale each matchday',
-    'rotation_tip' => 'Rotate to maintain fitness and morale',
-
     // Squad selection (tournament onboarding)
     'squad_selection_title' => 'Select your squad',
     'squad_selection_subtitle' => 'Choose 26 players for the tournament',

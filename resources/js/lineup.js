@@ -32,8 +32,6 @@ export default function lineupManager(config) {
         autoLineupUrl: config.autoLineupUrl,
         teamColors: config.teamColors,
         translations: config.translations,
-        formationModifiers: config.formationModifiers || {},
-        mentalityModifiers: config.mentalityModifiers || {},
 
         init() {
             // Snapshot the initial state for dirty detection
@@ -73,69 +71,6 @@ export default function lineupManager(config) {
                 }
             });
             return Math.round(total / this.selectedPlayers.length);
-        },
-
-        // Tactical impact: current formation modifiers
-        get currentFormationMod() {
-            return this.formationModifiers[this.selectedFormation] || { attack: 1.0, defense: 1.0 };
-        },
-
-        // Tactical impact: current mentality modifiers
-        get currentMentalityMod() {
-            return this.mentalityModifiers[this.selectedMentality] || { ownGoals: 1.0, opponentGoals: 1.0 };
-        },
-
-        // Combined attack modifier (formation × mentality)
-        get combinedAttack() {
-            return Math.round((this.currentFormationMod.attack * this.currentMentalityMod.ownGoals - 1) * 100);
-        },
-
-        // Combined defense modifier (formation × mentality) - lower is better for defense
-        get combinedDefense() {
-            return Math.round((this.currentFormationMod.defense * this.currentMentalityMod.opponentGoals - 1) * 100);
-        },
-
-        // Average fitness of selected players
-        get avgFitness() {
-            if (this.selectedPlayers.length === 0) return 0;
-            let total = 0;
-            this.selectedPlayers.forEach(id => {
-                if (this.playersData[id]) total += this.playersData[id].fitness;
-            });
-            return Math.round(total / this.selectedPlayers.length);
-        },
-
-        // Average morale of selected players
-        get avgMorale() {
-            if (this.selectedPlayers.length === 0) return 0;
-            let total = 0;
-            this.selectedPlayers.forEach(id => {
-                if (this.playersData[id]) total += this.playersData[id].morale;
-            });
-            return Math.round(total / this.selectedPlayers.length);
-        },
-
-        // Count of selected players with low fitness (<70)
-        get lowFitnessCount() {
-            let count = 0;
-            this.selectedPlayers.forEach(id => {
-                if (this.playersData[id] && this.playersData[id].fitness < 70) count++;
-            });
-            return count;
-        },
-
-        // Count of selected players with low morale (<65)
-        get lowMoraleCount() {
-            let count = 0;
-            this.selectedPlayers.forEach(id => {
-                if (this.playersData[id] && this.playersData[id].morale < 65) count++;
-            });
-            return count;
-        },
-
-        // Format modifier as signed percentage string
-        formatMod(value) {
-            return (value >= 0 ? '+' : '') + value + '%';
         },
 
         get slotAssignments() {
