@@ -28,7 +28,7 @@
         statusFilter: 'all',
         sortCol: null,
         sortDir: 'desc',
-        sidebarOpen: false,
+        sidebarOpen: true,
 
         togglePlayer(id) {
             this.expandedPlayer = this.expandedPlayer === id ? null : id;
@@ -53,7 +53,7 @@
             this.statusFilter = 'all';
         }
     }">
-        <div class="max-w-screen-2xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-4 sm:p-6 md:p-8">
 
@@ -81,7 +81,7 @@
                     @endif
 
                     {{-- ===== LAYER 0: Squad Dashboard KPIs ===== --}}
-                    <div class="mt-6 grid grid-cols-2 md:grid-cols-3 {{ $isCareerMode ? 'xl:grid-cols-5' : 'xl:grid-cols-3' }} gap-3">
+                    <div class="mt-6 grid grid-cols-2 {{ $isCareerMode ? 'md:grid-cols-5' : 'md:grid-cols-3' }} gap-3">
                         {{-- Squad Size --}}
                         <div class="bg-slate-50 rounded-lg p-3 border border-slate-200">
                             <div class="text-xs text-slate-500 font-medium uppercase tracking-wide">{{ __('squad_v2.squad_size') }}</div>
