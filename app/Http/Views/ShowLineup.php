@@ -2,12 +2,11 @@
 
 namespace App\Http\Views;
 
+use App\Modules\Competition\Services\CalendarService;
 use App\Modules\Lineup\Enums\Formation;
 use App\Modules\Lineup\Enums\Mentality;
 use App\Modules\Lineup\Services\LineupService;
 use App\Models\Game;
-use App\Models\GameMatch;
-use App\Models\GamePlayer;
 use App\Support\PositionMapper;
 use App\Support\PositionSlotMapper;
 use App\Support\TeamColors;
@@ -16,6 +15,7 @@ class ShowLineup
 {
     public function __construct(
         private readonly LineupService $lineupService,
+        private readonly CalendarService $calendarService,
     ) {}
 
     public function __invoke(string $gameId)
@@ -114,6 +114,22 @@ class ShowLineup
         // Get opponent scouting data
         $opponentData = $this->getOpponentData($gameId, $opponent->id, $matchDate, $competitionId);
 
+        // User's best XI average for coach assistant comparison
+        $userBestXI = $this->lineupService->getBestXIWithAverage($gameId, $game->team_id, $matchDate, $competitionId);
+        $userTeamAverage = $userBestXI['average'];
+
+        // Formation modifiers for coach assistant tips (attack/defense per formation)
+        $formationModifiers = [];
+        foreach (Formation::cases() as $formation) {
+            $formationModifiers[$formation->value] = [
+                'attack' => $formation->attackModifier(),
+                'defense' => $formation->defenseModifier(),
+            ];
+        }
+
+        // User's team form for coach assistant display
+        $playerForm = $this->calendarService->getTeamForm($gameId, $game->team_id);
+
         // Team shirt colors for pitch visualization
         $teamColorsHex = TeamColors::toHex($game->team->colors ?? TeamColors::get($game->team->getRawOriginal('name')));
 
@@ -142,6 +158,9 @@ class ShowLineup
             'slotCompatibility' => $slotCompatibility,
             'opponentData' => $opponentData,
             'teamColors' => $teamColorsHex,
+            'userTeamAverage' => $userTeamAverage,
+            'formationModifiers' => $formationModifiers,
+            'playerForm' => $playerForm,
         ]);
     }
 
@@ -150,12 +169,6 @@ class ShowLineup
      */
     private function getOpponentData(string $gameId, string $opponentTeamId, $matchDate, string $competitionId): array
     {
-        // Get opponent's players
-        $opponentPlayers = GamePlayer::with(['player', 'suspensions'])
-            ->where('game_id', $gameId)
-            ->where('team_id', $opponentTeamId)
-            ->get();
-
         // Calculate their best XI average using LineupService (respects formation requirements)
         $bestXIData = $this->lineupService->getBestXIWithAverage(
             $gameId,
@@ -164,49 +177,12 @@ class ShowLineup
             $competitionId
         );
 
-        // Get their top scorer
-        $topScorer = $opponentPlayers
-            ->where('goals', '>', 0)
-            ->sortByDesc('goals')
-            ->first();
-
-        // Get recent form (last 5 matches)
-        $recentMatches = GameMatch::where('game_id', $gameId)
-            ->where('played', true)
-            ->where(function ($query) use ($opponentTeamId) {
-                $query->where('home_team_id', $opponentTeamId)
-                    ->orWhere('away_team_id', $opponentTeamId);
-            })
-            ->orderByDesc('scheduled_date')
-            ->limit(5)
-            ->get();
-
-        $form = $recentMatches->map(function ($match) use ($opponentTeamId) {
-            $isHome = $match->home_team_id === $opponentTeamId;
-            $goalsFor = $isHome ? $match->home_score : $match->away_score;
-            $goalsAgainst = $isHome ? $match->away_score : $match->home_score;
-
-            if ($goalsFor > $goalsAgainst) {
-                return 'W';
-            } elseif ($goalsFor < $goalsAgainst) {
-                return 'L';
-            }
-            return 'D';
-        })->reverse()->values()->toArray();
-
-        // Count unavailable players (uses eager-loaded suspensions, no extra queries)
-        $injuredCount = $opponentPlayers->filter(fn($p) => $p->isInjured($matchDate))->count();
-        $suspendedCount = $opponentPlayers->filter(fn($p) => $p->isSuspendedInCompetition($competitionId))->count();
+        // Get recent form (last 5 matches) via CalendarService
+        $form = $this->calendarService->getTeamForm($gameId, $opponentTeamId);
 
         return [
             'teamAverage' => $bestXIData['average'],
-            'topScorer' => $topScorer ? [
-                'name' => $topScorer->name,
-                'goals' => $topScorer->goals,
-            ] : null,
             'form' => $form,
-            'injuredCount' => $injuredCount,
-            'suspendedCount' => $suspendedCount,
         ];
     }
 }

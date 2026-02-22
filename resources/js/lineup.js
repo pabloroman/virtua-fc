@@ -32,6 +32,10 @@ export default function lineupManager(config) {
         autoLineupUrl: config.autoLineupUrl,
         teamColors: config.teamColors,
         translations: config.translations,
+        formationModifiers: config.formationModifiers || {},
+        opponentAverage: config.opponentAverage || 0,
+        userTeamAverage: config.userTeamAverage || 0,
+        isHome: config.isHome || false,
 
         init() {
             // Snapshot the initial state for dirty detection
@@ -71,6 +75,80 @@ export default function lineupManager(config) {
                 }
             });
             return Math.round(total / this.selectedPlayers.length);
+        },
+
+        get coachTips() {
+            const tips = [];
+            const t = this.translations;
+            const oppAvg = this.opponentAverage;
+            const userAvg = this.teamAverage || this.userTeamAverage;
+            const diff = userAvg - oppAvg;
+            const isWeaker = oppAvg > 0 && diff <= -5;
+            const isStronger = oppAvg > 0 && diff >= 5;
+            const fmMods = this.formationModifiers[this.selectedFormation];
+
+            // Formation & mentality tips
+            if (isWeaker && this.selectedMentality !== 'defensive') {
+                tips.push({ id: 'defensive_recommended', priority: 1, type: 'warning', message: t.coach_defensive_recommended });
+            }
+            if (isStronger && this.selectedMentality !== 'attacking') {
+                tips.push({ id: 'attacking_vs_weaker', priority: 4, type: 'info', message: t.coach_attacking_recommended });
+            }
+            if (isWeaker && fmMods && fmMods.attack > 1.0) {
+                tips.push({ id: 'risky_formation', priority: 2, type: 'warning', message: t.coach_risky_formation });
+            }
+
+            // Fitness tips (only if lineup has players)
+            if (this.selectedPlayers.length > 0) {
+                const criticalNames = [];
+                let lowFitnessCount = 0;
+                this.selectedPlayers.forEach(id => {
+                    const p = this.playersData[id];
+                    if (!p) return;
+                    if (p.fitness < 50) criticalNames.push(p.name);
+                    else if (p.fitness < 70) lowFitnessCount++;
+                });
+                if (criticalNames.length > 0) {
+                    tips.push({ id: 'critical_fitness', priority: 0, type: 'warning', message: t.coach_critical_fitness.replace(':names', criticalNames.join(', ')) });
+                }
+                if (lowFitnessCount > 0) {
+                    tips.push({ id: 'low_fitness', priority: 1, type: 'warning', message: t.coach_low_fitness.replace(':count', lowFitnessCount) });
+                }
+
+                // Morale tips
+                let lowMoraleCount = 0;
+                this.selectedPlayers.forEach(id => {
+                    const p = this.playersData[id];
+                    if (p && p.morale < 60) lowMoraleCount++;
+                });
+                if (lowMoraleCount > 0) {
+                    tips.push({ id: 'low_morale', priority: 2, type: 'warning', message: t.coach_low_morale.replace(':count', lowMoraleCount) });
+                }
+            }
+
+            // Bench frustration: quality non-selected players losing morale
+            const selectedSet = new Set(this.selectedPlayers);
+            let benchFrustrationCount = 0;
+            Object.values(this.playersData).forEach(p => {
+                if (!selectedSet.has(p.id) && p.isAvailable && p.overallScore >= 70 && p.morale < 65) {
+                    benchFrustrationCount++;
+                }
+            });
+            if (benchFrustrationCount >= 2) {
+                tips.push({ id: 'bench_frustration', priority: 4, type: 'info', message: t.coach_bench_frustration.replace(':count', benchFrustrationCount) });
+            }
+
+            // Home advantage (low priority filler)
+            if (this.isHome) {
+                tips.push({ id: 'home_advantage', priority: 5, type: 'info', message: t.coach_home_advantage });
+            }
+
+            // Sort by priority (lower = more important), limit to 4
+            tips.sort((a, b) => a.priority - b.priority);
+
+            // If we have 4+ tips, drop home_advantage to make room for more important ones
+            const filtered = tips.length > 4 ? tips.filter(t => t.id !== 'home_advantage') : tips;
+            return filtered.slice(0, 4);
         },
 
         get slotAssignments() {
