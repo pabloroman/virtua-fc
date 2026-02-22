@@ -25,7 +25,9 @@
 
                     {{-- Tab Navigation --}}
                     @php
-                        $salidaBadge = $unsolicitedOffers->count() + $preContractOffers->count() + $listedOffers->count();
+                        $counteredNegotiations = $negotiatingPlayers->filter(fn ($p) => $activeNegotiations->get($p->id)?->isCountered());
+                        $pendingOfferNegotiations = $negotiatingPlayers->filter(fn ($p) => $activeNegotiations->get($p->id)?->isPending());
+                        $salidaBadge = $unsolicitedOffers->count() + $preContractOffers->count() + $listedOffers->count() + $counteredNegotiations->count();
                     @endphp
                     <x-section-nav :items="[
                         ['href' => route('game.transfers', $game->id), 'label' => __('transfers.incoming'), 'active' => false, 'badge' => $counterOfferCount > 0 ? $counterOfferCount : null],
@@ -41,7 +43,8 @@
                             || $agreedPreContracts->isNotEmpty()
                             || $loanSearches->isNotEmpty()
                             || $listedPlayers->isNotEmpty()
-                            || $recentTransfers->isNotEmpty();
+                            || $recentTransfers->isNotEmpty()
+                            || $negotiatingPlayers->isNotEmpty();
                         $hasRightContent = $renewalEligiblePlayers->isNotEmpty()
                             || $negotiatingPlayers->isNotEmpty()
                             || $pendingRenewals->isNotEmpty()
@@ -143,6 +146,134 @@
                                                         <x-secondary-button type="submit" size="sm">{{ __('app.reject') }}</x-secondary-button>
                                                     </form>
                                                 </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                            @endif
+
+                            {{-- RENEWAL COUNTER-OFFERS — orange accent (needs action) --}}
+                            @if($counteredNegotiations->isNotEmpty())
+                            <div class="border-l-4 border-l-orange-500 pl-5">
+                                <h4 class="font-semibold text-lg text-slate-900 mb-1">{{ __('transfers.renewal_counter_offers') }}</h4>
+                                <p class="text-sm text-slate-500 mb-3">{{ __('transfers.renewal_counter_offers_help') }}</p>
+                                <div class="space-y-3">
+                                    @foreach($counteredNegotiations as $player)
+                                    @php
+                                        $negotiation = $activeNegotiations->get($player->id);
+                                        $mood = $renewalMoods[$player->id] ?? null;
+                                        $midpoint = $renewalMidpoints[$player->id] ?? 0;
+                                    @endphp
+                                    <div x-data="{ showCounter: false }" class="bg-orange-50 rounded-lg p-4">
+                                        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                                            <div class="flex items-center gap-4">
+                                                <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center shrink-0">
+                                                    <x-position-badge :position="$player->position" size="sm" />
+                                                </div>
+                                                <div>
+                                                    <div class="font-semibold text-slate-900">{{ $player->player->name }}</div>
+                                                    <div class="text-sm text-slate-600">
+                                                        {{ $player->position_name }} &middot; {{ $player->age }} {{ __('app.years') }}
+                                                    </div>
+                                                    <div class="text-sm text-slate-600 mt-0.5">
+                                                        {{ __('transfers.your_bid_amount', ['amount' => $negotiation->formatted_user_offer]) }}
+                                                        <span class="text-slate-300 mx-1">&rarr;</span>
+                                                        <span class="font-semibold text-orange-600">{{ __('transfers.they_ask', ['amount' => $negotiation->formatted_counter_offer . __('squad.per_year')]) }}</span>
+                                                    </div>
+                                                    @if($mood)
+                                                        <div class="mt-1">
+                                                            <span class="inline-flex items-center gap-1 text-xs font-medium
+                                                                @if($mood['color'] === 'green') text-green-600
+                                                                @elseif($mood['color'] === 'amber') text-amber-600
+                                                                @else text-red-500
+                                                                @endif">
+                                                                <span class="w-1.5 h-1.5 rounded-full
+                                                                    @if($mood['color'] === 'green') bg-green-500
+                                                                    @elseif($mood['color'] === 'amber') bg-amber-500
+                                                                    @else bg-red-500
+                                                                    @endif"></span>
+                                                                {{ $mood['label'] }}
+                                                            </span>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                            <div class="flex flex-col gap-2">
+                                                <div class="flex gap-2">
+                                                    <form method="post" action="{{ route('game.transfers.accept-renewal-counter', [$game->id, $player->id]) }}">
+                                                        @csrf
+                                                        <x-primary-button color="green" size="sm">{{ __('transfers.accept_counter') }}</x-primary-button>
+                                                    </form>
+                                                    <x-secondary-button type="button" size="sm" @click="showCounter = !showCounter">{{ __('transfers.negotiate') }}</x-secondary-button>
+                                                    <form method="post" action="{{ route('game.transfers.decline-renewal', [$game->id, $player->id]) }}">
+                                                        @csrf
+                                                        <x-ghost-button type="submit" color="red" size="sm">{{ __('app.reject') }}</x-ghost-button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {{-- Inline counter-offer form --}}
+                                        <div x-show="showCounter" x-cloak x-transition class="mt-3 pt-3 border-t border-orange-200">
+                                            <form method="POST" action="{{ route('game.transfers.renew', [$game->id, $player->id]) }}" class="flex flex-col md:flex-row md:items-end gap-3">
+                                                @csrf
+                                                <div>
+                                                    <label class="text-xs text-slate-500 block mb-1">{{ __('transfers.your_offer') }}</label>
+                                                    <x-money-input name="offer_wage" :value="$midpoint" size="sm" />
+                                                </div>
+                                                <div>
+                                                    <label class="text-xs text-slate-500 block mb-1">{{ __('transfers.contract_duration') }}</label>
+                                                    <x-select-input name="offered_years" class="w-full focus:border-orange-500 focus:ring-orange-500">
+                                                        @foreach(range(1, 5) as $years)
+                                                            <option value="{{ $years }}" {{ $years === ($negotiation->preferred_years ?? 3) ? 'selected' : '' }}>
+                                                                {{ trans_choice('transfers.years', $years, ['count' => $years]) }}
+                                                            </option>
+                                                        @endforeach
+                                                    </x-select-input>
+                                                </div>
+                                                <x-primary-button color="amber" size="sm">{{ __('transfers.negotiate') }}</x-primary-button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                            @endif
+
+                            {{-- RENEWAL OFFERS PENDING — sky accent (waiting for response) --}}
+                            @if($pendingOfferNegotiations->isNotEmpty())
+                            <div class="border-l-4 border-l-sky-500 pl-5">
+                                <h4 class="font-semibold text-lg text-slate-900 mb-1">{{ __('transfers.renewal_offers_sent') }}</h4>
+                                <p class="text-sm text-slate-500 mb-3">{{ __('transfers.renewal_offers_sent_help') }}</p>
+                                <div class="space-y-3">
+                                    @foreach($pendingOfferNegotiations as $player)
+                                    @php
+                                        $negotiation = $activeNegotiations->get($player->id);
+                                    @endphp
+                                    <div class="bg-sky-50 rounded-lg p-4">
+                                        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                                            <div class="flex items-center gap-4">
+                                                <div class="w-10 h-10 rounded-full bg-sky-100 flex items-center justify-center shrink-0">
+                                                    <x-position-badge :position="$player->position" size="sm" />
+                                                </div>
+                                                <div>
+                                                    <div class="font-semibold text-slate-900">{{ $player->player->name }}</div>
+                                                    <div class="text-sm text-slate-600">
+                                                        {{ $player->position_name }} &middot; {{ $player->age }} {{ __('app.years') }} &middot;
+                                                        {{ __('transfers.your_bid_amount', ['amount' => $negotiation->formatted_user_offer . __('squad.per_year')]) }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center gap-3">
+                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-sky-100 text-sky-700">
+                                                    <span class="w-1.5 h-1.5 bg-sky-500 rounded-full animate-pulse"></span>
+                                                    {{ __('transfers.response_next_matchday') }}
+                                                </span>
+                                                <form method="post" action="{{ route('game.transfers.decline-renewal', [$game->id, $player->id]) }}">
+                                                    @csrf
+                                                    <x-ghost-button type="submit" color="red" size="sm">{{ __('app.cancel') }}</x-ghost-button>
+                                                </form>
                                             </div>
                                         </div>
                                     </div>
