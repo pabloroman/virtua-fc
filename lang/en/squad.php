@@ -83,6 +83,21 @@ return [
     'injured' => 'injured',
     'suspended' => 'suspended',
 
+    // Coach assistant
+    'coach_assistant' => 'Coach Assistant',
+    'coach_recommendations' => 'Recommendations',
+    'coach_no_tips' => 'No special recommendations for this match.',
+    'coach_your_team' => 'Your team',
+    'coach_opponent' => 'Opponent',
+    'coach_defensive_recommended' => 'Opponent is stronger. Defensive mentality reduces their expected goals by 30%.',
+    'coach_attacking_recommended' => 'You have the advantage. Attacking mentality can maximize your goals.',
+    'coach_risky_formation' => 'Your attacking formation against a stronger opponent will give them more chances. Consider a more defensive one.',
+    'coach_home_advantage' => "You're playing at home (+0.15 expected goals).",
+    'coach_critical_fitness' => ':names at critical fitness (<50). 2x injury risk. Consider rotating them.',
+    'coach_low_fitness' => ':count player(s) with low fitness (<70). They perform worse and have higher injury risk.',
+    'coach_low_morale' => ':count player(s) with low morale. They\'ll perform worse in the match.',
+    'coach_bench_frustration' => ':count quality player(s) not playing and losing morale. Rotate to keep them happy.',
+
     // Unavailability reasons
     'suspended_matches' => 'Suspended (:count match)|Suspended (:count matches)',
     'injured_generic' => 'Injured',

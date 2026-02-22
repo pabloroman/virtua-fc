@@ -83,6 +83,21 @@ return [
     'injured' => 'lesionados',
     'suspended' => 'sancionados',
 
+    // Coach assistant
+    'coach_assistant' => 'Asistente Técnico',
+    'coach_recommendations' => 'Recomendaciones',
+    'coach_no_tips' => 'Sin recomendaciones especiales para este partido.',
+    'coach_your_team' => 'Tu equipo',
+    'coach_opponent' => 'Rival',
+    'coach_defensive_recommended' => 'Rival más fuerte. Mentalidad defensiva reduce sus goles esperados un 30%.',
+    'coach_attacking_recommended' => 'Tienes ventaja. Una mentalidad ofensiva puede maximizar tus goles.',
+    'coach_risky_formation' => 'Tu formación ofensiva contra un rival superior les dará más ocasiones. Considera una más defensiva.',
+    'coach_home_advantage' => 'Jugáis en casa (+0.15 goles esperados).',
+    'coach_critical_fitness' => ':names en forma crítica (<50). Riesgo de lesión 2x mayor. Considera rotarlos.',
+    'coach_low_fitness' => ':count jugador(es) con forma baja (<70). Rinden peor y tienen mayor riesgo de lesión.',
+    'coach_low_morale' => ':count jugador(es) con moral baja. Tendrán peor rendimiento en el partido.',
+    'coach_bench_frustration' => ':count jugador(es) de calidad sin jugar y perdiendo moral. Rota para mantenerlos contentos.',
+
     // Unavailability reasons
     'suspended_matches' => 'Sancionado (:count partido)|Sancionado (:count partidos)',
     'injured_generic' => 'Lesionado',

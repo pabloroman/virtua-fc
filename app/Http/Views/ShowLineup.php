@@ -114,6 +114,19 @@ class ShowLineup
         // Get opponent scouting data
         $opponentData = $this->getOpponentData($gameId, $opponent->id, $matchDate, $competitionId);
 
+        // User's best XI average for coach assistant comparison
+        $userBestXI = $this->lineupService->getBestXIWithAverage($gameId, $game->team_id, $matchDate, $competitionId);
+        $userTeamAverage = $userBestXI['average'];
+
+        // Formation modifiers for coach assistant tips (attack/defense per formation)
+        $formationModifiers = [];
+        foreach (Formation::cases() as $formation) {
+            $formationModifiers[$formation->value] = [
+                'attack' => $formation->attackModifier(),
+                'defense' => $formation->defenseModifier(),
+            ];
+        }
+
         // Team shirt colors for pitch visualization
         $teamColorsHex = TeamColors::toHex($game->team->colors ?? TeamColors::get($game->team->getRawOriginal('name')));
 
@@ -142,6 +155,8 @@ class ShowLineup
             'slotCompatibility' => $slotCompatibility,
             'opponentData' => $opponentData,
             'teamColors' => $teamColorsHex,
+            'userTeamAverage' => $userTeamAverage,
+            'formationModifiers' => $formationModifiers,
         ]);
     }
 
