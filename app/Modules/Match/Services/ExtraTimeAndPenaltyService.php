@@ -30,16 +30,12 @@ class ExtraTimeAndPenaltyService
 
         $homeEntryMinutes = [];
         $awayEntryMinutes = [];
-        $allPlayers = $homePlayers->merge($awayPlayers);
 
         foreach ($match->substitutions ?? [] as $sub) {
-            $playerIn = $allPlayers->firstWhere('id', $sub['player_in_id']);
-            if ($playerIn) {
-                if ($playerIn->team_id === $match->home_team_id) {
-                    $homeEntryMinutes[$sub['player_in_id']] = $sub['minute'];
-                } else {
-                    $awayEntryMinutes[$sub['player_in_id']] = $sub['minute'];
-                }
+            if ($sub['team_id'] === $match->home_team_id) {
+                $homeEntryMinutes[$sub['player_in_id']] = $sub['minute'];
+            } else {
+                $awayEntryMinutes[$sub['player_in_id']] = $sub['minute'];
             }
         }
 
@@ -99,18 +95,33 @@ class ExtraTimeAndPenaltyService
     }
 
     /**
-     * Load lineup players split by team.
+     * Load the players currently on the pitch, accounting for substitutions.
      *
      * @return array{0: Collection, 1: Collection} [homePlayers, awayPlayers]
      */
     private function loadPlayersByTeam(GameMatch $match): array
     {
-        $allLineupIds = array_merge($match->home_lineup ?? [], $match->away_lineup ?? []);
-        $players = GamePlayer::with('player')->whereIn('id', $allLineupIds)->get();
+        $homeIds = $match->home_lineup ?? [];
+        $awayIds = $match->away_lineup ?? [];
+
+        foreach ($match->substitutions ?? [] as $sub) {
+            $isHome = $sub['team_id'] === $match->home_team_id;
+
+            if ($isHome) {
+                $homeIds = array_values(array_filter($homeIds, fn ($id) => $id !== $sub['player_out_id']));
+                $homeIds[] = $sub['player_in_id'];
+            } else {
+                $awayIds = array_values(array_filter($awayIds, fn ($id) => $id !== $sub['player_out_id']));
+                $awayIds[] = $sub['player_in_id'];
+            }
+        }
+
+        $allIds = array_merge($homeIds, $awayIds);
+        $players = GamePlayer::with('player')->whereIn('id', $allIds)->get()->keyBy('id');
 
         return [
-            $players->filter(fn ($p) => $p->team_id === $match->home_team_id),
-            $players->filter(fn ($p) => $p->team_id === $match->away_team_id),
+            $players->only($homeIds)->values(),
+            $players->only($awayIds)->values(),
         ];
     }
 
