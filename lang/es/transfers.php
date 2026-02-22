@@ -175,6 +175,33 @@ return [
     'your_bid_amount' => 'Tu oferta: :amount',
     'they_ask' => 'Piden: :amount',
 
+    // Transfers help text
+    'transfers_help_toggle' => '¿Cómo funcionan los traspasos?',
+    'transfers_help_intro' => 'Gestiona tus traspasos salientes, contratos y cesiones. Las ofertas llegan cada jornada según las condiciones del mercado.',
+    'transfers_help_selling_title' => 'Vender jugadores',
+    'transfers_help_selling_list' => 'Pon jugadores en venta desde la página de Plantilla. Otros clubes harán ofertas basadas en el valor del jugador.',
+    'transfers_help_selling_unsolicited' => 'También puedes recibir ofertas no solicitadas por jugadores no listados, especialmente los de alto valor.',
+    'transfers_help_selling_accept' => 'Los traspasos aceptados se completan cuando se abre la siguiente ventana de fichajes.',
+    'transfers_help_contracts_title' => 'Contratos y Renovaciones',
+    'transfers_help_contracts_expiring' => 'Los jugadores en su último año de contrato pueden ser fichados gratis por otros clubes mediante precontrato a partir de enero.',
+    'transfers_help_contracts_renew' => 'Renueva a los jugadores antes de que sea tarde. Las negociaciones duran varias jornadas — el jugador puede aceptar, contraofertar o rechazar.',
+    'transfers_help_contracts_wages' => 'Vigila tu masa salarial. Salarios más altos atraen mejores jugadores pero reducen tu presupuesto de fichajes.',
+    'transfers_help_loans_title' => 'Cesiones',
+    'transfers_help_loans_out' => 'Cede a jugadores jóvenes o con poco protagonismo. Se desarrollarán jugando en otro club y regresarán al final de la temporada.',
+
+    // Scouting help text
+    'scouting_help_toggle' => '¿Cómo funcionan los ojeadores?',
+    'scouting_help_intro' => 'Usa tus ojeadores para encontrar jugadores en el mercado de fichajes. Cuanto mejor sea tu infraestructura de ojeadores, mejores serán los resultados.',
+    'scouting_help_search_title' => 'Búsquedas de ojeadores',
+    'scouting_help_search_filters' => 'Configura filtros (posición, edad, habilidad, valor) y tu ojeador buscará jugadores que coincidan.',
+    'scouting_help_search_time' => 'Cada búsqueda tarda varias jornadas en completarse. Solo puedes tener una búsqueda activa a la vez.',
+    'scouting_help_search_scope' => 'Las búsquedas nacionales encuentran jugadores de tu liga. Las internacionales requieren nivel de ojeadores 3+.',
+    'scouting_help_shortlist_title' => 'Lista de seguimiento y ofertas',
+    'scouting_help_shortlist_star' => 'Marca con estrella a los jugadores de los informes para añadirlos a tu lista de seguimiento y compararlos fácilmente.',
+    'scouting_help_shortlist_bid' => 'Envía una oferta desde la lista de seguimiento. El club vendedor responde en la siguiente jornada — puede aceptar, rechazar o contraofertar.',
+    'scouting_help_shortlist_loan' => 'También puedes solicitar una cesión en vez de un traspaso permanente.',
+    'scouting_help_shortlist_precontract' => 'Los jugadores en su último año de contrato pueden ficharse gratis mediante precontrato a partir de enero.',
+
     // Decline renewal
     'reconsider_renewal' => 'Reconsiderar',
     'declined_renewals' => 'No renovados',

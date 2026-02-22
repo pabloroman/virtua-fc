@@ -29,11 +29,56 @@
                         $pendingOfferNegotiations = $negotiatingPlayers->filter(fn ($p) => $activeNegotiations->get($p->id)?->isPending());
                         $salidaBadge = $unsolicitedOffers->count() + $preContractOffers->count() + $listedOffers->count() + $counteredNegotiations->count();
                     @endphp
-                    <x-section-nav :items="[
-                        ['href' => route('game.transfers', $game->id), 'label' => __('transfers.incoming'), 'active' => false, 'badge' => $counterOfferCount > 0 ? $counterOfferCount : null],
-                        ['href' => route('game.transfers.outgoing', $game->id), 'label' => __('transfers.outgoing'), 'active' => true, 'badge' => $salidaBadge > 0 ? $salidaBadge : null],
-                        ['href' => route('game.scouting', $game->id), 'label' => __('transfers.scouting_tab'), 'active' => false],
-                    ]" />
+                    <div x-data="{ helpOpen: false }">
+                        <x-section-nav :items="[
+                            ['href' => route('game.transfers', $game->id), 'label' => __('transfers.incoming'), 'active' => false, 'badge' => $counterOfferCount > 0 ? $counterOfferCount : null],
+                            ['href' => route('game.transfers.outgoing', $game->id), 'label' => __('transfers.outgoing'), 'active' => true, 'badge' => $salidaBadge > 0 ? $salidaBadge : null],
+                            ['href' => route('game.scouting', $game->id), 'label' => __('transfers.scouting_tab'), 'active' => false],
+                        ]">
+                            <button @click="helpOpen = !helpOpen" class="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-700 transition-colors whitespace-nowrap">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-slate-400 shrink-0">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-7-4a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM9 9a.75.75 0 0 0 0 1.5h.253a.25.25 0 0 1 .244.304l-.459 2.066A1.75 1.75 0 0 0 10.747 15H11a.75.75 0 0 0 0-1.5h-.253a.25.25 0 0 1-.244-.304l.459-2.066A1.75 1.75 0 0 0 9.253 9H9Z" clip-rule="evenodd" />
+                                </svg>
+                                <span class="hidden md:inline">{{ __('transfers.transfers_help_toggle') }}</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 transition-transform hidden md:block" :class="helpOpen ? 'rotate-180' : ''">
+                                    <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </x-section-nav>
+
+                        <div x-show="helpOpen" x-transition class="mt-3 bg-slate-50 border border-slate-200 rounded-lg p-4 text-sm">
+                            <p class="text-slate-600 mb-4">{{ __('transfers.transfers_help_intro') }}</p>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                                {{-- Selling --}}
+                                <div>
+                                    <p class="font-semibold text-slate-700 mb-2">{{ __('transfers.transfers_help_selling_title') }}</p>
+                                    <ul class="space-y-1 text-slate-600">
+                                        <li class="flex gap-2"><span class="text-amber-500 shrink-0">&#9679;</span> {{ __('transfers.transfers_help_selling_list') }}</li>
+                                        <li class="flex gap-2"><span class="text-red-400 shrink-0">&#9679;</span> {{ __('transfers.transfers_help_selling_unsolicited') }}</li>
+                                        <li class="flex gap-2"><span class="text-emerald-500 shrink-0">&#9679;</span> {{ __('transfers.transfers_help_selling_accept') }}</li>
+                                    </ul>
+                                </div>
+
+                                {{-- Contracts --}}
+                                <div>
+                                    <p class="font-semibold text-slate-700 mb-2">{{ __('transfers.transfers_help_contracts_title') }}</p>
+                                    <ul class="space-y-1 text-slate-600">
+                                        <li class="flex gap-2"><span class="text-red-400 shrink-0">&#9679;</span> {{ __('transfers.transfers_help_contracts_expiring') }}</li>
+                                        <li class="flex gap-2"><span class="text-sky-500 shrink-0">&#9679;</span> {{ __('transfers.transfers_help_contracts_renew') }}</li>
+                                        <li class="flex gap-2"><span class="text-amber-500 shrink-0">&#9679;</span> {{ __('transfers.transfers_help_contracts_wages') }}</li>
+                                    </ul>
+                                </div>
+
+                                {{-- Loans --}}
+                                <div>
+                                    <p class="font-semibold text-slate-700 mb-2">{{ __('transfers.transfers_help_loans_title') }}</p>
+                                    <ul class="space-y-1 text-slate-600">
+                                        <li class="flex gap-2"><span class="text-sky-500 shrink-0">&#9679;</span> {{ __('transfers.transfers_help_loans_out') }}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     @php
                         $hasLeftContent = $unsolicitedOffers->isNotEmpty()

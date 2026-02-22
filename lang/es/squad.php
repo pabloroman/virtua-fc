@@ -203,6 +203,21 @@ return [
     'academy_tier_4' => 'Cantera de Clase Mundial',
     'academy_tier_unknown' => 'Desconocido',
 
+    // Lineup help text
+    'lineup_help_toggle' => '¿Cómo funciona la alineación?',
+    'lineup_help_intro' => 'Elige 11 jugadores para cada partido. Tu formación, la forma física y la compatibilidad posicional afectan al rendimiento.',
+    'lineup_help_formation_title' => 'Formación y Mentalidad',
+    'lineup_help_formation_desc' => 'La formación determina qué posiciones hay disponibles en el campo. Los jugadores rinden mejor en su posición natural.',
+    'lineup_help_compatibility_natural' => 'Natural — el jugador está en su mejor posición, rendimiento completo.',
+    'lineup_help_compatibility_good' => 'Bueno / Muy Bueno — penalización leve, pero el jugador puede rendir bien.',
+    'lineup_help_compatibility_poor' => 'Malo / Inadecuado — penalización significativa, evítalo si es posible.',
+    'lineup_help_mentality_desc' => 'La mentalidad afecta a lo ofensivo o defensivo que juega tu equipo.',
+    'lineup_help_condition_title' => 'Forma Física y Moral',
+    'lineup_help_condition_desc' => 'Los jugadores con baja forma física o moral rinden peor. Rota la plantilla para mantener a todos frescos.',
+    'lineup_help_fitness' => 'La forma física baja después de cada partido y se recupera entre jornadas. Las lesiones aumentan cuando la forma es baja.',
+    'lineup_help_morale' => 'La moral se ve afectada por los resultados, los minutos jugados y la situación contractual.',
+    'lineup_help_auto' => 'Usa "Selección Auto" para que el sistema elija el mejor XI disponible para tu formación.',
+
     // Squad selection (tournament onboarding)
     'squad_selection_title' => 'Selecciona tu convocatoria',
     'squad_selection_subtitle' => 'Elige 26 jugadores para el torneo',

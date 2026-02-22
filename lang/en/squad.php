@@ -203,6 +203,21 @@ return [
     'academy_tier_4' => 'World-Class Academy',
     'academy_tier_unknown' => 'Unknown',
 
+    // Lineup help text
+    'lineup_help_toggle' => 'How does lineup selection work?',
+    'lineup_help_intro' => 'Choose 11 players for each match. Your formation, player fitness, and positional compatibility all affect performance.',
+    'lineup_help_formation_title' => 'Formation & Mentality',
+    'lineup_help_formation_desc' => 'The formation determines which positions are available on the pitch. Players perform best in their natural position.',
+    'lineup_help_compatibility_natural' => 'Natural — player is in their best position, full performance.',
+    'lineup_help_compatibility_good' => 'Good / Very Good — slight penalty, but the player can perform well.',
+    'lineup_help_compatibility_poor' => 'Poor / Unsuitable — significant penalty, avoid if possible.',
+    'lineup_help_mentality_desc' => 'Mentality affects how attacking or defensive your team plays.',
+    'lineup_help_condition_title' => 'Fitness & Morale',
+    'lineup_help_condition_desc' => 'Players with low fitness or morale perform worse. Rotate your squad to keep everyone fresh.',
+    'lineup_help_fitness' => 'Fitness drops after each match and recovers between matchdays. Injuries increase when fitness is low.',
+    'lineup_help_morale' => 'Morale is affected by results, playing time, and contract status.',
+    'lineup_help_auto' => 'Use "Auto Select" to let the system pick the best available XI for your formation.',
+
     // Squad selection (tournament onboarding)
     'squad_selection_title' => 'Select your squad',
     'squad_selection_subtitle' => 'Choose 26 players for the tournament',
