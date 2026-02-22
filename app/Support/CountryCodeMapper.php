@@ -172,6 +172,7 @@ class CountryCodeMapper
         'North Korea' => 'kp',
         'Korea, Republic of' => 'kr',
         'South Korea' => 'kr',
+        'Korea, South' => 'kr',
         'Korea Republic' => 'kr',
         'Kuwait' => 'kw',
         'Kyrgyzstan' => 'kg',
