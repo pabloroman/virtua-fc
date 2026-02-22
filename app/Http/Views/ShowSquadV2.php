@@ -147,7 +147,7 @@ class ShowSquadV2
             $academyCount = AcademyPlayer::where('game_id', $gameId)->where('team_id', $game->team_id)->count();
         }
 
-        return view('squad-v2', [
+        return view('squad', [
             'game' => $game,
             'goalkeepers' => $goalkeepers,
             'defenders' => $defenders,
