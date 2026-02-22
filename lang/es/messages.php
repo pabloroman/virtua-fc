@@ -13,6 +13,7 @@ return [
 
     // Bid/loan submission confirmations
     'bid_submitted' => 'Tu oferta por :player ha sido enviada. Recibirás respuesta próximamente.',
+    'bid_already_exists' => 'Ya tienes una oferta pendiente por este jugador.',
     'loan_request_submitted' => 'Tu solicitud de cesión por :player ha sido enviada. Recibirás respuesta próximamente.',
 
     // Counter offer
