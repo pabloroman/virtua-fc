@@ -262,7 +262,6 @@
                                                 <th class="font-semibold py-2 text-center w-16">{{ __('squad_v2.cards') }}</th>
                                             </template>
 
-                                            <th class="font-semibold py-2 text-center w-10"></th>
                                             <th class="font-semibold py-2 text-center w-10">{{ __('app.age') }}</th>
                                             <th class="font-semibold py-2 pr-3 text-center w-12 cursor-help" x-data x-tooltip.raw="{{ __('squad.overall') }}">{{ __('squad.overall') }}</th>
                                         </tr>
@@ -312,6 +311,9 @@
                                                                 <path fill-rule="evenodd" d="M19.5 21a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3h-5.379a.75.75 0 0 1-.53-.22L11.47 3.66A2.25 2.25 0 0 0 9.879 3H4.5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h15Zm-6.75-10.5a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V10.5Z" clip-rule="evenodd" />
                                                             </svg>
                                                         </button>
+                                                        @if($gp->nationality_flag)
+                                                            <img src="/flags/{{ $gp->nationality_flag['code'] }}.svg" class="w-5 h-3.5 rounded shadow-sm shrink-0" title="{{ $gp->nationality_flag['name'] }}">
+                                                        @endif
                                                         <div class="min-w-0">
                                                             <div class="font-medium text-slate-900 truncate">{{ $gp->player->name }}</div>
                                                             @if($unavailReason)
@@ -434,13 +436,6 @@
                                                         </span>
                                                     </td>
                                                 </template>
-
-                                                {{-- Nationality flag (all modes) --}}
-                                                <td class="py-2.5 text-center w-10">
-                                                    @if($gp->nationality_flag)
-                                                        <img src="/flags/{{ $gp->nationality_flag['code'] }}.svg" class="w-5 h-4 mx-auto rounded shadow-sm" title="{{ $gp->nationality_flag['name'] }}">
-                                                    @endif
-                                                </td>
 
                                                 {{-- Age (all modes) --}}
                                                 <td class="py-2.5 text-center w-10 text-slate-600">{{ $gp->age }}</td>
