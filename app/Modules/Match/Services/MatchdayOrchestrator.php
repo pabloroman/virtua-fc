@@ -152,15 +152,17 @@ class MatchdayOrchestrator
         // Recalculate standings positions once per league competition (not per match)
         $this->recalculateLeaguePositions($game->id, $matches);
 
+        // Mark user's match as pending finalization BEFORE post-match actions,
+        // so that competition progress checks can see the flag and defer
+        // notifications/knockout generation until standings are finalized.
+        if ($playerMatch) {
+            $game->update(['pending_finalization_match_id' => $playerMatch->id]);
+        }
+
         // Process post-match actions (clear cached relations so season-scoped
         // relationships like currentInvestment lazy-load correctly after refresh)
         $game->refresh()->setRelations([]);
         $this->processPostMatchActions($game, $matches, $handlers, $allPlayers, $deferMatchId);
-
-        // Mark user's match as pending finalization
-        if ($playerMatch) {
-            $game->update(['pending_finalization_match_id' => $playerMatch->id]);
-        }
 
         return ['playerMatch' => $playerMatch];
     }
