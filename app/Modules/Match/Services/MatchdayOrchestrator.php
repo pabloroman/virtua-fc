@@ -17,6 +17,7 @@ use App\Modules\Transfer\Services\LoanService;
 use App\Modules\Transfer\Services\ScoutingService;
 use App\Modules\Transfer\Services\TransferService;
 use App\Models\AcademyPlayer;
+use App\Models\ClubProfile;
 use App\Models\Competition;
 use App\Models\CupTie;
 use App\Models\Game;
@@ -136,8 +137,11 @@ class MatchdayOrchestrator
             ->pluck('game_player_id')
             ->toArray();
 
+        // Batch load club profiles for AI mentality selection (1 query per batch)
+        $clubProfiles = ClubProfile::whereIn('team_id', $teamIds)->get()->keyBy('team_id');
+
         // Prepare lineups for all matches (pass pre-loaded data)
-        $this->lineupService->ensureLineupsForMatches($matches, $game, $allPlayers, $suspendedPlayerIds);
+        $this->lineupService->ensureLineupsForMatches($matches, $game, $allPlayers, $suspendedPlayerIds, $clubProfiles);
 
         // Simulate all matches (pass game for medical tier effects on injuries)
         $matchResults = $this->simulateMatches($matches, $game, $allPlayers);

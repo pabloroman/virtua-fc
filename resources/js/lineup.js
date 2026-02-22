@@ -34,6 +34,8 @@ export default function lineupManager(config) {
         translations: config.translations,
         formationModifiers: config.formationModifiers || {},
         opponentAverage: config.opponentAverage || 0,
+        opponentFormation: config.opponentFormation || null,
+        opponentMentality: config.opponentMentality || null,
         userTeamAverage: config.userTeamAverage || 0,
         isHome: config.isHome || false,
 
@@ -86,16 +88,27 @@ export default function lineupManager(config) {
             const isWeaker = oppAvg > 0 && diff <= -5;
             const isStronger = oppAvg > 0 && diff >= 5;
             const fmMods = this.formationModifiers[this.selectedFormation];
+            const oppFm = this.opponentFormation;
+            const oppMent = this.opponentMentality;
+            const oppMentLabel = oppMent ? (t['mentality_' + oppMent] || oppMent) : '';
 
-            // Formation & mentality tips
-            if (isWeaker && this.selectedMentality !== 'defensive') {
+            // Opponent tactical tips (using predicted formation/mentality)
+            if (oppMent === 'defensive' && oppFm) {
+                tips.push({ id: 'opp_defensive', priority: 1, type: 'info', message: t.coach_opponent_defensive_setup.replace(':formation', oppFm).replace(':mentality', oppMentLabel) });
+            } else if (oppMent === 'attacking' && oppFm) {
+                tips.push({ id: 'opp_attacking', priority: 1, type: 'info', message: t.coach_opponent_attacking_setup.replace(':formation', oppFm).replace(':mentality', oppMentLabel) });
+            } else if (isWeaker && this.selectedMentality !== 'defensive') {
                 tips.push({ id: 'defensive_recommended', priority: 1, type: 'warning', message: t.coach_defensive_recommended });
             }
-            if (isStronger && this.selectedMentality !== 'attacking') {
+            if (isStronger && this.selectedMentality !== 'attacking' && oppMent !== 'attacking') {
                 tips.push({ id: 'attacking_vs_weaker', priority: 4, type: 'info', message: t.coach_attacking_recommended });
             }
             if (isWeaker && fmMods && fmMods.attack > 1.0) {
                 tips.push({ id: 'risky_formation', priority: 2, type: 'warning', message: t.coach_risky_formation });
+            }
+            // Opponent playing 5-at-the-back
+            if (oppFm && (oppFm.startsWith('5-') || oppFm === '5-3-2' || oppFm === '5-4-1')) {
+                tips.push({ id: 'opp_deep_block', priority: 3, type: 'info', message: t.coach_opponent_deep_block });
             }
 
             // Fitness tips (only if lineup has players)
