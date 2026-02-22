@@ -8,7 +8,6 @@ return [
     'squad_value' => 'Valor Plantilla',
 
     // View modes
-    'overview' => 'General',
     'tactical' => 'Táctico',
     'planning' => 'Planificación',
 

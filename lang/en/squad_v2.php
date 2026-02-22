@@ -8,7 +8,6 @@ return [
     'squad_value' => 'Squad Value',
 
     // View modes
-    'overview' => 'Overview',
     'tactical' => 'Tactical',
     'planning' => 'Planning',
 

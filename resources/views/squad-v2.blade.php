@@ -21,7 +21,7 @@
     </x-slot>
 
     <div x-data="{
-        viewMode: new URLSearchParams(window.location.search).get('mode') || 'overview',
+        viewMode: new URLSearchParams(window.location.search).get('mode') || 'tactical',
         posFilter: 'all',
         availFilter: 'all',
         statusFilter: 'all',
@@ -137,9 +137,6 @@
                     <div class="mt-6 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                         {{-- View Mode Toggle --}}
                         <div class="flex items-center overflow-x-auto scrollbar-hide gap-1 bg-slate-100 rounded-lg p-1">
-                            <button @click="viewMode = 'overview'" :class="viewMode === 'overview' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:text-slate-700'" class="shrink-0 px-3 py-1.5 text-sm font-medium rounded-md transition-colors min-h-[36px]">
-                                {{ __('squad_v2.overview') }}
-                            </button>
                             <button @click="viewMode = 'tactical'" :class="viewMode === 'tactical' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:text-slate-700'" class="shrink-0 px-3 py-1.5 text-sm font-medium rounded-md transition-colors min-h-[36px]">
                                 {{ __('squad_v2.tactical') }}
                             </button>
@@ -194,17 +191,6 @@
                                         <tr>
                                             <th class="font-semibold py-2 pl-3 w-10"></th>
                                             <th class="font-semibold py-2">{{ __('app.name') }}</th>
-
-                                            {{-- Overview headers --}}
-                                            <template x-if="viewMode === 'overview'">
-                                                <th class="font-semibold py-2 text-center w-10 cursor-help" x-data x-tooltip.raw="{{ __('squad.fitness_full') }}">{{ __('squad.fitness') }}</th>
-                                            </template>
-                                            <template x-if="viewMode === 'overview'">
-                                                <th class="font-semibold py-2 text-center w-10 cursor-help" x-data x-tooltip.raw="{{ __('squad.morale_full') }}">{{ __('squad.morale') }}</th>
-                                            </template>
-                                            <template x-if="viewMode === 'overview'">
-                                                <th class="font-semibold py-2 text-center w-10 cursor-help" x-data x-tooltip.raw="{{ __('squad.legend_apps') }}">{{ __('squad.apps') }}</th>
-                                            </template>
 
                                             {{-- Tactical headers --}}
                                             <template x-if="viewMode === 'tactical'">
@@ -324,21 +310,6 @@
                                                         @include('partials.squad-v2.player-status-icon', ['gp' => $gp, 'game' => $game])
                                                     </div>
                                                 </td>
-
-                                                {{-- === Overview columns === --}}
-                                                <template x-if="viewMode === 'overview'">
-                                                    <td class="py-2.5 text-center w-10">
-                                                        <span class="@if($gp->fitness >= 90) text-green-600 @elseif($gp->fitness >= 80) text-lime-600 @elseif($gp->fitness < 50) text-red-500 font-medium @elseif($gp->fitness < 70) text-amber-600 @endif">{{ $gp->fitness }}</span>
-                                                    </td>
-                                                </template>
-                                                <template x-if="viewMode === 'overview'">
-                                                    <td class="py-2.5 text-center w-10">
-                                                        <span class="@if($gp->morale >= 85) text-green-600 @elseif($gp->morale >= 75) text-lime-600 @elseif($gp->morale < 50) text-red-500 font-medium @elseif($gp->morale < 65) text-amber-600 @endif">{{ $gp->morale }}</span>
-                                                    </td>
-                                                </template>
-                                                <template x-if="viewMode === 'overview'">
-                                                    <td class="py-2.5 text-center w-10 text-slate-500">{{ $gp->appearances }}</td>
-                                                </template>
 
                                                 {{-- === Tactical columns === --}}
                                                 <template x-if="viewMode === 'tactical'">
@@ -498,9 +469,6 @@
                                                                 <span class="text-red-500">{{ $unavailReason }}</span>
                                                             @else
                                                                 {{-- Context-dependent second line --}}
-                                                                <template x-if="viewMode === 'overview'">
-                                                                    <span>{{ $gp->age }} {{ __('squad.years_abbr') }} &middot; {{ __('squad.fitness') }} {{ $gp->fitness }} &middot; {{ __('squad.morale') }} {{ $gp->morale }}</span>
-                                                                </template>
                                                                 <template x-if="viewMode === 'tactical'">
                                                                     <span>{{ __('squad.technical') }} {{ $gp->technical_ability }} &middot; {{ __('squad.physical') }} {{ $gp->physical_ability }} &middot; {{ __('squad.fitness') }} {{ $gp->fitness }}</span>
                                                                 </template>
