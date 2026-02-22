@@ -1,0 +1,407 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/3384.png",
+  "name": "Switzerland",
+  "players": [
+    {
+      "contract": "Sep 1, 2021",
+      "dateOfBirth": "Dec 6, 1997",
+      "foot": "right",
+      "height": "1,96m",
+      "id": "257814",
+      "marketValue": "€40.00m",
+      "name": "Gregor Kobel",
+      "position": "Goalkeeper"
+    },
+    {
+      "dateOfBirth": "Jun 1, 2003",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "583038",
+      "marketValue": "€4.00m",
+      "name": "Pascal Loretz",
+      "position": "Goalkeeper"
+    },
+    {
+      "dateOfBirth": "Jul 3, 2002",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "500763",
+      "marketValue": "€3.50m",
+      "name": "Marvin Keller",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Oct 15, 2018",
+      "dateOfBirth": "Jun 6, 1994",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "147051",
+      "marketValue": "€3.00m",
+      "name": "Yvon Mvogo",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 9, 2017",
+      "dateOfBirth": "Jul 19, 1995",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "284730",
+      "marketValue": "€40.00m",
+      "name": "Manuel Akanji",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Nov 15, 2024",
+      "dateOfBirth": "Jul 31, 2003",
+      "foot": "right",
+      "height": "1,94m",
+      "id": "635645",
+      "marketValue": "€9.50m",
+      "name": "Aurèle Amenda",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "May 28, 2016",
+      "dateOfBirth": "Sep 30, 1996",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "192635",
+      "marketValue": "€8.00m",
+      "name": "Nico Elvedi",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Mar 25, 2025",
+      "dateOfBirth": "May 18, 2003",
+      "foot": "left",
+      "height": "1,89m",
+      "id": "579459",
+      "marketValue": "€7.00m",
+      "name": "Albian Hajdari",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Oct 7, 2020",
+      "dateOfBirth": "Jan 20, 2002",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "507344",
+      "marketValue": "€5.00m",
+      "name": "Becir Omeragic",
+      "number": "2",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Oct 10, 2025",
+      "dateOfBirth": "Jun 2, 2003",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "539798",
+      "marketValue": "€4.50m",
+      "name": "Luca Jaquez",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Sep 1, 2021",
+      "dateOfBirth": "Jun 24, 1998",
+      "foot": "left",
+      "height": "1,94m",
+      "id": "382478",
+      "marketValue": "€4.00m",
+      "name": "Cédric Zesiger",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Nov 18, 2019",
+      "dateOfBirth": "Feb 4, 1998",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "298583",
+      "marketValue": "€3.00m",
+      "name": "Eray Cömert",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Oct 13, 2025",
+      "dateOfBirth": "Apr 5, 2002",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "582987",
+      "marketValue": "€1.50m",
+      "name": "Adrian Bajrami",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Mar 21, 2025",
+      "dateOfBirth": "Feb 2, 1997",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "243770",
+      "marketValue": "€1.20m",
+      "name": "Stefan Gartenmann",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Sep 1, 2021",
+      "dateOfBirth": "Jan 11, 1996",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "192616",
+      "marketValue": "€4.00m",
+      "name": "Ulisses Garcia",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Nov 18, 2024",
+      "dateOfBirth": "Mar 24, 1998",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "298603",
+      "marketValue": "€2.70m",
+      "name": "Miro Muheim",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Oct 7, 2011",
+      "dateOfBirth": "Aug 25, 1992",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "86784",
+      "marketValue": "€2.50m",
+      "name": "Ricardo Rodríguez",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Mar 21, 2025",
+      "dateOfBirth": "Dec 7, 1999",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "449597",
+      "marketValue": "€2.20m",
+      "name": "Isaac Schmidt",
+      "position": "Left-Back"
+    },
+    {
+      "dateOfBirth": "Dec 13, 2004",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "990637",
+      "marketValue": "€3.00m",
+      "name": "Zachary Athekame",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Mar 21, 2025",
+      "dateOfBirth": "Sep 14, 1996",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "503348",
+      "marketValue": "€2.20m",
+      "name": "Lucas Blondel",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Oct 14, 2014",
+      "dateOfBirth": "Mar 5, 1993",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "168989",
+      "marketValue": "€1.50m",
+      "name": "Silvan Widmer",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "May 28, 2016",
+      "dateOfBirth": "Nov 20, 1996",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "334526",
+      "marketValue": "€30.00m",
+      "name": "Denis Zakaria",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 4, 2011",
+      "dateOfBirth": "Sep 27, 1992",
+      "foot": "left",
+      "height": "1,86m",
+      "id": "111455",
+      "marketValue": "€17.00m",
+      "name": "Granit Xhaka",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Sep 27, 2022",
+      "dateOfBirth": "Jul 30, 2002",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "608172",
+      "marketValue": "€11.00m",
+      "name": "Ardon Jashari",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Nov 18, 2019",
+      "dateOfBirth": "Jan 6, 1997",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "237658",
+      "marketValue": "€10.00m",
+      "name": "Michel Aebischer",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Sep 8, 2018",
+      "dateOfBirth": "Feb 6, 1997",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "212723",
+      "marketValue": "€7.50m",
+      "name": "Djibril Sow",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Mar 25, 2017",
+      "dateOfBirth": "Apr 15, 1992",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "148252",
+      "marketValue": "€6.50m",
+      "name": "Remo Freuler",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Mar 26, 2024",
+      "dateOfBirth": "Oct 8, 1995",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "280387",
+      "marketValue": "€4.00m",
+      "name": "Vincent Sierro",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Oct 7, 2020",
+      "dateOfBirth": "Apr 11, 2001",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "507486",
+      "marketValue": "€4.00m",
+      "name": "Simon Sohm",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 7, 2025",
+      "dateOfBirth": "Oct 14, 2005",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "927353",
+      "marketValue": "€750k",
+      "name": "Johan Manzambi",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Sep 8, 2024",
+      "dateOfBirth": "Aug 5, 1999",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "410787",
+      "marketValue": "€7.00m",
+      "name": "Joël Monteiro",
+      "position": "Left Midfield"
+    },
+    {
+      "contract": "Nov 24, 2022",
+      "dateOfBirth": "Feb 16, 2002",
+      "foot": "left",
+      "height": "1,79m",
+      "id": "507341",
+      "marketValue": "€10.00m",
+      "name": "Fabian Rieder",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Mar 21, 2025",
+      "dateOfBirth": "Feb 12, 2003",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "583058",
+      "marketValue": "€9.00m",
+      "name": "Alvyn Sanches",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Oct 12, 2018",
+      "dateOfBirth": "Nov 11, 1993",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "250490",
+      "marketValue": "€2.00m",
+      "name": "Christian Fassnacht",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Sep 8, 2019",
+      "dateOfBirth": "Aug 5, 1998",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "345886",
+      "marketValue": "€7.00m",
+      "name": "Rubén Vargas",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Sep 24, 2022",
+      "dateOfBirth": "Oct 25, 2000",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "365108",
+      "marketValue": "€25.00m",
+      "name": "Dan Ndoye",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Sep 27, 2022",
+      "dateOfBirth": "Dec 4, 2000",
+      "foot": "both",
+      "height": "1,85m",
+      "id": "548729",
+      "marketValue": "€15.00m",
+      "name": "Zeki Amdouni",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Mar 31, 2015",
+      "dateOfBirth": "Feb 14, 1997",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "237662",
+      "marketValue": "€12.00m",
+      "name": "Breel Embolo",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Sep 1, 2021",
+      "dateOfBirth": "Jun 22, 1999",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "345468",
+      "marketValue": "€4.00m",
+      "name": "Andi Zeqiri",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Nov 15, 2019",
+      "dateOfBirth": "Dec 27, 1996",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "243856",
+      "marketValue": "€2.00m",
+      "name": "Cedric Itten",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": null,
+  "stadiumSeats": null,
+  "transfermarktId": "3384"
+}

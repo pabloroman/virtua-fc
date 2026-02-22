@@ -67,7 +67,7 @@ class ShowSquadSelection
             $overall = (int) round(($technical + $physical) / 2);
 
             $candidate = [
-                'transfermarkt_id' => $tmId,
+                'transfermarkt_id' => (string) $tmId,
                 'player_id' => $player->id,
                 'name' => $player->name,
                 'position' => $position,
