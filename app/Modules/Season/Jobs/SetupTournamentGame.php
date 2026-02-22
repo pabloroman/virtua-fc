@@ -4,9 +4,6 @@ namespace App\Modules\Season\Jobs;
 
 use App\Modules\Squad\Services\InjuryService;
 use App\Modules\Squad\Services\PlayerDevelopmentService;
-use App\Modules\Squad\Services\PlayerValuationService;
-use App\Modules\Competition\Services\StandingsCalculator;
-use App\Support\Money;
 use App\Models\CompetitionEntry;
 use App\Models\CompetitionTeam;
 use App\Models\Game;
@@ -36,7 +33,6 @@ class SetupTournamentGame implements ShouldQueue
     ) {}
 
     public function handle(
-        StandingsCalculator $standingsCalculator,
         PlayerDevelopmentService $developmentService,
     ): void {
         $game = Game::find($this->gameId);
@@ -44,14 +40,15 @@ class SetupTournamentGame implements ShouldQueue
             return;
         }
 
-        // Load groups.json for fixture data and group assignments
+        // Load groups.json for fixture pairings and dates
         $groupsPath = base_path('data/2025/WC/groups.json');
         $groupsData = json_decode(file_get_contents($groupsPath), true);
 
-        // Build team key -> Team UUID map (team key = transfermarkt_id for national teams)
-        $teamKeyMap = Team::where('type', 'national')
-            ->whereNotNull('transfermarkt_id')
-            ->pluck('id', 'transfermarkt_id')
+        // Build team key -> Team UUID map from seeded competition_teams
+        $teamKeyMap = CompetitionTeam::where('competition_id', self::COMPETITION_ID)
+            ->where('season', '2025')
+            ->join('teams', 'competition_teams.team_id', '=', 'teams.id')
+            ->pluck('teams.id', 'teams.transfermarkt_id')
             ->toArray();
 
         // Step 1: Create competition entries for all WC teams
@@ -60,8 +57,8 @@ class SetupTournamentGame implements ShouldQueue
         // Step 2: Create fixtures from groups.json
         $this->createFixtures($groupsData, $teamKeyMap);
 
-        // Step 3: Create standings with group labels
-        $this->createGroupStandings($groupsData, $teamKeyMap, $standingsCalculator);
+        // Step 3: Create standings from DB group assignments
+        $this->createGroupStandings();
 
         // Step 4: Create game players for all teams
         $this->createGamePlayers($developmentService);
@@ -128,26 +125,29 @@ class SetupTournamentGame implements ShouldQueue
         }
     }
 
-    private function createGroupStandings(array $groupsData, array $teamKeyMap, StandingsCalculator $standingsCalculator): void
+    private function createGroupStandings(): void
     {
         if (GameStanding::where('game_id', $this->gameId)->exists()) {
             return;
         }
 
-        $rows = [];
-        foreach ($groupsData as $groupLabel => $groupInfo) {
-            $position = 1;
-            foreach ($groupInfo['teams'] as $teamKey) {
-                $teamId = $teamKeyMap[$teamKey] ?? null;
-                if (!$teamId) {
-                    continue;
-                }
+        // Read group assignments from competition_teams (set by SeedWorldCupData)
+        $groupedTeams = CompetitionTeam::where('competition_id', self::COMPETITION_ID)
+            ->where('season', '2025')
+            ->whereNotNull('group_label')
+            ->orderBy('group_label')
+            ->get()
+            ->groupBy('group_label');
 
+        $rows = [];
+        foreach ($groupedTeams as $groupLabel => $teams) {
+            $position = 1;
+            foreach ($teams as $ct) {
                 $rows[] = [
                     'game_id' => $this->gameId,
                     'competition_id' => self::COMPETITION_ID,
                     'group_label' => $groupLabel,
-                    'team_id' => $teamId,
+                    'team_id' => $ct->team_id,
                     'position' => $position,
                     'prev_position' => null,
                     'played' => 0,

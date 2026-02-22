@@ -16,7 +16,7 @@ class SeedWorldCupData extends Command
     protected $signature = 'app:seed-world-cup-data
                             {--fresh : Clear existing World Cup data before seeding}';
 
-    protected $description = 'Seed World Cup national teams and players into the main teams/players tables';
+    protected $description = 'Seed World Cup national teams, players, and group stage schedule';
 
     private const COMPETITION_ID = 'WC2026';
     private const SEASON = '2025';
@@ -28,7 +28,8 @@ class SeedWorldCupData extends Command
         }
 
         $this->seedCompetition();
-        $this->seedTeamsAndPlayers();
+        $teamKeyMap = $this->seedTeamsAndPlayers();
+        $this->seedGroupAssignments($teamKeyMap);
         $this->displaySummary();
 
         return CommandAlias::SUCCESS;
@@ -38,15 +39,12 @@ class SeedWorldCupData extends Command
     {
         $this->info('Clearing existing World Cup data...');
 
-        // Remove competition_teams links for WC2026
         DB::table('competition_teams')
             ->where('competition_id', self::COMPETITION_ID)
             ->delete();
 
-        // Remove national teams (don't delete Players — they may be shared with career mode)
         DB::table('teams')->where('type', 'national')->delete();
 
-        // Remove the competition record
         DB::table('competitions')->where('id', self::COMPETITION_ID)->delete();
 
         $this->info('Cleared.');
@@ -71,16 +69,21 @@ class SeedWorldCupData extends Command
         $this->info('Competition: Copa del Mundo FIFA 2026');
     }
 
-    private function seedTeamsAndPlayers(): void
+    /**
+     * Seed national teams and their players from individual team JSON files.
+     * Returns a map of transfermarkt_id => team UUID for group assignment.
+     */
+    private function seedTeamsAndPlayers(): array
     {
         $basePath = base_path('data/2025/WC/teams');
 
         if (!is_dir($basePath)) {
             $this->error('World Cup teams directory not found: data/2025/WC/teams/');
-            return;
+            return [];
         }
 
         $valuationService = app(PlayerValuationService::class);
+        $teamKeyMap = [];
         $teamCount = 0;
         $playerCount = 0;
 
@@ -90,33 +93,33 @@ class SeedWorldCupData extends Command
                 continue;
             }
 
-            // Extract team key from filename (e.g., "3375" from "3375.json")
-            $teamKey = pathinfo($filePath, PATHINFO_FILENAME);
-            $countryCode = CountryCodeMapper::toCode($data['name']) ?? $teamKey;
+            $teamKey = $data['transfermarktId'] ?? pathinfo($filePath, PATHINFO_FILENAME);
+            $teamName = $data['name'];
+            $countryCode = CountryCodeMapper::toCode($teamName) ?? $teamKey;
 
-            // Create or find the Team record
             $teamId = $this->seedTeam($teamKey, $data, $countryCode);
             if (!$teamId) {
                 continue;
             }
 
+            $teamKeyMap[$teamKey] = $teamId;
             $teamCount++;
 
-            // Seed players
             $players = $data['players'] ?? [];
-            $playerCount += $this->seedPlayers($teamId, $players, $valuationService);
+            $playerCount += $this->seedPlayers($teamId, $teamName, $players, $valuationService);
         }
 
         $this->line("  Teams: {$teamCount}");
         $this->line("  Players: {$playerCount}");
+
+        return $teamKeyMap;
     }
 
     private function seedTeam(string $teamKey, array $data, string $countryCode): ?string
     {
-        // Use the team key as a pseudo transfermarkt_id for national teams
         $existing = DB::table('teams')
+            ->where('transfermarkt_id', $teamKey)
             ->where('type', 'national')
-            ->where('country', $countryCode)
             ->first();
 
         if ($existing) {
@@ -124,19 +127,23 @@ class SeedWorldCupData extends Command
         } else {
             $teamId = Str::uuid()->toString();
 
+            $stadiumSeats = isset($data['stadiumSeats'])
+                ? (int) str_replace(['.', ','], '', $data['stadiumSeats'])
+                : 0;
+
             DB::table('teams')->insert([
                 'id' => $teamId,
                 'transfermarkt_id' => $teamKey,
                 'type' => 'national',
                 'name' => $data['name'],
                 'country' => $countryCode,
-                'image' => null,
-                'stadium_name' => null,
-                'stadium_seats' => 0,
+                'image' => $data['image'] ?? null,
+                'stadium_name' => $data['stadiumName'] ?? null,
+                'stadium_seats' => $stadiumSeats,
             ]);
         }
 
-        // Link team to WC2026 competition
+        // Link team to WC2026 competition (group_label set later by seedGroupAssignments)
         DB::table('competition_teams')->updateOrInsert(
             [
                 'competition_id' => self::COMPETITION_ID,
@@ -149,7 +156,7 @@ class SeedWorldCupData extends Command
         return $teamId;
     }
 
-    private function seedPlayers(string $teamId, array $players, PlayerValuationService $valuationService): int
+    private function seedPlayers(string $teamId, string $teamName, array $players, PlayerValuationService $valuationService): int
     {
         $count = 0;
 
@@ -159,7 +166,6 @@ class SeedWorldCupData extends Command
                 continue;
             }
 
-            // Skip if player already exists (may be shared with career mode)
             $exists = DB::table('players')
                 ->where('transfermarkt_id', $transfermarktId)
                 ->exists();
@@ -189,6 +195,9 @@ class SeedWorldCupData extends Command
                 default => null,
             };
 
+            // Guess nationality from team name when not provided in player data
+            $nationality = $player['nationality'] ?? [$teamName];
+
             $marketValueCents = Money::parseMarketValue($player['marketValue'] ?? null);
             $position = $player['position'] ?? 'Central Midfield';
             [$technical, $physical] = $valuationService->marketValueToAbilities($marketValueCents, $position, $age ?? 25);
@@ -198,7 +207,7 @@ class SeedWorldCupData extends Command
                 'transfermarkt_id' => $transfermarktId,
                 'name' => $player['name'],
                 'date_of_birth' => $dateOfBirth,
-                'nationality' => json_encode($player['nationality'] ?? []),
+                'nationality' => json_encode($nationality),
                 'height' => $player['height'] ?? null,
                 'foot' => $foot,
                 'technical_ability' => $technical,
@@ -211,12 +220,101 @@ class SeedWorldCupData extends Command
         return $count;
     }
 
+    /**
+     * Read groups.json and schedule.json to store group assignments on competition_teams
+     * and validate that all team references are resolvable.
+     */
+    private function seedGroupAssignments(array $teamKeyMap): void
+    {
+        $groupsPath = base_path('data/2025/WC/groups.json');
+        if (!file_exists($groupsPath)) {
+            $this->warn('groups.json not found — skipping group assignments.');
+            return;
+        }
+
+        $groupsData = json_decode(file_get_contents($groupsPath), true);
+        if (!$groupsData) {
+            $this->error('Failed to parse groups.json.');
+            return;
+        }
+
+        $this->newLine();
+        $this->info('Group stage schedule:');
+
+        $matchCount = 0;
+        $unresolvedTeams = [];
+
+        foreach ($groupsData as $groupLabel => $groupInfo) {
+            $teamNames = [];
+
+            // Assign group_label to each team in competition_teams
+            foreach ($groupInfo['teams'] as $teamKey) {
+                $teamId = $teamKeyMap[$teamKey] ?? null;
+
+                if (!$teamId) {
+                    $unresolvedTeams[] = $teamKey;
+                    continue;
+                }
+
+                DB::table('competition_teams')
+                    ->where('competition_id', self::COMPETITION_ID)
+                    ->where('team_id', $teamId)
+                    ->where('season', self::SEASON)
+                    ->update(['group_label' => $groupLabel]);
+
+                $teamName = DB::table('teams')->where('id', $teamId)->value('name');
+                $teamNames[$teamKey] = $teamName;
+            }
+
+            // Display group
+            $this->line("  Group {$groupLabel}: " . implode(', ', $teamNames));
+
+            // Validate and display match pairings
+            foreach ($groupInfo['matches'] as $match) {
+                $homeName = $teamNames[$match['home']] ?? "? ({$match['home']})";
+                $awayName = $teamNames[$match['away']] ?? "? ({$match['away']})";
+                $this->line("    R{$match['round']} {$match['date']}: {$homeName} vs {$awayName}");
+                $matchCount++;
+            }
+        }
+
+        // Display knockout schedule from schedule.json
+        $schedulePath = base_path('data/2025/WC/schedule.json');
+        if (file_exists($schedulePath)) {
+            $scheduleData = json_decode(file_get_contents($schedulePath), true);
+            $knockoutRounds = $scheduleData['knockout'] ?? [];
+
+            if ($knockoutRounds) {
+                $this->newLine();
+                $this->info('Knockout schedule:');
+                foreach ($knockoutRounds as $round) {
+                    $this->line("  R{$round['round']} {$round['date']}: {$round['name']}");
+                }
+            }
+        }
+
+        if ($unresolvedTeams) {
+            $this->newLine();
+            $this->warn('Unresolved team references: ' . implode(', ', array_unique($unresolvedTeams)));
+        }
+
+        $this->newLine();
+        $this->line("  Group stage matches: {$matchCount}");
+    }
+
     private function displaySummary(): void
     {
         $this->newLine();
         $this->info('Summary:');
         $this->line('  National Teams: ' . DB::table('teams')->where('type', 'national')->count());
         $this->line('  WC Competition Teams: ' . DB::table('competition_teams')->where('competition_id', self::COMPETITION_ID)->count());
+
+        $groupedTeams = DB::table('competition_teams')
+            ->where('competition_id', self::COMPETITION_ID)
+            ->whereNotNull('group_label')
+            ->count();
+        $this->line("  Teams with group assignment: {$groupedTeams}");
+
         $this->line('  Total Players: ' . DB::table('players')->count());
         $this->newLine();
         $this->info('World Cup data seeded successfully!');
