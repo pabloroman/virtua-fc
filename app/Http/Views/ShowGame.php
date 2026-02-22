@@ -114,22 +114,38 @@ class ShowGame
 
     private function getLeagueStandings(Game $game): \Illuminate\Support\Collection
     {
-        $standings = GameStanding::with('team')
+        $query = GameStanding::with('team')
             ->where('game_id', $game->id)
-            ->where('competition_id', $game->competition_id)
-            ->orderBy('position')
-            ->get();
+            ->where('competition_id', $game->competition_id);
+
+        // For tournament mode, only show the player's group
+        if ($game->isTournamentMode()) {
+            $playerGroupLabel = GameStanding::where('game_id', $game->id)
+                ->where('competition_id', $game->competition_id)
+                ->where('team_id', $game->team_id)
+                ->value('group_label');
+
+            if ($playerGroupLabel) {
+                $query->where('group_label', $playerGroupLabel);
+            }
+        }
+
+        $standings = $query->orderBy('position')->get();
 
         if ($standings->isEmpty()) {
             return collect();
         }
 
-        // Show a window around the player's team: nearby teams + top of table
+        // For tournament mode, show all teams in the group (typically 4)
+        if ($game->isTournamentMode()) {
+            return $standings;
+        }
+
+        // For leagues, show a window around the player's team + top of table
         $playerPosition = $standings->firstWhere('team_id', $game->team_id)?->position ?? 1;
         $windowStart = max(1, $playerPosition - 2);
         $windowEnd = min($standings->count(), $playerPosition + 2);
 
-        // Always include top 3
         $topIds = $standings->where('position', '<=', 3)->pluck('team_id');
         $windowIds = $standings->whereBetween('position', [$windowStart, $windowEnd])->pluck('team_id');
         $visibleIds = $topIds->merge($windowIds)->unique();
