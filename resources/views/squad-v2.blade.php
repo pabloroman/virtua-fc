@@ -236,7 +236,7 @@
                                                 <th class="font-semibold py-2 text-center w-14">{{ __('app.contract') }}</th>
                                             </template>
                                             <template x-if="viewMode === 'planning'">
-                                                <th class="font-semibold py-2 text-center w-16 cursor-help" x-data x-tooltip.raw="{{ __('squad.potential_range') }}">{{ __('squad.pot') }}</th>
+                                                <th class="font-semibold py-2 text-center cursor-help" x-data x-tooltip.raw="{{ __('squad.potential_range') }}">{{ __('squad.pot') }}</th>
                                             </template>
                                             <template x-if="viewMode === 'planning'">
                                                 <th class="font-semibold py-2 text-center w-14 cursor-help" x-data x-tooltip.raw="{{ __('squad.development') }}">{{ __('squad_v2.dev') }}</th>
@@ -388,7 +388,13 @@
                                                     </td>
                                                 </template>
                                                 <template x-if="viewMode === 'planning'">
-                                                    <td class="py-2.5 text-center w-16 text-slate-600">{{ $gp->potential_range }}</td>
+                                                    <td class="py-2.5 px-1">
+                                                        <x-potential-bar
+                                                            :current-ability="$gp->overall_score"
+                                                            :potential-low="$gp->potential_low"
+                                                            :potential-high="$gp->potential_high"
+                                                        />
+                                                    </td>
                                                 </template>
                                                 <template x-if="viewMode === 'planning'">
                                                     <td class="py-2.5 text-center w-14">
