@@ -100,6 +100,12 @@ class GroupStageCupHandler implements CompetitionHandler
             return;
         }
 
+        // Don't generate while a group-stage match is pending finalization —
+        // its standings haven't been applied yet, so seedings would be wrong
+        if ($game->hasPendingFinalizationForCompetition($competitionId)) {
+            return;
+        }
+
         $currentRound = $this->getCurrentKnockoutRound($game->id, $competitionId);
         $finalRound = $this->knockoutGenerator->getFinalRound($competitionId);
 

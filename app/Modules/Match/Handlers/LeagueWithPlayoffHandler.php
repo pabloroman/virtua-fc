@@ -127,6 +127,12 @@ class LeagueWithPlayoffHandler implements CompetitionHandler
             return false;
         }
 
+        // Don't generate while a league match is pending finalization —
+        // its standings haven't been applied yet, so seedings would be wrong
+        if ($game->hasPendingFinalizationForCompetition($game->competition_id)) {
+            return false;
+        }
+
         $currentRound = $this->getCurrentPlayoffRound($game, $generator);
         $nextRound = $currentRound + 1;
 

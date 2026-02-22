@@ -125,6 +125,12 @@ class SwissFormatHandler implements CompetitionHandler
             return;
         }
 
+        // Don't generate while a league-phase match is pending finalization —
+        // its standings haven't been applied yet, so seedings would be wrong
+        if ($game->hasPendingFinalizationForCompetition($competitionId)) {
+            return;
+        }
+
         $currentRound = $this->getCurrentKnockoutRound($game->id, $competitionId);
         $nextRound = $currentRound + 1;
 
