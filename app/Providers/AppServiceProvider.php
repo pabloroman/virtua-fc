@@ -14,6 +14,7 @@ use App\Modules\Match\Handlers\SwissFormatHandler;
 use App\Modules\Match\Listeners\AwardCupPrizeMoney;
 use App\Modules\Match\Listeners\ConductNextCupRoundDraw;
 use App\Modules\Notification\Listeners\SendCupTieNotifications;
+use App\Modules\Notification\Listeners\SendCompetitionProgressNotifications;
 use App\Modules\Notification\Listeners\SendMatchNotifications;
 use App\Modules\Match\Listeners\UpdateGoalkeeperStats;
 use App\Modules\Match\Listeners\UpdateLeagueStandings;
@@ -53,9 +54,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Order matters: standings must be updated before competition progress notifications
         Event::listen(MatchFinalized::class, UpdateLeagueStandings::class);
         Event::listen(MatchFinalized::class, UpdateGoalkeeperStats::class);
         Event::listen(MatchFinalized::class, SendMatchNotifications::class);
+        Event::listen(MatchFinalized::class, SendCompetitionProgressNotifications::class);
 
         Event::listen(CupTieResolved::class, AwardCupPrizeMoney::class);
         Event::listen(CupTieResolved::class, ConductNextCupRoundDraw::class);

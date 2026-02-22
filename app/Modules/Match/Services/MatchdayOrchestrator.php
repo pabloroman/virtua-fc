@@ -609,6 +609,12 @@ class MatchdayOrchestrator
                 continue;
             }
 
+            // Defer notification if a match is pending finalization — standings
+            // are incomplete. The notification will be sent after finalization.
+            if ($game->hasPendingFinalizationForCompetition($competitionId)) {
+                continue;
+            }
+
             // League phase just completed — check player's team position
             $standing = GameStanding::where('game_id', $game->id)
                 ->where('competition_id', $competitionId)
@@ -670,6 +676,12 @@ class MatchdayOrchestrator
                 continue;
             }
 
+            // Defer notification if a match is pending finalization — standings
+            // are incomplete. The notification will be sent after finalization.
+            if ($game->hasPendingFinalizationForCompetition($competitionId)) {
+                continue;
+            }
+
             // Regular season just completed — check player's team position
             $standing = GameStanding::where('game_id', $game->id)
                 ->where('competition_id', $competitionId)
@@ -723,6 +735,12 @@ class MatchdayOrchestrator
                 ->exists();
 
             if ($hasUnplayed) {
+                continue;
+            }
+
+            // Defer notification if a match is pending finalization — standings
+            // are incomplete. The notification will be sent after finalization.
+            if ($game->hasPendingFinalizationForCompetition($competitionId)) {
                 continue;
             }
 
