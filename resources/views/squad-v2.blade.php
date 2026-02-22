@@ -22,7 +22,6 @@
 
     <div x-data="{
         viewMode: new URLSearchParams(window.location.search).get('mode') || 'overview',
-        expandedPlayer: null,
         posFilter: 'all',
         availFilter: 'all',
         statusFilter: 'all',
@@ -30,9 +29,6 @@
         sortDir: 'desc',
         sidebarOpen: true,
 
-        togglePlayer(id) {
-            this.expandedPlayer = this.expandedPlayer === id ? null : id;
-        },
         isVisible(group, available, status) {
             if (this.posFilter !== 'all' && group !== this.posFilter) return false;
             if (this.availFilter === 'available' && !available) return false;
@@ -294,18 +290,21 @@
                                                 }
                                             @endphp
                                             <tr x-show="isVisible('{{ $groupKey }}', {{ $isUnavailable ? 'false' : 'true' }}, '{{ $statusKey }}')"
-                                                @click="togglePlayer('{{ $gp->id }}')"
-                                                :class="expandedPlayer === '{{ $gp->id }}' ? 'bg-sky-50' : 'hover:bg-slate-50'"
-                                                class="border-b border-slate-100 cursor-pointer transition-colors {{ $isUnavailable ? 'opacity-60' : '' }}">
+                                                class="border-b border-slate-100 hover:bg-slate-50 transition-colors {{ $isUnavailable ? 'opacity-60' : '' }}">
 
                                                 {{-- Position --}}
                                                 <td class="py-2.5 pl-3 w-10">
                                                     <x-position-badge :position="$gp->position" :tooltip="\App\Support\PositionMapper::toDisplayName($gp->position)" class="cursor-help" />
                                                 </td>
 
-                                                {{-- Name + status --}}
+                                                {{-- Name + status + detail icon --}}
                                                 <td class="py-2.5 pl-2 pr-2">
                                                     <div class="flex items-center gap-2 min-w-0">
+                                                        <button @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $gp->id]) }}')" class="p-1 text-slate-300 rounded hover:text-slate-500 transition-colors shrink-0">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="w-5 h-5">
+                                                                <path fill-rule="evenodd" d="M19.5 21a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3h-5.379a.75.75 0 0 1-.53-.22L11.47 3.66A2.25 2.25 0 0 0 9.879 3H4.5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h15Zm-6.75-10.5a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V10.5Z" clip-rule="evenodd" />
+                                                            </svg>
+                                                        </button>
                                                         <div class="min-w-0">
                                                             <div class="font-medium text-slate-900 truncate">{{ $gp->player->name }}</div>
                                                             @if($unavailReason)
@@ -442,19 +441,6 @@
                                                         @endif">{{ $gp->overall_score }}</span>
                                                 </td>
                                             </tr>
-
-                                            {{-- ===== LAYER 2: Expanded Player Row ===== --}}
-                                            <tr x-show="expandedPlayer === '{{ $gp->id }}'"  x-transition.opacity.duration.150ms>
-                                                <td colspan="20" class="p-0">
-                                                    @include('partials.squad-v2.player-expanded', [
-                                                        'gp' => $gp,
-                                                        'game' => $game,
-                                                        'isCareerMode' => $isCareerMode,
-                                                        'seasonEndDate' => $seasonEndDate,
-                                                        'renewalData' => $renewalData,
-                                                    ])
-                                                </td>
-                                            </tr>
                                             @endforeach
                                         </tbody>
                                         @endif
@@ -489,9 +475,8 @@
                                         <div x-show="isVisible('{{ $groupKey }}', {{ $isUnavailable ? 'false' : 'true' }}, '{{ $statusKey }}')"
                                              class="{{ $isUnavailable ? 'opacity-60' : '' }}">
                                             {{-- Card --}}
-                                            <button @click="togglePlayer('{{ $gp->id }}')"
-                                                    :class="expandedPlayer === '{{ $gp->id }}' ? 'border-sky-300 bg-sky-50' : 'border-slate-200 bg-white'"
-                                                    class="w-full text-left p-3 rounded-lg border transition-colors">
+                                            <button @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $gp->id]) }}')"
+                                                    class="w-full text-left p-3 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition-colors">
                                                 <div class="flex items-center gap-2.5">
                                                     <x-position-badge :position="$gp->position" />
                                                     <div class="flex-1 min-w-0">
@@ -529,17 +514,6 @@
                                                         @endif">{{ $gp->overall_score }}</span>
                                                 </div>
                                             </button>
-
-                                            {{-- Expanded detail (mobile) --}}
-                                            <div x-show="expandedPlayer === '{{ $gp->id }}'" x-transition.opacity.duration.150ms class="mt-1">
-                                                @include('partials.squad-v2.player-expanded', [
-                                                    'gp' => $gp,
-                                                    'game' => $game,
-                                                    'isCareerMode' => $isCareerMode,
-                                                    'seasonEndDate' => $seasonEndDate,
-                                                    'renewalData' => $renewalData,
-                                                ])
-                                            </div>
                                         </div>
                                         @endforeach
                                     </div>
