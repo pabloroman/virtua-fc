@@ -1,4 +1,4 @@
-@props(['currentAbility', 'potentialLow' => null, 'potentialHigh' => null, 'projection' => null])
+@props(['currentAbility', 'potentialLow' => null, 'potentialHigh' => null, 'projection' => null, 'size' => 'md'])
 
 @php
     $max = 99;
@@ -15,15 +15,38 @@
         default => 'bg-slate-400',
     };
 
-    $potentialGap = ($potentialHigh && $potentialLow) ? $potentialHigh - $currentAbility : 0;
+    $barHeight = match($size) {
+        'sm' => 'h-1',
+        default => 'h-1.5',
+    };
+    $containerMin = match($size) {
+        'sm' => 'min-w-[100px]',
+        default => 'min-w-[140px]',
+    };
+    $numberClass = match($size) {
+        'sm' => 'text-xs font-bold w-5',
+        default => 'text-sm font-bold w-6',
+    };
+    $ceilingClass = match($size) {
+        'sm' => 'text-[10px] w-4',
+        default => 'text-xs w-5',
+    };
+    $gapClass = match($size) {
+        'sm' => 'gap-1.5',
+        default => 'gap-2',
+    };
+    $dotSize = match($size) {
+        'sm' => 'w-1 h-1',
+        default => 'w-1.5 h-1.5',
+    };
 @endphp
 
-<div class="flex items-center gap-2 min-w-[140px]">
+<div class="flex items-center {{ $gapClass }} {{ $containerMin }}">
     {{-- Current ability number --}}
-    <span class="text-sm font-bold w-6 text-right flex-shrink-0 @if($currentAbility >= 80) text-green-600 @elseif($currentAbility >= 70) text-lime-600 @elseif($currentAbility >= 60) text-amber-600 @else text-slate-500 @endif">{{ $currentAbility }}</span>
+    <span class="{{ $numberClass }} text-right flex-shrink-0 @if($currentAbility >= 80) text-green-600 @elseif($currentAbility >= 70) text-lime-600 @elseif($currentAbility >= 60) text-amber-600 @else text-slate-500 @endif">{{ $currentAbility }}</span>
 
     {{-- Bar --}}
-    <div class="relative w-full h-2.5 bg-slate-100 rounded-full overflow-hidden flex-grow">
+    <div class="relative w-full {{ $barHeight }} bg-slate-200 rounded-full overflow-hidden flex-grow">
         {{-- Potential range highlight --}}
         @if($potentialLow && $potentialHigh)
         <div class="absolute h-full bg-sky-100 rounded-full" style="left: {{ $potLowPct }}%; width: {{ $potHighPct - $potLowPct }}%"></div>
@@ -34,14 +57,14 @@
 
         {{-- Projection marker --}}
         @if($projectedPct !== null && $projection != 0)
-        <div class="absolute top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full border border-white shadow-sm {{ $projection > 0 ? 'bg-green-500' : 'bg-red-500' }}" style="left: {{ $projectedPct }}%"></div>
+        <div class="absolute top-1/2 -translate-y-1/2 {{ $dotSize }} rounded-full border border-white shadow-sm {{ $projection > 0 ? 'bg-green-500' : 'bg-red-500' }}" style="left: {{ $projectedPct }}%"></div>
         @endif
     </div>
 
     {{-- Potential ceiling --}}
     @if($potentialHigh)
-    <span class="text-xs text-sky-500 font-medium w-5 flex-shrink-0">{{ $potentialHigh }}</span>
+    <span class="{{ $ceilingClass }} text-sky-500 font-medium flex-shrink-0">{{ $potentialHigh }}</span>
     @else
-    <span class="text-xs text-slate-300 w-5 flex-shrink-0">?</span>
+    <span class="{{ $ceilingClass }} text-slate-300 flex-shrink-0">?</span>
     @endif
 </div>

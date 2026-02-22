@@ -1,0 +1,46 @@
+<?php
+
+return [
+    // Dashboard KPIs
+    'squad_size' => 'Plantilla',
+    'avg_age' => 'Edad Media',
+    'condition' => 'Estado',
+    'squad_value' => 'Valor Plantilla',
+
+    // View modes
+    'tactical' => 'Táctico',
+    'planning' => 'Planificación',
+
+    // Table headers
+    'cards' => 'Tarjetas',
+    'avg_ovr' => 'Media',
+
+    // Filters
+    'available' => 'Disponibles',
+    'unavailable' => 'No disponibles',
+    'clear_filters' => 'Limpiar filtros',
+
+    // Sidebar
+    'squad_analysis' => 'Análisis Plantilla',
+    'alerts' => 'Alertas',
+    'position_depth' => 'Profundidad Posicional',
+    'age_profile' => 'Perfil de Edad',
+    'contract_watch' => 'Contratos',
+    'expiring_this_season' => 'Expiran esta temporada',
+    'expiring_next_season' => 'Expiran la próxima temporada',
+    'no_contract_issues' => 'Sin contratos pendientes',
+    'highest_earners' => 'Mayores salarios',
+
+    // Tooltips
+    'tooltip_fitness' => 'Forma física media — afecta resistencia y rendimiento',
+    'tooltip_morale' => 'Moral media — afecta motivación y consistencia',
+    'tooltip_avg_overall' => 'Puntuación media de la plantilla',
+
+    // Alerts
+    'alert_many_injured' => ':count jugadores lesionados — considera rotar titulares',
+    'alert_low_morale' => ':count jugadores con moral baja',
+    'alert_low_fitness' => ':count jugadores con baja forma física',
+    'alert_thin_position' => 'Solo :count jugador(es) en :position — poca cobertura',
+    'alert_no_cover' => 'Sin cobertura en :position',
+    'alert_window_closing' => ':window cierra en :matchdays jornadas',
+];
