@@ -202,6 +202,9 @@
 
                                             {{-- Overview headers --}}
                                             <template x-if="viewMode === 'overview'">
+                                                <th class="font-semibold py-2 text-center w-10"></th>
+                                            </template>
+                                            <template x-if="viewMode === 'overview'">
                                                 <th class="font-semibold py-2 text-center w-10">{{ __('squad.fitness') }}</th>
                                             </template>
                                             <template x-if="viewMode === 'overview'">
@@ -268,7 +271,6 @@
                                             <tr class="bg-slate-100">
                                                 <td colspan="20" class="py-2 px-3">
                                                     <div class="flex items-center gap-2">
-                                                        <x-position-badge :group="$group['group']" size="sm" />
                                                         <span class="text-xs font-semibold text-slate-600 uppercase tracking-wide">{{ $group['label'] }}</span>
                                                         <span class="text-xs text-slate-400">({{ $group['players']->count() }})</span>
                                                         <span class="text-xs text-slate-400 ml-auto">{{ __('squad_v2.avg_ovr') }} {{ round($group['players']->avg('overall_score')) }}</span>
@@ -302,7 +304,7 @@
                                                 </td>
 
                                                 {{-- Name + status --}}
-                                                <td class="py-2.5 pr-2">
+                                                <td class="py-2.5 pl-2 pr-2">
                                                     <div class="flex items-center gap-2 min-w-0">
                                                         <div class="min-w-0">
                                                             <div class="font-medium text-slate-900 truncate">{{ $gp->player->name }}</div>
@@ -319,6 +321,13 @@
                                                 <td class="py-2.5 text-center w-10 text-slate-600">{{ $gp->age }}</td>
 
                                                 {{-- === Overview columns === --}}
+                                                <template x-if="viewMode === 'overview'">
+                                                    <td class="py-2.5 text-center w-10">
+                                                        @if($gp->nationality_flag)
+                                                            <img src="/flags/{{ $gp->nationality_flag['code'] }}.svg" class="w-5 h-4 mx-auto rounded shadow-sm" title="{{ $gp->nationality_flag['name'] }}">
+                                                        @endif
+                                                    </td>
+                                                </template>
                                                 <template x-if="viewMode === 'overview'">
                                                     <td class="py-2.5 text-center w-10">
                                                         <span class="@if($gp->fitness >= 90) text-green-600 @elseif($gp->fitness >= 80) text-lime-600 @elseif($gp->fitness < 50) text-red-500 font-medium @elseif($gp->fitness < 70) text-amber-600 @endif">{{ $gp->fitness }}</span>
@@ -461,7 +470,6 @@
                                     <div x-show="posFilter === 'all' || posFilter === '{{ $group['group'] }}'">
                                         {{-- Group label --}}
                                         <div class="flex items-center gap-2 py-2 px-1">
-                                            <x-position-badge :group="$group['group']" size="sm" />
                                             <span class="text-xs font-semibold text-slate-500 uppercase tracking-wide">{{ $group['label'] }} ({{ $group['players']->count() }})</span>
                                         </div>
 

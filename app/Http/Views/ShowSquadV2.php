@@ -79,8 +79,8 @@ class ShowSquadV2
 
         // Age distribution
         $youngCount = $allPlayers->filter(fn ($p) => $p->age <= 23)->count();
-        $primeCount = $allPlayers->filter(fn ($p) => $p->age >= 24 && $p->age <= 28)->count();
-        $veteranCount = $allPlayers->filter(fn ($p) => $p->age >= 29)->count();
+        $primeCount = $allPlayers->filter(fn ($p) => $p->age >= 24 && $p->age <= 29)->count();
+        $veteranCount = $allPlayers->filter(fn ($p) => $p->age >= 30)->count();
 
         // Career mode financial data
         $squadValue = 0;

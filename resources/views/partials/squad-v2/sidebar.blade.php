@@ -86,11 +86,11 @@
             </span>
             <span class="flex items-center gap-1">
                 <span class="w-2 h-2 rounded-full bg-sky-400"></span>
-                <span class="text-slate-600">24-28: {{ $primeCount }}</span>
+                <span class="text-slate-600">24-29: {{ $primeCount }}</span>
             </span>
             <span class="flex items-center gap-1">
                 <span class="w-2 h-2 rounded-full bg-orange-400"></span>
-                <span class="text-slate-600">29+: {{ $veteranCount }}</span>
+                <span class="text-slate-600">30+: {{ $veteranCount }}</span>
             </span>
         </div>
     </div>
