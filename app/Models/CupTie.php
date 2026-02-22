@@ -123,6 +123,30 @@ class CupTie extends Model
         return null;
     }
 
+    /**
+     * Determine if extra time is needed for the given match in this tie.
+     */
+    public function needsExtraTime(GameMatch $match): bool
+    {
+        $roundConfig = $this->getRoundConfig();
+
+        if (! $roundConfig) {
+            return false;
+        }
+
+        if ($roundConfig->twoLegged) {
+            if ($this->second_leg_match_id !== $match->id) {
+                return false;
+            }
+
+            $aggregate = $this->getAggregateScore();
+
+            return $aggregate['home'] === $aggregate['away'];
+        }
+
+        return $match->home_score === $match->away_score;
+    }
+
     public function isTwoLegged(): bool
     {
         return $this->getRoundConfig()->twoLegged ?? false;

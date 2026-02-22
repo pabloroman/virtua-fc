@@ -4,15 +4,14 @@ namespace App\Http\Actions;
 
 use App\Models\Game;
 use App\Models\GameMatch;
-use App\Models\GamePlayer;
-use App\Modules\Match\Services\MatchSimulator;
+use App\Modules\Match\Services\ExtraTimeAndPenaltyService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ProcessPenalties
 {
     public function __construct(
-        private readonly MatchSimulator $matchSimulator,
+        private readonly ExtraTimeAndPenaltyService $service,
     ) {}
 
     public function __invoke(Request $request, string $gameId, string $matchId): JsonResponse
@@ -37,32 +36,12 @@ class ProcessPenalties
             'kickerOrder.*' => 'string',
         ]);
 
-        // Load players
-        $allLineupIds = array_merge($match->home_lineup ?? [], $match->away_lineup ?? []);
-        $players = GamePlayer::with('player')->whereIn('id', $allLineupIds)->get();
-        $homePlayers = $players->filter(fn ($p) => $p->team_id === $match->home_team_id);
-        $awayPlayers = $players->filter(fn ($p) => $p->team_id === $match->away_team_id);
-
-        // Determine which side the user controls
-        $isUserHome = $match->home_team_id === $game->team_id;
-        $userOrder = $request->input('kickerOrder');
-
-        $result = $this->matchSimulator->simulatePenaltyShootout(
-            $homePlayers,
-            $awayPlayers,
-            $isUserHome ? $userOrder : null,
-            $isUserHome ? null : $userOrder,
-        );
-
-        $match->update([
-            'home_score_penalties' => $result['homeScore'],
-            'away_score_penalties' => $result['awayScore'],
-        ]);
+        $result = $this->service->processPenalties($match, $game, $request->input('kickerOrder'));
 
         return response()->json([
-            'homeScore' => $result['homeScore'],
-            'awayScore' => $result['awayScore'],
-            'kicks' => $result['kicks'],
+            'homeScore' => $result->homeScore,
+            'awayScore' => $result->awayScore,
+            'kicks' => $result->kicks,
         ]);
     }
 }
