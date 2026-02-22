@@ -12,7 +12,6 @@ return [
     'planning' => 'Planificación',
 
     // Table headers
-    'dev' => 'Des',
     'cards' => 'Tarjetas',
     'avg_ovr' => 'Media',
 

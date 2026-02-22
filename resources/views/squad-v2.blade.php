@@ -190,7 +190,7 @@
                                     <thead class="text-left border-b border-slate-200 bg-white">
                                         <tr>
                                             <th class="font-semibold py-2 pl-3 w-10"></th>
-                                            <th class="font-semibold py-2">{{ __('app.name') }}</th>
+                                            <th class="py-2"></th>
 
                                             {{-- Tactical headers --}}
                                             <template x-if="viewMode === 'tactical'">
@@ -218,10 +218,7 @@
                                                 <th class="font-semibold py-2 text-center w-14">{{ __('app.contract') }}</th>
                                             </template>
                                             <template x-if="viewMode === 'planning'">
-                                                <th class="font-semibold py-2 text-center cursor-help" x-data x-tooltip.raw="{{ __('squad.potential_range') }}">{{ __('squad.pot') }}</th>
-                                            </template>
-                                            <template x-if="viewMode === 'planning'">
-                                                <th class="font-semibold py-2 text-center w-14 cursor-help" x-data x-tooltip.raw="{{ __('squad.development') }}">{{ __('squad_v2.dev') }}</th>
+                                                <th class="font-semibold py-2 text-center cursor-help" x-data x-tooltip.raw="{{ __('squad.potential_range') }}">{{ __('squad.potential_range') }}</th>
                                             </template>
                                             @endif
 
@@ -249,7 +246,7 @@
                                             </template>
 
                                             <th class="font-semibold py-2 text-center w-10">{{ __('app.age') }}</th>
-                                            <th class="font-semibold py-2 pr-3 text-center w-12 cursor-help" x-data x-tooltip.raw="{{ __('squad.overall') }}">{{ __('squad.overall') }}</th>
+                                            <th class="py-2 pr-3 w-12"></th>
                                         </tr>
                                     </thead>
                                     @foreach($positionGroups as $group)
@@ -350,30 +347,24 @@
                                                 </template>
                                                 <template x-if="viewMode === 'planning'">
                                                     <td class="py-2.5 px-1">
-                                                        <x-potential-bar
-                                                            :current-ability="$gp->overall_score"
-                                                            :potential-low="$gp->potential_low"
-                                                            :potential-high="$gp->potential_high"
-                                                            size="sm"
-                                                        />
-                                                    </td>
-                                                </template>
-                                                <template x-if="viewMode === 'planning'">
-                                                    <td class="py-2.5 text-center w-14">
-                                                        @php $ds = $gp->dev_status; @endphp
-                                                        <span class="inline-flex items-center gap-0.5 text-xs font-medium
-                                                            @if($ds === 'growing') text-green-600
-                                                            @elseif($ds === 'peak') text-sky-600
-                                                            @else text-orange-600
-                                                            @endif">
-                                                            @if($ds === 'growing')
-                                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg>
-                                                            @elseif($ds === 'declining')
-                                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-                                                            @else
-                                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14"/></svg>
-                                                            @endif
-                                                        </span>
+                                                        <div class="flex items-center gap-1">
+                                                            <x-potential-bar
+                                                                :current-ability="$gp->overall_score"
+                                                                :potential-low="$gp->potential_low"
+                                                                :potential-high="$gp->potential_high"
+                                                                size="sm"
+                                                            />
+                                                            @php $ds = $gp->dev_status; @endphp
+                                                            <span class="shrink-0 @if($ds === 'growing') text-green-600 @elseif($ds === 'peak') text-sky-600 @else text-orange-600 @endif" x-data x-tooltip.raw="{{ __('squad.development') }}">
+                                                                @if($ds === 'growing')
+                                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg>
+                                                                @elseif($ds === 'declining')
+                                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                                                @else
+                                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14"/></svg>
+                                                                @endif
+                                                            </span>
+                                                        </div>
                                                     </td>
                                                 </template>
                                                 @endif

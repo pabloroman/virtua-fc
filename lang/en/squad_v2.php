@@ -12,7 +12,6 @@ return [
     'planning' => 'Planning',
 
     // Table headers
-    'dev' => 'Dev',
     'cards' => 'Cards',
     'avg_ovr' => 'Avg',
 
