@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $game_id
  * @property string $competition_id
  * @property int $round_number
+ * @property int|null $bracket_position
  * @property string $home_team_id
  * @property string $away_team_id
  * @property string|null $first_leg_match_id
@@ -53,6 +54,7 @@ class CupTie extends Model
         'game_id',
         'competition_id',
         'round_number',
+        'bracket_position',
         'home_team_id',
         'away_team_id',
         'first_leg_match_id',
@@ -64,6 +66,7 @@ class CupTie extends Model
 
     protected $casts = [
         'round_number' => 'integer',
+        'bracket_position' => 'integer',
         'completed' => 'boolean',
         'resolution' => 'array',
     ];

@@ -33,7 +33,7 @@ class SaveSquadSelection
 
         // Load and validate against JSON candidates
         $transfermarktId = $game->team->transfermarkt_id;
-        $jsonPath = base_path("data/2025/WC/teams/{$transfermarktId}.json");
+        $jsonPath = base_path("data/2025/WC2026/teams/{$transfermarktId}.json");
         $data = json_decode(file_get_contents($jsonPath), true);
         $jsonPlayers = collect($data['players'] ?? []);
         $validTmIds = $jsonPlayers->pluck('id')->toArray();

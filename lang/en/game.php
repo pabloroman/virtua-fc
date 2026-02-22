@@ -31,6 +31,8 @@ return [
     // Groups (World Cup)
     'group' => 'Group',
     'group_stage' => 'Group Stage',
+    'round_of_32' => 'Round of 32',
+    'third_place_match' => 'Third-place match',
 
     // Standings
     'pts' => 'pts',

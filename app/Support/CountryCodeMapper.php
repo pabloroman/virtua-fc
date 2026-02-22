@@ -151,6 +151,7 @@ class CountryCodeMapper
         'Indonesia' => 'id',
         'Iran' => 'ir',
         'Iran, Islamic Republic of' => 'ir',
+        'IR Iran' => 'ir',
         'Iraq' => 'iq',
         'Ireland' => 'ie',
         'Republic of Ireland' => 'ie',
