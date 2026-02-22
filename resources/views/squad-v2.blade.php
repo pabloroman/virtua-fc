@@ -194,7 +194,6 @@
                                         <tr>
                                             <th class="font-semibold py-2 pl-3 w-10"></th>
                                             <th class="font-semibold py-2">{{ __('app.name') }}</th>
-                                            <th class="font-semibold py-2 text-center w-10">{{ __('app.age') }}</th>
 
                                             {{-- Overview headers --}}
                                             <template x-if="viewMode === 'overview'">
@@ -266,6 +265,7 @@
                                                 <th class="font-semibold py-2 text-center w-16">{{ __('squad_v2.cards') }}</th>
                                             </template>
 
+                                            <th class="font-semibold py-2 text-center w-10">{{ __('app.age') }}</th>
                                             <th class="font-semibold py-2 pr-3 text-center w-12 cursor-help" x-data x-tooltip.raw="{{ __('squad.overall') }}">{{ __('squad.overall') }}</th>
                                         </tr>
                                     </thead>
@@ -324,9 +324,6 @@
                                                         @include('partials.squad-v2.player-status-icon', ['gp' => $gp, 'game' => $game])
                                                     </div>
                                                 </td>
-
-                                                {{-- Age (all modes) --}}
-                                                <td class="py-2.5 text-center w-10 text-slate-600">{{ $gp->age }}</td>
 
                                                 {{-- === Overview columns === --}}
                                                 <template x-if="viewMode === 'overview'">
@@ -446,6 +443,9 @@
                                                         </span>
                                                     </td>
                                                 </template>
+
+                                                {{-- Age (all modes) --}}
+                                                <td class="py-2.5 text-center w-10 text-slate-600">{{ $gp->age }}</td>
 
                                                 {{-- Overall (always visible) --}}
                                                 <td class="py-2.5 pr-3 text-center w-12">
