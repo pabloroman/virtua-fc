@@ -696,11 +696,11 @@ class Game extends Model
     // ==========================================
 
     /**
-     * Check if the game needs the welcome tutorial (new games only).
+     * Check if the game needs the welcome tutorial (career mode only).
      */
     public function needsWelcome(): bool
     {
-        return $this->needs_welcome ?? false;
+        return $this->isCareerMode() && ($this->needs_welcome ?? false);
     }
 
     /**
