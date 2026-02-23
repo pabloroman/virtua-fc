@@ -105,7 +105,7 @@
                                             <span class="text-lg md:text-xl font-semibold @if($playerTie->home_team_id === $game->team_id) text-sky-700 @endif truncate">
                                                 {{ $playerTie->homeTeam->name }}
                                             </span>
-                                            <img src="{{ $playerTie->homeTeam->image }}" class="w-10 h-10 md:w-12 md:h-12 shrink-0">
+                                            <x-team-crest :team="$playerTie->homeTeam" class="w-10 h-10 md:w-12 md:h-12 shrink-0" />
                                         </div>
                                         <div class="px-4 md:px-6 text-center">
                                             @if($playerTie->firstLegMatch?->played)
@@ -115,7 +115,7 @@
                                             @endif
                                         </div>
                                         <div class="flex items-center gap-3 flex-1">
-                                            <img src="{{ $playerTie->awayTeam->image }}" class="w-10 h-10 md:w-12 md:h-12 shrink-0">
+                                            <x-team-crest :team="$playerTie->awayTeam" class="w-10 h-10 md:w-12 md:h-12 shrink-0" />
                                             <span class="text-lg md:text-xl font-semibold @if($playerTie->away_team_id === $game->team_id) text-sky-700 @endif truncate">
                                                 {{ $playerTie->awayTeam->name }}
                                             </span>
@@ -139,11 +139,11 @@
                                             <span class="text-base md:text-lg font-semibold @if($playerTie->home_team_id === $game->team_id) {{ $won ? 'text-green-700' : 'text-red-700' }} @endif truncate">
                                                 {{ $playerTie->homeTeam->name }}
                                             </span>
-                                            <img src="{{ $playerTie->homeTeam->image }}" class="w-8 h-8 md:w-10 md:h-10 shrink-0">
+                                            <x-team-crest :team="$playerTie->homeTeam" class="w-8 h-8 md:w-10 md:h-10 shrink-0" />
                                         </div>
                                         <div class="px-4 text-lg font-semibold">{{ $playerTie->getScoreDisplay() }}</div>
                                         <div class="flex items-center gap-3 flex-1">
-                                            <img src="{{ $playerTie->awayTeam->image }}" class="w-8 h-8 md:w-10 md:h-10 shrink-0">
+                                            <x-team-crest :team="$playerTie->awayTeam" class="w-8 h-8 md:w-10 md:h-10 shrink-0" />
                                             <span class="text-base md:text-lg font-semibold @if($playerTie->away_team_id === $game->team_id) {{ $won ? 'text-green-700' : 'text-red-700' }} @endif truncate">
                                                 {{ $playerTie->awayTeam->name }}
                                             </span>

@@ -68,7 +68,7 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
             </td>
             <td class="align-middle whitespace-nowrap py-1.5 px-2">
                 <div class="flex items-center space-x-2 @if($isPlayer) font-semibold @endif">
-                    <img src="{{ $standing->team->image }}" class="w-6 h-6">
+                    <x-team-crest :team="$standing->team" class="w-6 h-6" />
                     <span>{{ $standing->team->name }}</span>
                 </div>
             </td>

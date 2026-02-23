@@ -16,7 +16,7 @@
 
             {{-- Season Header --}}
             <div class="text-center mb-8">
-                <img src="{{ $game->team->image }}" alt="{{ $game->team->name }}" class="w-20 h-20 mx-auto mb-4">
+                <x-team-crest :team="$game->team" class="w-20 h-20 mx-auto mb-4" />
                 <h1 class="text-3xl font-bold text-white mb-1">{{ __('game.season_n', ['season' => $game->formatted_season]) }}</h1>
                 <p class="text-slate-500">{{ $game->team->name }}</p>
             </div>

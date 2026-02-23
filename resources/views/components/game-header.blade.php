@@ -13,7 +13,7 @@
     {{-- Desktop Header --}}
     <div class="hidden md:flex justify-between text-slate-400">
         <div class="flex items-center space-x-4">
-            <img src="{{ $game->team->image }}" class="w-16 h-16 rounded">
+            <x-team-crest :team="$game->team" class="w-16 h-16 rounded" />
             <div>
                 <h2 class="font-semibold text-xl text-white leading-tight">
                     {{ $game->team->name }}
@@ -30,11 +30,11 @@
             <div>
                 <div class="text-xs">{{ __('game.next_match') }} - {{ $nextMatch->scheduled_date->format('d/m/Y') }}</div>
                 <div class="flex items-center space-x-1">
-                    <img class="w-4 h-4" src="{{ $nextMatch->homeTeam->image }}">
+                    <x-team-crest :team="$nextMatch->homeTeam" class="w-4 h-4" />
                     <span>{{ $nextMatch->homeTeam->name }}</span>
                     <span> vs </span>
                     <span>{{ $nextMatch->awayTeam->name }}</span>
-                    <img class="w-4 h-4" src="{{ $nextMatch->awayTeam->image }}">
+                    <x-team-crest :team="$nextMatch->awayTeam" class="w-4 h-4" />
                 </div>
             </div>
             @if($game->hasPendingActions())
@@ -100,7 +100,7 @@
     {{-- Mobile Header --}}
     <div class="flex md:hidden items-center justify-between text-slate-400">
         <div class="flex items-center space-x-3 min-w-0">
-            <img src="{{ $game->team->image }}" class="w-8 h-8 rounded-sm shrink-0">
+            <x-team-crest :team="$game->team" class="w-8 h-8 rounded-sm shrink-0" />
             <div class="min-w-0">
                 <h2 class="font-semibold text-base text-white leading-tight truncate">
                     {{ $game->team->name }}
@@ -167,7 +167,7 @@
             {{-- Drawer Header --}}
             <div class="flex items-center justify-between p-4 border-b border-slate-200 bg-slate-50">
                 <div class="flex items-center space-x-3 min-w-0">
-                    <img src="{{ $game->team->image }}" class="w-10 h-10 rounded-sm shrink-0">
+                    <x-team-crest :team="$game->team" class="w-10 h-10 rounded-sm shrink-0" />
                     <div class="min-w-0">
                         <h3 class="font-semibold text-sm text-slate-900 truncate">{{ $game->team->name }}</h3>
                         <p class="text-xs text-slate-500">{{ __('game.season') }} {{ $game->formatted_season }}</p>
@@ -185,11 +185,11 @@
             <div class="px-4 py-3 border-b border-slate-100 bg-slate-50/50">
                 <div class="text-xs text-slate-500 mb-1">{{ __('game.next_match') }} - {{ $nextMatch->scheduled_date->format('d/m/Y') }}</div>
                 <div class="flex items-center space-x-1 text-sm text-slate-700">
-                    <img class="w-4 h-4" src="{{ $nextMatch->homeTeam->image }}">
+                    <x-team-crest :team="$nextMatch->homeTeam" class="w-4 h-4" />
                     <span class="truncate">{{ $nextMatch->homeTeam->name }}</span>
                     <span class="text-slate-400">vs</span>
                     <span class="truncate">{{ $nextMatch->awayTeam->name }}</span>
-                    <img class="w-4 h-4" src="{{ $nextMatch->awayTeam->image }}">
+                    <x-team-crest :team="$nextMatch->awayTeam" class="w-4 h-4" />
                 </div>
             </div>
             @endif

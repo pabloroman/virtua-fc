@@ -69,7 +69,7 @@
                                 </div>
                                 <div class="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
                                     @if($player->team)
-                                        <img src="{{ $player->team->image }}" class="w-4 h-4 shrink-0">
+                                        <x-team-crest :team="$player->team" class="w-4 h-4 shrink-0" />
                                         <span class="truncate">{{ $player->team->name }}</span>
                                     @endif
                                 </div>

@@ -20,7 +20,7 @@
                             <div class="text-amber-600 font-semibold text-sm uppercase tracking-wide mb-2">{{ __('season.league_champion', ['league' => $competition->name]) }}</div>
                             @if($champion && $champion->team)
                                 <div class="flex justify-center items-center gap-3 mb-2">
-                                    <img src="{{ $champion->team->image }}" class="w-14 h-14">
+                                    <x-team-crest :team="$champion->team" class="w-14 h-14" />
                                 </div>
                                 <div class="text-xl font-bold text-slate-900">{{ $champion->team->name }}</div>
                                 <div class="text-sm text-slate-600">{{ $champion->points }} pts</div>
@@ -35,7 +35,7 @@
                             <div class="text-sky-600 font-semibold text-sm uppercase tracking-wide mb-2">{{ $cupName }}</div>
                             @if($cupWinner)
                                 <div class="flex justify-center items-center gap-3 mb-2">
-                                    <img src="{{ $cupWinner->image }}" class="w-14 h-14">
+                                    <x-team-crest :team="$cupWinner" class="w-14 h-14" />
                                 </div>
                                 <div class="text-xl font-bold text-slate-900">{{ $cupWinner->name }}</div>
                                 <div class="text-sm text-slate-500">
@@ -54,7 +54,7 @@
                         <div class="text-xs text-slate-500 uppercase tracking-wide mb-3 text-center">{{ __('season.other_league_results') }}</div>
                         <div class="bg-slate-50 rounded-lg p-4 flex items-center justify-center gap-4">
                             <div class="text-sm text-slate-500 font-medium">{{ __('season.league_champion', ['league' => $otherLeague->name]) }}</div>
-                            <img src="{{ $otherLeagueChampion->image }}" class="w-8 h-8">
+                            <x-team-crest :team="$otherLeagueChampion" class="w-8 h-8" />
                             <div class="font-semibold text-slate-900">{{ $otherLeagueChampion->name }}</div>
                         </div>
                     </div>
@@ -69,7 +69,7 @@
                                     <div class="w-6 text-center font-bold {{ $standing->position === 1 ? 'text-amber-600' : ($standing->position === 2 ? 'text-slate-500' : 'text-amber-700') }}">
                                         {{ $standing->position }}
                                     </div>
-                                    <img src="{{ $standing->team->image }}" class="w-6 h-6">
+                                    <x-team-crest :team="$standing->team" class="w-6 h-6" />
                                     <div class="flex-1 font-medium text-slate-900">{{ $standing->team->name }}</div>
                                     <div class="text-slate-600 text-sm">{{ $standing->points }} pts</div>
                                 </div>
@@ -82,7 +82,7 @@
                         <div class="text-center text-slate-500 font-semibold text-sm uppercase tracking-wide mb-4">{{ __('season.your_season') }}</div>
 
                         <div class="flex justify-center items-center gap-4 mb-4">
-                            <img src="{{ $game->team->image }}" class="w-12 h-12">
+                            <x-team-crest :team="$game->team" class="w-12 h-12" />
                             <div>
                                 <div class="text-xl font-bold text-slate-900">{{ $game->team->name }}</div>
                             </div>
@@ -142,7 +142,7 @@
                                 @if($topScorers->isNotEmpty())
                                     @php $scorer = $topScorers->first(); @endphp
                                     <div class="flex items-center justify-center gap-2 mb-1">
-                                        <img src="{{ $scorer->team->image }}" class="w-5 h-5">
+                                        <x-team-crest :team="$scorer->team" class="w-5 h-5" />
                                         <span class="font-semibold text-slate-900">{{ $scorer->player->name }}</span>
                                     </div>
                                     <div class="text-2xl font-bold text-slate-900">{{ $scorer->goals }}</div>
@@ -158,7 +158,7 @@
                                 @if($topAssisters->isNotEmpty())
                                     @php $assister = $topAssisters->first(); @endphp
                                     <div class="flex items-center justify-center gap-2 mb-1">
-                                        <img src="{{ $assister->team->image }}" class="w-5 h-5">
+                                        <x-team-crest :team="$assister->team" class="w-5 h-5" />
                                         <span class="font-semibold text-slate-900">{{ $assister->player->name }}</span>
                                     </div>
                                     <div class="text-2xl font-bold text-slate-900">{{ $assister->assists }}</div>
@@ -173,7 +173,7 @@
                                 <div class="text-xs text-slate-500 uppercase tracking-wide mb-2">{{ __($competition->getConfig()->getBestGoalkeeperAwardName()) }}</div>
                                 @if($bestGoalkeeper)
                                     <div class="flex items-center justify-center gap-2 mb-1">
-                                        <img src="{{ $bestGoalkeeper->team->image }}" class="w-5 h-5">
+                                        <x-team-crest :team="$bestGoalkeeper->team" class="w-5 h-5" />
                                         <span class="font-semibold text-slate-900">{{ $bestGoalkeeper->player->name }}</span>
                                     </div>
                                     <div class="text-2xl font-bold text-slate-900">{{ $bestGoalkeeper->clean_sheets }}</div>
@@ -198,7 +198,7 @@
                                 <div class="flex-1">
                                     <div class="text-xs text-slate-500 uppercase tracking-wide">{{ __('season.best_attack') }}</div>
                                     <div class="flex items-center gap-2">
-                                        <img src="{{ $bestAttack->team->image }}" class="w-4 h-4">
+                                        <x-team-crest :team="$bestAttack->team" class="w-4 h-4" />
                                         <span class="font-medium text-slate-900 text-sm">{{ $bestAttack->team->name }}</span>
                                     </div>
                                 </div>
@@ -218,7 +218,7 @@
                                 <div class="flex-1">
                                     <div class="text-xs text-slate-500 uppercase tracking-wide">{{ __('season.best_defense') }}</div>
                                     <div class="flex items-center gap-2">
-                                        <img src="{{ $bestDefense->team->image }}" class="w-4 h-4">
+                                        <x-team-crest :team="$bestDefense->team" class="w-4 h-4" />
                                         <span class="font-medium text-slate-900 text-sm">{{ $bestDefense->team->name }}</span>
                                     </div>
                                 </div>
@@ -246,14 +246,14 @@
                                 <div class="space-y-2">
                                     @foreach($directlyPromoted as $promoted)
                                         <div class="flex items-center gap-2">
-                                            <img src="{{ $promoted->team->image }}" class="w-5 h-5">
+                                            <x-team-crest :team="$promoted->team" class="w-5 h-5" />
                                             <span class="text-sm text-slate-900">{{ $promoted->team->name }}</span>
                                             <span class="text-xs text-green-600">({{ __('season.place', ['position' => $promoted->position]) }})</span>
                                         </div>
                                     @endforeach
                                     @if($playoffWinner)
                                         <div class="flex items-center gap-2">
-                                            <img src="{{ $playoffWinner->image }}" class="w-5 h-5">
+                                            <x-team-crest :team="$playoffWinner" class="w-5 h-5" />
                                             <span class="text-sm text-slate-900">{{ $playoffWinner->name }}</span>
                                             <span class="text-xs text-green-600">({{ __('season.playoff_winner') }})</span>
                                         </div>
@@ -271,7 +271,7 @@
                                 <div class="space-y-2">
                                     @foreach($relegatedTeams as $relegated)
                                         <div class="flex items-center gap-2">
-                                            <img src="{{ $relegated->team->image }}" class="w-5 h-5">
+                                            <x-team-crest :team="$relegated->team" class="w-5 h-5" />
                                             <span class="text-sm text-slate-900">{{ $relegated->team->name }}</span>
                                             <span class="text-xs text-red-600">({{ __('season.place', ['position' => $relegated->position]) }})</span>
                                         </div>
@@ -317,7 +317,7 @@
                                 @foreach($otherTeamRetiring->take(10) as $retiringPlayer)
                                     <div class="flex items-center justify-between text-sm">
                                         <div class="flex items-center gap-2">
-                                            <img src="{{ $retiringPlayer->team->image }}" class="w-4 h-4">
+                                            <x-team-crest :team="$retiringPlayer->team" class="w-4 h-4" />
                                             <span class="text-slate-700">{{ $retiringPlayer->name }}</span>
                                             <span class="text-xs text-slate-400">({{ $retiringPlayer->age }})</span>
                                         </div>

@@ -58,8 +58,8 @@ $yourAppearances = $yourSquadStats->where('appearances', '>', 0)->sortByDesc('ap
 
                 {{-- Team Badge --}}
                 <div class="mt-6 md:mt-8 inline-flex flex-col items-center">
-                    <img src="{{ $game->team->image }}" alt="{{ $game->team->name }}"
-                         class="w-20 h-20 md:w-28 md:h-28 {{ $isChampion ? 'drop-shadow-lg' : '' }}">
+                    <x-team-crest :team="$game->team"
+                         class="w-20 h-20 md:w-28 md:h-28 {{ $isChampion ? 'drop-shadow-lg' : '' }}" />
                     <div class="mt-3 text-xl md:text-2xl font-bold text-white">{{ $game->team->name }}</div>
                     @if($playerStanding)
                     <div class="mt-1 text-sm {{ $isChampion ? 'text-amber-100' : 'text-slate-300' }}">
@@ -162,7 +162,7 @@ $yourAppearances = $yourSquadStats->where('appearances', '>', 0)->sortByDesc('ap
 
                         {{-- Opponent --}}
                         <div class="flex items-center gap-2 flex-1 min-w-0">
-                            <img src="{{ $opponent->image }}" class="w-5 h-5 shrink-0">
+                            <x-team-crest :team="$opponent" class="w-5 h-5 shrink-0" />
                             <span class="text-sm font-medium text-slate-900 truncate">
                                 {{ $isHome ? '' : '@ ' }}{{ $opponent->name }}
                             </span>
@@ -216,7 +216,7 @@ $yourAppearances = $yourSquadStats->where('appearances', '>', 0)->sortByDesc('ap
                                         <td class="py-1.5 pr-1 text-center text-xs text-slate-400">{{ $standing->position }}</td>
                                         <td class="py-1.5">
                                             <div class="flex items-center gap-1.5">
-                                                <img src="{{ $standing->team->image }}" class="w-4 h-4 shrink-0">
+                                                <x-team-crest :team="$standing->team" class="w-4 h-4 shrink-0" />
                                                 <span class="text-xs truncate">{{ $standing->team->name }}</span>
                                             </div>
                                         </td>
@@ -264,7 +264,7 @@ $yourAppearances = $yourSquadStats->where('appearances', '>', 0)->sortByDesc('ap
                                 <div class="flex items-center justify-between gap-2">
                                     {{-- Home team --}}
                                     <div class="flex items-center gap-2 flex-1 min-w-0 {{ $isHomeWinner ? 'font-semibold' : '' }}">
-                                        <img src="{{ $tie->homeTeam->image }}" class="w-5 h-5 shrink-0">
+                                        <x-team-crest :team="$tie->homeTeam" class="w-5 h-5 shrink-0" />
                                         <span class="text-sm truncate {{ $isHomeWinner ? 'text-slate-900' : 'text-slate-500' }}">{{ $tie->homeTeam->name }}</span>
                                     </div>
 
@@ -285,7 +285,7 @@ $yourAppearances = $yourSquadStats->where('appearances', '>', 0)->sortByDesc('ap
                                     {{-- Away team --}}
                                     <div class="flex items-center gap-2 flex-1 min-w-0 justify-end {{ $isAwayWinner ? 'font-semibold' : '' }}">
                                         <span class="text-sm truncate text-right {{ $isAwayWinner ? 'text-slate-900' : 'text-slate-500' }}">{{ $tie->awayTeam->name }}</span>
-                                        <img src="{{ $tie->awayTeam->image }}" class="w-5 h-5 shrink-0">
+                                        <x-team-crest :team="$tie->awayTeam" class="w-5 h-5 shrink-0" />
                                     </div>
                                 </div>
                             </div>
@@ -311,7 +311,7 @@ $yourAppearances = $yourSquadStats->where('appearances', '>', 0)->sortByDesc('ap
                         @if($topScorers->isNotEmpty())
                             @php $scorer = $topScorers->first(); @endphp
                             <div class="flex items-center justify-center gap-2 mb-1">
-                                <img src="{{ $scorer->team->image }}" class="w-5 h-5">
+                                <x-team-crest :team="$scorer->team" class="w-5 h-5" />
                                 <span class="font-semibold text-sm text-slate-900">{{ $scorer->player->name }}</span>
                             </div>
                             <div class="text-3xl font-bold text-amber-600">{{ $scorer->goals }}</div>
@@ -327,7 +327,7 @@ $yourAppearances = $yourSquadStats->where('appearances', '>', 0)->sortByDesc('ap
                         <div class="text-xs text-sky-600 font-semibold uppercase tracking-wide mb-3">{{ __('season.golden_glove') }}</div>
                         @if($bestGoalkeeper)
                             <div class="flex items-center justify-center gap-2 mb-1">
-                                <img src="{{ $bestGoalkeeper->team->image }}" class="w-5 h-5">
+                                <x-team-crest :team="$bestGoalkeeper->team" class="w-5 h-5" />
                                 <span class="font-semibold text-sm text-slate-900">{{ $bestGoalkeeper->player->name }}</span>
                             </div>
                             <div class="text-3xl font-bold text-sky-600">{{ $bestGoalkeeper->clean_sheets }}</div>
@@ -347,7 +347,7 @@ $yourAppearances = $yourSquadStats->where('appearances', '>', 0)->sortByDesc('ap
                         @if($topAssisters->isNotEmpty())
                             @php $assister = $topAssisters->first(); @endphp
                             <div class="flex items-center justify-center gap-2 mb-1">
-                                <img src="{{ $assister->team->image }}" class="w-5 h-5">
+                                <x-team-crest :team="$assister->team" class="w-5 h-5" />
                                 <span class="font-semibold text-sm text-slate-900">{{ $assister->player->name }}</span>
                             </div>
                             <div class="text-3xl font-bold text-emerald-600">{{ $assister->assists }}</div>
@@ -366,7 +366,7 @@ $yourAppearances = $yourSquadStats->where('appearances', '>', 0)->sortByDesc('ap
                         @foreach($topScorers as $scorer)
                         <div class="flex items-center gap-3 py-1.5 {{ $scorer->team_id === $game->team_id ? 'bg-amber-50 -mx-2 px-2 rounded' : '' }}">
                             <span class="w-5 text-center text-xs font-bold {{ $loop->first ? 'text-amber-600' : 'text-slate-400' }}">{{ $loop->iteration }}</span>
-                            <img src="{{ $scorer->team->image }}" class="w-4 h-4 shrink-0">
+                            <x-team-crest :team="$scorer->team" class="w-4 h-4 shrink-0" />
                             <span class="flex-1 text-sm text-slate-900 truncate">{{ $scorer->player->name }}</span>
                             <span class="text-sm font-bold text-slate-700">{{ $scorer->goals }}</span>
                             <span class="text-xs text-slate-400 w-10">{{ $scorer->assists }} ast</span>

@@ -12,7 +12,7 @@
 <div class="border rounded-lg overflow-hidden {{ $isPlayerTie ? 'border-sky-300 bg-sky-50' : 'border-slate-200' }}">
     {{-- Home Team --}}
     <div class="flex items-center gap-2 p-2 {{ $homeWon ? 'bg-green-50' : '' }} {{ $awayWon ? 'opacity-50' : '' }}">
-        <img src="{{ $tie->homeTeam->image }}" alt="{{ $tie->homeTeam->name }}" class="w-5 h-5">
+        <x-team-crest :team="$tie->homeTeam" class="w-5 h-5" />
         <span class="flex-1 text-sm truncate @if($homeWon) font-semibold @endif {{ $tie->home_team_id === $playerTeamId ? 'font-semibold text-sky-700' : '' }}">
             {{ $tie->homeTeam->name }}
         </span>
@@ -26,7 +26,7 @@
 
     {{-- Away Team --}}
     <div class="flex items-center gap-2 p-2 border-t {{ $awayWon ? 'bg-green-50' : '' }} {{ $homeWon ? 'opacity-50' : '' }}">
-        <img src="{{ $tie->awayTeam->image }}" alt="{{ $tie->awayTeam->name }}" class="w-5 h-5">
+        <x-team-crest :team="$tie->awayTeam" class="w-5 h-5" />
         <span class="flex-1 text-sm truncate @if($awayWon) font-semibold @endif {{ $tie->away_team_id === $playerTeamId ? 'font-semibold text-sky-700' : '' }}">
             {{ $tie->awayTeam->name }}
         </span>

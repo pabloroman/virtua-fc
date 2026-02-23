@@ -124,7 +124,7 @@
                                     <div class="bg-red-50 rounded-lg p-4">
                                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                             <div class="flex items-center gap-4">
-                                                <img src="{{ $offer->offeringTeam->image }}" class="w-10 h-10 shrink-0">
+                                                <x-team-crest :team="$offer->offeringTeam" class="w-10 h-10 shrink-0" />
                                                 <div>
                                                     <div class="font-semibold text-slate-900">
                                                         {{ $offer->gamePlayer->player->name }} &larr; {{ $offer->offeringTeam->name }}
@@ -168,7 +168,7 @@
                                     <div class="bg-red-50 rounded-lg p-4">
                                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                             <div class="flex items-center gap-4">
-                                                <img src="{{ $offer->offeringTeam->image }}" class="w-10 h-10 shrink-0">
+                                                <x-team-crest :team="$offer->offeringTeam" class="w-10 h-10 shrink-0" />
                                                 <div>
                                                     <div class="font-semibold text-slate-900">
                                                         {{ $offer->gamePlayer->player->name }} &larr; {{ $offer->offeringTeam->name }}
@@ -337,7 +337,7 @@
                                     <div class="bg-amber-50 rounded-lg p-4">
                                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                             <div class="flex items-center gap-4">
-                                                <img src="{{ $offer->offeringTeam->image }}" class="w-10 h-10 shrink-0">
+                                                <x-team-crest :team="$offer->offeringTeam" class="w-10 h-10 shrink-0" />
                                                 <div>
                                                     <div class="font-semibold text-slate-900">
                                                         {{ $offer->gamePlayer->player->name }} &larr; {{ $offer->offeringTeam->name }}
@@ -381,7 +381,7 @@
                                     <div class="bg-emerald-50 rounded-lg p-4">
                                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                             <div class="flex items-center gap-4">
-                                                <img src="{{ $transfer->offeringTeam->image }}" class="w-10 h-10 shrink-0">
+                                                <x-team-crest :team="$transfer->offeringTeam" class="w-10 h-10 shrink-0" />
                                                 <div>
                                                     <div class="font-semibold text-slate-900">
                                                         {{ $transfer->gamePlayer->player->name }} &rarr; {{ $transfer->offeringTeam->name }}
@@ -412,7 +412,7 @@
                                     <div class="bg-emerald-50 rounded-lg p-4">
                                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                             <div class="flex items-center gap-4">
-                                                <img src="{{ $transfer->offeringTeam->image }}" class="w-10 h-10 shrink-0">
+                                                <x-team-crest :team="$transfer->offeringTeam" class="w-10 h-10 shrink-0" />
                                                 <div>
                                                     <div class="font-semibold text-slate-900">
                                                         {{ $transfer->gamePlayer->player->name }} &rarr; {{ $transfer->offeringTeam->name }}
@@ -529,7 +529,7 @@
                                         @foreach($recentTransfers as $transfer)
                                             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-1 py-2 text-sm">
                                                 <div class="flex items-center gap-3">
-                                                    <img src="{{ $transfer->offeringTeam->image }}" class="w-6 h-6 shrink-0">
+                                                    <x-team-crest :team="$transfer->offeringTeam" class="w-6 h-6 shrink-0" />
                                                     <span class="text-slate-600">
                                     {{ $transfer->gamePlayer->player->name }} &rarr; {{ $transfer->offeringTeam->name }}
                                 </span>
@@ -703,7 +703,7 @@
                                     @foreach($loansOut as $loan)
                                     <div class="px-4 py-3">
                                         <div class="flex items-center gap-3">
-                                            <img src="{{ $loan->loanTeam->image }}" class="w-7 h-7 shrink-0">
+                                            <x-team-crest :team="$loan->loanTeam" class="w-7 h-7 shrink-0" />
                                             <div class="min-w-0">
                                                 <div class="font-medium text-sm text-slate-900 truncate">{{ $loan->gamePlayer->name }}</div>
                                                 <div class="text-xs text-slate-500">

@@ -45,7 +45,7 @@
                                         <span class="text-xl font-semibold @if($playerTie->home_team_id === $game->team_id) text-sky-700 @endif">
                                             {{ $playerTie->homeTeam->name }}
                                         </span>
-                                        <img src="{{ $playerTie->homeTeam->image }}" class="w-12 h-12">
+                                        <x-team-crest :team="$playerTie->homeTeam" class="w-12 h-12" />
                                     </div>
                                     <div class="px-6 text-center">
                                         @if($playerTie->firstLegMatch?->played)
@@ -57,7 +57,7 @@
                                         @endif
                                     </div>
                                     <div class="flex items-center gap-3 flex-1">
-                                        <img src="{{ $playerTie->awayTeam->image }}" class="w-12 h-12">
+                                        <x-team-crest :team="$playerTie->awayTeam" class="w-12 h-12" />
                                         <span class="text-xl font-semibold @if($playerTie->away_team_id === $game->team_id) text-sky-700 @endif">
                                             {{ $playerTie->awayTeam->name }}
                                         </span>
@@ -86,13 +86,13 @@
                                         <span class="text-lg font-semibold @if($playerTie->home_team_id === $game->team_id) {{ $won ? 'text-green-700' : 'text-red-700' }} @endif">
                                             {{ $playerTie->homeTeam->name }}
                                         </span>
-                                        <img src="{{ $playerTie->homeTeam->image }}" class="w-10 h-10">
+                                        <x-team-crest :team="$playerTie->homeTeam" class="w-10 h-10" />
                                     </div>
                                     <div class="px-4 text-lg font-semibold">
                                         {{ $playerTie->getScoreDisplay() }}
                                     </div>
                                     <div class="flex items-center gap-3 flex-1">
-                                        <img src="{{ $playerTie->awayTeam->image }}" class="w-10 h-10">
+                                        <x-team-crest :team="$playerTie->awayTeam" class="w-10 h-10" />
                                         <span class="text-lg font-semibold @if($playerTie->away_team_id === $game->team_id) {{ $won ? 'text-green-700' : 'text-red-700' }} @endif">
                                             {{ $playerTie->awayTeam->name }}
                                         </span>

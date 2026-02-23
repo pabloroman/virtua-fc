@@ -49,7 +49,7 @@
 
     {{-- Opponent --}}
     <div class="flex-1 flex items-center gap-2">
-        <img src="{{ $opponent->image }}" class="w-6 h-6">
+        <x-team-crest :team="$opponent" class="w-6 h-6" />
         <span class="font-medium text-slate-900">{{ $opponent->name }}</span>
     </div>
 
