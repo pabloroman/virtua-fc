@@ -1158,6 +1158,48 @@ class TransferService
     }
 
     /**
+     * Submit a pre-contract offer for an expiring player (user-initiated).
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function submitPreContractOffer(Game $game, GamePlayer $player, int $offeredWageCents): TransferOffer
+    {
+        if (!$game->isPreContractPeriod()) {
+            throw new \InvalidArgumentException(__('messages.pre_contract_not_available'));
+        }
+
+        $seasonEnd = $game->getSeasonEndDate();
+        if (!$player->contract_until || !$player->contract_until->lte($seasonEnd)) {
+            throw new \InvalidArgumentException(__('messages.player_not_expiring'));
+        }
+
+        $existingOffer = TransferOffer::where('game_id', $game->id)
+            ->where('game_player_id', $player->id)
+            ->where('direction', TransferOffer::DIRECTION_INCOMING)
+            ->where('offer_type', TransferOffer::TYPE_PRE_CONTRACT)
+            ->whereIn('status', [TransferOffer::STATUS_AGREED, TransferOffer::STATUS_PENDING])
+            ->exists();
+
+        if ($existingOffer) {
+            throw new \InvalidArgumentException(__('transfers.already_bidding'));
+        }
+
+        return TransferOffer::create([
+            'game_id' => $game->id,
+            'game_player_id' => $player->id,
+            'offering_team_id' => $game->team_id,
+            'selling_team_id' => $player->team_id,
+            'offer_type' => TransferOffer::TYPE_PRE_CONTRACT,
+            'direction' => TransferOffer::DIRECTION_INCOMING,
+            'transfer_fee' => 0,
+            'offered_wage' => $offeredWageCents,
+            'status' => TransferOffer::STATUS_PENDING,
+            'expires_at' => $game->current_date->addDays(TransferOffer::PRE_CONTRACT_OFFER_EXPIRY_DAYS),
+            'game_date' => $game->current_date,
+        ]);
+    }
+
+    /**
      * Submit a new bid for a player. Returns the created offer or null if budget is insufficient.
      */
     public function submitBid(Game $game, GamePlayer $player, int $bidAmountCents, ScoutingService $scoutingService): ?TransferOffer

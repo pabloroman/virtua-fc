@@ -5,7 +5,6 @@ namespace App\Http\Actions;
 use App\Modules\Transfer\Services\LoanService;
 use App\Models\Game;
 use App\Models\GamePlayer;
-use App\Models\TransferOffer;
 use Illuminate\Http\Request;
 
 class RequestLoan
@@ -31,19 +30,7 @@ class RequestLoan
 
     private function handleLoanIn(Game $game, GamePlayer $player)
     {
-        // Create a pending loan request — evaluation deferred to next matchday
-        TransferOffer::create([
-            'game_id' => $game->id,
-            'game_player_id' => $player->id,
-            'offering_team_id' => $game->team_id,
-            'selling_team_id' => $player->team_id,
-            'offer_type' => TransferOffer::TYPE_LOAN_IN,
-            'direction' => TransferOffer::DIRECTION_INCOMING,
-            'transfer_fee' => 0,
-            'status' => TransferOffer::STATUS_PENDING,
-            'expires_at' => $game->current_date->addDays(30),
-            'game_date' => $game->current_date,
-        ]);
+        $this->loanService->requestLoanIn($game, $player);
 
         return redirect()->route('game.transfers', $game->id)
             ->with('success', __('messages.loan_request_submitted', ['player' => $player->player->name]));
