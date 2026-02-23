@@ -61,11 +61,45 @@ class SeedWorldCupData extends Command
     {
         $this->info('Clearing existing World Cup data...');
 
-        DB::table('competition_teams')
-            ->where('competition_id', self::COMPETITION_ID)
-            ->delete();
+        $teamIds = DB::table('teams')->where('type', 'national')->pluck('id');
 
-        DB::table('teams')->where('type', 'national')->delete();
+        if ($teamIds->isNotEmpty()) {
+            // Delete from tables that reference both teams and competition
+            DB::table('game_player_templates')->whereIn('team_id', $teamIds)->delete();
+            DB::table('match_events')->whereIn('team_id', $teamIds)->delete();
+            DB::table('game_players')->whereIn('team_id', $teamIds)->delete();
+            DB::table('game_standings')->whereIn('team_id', $teamIds)->delete();
+            DB::table('game_matches')
+                ->whereIn('home_team_id', $teamIds)
+                ->orWhereIn('away_team_id', $teamIds)
+                ->delete();
+            DB::table('cup_ties')
+                ->whereIn('home_team_id', $teamIds)
+                ->orWhereIn('away_team_id', $teamIds)
+                ->delete();
+            DB::table('competition_entries')->whereIn('team_id', $teamIds)->delete();
+            DB::table('competition_teams')->whereIn('team_id', $teamIds)->delete();
+        }
+
+        // Delete remaining rows that reference the competition by competition_id
+        $wcMatchIds = DB::table('game_matches')
+            ->where('competition_id', self::COMPETITION_ID)
+            ->pluck('id');
+        if ($wcMatchIds->isNotEmpty()) {
+            DB::table('match_events')->whereIn('game_match_id', $wcMatchIds)->delete();
+        }
+        DB::table('game_matches')->where('competition_id', self::COMPETITION_ID)->delete();
+        DB::table('game_standings')->where('competition_id', self::COMPETITION_ID)->delete();
+        DB::table('cup_ties')->where('competition_id', self::COMPETITION_ID)->delete();
+        DB::table('competition_entries')->where('competition_id', self::COMPETITION_ID)->delete();
+        DB::table('competition_teams')->where('competition_id', self::COMPETITION_ID)->delete();
+        DB::table('simulated_seasons')->where('competition_id', self::COMPETITION_ID)->delete();
+        DB::table('games')->where('competition_id', self::COMPETITION_ID)->delete();
+
+        if ($teamIds->isNotEmpty()) {
+            DB::table('teams')->where('type', 'national')->delete();
+        }
+
         DB::table('competitions')->where('id', self::COMPETITION_ID)->delete();
 
         $this->info('Cleared.');
