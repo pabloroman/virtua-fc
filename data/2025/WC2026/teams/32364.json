@@ -1,0 +1,371 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/32364.png",
+  "name": "Curaçao",
+  "players": [
+    {
+      "contract": "Jun 11, 2015",
+      "dateOfBirth": "Feb 6, 1989",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "79294",
+      "marketValue": "€250k",
+      "name": "Eloy Room",
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 13, 2023",
+      "dateOfBirth": "Jul 6, 1999",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "390814",
+      "marketValue": "€100k",
+      "name": "Trevor Doornbusch",
+      "number": "23",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Oct 9, 2021",
+      "dateOfBirth": "May 15, 2002",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "663961",
+      "marketValue": "€25k",
+      "name": "Tyrick Bodak",
+      "position": "Goalkeeper"
+    },
+    {
+      "dateOfBirth": "Jul 1, 2005",
+      "foot": "right",
+      "id": "1059515",
+      "name": "Leandro Merencia",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Sep 6, 2025",
+      "dateOfBirth": "Oct 12, 1996",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "216443",
+      "marketValue": "€3.50m",
+      "name": "Riechedly Bazoer",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Oct 11, 2025",
+      "dateOfBirth": "Mar 5, 1999",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "339337",
+      "marketValue": "€3.50m",
+      "name": "Armando Obispo",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Mar 25, 2021",
+      "dateOfBirth": "Jun 9, 1998",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "401029",
+      "marketValue": "€500k",
+      "name": "Roshon van Eijma",
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Oct 6, 2016",
+      "dateOfBirth": "Dec 23, 1993",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "328455",
+      "marketValue": "€450k",
+      "name": "Juriën Gaari",
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Mar 24, 2018",
+      "dateOfBirth": "Jul 15, 1998",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "338031",
+      "marketValue": "€400k",
+      "name": "Jurich Carolina",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Aug 20, 2011",
+      "dateOfBirth": "Sep 25, 1989",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "91251",
+      "marketValue": "€200k",
+      "name": "Cuco Martina",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Mar 26, 2023",
+      "dateOfBirth": "Aug 23, 1998",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "315211",
+      "marketValue": "€750k",
+      "name": "Sherel Floranus",
+      "number": "5",
+      "position": "Left-Back"
+    },
+    {
+      "dateOfBirth": "Mar 2, 2004",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "571150",
+      "name": "Jayden Candelaria",
+      "position": "Left-Back"
+    },
+    {
+      "dateOfBirth": "May 16, 2003",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "708989",
+      "name": "Deveron Fonville",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 6, 2024",
+      "dateOfBirth": "Mar 20, 1994",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "207006",
+      "marketValue": "€3.00m",
+      "name": "Joshua Brenet",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Sep 6, 2025",
+      "dateOfBirth": "Aug 19, 2001",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "412937",
+      "marketValue": "€2.00m",
+      "name": "Shurandy Sambo",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Oct 11, 2024",
+      "dateOfBirth": "Feb 3, 2004",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "626764",
+      "marketValue": "€800k",
+      "name": "Livano Comenencia",
+      "number": "8",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Nov 16, 2024",
+      "dateOfBirth": "Dec 19, 2003",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "913289",
+      "marketValue": "€350k",
+      "name": "Tyrique Mercera",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Mar 26, 2023",
+      "dateOfBirth": "Aug 19, 1999",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "393241",
+      "marketValue": "€600k",
+      "name": "Godfried Roemeratoe",
+      "number": "6",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 9, 2021",
+      "dateOfBirth": "Nov 11, 1999",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "433933",
+      "marketValue": "€200k",
+      "name": "Kevin Felida",
+      "number": "21",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Sep 8, 2019",
+      "dateOfBirth": "Aug 7, 1997",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "348863",
+      "marketValue": "€3.20m",
+      "name": "Juninho Bacuna",
+      "number": "7",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Mar 24, 2016",
+      "dateOfBirth": "Aug 21, 1991",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "126014",
+      "marketValue": "€350k",
+      "name": "Leandro Bacuna",
+      "number": "10",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Sep 6, 2025",
+      "dateOfBirth": "Sep 11, 2002",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "708005",
+      "marketValue": "€200k",
+      "name": "Tyrese Noslin",
+      "number": "17",
+      "position": "Right Midfield"
+    },
+    {
+      "contract": "Sep 6, 2025",
+      "dateOfBirth": "Dec 4, 1999",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "344830",
+      "marketValue": "€6.00m",
+      "name": "Tahith Chong",
+      "number": "14",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 26, 2019",
+      "dateOfBirth": "Sep 29, 1994",
+      "foot": "right",
+      "height": "1,74m",
+      "id": "374889",
+      "marketValue": "€850k",
+      "name": "Kenji Gorré",
+      "number": "14",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Mar 25, 2021",
+      "dateOfBirth": "Mar 29, 2002",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "594273",
+      "marketValue": "€700k",
+      "name": "Jeremy Antonisse",
+      "number": "11",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Sep 8, 2023",
+      "dateOfBirth": "Apr 10, 2000",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "538958",
+      "marketValue": "€400k",
+      "name": "Jearl Margaritha",
+      "number": "16",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 6, 2024",
+      "dateOfBirth": "Apr 11, 2004",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "806284",
+      "marketValue": "€100k",
+      "name": "Rayvien Rosario",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Oct 11, 2025",
+      "dateOfBirth": "May 18, 2002",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "485582",
+      "marketValue": "€3.50m",
+      "name": "Sontje Hansen",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Sep 6, 2024",
+      "dateOfBirth": "Sep 4, 2003",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "572519",
+      "marketValue": "€900k",
+      "name": "Ar'jany Martha",
+      "number": "15",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Sep 11, 2018",
+      "dateOfBirth": "Sep 19, 1992",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "232219",
+      "marketValue": "€350k",
+      "name": "Brandley Kuwas",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 10, 2022",
+      "dateOfBirth": "May 23, 2001",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "458418",
+      "marketValue": "€200k",
+      "name": "Joshua Zimmerman",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 13, 2023",
+      "dateOfBirth": "Nov 7, 1993",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "166240",
+      "marketValue": "€300k",
+      "name": "Jürgen Locadia",
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Nov 13, 2025",
+      "dateOfBirth": "Sep 23, 2004",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "1045762",
+      "marketValue": "€300k",
+      "name": "Jordi Paulina",
+      "number": "19",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Mar 24, 2016",
+      "dateOfBirth": "Apr 16, 1992",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "111183",
+      "marketValue": "€250k",
+      "name": "Rangelo Janga",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Oct 12, 2018",
+      "dateOfBirth": "Jun 9, 1996",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "240752",
+      "marketValue": "€200k",
+      "name": "Gervane Kastaneer",
+      "number": "19",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": null,
+  "stadiumSeats": null,
+  "transfermarktId": "32364"
+}

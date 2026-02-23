@@ -1,0 +1,407 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/3379.png",
+  "name": "Netherlands",
+  "players": [
+    {
+      "contract": "Oct 13, 2023",
+      "dateOfBirth": "Aug 18, 2002",
+      "foot": "right",
+      "height": "1,94m",
+      "id": "565093",
+      "marketValue": "€25.00m",
+      "name": "Bart Verbruggen",
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Mar 26, 2022",
+      "dateOfBirth": "Jun 13, 1993",
+      "foot": "both",
+      "height": "1,95m",
+      "id": "125714",
+      "marketValue": "€10.00m",
+      "name": "Mark Flekken",
+      "number": "23",
+      "position": "Goalkeeper"
+    },
+    {
+      "dateOfBirth": "Jan 23, 2000",
+      "foot": "right",
+      "height": "2,06m",
+      "id": "463527",
+      "marketValue": "€4.00m",
+      "name": "Kjell Scherpen",
+      "position": "Goalkeeper"
+    },
+    {
+      "dateOfBirth": "Aug 1, 1995",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "215094",
+      "marketValue": "€3.50m",
+      "name": "Nick Olij",
+      "position": "Goalkeeper"
+    },
+    {
+      "dateOfBirth": "Jan 17, 2003",
+      "foot": "left",
+      "height": "1,93m",
+      "id": "646991",
+      "marketValue": "€1.50m",
+      "name": "Robin Roefs",
+      "number": "13",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Oct 13, 2023",
+      "dateOfBirth": "Apr 19, 2001",
+      "foot": "left",
+      "height": "1,93m",
+      "id": "557459",
+      "marketValue": "€55.00m",
+      "name": "Micky van de Ven",
+      "number": "15",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Mar 25, 2017",
+      "dateOfBirth": "Aug 12, 1999",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "326031",
+      "marketValue": "€45.00m",
+      "name": "Matthijs de Ligt",
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "May 31, 2017",
+      "dateOfBirth": "Feb 18, 1995",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "177476",
+      "marketValue": "€35.00m",
+      "name": "Nathan Aké",
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Sep 10, 2024",
+      "dateOfBirth": "Jun 8, 2000",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "576314",
+      "marketValue": "€32.00m",
+      "name": "Jan Paul van Hecke",
+      "number": "12",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Oct 10, 2015",
+      "dateOfBirth": "Jul 8, 1991",
+      "foot": "right",
+      "height": "1,95m",
+      "id": "139208",
+      "marketValue": "€28.00m",
+      "name": "Virgil van Dijk",
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Aug 15, 2012",
+      "dateOfBirth": "Feb 5, 1992",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "111196",
+      "marketValue": "€7.00m",
+      "name": "Stefan de Vrij",
+      "position": "Centre-Back"
+    },
+    {
+      "dateOfBirth": "Mar 17, 2003",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "559327",
+      "marketValue": "€6.00m",
+      "name": "Youri Baas",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Mar 23, 2025",
+      "dateOfBirth": "Mar 10, 2002",
+      "foot": "left",
+      "height": "1,78m",
+      "id": "485585",
+      "marketValue": "€32.00m",
+      "name": "Ian Maatsen",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Nov 21, 2023",
+      "dateOfBirth": "Mar 7, 2006",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "904802",
+      "marketValue": "€30.00m",
+      "name": "Jorrel Hato",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Oct 13, 2023",
+      "dateOfBirth": "Nov 14, 2001",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "514285",
+      "marketValue": "€23.00m",
+      "name": "Quilindschy Hartman",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Oct 13, 2023",
+      "dateOfBirth": "Dec 10, 2000",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "484547",
+      "marketValue": "€50.00m",
+      "name": "Jeremie Frimpong",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 2, 2021",
+      "dateOfBirth": "Jun 17, 2001",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "420243",
+      "marketValue": "€45.00m",
+      "name": "Jurriën Timber",
+      "number": "3",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Mar 24, 2023",
+      "dateOfBirth": "Jul 18, 2000",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "420210",
+      "marketValue": "€32.00m",
+      "name": "Lutsharel Geertruida",
+      "number": "2",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Oct 13, 2018",
+      "dateOfBirth": "Apr 18, 1996",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "321528",
+      "marketValue": "€20.00m",
+      "name": "Denzel Dumfries",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Mar 24, 2021",
+      "dateOfBirth": "May 16, 2002",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "478573",
+      "marketValue": "€55.00m",
+      "name": "Ryan Gravenberch",
+      "number": "8",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 8, 2022",
+      "dateOfBirth": "Jan 12, 1997",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "347900",
+      "marketValue": "€32.00m",
+      "name": "Jerdy Schouten",
+      "number": "16",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Mar 27, 2023",
+      "dateOfBirth": "Nov 16, 1999",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "415381",
+      "marketValue": "€30.00m",
+      "name": "Mats Wieffer",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Sep 7, 2023",
+      "dateOfBirth": "Jul 29, 1998",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "460939",
+      "marketValue": "€50.00m",
+      "name": "Tijjani Reijnders",
+      "number": "14",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Sep 6, 2018",
+      "dateOfBirth": "May 12, 1997",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "326330",
+      "marketValue": "€45.00m",
+      "name": "Frenkie de Jong",
+      "number": "21",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Mar 26, 2024",
+      "dateOfBirth": "Jun 17, 2001",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "420213",
+      "marketValue": "€32.00m",
+      "name": "Quinten Timber",
+      "number": "20",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Sep 22, 2022",
+      "dateOfBirth": "May 16, 2002",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "470394",
+      "marketValue": "€16.00m",
+      "name": "Kenneth Taylor",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Nov 17, 2025",
+      "dateOfBirth": "Oct 4, 2003",
+      "foot": "right",
+      "height": "1,89m",
+      "id": "601495",
+      "marketValue": "€1.50m",
+      "name": "Luciano Valente",
+      "number": "22",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 3, 2022",
+      "dateOfBirth": "Apr 21, 2003",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "566931",
+      "marketValue": "€80.00m",
+      "name": "Xavi Simons",
+      "number": "7",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Oct 7, 2020",
+      "dateOfBirth": "Feb 28, 1998",
+      "foot": "left",
+      "height": "1,84m",
+      "id": "360518",
+      "marketValue": "€50.00m",
+      "name": "Teun Koopmeiners",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Mar 26, 2018",
+      "dateOfBirth": "May 5, 1999",
+      "foot": "both",
+      "height": "1,72m",
+      "id": "330659",
+      "marketValue": "€22.00m",
+      "name": "Justin Kluivert",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Sep 7, 2025",
+      "dateOfBirth": "Nov 12, 2001",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "593519",
+      "marketValue": "€10.00m",
+      "name": "Sem Steijn",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 21, 2021",
+      "dateOfBirth": "May 7, 1999",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "434675",
+      "marketValue": "€60.00m",
+      "name": "Cody Gakpo",
+      "number": "11",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Oct 8, 2021",
+      "dateOfBirth": "Jun 17, 1999",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "339332",
+      "marketValue": "€20.00m",
+      "name": "Noa Lang",
+      "number": "17",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Oct 16, 2023",
+      "dateOfBirth": "Feb 1, 2002",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "473169",
+      "marketValue": "€30.00m",
+      "name": "Brian Brobbey",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Sep 6, 2019",
+      "dateOfBirth": "Jan 19, 1999",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "326029",
+      "marketValue": "€28.00m",
+      "name": "Donyell Malen",
+      "number": "18",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Nov 14, 2025",
+      "dateOfBirth": "Feb 3, 2003",
+      "foot": "right",
+      "height": "1,96m",
+      "id": "559328",
+      "marketValue": "€15.00m",
+      "name": "Emmanuel Emegha",
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Oct 15, 2013",
+      "dateOfBirth": "Feb 13, 1994",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "167850",
+      "marketValue": "€10.00m",
+      "name": "Memphis Depay",
+      "number": "10",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Mar 23, 2018",
+      "dateOfBirth": "Aug 7, 1992",
+      "foot": "right",
+      "height": "1,97m",
+      "id": "228645",
+      "marketValue": "€5.00m",
+      "name": "Wout Weghorst",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": null,
+  "stadiumSeats": null,
+  "transfermarktId": "3379"
+}

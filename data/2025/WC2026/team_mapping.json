@@ -1,6 +1,6 @@
 {
     "MEX": {
-        "uuid": "c33b96d0-456e-4d2a-ac27-13cd45dcbc6c",
+        "uuid": "2f68f77a-4a37-432e-bd9e-eedcb8a23ad8",
         "csv_id": 1,
         "name": "Mexico",
         "group": "A",
@@ -8,7 +8,7 @@
         "transfermarkt_id": "6303"
     },
     "RSA": {
-        "uuid": "15255b23-b866-4318-a59f-4de85bf0c9ba",
+        "uuid": "1d77c333-76f7-4975-8db5-413c5bd0abb7",
         "csv_id": 2,
         "name": "South Africa",
         "group": "A",
@@ -16,7 +16,7 @@
         "transfermarkt_id": "3806"
     },
     "KOR": {
-        "uuid": "928ef355-06c7-4cf5-90de-f493f02d5cf6",
+        "uuid": "fac472c2-d5a8-4f54-94fc-11e9045a9a22",
         "csv_id": 3,
         "name": "South Korea",
         "group": "A",
@@ -24,7 +24,7 @@
         "transfermarkt_id": "3589"
     },
     "UEPD": {
-        "uuid": "6f6d2a5e-b8a0-4c9e-92fe-93d436b04332",
+        "uuid": "38672a12-a2bb-4f68-b06a-c4677c8ddb2c",
         "csv_id": 4,
         "name": "Winner UEFA Playoff D",
         "group": "A",
@@ -32,7 +32,7 @@
         "transfermarkt_id": null
     },
     "CAN": {
-        "uuid": "57a9e341-1dad-4ccf-8c97-0c45a4440083",
+        "uuid": "efb95fc0-f89d-42d6-b275-1a4b6d97c648",
         "csv_id": 5,
         "name": "Canada",
         "group": "B",
@@ -40,7 +40,7 @@
         "transfermarkt_id": "3510"
     },
     "UEPA": {
-        "uuid": "7276edfb-7b00-445d-b89e-2001af02c3cc",
+        "uuid": "ea09cbba-6d07-42e3-a44d-3d399c43651b",
         "csv_id": 6,
         "name": "Winner UEFA Playoff A",
         "group": "B",
@@ -48,7 +48,7 @@
         "transfermarkt_id": null
     },
     "QAT": {
-        "uuid": "adc8803c-ed8f-4d39-b8c3-8e9e58995daf",
+        "uuid": "9b0703c7-8085-4270-b706-ce6475d237ee",
         "csv_id": 7,
         "name": "Qatar",
         "group": "B",
@@ -56,7 +56,7 @@
         "transfermarkt_id": "14162"
     },
     "SUI": {
-        "uuid": "c53ea08d-8e72-4f00-a9ab-d4b95545f122",
+        "uuid": "b42a8efb-5eed-4b8e-ac3e-b63cea356222",
         "csv_id": 8,
         "name": "Switzerland",
         "group": "B",
@@ -64,7 +64,7 @@
         "transfermarkt_id": "3384"
     },
     "BRA": {
-        "uuid": "19a88aad-8e8f-45a3-97bd-fd71a9588c3b",
+        "uuid": "cb455e9b-1750-4f85-955a-9144326d6143",
         "csv_id": 9,
         "name": "Brazil",
         "group": "C",
@@ -72,7 +72,7 @@
         "transfermarkt_id": "3439"
     },
     "MAR": {
-        "uuid": "4480c347-569c-4aad-83d9-edfbc440e9d5",
+        "uuid": "7cd2f04d-5e35-444e-88ba-228032ef21b2",
         "csv_id": 10,
         "name": "Morocco",
         "group": "C",
@@ -80,7 +80,7 @@
         "transfermarkt_id": "3575"
     },
     "HAI": {
-        "uuid": "df8b05a7-0269-48a0-969c-e41c5e8dfe95",
+        "uuid": "5ef1b198-07e2-4e74-97cd-67437828e5c2",
         "csv_id": 11,
         "name": "Haiti",
         "group": "C",
@@ -88,7 +88,7 @@
         "transfermarkt_id": null
     },
     "SCO": {
-        "uuid": "24f78538-fd2f-4692-9750-197c4b8324fb",
+        "uuid": "fcd82915-91b6-46b8-ac67-181ce1e08e17",
         "csv_id": 12,
         "name": "Scotland",
         "group": "C",
@@ -96,7 +96,7 @@
         "transfermarkt_id": "3380"
     },
     "USA": {
-        "uuid": "e1be4897-ee2a-4a33-a36b-4b1c42d11d00",
+        "uuid": "8c44382e-81d2-42e3-864e-2781f838b863",
         "csv_id": 13,
         "name": "USA",
         "group": "D",
@@ -104,7 +104,7 @@
         "transfermarkt_id": null
     },
     "PAR": {
-        "uuid": "d54a9670-63c2-4713-bb68-f663c49d55c1",
+        "uuid": "073f361b-4d41-495d-b5f0-e43f1b82ba39",
         "csv_id": 14,
         "name": "Paraguay",
         "group": "D",
@@ -112,7 +112,7 @@
         "transfermarkt_id": null
     },
     "AUS": {
-        "uuid": "223c5848-ef9a-46c4-a5bb-269b99e88235",
+        "uuid": "0b00eca7-a12b-4de9-8d87-bd16cfa170d7",
         "csv_id": 15,
         "name": "Australia",
         "group": "D",
@@ -120,7 +120,7 @@
         "transfermarkt_id": null
     },
     "UEPC": {
-        "uuid": "5a6af833-789a-43d4-87a0-41991a1fdc90",
+        "uuid": "1fe80266-9851-4628-b94d-f103221c5968",
         "csv_id": 16,
         "name": "Winner UEFA Playoff C",
         "group": "D",
@@ -128,23 +128,23 @@
         "transfermarkt_id": null
     },
     "GER": {
-        "uuid": "2dbb0de1-ddf1-452d-9a9a-7dc9cef19679",
+        "uuid": "0df767fa-6467-4a3a-a260-63efeeac233a",
         "csv_id": 17,
         "name": "Germany",
         "group": "E",
         "is_placeholder": false,
-        "transfermarkt_id": null
+        "transfermarkt_id": "3262"
     },
     "CUR": {
-        "uuid": "cae269ed-3772-45c5-a62e-53a24905b2cf",
+        "uuid": "e58cb314-0d0f-4b33-b1d5-e8ec95a1120f",
         "csv_id": 18,
         "name": "Curaçao",
         "group": "E",
         "is_placeholder": false,
-        "transfermarkt_id": null
+        "transfermarkt_id": "32364"
     },
     "CIV": {
-        "uuid": "8fa4a10c-b913-44be-af63-e0e50f4db94f",
+        "uuid": "3c7edd00-6b2f-408e-b2ba-7921360906f2",
         "csv_id": 19,
         "name": "Côte d'Ivoire",
         "group": "E",
@@ -152,31 +152,31 @@
         "transfermarkt_id": null
     },
     "ECU": {
-        "uuid": "86ba11f7-99c9-43da-a012-87988fa03317",
+        "uuid": "827ee5d8-e0ab-4146-9e67-b5a63e7dc0ab",
         "csv_id": 20,
         "name": "Ecuador",
         "group": "E",
         "is_placeholder": false,
-        "transfermarkt_id": null
+        "transfermarkt_id": "5750"
     },
     "NED": {
-        "uuid": "8bfbc42c-16a5-44ba-a987-00b5e307632c",
+        "uuid": "fdebe315-0a79-4315-b7f1-1d19944eae6a",
         "csv_id": 21,
         "name": "Netherlands",
         "group": "F",
         "is_placeholder": false,
-        "transfermarkt_id": null
+        "transfermarkt_id": "3379"
     },
     "JPN": {
-        "uuid": "f51dc6bc-84a1-4186-9ef7-e8959ffcb9ad",
+        "uuid": "ce31e77a-eb28-49c7-a495-572096a18fde",
         "csv_id": 22,
         "name": "Japan",
         "group": "F",
         "is_placeholder": false,
-        "transfermarkt_id": null
+        "transfermarkt_id": "3435"
     },
     "UEPB": {
-        "uuid": "7aea4db5-a446-44ea-80c3-899cc3ae9d8a",
+        "uuid": "30ce0ced-4000-4414-a564-38ea4f840bb9",
         "csv_id": 23,
         "name": "Winner UEFA Playoff B",
         "group": "F",
@@ -184,15 +184,15 @@
         "transfermarkt_id": null
     },
     "TUN": {
-        "uuid": "8ac094cd-5791-42d1-b9eb-6ff09584459a",
+        "uuid": "e7433808-5b3b-4e2e-b919-29bceab1f02a",
         "csv_id": 24,
         "name": "Tunisia",
         "group": "F",
         "is_placeholder": false,
-        "transfermarkt_id": null
+        "transfermarkt_id": "3670"
     },
     "BEL": {
-        "uuid": "8c2985c5-4d43-4ef5-81bd-9fc5d6919c39",
+        "uuid": "95ed0806-f455-4d47-9fac-6298af9dac16",
         "csv_id": 25,
         "name": "Belgium",
         "group": "G",
@@ -200,7 +200,7 @@
         "transfermarkt_id": null
     },
     "EGY": {
-        "uuid": "0545f20c-eeeb-4d5b-b104-4d12b0471b40",
+        "uuid": "22a905cc-28c6-4aac-951a-1b97ab5e320e",
         "csv_id": 26,
         "name": "Egypt",
         "group": "G",
@@ -208,7 +208,7 @@
         "transfermarkt_id": null
     },
     "IRN": {
-        "uuid": "126d56da-68b3-4e52-9aed-e671c9a36625",
+        "uuid": "6b7aeab8-8336-436c-b3f0-72635f9a7c68",
         "csv_id": 27,
         "name": "IR Iran",
         "group": "G",
@@ -216,7 +216,7 @@
         "transfermarkt_id": null
     },
     "NZL": {
-        "uuid": "64d22142-856e-4b32-93c8-36f3cfb1ab8f",
+        "uuid": "c794b2af-ea50-4664-acb2-bbb97908b458",
         "csv_id": 28,
         "name": "New Zealand",
         "group": "G",
@@ -224,7 +224,7 @@
         "transfermarkt_id": null
     },
     "ESP": {
-        "uuid": "f94437ec-30be-48d8-9440-4c7244c667ce",
+        "uuid": "9d17deee-bd1a-4b2b-9363-7a9713d7c502",
         "csv_id": 29,
         "name": "Spain",
         "group": "H",
@@ -232,7 +232,7 @@
         "transfermarkt_id": "3375"
     },
     "CPV": {
-        "uuid": "d480f281-686b-4716-a1e2-0a61c0f861cd",
+        "uuid": "a886174b-ae37-436c-9f12-175b820bc925",
         "csv_id": 30,
         "name": "Cabo Verde",
         "group": "H",
@@ -240,7 +240,7 @@
         "transfermarkt_id": null
     },
     "KSA": {
-        "uuid": "c3db770f-b9d0-4aa0-a7bb-b0a352b4d1c5",
+        "uuid": "214560c7-bee0-4ee3-9243-01277063e295",
         "csv_id": 31,
         "name": "Saudi Arabia",
         "group": "H",
@@ -248,7 +248,7 @@
         "transfermarkt_id": null
     },
     "URU": {
-        "uuid": "57091bd2-4357-4f3a-95e7-07329e6611c2",
+        "uuid": "7a6ba133-f077-4abe-8566-097ec8d0da30",
         "csv_id": 32,
         "name": "Uruguay",
         "group": "H",
@@ -256,7 +256,7 @@
         "transfermarkt_id": null
     },
     "FRA": {
-        "uuid": "e5830419-e312-465a-a066-c61b691154c6",
+        "uuid": "e53d5923-bb0c-411f-a94d-beb30f543ec1",
         "csv_id": 33,
         "name": "France",
         "group": "I",
@@ -264,7 +264,7 @@
         "transfermarkt_id": "3377"
     },
     "SEN": {
-        "uuid": "eb312fe8-017c-4dde-844a-b4d1e95893b4",
+        "uuid": "8f33f487-5409-4073-995a-e0c6807089f5",
         "csv_id": 34,
         "name": "Senegal",
         "group": "I",
@@ -272,7 +272,7 @@
         "transfermarkt_id": null
     },
     "FP02": {
-        "uuid": "12a79164-bbfb-4a77-931b-226594652041",
+        "uuid": "a09ece42-0346-4e37-800c-ed931f599423",
         "csv_id": 35,
         "name": "Winner FIFA Playoff 2",
         "group": "I",
@@ -280,7 +280,7 @@
         "transfermarkt_id": null
     },
     "NOR": {
-        "uuid": "f5c022c0-9ecc-4ac1-bde6-b349db5d8046",
+        "uuid": "6bce8166-c3fa-478d-b3ba-0f0683e777f1",
         "csv_id": 36,
         "name": "Norway",
         "group": "I",
@@ -288,7 +288,7 @@
         "transfermarkt_id": null
     },
     "ARG": {
-        "uuid": "5511d303-17c4-47f7-a302-dec7466bf2be",
+        "uuid": "37fb12c9-0a2a-4ec1-8fa5-d8edd902bc79",
         "csv_id": 37,
         "name": "Argentina",
         "group": "J",
@@ -296,7 +296,7 @@
         "transfermarkt_id": "3437"
     },
     "ALG": {
-        "uuid": "9918e99d-258c-4262-8031-2e532c450c29",
+        "uuid": "494a9c40-6411-4f06-92db-eef95c38f70a",
         "csv_id": 38,
         "name": "Algeria",
         "group": "J",
@@ -304,7 +304,7 @@
         "transfermarkt_id": null
     },
     "AUT": {
-        "uuid": "f9ec2103-2f91-4b6d-868a-4cad94eecf90",
+        "uuid": "fbf14c50-649f-4a76-9e71-0ef860c9b0ea",
         "csv_id": 39,
         "name": "Austria",
         "group": "J",
@@ -312,7 +312,7 @@
         "transfermarkt_id": null
     },
     "JOR": {
-        "uuid": "534e75c7-ddf1-4e21-84f5-7f98eedea9a2",
+        "uuid": "8498027b-7f4a-4dcc-9ada-af2b21bf0f4b",
         "csv_id": 40,
         "name": "Jordan",
         "group": "J",
@@ -320,7 +320,7 @@
         "transfermarkt_id": null
     },
     "POR": {
-        "uuid": "90199ac7-53fe-4931-9312-1331da87ebb5",
+        "uuid": "299be8ad-69be-4a9f-ae2b-51146991dfb8",
         "csv_id": 41,
         "name": "Portugal",
         "group": "K",
@@ -328,7 +328,7 @@
         "transfermarkt_id": null
     },
     "FP01": {
-        "uuid": "54868bf4-7725-46db-8ca9-3f24f88bf132",
+        "uuid": "6a9ad7ff-50f7-44eb-b931-a6f7d0bc1a63",
         "csv_id": 42,
         "name": "Winner FIFA Playoff 1",
         "group": "K",
@@ -336,7 +336,7 @@
         "transfermarkt_id": null
     },
     "UZB": {
-        "uuid": "79f1bc25-83cd-423a-b583-a29e8de1b4f6",
+        "uuid": "9c59c4ce-e86d-436a-ac8a-8aa6bbfd2316",
         "csv_id": 43,
         "name": "Uzbekistan",
         "group": "K",
@@ -344,7 +344,7 @@
         "transfermarkt_id": null
     },
     "COL": {
-        "uuid": "2433f44a-41e0-450c-9b16-adce21b44de5",
+        "uuid": "18c8ed76-7917-4ed4-935a-2007ad7a6f0f",
         "csv_id": 44,
         "name": "Colombia",
         "group": "K",
@@ -352,7 +352,7 @@
         "transfermarkt_id": null
     },
     "ENG": {
-        "uuid": "4385e96e-25af-43cc-8a81-024a55824b90",
+        "uuid": "21c4136c-750a-4423-8638-16896453aa93",
         "csv_id": 45,
         "name": "England",
         "group": "L",
@@ -360,7 +360,7 @@
         "transfermarkt_id": "3299"
     },
     "CRO": {
-        "uuid": "b72192c3-2f3f-4c28-acdb-4376af49812f",
+        "uuid": "723785d2-8e58-4b3e-b036-d3c54066304f",
         "csv_id": 46,
         "name": "Croatia",
         "group": "L",
@@ -368,7 +368,7 @@
         "transfermarkt_id": null
     },
     "GHA": {
-        "uuid": "ea26c2c7-02ef-4d15-8611-064fe29019ce",
+        "uuid": "abbe6f72-e2fe-49c3-9f70-43f6548172d2",
         "csv_id": 47,
         "name": "Ghana",
         "group": "L",
@@ -376,7 +376,7 @@
         "transfermarkt_id": null
     },
     "PAN": {
-        "uuid": "22671790-3cc2-4662-a938-7a0646515d54",
+        "uuid": "801fc822-89f6-423c-a5ea-f87d0bd841e0",
         "csv_id": 48,
         "name": "Panama",
         "group": "L",

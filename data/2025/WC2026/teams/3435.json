@@ -1,0 +1,731 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/3435.png",
+  "name": "Japan",
+  "players": [
+    {
+      "contract": "Jul 19, 2022",
+      "dateOfBirth": "Aug 21, 2002",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "432298",
+      "marketValue": "€9.00m",
+      "name": "Zion Suzuki",
+      "position": "Goalkeeper"
+    },
+    {
+      "dateOfBirth": "Jan 23, 2001",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "501737",
+      "marketValue": "€2.50m",
+      "name": "Leo Kokubo",
+      "number": "12",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 18, 2019",
+      "dateOfBirth": "Jul 28, 1999",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "415521",
+      "marketValue": "€1.70m",
+      "name": "Keisuke Osako",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jul 27, 2022",
+      "dateOfBirth": "Nov 22, 2000",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "405382",
+      "marketValue": "€1.00m",
+      "name": "Kosei Tani",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jul 12, 2025",
+      "dateOfBirth": "Mar 3, 1999",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "683271",
+      "marketValue": "€850k",
+      "name": "Tomoki Hayakawa",
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "dateOfBirth": "Dec 25, 2002",
+      "foot": "right",
+      "height": "1,93m",
+      "id": "617377",
+      "marketValue": "€800k",
+      "name": "Taishi Brandon Nozawa",
+      "number": "23",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jul 8, 2025",
+      "dateOfBirth": "Jan 10, 2006",
+      "foot": "right",
+      "height": "1,97m",
+      "id": "916599",
+      "marketValue": "€50k",
+      "name": "Alexandre Pisano",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 2, 2022",
+      "dateOfBirth": "May 12, 1999",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "353892",
+      "marketValue": "€30.00m",
+      "name": "Hiroki Ito",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 21, 2019",
+      "dateOfBirth": "Jan 27, 1997",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "355816",
+      "marketValue": "€15.00m",
+      "name": "Ko Itakura",
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Sep 12, 2023",
+      "dateOfBirth": "Aug 25, 1997",
+      "foot": "left",
+      "height": "1,90m",
+      "id": "415035",
+      "marketValue": "€10.00m",
+      "name": "Koki Machida",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 14, 2019",
+      "dateOfBirth": "Feb 5, 1997",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "598791",
+      "marketValue": "€9.00m",
+      "name": "Tsuyoshi Watanabe",
+      "number": "5",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jul 24, 2022",
+      "dateOfBirth": "Aug 7, 1996",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "602314",
+      "marketValue": "€1.40m",
+      "name": "Hayato Araki",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 11, 2015",
+      "dateOfBirth": "Jul 15, 1991",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "307870",
+      "marketValue": "€1.20m",
+      "name": "Shogo Taniguchi",
+      "number": "3",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 12, 2017",
+      "dateOfBirth": "Oct 24, 1994",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "188915",
+      "marketValue": "€1.00m",
+      "name": "Naomichi Ueda",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 18, 2019",
+      "dateOfBirth": "Feb 16, 1997",
+      "foot": "left",
+      "height": "1,81m",
+      "id": "346647",
+      "marketValue": "€1.00m",
+      "name": "Yuta Nakayama",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Dec 14, 2019",
+      "dateOfBirth": "Oct 28, 1998",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "489072",
+      "marketValue": "€1.00m",
+      "name": "Taiyo Koga",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Sep 5, 2024",
+      "dateOfBirth": "Sep 4, 2004",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "671108",
+      "marketValue": "€550k",
+      "name": "Kota Takai",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jul 12, 2025",
+      "dateOfBirth": "Aug 15, 2000",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "1030663",
+      "marketValue": "€500k",
+      "name": "Yuto Tsunashima",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jul 8, 2025",
+      "dateOfBirth": "Jan 10, 1999",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "610795",
+      "marketValue": "€350k",
+      "name": "Tomoya Ando",
+      "number": "16",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 10, 2025",
+      "dateOfBirth": "Jul 12, 2003",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "848856",
+      "marketValue": "€350k",
+      "name": "Junnosuke Suzuki",
+      "number": "25",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "May 24, 2008",
+      "dateOfBirth": "Sep 12, 1986",
+      "foot": "both",
+      "height": "1,70m",
+      "id": "79522",
+      "marketValue": "€150k",
+      "name": "Yuto Nagatomo",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Oct 9, 2020",
+      "dateOfBirth": "Jun 28, 2000",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "405385",
+      "marketValue": "€12.00m",
+      "name": "Yukinari Sugawara",
+      "number": "2",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Dec 10, 2019",
+      "dateOfBirth": "May 17, 1999",
+      "foot": "right",
+      "height": "1,84m",
+      "id": "387191",
+      "marketValue": "€2.00m",
+      "name": "Daiki Hashioka",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 5, 2025",
+      "dateOfBirth": "Aug 11, 2002",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "1137808",
+      "marketValue": "€800k",
+      "name": "Hiroki Sekine",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jul 8, 2025",
+      "dateOfBirth": "Sep 20, 2001",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "1137518",
+      "marketValue": "€450k",
+      "name": "Henry Heroki Mochizuki",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Aug 2, 2015",
+      "dateOfBirth": "Feb 9, 1993",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "146310",
+      "marketValue": "€12.00m",
+      "name": "Wataru Endo",
+      "number": "6",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Nov 16, 2023",
+      "dateOfBirth": "Dec 30, 2000",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "643574",
+      "marketValue": "€7.00m",
+      "name": "Kaishu Sano",
+      "number": "21",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Mar 24, 2023",
+      "dateOfBirth": "Jun 7, 2000",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "405389",
+      "marketValue": "€1.00m",
+      "name": "Ayumu Seko",
+      "number": "22",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jul 12, 2025",
+      "dateOfBirth": "Aug 13, 2002",
+      "foot": "left",
+      "height": "1,75m",
+      "id": "665618",
+      "marketValue": "€900k",
+      "name": "Satoshi Tanaka",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Mar 30, 2021",
+      "dateOfBirth": "Dec 25, 1991",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "290660",
+      "marketValue": "€750k",
+      "name": "Sho Inagaki",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jul 12, 2025",
+      "dateOfBirth": "Nov 20, 2003",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "957526",
+      "marketValue": "€400k",
+      "name": "Zento Uno",
+      "position": "Defensive Midfield"
+    },
+    {
+      "dateOfBirth": "Apr 15, 2001",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "1156272",
+      "marketValue": "€125k",
+      "name": "Koki Kumasaka",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Sep 11, 2018",
+      "dateOfBirth": "May 10, 1995",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "524315",
+      "marketValue": "€15.00m",
+      "name": "Hidemasa Morita",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Mar 29, 2022",
+      "dateOfBirth": "Nov 21, 1997",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "496656",
+      "marketValue": "€11.00m",
+      "name": "Reo Hatate",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Mar 25, 2021",
+      "dateOfBirth": "Sep 8, 1995",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "262489",
+      "marketValue": "€4.00m",
+      "name": "Hayao Kawabe",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 10, 2025",
+      "dateOfBirth": "Sep 25, 2003",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "957544",
+      "marketValue": "€4.00m",
+      "name": "Kodai Sano",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Dec 14, 2019",
+      "dateOfBirth": "Sep 10, 1998",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "489359",
+      "marketValue": "€4.00m",
+      "name": "Ao Tanaka",
+      "number": "17",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jul 19, 2022",
+      "dateOfBirth": "Feb 16, 2002",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "697277",
+      "marketValue": "€1.80m",
+      "name": "Joel Chima Fujita",
+      "number": "7",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Nov 14, 2025",
+      "dateOfBirth": "Aug 13, 2004",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "671114",
+      "marketValue": "€450k",
+      "name": "Sota Kitano",
+      "number": "24",
+      "position": "Right Midfield"
+    },
+    {
+      "contract": "Jul 8, 2025",
+      "dateOfBirth": "Apr 5, 1999",
+      "foot": "right",
+      "height": "1,67m",
+      "id": "589813",
+      "marketValue": "€400k",
+      "name": "Tojiro Kubo",
+      "position": "Right Midfield"
+    },
+    {
+      "contract": "Mar 22, 2019",
+      "dateOfBirth": "Aug 5, 1996",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "356141",
+      "marketValue": "€15.00m",
+      "name": "Daichi Kamada",
+      "number": "15",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 15, 2023",
+      "dateOfBirth": "Apr 11, 1997",
+      "foot": "right",
+      "height": "1,68m",
+      "id": "679903",
+      "marketValue": "€2.00m",
+      "name": "Ryoya Morishita",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jul 8, 2025",
+      "dateOfBirth": "Feb 6, 2005",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "908661",
+      "marketValue": "€250k",
+      "name": "Yuto Ozeki",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 10, 2025",
+      "dateOfBirth": "Oct 16, 2006",
+      "foot": "right",
+      "height": "1,71m",
+      "id": "948169",
+      "marketValue": "€200k",
+      "name": "Ryunosuke Sato",
+      "number": "14",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Nov 16, 2021",
+      "dateOfBirth": "May 20, 1997",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "504849",
+      "marketValue": "€45.00m",
+      "name": "Kaoru Mitoma",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Oct 13, 2015",
+      "dateOfBirth": "Jan 16, 1995",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "165793",
+      "marketValue": "€15.00m",
+      "name": "Takumi Minamino",
+      "number": "8",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Mar 24, 2023",
+      "dateOfBirth": "Jul 28, 2000",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "405397",
+      "marketValue": "€12.00m",
+      "name": "Keito Nakamura",
+      "number": "13",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 18, 2019",
+      "dateOfBirth": "Oct 20, 1997",
+      "foot": "right",
+      "height": "1,73m",
+      "id": "420931",
+      "marketValue": "€8.00m",
+      "name": "Daizen Maeda",
+      "number": "11",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Oct 10, 2025",
+      "dateOfBirth": "Aug 10, 2001",
+      "foot": "right",
+      "height": "1,70m",
+      "id": "501743",
+      "marketValue": "€4.00m",
+      "name": "Koki Saito",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 10, 2025",
+      "dateOfBirth": "Sep 28, 2002",
+      "foot": "right",
+      "height": "1,64m",
+      "id": "566013",
+      "marketValue": "€650k",
+      "name": "Shunsuke Mito",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 5, 2025",
+      "dateOfBirth": "May 14, 2004",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "925357",
+      "marketValue": "€650k",
+      "name": "Kota Tawaratsumida",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 9, 2019",
+      "dateOfBirth": "Jun 4, 2001",
+      "foot": "left",
+      "height": "1,73m",
+      "id": "405398",
+      "marketValue": "€40.00m",
+      "name": "Takefusa Kubo",
+      "number": "20",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Sep 11, 2018",
+      "dateOfBirth": "Jun 16, 1998",
+      "foot": "left",
+      "height": "1,72m",
+      "id": "358504",
+      "marketValue": "€22.00m",
+      "name": "Ritsu Doan",
+      "number": "10",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 9, 2017",
+      "dateOfBirth": "Mar 9, 1993",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "348791",
+      "marketValue": "€8.00m",
+      "name": "Junya Ito",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Dec 10, 2019",
+      "dateOfBirth": "Feb 25, 1997",
+      "foot": "right",
+      "height": "1,66m",
+      "id": "594069",
+      "marketValue": "€1.30m",
+      "name": "Yuki Soma",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 5, 2025",
+      "dateOfBirth": "Jan 3, 2001",
+      "foot": "right",
+      "height": "1,72m",
+      "id": "936237",
+      "marketValue": "€900k",
+      "name": "Yu Hirakawa",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 6, 2024",
+      "dateOfBirth": "Oct 25, 2001",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "668606",
+      "marketValue": "€7.00m",
+      "name": "Yuito Suzuki",
+      "position": "Second Striker"
+    },
+    {
+      "contract": "Nov 19, 2019",
+      "dateOfBirth": "Jan 20, 1995",
+      "foot": "right",
+      "height": "1,70m",
+      "id": "489463",
+      "marketValue": "€14.00m",
+      "name": "Kyogo Furuhashi",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 18, 2019",
+      "dateOfBirth": "Aug 28, 1998",
+      "foot": "right",
+      "height": "1,82m",
+      "id": "589128",
+      "marketValue": "€8.00m",
+      "name": "Ayase Ueda",
+      "number": "18",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jul 19, 2022",
+      "dateOfBirth": "Sep 30, 1999",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "550580",
+      "marketValue": "€3.00m",
+      "name": "Shuto Machino",
+      "number": "9",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Dec 14, 2019",
+      "dateOfBirth": "Aug 8, 1997",
+      "foot": "right",
+      "height": "1,86m",
+      "id": "351567",
+      "marketValue": "€3.00m",
+      "name": "Koki Ogawa",
+      "number": "19",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jul 24, 2022",
+      "dateOfBirth": "Sep 7, 2001",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "663514",
+      "marketValue": "€1.60m",
+      "name": "Mao Hosoya",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Nov 15, 2024",
+      "dateOfBirth": "Jul 27, 1996",
+      "foot": "right",
+      "height": "1,81m",
+      "id": "592116",
+      "marketValue": "€1.50m",
+      "name": "Yuki Ohashi",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jul 8, 2025",
+      "dateOfBirth": "May 26, 2000",
+      "foot": "right",
+      "height": "1,78m",
+      "id": "405395",
+      "marketValue": "€1.20m",
+      "name": "Taisei Miyashiro",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jul 8, 2025",
+      "dateOfBirth": "May 30, 2000",
+      "foot": "right",
+      "height": "1,75m",
+      "id": "681970",
+      "marketValue": "€900k",
+      "name": "Shin Yamada",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Nov 14, 2025",
+      "dateOfBirth": "Jun 3, 2005",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "916623",
+      "marketValue": "€900k",
+      "name": "Keisuke Goto",
+      "number": "26",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jul 12, 2025",
+      "dateOfBirth": "May 5, 1999",
+      "foot": "right",
+      "height": "1,91m",
+      "id": "495752",
+      "marketValue": "€850k",
+      "name": "Taichi Hara",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jul 8, 2025",
+      "dateOfBirth": "Apr 19, 1995",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "511448",
+      "marketValue": "€700k",
+      "name": "Ryo Germain",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jul 8, 2025",
+      "dateOfBirth": "Jul 14, 1997",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "415033",
+      "marketValue": "€600k",
+      "name": "Yuki Kakita",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jul 8, 2025",
+      "dateOfBirth": "Oct 15, 2002",
+      "foot": "right",
+      "height": "1,68m",
+      "id": "1268075",
+      "name": "Sota Nakamura",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": null,
+  "stadiumSeats": null,
+  "transfermarktId": "3435"
+}
