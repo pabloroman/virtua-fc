@@ -367,3 +367,110 @@ php artisan app:create-test-game
 ```bash
 php artisan test
 ```
+
+---
+
+## F. Investment Timing Analysis
+
+An important question surfaced during this research: **does the investment selection happen at the right time in the game, from a playability standpoint?** This analysis applies to the existing budget system and has implications for where stadium decisions should live.
+
+### Current Game Loop Timeline
+
+```
+Season N: last match played
+  → Player clicks "Start New Season"
+  → Season Transition Pipeline runs (background job):
+      Priority 3:   Loan returns
+      Priority 5:   Archive / Contract expiration / Pre-contracts
+      Priority 6-7: Renewals, retirements
+      Priority 10:  Player development
+      Priority 15:  Season Settlement (actual vs projected revenue reconciled)
+      Priority 20:  Stats reset
+      Priority 24:  Season simulation (AI seasons)
+      Priority 25:  Supercup qualification
+      Priority 26:  Promotion/relegation
+      Priority 30:  Fixture generation
+      Priority 40:  Standings reset
+      Priority 50:  BudgetProjectionProcessor (projects new season revenue)
+      Priority 55:  Youth academy batch generation
+      Priority 105: UEFA qualification
+      Priority 110: OnboardingResetProcessor (needs_onboarding = true)
+  → Loading screen clears
+  → ONBOARDING SCREEN:
+      - Season preview (objective, competitions)
+      - Budget allocation sliders (Youth / Medical / Scouting / Facilities / Transfers)
+      - "Begin Season" button
+  → Player allocates → CompleteOnboarding saves GameInvestment, fires SeasonStarted
+  → Season N+1 starts immediately (summer window July-August)
+  → Budget CAN be re-allocated mid-season (isLocked is always false)
+  → 38 matchdays play out
+  → Cycle repeats
+```
+
+### What Works Well
+
+**Investment happens before you know anything — and that's correct.** You haven't played a match, don't know how transfers will go, can't predict injuries or cup draws. This mirrors how real club boards approve budgets before the season. The uncertainty creates genuine tension: *"Do I bet big on academy, or hedge with medical in case of injuries?"*
+
+**Projections are calculated before allocation.** The player sees squad strength rankings, projected position, estimated revenue, and available surplus before touching the sliders. This is enough information to make an informed but still uncertain decision.
+
+### What Undermines Playability
+
+#### 1. Budget never actually locks
+
+`ShowBudgetAllocation.php` always sets `isLocked = false`. Players can re-allocate infrastructure investment at any time via the Finances page. The UI has translation keys for `budget_locked` and `budget_locked_desc` ("Budget allocation is fixed for the season. Changes can be made at the start of next pre-season.") but **the lock is never engaged**.
+
+**Impact:** If you can always change your mind, the pre-season allocation becomes a suggestion rather than a commitment. There's no reason to agonize over the sliders if you can adjust after matchday 10. The "trade-off tension" the system is designed to create is undermined.
+
+#### 2. Infrastructure effects are immediate and non-persistent
+
+When you allocate €8M to Youth Academy, you instantly get Tier 3 academy that same season. Drop to €2M next season and you're back to Tier 2. There's no build-up, no momentum, no legacy.
+
+**Impact:** Small clubs can't gradually build infrastructure — they need to afford Tier 3+ fresh every season. There's no sense of "my club is developing over the years" because everything resets.
+
+#### 3. All decisions happen in one moment
+
+The onboarding screen asks the player to simultaneously decide: academy investment, medical investment, scouting investment, facilities investment, and transfer budget. That's 5 competing priorities on one screen, resolved in 30 seconds.
+
+**Impact:** No pacing. No reveal moments. No "I should have spent more on medical" regret mid-season (since you can change it). The entire strategic layer collapses into a single interaction.
+
+#### 4. No information evolves between decisions
+
+You get all projections at once, make all choices at once, and start playing. There's never a moment where new information forces you to reconsider a previous choice (since you can just re-allocate anyway).
+
+### How This Affects Stadium Feature Design
+
+These observations lead to specific design recommendations for the stadium feature:
+
+#### Don't add stadium to the onboarding screen
+
+The onboarding screen already has 5 competing sliders. Adding stadium expansion and ticket pricing there would create decision overload. Stadium is a fundamentally different kind of decision (multi-season commitment) that deserves its own space.
+
+#### Stadium should be a separate page, accessible during summer window
+
+The narrative becomes:
+1. **Pre-season onboarding** → "Here's your budget. Allocate your infrastructure and transfer budget." (seasonal, reversible)
+2. **Stadium page** → "Here's your stadium. Want to expand? Change ticket prices?" (persistent, long-term)
+3. **Transfer market** → "Here are available players." (tactical, reactive)
+
+This creates three distinct decision domains with different time horizons.
+
+#### Ticket pricing should lock after the season starts
+
+Since the current budget allocation never locks (a playability issue), the stadium feature should at least introduce locking for its own decisions. Ticket pricing locks once the first competitive match is played. This creates a commitment the rest of the budget system lacks.
+
+#### Stadium expansion cost should come from transfer budget
+
+Rather than creating a new funding source, expansion should deduct from the transfer budget (the flexible pool). This creates a clear trade-off: "Do I spend €15M on a striker, or on +5,000 seats that will pay back over 5 seasons?"
+
+### Future Considerations (Beyond Stadium V1)
+
+These timing issues suggest broader improvements to the financial system that could come later:
+
+| Improvement | Impact | Effort |
+|------------|--------|--------|
+| **Lock infrastructure allocation after matchday 1** | Restores commitment tension for all investment areas | Low — add `isLocked` check based on `current_matchday > 0` |
+| **Cumulative infrastructure investment** | Small clubs can gradually build up; creates multi-season arcs | High — reworks `GameInvestment` model fundamentally |
+| **Split decisions across the season** | Better pacing, more decision points | Medium — new UI moments for mid-season decisions |
+| **Add maintenance costs** | Infrastructure degrades if not maintained, creating ongoing pressure | Medium — new processor + decay logic |
+
+The stadium expansion feature naturally introduces the concept of persistent, cumulative investment. If players respond well to it, that pattern could later extend to the other infrastructure areas (academy, medical, scouting, facilities).
