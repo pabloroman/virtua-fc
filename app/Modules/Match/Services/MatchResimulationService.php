@@ -146,6 +146,91 @@ class MatchResimulationService
     }
 
     /**
+     * Re-simulate extra time from a given minute (after an ET substitution or tactical change).
+     * Same structure as doResimulate() but targets ET scores and uses simulateExtraTime().
+     */
+    public function resimulateExtraTime(
+        GameMatch $match,
+        Game $game,
+        int $minute,
+        Collection $homePlayers,
+        Collection $awayPlayers,
+        array $allSubstitutions = [],
+    ): ResimulationResult {
+        return DB::transaction(function () use ($match, $game, $minute, $homePlayers, $awayPlayers, $allSubstitutions) {
+            $competitionId = $match->competition_id;
+
+            // 1. Capture old ET scores
+            $oldHomeScore = $match->home_score_et ?? 0;
+            $oldAwayScore = $match->away_score_et ?? 0;
+
+            // 2. Revert all events after the minute
+            $this->revertEventsAfterMinute($match, $minute, $competitionId);
+
+            // 3. Calculate ET-only score at minute (events with minute > 90 that remain)
+            $scoreAtMinute = $this->calculateScoreAtMinute($match, 90);
+
+            // 4. Read formation/mentality from match record
+            $homeFormation = Formation::tryFrom($match->home_formation) ?? Formation::F_4_4_2;
+            $awayFormation = Formation::tryFrom($match->away_formation) ?? Formation::F_4_4_2;
+            $homeMentality = Mentality::tryFrom($match->home_mentality ?? '') ?? Mentality::BALANCED;
+            $awayMentality = Mentality::tryFrom($match->away_mentality ?? '') ?? Mentality::BALANCED;
+
+            // 5. Exclude red-carded players
+            $redCardedPlayerIds = MatchEvent::where('game_match_id', $match->id)
+                ->where('event_type', 'red_card')
+                ->where('minute', '<=', $minute)
+                ->pluck('game_player_id')
+                ->all();
+
+            $homePlayers = $homePlayers->reject(fn ($p) => in_array($p->id, $redCardedPlayerIds));
+            $awayPlayers = $awayPlayers->reject(fn ($p) => in_array($p->id, $redCardedPlayerIds));
+
+            // 6. Build entry minute maps from substitutions
+            $isUserHome = $match->isHomeTeam($game->team_id);
+            $homeEntryMinutes = [];
+            $awayEntryMinutes = [];
+            foreach ($allSubstitutions as $sub) {
+                if ($isUserHome) {
+                    $homeEntryMinutes[$sub['playerInId']] = $sub['minute'];
+                } else {
+                    $awayEntryMinutes[$sub['playerInId']] = $sub['minute'];
+                }
+            }
+
+            // 7. Re-simulate extra time remainder
+            $remainderResult = $this->matchSimulator->simulateExtraTime(
+                $match->homeTeam,
+                $match->awayTeam,
+                $homePlayers,
+                $awayPlayers,
+                $homeEntryMinutes,
+                $awayEntryMinutes,
+                fromMinute: $minute,
+                homeFormation: $homeFormation,
+                awayFormation: $awayFormation,
+                homeMentality: $homeMentality,
+                awayMentality: $awayMentality,
+            );
+
+            // 8. Calculate new ET score
+            $newHomeScore = $scoreAtMinute['home'] + $remainderResult->homeScore;
+            $newAwayScore = $scoreAtMinute['away'] + $remainderResult->awayScore;
+
+            // 9. Apply the new remainder events
+            $this->applyNewEvents($match, $game, $remainderResult, $competitionId);
+
+            // 10. Update ET scores (not regular-time scores)
+            $match->update([
+                'home_score_et' => $newHomeScore,
+                'away_score_et' => $newAwayScore,
+            ]);
+
+            return new ResimulationResult($newHomeScore, $newAwayScore, $oldHomeScore, $oldAwayScore);
+        });
+    }
+
+    /**
      * Revert all match events after a given minute and rebuild affected player stats.
      *
      * Instead of manually decrementing stats (fragile mirror of applyNewEvents),
@@ -235,11 +320,19 @@ class MatchResimulationService
     }
 
     /**
-     * Calculate the score at a given minute from remaining events.
+     * Calculate the score from remaining events.
+     *
+     * @param  int  $afterMinute  Only count events with minute > this value (0 = all events)
      */
-    private function calculateScoreAtMinute(GameMatch $match): array
+    private function calculateScoreAtMinute(GameMatch $match, int $afterMinute = 0): array
     {
-        $events = MatchEvent::where('game_match_id', $match->id)->get();
+        $query = MatchEvent::where('game_match_id', $match->id);
+
+        if ($afterMinute > 0) {
+            $query->where('minute', '>', $afterMinute);
+        }
+
+        $events = $query->get();
 
         $homeScore = 0;
         $awayScore = 0;

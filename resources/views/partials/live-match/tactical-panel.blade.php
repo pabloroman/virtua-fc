@@ -89,7 +89,7 @@
                     >
                         {{ __('game.tactical_tab_substitutions') }}
                         <span class="text-xs font-normal ml-1" :class="tacticalTab === 'substitutions' ? 'text-slate-500' : 'text-slate-400'"
-                              x-text="'(' + substitutionsMade.length + '/' + maxSubstitutions + ')'"></span>
+                              x-text="'(' + substitutionsMade.length + '/' + effectiveMaxSubstitutions + ')'"></span>
                         {{-- Active indicator --}}
                         <div
                             x-show="tacticalTab === 'substitutions'"
@@ -137,9 +137,9 @@
 
                     {{-- Window + sub budget summary --}}
                     <div class="flex items-center gap-3 mb-4 text-xs text-slate-500">
-                        <span>{{ __('game.sub_title') }}: <span class="font-semibold text-slate-700" x-text="substitutionsMade.length + '/' + maxSubstitutions"></span></span>
+                        <span>{{ __('game.sub_title') }}: <span class="font-semibold text-slate-700" x-text="substitutionsMade.length + '/' + effectiveMaxSubstitutions"></span></span>
                         <span class="text-slate-300">&middot;</span>
-                        <span>{{ __('game.sub_windows') }}: <span class="font-semibold text-slate-700" x-text="windowsUsed + '/' + maxWindows"></span></span>
+                        <span>{{ __('game.sub_windows') }}: <span class="font-semibold text-slate-700" x-text="windowsUsed + '/' + effectiveMaxWindows"></span></span>
                     </div>
 
                     {{-- All windows exhausted --}}

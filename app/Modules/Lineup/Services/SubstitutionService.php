@@ -8,6 +8,7 @@ use App\Models\GamePlayer;
 use App\Models\MatchEvent;
 use App\Models\PlayerSuspension;
 use Illuminate\Support\Str;
+use App\Modules\Match\Services\ExtraTimeAndPenaltyService;
 use App\Modules\Match\Services\MatchResimulationService;
 
 class SubstitutionService
@@ -16,8 +17,13 @@ class SubstitutionService
 
     public const MAX_WINDOWS = 3;
 
+    public const MAX_ET_SUBSTITUTIONS = 6;
+
+    public const MAX_ET_WINDOWS = 4;
+
     public function __construct(
         private readonly MatchResimulationService $resimulationService,
+        private readonly ExtraTimeAndPenaltyService $extraTimeService,
     ) {}
 
     /**
@@ -31,16 +37,21 @@ class SubstitutionService
         array $newSubstitutions,
         int $minute,
         array $previousSubstitutions,
+        bool $isExtraTime = false,
     ): array {
+        // Use higher limits during extra time (6th sub, 4th window)
+        $maxSubs = $isExtraTime ? self::MAX_ET_SUBSTITUTIONS : self::MAX_SUBSTITUTIONS;
+        $maxWindows = $isExtraTime ? self::MAX_ET_WINDOWS : self::MAX_WINDOWS;
+
         // Check total substitution limit
         $totalSubs = count($previousSubstitutions) + count($newSubstitutions);
-        if ($totalSubs > self::MAX_SUBSTITUTIONS) {
+        if ($totalSubs > $maxSubs) {
             throw new \InvalidArgumentException('game.sub_error_limit_reached');
         }
 
         // Check substitution window limit
         $previousWindows = count(array_unique(array_column($previousSubstitutions, 'minute')));
-        if ($previousWindows >= self::MAX_WINDOWS) {
+        if ($previousWindows >= $maxWindows) {
             throw new \InvalidArgumentException('game.sub_error_windows_reached');
         }
 
@@ -116,7 +127,7 @@ class SubstitutionService
             $batchInIds[] = $playerInId;
         }
 
-        return $this->processBatchSubstitution($match, $game, $newSubstitutions, $minute, $previousSubstitutions);
+        return $this->processBatchSubstitution($match, $game, $newSubstitutions, $minute, $previousSubstitutions, $isExtraTime);
     }
 
     /**
@@ -125,6 +136,7 @@ class SubstitutionService
      *
      * @param  array  $newSubstitutions  Subs to make now [{playerOutId, playerInId}]
      * @param  array  $previousSubstitutions  Previous subs already made this match [{playerOutId, playerInId, minute}]
+     * @param  bool  $isExtraTime  Whether this substitution happens during extra time
      * @return array  Response payload for the frontend
      */
     public function processBatchSubstitution(
@@ -133,6 +145,7 @@ class SubstitutionService
         array $newSubstitutions,
         int $minute,
         array $previousSubstitutions,
+        bool $isExtraTime = false,
     ): array {
         $isUserHome = $match->isHomeTeam($game->team_id);
 
@@ -156,7 +169,11 @@ class SubstitutionService
         $awayPlayers = $isUserHome ? $opponentPlayers : $userLineup;
 
         // Delegate re-simulation to shared service (pass all subs for energy calculation)
-        $result = $this->resimulationService->resimulate($match, $game, $minute, $homePlayers, $awayPlayers, $allSubs);
+        if ($isExtraTime) {
+            $result = $this->resimulationService->resimulateExtraTime($match, $game, $minute, $homePlayers, $awayPlayers, $allSubs);
+        } else {
+            $result = $this->resimulationService->resimulate($match, $game, $minute, $homePlayers, $awayPlayers, $allSubs);
+        }
 
         // Increment appearances and record each sub in the batch
         foreach ($newSubstitutions as $sub) {
@@ -180,7 +197,7 @@ class SubstitutionService
         }
 
         // Build the response for the frontend
-        return $this->buildBatchResponse($match, $game, $minute, $newSubstitutions, $result->newHomeScore, $result->newAwayScore);
+        return $this->buildBatchResponse($match, $game, $minute, $newSubstitutions, $result->newHomeScore, $result->newAwayScore, $isExtraTime);
     }
 
     /**
@@ -222,7 +239,7 @@ class SubstitutionService
     /**
      * Build the JSON response for a batch substitution.
      */
-    private function buildBatchResponse(GameMatch $match, Game $game, int $minute, array $newSubstitutions, int $newHomeScore, int $newAwayScore): array
+    private function buildBatchResponse(GameMatch $match, Game $game, int $minute, array $newSubstitutions, int $newHomeScore, int $newAwayScore, bool $isExtraTime = false): array
     {
         $formattedEvents = $this->resimulationService->buildEventsResponse($match, $minute);
 
@@ -243,7 +260,7 @@ class SubstitutionService
             'teamId' => $game->team_id,
         ], $newSubstitutions);
 
-        return [
+        $response = [
             'newScore' => [
                 'home' => $newHomeScore,
                 'away' => $newAwayScore,
@@ -251,5 +268,14 @@ class SubstitutionService
             'newEvents' => $formattedEvents,
             'substitutions' => $substitutionDetails,
         ];
+
+        if ($isExtraTime) {
+            $response['isExtraTime'] = true;
+            $response['needsPenalties'] = $this->extraTimeService->checkNeedsPenalties(
+                $match->fresh(), $newHomeScore, $newAwayScore
+            );
+        }
+
+        return $response;
     }
 }
