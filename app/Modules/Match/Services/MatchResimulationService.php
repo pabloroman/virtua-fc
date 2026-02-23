@@ -250,10 +250,30 @@ class MatchResimulationService
         $affectedPlayerIds = $eventsToRevert->pluck('game_player_id')->unique()->values()->all();
 
         // Clear side-effects that can't be recalculated from events alone
+        $competition = \App\Models\Competition::find($competitionId);
+        $handlerType = $competition->handler_type ?? 'league';
+        $rules = $this->eligibilityService->rulesForHandlerType($handlerType);
+
         foreach ($eventsToRevert as $event) {
-            if (in_array($event->event_type, ['yellow_card', 'red_card'])) {
+            if ($event->event_type === 'yellow_card') {
+                // Check if this yellow was at a suspension threshold before reverting
+                $record = PlayerSuspension::forPlayerInCompetition($event->game_player_id, $competitionId);
+                $yellowsBefore = $record->yellow_cards ?? 0;
+                $wasAtThreshold = $rules->checkAccumulation($yellowsBefore) !== null;
+
+                PlayerSuspension::revertYellowCard($event->game_player_id, $competitionId);
+
+                // Only clear suspension if this specific yellow caused it
+                if ($wasAtThreshold && $record && $record->fresh()->matches_remaining > 0) {
+                    $record->update(['matches_remaining' => 0]);
+                }
+            }
+
+            if ($event->event_type === 'red_card') {
                 $suspension = PlayerSuspension::forPlayerInCompetition($event->game_player_id, $competitionId);
-                $suspension?->delete();
+                if ($suspension && $suspension->matches_remaining > 0) {
+                    $suspension->update(['matches_remaining' => 0]);
+                }
             }
 
             if ($event->event_type === 'injury') {
@@ -363,6 +383,8 @@ class MatchResimulationService
     {
         $now = now();
         $events = $result->events;
+        $competition = \App\Models\Competition::find($competitionId);
+        $handlerType = $competition->handler_type ?? 'league';
 
         // Bulk insert match events
         $rows = $events->map(fn (MatchEventData $e) => [
@@ -447,10 +469,7 @@ class MatchResimulationService
 
             switch ($event->type) {
                 case 'yellow_card':
-                    $suspension = $this->eligibilityService->checkYellowCardAccumulation($player->fresh());
-                    if ($suspension) {
-                        $this->eligibilityService->applySuspension($player, $suspension, $competitionId);
-                    }
+                    $this->eligibilityService->processYellowCard($player->id, $competitionId, $handlerType);
                     break;
                 case 'red_card':
                     $isSecondYellow = $event->metadata['second_yellow'] ?? false;

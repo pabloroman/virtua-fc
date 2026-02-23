@@ -5,6 +5,7 @@ namespace App\Modules\Match\Handlers;
 use App\Modules\Competition\Contracts\CompetitionHandler;
 use App\Modules\Competition\Services\CupDrawService;
 use App\Modules\Match\Services\CupTieResolver;
+use App\Modules\Squad\Services\EligibilityService;
 use App\Models\Competition;
 use App\Models\CupTie;
 use App\Models\FinancialTransaction;
@@ -17,6 +18,7 @@ class KnockoutCupHandler implements CompetitionHandler
     public function __construct(
         private readonly CupDrawService $cupDrawService,
         private readonly CupTieResolver $cupTieResolver,
+        private readonly EligibilityService $eligibilityService,
     ) {}
 
     public function getType(): string
@@ -52,6 +54,9 @@ class KnockoutCupHandler implements CompetitionHandler
     public function afterMatches(Game $game, Collection $matches, Collection $allPlayers): void
     {
         $this->resolveCupTies($game, $matches, $allPlayers);
+
+        // Reset yellow cards if a completed round matches the reset threshold
+        $this->maybeResetYellowCards($game, $matches);
 
         // After resolving ties, check if next round can be drawn
         $this->conductNextRoundDrawIfReady($game, $matches);
@@ -118,6 +123,47 @@ class KnockoutCupHandler implements CompetitionHandler
 
             if ($winnerId) {
                 $this->awardCupPrizeMoney($game, $tie->competition_id, $tie->round_number, $winnerId);
+            }
+        }
+    }
+
+    /**
+     * Reset yellow cards if the just-completed round matches the reset threshold.
+     */
+    private function maybeResetYellowCards(Game $game, Collection $matches): void
+    {
+        $competitionId = $matches->first()?->competition_id;
+        if (!$competitionId) {
+            return;
+        }
+
+        $rules = $this->eligibilityService->rulesForHandlerType('knockout_cup');
+        if ($rules->yellowCardResetAfterRound === null) {
+            return;
+        }
+
+        // Check if the reset round just completed (all ties resolved)
+        $resetRound = $rules->yellowCardResetAfterRound;
+        $allComplete = CupTie::where('game_id', $game->id)
+            ->where('competition_id', $competitionId)
+            ->where('round_number', $resetRound)
+            ->where('completed', false)
+            ->doesntExist();
+
+        $roundExists = CupTie::where('game_id', $game->id)
+            ->where('competition_id', $competitionId)
+            ->where('round_number', $resetRound)
+            ->exists();
+
+        if ($roundExists && $allComplete) {
+            // Only reset once — check if a later round already has ties (reset already happened)
+            $laterRoundExists = CupTie::where('game_id', $game->id)
+                ->where('competition_id', $competitionId)
+                ->where('round_number', '>', $resetRound)
+                ->exists();
+
+            if (!$laterRoundExists) {
+                $this->eligibilityService->resetYellowCardsForCompetition($game->id, $competitionId);
             }
         }
     }
