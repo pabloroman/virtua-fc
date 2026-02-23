@@ -61,15 +61,6 @@ class EvaluateAcademy
             }
         }
 
-        // Count loaned players (they still occupy virtual seats at season end)
-        $loanedCount = AcademyPlayer::where('game_id', $gameId)
-            ->where('team_id', $game->team_id)
-            ->where('is_on_loan', true)
-            ->count();
-
-        // Returning loans take seats at season end
-        $seatsAfter += $loanedCount;
-
         if ($seatsAfter > $capacity && $capacity > 0) {
             $excess = $seatsAfter - $capacity;
 
