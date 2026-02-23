@@ -7,6 +7,8 @@ export default function liveMatch(config) {
         finalHomeScore: config.finalHomeScore,
         finalAwayScore: config.finalAwayScore,
         otherMatches: config.otherMatches || [],
+        homeTeamName: config.homeTeamName,
+        awayTeamName: config.awayTeamName,
         homeTeamImage: config.homeTeamImage,
         awayTeamImage: config.awayTeamImage,
         userTeamId: config.userTeamId,
@@ -102,6 +104,7 @@ export default function liveMatch(config) {
         _lastTick: null,
         _animFrame: null,
         _kickoffTimeout: null,
+        _startETTimeout: null,
 
         // Speed presets: match minutes per real second
         speedRates: {
@@ -315,7 +318,7 @@ export default function liveMatch(config) {
                 // If ET data was preloaded (page refresh), use it directly
                 if (this.preloadedExtraTimeData) {
                     this.phase = 'going_to_extra_time';
-                    setTimeout(() => this.startExtraTime(), 2000);
+                    this._startETTimeout = setTimeout(() => this.startExtraTime(), 2000);
                 } else {
                     this.phase = 'going_to_extra_time';
                     this.fetchExtraTime();
@@ -374,7 +377,7 @@ export default function liveMatch(config) {
                 this._needsPenalties = result.needsPenalties || false;
 
                 // Brief pause showing "Extra Time" before starting
-                setTimeout(() => this.startExtraTime(), 2000);
+                this._startETTimeout = setTimeout(() => this.startExtraTime(), 2000);
             } catch (err) {
                 console.error('Extra time request failed:', err);
                 this.enterFullTime();
@@ -403,6 +406,7 @@ export default function liveMatch(config) {
         },
 
         enterExtraTimeEnd() {
+            clearTimeout(this._startETTimeout);
             this.currentMinute = 120;
 
             // Reveal any remaining ET events
@@ -514,6 +518,12 @@ export default function liveMatch(config) {
                 return;
             }
 
+            if (this.hasExtraTime && this.phase === 'going_to_extra_time') {
+                clearTimeout(this._startETTimeout);
+                this.skipExtraTime();
+                return;
+            }
+
             if (this.hasExtraTime && (this.phase === 'extra_time_first_half'
                 || this.phase === 'extra_time_second_half' || this.phase === 'extra_time_half_time')) {
                 this.skipExtraTime();
@@ -526,6 +536,7 @@ export default function liveMatch(config) {
         },
 
         skipExtraTime() {
+            clearTimeout(this._startETTimeout);
             this._skippingToEnd = false;
             this.currentMinute = 123;
 
@@ -699,11 +710,26 @@ export default function liveMatch(config) {
         },
 
         get penaltyHomeScore() {
+            if (this.penaltyKicks.length > 0) {
+                return this.revealedPenaltyKicks.filter(k => k.side === 'home' && k.scored).length;
+            }
             return this.penaltyResult ? this.penaltyResult.home : 0;
         },
 
         get penaltyAwayScore() {
+            if (this.penaltyKicks.length > 0) {
+                return this.revealedPenaltyKicks.filter(k => k.side === 'away' && k.scored).length;
+            }
             return this.penaltyResult ? this.penaltyResult.away : 0;
+        },
+
+        get penaltyWinner() {
+            if (!this.penaltyResult) return null;
+            const homeWon = this.penaltyResult.home > this.penaltyResult.away;
+            return {
+                name: homeWon ? this.homeTeamName : this.awayTeamName,
+                image: homeWon ? this.homeTeamImage : this.awayTeamImage,
+            };
         },
 
         // =============================
@@ -815,6 +841,7 @@ export default function liveMatch(config) {
                 }
 
                 const result = await response.json();
+                const isETChange = result.isExtraTime || false;
 
                 // Update active tactics
                 if (result.formation) {
@@ -824,34 +851,54 @@ export default function liveMatch(config) {
                     this.activeMentality = result.mentality;
                 }
 
-                // Remove future unrevealed events from the array
-                this.events = this.events.filter(e => e.minute <= minute);
+                if (isETChange) {
+                    // ET tactical change: update extra time events and scores
+                    this.extraTimeEvents = this.extraTimeEvents.filter(e => e.minute <= minute);
+                    this.revealedEvents = this.revealedEvents.filter(e => e.minute <= minute);
 
-                // Remove future events from revealedEvents too
-                this.revealedEvents = this.revealedEvents.filter(e => e.minute <= minute);
-
-                // Append new events from the server
-                if (result.newEvents && result.newEvents.length > 0) {
-                    this.events.push(...result.newEvents);
-                    this.events.sort((a, b) => a.minute - b.minute);
-                }
-
-                // Reset lastRevealedIndex
-                this.lastRevealedIndex = -1;
-                for (let i = 0; i < this.events.length; i++) {
-                    if (this.events[i].minute <= this.currentMinute) {
-                        this.lastRevealedIndex = i;
-                    } else {
-                        break;
+                    if (result.newEvents && result.newEvents.length > 0) {
+                        this.extraTimeEvents.push(...result.newEvents);
+                        this.extraTimeEvents.sort((a, b) => a.minute - b.minute);
                     }
+
+                    this.lastRevealedETIndex = -1;
+                    for (let i = 0; i < this.extraTimeEvents.length; i++) {
+                        if (this.extraTimeEvents[i].minute <= this.currentMinute) {
+                            this.lastRevealedETIndex = i;
+                        } else {
+                            break;
+                        }
+                    }
+
+                    this.etHomeScore = result.newScore.home;
+                    this.etAwayScore = result.newScore.away;
+                    this._needsPenalties = result.needsPenalties || false;
+
+                    this.recalculateScore();
+                } else {
+                    // Regular time tactical change
+                    this.events = this.events.filter(e => e.minute <= minute);
+                    this.revealedEvents = this.revealedEvents.filter(e => e.minute <= minute);
+
+                    if (result.newEvents && result.newEvents.length > 0) {
+                        this.events.push(...result.newEvents);
+                        this.events.sort((a, b) => a.minute - b.minute);
+                    }
+
+                    this.lastRevealedIndex = -1;
+                    for (let i = 0; i < this.events.length; i++) {
+                        if (this.events[i].minute <= this.currentMinute) {
+                            this.lastRevealedIndex = i;
+                        } else {
+                            break;
+                        }
+                    }
+
+                    this.finalHomeScore = result.newScore.home;
+                    this.finalAwayScore = result.newScore.away;
+
+                    this.recalculateScore();
                 }
-
-                // Update the final score
-                this.finalHomeScore = result.newScore.home;
-                this.finalAwayScore = result.newScore.away;
-
-                // Recalculate current displayed score
-                this.recalculateScore();
 
                 // Close the panel and resume
                 this.closeTacticalPanel();
@@ -872,6 +919,15 @@ export default function liveMatch(config) {
                 .map(e => e.gamePlayerId);
         },
 
+        // Dynamic limits: 6 subs / 4 windows during ET in knockout, 5/3 otherwise
+        get effectiveMaxSubstitutions() {
+            return (this.isKnockout && this.hasExtraTime) ? 6 : this.maxSubstitutions;
+        },
+
+        get effectiveMaxWindows() {
+            return (this.isKnockout && this.hasExtraTime) ? 4 : this.maxWindows;
+        },
+
         get windowsUsed() {
             // Count unique minutes in substitutionsMade — each unique minute = one window
             const minutes = new Set(this.substitutionsMade.map(s => s.minute));
@@ -879,15 +935,15 @@ export default function liveMatch(config) {
         },
 
         get hasWindowsLeft() {
-            return this.windowsUsed < this.maxWindows;
+            return this.windowsUsed < this.effectiveMaxWindows;
         },
 
         get subsRemaining() {
-            return this.maxSubstitutions - this.substitutionsMade.length - this.pendingSubs.length;
+            return this.effectiveMaxSubstitutions - this.substitutionsMade.length - this.pendingSubs.length;
         },
 
         get canSubstitute() {
-            return this.substitutionsMade.length + this.pendingSubs.length < this.maxSubstitutions;
+            return this.substitutionsMade.length + this.pendingSubs.length < this.effectiveMaxSubstitutions;
         },
 
         get canAddMoreToPending() {
@@ -996,6 +1052,7 @@ export default function liveMatch(config) {
                 }
 
                 const result = await response.json();
+                const isETSub = result.isExtraTime || false;
 
                 // Record all substitutions in the batch
                 for (const sub of result.substitutions) {
@@ -1014,45 +1071,84 @@ export default function liveMatch(config) {
                     }
                 }
 
-                // Remove future unrevealed events from the array
-                this.events = this.events.filter(e => e.minute <= subMinute);
+                if (isETSub) {
+                    // ET substitution: update extra time events and scores
+                    this.extraTimeEvents = this.extraTimeEvents.filter(e => e.minute <= subMinute);
+                    this.revealedEvents = this.revealedEvents.filter(e => e.minute <= subMinute);
 
-                // Remove future events from revealedEvents too
-                this.revealedEvents = this.revealedEvents.filter(e => e.minute <= subMinute);
-
-                // Add substitution events to the feed (one per sub in the batch)
-                for (const sub of result.substitutions) {
-                    this.revealedEvents.unshift({
-                        minute: subMinute,
-                        type: 'substitution',
-                        playerName: sub.playerOutName,
-                        playerInName: sub.playerInName,
-                        teamId: sub.teamId,
-                    });
-                }
-
-                // Append new events from the server (they'll be revealed as the clock advances)
-                if (result.newEvents && result.newEvents.length > 0) {
-                    this.events.push(...result.newEvents);
-                    this.events.sort((a, b) => a.minute - b.minute);
-                }
-
-                // Reset lastRevealedIndex to account for the modified events array
-                this.lastRevealedIndex = -1;
-                for (let i = 0; i < this.events.length; i++) {
-                    if (this.events[i].minute <= this.currentMinute) {
-                        this.lastRevealedIndex = i;
-                    } else {
-                        break;
+                    // Add substitution events to the feed
+                    for (const sub of result.substitutions) {
+                        this.revealedEvents.unshift({
+                            minute: subMinute,
+                            type: 'substitution',
+                            playerName: sub.playerOutName,
+                            playerInName: sub.playerInName,
+                            teamId: sub.teamId,
+                        });
                     }
+
+                    // Append new ET events
+                    if (result.newEvents && result.newEvents.length > 0) {
+                        this.extraTimeEvents.push(...result.newEvents);
+                        this.extraTimeEvents.sort((a, b) => a.minute - b.minute);
+                    }
+
+                    // Reset ET reveal index
+                    this.lastRevealedETIndex = -1;
+                    for (let i = 0; i < this.extraTimeEvents.length; i++) {
+                        if (this.extraTimeEvents[i].minute <= this.currentMinute) {
+                            this.lastRevealedETIndex = i;
+                        } else {
+                            break;
+                        }
+                    }
+
+                    // Update ET scores
+                    this.etHomeScore = result.newScore.home;
+                    this.etAwayScore = result.newScore.away;
+                    this._needsPenalties = result.needsPenalties || false;
+
+                    // Recalculate displayed score
+                    this.recalculateScore();
+                } else {
+                    // Regular time substitution
+                    this.events = this.events.filter(e => e.minute <= subMinute);
+                    this.revealedEvents = this.revealedEvents.filter(e => e.minute <= subMinute);
+
+                    // Add substitution events to the feed
+                    for (const sub of result.substitutions) {
+                        this.revealedEvents.unshift({
+                            minute: subMinute,
+                            type: 'substitution',
+                            playerName: sub.playerOutName,
+                            playerInName: sub.playerInName,
+                            teamId: sub.teamId,
+                        });
+                    }
+
+                    // Append new events from the server
+                    if (result.newEvents && result.newEvents.length > 0) {
+                        this.events.push(...result.newEvents);
+                        this.events.sort((a, b) => a.minute - b.minute);
+                    }
+
+                    // Reset lastRevealedIndex
+                    this.lastRevealedIndex = -1;
+                    for (let i = 0; i < this.events.length; i++) {
+                        if (this.events[i].minute <= this.currentMinute) {
+                            this.lastRevealedIndex = i;
+                        } else {
+                            break;
+                        }
+                    }
+
+                    // Update the final score
+                    this.finalHomeScore = result.newScore.home;
+                    this.finalAwayScore = result.newScore.away;
+
+                    // Recalculate current displayed score
+                    this.recalculateScore();
                 }
-
-                // Update the final score
-                this.finalHomeScore = result.newScore.home;
-                this.finalAwayScore = result.newScore.away;
-
-                // Recalculate current displayed score from revealed goal events
-                this.recalculateScore();
 
                 // Close the panel and resume
                 this.closeTacticalPanel();
@@ -1232,6 +1328,7 @@ export default function liveMatch(config) {
             }
             clearTimeout(this.pauseTimer);
             clearTimeout(this._kickoffTimeout);
+            clearTimeout(this._startETTimeout);
             clearTimeout(this._penaltyRevealTimer);
             document.body.classList.remove('overflow-y-hidden');
         },

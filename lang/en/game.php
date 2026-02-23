@@ -151,6 +151,7 @@ return [
     'live_pen_scored' => 'Goal',
     'live_pen_missed' => 'Missed',
     'live_pen_round' => 'Round :round',
+    'live_pen_winner' => 'wins on penalties!',
 
     // Substitutions
     'sub_title' => 'Substitutions',
