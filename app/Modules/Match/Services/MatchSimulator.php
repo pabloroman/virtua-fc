@@ -770,8 +770,10 @@ class MatchSimulator
     }
 
     /**
-     * Simulate extra time (30 minutes of play).
-     * Lower expected goals than normal time.
+     * Simulate extra time (30 minutes of play, or remainder from a given minute).
+     * Lower expected goals than normal time. Supports formation/mentality modifiers.
+     *
+     * @param  int  $fromMinute  Start minute (90 for full ET, or mid-ET after a sub/tactic change)
      */
     public function simulateExtraTime(
         Team $homeTeam,
@@ -780,46 +782,72 @@ class MatchSimulator
         Collection $awayPlayers,
         array $homeEntryMinutes = [],
         array $awayEntryMinutes = [],
+        int $fromMinute = 90,
+        ?Formation $homeFormation = null,
+        ?Formation $awayFormation = null,
+        ?Mentality $homeMentality = null,
+        ?Mentality $awayMentality = null,
     ): MatchResult {
         $events = collect();
 
-        // Ratio-based xG scaled to 30 minutes — energy already accounts for fatigue
-        $homeStrength = $this->calculateTeamStrength($homePlayers, 90, $homeEntryMinutes);
-        $awayStrength = $this->calculateTeamStrength($awayPlayers, 90, $awayEntryMinutes);
+        $homeFormation = $homeFormation ?? Formation::F_4_4_2;
+        $awayFormation = $awayFormation ?? Formation::F_4_4_2;
+        $homeMentality = $homeMentality ?? Mentality::BALANCED;
+        $awayMentality = $awayMentality ?? Mentality::BALANCED;
+
+        // Scale ET fraction based on remaining minutes (full ET = 30/90, partial if re-simulating)
+        $etMinutesRemaining = max(0, 120 - $fromMinute);
+        $etFraction = $etMinutesRemaining / 90.0;
+
+        // Ratio-based xG — energy already accounts for fatigue
+        $homeStrength = $this->calculateTeamStrength($homePlayers, $fromMinute, $homeEntryMinutes);
+        $awayStrength = $this->calculateTeamStrength($awayPlayers, $fromMinute, $awayEntryMinutes);
 
         $baseGoals = config('match_simulation.base_goals', 1.3);
         $ratioExponent = config('match_simulation.ratio_exponent', 2.0);
         $homeAdvantageGoals = config('match_simulation.home_advantage_goals', 0.15);
 
         $strengthRatio = $awayStrength > 0 ? $homeStrength / $awayStrength : 1.0;
-        $etFraction = 30.0 / 90.0;
         $etBaseGoals = $baseGoals * 0.8; // 20% fatigue reduction
 
-        $homeExpectedGoals = (pow($strengthRatio, $ratioExponent) * $etBaseGoals + $homeAdvantageGoals) * $etFraction;
-        $awayExpectedGoals = (pow(1 / $strengthRatio, $ratioExponent) * $etBaseGoals) * $etFraction;
+        $homeExpectedGoals = (pow($strengthRatio, $ratioExponent) * $etBaseGoals + $homeAdvantageGoals)
+            * $homeFormation->attackModifier()
+            * $awayFormation->defenseModifier()
+            * $homeMentality->ownGoalsModifier()
+            * $awayMentality->opponentGoalsModifier()
+            * $etFraction;
+
+        $awayExpectedGoals = (pow(1 / $strengthRatio, $ratioExponent) * $etBaseGoals)
+            * $awayFormation->attackModifier()
+            * $homeFormation->defenseModifier()
+            * $awayMentality->ownGoalsModifier()
+            * $homeMentality->opponentGoalsModifier()
+            * $etFraction;
 
         $homeScore = $this->poissonRandom($homeExpectedGoals);
         $awayScore = $this->poissonRandom($awayExpectedGoals);
 
-        // Generate goal events only if we have player data (ET is 91'-120')
+        // Generate goal events in range [fromMinute+1, 120]
+        $minMinute = $fromMinute + 1;
+        $maxMinute = 120;
+
         if ($homePlayers->isNotEmpty() && $awayPlayers->isNotEmpty()) {
-            for ($i = 0; $i < $homeScore; $i++) {
-                $minute = rand(91, 120);
-                $scorer = $this->pickPlayerByPosition($homePlayers, self::GOAL_SCORING_WEIGHTS);
-                if ($scorer) {
-                    $events->push(MatchEventData::goal($homeTeam->id, $scorer->id, $minute));
-                }
-            }
+            $homeGoalEvents = $this->generateGoalEventsInRange(
+                $homeScore, $homeTeam->id, $awayTeam->id,
+                $homePlayers, $awayPlayers, $minMinute, $maxMinute
+            );
 
-            for ($i = 0; $i < $awayScore; $i++) {
-                $minute = rand(91, 120);
-                $scorer = $this->pickPlayerByPosition($awayPlayers, self::GOAL_SCORING_WEIGHTS);
-                if ($scorer) {
-                    $events->push(MatchEventData::goal($awayTeam->id, $scorer->id, $minute));
-                }
-            }
+            $awayGoalEvents = $this->generateGoalEventsInRange(
+                $awayScore, $awayTeam->id, $homeTeam->id,
+                $awayPlayers, $homePlayers, $minMinute, $maxMinute
+            );
 
+            $events = $events->merge($homeGoalEvents)->merge($awayGoalEvents);
             $events = $events->sortBy('minute')->values();
+
+            $events = $this->reassignEventsFromUnavailablePlayers(
+                $events, $homePlayers, $awayPlayers
+            );
         }
 
         return new MatchResult($homeScore, $awayScore, $events);

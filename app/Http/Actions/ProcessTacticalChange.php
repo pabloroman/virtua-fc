@@ -35,7 +35,7 @@ class ProcessTacticalChange
         }
 
         $validated = $request->validate([
-            'minute' => 'required|integer|min:1|max:93',
+            'minute' => 'required|integer|min:1|max:120',
             'formation' => ['nullable', 'string', Rule::enum(Formation::class)],
             'mentality' => ['nullable', 'string', Rule::enum(Mentality::class)],
             'previousSubstitutions' => 'array',
@@ -49,6 +49,8 @@ class ProcessTacticalChange
             return response()->json(['error' => __('game.tactical_no_changes')], 422);
         }
 
+        $isExtraTime = $validated['minute'] > 90;
+
         $result = $this->tacticalChangeService->processTacticalChange(
             $match,
             $game,
@@ -56,6 +58,7 @@ class ProcessTacticalChange
             $validated['previousSubstitutions'] ?? [],
             $validated['formation'] ?? null,
             $validated['mentality'] ?? null,
+            isExtraTime: $isExtraTime,
         );
 
         return response()->json($result);

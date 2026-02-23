@@ -7,6 +7,7 @@ use App\Modules\Lineup\Enums\Mentality;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
+use App\Modules\Match\Services\ExtraTimeAndPenaltyService;
 use App\Modules\Match\Services\MatchResimulationService;
 use App\Modules\Lineup\Services\SubstitutionService;
 
@@ -15,6 +16,7 @@ class TacticalChangeService
     public function __construct(
         private readonly MatchResimulationService $resimulationService,
         private readonly SubstitutionService $substitutionService,
+        private readonly ExtraTimeAndPenaltyService $extraTimeService,
     ) {}
 
     /**
@@ -28,6 +30,7 @@ class TacticalChangeService
         array $previousSubstitutions,
         ?string $formation = null,
         ?string $mentality = null,
+        bool $isExtraTime = false,
     ): array {
         $isUserHome = $match->isHomeTeam($game->team_id);
 
@@ -63,9 +66,13 @@ class TacticalChangeService
         $effectiveMentality = $isUserHome ? $match->home_mentality : $match->away_mentality;
 
         // Re-simulate with updated tactics (pass previous subs for energy calculation)
-        $result = $this->resimulationService->resimulate($match, $game, $minute, $homePlayers, $awayPlayers, $previousSubstitutions);
+        if ($isExtraTime) {
+            $result = $this->resimulationService->resimulateExtraTime($match, $game, $minute, $homePlayers, $awayPlayers, $previousSubstitutions);
+        } else {
+            $result = $this->resimulationService->resimulate($match, $game, $minute, $homePlayers, $awayPlayers, $previousSubstitutions);
+        }
 
-        return [
+        $response = [
             'newScore' => [
                 'home' => $result->newHomeScore,
                 'away' => $result->newAwayScore,
@@ -74,5 +81,14 @@ class TacticalChangeService
             'formation' => $effectiveFormation,
             'mentality' => $effectiveMentality,
         ];
+
+        if ($isExtraTime) {
+            $response['isExtraTime'] = true;
+            $response['needsPenalties'] = $this->extraTimeService->checkNeedsPenalties(
+                $match->fresh(), $result->newHomeScore, $result->newAwayScore
+            );
+        }
+
+        return $response;
     }
 }

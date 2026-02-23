@@ -10,6 +10,8 @@ use App\Models\MatchEvent;
 use App\Modules\Match\DTOs\ExtraTimeProcessResult;
 use App\Modules\Match\DTOs\MatchEventData;
 use App\Modules\Match\DTOs\PenaltyProcessResult;
+use App\Modules\Lineup\Enums\Formation;
+use App\Modules\Lineup\Enums\Mentality;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
@@ -39,6 +41,12 @@ class ExtraTimeAndPenaltyService
             }
         }
 
+        // Read formation/mentality from match record
+        $homeFormation = Formation::tryFrom($match->home_formation) ?? Formation::F_4_4_2;
+        $awayFormation = Formation::tryFrom($match->away_formation) ?? Formation::F_4_4_2;
+        $homeMentality = Mentality::tryFrom($match->home_mentality ?? '') ?? Mentality::BALANCED;
+        $awayMentality = Mentality::tryFrom($match->away_mentality ?? '') ?? Mentality::BALANCED;
+
         $extraTimeResult = $this->matchSimulator->simulateExtraTime(
             $match->homeTeam,
             $match->awayTeam,
@@ -46,6 +54,10 @@ class ExtraTimeAndPenaltyService
             $awayPlayers,
             $homeEntryMinutes,
             $awayEntryMinutes,
+            homeFormation: $homeFormation,
+            awayFormation: $awayFormation,
+            homeMentality: $homeMentality,
+            awayMentality: $awayMentality,
         );
 
         $match->update([
@@ -129,7 +141,7 @@ class ExtraTimeAndPenaltyService
      * Determine if penalties are needed after extra time,
      * accounting for two-legged aggregate scores.
      */
-    private function checkNeedsPenalties(GameMatch $match, int $homeScoreET, int $awayScoreET): bool
+    public function checkNeedsPenalties(GameMatch $match, int $homeScoreET, int $awayScoreET): bool
     {
         $totalHome = $match->home_score + $homeScoreET;
         $totalAway = $match->away_score + $awayScoreET;

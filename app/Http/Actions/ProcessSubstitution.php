@@ -32,15 +32,17 @@ class ProcessSubstitution
         }
 
         $validated = $request->validate([
-            'substitutions' => 'required|array|min:1|max:'.SubstitutionService::MAX_SUBSTITUTIONS,
+            'substitutions' => 'required|array|min:1|max:'.SubstitutionService::MAX_ET_SUBSTITUTIONS,
             'substitutions.*.playerOutId' => 'required|string',
             'substitutions.*.playerInId' => 'required|string',
-            'minute' => 'required|integer|min:1|max:93',
+            'minute' => 'required|integer|min:1|max:120',
             'previousSubstitutions' => 'array',
             'previousSubstitutions.*.playerOutId' => 'required|string',
             'previousSubstitutions.*.playerInId' => 'required|string',
             'previousSubstitutions.*.minute' => 'required|integer',
         ]);
+
+        $isExtraTime = $validated['minute'] > 90;
 
         try {
             $result = $this->substitutionService->validateAndProcessBatchSubstitution(
@@ -49,6 +51,7 @@ class ProcessSubstitution
                 $validated['substitutions'],
                 $validated['minute'],
                 $validated['previousSubstitutions'] ?? [],
+                isExtraTime: $isExtraTime,
             );
 
             return response()->json($result);
