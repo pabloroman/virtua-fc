@@ -96,6 +96,10 @@ return [
     'loan_rejected_title' => 'Loan request for :player rejected',
     'loan_rejected' => ':team have rejected your loan request for :player.',
 
+    // Tournament welcome
+    'tournament_welcome_title' => 'Welcome to the World Cup!',
+    'tournament_welcome_message' => 'The entire nation has their eyes on you. No pressure... but don\'t let them down!',
+
     // Priority badges
     'priority_urgent' => 'Urgent',
     'priority_attention' => 'Attention',

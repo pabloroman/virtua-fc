@@ -2,6 +2,7 @@
 
 namespace App\Modules\Season\Jobs;
 
+use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Squad\Services\InjuryService;
 use App\Modules\Squad\Services\PlayerDevelopmentService;
 use App\Modules\Competition\Services\StandingsCalculator;
@@ -36,6 +37,7 @@ class SetupTournamentGame implements ShouldQueue
     public function handle(
         StandingsCalculator $standingsCalculator,
         PlayerDevelopmentService $developmentService,
+        NotificationService $notificationService,
     ): void {
         $game = Game::find($this->gameId);
         if (!$game || $game->isSetupComplete()) {
@@ -64,6 +66,10 @@ class SetupTournamentGame implements ShouldQueue
 
         // Step 4: Create game players for teams with JSON rosters
         $this->createGamePlayers($mapping, $developmentService);
+
+        // Send welcome notification
+        $teamName = Team::find($this->teamId)?->name ?? '';
+        $notificationService->notifyTournamentWelcome($game, self::COMPETITION_ID, $teamName);
 
         // Mark setup as complete
         Game::where('id', $this->gameId)->update(['setup_completed_at' => now()]);

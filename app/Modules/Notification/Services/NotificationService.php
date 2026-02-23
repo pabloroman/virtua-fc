@@ -650,6 +650,27 @@ class NotificationService
     }
 
     // ==========================================
+    // Tournament Notifications
+    // ==========================================
+
+    /**
+     * Create a welcome notification for a new tournament game.
+     */
+    public function notifyTournamentWelcome(Game $game, string $competitionId, string $teamName): GameNotification
+    {
+        return $this->create(
+            game: $game,
+            type: GameNotification::TYPE_TOURNAMENT_WELCOME,
+            title: __('notifications.tournament_welcome_title'),
+            message: __('notifications.tournament_welcome_message'),
+            priority: GameNotification::PRIORITY_MILESTONE,
+            metadata: [
+                'competition_id' => $competitionId,
+            ],
+        );
+    }
+
+    // ==========================================
     // Helpers
     // ==========================================
 
@@ -679,6 +700,7 @@ class NotificationService
             GameNotification::TYPE_RENEWAL_REJECTED => 'contract',
             GameNotification::TYPE_TRANSFER_BID_RESULT => 'transfer',
             GameNotification::TYPE_LOAN_REQUEST_RESULT => 'loan',
+            GameNotification::TYPE_TOURNAMENT_WELCOME => 'trophy',
             default => 'bell',
         };
     }
