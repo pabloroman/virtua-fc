@@ -68,6 +68,27 @@ class ShowCompetition
         $hasGroups = $standings->whereNotNull('group_label')->isNotEmpty();
         $groupedStandings = $hasGroups ? $standings->groupBy('group_label') : null;
 
+        // Playoff bracket data for league_with_playoff competitions (e.g. Segunda División)
+        $knockoutRounds = collect();
+        $knockoutTies = collect();
+        $leaguePhaseComplete = false;
+
+        if ($competition->handler_type === 'league_with_playoff') {
+            $knockoutRounds = collect(LeagueFixtureGenerator::loadKnockoutRounds($competition->id, $competition->season, $game->season));
+
+            $knockoutTies = CupTie::with(['homeTeam', 'awayTeam', 'winner', 'firstLegMatch', 'secondLegMatch', 'competition'])
+                ->where('game_id', $game->id)
+                ->where('competition_id', $competition->id)
+                ->get()
+                ->groupBy('round_number');
+
+            $leaguePhaseComplete = !GameMatch::where('game_id', $game->id)
+                ->where('competition_id', $competition->id)
+                ->whereNull('cup_tie_id')
+                ->where('played', false)
+                ->exists() && $standings->first()?->played > 0;
+        }
+
         return view('standings', [
             'game' => $game,
             'competition' => $competition,
@@ -76,6 +97,9 @@ class ShowCompetition
             'topScorers' => $topScorers,
             'teamForms' => $teamForms,
             'standingsZones' => $standingsZones,
+            'knockoutRounds' => $knockoutRounds,
+            'knockoutTies' => $knockoutTies,
+            'leaguePhaseComplete' => $leaguePhaseComplete,
         ]);
     }
 
