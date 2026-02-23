@@ -138,9 +138,9 @@ return [
 
         'continental_slots' => [
             'ENG1' => [
-                'UCL' => [1, 2, 3, 4],
-                'UEL' => [5],
-                'UECL' => [6],
+                'UCL' => [1, 2, 3, 4, 5],
+                'UEL' => [6],
+                'UECL' => [7],
             ],
         ],
 
