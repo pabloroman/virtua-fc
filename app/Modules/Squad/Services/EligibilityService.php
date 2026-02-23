@@ -4,17 +4,11 @@ namespace App\Modules\Squad\Services;
 
 use App\Models\GamePlayer;
 use App\Models\PlayerSuspension;
+use App\Modules\Squad\DTOs\SuspensionRuleSet;
 use Carbon\Carbon;
 
 class EligibilityService
 {
-    // Yellow card accumulation thresholds (La Liga rules)
-    private const YELLOW_CARD_THRESHOLDS = [
-        5 => 1,   // 5 yellows = 1 match ban
-        10 => 2,  // 10 yellows = 2 match ban
-        15 => 3,  // 15 yellows = 3 match ban
-    ];
-
     /**
      * Apply a suspension to a player for a specific competition.
      *
@@ -52,21 +46,46 @@ class EligibilityService
     }
 
     /**
-     * Check if a player has crossed a yellow card threshold and should be suspended.
-     * Returns the number of matches to suspend, or null if no suspension.
+     * Record a yellow card and check if it triggers a suspension.
+     * Tracks the yellow card on the per-competition counter and applies
+     * the suspension if the accumulation threshold is reached.
+     *
+     * @return int|null Number of matches banned, or null if no suspension
      */
-    public function checkYellowCardAccumulation(GamePlayer $player): ?int
+    public function processYellowCard(string $gamePlayerId, string $competitionId, string $handlerType = 'league'): ?int
     {
-        $yellowCards = $player->yellow_cards;
+        $competitionYellows = PlayerSuspension::recordYellowCard($gamePlayerId, $competitionId);
+        $banLength = $this->checkYellowCardAccumulation($competitionYellows, $handlerType);
 
-        // Check thresholds in descending order
-        foreach (array_reverse(self::YELLOW_CARD_THRESHOLDS, true) as $threshold => $matches) {
-            if ($yellowCards === $threshold) {
-                return $matches;
-            }
+        if ($banLength) {
+            PlayerSuspension::applySuspension($gamePlayerId, $competitionId, $banLength);
         }
 
-        return null;
+        return $banLength;
+    }
+
+    /**
+     * Check if a yellow card count triggers a suspension.
+     * Returns the number of matches to suspend, or null if no suspension.
+     */
+    public function checkYellowCardAccumulation(int $competitionYellowCards, string $handlerType = 'league'): ?int
+    {
+        $rules = $this->rulesForHandlerType($handlerType);
+
+        return $rules->checkAccumulation($competitionYellowCards);
+    }
+
+    /**
+     * Resolve the suspension rule set for a given competition handler type.
+     */
+    public function rulesForHandlerType(string $handlerType): SuspensionRuleSet
+    {
+        return match ($handlerType) {
+            'knockout_cup' => SuspensionRuleSet::copaDelRey(),
+            'group_stage_cup' => SuspensionRuleSet::worldCup(),
+            'swiss_format' => SuspensionRuleSet::uefaClub(),
+            default => SuspensionRuleSet::default(),
+        };
     }
 
     /**
@@ -83,6 +102,18 @@ class EligibilityService
         $matches = $isSecondYellow ? 1 : 1;
 
         $this->applySuspension($player, $matches, $competitionId);
+    }
+
+    /**
+     * Reset yellow card accumulation counters for all players in a competition.
+     * Only resets the per-competition counter, not the visible season stat.
+     */
+    public function resetYellowCardsForCompetition(string $gameId, string $competitionId): void
+    {
+        PlayerSuspension::where('competition_id', $competitionId)
+            ->whereHas('gamePlayer', fn ($q) => $q->where('game_id', $gameId))
+            ->where('yellow_cards', '>', 0)
+            ->update(['yellow_cards' => 0]);
     }
 
     /**

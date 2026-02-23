@@ -6,11 +6,11 @@ use App\Modules\Competition\Contracts\CompetitionHandler;
 use App\Modules\Competition\DTOs\PlayoffRoundConfig;
 use App\Modules\Competition\Services\WorldCupKnockoutGenerator;
 use App\Modules\Match\Services\CupTieResolver;
+use App\Modules\Squad\Services\EligibilityService;
 use App\Models\Competition;
 use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameMatch;
-use App\Models\GameStanding;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
@@ -27,6 +27,7 @@ class GroupStageCupHandler implements CompetitionHandler
     public function __construct(
         private readonly CupTieResolver $tieResolver,
         private readonly WorldCupKnockoutGenerator $knockoutGenerator,
+        private readonly EligibilityService $eligibilityService,
     ) {}
 
     public function getType(): string
@@ -132,6 +133,12 @@ class GroupStageCupHandler implements CompetitionHandler
 
         if (!$currentRoundComplete) {
             return;
+        }
+
+        // Reset yellow cards if the completed round matches the reset threshold
+        $rules = $this->eligibilityService->rulesForHandlerType('group_stage_cup');
+        if ($rules->yellowCardResetAfterRound === $currentRound) {
+            $this->eligibilityService->resetYellowCardsForCompetition($game->id, $competitionId);
         }
 
         // After semi-finals, generate both 3rd-place match AND final

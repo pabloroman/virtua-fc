@@ -5,6 +5,7 @@ namespace Tests\Unit\Handlers;
 use App\Modules\Match\Handlers\KnockoutCupHandler;
 use App\Modules\Competition\Services\CupDrawService;
 use App\Modules\Match\Services\CupTieResolver;
+use App\Modules\Squad\Services\EligibilityService;
 use App\Models\Competition;
 use App\Models\CupTie;
 use App\Models\Game;
@@ -38,6 +39,7 @@ class KnockoutCupHandlerTest extends TestCase
         $this->handler = new KnockoutCupHandler(
             $this->cupDrawServiceMock,
             $this->cupTieResolverMock,
+            new EligibilityService(),
         );
 
         $user = User::factory()->create();

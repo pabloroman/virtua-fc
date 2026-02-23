@@ -309,11 +309,12 @@ class MatchResultProcessor
 
             switch ($eventData['event_type']) {
                 case 'yellow_card':
-                    // Player already has updated yellow_cards from stat increment loop above
-                    $suspension = $this->eligibilityService->checkYellowCardAccumulation($player);
+                    $competition = $competitions->get($eventData['competitionId']);
+                    $handlerType = $competition->handler_type ?? 'league';
+                    $suspension = $this->eligibilityService->processYellowCard(
+                        $player->id, $eventData['competitionId'], $handlerType
+                    );
                     if ($suspension) {
-                        $this->eligibilityService->applySuspension($player, $suspension, $eventData['competitionId']);
-
                         // Notifications for the deferred match are created during finalization
                         if ($isUserTeamPlayer && ! $isDeferredMatch) {
                             $this->notificationService->notifySuspension(

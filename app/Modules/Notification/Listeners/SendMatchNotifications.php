@@ -7,6 +7,7 @@ use App\Modules\Squad\Services\EligibilityService;
 use App\Modules\Notification\Services\NotificationService;
 use App\Models\GamePlayer;
 use App\Models\MatchEvent;
+use App\Models\PlayerSuspension;
 
 class SendMatchNotifications
 {
@@ -29,18 +30,28 @@ class SendMatchNotifications
         $playerIds = $events->pluck('game_player_id')->unique()->all();
         $players = GamePlayer::whereIn('id', $playerIds)->get()->keyBy('id');
 
+        $yellowCardNotified = [];
+
         foreach ($events as $matchEvent) {
             $player = $players->get($matchEvent->game_player_id);
             if (! $player || $player->team_id !== $userTeamId) {
                 continue;
             }
 
-            match ($matchEvent->event_type) {
-                'red_card' => $this->notifyRedCard($event, $player, $matchEvent),
-                'injury' => $this->notifyInjury($event, $player, $matchEvent),
-                'yellow_card' => $this->notifyYellowCardAccumulation($event, $player),
-                default => null,
-            };
+            switch ($matchEvent->event_type) {
+                case 'red_card':
+                    $this->notifyRedCard($event, $player, $matchEvent);
+                    break;
+                case 'injury':
+                    $this->notifyInjury($event, $player, $matchEvent);
+                    break;
+                case 'yellow_card':
+                    if (! in_array($player->id, $yellowCardNotified)) {
+                        $this->notifyYellowCardAccumulation($event, $player);
+                        $yellowCardNotified[] = $player->id;
+                    }
+                    break;
+            }
         }
     }
 
@@ -67,7 +78,10 @@ class SendMatchNotifications
 
     private function notifyYellowCardAccumulation(MatchFinalized $event, GamePlayer $player): void
     {
-        $suspension = $this->eligibilityService->checkYellowCardAccumulation($player);
+        $competitionId = $event->competition->id ?? $event->match->competition_id;
+        $handlerType = $event->competition->handler_type ?? 'league';
+        $competitionYellows = PlayerSuspension::getYellowCards($player->id, $competitionId);
+        $suspension = $this->eligibilityService->checkYellowCardAccumulation($competitionYellows, $handlerType);
 
         if ($suspension) {
             $this->notificationService->notifySuspension(
