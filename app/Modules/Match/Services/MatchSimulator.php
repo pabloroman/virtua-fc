@@ -839,11 +839,10 @@ class MatchSimulator
     }
 
     /**
-     * Simulate a detailed penalty shootout with kick-by-kick results.
+     * Simulate a detailed penalty shootout with kick-by-kick results (max 5 rounds).
      *
-     * Accepts optional ordered player ID arrays. When provided, those players
-     * take the first 5 kicks in the given order. For sudden death or when no
-     * order is supplied, players are picked by technical ability (outfield first).
+     * Each kick is a kicker-vs-goalkeeper duel. If still tied after 5 rounds,
+     * round 5 is rigged so one team scores and the other misses.
      *
      * @param  array<string>|null  $homeOrder  Ordered game_player IDs for home kickers
      * @param  array<string>|null  $awayOrder  Ordered game_player IDs for away kickers
@@ -869,6 +868,10 @@ class MatchSimulator
             ];
         }
 
+        // Extract goalkeepers — home kickers face the away GK and vice versa
+        $homeGk = $homePlayers->firstWhere('position', 'Goalkeeper');
+        $awayGk = $awayPlayers->firstWhere('position', 'Goalkeeper');
+
         $homeScore = 0;
         $awayScore = 0;
         $kicks = [];
@@ -877,10 +880,10 @@ class MatchSimulator
         $homeIdx = 0;
         $awayIdx = 0;
 
-        // First 5 penalties each
+        // 5 penalties each
         for ($i = 0; $i < $maxRounds; $i++) {
             $homeKicker = $homeKickers[$homeIdx % count($homeKickers)];
-            $homeScored = $this->penaltyScored($homeKicker);
+            $homeScored = $this->penaltyScored($homeKicker, $awayGk);
             if ($homeScored) {
                 $homeScore++;
             }
@@ -894,7 +897,7 @@ class MatchSimulator
             $homeIdx++;
 
             $awayKicker = $awayKickers[$awayIdx % count($awayKickers)];
-            $awayScored = $this->penaltyScored($awayKicker);
+            $awayScored = $this->penaltyScored($awayKicker, $homeGk);
             if ($awayScored) {
                 $awayScore++;
             }
@@ -919,39 +922,48 @@ class MatchSimulator
             $round++;
         }
 
-        // Sudden death if still tied after 5
-        while ($homeScore === $awayScore) {
-            $round++;
-            $homeKicker = $homeKickers[$homeIdx % count($homeKickers)];
-            $homeScored = $this->penaltyScored($homeKicker);
-            if ($homeScored) {
-                $homeScore++;
-            }
-            $kicks[] = [
-                'round' => $round,
-                'side' => 'home',
-                'playerId' => $homeKicker->id,
-                'playerName' => $homeKicker->player->name ?? '',
-                'scored' => $homeScored,
-            ];
-            $homeIdx++;
+        // If still tied after 5 rounds, rig round 5 so one team wins
+        if ($homeScore === $awayScore) {
+            $homeWins = (bool) random_int(0, 1);
+            $winnerSide = $homeWins ? 'home' : 'away';
+            $loserSide = $homeWins ? 'away' : 'home';
 
-            $awayKicker = $awayKickers[$awayIdx % count($awayKickers)];
-            $awayScored = $this->penaltyScored($awayKicker);
-            if ($awayScored) {
-                $awayScore++;
+            // Find round-5 kicks
+            $r5WinnerIdx = null;
+            $r5LoserIdx = null;
+            foreach ($kicks as $idx => $kick) {
+                if ($kick['round'] === 5 && $kick['side'] === $winnerSide) {
+                    $r5WinnerIdx = $idx;
+                }
+                if ($kick['round'] === 5 && $kick['side'] === $loserSide) {
+                    $r5LoserIdx = $idx;
+                }
             }
-            $kicks[] = [
-                'round' => $round,
-                'side' => 'away',
-                'playerId' => $awayKicker->id,
-                'playerName' => $awayKicker->player->name ?? '',
-                'scored' => $awayScored,
-            ];
-            $awayIdx++;
 
-            if ($homeScored !== $awayScored) {
-                break;
+            // Set winner's R5 to scored, loser's R5 to missed
+            if ($r5WinnerIdx !== null) {
+                $kicks[$r5WinnerIdx]['scored'] = true;
+            }
+            if ($r5LoserIdx !== null) {
+                $kicks[$r5LoserIdx]['scored'] = false;
+            }
+
+            // Recalculate scores from the kicks array
+            $homeScore = collect($kicks)->where('side', 'home')->where('scored', true)->count();
+            $awayScore = collect($kicks)->where('side', 'away')->where('scored', true)->count();
+
+            // Edge case: still tied if earlier rounds compensated — flip one loser scored kick
+            if ($homeScore === $awayScore) {
+                foreach ($kicks as $idx => $kick) {
+                    if ($kick['side'] === $loserSide && $kick['scored'] && $kick['round'] < 5) {
+                        $kicks[$idx]['scored'] = false;
+
+                        break;
+                    }
+                }
+
+                $homeScore = collect($kicks)->where('side', 'home')->where('scored', true)->count();
+                $awayScore = collect($kicks)->where('side', 'away')->where('scored', true)->count();
             }
         }
 
@@ -1003,20 +1015,26 @@ class MatchSimulator
 
     /**
      * Determine if a penalty is scored.
-     * Base ~77% success rate, modified by player's technical ability and morale.
+     * Kicker-vs-goalkeeper duel with a luck factor.
      */
-    private function penaltyScored(?GamePlayer $player = null): bool
+    private function penaltyScored(?GamePlayer $kicker = null, ?GamePlayer $goalkeeper = null): bool
     {
-        $base = 77;
+        $base = 75;
 
-        if ($player) {
-            // Technical ability: ±10% across full range (0-100)
-            $base += ($player->technical_ability - 50) * 0.20;
-            // Morale: ±5% across full range (0-100)
-            $base += ($player->morale - 50) * 0.10;
-            // Clamp to reasonable range
-            $base = max(55, min(95, $base));
+        if ($kicker) {
+            $base += ($kicker->technical_ability - 50) * 0.15;
+            $base += ($kicker->morale - 50) * 0.06;
         }
+
+        if ($goalkeeper) {
+            $base -= ($goalkeeper->technical_ability - 50) * 0.10;
+        }
+
+        // Luck factor
+        $base += random_int(-5, 5);
+
+        // Clamp to reasonable range
+        $base = max(50, min(95, $base));
 
         return $this->percentChance($base);
     }
