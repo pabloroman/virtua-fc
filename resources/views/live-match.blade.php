@@ -46,6 +46,9 @@
                 penaltiesUrl: '{{ $penaltiesUrl }}',
                 extraTimeData: {{ Js::from($extraTimeData) }},
                 twoLeggedInfo: {{ Js::from($twoLeggedInfo) }},
+                isTournamentKnockout: {{ $isTournamentKnockout ? 'true' : 'false' }},
+                knockoutRoundNumber: {{ $knockoutRoundNumber ?? 'null' }},
+                knockoutRoundName: '{{ $knockoutRoundName ?? '' }}',
                 translations: {
                     unsavedTacticalChanges: '{{ __('game.tactical_unsaved_changes') }}',
                     extraTime: '{{ __('game.live_extra_time') }}',
@@ -54,6 +57,19 @@
                     penScored: '{{ __('game.live_pen_scored') }}',
                     penMissed: '{{ __('game.live_pen_missed') }}',
                     penWinner: '{{ __('game.live_pen_winner') }}',
+                    tournamentChampion: '{{ __('game.tournament_champion_title') }}',
+                    tournamentRunnerUp: '{{ __('game.tournament_runner_up_title') }}',
+                    tournamentThird: '{{ __('game.tournament_third_place_title') }}',
+                    tournamentFourth: '{{ __('game.tournament_fourth_place_title') }}',
+                    tournamentEliminated: '{{ __('game.tournament_eliminated_title') }}',
+                    tournamentEliminatedIn: '{{ __('game.tournament_eliminated_in', ['round' => $knockoutRoundName ?? '']) }}',
+                    tournamentAdvance: '{{ __('game.tournament_you_advance') }}',
+                    tournamentAdvanceTo: '{{ __('game.tournament_advance_to', ['round' => '']) }}',
+                    tournamentToFinal: '{{ __('game.tournament_to_final') }}',
+                    tournamentToThirdPlace: '{{ __('game.tournament_to_third_place') }}',
+                    tournamentViewSummary: '{{ __('game.tournament_view_summary') }}',
+                    tournamentSimulating: '{{ __('game.tournament_simulating') }}',
+                    continueDashboard: '{{ __('game.live_continue_dashboard') }}',
                 },
              })"
              x-on:keydown.escape.window="if (!tacticalPanelOpen) skipToEnd()"
@@ -432,57 +448,215 @@
                     {{-- Full Time Summary --}}
                     <template x-if="phase === 'full_time'">
                         <div class="mt-6 pt-6 border-t border-slate-200">
-                            {{-- Injury details revealed at full time --}}
-                            @php
-                                $injuries = collect($events)->filter(fn($e) => $e['type'] === 'injury');
-                            @endphp
-                            @if($injuries->isNotEmpty())
-                                <div class="mb-4 p-3 bg-orange-50 rounded-lg">
-                                    <h4 class="text-sm font-semibold text-orange-800 mb-1">{{ __('game.live_injuries_report') }}</h4>
-                                    @foreach($injuries as $injury)
-                                        <div class="text-xs text-orange-700">
-                                            {{ $injury['playerName'] }} &mdash;
-                                            {{ __(App\Modules\Squad\Services\InjuryService::INJURY_TRANSLATION_MAP[$injury['metadata']['injury_type']] ?? 'game.live_injury') }}
-                                            @if(isset($injury['metadata']['weeks_out']))
-                                                ({{ trans_choice('game.live_weeks_out', $injury['metadata']['weeks_out'], ['count' => $injury['metadata']['weeks_out']]) }})
-                                            @endif
-                                        </div>
-                                    @endforeach
-                                </div>
-                            @endif
 
-                            {{-- Other Results --}}
-                            @if(count($otherMatches) > 0)
-                                <div class="mb-4">
-                                    <h4 class="text-sm font-semibold text-slate-500 uppercase mb-2">{{ __('game.live_other_results') }}</h4>
-                                    <div class="space-y-1">
-                                        @foreach($otherMatches as $other)
-                                            <div class="flex items-center py-1.5 px-2 rounded text-sm bg-slate-50">
-                                                <div class="flex items-center gap-2 flex-1 justify-end">
-                                                    <span class="@if($other['homeScore'] > $other['awayScore']) font-semibold @endif text-slate-700 truncate">{{ $other['homeTeam'] }}</span>
-                                                    <img src="{{ $other['homeTeamImage'] }}" class="w-5 h-5">
-                                                </div>
-                                                <div class="px-3 font-semibold tabular-nums text-slate-900">
-                                                    {{ $other['homeScore'] }} - {{ $other['awayScore'] }}
-                                                </div>
-                                                <div class="flex items-center gap-2 flex-1">
-                                                    <img src="{{ $other['awayTeamImage'] }}" class="w-5 h-5">
-                                                    <span class="@if($other['awayScore'] > $other['homeScore']) font-semibold @endif text-slate-700 truncate">{{ $other['awayTeam'] }}</span>
-                                                </div>
-                                            </div>
-                                        @endforeach
+                            {{-- ============================== --}}
+                            {{-- TOURNAMENT DRAMATIC RESULTS    --}}
+                            {{-- ============================== --}}
+
+                            {{-- Champion: Gold celebration --}}
+                            <template x-if="tournamentResultType === 'champion'">
+                                <div class="relative -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 px-6 sm:px-8 py-10 bg-gradient-to-b from-amber-400 via-yellow-500 to-amber-600 text-center overflow-hidden">
+                                    {{-- Decorative stars --}}
+                                    <div class="absolute inset-0 opacity-20">
+                                        <div class="absolute top-4 left-8 text-4xl">&#11088;</div>
+                                        <div class="absolute top-12 right-12 text-3xl">&#11088;</div>
+                                        <div class="absolute bottom-8 left-16 text-2xl">&#11088;</div>
+                                        <div class="absolute bottom-4 right-8 text-4xl">&#11088;</div>
+                                    </div>
+                                    <div class="relative z-10">
+                                        <div class="text-6xl mb-3">&#127942;</div>
+                                        <img :src="userTeamId === homeTeamId ? homeTeamImage : awayTeamImage"
+                                             class="w-20 h-20 mx-auto mb-4 drop-shadow-lg" alt="">
+                                        <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-2 drop-shadow-md"
+                                            x-text="translations.tournamentChampion"></h2>
+                                        <p class="text-amber-100 text-lg font-semibold"
+                                           x-text="userTeamId === homeTeamId ? homeTeamName : awayTeamName"></p>
+                                    </div>
+                                    <div class="relative z-10 mt-8">
+                                        <form method="POST" action="{{ route('game.finalize-match', $game->id) }}">
+                                            @csrf
+                                            <input type="hidden" name="tournament_end" value="1">
+                                            <button type="submit"
+                                                    class="inline-flex items-center px-8 py-3 bg-white text-amber-700 font-bold rounded-lg shadow-lg hover:bg-amber-50 transition-colors min-h-[44px]"
+                                                    x-text="translations.tournamentViewSummary">
+                                            </button>
+                                        </form>
                                     </div>
                                 </div>
-                            @endif
+                            </template>
 
-                            <div class="text-center">
-                                <form method="POST" action="{{ route('game.finalize-match', $game->id) }}">
-                                    @csrf
-                                    <x-primary-button class="px-6">
-                                        {{ __('game.live_continue_dashboard') }}
-                                    </x-primary-button>
-                                </form>
-                            </div>
+                            {{-- Runner-up: Silver/respectful --}}
+                            <template x-if="tournamentResultType === 'runner_up'">
+                                <div class="relative -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 px-6 sm:px-8 py-10 bg-gradient-to-b from-slate-500 via-slate-600 to-slate-700 text-center">
+                                    <div class="text-5xl mb-3">&#129352;</div>
+                                    <img :src="userTeamId === homeTeamId ? homeTeamImage : awayTeamImage"
+                                         class="w-16 h-16 mx-auto mb-4 opacity-90" alt="">
+                                    <h2 class="text-2xl md:text-3xl font-bold text-white mb-2"
+                                        x-text="translations.tournamentRunnerUp"></h2>
+                                    <p class="text-slate-300 text-sm"
+                                       x-text="userTeamId === homeTeamId ? homeTeamName : awayTeamName"></p>
+                                    <div class="mt-8">
+                                        <form method="POST" action="{{ route('game.finalize-match', $game->id) }}">
+                                            @csrf
+                                            <input type="hidden" name="tournament_end" value="1">
+                                            <button type="submit"
+                                                    class="inline-flex items-center px-8 py-3 bg-white/10 text-white font-semibold rounded-lg border border-white/20 hover:bg-white/20 transition-colors min-h-[44px]"
+                                                    x-text="translations.tournamentViewSummary">
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </template>
+
+                            {{-- Third place: Bronze tinted --}}
+                            <template x-if="tournamentResultType === 'third'">
+                                <div class="relative -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 px-6 sm:px-8 py-10 bg-gradient-to-b from-orange-600 via-amber-700 to-orange-800 text-center">
+                                    <div class="text-5xl mb-3">&#129353;</div>
+                                    <img :src="userTeamId === homeTeamId ? homeTeamImage : awayTeamImage"
+                                         class="w-16 h-16 mx-auto mb-4" alt="">
+                                    <h2 class="text-2xl md:text-3xl font-bold text-white mb-2"
+                                        x-text="translations.tournamentThird"></h2>
+                                    <p class="text-orange-200 text-sm"
+                                       x-text="userTeamId === homeTeamId ? homeTeamName : awayTeamName"></p>
+                                    <div class="mt-8">
+                                        <form method="POST" action="{{ route('game.finalize-match', $game->id) }}">
+                                            @csrf
+                                            <input type="hidden" name="tournament_end" value="1">
+                                            <button type="submit"
+                                                    class="inline-flex items-center px-8 py-3 bg-white/10 text-white font-semibold rounded-lg border border-white/20 hover:bg-white/20 transition-colors min-h-[44px]"
+                                                    x-text="translations.tournamentViewSummary">
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </template>
+
+                            {{-- Fourth place: Somber --}}
+                            <template x-if="tournamentResultType === 'fourth'">
+                                <div class="relative -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 px-6 sm:px-8 py-10 bg-gradient-to-b from-slate-600 via-slate-700 to-slate-800 text-center">
+                                    <img :src="userTeamId === homeTeamId ? homeTeamImage : awayTeamImage"
+                                         class="w-14 h-14 mx-auto mb-4 opacity-70" alt="">
+                                    <h2 class="text-2xl md:text-3xl font-bold text-slate-300 mb-2"
+                                        x-text="translations.tournamentFourth"></h2>
+                                    <p class="text-slate-400 text-sm"
+                                       x-text="userTeamId === homeTeamId ? homeTeamName : awayTeamName"></p>
+                                    <div class="mt-8">
+                                        <form method="POST" action="{{ route('game.finalize-match', $game->id) }}">
+                                            @csrf
+                                            <input type="hidden" name="tournament_end" value="1">
+                                            <button type="submit"
+                                                    class="inline-flex items-center px-8 py-3 bg-white/10 text-slate-200 font-semibold rounded-lg border border-white/20 hover:bg-white/20 transition-colors min-h-[44px]"
+                                                    x-text="translations.tournamentViewSummary">
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </template>
+
+                            {{-- Eliminated in R32/R16/QF: Somber/dramatic --}}
+                            <template x-if="tournamentResultType === 'eliminated'">
+                                <div class="relative -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 px-6 sm:px-8 py-10 bg-gradient-to-b from-slate-700 via-slate-800 to-slate-900 text-center">
+                                    <img :src="userTeamId === homeTeamId ? homeTeamImage : awayTeamImage"
+                                         class="w-14 h-14 mx-auto mb-4 opacity-60 grayscale" alt="">
+                                    <h2 class="text-2xl md:text-3xl font-bold text-white mb-1"
+                                        x-text="translations.tournamentEliminated"></h2>
+                                    <p class="text-slate-400 text-sm"
+                                       x-text="translations.tournamentEliminatedIn"></p>
+                                    <div class="mt-8">
+                                        <form method="POST" action="{{ route('game.finalize-match', $game->id) }}">
+                                            @csrf
+                                            <input type="hidden" name="tournament_end" value="1">
+                                            <button type="submit"
+                                                    class="inline-flex items-center px-8 py-3 bg-white/10 text-slate-200 font-semibold rounded-lg border border-white/20 hover:bg-white/20 transition-colors min-h-[44px]"
+                                                    x-text="translations.tournamentViewSummary">
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </template>
+
+                            {{-- ============================== --}}
+                            {{-- NON-DECISIVE / NORMAL RESULTS  --}}
+                            {{-- ============================== --}}
+
+                            {{-- Semi-final win: "You're in the Final!" --}}
+                            <template x-if="tournamentResultType === 'to_final'">
+                                <div class="mb-4 p-4 bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-lg text-center">
+                                    <div class="text-3xl mb-1">&#127942;</div>
+                                    <h3 class="text-lg font-bold text-amber-800" x-text="translations.tournamentToFinal"></h3>
+                                </div>
+                            </template>
+
+                            {{-- Semi-final loss: "Third-Place Match Awaits" --}}
+                            <template x-if="tournamentResultType === 'to_third_place'">
+                                <div class="mb-4 p-4 bg-slate-50 border border-slate-200 rounded-lg text-center">
+                                    <h3 class="text-base font-semibold text-slate-600" x-text="translations.tournamentToThirdPlace"></h3>
+                                </div>
+                            </template>
+
+                            {{-- R32/R16/QF win: "You Advance!" --}}
+                            <template x-if="tournamentResultType === 'advance'">
+                                <div class="mb-4 p-4 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg text-center">
+                                    <h3 class="text-lg font-bold text-green-700" x-text="translations.tournamentAdvance"></h3>
+                                </div>
+                            </template>
+
+                            {{-- Standard full-time content (non-decisive tournaments + all non-tournament matches) --}}
+                            <template x-if="!isTournamentDecisive">
+                                <div>
+                                    {{-- Injury details revealed at full time --}}
+                                    @php
+                                        $injuries = collect($events)->filter(fn($e) => $e['type'] === 'injury');
+                                    @endphp
+                                    @if($injuries->isNotEmpty())
+                                        <div class="mb-4 p-3 bg-orange-50 rounded-lg">
+                                            <h4 class="text-sm font-semibold text-orange-800 mb-1">{{ __('game.live_injuries_report') }}</h4>
+                                            @foreach($injuries as $injury)
+                                                <div class="text-xs text-orange-700">
+                                                    {{ $injury['playerName'] }} &mdash;
+                                                    {{ __(App\Modules\Squad\Services\InjuryService::INJURY_TRANSLATION_MAP[$injury['metadata']['injury_type']] ?? 'game.live_injury') }}
+                                                    @if(isset($injury['metadata']['weeks_out']))
+                                                        ({{ trans_choice('game.live_weeks_out', $injury['metadata']['weeks_out'], ['count' => $injury['metadata']['weeks_out']]) }})
+                                                    @endif
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @endif
+
+                                    {{-- Other Results --}}
+                                    @if(count($otherMatches) > 0)
+                                        <div class="mb-4">
+                                            <h4 class="text-sm font-semibold text-slate-500 uppercase mb-2">{{ __('game.live_other_results') }}</h4>
+                                            <div class="space-y-1">
+                                                @foreach($otherMatches as $other)
+                                                    <div class="flex items-center py-1.5 px-2 rounded text-sm bg-slate-50">
+                                                        <div class="flex items-center gap-2 flex-1 justify-end">
+                                                            <span class="@if($other['homeScore'] > $other['awayScore']) font-semibold @endif text-slate-700 truncate">{{ $other['homeTeam'] }}</span>
+                                                            <img src="{{ $other['homeTeamImage'] }}" class="w-5 h-5">
+                                                        </div>
+                                                        <div class="px-3 font-semibold tabular-nums text-slate-900">
+                                                            {{ $other['homeScore'] }} - {{ $other['awayScore'] }}
+                                                        </div>
+                                                        <div class="flex items-center gap-2 flex-1">
+                                                            <img src="{{ $other['awayTeamImage'] }}" class="w-5 h-5">
+                                                            <span class="@if($other['awayScore'] > $other['homeScore']) font-semibold @endif text-slate-700 truncate">{{ $other['awayTeam'] }}</span>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    <div class="text-center">
+                                        <form method="POST" action="{{ route('game.finalize-match', $game->id) }}">
+                                            @csrf
+                                            <x-primary-button class="px-6">
+                                                {{ __('game.live_continue_dashboard') }}
+                                            </x-primary-button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </template>
                         </div>
                     </template>
                 </div>

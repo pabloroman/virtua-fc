@@ -32,6 +32,7 @@ return [
     'group' => 'Grupo',
     'group_stage' => 'Fase de Grupos',
     'round_of_32' => 'Dieciseisavos de final',
+    'cup.round_of_32' => 'Dieciseisavos de final',
     'third_place_match' => 'Tercer puesto',
 
     // Standings
@@ -261,6 +262,20 @@ return [
     'uecl_eliminated' => 'Eliminado',
 
     // UEFA Swiss Format - Season Goals
+    // Tournament Dramatic Results (knockout stage)
+    'tournament_champion_title' => '¡Campeones del Mundo!',
+    'tournament_runner_up_title' => 'Subcampeones',
+    'tournament_third_place_title' => '¡Tercer Puesto!',
+    'tournament_fourth_place_title' => 'Cuarto Puesto',
+    'tournament_eliminated_title' => 'Tu aventura termina',
+    'tournament_eliminated_in' => 'Eliminados en :round',
+    'tournament_you_advance' => '¡Clasificados!',
+    'tournament_advance_to' => 'Siguiente: :round',
+    'tournament_to_final' => '¡Estás en la Final!',
+    'tournament_to_third_place' => 'Disputarás el partido por el tercer puesto',
+    'tournament_view_summary' => 'Ver Resumen del Torneo',
+    'tournament_simulating' => 'Simulando partidos restantes...',
+
     'goal_ucl_title' => 'Ganar la Champions League',
     'goal_ucl_knockout' => 'Pasar a fase eliminatoria',
     'goal_uel_knockout' => 'Pasar a fase eliminatoria',

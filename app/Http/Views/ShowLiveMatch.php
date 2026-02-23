@@ -206,6 +206,19 @@ class ShowLiveMatch
             'tooltip' => $m->tooltip(),
         ], Mentality::cases());
 
+        // Tournament knockout context for dramatic result display
+        $isTournamentKnockout = $game->isTournamentMode() && $playerMatch->cup_tie_id !== null;
+        $knockoutRoundNumber = null;
+        $knockoutRoundName = null;
+
+        if ($isTournamentKnockout) {
+            $cupTie = CupTie::find($playerMatch->cup_tie_id);
+            if ($cupTie) {
+                $knockoutRoundNumber = $cupTie->round_number;
+                $knockoutRoundName = $playerMatch->round_name ? __($playerMatch->round_name) : null;
+            }
+        }
+
         return view('live-match', [
             'game' => $game,
             'match' => $playerMatch,
@@ -226,6 +239,9 @@ class ShowLiveMatch
             'isKnockout' => $isKnockout,
             'extraTimeData' => $extraTimeData,
             'twoLeggedInfo' => $twoLeggedInfo,
+            'isTournamentKnockout' => $isTournamentKnockout,
+            'knockoutRoundNumber' => $knockoutRoundNumber,
+            'knockoutRoundName' => $knockoutRoundName,
         ]);
     }
 
