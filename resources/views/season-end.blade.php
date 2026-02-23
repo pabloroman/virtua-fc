@@ -17,7 +17,7 @@
                     <div class="grid {{ $cupCompetition ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1' }} gap-4 mb-6">
                         {{-- League Champion --}}
                         <div class="text-center py-6 bg-gradient-to-b from-amber-50 to-white rounded-lg border border-amber-200">
-                            <div class="text-amber-600 font-semibold text-sm uppercase tracking-wide mb-2">{{ __('season.league_champion', ['league' => $competition->name]) }}</div>
+                            <div class="text-amber-600 font-semibold text-sm uppercase tracking-wide mb-2">{{ __('season.league_champion', ['league' => __($competition->name)]) }}</div>
                             @if($champion && $champion->team)
                                 <div class="flex justify-center items-center gap-3 mb-2">
                                     <x-team-crest :team="$champion->team" class="w-14 h-14" />

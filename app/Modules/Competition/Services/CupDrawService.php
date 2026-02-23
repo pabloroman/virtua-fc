@@ -81,7 +81,7 @@ class CupDrawService
                     'game_id' => $gameId,
                     'competition_id' => $competitionId,
                     'round_number' => $roundNumber,
-                    'round_name' => $roundConfig->name . ' (Vuelta)',
+                    'round_name' => $roundConfig->name . '_return',
                     'home_team_id' => $awayTeamId, // Teams swap for second leg
                     'away_team_id' => $homeTeamId,
                     'scheduled_date' => $roundConfig->secondLegDate,

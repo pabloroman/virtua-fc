@@ -35,8 +35,8 @@
     {{-- Date & Competition --}}
     <div class="w-16">
         <div class="text-xs text-slate-700">{{ $match->scheduled_date->locale(app()->getLocale())->translatedFormat('d/m/Y') }}</div>
-        <div class="text-xs text-slate-400 truncate" title="{{ $match->competition->name ?? __('transfers.league') }}">
-            {{ $match->competition->name ?? __('transfers.league') }}
+        <div class="text-xs text-slate-400 truncate" title="{{ __($match->competition->name ?? __('transfers.league')) }}">
+            {{ __($match->competition->name ?? __('transfers.league')) }}
         </div>
     </div>
 

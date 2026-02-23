@@ -172,13 +172,13 @@
     "knockout": [
         {
             "round": 1,
-            "name": "Playoff Semifinal",
+            "name": "cup.playoff_semi_finals",
             "first_leg_date": "2026-06-07",
             "second_leg_date": "2026-06-14"
         },
         {
             "round": 2,
-            "name": "Playoff Final",
+            "name": "cup.playoff_final",
             "first_leg_date": "2026-06-21",
             "second_leg_date": "2026-06-28"
         }

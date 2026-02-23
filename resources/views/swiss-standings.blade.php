@@ -18,7 +18,7 @@ $defaultTab = $knockoutStarted ? 'knockout' : 'league';
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg" x-data="{ activeTab: '{{ $defaultTab }}' }">
                 <div class="p-6 sm:p-8">
-                    <h3 class="font-semibold text-xl text-slate-900 mb-6">{{ $competition->name }}</h3>
+                    <h3 class="font-semibold text-xl text-slate-900 mb-6">{{ __($competition->name) }}</h3>
 
                     {{-- Tab Navigation --}}
                     @if($hasKnockout)
@@ -48,7 +48,7 @@ $defaultTab = $knockoutStarted ? 'knockout' : 'league';
                                         @php $ties = $knockoutTies->get($round->round, collect()); @endphp
                                         <div class="flex-shrink-0 w-64">
                                             <div class="text-center mb-4">
-                                                <h4 class="font-semibold text-slate-700">{{ $round->name }}</h4>
+                                                <h4 class="font-semibold text-slate-700">{{ __($round->name) }}</h4>
                                                 <div class="text-xs text-slate-400">
                                                     {{ $round->firstLegDate->format('M d') }}
                                                     @if($round->twoLegged)

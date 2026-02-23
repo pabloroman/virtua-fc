@@ -39,60 +39,6 @@
                             </a>
                         </div>
 
-                        {{-- Tournament Knockout Progress --}}
-                        @if($game->isTournamentMode() && isset($tournamentTie) && $tournamentTie)
-                        <div class="pt-4 border-t">
-                            @php
-                                $won = $tournamentTie->completed && $tournamentTie->winner_id === $game->team_id;
-                                $lost = $tournamentTie->completed && $tournamentTie->winner_id !== $game->team_id;
-                                $isHome = $tournamentTie->home_team_id === $game->team_id;
-                                $opponent = $isHome ? $tournamentTie->awayTeam : $tournamentTie->homeTeam;
-                            @endphp
-
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="font-semibold text-lg text-slate-900">{{ __('game.knockout_phase') }}</h3>
-                                <a href="{{ route('game.competition', [$game->id, $game->competition_id]) }}" class="text-sm text-sky-600 hover:text-sky-800">
-                                    {{ __('game.full_calendar') }} &rarr;
-                                </a>
-                            </div>
-
-                            <div class="p-4 rounded-lg border {{ $won ? 'bg-green-50 border-green-200' : ($lost ? 'bg-red-50 border-red-200' : 'bg-sky-50 border-sky-200') }}">
-                                <div class="text-xs font-semibold uppercase tracking-wide text-center mb-3 {{ $won ? 'text-green-600' : ($lost ? 'text-red-600' : 'text-sky-600') }}">
-                                    {{ $tournamentTie->firstLegMatch?->round_name ?? '' }}
-                                    @if($won) &mdash; {{ __('cup.advanced_to_next_round') }}
-                                    @elseif($lost) &mdash; {{ __('cup.eliminated') }}
-                                    @endif
-                                </div>
-                                <div class="flex items-center justify-center gap-4">
-                                    <div class="flex items-center gap-2 flex-1 justify-end">
-                                        <span class="text-sm font-semibold text-slate-900 truncate">{{ $tournamentTie->homeTeam->name }}</span>
-                                        <x-team-crest :team="$tournamentTie->homeTeam" class="w-8 h-8 shrink-0" />
-                                    </div>
-                                    <div class="text-center px-2">
-                                        @if($tournamentTie->firstLegMatch?->played)
-                                            <span class="text-lg font-bold text-slate-900">{{ $tournamentTie->firstLegMatch->home_score }} - {{ $tournamentTie->firstLegMatch->away_score }}</span>
-                                            @if($tournamentTie->firstLegMatch->is_extra_time)
-                                                <div class="text-[10px] text-slate-400">
-                                                    @if($tournamentTie->firstLegMatch->home_score_penalties !== null)
-                                                        {{ __('season.pens_abbr') }} {{ $tournamentTie->firstLegMatch->home_score_penalties }}-{{ $tournamentTie->firstLegMatch->away_score_penalties }}
-                                                    @else
-                                                        {{ __('season.aet_abbr') }}
-                                                    @endif
-                                                </div>
-                                            @endif
-                                        @else
-                                            <span class="text-lg font-bold text-slate-400">{{ __('game.vs') }}</span>
-                                        @endif
-                                    </div>
-                                    <div class="flex items-center gap-2 flex-1">
-                                        <x-team-crest :team="$tournamentTie->awayTeam" class="w-8 h-8 shrink-0" />
-                                        <span class="text-sm font-semibold text-slate-900 truncate">{{ $tournamentTie->awayTeam->name }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        @endif
-
                         {{-- Highlighted Next Match Card --}}
                         @php
                             $comp = $nextMatch->competition;
@@ -107,10 +53,10 @@
                             <div class="text-center">
                                 <div class="flex items-center justify-center gap-2">
                                     <span class="px-3 py-1 text-sm font-semibold rounded-full {{ $accent['badge'] }}">
-                                        {{ $nextMatch->competition->name ?? 'League' }}
+                                        {{ __($nextMatch->competition->name ?? 'League') }}
                                     </span>
                                     @if($nextMatch->round_name)
-                                        <span class="text-sm text-slate-500">&middot; {{ $nextMatch->round_name }}</span>
+                                        <span class="text-sm text-slate-500">&middot; {{ __($nextMatch->round_name) }}</span>
                                     @else
                                         <span class="text-sm text-slate-500">&middot; {{ __('game.matchday_n', ['number' => $nextMatch->round_number]) }}</span>
                                     @endif

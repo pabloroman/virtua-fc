@@ -89,7 +89,7 @@
                 <div class="py-1">
                     @foreach($teamCompetitions as $competition)
                     <a href="{{ route('game.competition', [$game->id, $competition->id]) }}" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 @if(request()->route('competitionId') == $competition->id) bg-slate-100 font-semibold @endif">
-                        {{ $competition->name }}
+                        {{ __($competition->name) }}
                     </a>
                     @endforeach
                 </div>
@@ -228,7 +228,7 @@
                 </div>
                 @foreach($teamCompetitions as $competition)
                 <x-responsive-nav-link :href="route('game.competition', [$game->id, $competition->id])" :active="request()->route('competitionId') == $competition->id">
-                    {{ $competition->name }}
+                    {{ __($competition->name) }}
                 </x-responsive-nav-link>
                 @endforeach
             </div>

@@ -36,31 +36,31 @@
     "knockout": [
         {
             "round": 1,
-            "name": "Playoff de eliminación",
+            "name": "cup.knockout_playoff_round",
             "first_leg_date": "2026-02-19",
             "second_leg_date": "2026-02-26"
         },
         {
             "round": 2,
-            "name": "Octavos de final",
+            "name": "cup.round_of_16",
             "first_leg_date": "2026-03-12",
             "second_leg_date": "2026-03-19"
         },
         {
             "round": 3,
-            "name": "Cuartos de final",
+            "name": "cup.quarter_finals",
             "first_leg_date": "2026-04-09",
             "second_leg_date": "2026-04-16"
         },
         {
             "round": 4,
-            "name": "Semifinal",
+            "name": "cup.semi_finals",
             "first_leg_date": "2026-04-30",
             "second_leg_date": "2026-05-07"
         },
         {
             "round": 5,
-            "name": "Final",
+            "name": "cup.final",
             "date": "2026-05-20"
         }
     ]

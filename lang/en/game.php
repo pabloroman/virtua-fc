@@ -209,6 +209,7 @@ return [
     'mode_tournament' => 'World Cup',
     'mode_tournament_desc' => 'Manage a national team in the World Cup',
     'mode_tournament_badge' => 'World Cup',
+    'wc2026_name' => 'World Cup 2026',
 
     // Season Goals
     'goal_title' => 'Win the League',

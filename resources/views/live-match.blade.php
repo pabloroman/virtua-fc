@@ -61,7 +61,7 @@
             {{-- Competition & Round Info --}}
             <div class="text-center mb-4">
                 <span class="text-sm text-slate-400">
-                    {{ $match->competition->name }} &middot; {{ $match->round_name ?? __('game.matchday_n', ['number' => $match->round_number]) }}
+                    {{ __($match->competition->name) }} &middot; {{ $match->round_name ? __($match->round_name) : __('game.matchday_n', ['number' => $match->round_number]) }}
                 </span>
             </div>
 

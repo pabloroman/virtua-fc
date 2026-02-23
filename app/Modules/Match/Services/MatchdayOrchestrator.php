@@ -565,7 +565,8 @@ class MatchdayOrchestrator
         foreach ($resolvedTies as $tie) {
             $competition = $tie->competition;
             $roundConfig = $tie->getRoundConfig();
-            $roundName = $roundConfig->name ?? $tie->firstLegMatch->round_name ?? '';
+            $roundKey = $roundConfig->name ?? $tie->firstLegMatch->round_name ?? '';
+            $roundName = __($roundKey);
 
             if ($tie->winner_id === $game->team_id) {
                 $this->notificationService->notifyCompetitionAdvancement(

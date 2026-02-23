@@ -10,7 +10,7 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 sm:p-8">
                     <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2 mb-6">
-                        <h3 class="font-semibold text-xl text-slate-900">{{ $competition->name }}</h3>
+                        <h3 class="font-semibold text-xl text-slate-900">{{ __($competition->name) }}</h3>
                         <div class="flex items-center gap-4">
                             @if($cupStatus === 'champion')
                                 <span class="px-3 py-1 text-sm bg-yellow-100 text-yellow-700 rounded-full">{{ __('cup.champion') }}</span>
@@ -74,7 +74,7 @@
                             <div class="mb-8 p-6 rounded-xl {{ $won ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200' }} border">
                                 <div class="text-center text-sm {{ $won ? 'text-green-600' : 'text-red-600' }} mb-3">
                                     @if($cupStatus === 'champion')
-                                        {{ __('cup.champion_message', ['competition' => $competition->name]) }}
+                                        {{ __('cup.champion_message', ['competition' => __($competition->name)]) }}
                                     @elseif($won)
                                         {{ __('cup.advanced_to_next_round') }}
                                     @else

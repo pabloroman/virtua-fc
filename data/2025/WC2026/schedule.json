@@ -2,32 +2,32 @@
     "knockout": [
         {
             "round": 1,
-            "name": "Dieciseisavos de final",
+            "name": "cup.round_of_32",
             "date": "2026-06-28"
         },
         {
             "round": 2,
-            "name": "Octavos de final",
+            "name": "cup.round_of_16",
             "date": "2026-07-04"
         },
         {
             "round": 3,
-            "name": "Cuartos de final",
+            "name": "cup.quarter_finals",
             "date": "2026-07-09"
         },
         {
             "round": 4,
-            "name": "Semifinal",
+            "name": "cup.semi_finals",
             "date": "2026-07-14"
         },
         {
             "round": 5,
-            "name": "Tercer puesto",
+            "name": "cup.third_place",
             "date": "2026-07-18"
         },
         {
             "round": 6,
-            "name": "Final",
+            "name": "cup.final",
             "date": "2026-07-19"
         }
     ]

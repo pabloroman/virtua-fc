@@ -212,7 +212,7 @@ class SwissFormatHandler implements CompetitionHandler
                 'id' => Str::uuid()->toString(),
                 'game_id' => $game->id,
                 'competition_id' => $competitionId,
-                'round_name' => $config->name . ' (Vuelta)',
+                'round_name' => $config->name . '_return',
                 'round_number' => $config->round,
                 'home_team_id' => $awayTeamId,
                 'away_team_id' => $homeTeamId,

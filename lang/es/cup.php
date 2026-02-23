@@ -42,4 +42,25 @@ return [
     // Group stage cup progress
     'group_stage_qualified' => '¡Clasificado del Grupo :group a la fase eliminatoria!',
     'group_stage_eliminated' => 'Eliminado en la fase de grupos (Grupo :group)',
+
+    // Knockout round names
+    'first_round' => 'Primera ronda',
+    'second_round' => 'Segunda ronda',
+    'round_of_32' => 'Dieciseisavos de final',
+    'round_of_16' => 'Octavos de final',
+    'quarter_finals' => 'Cuartos de final',
+    'semi_finals' => 'Semifinal',
+    'final' => 'Final',
+    'third_place' => 'Tercer puesto',
+    'knockout_playoff_round' => 'Playoff de eliminación',
+    'playoff_semi_finals' => 'Playoff Semifinal',
+    'playoff_final' => 'Playoff Final',
+
+    // Second leg variants
+    'semi_finals_return' => 'Semifinal (Vuelta)',
+    'round_of_16_return' => 'Octavos de final (Vuelta)',
+    'quarter_finals_return' => 'Cuartos de final (Vuelta)',
+    'knockout_playoff_round_return' => 'Playoff de eliminación (Vuelta)',
+    'playoff_semi_finals_return' => 'Playoff Semifinal (Vuelta)',
+    'playoff_final_return' => 'Playoff Final (Vuelta)',
 ];

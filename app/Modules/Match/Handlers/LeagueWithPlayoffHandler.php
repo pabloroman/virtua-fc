@@ -209,7 +209,7 @@ class LeagueWithPlayoffHandler implements CompetitionHandler
                 'id' => Str::uuid()->toString(),
                 'game_id' => $game->id,
                 'competition_id' => $generator->getCompetitionId(),
-                'round_name' => $config->name . ' (Vuelta)',
+                'round_name' => $config->name . '_return',
                 'round_number' => $config->round,
                 'home_team_id' => $awayTeamId, // Teams swap for second leg
                 'away_team_id' => $homeTeamId,

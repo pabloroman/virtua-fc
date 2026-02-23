@@ -209,6 +209,7 @@ return [
     'mode_tournament' => 'Copa del Mundo',
     'mode_tournament_desc' => 'Dirige una selección en el Mundial',
     'mode_tournament_badge' => 'Copa del Mundo',
+    'wc2026_name' => 'Copa del Mundo 2026',
 
     // Season Goals
     'goal_title' => 'Ganar la Liga',

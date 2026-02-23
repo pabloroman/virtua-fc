@@ -16,13 +16,13 @@
                     @if($matches->first()->round_name)
                         <h3 class="font-semibold text-xl text-slate-900">
                             @if($competition)
-                                <span>{{ $competition->name }} &centerdot;</span>
+                                <span>{{ __($competition->name) }} &centerdot;</span>
                             @endif
-                            {{ __('game.matchday_results', ['name' => $matches->first()?->round_name]) }}</h3>
+                            {{ __('game.matchday_results', ['name' => __($matches->first()?->round_name ?? '')]) }}</h3>
                     @else
                         <h3 class="font-semibold text-xl text-slate-900">
                             @if($competition)
-                                <span>{{ $competition->name }} &centerdot;</span>
+                                <span>{{ __($competition->name) }} &centerdot;</span>
                             @endif
                         {{ __('game.matchday_results', ['name' => __('game.matchday_n', ['number' => $matchday])]) }}</h3>
                     @endif

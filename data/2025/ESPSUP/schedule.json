@@ -2,12 +2,12 @@
     "knockout": [
         {
             "round": 1,
-            "name": "Semifinal",
+            "name": "cup.semi_finals",
             "date": "2026-01-07"
         },
         {
             "round": 2,
-            "name": "Final",
+            "name": "cup.final",
             "date": "2026-01-09"
         }
     ]

@@ -2,38 +2,38 @@
     "knockout": [
         {
             "round": 1,
-            "name": "Primera ronda",
+            "name": "cup.first_round",
             "date": "2025-10-29"
         },
         {
             "round": 2,
-            "name": "Segunda ronda",
+            "name": "cup.second_round",
             "date": "2025-12-03"
         },
         {
             "round": 3,
-            "name": "Dieciseisavos de final",
+            "name": "cup.round_of_32",
             "date": "2025-12-17"
         },
         {
             "round": 4,
-            "name": "Octavos de final",
+            "name": "cup.round_of_16",
             "date": "2026-01-14"
         },
         {
             "round": 5,
-            "name": "Cuartos de final",
+            "name": "cup.quarter_finals",
             "date": "2026-02-04"
         },
         {
             "round": 6,
-            "name": "Semifinal",
+            "name": "cup.semi_finals",
             "first_leg_date": "2026-02-10",
             "second_leg_date": "2026-03-03"
         },
         {
             "round": 7,
-            "name": "Final",
+            "name": "cup.final",
             "date": "2026-04-25"
         }
     ]

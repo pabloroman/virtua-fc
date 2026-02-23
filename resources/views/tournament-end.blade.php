@@ -48,12 +48,12 @@ $yourAppearances = $yourSquadStats->where('appearances', '>', 0)->sortByDesc('ap
                     <h1 class="text-3xl md:text-5xl font-extrabold text-white mb-2 tracking-tight">
                         {{ __('season.tournament_champion') }}
                     </h1>
-                    <p class="text-lg md:text-xl text-amber-100 font-medium">{{ $competition->name ?? 'World Cup' }} 2026</p>
+                    <p class="text-lg md:text-xl text-amber-100 font-medium">{{ __($competition->name ?? 'game.wc2026_name') }}</p>
                 @else
                     <h1 class="text-3xl md:text-5xl font-extrabold text-white mb-2 tracking-tight">
                         {{ __('season.tournament_complete') }}
                     </h1>
-                    <p class="text-lg md:text-xl text-slate-300 font-medium">{{ $competition->name ?? 'World Cup' }} 2026</p>
+                    <p class="text-lg md:text-xl text-slate-300 font-medium">{{ __($competition->name ?? 'game.wc2026_name') }}</p>
                 @endif
 
                 {{-- Team Badge --}}
@@ -157,7 +157,7 @@ $yourAppearances = $yourSquadStats->where('appearances', '>', 0)->sortByDesc('ap
 
                         {{-- Round --}}
                         <span class="hidden md:inline text-xs text-slate-400 w-16 shrink-0">
-                            {{ $match->round_name ?? __('game.matchday_n', ['number' => $match->round_number]) }}
+                            {{ $match->round_name ? __($match->round_name) : __('game.matchday_n', ['number' => $match->round_number]) }}
                         </span>
 
                         {{-- Opponent --}}
@@ -246,7 +246,7 @@ $yourAppearances = $yourSquadStats->where('appearances', '>', 0)->sortByDesc('ap
                 <div class="space-y-6">
                     @foreach($knockoutTies as $roundNumber => $ties)
                     @php
-                        $roundName = $ties->first()->firstLegMatch->round_name ?? __('cup.round_n', ['round' => $roundNumber]);
+                        $roundName = $ties->first()->firstLegMatch->round_name ? __($ties->first()->firstLegMatch->round_name) : __('cup.round_n', ['round' => $roundNumber]);
                     @endphp
                     <div>
                         <h3 class="text-xs font-semibold text-slate-500 uppercase mb-3">{{ $roundName }}</h3>

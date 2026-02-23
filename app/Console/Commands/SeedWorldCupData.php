@@ -179,7 +179,7 @@ class SeedWorldCupData extends Command
         DB::table('competitions')->updateOrInsert(
             ['id' => self::COMPETITION_ID],
             [
-                'name' => 'Copa del Mundo FIFA 2026',
+                'name' => 'game.wc2026_name',
                 'country' => 'INT',
                 'tier' => 0,
                 'type' => 'league',
@@ -190,7 +190,7 @@ class SeedWorldCupData extends Command
             ]
         );
 
-        $this->info('Competition: Copa del Mundo FIFA 2026');
+        $this->info('Competition: World Cup 2026');
     }
 
     /**
@@ -425,12 +425,12 @@ class SeedWorldCupData extends Command
     private function generateScheduleJson(): void
     {
         $stageMap = [
-            2 => ['round' => 1, 'name' => 'Dieciseisavos de final'],
-            3 => ['round' => 2, 'name' => 'Octavos de final'],
-            4 => ['round' => 3, 'name' => 'Cuartos de final'],
-            5 => ['round' => 4, 'name' => 'Semifinal'],
-            6 => ['round' => 5, 'name' => 'Tercer puesto'],
-            7 => ['round' => 6, 'name' => 'Final'],
+            2 => ['round' => 1, 'name' => 'cup.round_of_32'],
+            3 => ['round' => 2, 'name' => 'cup.round_of_16'],
+            4 => ['round' => 3, 'name' => 'cup.quarter_finals'],
+            5 => ['round' => 4, 'name' => 'cup.semi_finals'],
+            6 => ['round' => 5, 'name' => 'cup.third_place'],
+            7 => ['round' => 6, 'name' => 'cup.final'],
         ];
 
         // Find earliest date per stage_id

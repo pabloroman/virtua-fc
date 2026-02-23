@@ -23,14 +23,14 @@
 
                     {{-- Header --}}
                     <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-6">
-                        <h3 class="font-semibold text-xl text-slate-900">{{ $competition->name }}</h3>
+                        <h3 class="font-semibold text-xl text-slate-900">{{ __($competition->name) }}</h3>
                         <div class="flex items-center gap-3">
                             @if($knockoutStatus === 'champion')
                                 <span class="px-3 py-1 text-sm bg-yellow-100 text-yellow-700 rounded-full">{{ __('cup.champion') }}</span>
                             @elseif($knockoutStatus === 'eliminated')
                                 <span class="px-3 py-1 text-sm bg-red-100 text-red-700 rounded-full">{{ __('cup.eliminated') }}</span>
                             @elseif($knockoutStatus === 'active')
-                                <span class="px-3 py-1 text-sm bg-green-100 text-green-700 rounded-full">{{ $playerTie?->firstLegMatch?->round_name }}</span>
+                                <span class="px-3 py-1 text-sm bg-green-100 text-green-700 rounded-full">{{ __($playerTie?->firstLegMatch?->round_name ?? '') }}</span>
                             @elseif($knockoutStatus === 'qualified')
                                 <span class="px-3 py-1 text-sm bg-emerald-100 text-emerald-700 rounded-full">{{ __('game.knockout_qualified') }}</span>
                             @elseif($knockoutStatus === 'group_stage')
@@ -99,7 +99,7 @@
                                     $opponent = $isHome ? $playerTie->awayTeam : $playerTie->homeTeam;
                                 @endphp
                                 <div class="mb-8 p-6 rounded-xl bg-gradient-to-r from-sky-50 to-sky-100 border border-sky-200">
-                                    <div class="text-center text-sm text-sky-600 mb-3">{{ __('cup.your_current_cup_tie', ['round' => $playerTie->firstLegMatch?->round_name ?? '']) }}</div>
+                                    <div class="text-center text-sm text-sky-600 mb-3">{{ __('cup.your_current_cup_tie', ['round' => __($playerTie->firstLegMatch?->round_name ?? '')]) }}</div>
                                     <div class="flex items-center justify-center gap-6">
                                         <div class="flex items-center gap-3 flex-1 justify-end">
                                             <span class="text-lg md:text-xl font-semibold @if($playerTie->home_team_id === $game->team_id) text-sky-700 @endif truncate">
@@ -127,7 +127,7 @@
                                 <div class="mb-8 p-5 rounded-xl {{ $won ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200' }} border">
                                     <div class="text-center text-sm {{ $won ? 'text-green-600' : 'text-red-600' }} mb-3">
                                         @if($knockoutStatus === 'champion')
-                                            {{ __('cup.champion_message', ['competition' => $competition->name]) }}
+                                            {{ __('cup.champion_message', ['competition' => __($competition->name)]) }}
                                         @elseif($won)
                                             {{ __('cup.advanced_to_next_round') }}
                                         @else
@@ -159,7 +159,7 @@
                                         @php $ties = $knockoutTies->get($round->round, collect()); @endphp
                                         <div class="flex-shrink-0 w-64">
                                             <div class="text-center mb-4">
-                                                <h4 class="font-semibold text-slate-700">{{ $round->name }}</h4>
+                                                <h4 class="font-semibold text-slate-700">{{ __($round->name) }}</h4>
                                                 <div class="text-xs text-slate-400">{{ $round->firstLegDate->format('d M') }}</div>
                                             </div>
 

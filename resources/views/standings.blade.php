@@ -15,7 +15,7 @@
 
             @if($hasPlayoff)
                 <div class="p-4 sm:p-6 md:p-8" x-data="{ activeTab: '{{ $defaultTab }}' }">
-                    <h3 class="font-semibold text-xl text-slate-900 mb-6">{{ $competition->name }}</h3>
+                    <h3 class="font-semibold text-xl text-slate-900 mb-6">{{ __($competition->name) }}</h3>
 
                     {{-- Tab Navigation --}}
                     <div class="flex border-b border-slate-200 mb-0">
@@ -42,7 +42,7 @@
                                     @php $ties = $knockoutTies->get($round->round, collect()); @endphp
                                     <div class="flex-shrink-0 w-64">
                                         <div class="text-center mb-4">
-                                            <h4 class="font-semibold text-slate-700">{{ $round->name }}</h4>
+                                            <h4 class="font-semibold text-slate-700">{{ __($round->name) }}</h4>
                                             <div class="text-xs text-slate-400">
                                                 {{ $round->firstLegDate->format('M d') }}
                                                 @if($round->twoLegged)
@@ -100,7 +100,7 @@
             @else
                 <div class="p-4 sm:p-6 md:p-8 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
                     <div class="md:col-span-2 space-y-3">
-                        <h3 class="font-semibold text-xl text-slate-900">{{ $competition->name }}</h3>
+                        <h3 class="font-semibold text-xl text-slate-900">{{ __($competition->name) }}</h3>
 
                         @include('partials.standings-flat', [
                             'game' => $game,
