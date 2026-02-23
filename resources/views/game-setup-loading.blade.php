@@ -6,8 +6,8 @@
     <div class="min-h-screen flex items-center justify-center py-8" x-data="setupPoller()" x-init="startPolling()">
         <div class="text-center px-4">
             {{-- Team Logo --}}
-            <img src="{{ $game->team->image }}" alt="{{ $game->team->name }}"
-                 class="w-24 h-24 mx-auto mb-6 animate-pulse">
+            <x-team-crest :team="$game->team"
+                 class="w-24 h-24 mx-auto mb-6 animate-pulse" />
 
             {{-- Spinner --}}
             <div class="flex justify-center mb-6">

@@ -66,7 +66,7 @@
                                 <div class="flex items-center justify-center gap-4">
                                     <div class="flex items-center gap-2 flex-1 justify-end">
                                         <span class="text-sm font-semibold text-slate-900 truncate">{{ $tournamentTie->homeTeam->name }}</span>
-                                        <img src="{{ $tournamentTie->homeTeam->image }}" class="w-8 h-8 shrink-0">
+                                        <x-team-crest :team="$tournamentTie->homeTeam" class="w-8 h-8 shrink-0" />
                                     </div>
                                     <div class="text-center px-2">
                                         @if($tournamentTie->firstLegMatch?->played)
@@ -85,7 +85,7 @@
                                         @endif
                                     </div>
                                     <div class="flex items-center gap-2 flex-1">
-                                        <img src="{{ $tournamentTie->awayTeam->image }}" class="w-8 h-8 shrink-0">
+                                        <x-team-crest :team="$tournamentTie->awayTeam" class="w-8 h-8 shrink-0" />
                                         <span class="text-sm font-semibold text-slate-900 truncate">{{ $tournamentTie->awayTeam->name }}</span>
                                     </div>
                                 </div>
@@ -124,7 +124,7 @@
                             <div class="flex items-start justify-around">
                                 {{-- Home Team --}}
                                 <div class="flex-1 flex flex-col items-center text-center min-w-0 px-2">
-                                    <img src="{{ $nextMatch->homeTeam->image }}" class="w-12 h-12 md:w-20 md:h-20 mb-2">
+                                    <x-team-crest :team="$nextMatch->homeTeam" class="w-12 h-12 md:w-20 md:h-20 mb-2" />
                                     <h4 class="text-base md:text-xl font-bold text-slate-900 truncate max-w-full">{{ $nextMatch->homeTeam->name }}</h4>
                                     @if($homeStanding)
                                     <div class="text-sm text-slate-500 mt-0.5">
@@ -148,7 +148,7 @@
 
                                 {{-- Away Team --}}
                                 <div class="flex-1 flex flex-col items-center text-center min-w-0 px-2">
-                                    <img src="{{ $nextMatch->awayTeam->image }}" class="w-12 h-12 md:w-20 md:h-20 mb-2">
+                                    <x-team-crest :team="$nextMatch->awayTeam" class="w-12 h-12 md:w-20 md:h-20 mb-2" />
                                     <h4 class="text-base md:text-xl font-bold text-slate-900 truncate max-w-full">{{ $nextMatch->awayTeam->name }}</h4>
                                     @if($awayStanding)
                                     <div class="text-sm text-slate-500 mt-0.5">
@@ -309,7 +309,7 @@
                                             <td class="py-1.5 text-slate-500">{{ $standing->position }}</td>
                                             <td class="py-1.5">
                                                 <div class="flex items-center gap-2">
-                                                    <img src="{{ $standing->team->image }}" class="w-5 h-5 shrink-0">
+                                                    <x-team-crest :team="$standing->team" class="w-5 h-5 shrink-0" />
                                                     <span class="truncate {{ $isPlayer ? 'text-slate-900' : 'text-slate-700' }}">{{ $standing->team->name }}</span>
                                                 </div>
                                             </td>

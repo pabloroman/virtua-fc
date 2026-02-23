@@ -107,7 +107,7 @@
                                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                             <div class="flex items-center gap-4">
                                                 @if($bid->sellingTeam)
-                                                <img src="{{ $bid->sellingTeam->image }}" class="w-10 h-10 shrink-0">
+                                                <x-team-crest :team="$bid->sellingTeam" class="w-10 h-10 shrink-0" />
                                                 @endif
                                                 <div>
                                                     <div class="font-semibold text-slate-900">
@@ -151,7 +151,7 @@
                                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                             <div class="flex items-center gap-4">
                                                 @if($bid->sellingTeam)
-                                                <img src="{{ $bid->sellingTeam->image }}" class="w-10 h-10 shrink-0">
+                                                <x-team-crest :team="$bid->sellingTeam" class="w-10 h-10 shrink-0" />
                                                 @endif
                                                 <div>
                                                     <div class="font-semibold text-slate-900">
@@ -197,7 +197,7 @@
                                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                             <div class="flex items-center gap-4">
                                                 @if($transfer->sellingTeam)
-                                                <img src="{{ $transfer->sellingTeam->image }}" class="w-10 h-10 shrink-0">
+                                                <x-team-crest :team="$transfer->sellingTeam" class="w-10 h-10 shrink-0" />
                                                 @endif
                                                 <div>
                                                     <div class="font-semibold text-slate-900">
@@ -245,7 +245,7 @@
                                     @foreach($loansIn as $loan)
                                     <div class="px-4 py-3">
                                         <div class="flex items-center gap-3">
-                                            <img src="{{ $loan->parentTeam->image }}" class="w-7 h-7 shrink-0">
+                                            <x-team-crest :team="$loan->parentTeam" class="w-7 h-7 shrink-0" />
                                             <div class="min-w-0">
                                                 <div class="font-medium text-sm text-slate-900 truncate">{{ $loan->gamePlayer->name }}</div>
                                                 <div class="text-xs text-slate-500">
@@ -275,7 +275,7 @@
                                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                                             <div class="flex items-center gap-4">
                                                 @if($bid->sellingTeam)
-                                                <img src="{{ $bid->sellingTeam->image }}" class="w-8 h-8 grayscale shrink-0">
+                                                <x-team-crest :team="$bid->sellingTeam" class="w-8 h-8 grayscale shrink-0" />
                                                 @endif
                                                 <div>
                                                     <div class="font-medium text-slate-700">

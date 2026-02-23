@@ -38,7 +38,7 @@
                                 </td>
                                 <td class="align-middle whitespace-nowrap py-1 px-1.5">
                                     <div class="flex items-center space-x-1.5 @if($isPlayer) font-semibold @endif">
-                                        <img src="{{ $standing->team->image }}" class="w-5 h-5 shrink-0">
+                                        <x-team-crest :team="$standing->team" class="w-5 h-5 shrink-0" />
                                         <span class="truncate">{{ $standing->team->name }}</span>
                                     </div>
                                 </td>

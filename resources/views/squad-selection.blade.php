@@ -50,7 +50,7 @@ $tabs = [
 
             {{-- Welcome Header --}}
             <div class="text-center mb-6 md:mb-8">
-                <img src="{{ $game->team->image }}" alt="{{ $game->team->name }}" class="w-16 h-16 md:w-20 md:h-20 mx-auto mb-3 md:mb-4">
+                <x-team-crest :team="$game->team" class="w-16 h-16 md:w-20 md:h-20 mx-auto mb-3 md:mb-4" />
                 <h1 class="text-2xl md:text-3xl font-bold text-white mb-1">
                     {{ __('game.welcome_to_team', ['team_a' => $game->team->nameWithA()]) }}, {{ $game->player_name }}
                 </h1>

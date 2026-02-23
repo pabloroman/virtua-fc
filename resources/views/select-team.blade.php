@@ -122,7 +122,7 @@
                                             <div class="grid lg:grid-cols-4 md:grid-cols-2 gap-2 mt-4">
                                                 @foreach($competition->teams as $team)
                                                     <label class="border text-slate-700 has-[:checked]:ring-sky-200 has-[:checked]:text-sky-900 has-[:checked]:bg-sky-100 grid grid-cols-[40px_1fr_auto] items-center gap-4 rounded-lg p-4 ring-1 ring-transparent hover:bg-sky-50">
-                                                        <img src="{{ $team->image }}" class="w-10 h-10">
+                                                        <x-team-crest :team="$team" class="w-10 h-10" />
                                                         <span class="text-[20px]">{{ $team->name }}</span>
                                                         <input x-bind:required="mode === 'career'" x-bind:disabled="mode !== 'career'" type="radio" name="team_id" value="{{ $team->id }}" class="hidden appearance-none rounded-full border-[5px] border-white bg-white bg-clip-padding outline-none ring-1 ring-gray-950/10 checked:border-sky-600 checked:ring-sky-600 focus:outline-none">
                                                     </label>
@@ -153,7 +153,7 @@
                                             <div class="grid lg:grid-cols-4 md:grid-cols-2 gap-2 mt-4">
                                                 @foreach($teams as $team)
                                                     <label class="border text-slate-700 has-[:checked]:ring-amber-200 has-[:checked]:text-amber-900 has-[:checked]:bg-amber-50 grid grid-cols-[40px_1fr_auto] items-center gap-4 rounded-lg p-4 ring-1 ring-transparent hover:bg-amber-50">
-                                                        <img src="{{ $team->image }}" class="w-10 h-7 rounded shadow object-cover" onerror="this.style.display='none'">
+                                                        <x-team-crest :team="$team" class="w-10 h-7 rounded shadow object-cover" onerror="this.style.display='none'" />
                                                         <span class="text-[20px]">{{ $team->name }}</span>
                                                         <input x-bind:required="mode === 'tournament'" x-bind:disabled="mode !== 'tournament'" type="radio" name="team_id" value="{{ $team->id }}" class="hidden appearance-none rounded-full border-[5px] border-white bg-white bg-clip-padding outline-none ring-1 ring-gray-950/10 checked:border-amber-600 checked:ring-amber-600 focus:outline-none">
                                                     </label>

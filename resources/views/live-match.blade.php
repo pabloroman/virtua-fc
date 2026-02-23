@@ -72,7 +72,7 @@
                     <div class="flex items-center justify-center gap-2 md:gap-6 mb-2">
                         <div class="flex items-center gap-2 md:gap-3 flex-1 justify-end">
                             <span class="text-sm md:text-xl font-semibold text-slate-900 truncate">{{ $match->homeTeam->name }}</span>
-                            <img src="{{ $match->homeTeam->image }}" class="w-10 h-10 md:w-14 md:h-14 shrink-0" alt="{{ $match->homeTeam->name }}">
+                            <x-team-crest :team="$match->homeTeam" class="w-10 h-10 md:w-14 md:h-14 shrink-0" />
                         </div>
 
                         <div class="relative px-2 md:px-6">
@@ -92,7 +92,7 @@
                         </div>
 
                         <div class="flex items-center gap-2 md:gap-3 flex-1">
-                            <img src="{{ $match->awayTeam->image }}" class="w-10 h-10 md:w-14 md:h-14 shrink-0" alt="{{ $match->awayTeam->name }}">
+                            <x-team-crest :team="$match->awayTeam" class="w-10 h-10 md:w-14 md:h-14 shrink-0" />
                             <span class="text-sm md:text-xl font-semibold text-slate-900 truncate">{{ $match->awayTeam->name }}</span>
                         </div>
                     </div>

@@ -49,7 +49,7 @@
                         <span class="text-slate-300">&middot;</span>
                     @endif
                     @if($gamePlayer->team && $isCareerMode)
-                        <img src="{{ $gamePlayer->team->image }}" class="w-4 h-4 rounded shadow-sm">
+                        <x-team-crest :team="$gamePlayer->team" class="w-4 h-4 rounded shadow-sm" />
                         <span>{{ $gamePlayer->team->name }}</span>
                         <span class="text-slate-300">&middot;</span>
                     @endif

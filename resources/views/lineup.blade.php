@@ -237,7 +237,7 @@
                                     <div class="flex items-center justify-between gap-2 mb-1">
                                         {{-- User Team --}}
                                         <div class="flex items-center gap-2 min-w-0">
-                                            <img src="{{ $game->team->image }}" class="w-7 h-7 shrink-0" alt="{{ $game->team->name }}">
+                                            <x-team-crest :team="$game->team" class="w-7 h-7 shrink-0" />
                                             <span class="text-lg font-bold text-slate-900" x-text="teamAverage || '-'"></span>
                                         </div>
 
@@ -260,7 +260,7 @@
                                         {{-- Opponent Team --}}
                                         <div class="flex items-center gap-2 min-w-0">
                                             <span class="text-lg font-bold text-slate-900">{{ $opponentData['teamAverage'] ?: '-' }}</span>
-                                            <img src="{{ $opponent->image }}" class="w-7 h-7 shrink-0" alt="{{ $opponent->name }}">
+                                            <x-team-crest :team="$opponent" class="w-7 h-7 shrink-0" />
                                         </div>
                                     </div>
 
