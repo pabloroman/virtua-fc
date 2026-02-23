@@ -6,14 +6,118 @@ use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\MatchEvent;
+use App\Models\PlayerSuspension;
 use Illuminate\Support\Str;
 use App\Modules\Match\Services\MatchResimulationService;
 
 class SubstitutionService
 {
+    public const MAX_SUBSTITUTIONS = 5;
+
+    public const MAX_WINDOWS = 3;
+
     public function __construct(
         private readonly MatchResimulationService $resimulationService,
     ) {}
+
+    /**
+     * Validate substitution rules and delegate to processBatchSubstitution on success.
+     *
+     * @throws \InvalidArgumentException with a raw translation key on validation failure
+     */
+    public function validateAndProcessBatchSubstitution(
+        GameMatch $match,
+        Game $game,
+        array $newSubstitutions,
+        int $minute,
+        array $previousSubstitutions,
+    ): array {
+        // Check total substitution limit
+        $totalSubs = count($previousSubstitutions) + count($newSubstitutions);
+        if ($totalSubs > self::MAX_SUBSTITUTIONS) {
+            throw new \InvalidArgumentException('game.sub_error_limit_reached');
+        }
+
+        // Check substitution window limit
+        $previousWindows = count(array_unique(array_column($previousSubstitutions, 'minute')));
+        if ($previousWindows >= self::MAX_WINDOWS) {
+            throw new \InvalidArgumentException('game.sub_error_windows_reached');
+        }
+
+        // Build active lineup from starting lineup + previous subs
+        $isHome = $match->isHomeTeam($game->team_id);
+        $activeLineupIds = $isHome ? ($match->home_lineup ?? []) : ($match->away_lineup ?? []);
+
+        foreach ($previousSubstitutions as $sub) {
+            $activeLineupIds = array_values(array_filter(
+                $activeLineupIds,
+                fn ($id) => $id !== $sub['playerOutId']
+            ));
+            $activeLineupIds[] = $sub['playerInId'];
+        }
+
+        // Validate each sub in the batch
+        $batchOutIds = [];
+        $batchInIds = [];
+
+        foreach ($newSubstitutions as $sub) {
+            $playerOutId = $sub['playerOutId'];
+            $playerInId = $sub['playerInId'];
+
+            // Build effective lineup considering earlier subs in this batch
+            $effectiveLineup = $activeLineupIds;
+            foreach ($batchOutIds as $i => $outId) {
+                $effectiveLineup = array_values(array_filter($effectiveLineup, fn ($id) => $id !== $outId));
+                $effectiveLineup[] = $batchInIds[$i];
+            }
+
+            if (! in_array($playerOutId, $effectiveLineup)) {
+                throw new \InvalidArgumentException('game.sub_error_player_not_on_pitch');
+            }
+
+            // Prevent substituting a red-carded player
+            $wasRedCarded = MatchEvent::where('game_match_id', $match->id)
+                ->where('game_player_id', $playerOutId)
+                ->where('event_type', 'red_card')
+                ->where('minute', '<=', $minute)
+                ->exists();
+
+            if ($wasRedCarded) {
+                throw new \InvalidArgumentException('game.sub_error_player_sent_off');
+            }
+
+            // Validate player-in belongs to team and exists
+            $playerIn = GamePlayer::where('id', $playerInId)
+                ->where('game_id', $game->id)
+                ->where('team_id', $game->team_id)
+                ->first();
+
+            if (! $playerIn) {
+                throw new \InvalidArgumentException('game.sub_error_invalid_player');
+            }
+
+            if (in_array($playerInId, $effectiveLineup)) {
+                throw new \InvalidArgumentException('game.sub_error_already_on_pitch');
+            }
+
+            if (PlayerSuspension::isSuspended($playerInId, $match->competition_id)) {
+                throw new \InvalidArgumentException('game.sub_error_player_suspended');
+            }
+
+            if ($playerIn->isInjured($match->scheduled_date)) {
+                throw new \InvalidArgumentException('game.sub_error_player_injured');
+            }
+
+            if (in_array($playerInId, $batchInIds)) {
+                throw new \InvalidArgumentException('game.sub_error_already_on_pitch');
+            }
+
+            $batchOutIds[] = $playerOutId;
+            $batchInIds[] = $playerInId;
+        }
+
+        return $this->processBatchSubstitution($match, $game, $newSubstitutions, $minute, $previousSubstitutions);
+    }
 
     /**
      * Process a batch of substitutions: revert future events, re-simulate remainder, apply new result.
