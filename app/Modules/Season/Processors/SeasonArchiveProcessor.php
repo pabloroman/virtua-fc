@@ -4,6 +4,9 @@ namespace App\Modules\Season\Processors;
 
 use App\Modules\Season\Contracts\SeasonEndProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
+use App\Modules\Competition\Services\SwissKnockoutGenerator;
+use App\Models\CompetitionEntry;
+use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
@@ -61,7 +64,41 @@ class SeasonArchiveProcessor implements SeasonEndProcessor
         // Store awards in transition data for display on season-end screen
         $data->setMetadata('seasonAwards', $awards);
 
+        // Capture European competition winners before cup tie data is deleted
+        $this->captureEuropeanWinners($game, $data);
+
         return $data;
+    }
+
+    /**
+     * Capture UEL winner before cup tie data is deleted by later processors.
+     *
+     * If the player participated in UEL, find the final winner.
+     * Otherwise, randomly pick from UEL CompetitionEntry records.
+     */
+    private function captureEuropeanWinners(Game $game, SeasonTransitionData $data): void
+    {
+        // Check if the UEL final was played (player participated in UEL)
+        $uelFinal = CupTie::where('game_id', $game->id)
+            ->where('competition_id', 'UEL')
+            ->where('round_number', SwissKnockoutGenerator::ROUND_FINAL)
+            ->where('completed', true)
+            ->first();
+
+        if ($uelFinal && $uelFinal->winner_id) {
+            $data->setMetadata(SeasonTransitionData::META_UEL_WINNER, $uelFinal->winner_id);
+            return;
+        }
+
+        // UEL wasn't played by the user — pick a random team from UEL entries
+        $uelEntry = CompetitionEntry::where('game_id', $game->id)
+            ->where('competition_id', 'UEL')
+            ->inRandomOrder()
+            ->first();
+
+        if ($uelEntry) {
+            $data->setMetadata(SeasonTransitionData::META_UEL_WINNER, $uelEntry->team_id);
+        }
     }
 
     /**

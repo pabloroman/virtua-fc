@@ -9,6 +9,7 @@ use App\Models\Competition;
 use App\Models\CompetitionEntry;
 use App\Models\CupTie;
 use App\Models\Game;
+use App\Models\GamePlayer;
 use App\Models\GameStanding;
 use App\Models\SimulatedSeason;
 use App\Models\Team;
@@ -45,6 +46,9 @@ class UefaQualificationProcessor implements SeasonEndProcessor
         foreach ($this->countryConfig->allCountryCodes() as $countryCode) {
             $this->processCountry($game, $countryCode);
         }
+
+        $this->qualifyUelWinner($game, $data);
+        $this->fillRemainingContinentalSlots($game);
 
         return $data;
     }
@@ -247,6 +251,129 @@ class UefaQualificationProcessor implements SeasonEndProcessor
                         'entry_round' => 1,
                     ]
                 );
+            }
+        }
+    }
+
+    /**
+     * Qualify the UEL winner into next season's UCL.
+     *
+     * If the winner is already in UCL, do nothing.
+     * Otherwise, add them and remove a non-configured-country team to maintain 36.
+     */
+    private function qualifyUelWinner(Game $game, SeasonTransitionData $data): void
+    {
+        $uelWinnerId = $data->getMetadata(SeasonTransitionData::META_UEL_WINNER);
+        if (!$uelWinnerId) {
+            return;
+        }
+
+        $uclCompetition = Competition::find('UCL');
+        if (!$uclCompetition) {
+            return;
+        }
+
+        // Check if already in UCL
+        $alreadyInUcl = CompetitionEntry::where('game_id', $game->id)
+            ->where('competition_id', 'UCL')
+            ->where('team_id', $uelWinnerId)
+            ->exists();
+
+        if ($alreadyInUcl) {
+            return;
+        }
+
+        // Find a non-configured-country team to replace
+        $configuredCountries = collect($this->countryConfig->allCountryCodes())
+            ->filter(fn (string $code) => !empty($this->countryConfig->continentalSlots($code)))
+            ->all();
+
+        $replaceable = CompetitionEntry::where('game_id', $game->id)
+            ->where('competition_id', 'UCL')
+            ->get()
+            ->filter(function (CompetitionEntry $entry) use ($configuredCountries) {
+                $team = Team::find($entry->team_id);
+                return $team && !in_array($team->country, $configuredCountries);
+            });
+
+        if ($replaceable->isNotEmpty()) {
+            // Remove a random non-configured-country team
+            $toRemove = $replaceable->random();
+            CompetitionEntry::where('game_id', $game->id)
+                ->where('competition_id', 'UCL')
+                ->where('team_id', $toRemove->team_id)
+                ->delete();
+        }
+
+        // Add UEL winner to UCL
+        CompetitionEntry::updateOrCreate(
+            [
+                'game_id' => $game->id,
+                'competition_id' => 'UCL',
+                'team_id' => $uelWinnerId,
+            ],
+            [
+                'entry_round' => 1,
+            ]
+        );
+    }
+
+    /**
+     * Fill remaining continental slots to reach 36 teams per swiss_format competition.
+     *
+     * Selects teams with GamePlayer records, ranked by average market value,
+     * excluding teams already in any swiss_format competition.
+     */
+    private function fillRemainingContinentalSlots(Game $game): void
+    {
+        $swissCompetitionIds = Competition::where('handler_type', 'swiss_format')
+            ->pluck('id')
+            ->toArray();
+
+        if (empty($swissCompetitionIds)) {
+            return;
+        }
+
+        // Collect all teams already in any swiss_format competition
+        $usedTeamIds = CompetitionEntry::where('game_id', $game->id)
+            ->whereIn('competition_id', $swissCompetitionIds)
+            ->pluck('team_id')
+            ->toArray();
+
+        foreach ($swissCompetitionIds as $competitionId) {
+            $currentCount = CompetitionEntry::where('game_id', $game->id)
+                ->where('competition_id', $competitionId)
+                ->count();
+
+            $needed = 36 - $currentCount;
+            if ($needed <= 0) {
+                continue;
+            }
+
+            // Find filler teams: have GamePlayer records, not in any swiss competition
+            $fillerTeams = GamePlayer::where('game_id', $game->id)
+                ->whereNotIn('team_id', $usedTeamIds)
+                ->groupBy('team_id')
+                ->selectRaw('team_id, AVG(market_value_cents) as avg_value')
+                ->orderByDesc('avg_value')
+                ->limit($needed)
+                ->pluck('team_id')
+                ->toArray();
+
+            foreach ($fillerTeams as $teamId) {
+                CompetitionEntry::updateOrCreate(
+                    [
+                        'game_id' => $game->id,
+                        'competition_id' => $competitionId,
+                        'team_id' => $teamId,
+                    ],
+                    [
+                        'entry_round' => 1,
+                    ]
+                );
+
+                // Track used teams across competitions
+                $usedTeamIds[] = $teamId;
             }
         }
     }
