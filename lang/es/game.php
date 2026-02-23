@@ -151,6 +151,7 @@ return [
     'live_pen_scored' => 'Gol',
     'live_pen_missed' => 'Fallo',
     'live_pen_round' => 'Ronda :round',
+    'live_pen_winner' => 'gana en los penaltis',
 
     // Substitutions
     'sub_title' => 'Sustituciones',
