@@ -6,8 +6,6 @@
 @endphp
 
 <div class="md:col-span-2 space-y-6">
-    <h3 class="font-semibold text-xl text-slate-900">{{ $competition->name }}</h3>
-
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         @foreach($groupedStandings as $groupLabel => $groupStandings)
             <div class="space-y-2">

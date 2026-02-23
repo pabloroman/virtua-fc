@@ -277,9 +277,10 @@
                         <div>
                             <div class="flex items-center justify-between mb-4">
                                 <h4 class="font-semibold text-xl text-slate-900">
-                                    {{ __('game.standings') }}
                                     @if($game->isTournamentMode() && $leagueStandings->first()?->group_label)
-                                        <span class="text-slate-400 font-normal">&mdash; {{ __('game.group') }} {{ $leagueStandings->first()->group_label }}</span>
+                                        {{ __('game.group') }} {{ $leagueStandings->first()->group_label }}
+                                    @else
+                                        {{ __('game.standings') }}
                                     @endif
                                 </h4>
                                 <a href="{{ route('game.competition', [$game->id, $game->competition_id]) }}" class="text-sm text-sky-600 hover:text-sky-800">

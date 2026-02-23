@@ -52,9 +52,8 @@ $tabs = [
             <div class="text-center mb-6 md:mb-8">
                 <x-team-crest :team="$game->team" class="w-16 h-16 md:w-20 md:h-20 mx-auto mb-3 md:mb-4" />
                 <h1 class="text-2xl md:text-3xl font-bold text-white mb-1">
-                    {{ __('game.welcome_to_team', ['team_a' => $game->team->nameWithA()]) }}, {{ $game->player_name }}
+                    {{ __('game.welcome_name', ['name' => $game->player_name ]) }}
                 </h1>
-                <p class="text-slate-500">{{ __('game.season_n', ['season' => $game->formatted_season]) }}</p>
             </div>
 
             {{-- Flash Messages --}}

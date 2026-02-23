@@ -96,6 +96,10 @@ return [
     'loan_rejected_title' => 'Cesión de :player rechazada',
     'loan_rejected' => ':team ha rechazado tu solicitud de cesión por :player.',
 
+    // Tournament welcome
+    'tournament_welcome_title' => '¡Bienvenido al Mundial!',
+    'tournament_welcome_message' => 'Todo el país tiene los ojos puestos en tí. Sin presión... ¡pero no les decepciones!',
+
     // Priority badges
     'priority_urgent' => 'Urgente',
     'priority_attention' => 'Atención',

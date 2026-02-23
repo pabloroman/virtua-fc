@@ -67,6 +67,7 @@ class GameNotification extends Model
     public const TYPE_RENEWAL_REJECTED = 'renewal_rejected';
     public const TYPE_TRANSFER_BID_RESULT = 'transfer_bid_result';
     public const TYPE_LOAN_REQUEST_RESULT = 'loan_request_result';
+    public const TYPE_TOURNAMENT_WELCOME = 'tournament_welcome';
 
     // Priorities
     public const PRIORITY_MILESTONE = 'milestone';
@@ -98,6 +99,7 @@ class GameNotification extends Model
         self::TYPE_RENEWAL_REJECTED => 'transfers',
         self::TYPE_TRANSFER_BID_RESULT => 'scouting',
         self::TYPE_LOAN_REQUEST_RESULT => 'scouting',
+        self::TYPE_TOURNAMENT_WELCOME => 'competition',
     ];
 
     protected $fillable = [
@@ -366,6 +368,13 @@ class GameNotification extends Model
                 'border' => 'border-purple-200',
                 'text' => 'text-purple-800',
                 'icon_bg' => 'bg-purple-500',
+                'icon_text' => 'text-white',
+            ],
+            self::TYPE_TOURNAMENT_WELCOME => [
+                'bg' => 'bg-yellow-50',
+                'border' => 'border-yellow-300',
+                'text' => 'text-yellow-900',
+                'icon_bg' => 'bg-yellow-500',
                 'icon_text' => 'text-white',
             ],
             default => [
