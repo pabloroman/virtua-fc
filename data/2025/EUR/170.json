@@ -1,0 +1,448 @@
+{
+  "image": "https://tmssl.akamaized.net/images/wappen/big/170.png",
+  "name": "Rapid Vienna",
+  "players": [
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 17, 2001",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "404881",
+      "marketValue": "€1.50m",
+      "name": "Niklas Hedl",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "1",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Mar 10, 1997",
+      "foot": "right",
+      "height": "1,87m",
+      "id": "223957",
+      "marketValue": "€500k",
+      "name": "Paul Gartler",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "25",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Oct 13, 2004",
+      "height": "1,87m",
+      "id": "658130",
+      "marketValue": "€250k",
+      "name": "Laurenz Orgler",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "50",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Nov 16, 2005",
+      "height": "1,88m",
+      "id": "692605",
+      "marketValue": "€200k",
+      "name": "Benjamin Göschl",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "51",
+      "position": "Goalkeeper"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "May 30, 1999",
+      "foot": "left",
+      "height": "1,97m",
+      "id": "683891",
+      "marketValue": "€4.00m",
+      "name": "Serge-Philippe Raux-Yao",
+      "nationality": [
+        "France",
+        "Cote d'Ivoire"
+      ],
+      "number": "6",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Dec 22, 2003",
+      "foot": "left",
+      "height": "1,94m",
+      "id": "847257",
+      "marketValue": "€2.00m",
+      "name": "Ange Ahoussou",
+      "nationality": [
+        "Cote d'Ivoire"
+      ],
+      "number": "20",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 6, 1996",
+      "foot": "both",
+      "height": "1,95m",
+      "id": "319482",
+      "marketValue": "€2.00m",
+      "name": "Nenad Cvetkovic",
+      "nationality": [
+        "Serbia"
+      ],
+      "number": "55",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Feb 12, 2000",
+      "foot": "right",
+      "height": "1,97m",
+      "id": "475412",
+      "marketValue": "€800k",
+      "name": "Jean Marcelin",
+      "nationality": [
+        "Madagascar",
+        "France"
+      ],
+      "number": "24",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 9, 2005",
+      "foot": "right",
+      "height": "1,90m",
+      "id": "715893",
+      "marketValue": "€700k",
+      "name": "Jakob Schöller",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "4",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 25, 2005",
+      "foot": "both",
+      "height": "1,90m",
+      "id": "803046",
+      "marketValue": "€400k",
+      "name": "Amin-Elias Gröller",
+      "nationality": [
+        "Tunisia",
+        "Austria"
+      ],
+      "number": "47",
+      "position": "Centre-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Feb 6, 1997",
+      "foot": "left",
+      "height": "1,86m",
+      "id": "231586",
+      "marketValue": "€1.20m",
+      "name": "Jannes Horn",
+      "nationality": [
+        "Germany"
+      ],
+      "number": "38",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Aug 5, 2000",
+      "foot": "left",
+      "height": "1,82m",
+      "id": "393766",
+      "marketValue": "€800k",
+      "name": "Jonas Auer",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "23",
+      "position": "Left-Back"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Nov 22, 1999",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "439351",
+      "marketValue": "€2.20m",
+      "name": "Bendegúz Bolla",
+      "nationality": [
+        "Hungary"
+      ],
+      "number": "77",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Nov 29, 2004",
+      "foot": "right",
+      "height": "1,70m",
+      "id": "692598",
+      "marketValue": "€1.00m",
+      "name": "Furkan Demir",
+      "nationality": [
+        "Türkiye",
+        "Austria"
+      ],
+      "number": "61",
+      "position": "Right-Back"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jan 16, 2003",
+      "foot": "left",
+      "height": "1,88m",
+      "id": "976234",
+      "marketValue": "€1.80m",
+      "name": "Martin Ndzie",
+      "nationality": [
+        "Cameroon"
+      ],
+      "number": "14",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Aug 17, 1995",
+      "foot": "left",
+      "height": "1,83m",
+      "id": "224871",
+      "marketValue": "€800k",
+      "name": "Lukas Grgic",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "8",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Apr 18, 1999",
+      "foot": "right",
+      "height": "1,88m",
+      "id": "458537",
+      "marketValue": "€300k",
+      "name": "Tobias Børkeeiet",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "16",
+      "position": "Defensive Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Feb 20, 2003",
+      "foot": "right",
+      "height": "1,76m",
+      "id": "961937",
+      "marketValue": "€4.00m",
+      "name": "Romeo Amane",
+      "nationality": [
+        "Cote d'Ivoire"
+      ],
+      "number": "29",
+      "position": "Central Midfield"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Dec 29, 1994",
+      "foot": "left",
+      "height": "1,77m",
+      "id": "147485",
+      "marketValue": "€500k",
+      "name": "Louis Schaub",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "21",
+      "position": "Right Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Jul 9, 2003",
+      "foot": "right",
+      "height": "1,77m",
+      "id": "619657",
+      "marketValue": "€3.50m",
+      "name": "Tobias Gulliksen",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "17",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 24, 2001",
+      "foot": "both",
+      "height": "1,75m",
+      "id": "526895",
+      "marketValue": "€2.50m",
+      "name": "Matthias Seidl",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "18",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Aug 5, 1991",
+      "foot": "right",
+      "height": "1,79m",
+      "id": "49693",
+      "marketValue": "€450k",
+      "name": "Andreas Weimann",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "26",
+      "position": "Attacking Midfield"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Oct 22, 2003",
+      "foot": "right",
+      "height": "1,80m",
+      "id": "912078",
+      "marketValue": "€2.50m",
+      "name": "Petter Nosa Dahl",
+      "nationality": [
+        "Norway"
+      ],
+      "number": "10",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Dec 17, 2003",
+      "foot": "left",
+      "height": "1,80m",
+      "id": "601089",
+      "marketValue": "€500k",
+      "name": "Dominik Weixelbraun",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "41",
+      "position": "Left Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jan 5, 2006",
+      "foot": "both",
+      "height": "1,73m",
+      "id": "803052",
+      "marketValue": "€5.00m",
+      "name": "Nikolaus Wurmbrand",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "15",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 2, 2003",
+      "foot": "left",
+      "height": "1,73m",
+      "id": "548031",
+      "marketValue": "€1.50m",
+      "name": "Yusuf Demir",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "22",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2029",
+      "dateOfBirth": "Aug 23, 2001",
+      "foot": "left",
+      "height": "1,70m",
+      "id": "565531",
+      "marketValue": "€1.00m",
+      "name": "Marco Tilio",
+      "nationality": [
+        "Australia",
+        "Italy"
+      ],
+      "number": "7",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jun 14, 2000",
+      "foot": "left",
+      "height": "1,85m",
+      "id": "391561",
+      "marketValue": "€175k",
+      "name": "Oliver Strunz",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "39",
+      "position": "Right Winger"
+    },
+    {
+      "contract": "Jun 30, 2028",
+      "dateOfBirth": "Jun 3, 1999",
+      "foot": "right",
+      "height": "1,85m",
+      "id": "526785",
+      "marketValue": "€2.00m",
+      "name": "Claudy Mbuyi",
+      "nationality": [
+        "France",
+        "DR Congo"
+      ],
+      "number": "71",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2026",
+      "dateOfBirth": "Aug 18, 2002",
+      "foot": "right",
+      "height": "1,83m",
+      "id": "538974",
+      "marketValue": "€1.50m",
+      "name": "Janis Antiste",
+      "nationality": [
+        "France",
+        "Martinique"
+      ],
+      "number": "90",
+      "position": "Centre-Forward"
+    },
+    {
+      "contract": "Jun 30, 2027",
+      "dateOfBirth": "Jan 3, 1996",
+      "foot": "right",
+      "height": "1,92m",
+      "id": "320701",
+      "marketValue": "€900k",
+      "name": "Ercan Kara",
+      "nationality": [
+        "Austria"
+      ],
+      "number": "9",
+      "position": "Centre-Forward"
+    }
+  ],
+  "stadiumName": "Allianz-Stadion",
+  "stadiumSeats": "28345",
+  "transfermarktId": "170"
+}
