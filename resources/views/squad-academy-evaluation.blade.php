@@ -332,7 +332,7 @@
                     }
                     // Players without a decision yet count as kept
                     const undecided = this.playerCount - Object.values(this.decisions).filter(v => v).length;
-                    return kept + undecided + {{ $loanedCount }};
+                    return kept + undecided;
                 },
 
                 get allDecided() {
