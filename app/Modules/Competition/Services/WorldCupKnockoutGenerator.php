@@ -221,14 +221,18 @@ class WorldCupKnockoutGenerator
      */
     private function generateFixedBracketRound(Game $game, string $competitionId, int $round): array
     {
+        // Third place and final are derived directly from SF results,
+        // avoiding dependency on bracket_position which may be NULL.
+        if ($round === self::ROUND_THIRD_PLACE || $round === self::ROUND_FINAL) {
+            return $this->generateFromSemiFinals($game, $competitionId, $round);
+        }
+
         $bracket = $this->loadBracket();
 
         $roundKey = match ($round) {
             self::ROUND_OF_16 => 'round_of_16',
             self::ROUND_QUARTER_FINALS => 'quarter_finals',
             self::ROUND_SEMI_FINALS => 'semi_finals',
-            self::ROUND_THIRD_PLACE => 'third_place',
-            self::ROUND_FINAL => 'final',
             default => throw new \RuntimeException("Unknown round: {$round}"),
         };
 
@@ -245,6 +249,50 @@ class WorldCupKnockoutGenerator
         }
 
         return $matchups;
+    }
+
+    /**
+     * Generate third-place or final matchup directly from semi-final results.
+     *
+     * Third place = SF losers, Final = SF winners.
+     */
+    private function generateFromSemiFinals(Game $game, string $competitionId, int $round): array
+    {
+        $bracket = $this->loadBracket();
+        $roundKey = $round === self::ROUND_THIRD_PLACE ? 'third_place' : 'final';
+        $roundMatches = $bracket[$roundKey] ?? [];
+
+        if (empty($roundMatches)) {
+            return [];
+        }
+
+        $sfTies = CupTie::where('game_id', $game->id)
+            ->where('competition_id', $competitionId)
+            ->where('round_number', self::ROUND_SEMI_FINALS)
+            ->where('completed', true)
+            ->orderBy('bracket_position')
+            ->orderBy('id')
+            ->get();
+
+        if ($sfTies->count() !== 2) {
+            return [];
+        }
+
+        $matchNumber = $roundMatches[0]['match_number'];
+
+        if ($round === self::ROUND_THIRD_PLACE) {
+            $homeTeamId = $sfTies[0]->getLoserId();
+            $awayTeamId = $sfTies[1]->getLoserId();
+        } else {
+            $homeTeamId = $sfTies[0]->winner_id;
+            $awayTeamId = $sfTies[1]->winner_id;
+        }
+
+        if ($homeTeamId && $awayTeamId) {
+            return [[$homeTeamId, $awayTeamId, $matchNumber]];
+        }
+
+        return [];
     }
 
     /**
