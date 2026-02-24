@@ -1,296 +1,84 @@
 # Match Simulation
 
-This document describes how match results are simulated in VirtuaFC.
+How match results are simulated in VirtuaFC.
 
 ## Overview
 
-Match simulation uses a **Poisson distribution** to generate realistic scorelines based on:
-- Team strength ratios (from player abilities)
-- Formation and mentality
-- Home advantage
-- Striker quality bonus
-- Random performance variance
+Match simulation calculates **expected goals (xG)** for each team using a ratio-based formula, then generates actual scores via **Poisson distribution**. The xG is influenced by team strength, formation, mentality, home advantage, and a striker quality bonus. During matches, players lose energy over time, affecting their contribution.
 
-## Expected Goals Calculation
-
-The core of match simulation is calculating **expected goals** for each team using a **ratio-based** formula.
-
-### Base Formula
+## xG Formula
 
 ```
-strengthRatio = homeStrength / awayStrength
+homeXG = (strengthRatio ^ exponent) × baseGoals + homeAdvantage
+         × formation modifiers × mentality modifiers × matchFraction
 
-homeXG = (strengthRatio ^ ratioExponent) × baseGoals + homeAdvantage
-         × formationModifiers × mentalityModifiers + strikerBonus
-
-awayXG = ((1/strengthRatio) ^ ratioExponent) × baseGoals
-         × formationModifiers × mentalityModifiers + strikerBonus
+awayXG = ((1/strengthRatio) ^ exponent) × baseGoals
+         × formation modifiers × mentality modifiers × matchFraction
 ```
 
-When teams are equal (ratio = 1.0), both get `baseGoals` (1.3 xG). The stronger team is **always** favored regardless of venue — home advantage is a modest +0.15 on top.
+The stronger team is always favored regardless of venue — home advantage is a modest additive bonus on top.
 
-### Configuration Values
+**Team strength** is calculated from the 11-player lineup with ability-dominant weights (technical 55%, physical 35%, fitness 5%, morale 5%), each modified by a per-player energy effectiveness modifier and a random daily performance variance (normal distribution, tight range). See `calculateTeamStrength()` in `MatchSimulator`.
 
-| Parameter | Value | Description |
-|-----------|-------|-------------|
-| `base_goals` | 1.3 | xG per team when evenly matched (~2.6 total) |
-| `ratio_exponent` | 2.0 | Amplifies strength ratio into xG gap |
-| `home_advantage_goals` | 0.15 | Fixed home xG bonus |
+**Striker bonus**: The best forward in the lineup above a quality threshold adds bonus xG. See `calculateStrikerBonus()`.
 
-### Team Strength Calculation
+All base values and exponents are configurable in `config/match_simulation.php`.
 
-Team strength is calculated from the 11 players in the lineup. Ability is dominant (90% weight), while fitness/morale provide a small nudge:
+## Formation & Mentality
 
-```php
-foreach ($lineup as $player) {
-    $performance = getMatchPerformance($player); // 0.85-1.15 variance
+Each formation has attack and defense modifiers (multiplicative on xG). A team's attack modifier scales their own xG; their defense modifier scales the opponent's. Available formations and their modifiers are defined in `Formation` enum.
 
-    $effectiveTechnical = $player->technical_ability × $performance;
-    $effectivePhysical = $player->physical_ability × (0.5 + $performance × 0.5);
+Three mentalities — defensive, balanced, attacking — trade off own scoring vs conceding. Modifiers are in `config/match_simulation.php`.
 
-    $playerStrength = ($effectiveTechnical × 0.55) +
-                      ($effectivePhysical × 0.35) +
-                      ($player->fitness × 0.05) +
-                      ($player->morale × 0.05);
+AI teams select mentality based on reputation tier (bold/mid/cautious) crossed with venue (home/away) and relative strength. See `LineupService::selectAIMentality()`.
 
-    $totalStrength += $playerStrength;
-}
+## Energy System
 
-$teamStrength = ($totalStrength / 11) / 100; // Normalized to 0-1
-```
+Players lose energy per minute based on physical ability and age. Goalkeepers drain slower. As energy drops, player effectiveness decreases (from 1.0x down to a configured minimum). This makes late-game substitutions and squad rotation meaningful.
 
-Fitness and morale still affect matches through `getMatchPerformance()` modifiers — they influence the daily performance bell curve for each player.
-
-### Striker Quality Bonus
-
-Elite forwards boost their team's expected goals:
-
-```php
-$forwardPositions = ['Centre-Forward', 'Second Striker', 'Left Winger', 'Right Winger'];
-$bestForwardScore = max(forwards' effective scores);
-
-if ($bestForwardScore >= 85) {
-    $strikerBonus = ($bestForwardScore - 85) / 60; // 0.0 to 0.25
-}
-```
-
-| Best Forward Rating | Bonus xG |
-|---------------------|----------|
-| 94 (Mbappé) | +0.15 |
-| 90 | +0.08 |
-| 85 | +0.0 |
-| <85 | +0.0 |
+Energy parameters are in `config/match_simulation.php` under the `energy` key.
 
 ## Match Performance Variance
 
-Each player gets a random "form on the day" modifier:
-
-```
-performance = 1.0 + (normal_distribution × 0.05)
-clamped to: 0.90 - 1.10
-```
-
-This means:
-- ~68% of performances are within ±5% of base ability
-- ~95% are within ±10%
-- The tight range rewards careful lineup crafting — the better squad reliably wins
-
-### Morale & Fitness Influence
-
-- **High morale (80+)**: Slight performance boost
-- **Low morale (<50)**: Slight performance penalty
-- **Low fitness (<70)**: Increased variance (more bad days)
+Each player gets a random "form on the day" modifier using a normal distribution, shifted by morale and fitness. The tight variance range ensures the better squad reliably wins while still allowing occasional upsets. See `getMatchPerformance()`.
 
 ## Score Generation
 
-Final scores use **Poisson distribution**:
-
-```php
-$homeScore = poissonRandom($homeExpectedGoals);
-$awayScore = poissonRandom($awayExpectedGoals);
-```
-
-Scores are capped at 6 to prevent unrealistic cricket scores.
-
-### Example Calculations
-
-**Real Madrid (90 avg) HOME vs Rayo Vallecano (72 avg)**
-
-```
-Home strength: 0.90 (normalized)
-Away strength: 0.72 (normalized)
-Ratio: 0.90 / 0.72 = 1.25
-
-Home xG: (1.25^2) × 1.3 + 0.15 = 2.18
-Away xG: (0.80^2) × 1.3 = 0.83
-
-Typical result: 2-0 or 2-1 to Real Madrid
-Home win ~73%
-```
-
-**Rayo Vallecano (72 avg) HOME vs Real Madrid (90 avg)**
-
-```
-Home strength: 0.72 (normalized)
-Away strength: 0.90 (normalized)
-Ratio: 0.72 / 0.90 = 0.80
-
-Home xG: (0.80^2) × 1.3 + 0.15 = 0.98
-Away xG: (1.25^2) × 1.3 = 2.03
-
-Typical result: 0-2 or 1-2 to Real Madrid
-Real Madrid win even away ~55%
-```
-
-**Even Match (both 82 avg)**
-
-```
-Ratio: 1.0
-
-Home xG: (1.0^2) × 1.3 + 0.15 = 1.45
-Away xG: (1.0^2) × 1.3 = 1.30
-
-Typical result: 1-1 or 2-1
-Home win ~39%, Draw ~28%, Away win ~33%
-```
-
-## Extra Time
-
-Extra time uses the same ratio-based formula, scaled to 30 minutes with a 20% fatigue reduction:
-
-```php
-$etFraction = 30.0 / 90.0;
-$etBaseGoals = $baseGoals × 0.8; // fatigue
-$homeXG = (ratio^exp × etBaseGoals + homeAdvantage) × etFraction;
-$awayXG = ((1/ratio)^exp × etBaseGoals) × etFraction;
-```
-
-## Season Simulation (Non-Played Leagues)
-
-Leagues that the player doesn't participate in are simulated using the same ratio-based formula on a **match-by-match** basis:
-
-1. Calculate squad strength for each team (0-100 scale from `BudgetProjectionService`)
-2. Simulate all N×(N-1) fixtures (home and away for each pair)
-3. Generate Poisson-distributed goals per match using ratio-based xG
-4. Accumulate points (3W/1D/0L)
-5. Sort by points → goal difference → goals for
-
-This produces realistic standings with ~380 matches for a 20-team league — computationally trivial but statistically sound, as match-by-match averaging naturally produces realistic variance.
+Scores are Poisson-distributed from the final xG, capped at a maximum per team to prevent unrealistic scorelines.
 
 ## Match Events
 
 Beyond the scoreline, the simulation generates:
 
-### Goals & Assists
-- Goals assigned by position weight (strikers most likely)
-- 60% chance of assist per goal
-- Higher-rated players more likely to score/assist (dampened multiplier)
+- **Goals**: Attributed by position weight (forwards most likely) with a dampened quality multiplier (`sqrt` not linear) and within-match diminishing returns (halved weight per prior goal). See `pickGoalScorer()`.
+- **Assists**: Each goal has a configurable chance of having an assist, attributed by separate position weights. See `pickAssistProvider()`.
+- **Own goals**: Small configurable chance per goal, attributed by defensive position weights.
+- **Cards**: Yellow cards Poisson-distributed per team. Direct red chance increases with goal deficit. A second yellow becomes a red. Attributed by position weight (defenders/DMs highest).
+- **Injuries**: Configurable chance per player per match (and separate training injury chance for non-playing squad). Medical tier reduces chance. See [Injury System](injury-system.md).
+- **Event reassignment**: If a player is removed (injury/red card), subsequent events are reassigned to available teammates.
 
-#### Goal Scorer Distribution
+Position weights for all event types are defined in `MatchSimulator`.
 
-Goal scorer selection uses `pickGoalScorer()` with two mechanisms to prevent unrealistic concentration:
+## Extra Time & Penalties
 
-1. **Dampened quality multiplier**: `pow(effectiveScore / 70, 0.5)` instead of linear. A 90-rated CF gets only ~13% advantage over a 70-rated player (vs 29% with linear scaling).
+**Extra time** uses the same xG formula scaled to 30 minutes with a fatigue reduction factor.
 
-2. **Within-match diminishing returns**: A player's weight is halved for each prior goal in the same match. This makes hat-tricks rare (~1-3 per season league-wide), matching real La Liga data.
-
-| Position | Weight |
-|----------|--------|
-| Centre-Forward | 25 |
-| Second Striker | 22 |
-| Left/Right Winger | 15 |
-| Attacking Midfield | 12 |
-| Central Midfield | 6 |
-| Left/Right Midfield | 5 |
-| Defensive Midfield | 3 |
-| Left/Right-Back | 2 |
-| Centre-Back | 2 |
-| Goalkeeper | 0 |
-
-### Cards
-- ~1.5 yellow cards per team per match
-- Losing teams get more cards (frustration)
-- ~1% chance of direct red per team
-
-### Injuries
-- ~4% chance per team per match
-- Random injury type and duration
-
-## Configuration
-
-All parameters are tunable in `config/match_simulation.php`:
-
-```php
-return [
-    'base_goals' => 1.3,
-    'ratio_exponent' => 2.0,
-    'home_advantage_goals' => 0.15,
-    'performance_std_dev' => 0.05,
-    'performance_min' => 0.90,
-    'performance_max' => 1.10,
-    'max_goals_cap' => 6,
-    // ... event probabilities
-];
-```
+**Penalty shootouts** use a kicker-vs-goalkeeper duel: base conversion rate adjusted by kicker technical/morale bonus minus goalkeeper technical penalty, plus luck. Standard 5 kicks, then sudden death. Implementation guarantees resolution.
 
 ## Live Match
 
-Matches are played in a **live match view** where users can make decisions during the game:
+Users interact with matches through:
+- **Substitutions**: Up to 5 subs in 3 windows. Fresh subs have full energy.
+- **Tactical changes**: Formation and mentality changes mid-match, taking effect via `simulateRemainder()`.
 
-### Substitutions
-- Up to **5 substitutions** per match in **3 windows** (matching real football rules)
-- Select a player from the bench to replace a starter
-- Substituted players retain their match stats
+## Season Simulation
 
-### Tactical Changes
-- **Formation changes** mid-match (e.g., switch from 4-4-2 to 3-5-2)
-- **Mentality changes** (defensive, balanced, attacking)
-- Changes take effect for the remaining match simulation
+Non-played leagues are simulated match-by-match using the same ratio-based xG formula. Squad strength is calculated from best 18 players. Results are sorted by points → goal difference → goals for. See `SeasonSimulationService`.
 
-### Match Phases
-- Pre-match → First half → Half-time → Second half → Full-time
-- Extra time (cup matches): 30 minutes with fatigue modifier
-- Penalty shootouts for drawn cup ties
+## Key Files
 
-## Implementation
-
-See `app/Modules/Match/Services/MatchSimulator.php`:
-- `simulate()` - Main match simulation
-- `simulateRemainder()` - Resume from a given minute (substitution support)
-- `calculateTeamStrength()` - Lineup strength calculation (ability-dominant weights)
-- `calculateStrikerBonus()` - Forward quality bonus
-- `getMatchPerformance()` - Per-player daily form
-- `poissonRandom()` - Score generation
-- `simulateExtraTime()` - Extra time with fatigue
-
-See `app/Modules/Finance/Services/SeasonSimulationService.php`:
-- `simulateLeague()` - Full match-by-match season simulation
-- `simulateMatchResult()` - Single match using ratio-based xG + Poisson
-
-## Design Rationale
-
-### Why ratio-based xG?
-The previous additive share-based formula created a "floor" that made weak teams unrealistically competitive. With the old formula, a weak team at home was actually favored vs an elite team away. The ratio-based formula ensures the stronger team is always favored, with home advantage as a modest bonus on top.
-
-### Why Poisson distribution?
-Real football goals follow a Poisson distribution. It naturally creates realistic scorelines like 1-0, 2-1, 3-2 while occasionally allowing 5-0 blowouts.
-
-### Why ability-dominant weights (55/35/5/5)?
-The old 40/25/20/15 weights gave fitness (90-100) and morale (65-80) too much influence, compressing the elite-to-bottom strength range from ~20 points to ~14 points. With 55/35/5/5 weights, the full ability gap is preserved while fitness/morale still contribute through the per-player performance modifier.
-
-### Why a striker bonus?
-Team overall strength averages all 11 players, but a world-class striker creates chances from nothing. Mbappé vs an average striker should mean more goals for that team.
-
-### Why match-by-match season simulation?
-The old single-shot approach (`strength + random_noise(±4.0) → sort`) was chaotic — the ±4.0 noise was 30-50% of typical strength gaps. Match-by-match simulation produces ~380 data points per season, averaging out randomness while still allowing upsets on individual matchdays.
-
-## Expected Season Outcomes
-
-With these parameters, a 38-game La Liga season should show:
-- ~2.5-2.8 average goals per match
-- Elite teams (Real Madrid): ~75-85 pts
-- Strong teams (Atletico): ~65-75 pts
-- Mid-table: ~48-58 pts
-- Bottom: ~28-38 pts
-- Clear separation between quality tiers
-- Occasional upsets, but not chaos
+| File | Purpose |
+|------|---------|
+| `app/Modules/Match/Services/MatchSimulator.php` | Core simulation: xG, strength, events, extra time, penalties |
+| `app/Modules/Finance/Services/SeasonSimulationService.php` | Full league season simulation |
+| `config/match_simulation.php` | All tunable parameters |

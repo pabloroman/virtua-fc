@@ -1,154 +1,32 @@
 # Market Value Dynamics
 
-This document describes how player market values evolve over seasons based on ability changes and age.
+How player market values evolve over seasons.
 
 ## Overview
 
-Market value is recalculated at the end of each season based on:
-- **Current Ability** - Primary factor
-- **Age** - Young players command premium, veterans discounted
-- **Performance Trend** - Improving players gain value, declining lose it
+Market value is recalculated at the end of each season based on current ability, age, and performance trend. This creates a feedback loop: development affects value, and value influences transfer pricing, wage demands, and potential confidence.
 
-This creates a feedback loop where development affects value, and value influences potential confidence.
+## Calculation
 
-## Value Calculation
+```
+market_value = base_value(ability) × age_multiplier × trend_multiplier
+```
 
-### Step 1: Base Value from Ability
+- **Base value**: Mapped from average ability (tech + phys / 2) via tiered brackets with randomness within each bracket.
+- **Age multiplier**: Young players command a premium (up to ~1.8x), peak years are 1.0x, and veterans are heavily discounted (down to ~0.15x).
+- **Trend multiplier**: Young players who improved significantly get a bonus (up to ~1.4x). Declining players of any age get penalized (down to ~0.7x). Only applied when previous ability is known.
 
-Current ability determines the base market value:
+Values are clamped between €100K and €200M.
 
-| Overall | Base Value Range |
-|---------|------------------|
-| 92+ | €100-180M |
-| 88-91 | €60-100M |
-| 84-87 | €35-60M |
-| 80-83 | €20-35M |
-| 76-79 | €10-20M |
-| 72-75 | €5-10M |
-| 68-71 | €2-5M |
-| 64-67 | €1-2M |
-| 60-63 | €500K-1M |
-| <60 | €100-500K |
-
-### Step 2: Age Multiplier
-
-Age significantly impacts value:
-
-| Age | Multiplier | Description |
-|-----|------------|-------------|
-| ≤19 | 1.8x | Young star premium |
-| 20-21 | 1.5x | Developing talent |
-| 22-23 | 1.3x | Emerging player |
-| 24-26 | 1.1x | Approaching peak |
-| 27-28 | 1.0x | Peak years |
-| 29-30 | 0.85x | Post-peak |
-| 31-32 | 0.65x | Declining |
-| 33-34 | 0.45x | Late career |
-| 35-36 | 0.30x | Twilight |
-| 37+ | 0.15x | End of career |
-
-**Example**: Two players rated 88
-- Age 21: €80M × 1.5 = **€120M**
-- Age 34: €80M × 0.45 = **€36M**
-
-### Step 3: Performance Trend Multiplier
-
-How the player changed affects value momentum:
-
-#### Young Players (≤24) Improving
-| Improvement | Multiplier |
-|-------------|------------|
-| +5 or more | 1.4x (hot prospect) |
-| +3 to +4 | 1.25x |
-| +1 to +2 | 1.1x |
-| No change | 1.0x |
-
-#### All Players Declining
-| Decline | Multiplier |
-|---------|------------|
-| -4 or worse | 0.7x (concerning) |
-| -2 to -3 | 0.85x |
-| -1 | 0.95x |
-
-## Career Value Trajectories
-
-### Rising Star: Lamine Yamal
-
-| Season | Age | Ability | Change | Base | Age× | Trend× | Final |
-|--------|-----|---------|--------|------|------|--------|-------|
-| Start | 17 | 81 | — | — | — | — | €120M |
-| 1 | 18 | 85 | +4 | €47M | 1.8 | 1.25 | €106M |
-| 2 | 19 | 89 | +4 | €80M | 1.8 | 1.25 | €180M |
-| 3 | 20 | 92 | +3 | €140M | 1.5 | 1.25 | €200M* |
-| 4 | 21 | 94 | +2 | €140M | 1.5 | 1.1 | €200M* |
-
-*Capped at €200M
-
-### Stable Prime: World Class Player
-
-| Season | Age | Ability | Change | Base | Age× | Trend× | Final |
-|--------|-----|---------|--------|------|------|--------|-------|
-| Start | 27 | 91 | — | — | — | — | €150M |
-| 1 | 28 | 91 | 0 | €140M | 1.0 | 1.0 | €140M |
-| 2 | 29 | 90 | -1 | €140M | 0.85 | 0.95 | €113M |
-| 3 | 30 | 89 | -1 | €80M | 0.85 | 0.95 | €65M |
-
-### Veteran Decline: Lewandowski
-
-| Season | Age | Ability | Change | Base | Age× | Trend× | Final |
-|--------|-----|---------|--------|------|------|--------|-------|
-| Start | 36 | 88 | — | — | — | — | €15M |
-| 1 | 37 | 87 | -1 | €80M | 0.15 | 0.95 | €11M |
-| 2 | 38 | 85 | -2 | €47M | 0.15 | 0.85 | €6M |
-| 3 | 39 | 83 | -2 | €47M | 0.15 | 0.85 | €6M |
+See `abilityToMarketValue()` in `PlayerValuationService`.
 
 ## Feedback Loop
 
-Market value changes create a coherent feedback loop:
+Market value changes compound over a career:
 
-```
-Young Player Improves
-        ↓
-Market Value Increases
-        ↓
-Higher Value = Confirmed Potential
-        ↓
-More Valuable Asset
-```
+- **Young player improves** → Value increases → Confirms potential → More valuable transfer asset
+- **Veteran declines** → Value decreases → Lower wage demands → Consider selling/replacing
 
-```
-Veteran Declines
-        ↓
-Market Value Decreases
-        ↓
-Lower Value = Reduced Future
-        ↓
-Consider Selling/Replacing
-```
+## Key File
 
-## Value Boundaries
-
-- **Minimum**: €100K (no player worth less)
-- **Maximum**: €200M (realistic ceiling)
-
-## Implementation
-
-See `app/Modules/Squad/Services/PlayerDevelopmentService.php`:
-- `calculateMarketValue()` - Full calculation
-- `getAgeValueMultiplier()` - Age-based discount/premium
-- `getPerformanceTrendMultiplier()` - Trend bonus/penalty
-- `updateMarketValue()` - Apply new value
-
-## Design Rationale
-
-### Why update market value?
-Without updates, a player who improves from 75 to 90 over five seasons would still be valued at their original price. This breaks immersion and makes transfers unrealistic.
-
-### Why such large age multipliers?
-Real football shows massive value differences by age. Bellingham (21) is worth more than Modric (38) despite similar current ability. The age multiplier reflects contract length, resale value, and career potential.
-
-### Why a trend multiplier?
-Players on an upward trajectory are more valuable - they might improve further. Players declining are riskier investments. This creates realistic market dynamics.
-
-### Why cap at €200M?
-Only a handful of players have ever been valued above €150M. The cap prevents unrealistic inflation and keeps values grounded in reality.
+`app/Modules/Squad/Services/PlayerValuationService.php` — Both directions: market value to ability (seeding) and ability to market value (season-end recalculation).
