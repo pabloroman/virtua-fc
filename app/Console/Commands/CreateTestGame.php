@@ -48,7 +48,6 @@ class CreateTestGame extends Command
 
         $game = $gameCreationService->create(
             userId: (string) $user->id,
-            playerName: 'Test Manager',
             teamId: $teamToManage->id,
         );
 

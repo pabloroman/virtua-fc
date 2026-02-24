@@ -23,7 +23,6 @@ class InitGame
         }
 
         $request->validate([
-            'name' => ['required', 'string', 'max:25'],
             'team_id' => ['required', 'uuid'],
             'game_mode' => ['sometimes', Rule::in([Game::MODE_CAREER, Game::MODE_TOURNAMENT])],
         ]);
@@ -33,7 +32,6 @@ class InitGame
         if ($gameMode === Game::MODE_TOURNAMENT) {
             $game = $this->tournamentCreationService->create(
                 userId: (string) $request->user()->id,
-                playerName: $request->get('name'),
                 teamId: $request->get('team_id'),
             );
 
@@ -42,7 +40,6 @@ class InitGame
 
         $game = $this->gameCreationService->create(
             userId: (string) $request->user()->id,
-            playerName: $request->get('name'),
             teamId: $request->get('team_id'),
             gameMode: $gameMode,
         );

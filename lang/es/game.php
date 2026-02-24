@@ -91,7 +91,7 @@ return [
     'potential' => 'Potencial',
 
     // Welcome Tutorial
-    'welcome_name' => 'Bienvenido, :name',
+    'welcome_team' => 'Bienvenido al :team',
     'welcome_appointed' => 'Has sido nombrado nuevo entrenador :team_de',
     'welcome_how_it_works' => '¿Cómo funciona?',
     'welcome_step_matches' => 'Juega los partidos',
@@ -102,6 +102,8 @@ return [
     'welcome_step_transfers_desc' => 'Usa ojeadores para encontrar talento, negocia fichajes en las ventanas de verano e invierno, y gestiona las cesiones.',
     'welcome_step_finances' => 'Administra las finanzas',
     'welcome_step_finances_desc' => 'Asigna el presupuesto entre fichajes, cantera, cuerpo médico e instalaciones. Tu rendimiento afecta los ingresos futuros.',
+    'welcome_step_autosave' => 'Tu progreso se guarda automáticamente',
+    'welcome_step_autosave_desc' => 'Cada acción se guarda al instante. Puedes cerrar el navegador y volver en cualquier momento — tu partida estará justo donde la dejaste.',
     'welcome_start_journey' => 'Comenzar',
 
     // Onboarding
@@ -197,11 +199,12 @@ return [
 
     // Dashboard
     'your_games' => 'Tus Partidas',
+    'game_slots_used' => ':count de :max partidas',
+    'last_played' => 'Última vez: :time',
     'delete_game' => 'Eliminar Partida',
     'confirm_delete_game' => '¿Estás seguro de que quieres eliminar esta partida? Esta acción no se puede deshacer.',
     'start_game' => 'Iniciar Partida',
     'start_tournament' => 'Iniciar Torneo',
-    'manager_name' => 'Nombre del mánager',
 
     // Game modes
     'mode_career' => 'Modo Carrera',

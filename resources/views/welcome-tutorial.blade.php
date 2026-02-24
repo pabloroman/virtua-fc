@@ -10,7 +10,7 @@
             {{-- Welcome Header --}}
             <div class="text-center mb-10">
                 <x-team-crest :team="$game->team" class="w-24 h-24 md:w-32 md:h-32 mx-auto mb-6 drop-shadow-lg" />
-                <h1 class="text-3xl md:text-4xl font-bold text-white mb-2">{{ __('game.welcome_name', ['name' => $game->player_name]) }}</h1>
+                <h1 class="text-3xl md:text-4xl font-bold text-white mb-2">{{ __('game.welcome_team', ['team' => $game->team->name]) }}</h1>
                 <p class="text-lg text-slate-400">{{ __('game.welcome_appointed', ['team_de' => $game->team->nameWithDe()]) }}</p>
             </div>
 
@@ -70,6 +70,19 @@
                     <div>
                         <h3 class="font-semibold text-white">{{ __('game.welcome_step_finances') }}</h3>
                         <p class="text-sm text-slate-400 mt-1">{{ __('game.welcome_step_finances_desc') }}</p>
+                    </div>
+                </div>
+
+                {{-- Auto-save --}}
+                <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-5 flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-lg bg-teal-500/20 flex items-center justify-center shrink-0 mt-0.5">
+                        <svg class="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-white">{{ __('game.welcome_step_autosave') }}</h3>
+                        <p class="text-sm text-slate-400 mt-1">{{ __('game.welcome_step_autosave_desc') }}</p>
                     </div>
                 </div>
             </div>

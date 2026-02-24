@@ -9,8 +9,11 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 sm:p-8">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="font-semibold text-xl text-slate-900">{{ __('game.your_games') }}</h3>
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-6">
+                        <div class="flex items-center gap-3">
+                            <h3 class="font-semibold text-xl text-slate-900">{{ __('game.your_games') }}</h3>
+                            <span class="text-sm text-slate-400">{{ __('game.game_slots_used', ['count' => $gameCount, 'max' => $maxGames]) }}</span>
+                        </div>
                         @if($canCreateGame)
                             <a href="{{ route('select-team') }}" class="text-sky-600 hover:text-sky-800">+ {{ __('app.new_game') }}</a>
                         @endif
@@ -54,6 +57,9 @@
                                                 </span>
                                             </dd>
                                         @endif
+                                        <dd class="text-xs text-slate-400">
+                                            {{ __('game.last_played', ['time' => $game->updated_at->diffForHumans()]) }}
+                                        </dd>
                                     </dl>
                                     <div class="flex items-center justify-center gap-3">
                                         <x-primary-button class="text-md !p-0">

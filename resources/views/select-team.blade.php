@@ -24,16 +24,6 @@
                     <form method="post" action="{{ route('init-game') }}" @submit="loading = true" class="space-y-6">
                         @csrf
 
-                        {{-- Manager name --}}
-                        <label class="block">
-                            <x-text-input id="name" class="block mt-1 w-full text-lg"
-                                          type="text"
-                                          name="name"
-                                          autofocus
-                                          placeholder="{{ __('game.manager_name') }}"
-                                          required/>
-                        </label>
-                        <x-input-error :messages="$errors->get('name')" class="mt-2"/>
                         <x-input-error :messages="$errors->get('team_id')" class="mt-2"/>
 
                         {{-- Hidden game_mode field --}}

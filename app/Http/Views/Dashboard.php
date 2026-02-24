@@ -19,10 +19,14 @@ class Dashboard
             return redirect()->route('select-team');
         }
 
+        $maxGames = 3;
+
         return view('dashboard', [
             'user' => $request->user(),
             'games' => $games,
-            'canCreateGame' => $games->count() < 3,
+            'canCreateGame' => $games->count() < $maxGames,
+            'gameCount' => $games->count(),
+            'maxGames' => $maxGames,
         ]);
     }
 }

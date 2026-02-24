@@ -12,7 +12,7 @@ use Ramsey\Uuid\Uuid;
 
 class GameCreationService
 {
-    public function create(string $userId, string $playerName, string $teamId, string $gameMode = 'career'): Game
+    public function create(string $userId, string $teamId, string $gameMode = 'career'): Game
     {
         $gameId = Uuid::uuid4()->toString();
 
@@ -44,7 +44,6 @@ class GameCreationService
             'user_id' => $userId,
             'game_mode' => $gameMode,
             'country' => $team->country ?? 'ES',
-            'player_name' => $playerName,
             'team_id' => $teamId,
             'competition_id' => $competitionId,
             'season' => $season,

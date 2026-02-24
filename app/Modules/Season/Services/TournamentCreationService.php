@@ -9,7 +9,7 @@ use Ramsey\Uuid\Uuid;
 
 class TournamentCreationService
 {
-    public function create(string $userId, string $playerName, string $teamId): Game
+    public function create(string $userId, string $teamId): Game
     {
         $gameId = Uuid::uuid4()->toString();
 
@@ -20,7 +20,6 @@ class TournamentCreationService
             'user_id' => $userId,
             'game_mode' => Game::MODE_TOURNAMENT,
             'country' => $team->country ?? 'INT',
-            'player_name' => $playerName,
             'team_id' => $teamId,
             'competition_id' => 'WC2026',
             'season' => '2025',
