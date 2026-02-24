@@ -159,6 +159,9 @@ Modern football managers control several independent tactical dimensions. Here's
 | **Defensive line height** | Defensive Line slider + Offside Trap | Drop Back vs. High | Offside Trap toggle | **None** | **High** |
 | **Transition behavior** | Counter-Press vs Regroup / Counter vs Hold | Implicit in presets | Force Counter-attacks toggle | **None** | **High** |
 | **Width control** | Attacking Width + Defensive Width | Width metric | Through Wings/Middle | **None** | **Medium** |
+| **Marking style** | Man/Zonal per player | Implicit in AI | Zonal/Man toggle | **None** | **Medium** |
+| **Player positional versatility** | Full position training | 4-tier familiarity per position | N/A | **Single position only** | **High** |
+| **Individual player instructions** | 10+ per-player toggles | Implicit in roles | N/A | **None** | **High** (long-term) |
 | **Player roles** | ~50+ role/duty combos | 31 roles, 52 combos | Playstyles (limited) | **None** | **High** (long-term) |
 | **Role familiarity** | Training-based familiarity | 4-tier familiarity per role | N/A | **None** | **Medium** (long-term) |
 | **Tactical familiarity** | Team learns over weeks | N/A | Implicit (stick to formation) | **None** | **Low** |
@@ -168,7 +171,7 @@ Modern football managers control several independent tactical dimensions. Here's
 | **Coach/AI suggestions** | Assistant feedback | Smart Tactics + weakness analysis | N/A | Basic tips | **Medium** |
 | **Mid-match changes** | Full tactical changes | D-pad quick tactics + suggestions | Full changes | Formation + mentality only | **Medium** |
 
-### The 6 Critical Gaps
+### The 9 Critical Gaps
 
 Ranked by impact on user experience:
 
@@ -187,7 +190,16 @@ What happens in the 5 seconds after winning/losing the ball is tactically crucia
 **5. No width/focus control (MEDIUM)**
 "Attack through wings" vs. "attack through the middle" is a simple but effective knob that even Top Eleven provides. It gives meaning to having good wingers vs. good central midfielders.
 
-**6. No player roles (HIGH, long-term)**
+**6. No marking control (MEDIUM)**
+Top Eleven provides Zonal/Man marking. Marking style is a real tactical decision (man-mark Messi vs. defend zonally) with clear risk/reward. Missing from VirtuaFC entirely.
+
+**7. Players locked to single position (HIGH)**
+Every GamePlayer has exactly one position. In real football, Araujo plays CB and RB, Cancelo plays both flanks, Kimmich operates at DM and RB. FM24 has full position training, EA FC 25 has 4-tier position familiarity. VirtuaFC treats all Centre-Backs identically regardless of their real versatility.
+
+**8. No individual player instructions (HIGH, long-term)**
+FM24 allows 10+ per-player toggles (stay back, roam, close down more, etc.). EA FC 25 embeds this in roles. VirtuaFC has zero per-player tactical control — every player follows the same team-level instructions. This limits tactical expression significantly. Should be built after team instructions are solid.
+
+**9. No player roles (HIGH, long-term)**
 Both FM24 and EA FC 25 have deep role systems with familiarity. This gives meaning to individual player development and squad building — a CM isn't just a CM, they're a specific type of CM. This is the biggest long-term gap but also the most complex to implement.
 
 ### Where VirtuaFC Sits Today
@@ -225,11 +237,13 @@ VirtuaFC has **fewer tactical options than any competitor in its weight class**.
 3. **Every instruction must interact with squad attributes** — pressing needs physical ability, possession needs technical ability
 4. **Instructions must interact with each other AND with opponent's instructions** — counter-attack is devastating against an opponent playing attacking mentality + high line
 5. **The existing energy/stamina system is a natural fit** — pressing should burn energy, low block should conserve it
-6. **Mobile-first: 5-6 total tactical decisions pre-match, displayed as pill-button selectors**
+6. **Mobile-first: 6-7 total tactical decisions pre-match, displayed as pill-button selectors**
+7. **Players are not locked to one position** — every player can have alternate positions reflecting real versatility (Araujo at RB, Cancelo on both flanks, Kimmich at DM or RB)
+8. **Build toward individual player instructions** — team-level instructions first (Phase 2), then per-player tactical orders (Phase 3) for maximum depth
 
 ---
 
-### Phase 1: Quick Wins (config + enum changes, no schema changes)
+### Phase 1: Quick Wins + Player Versatility
 
 **1.1 Add 4 New Formations**
 - 4-3-2-1 (Christmas tree), 4-1-2-1-2 (diamond), 3-4-2-1, 4-4-1-1
@@ -243,6 +257,50 @@ VirtuaFC has **fewer tactical options than any competitor in its weight class**.
 - Current 5-3-2 has attack=0.90 AND defense=0.90 (worse at everything — broken)
 - Redesign so defensive formations sacrifice attack for real defensive solidity
 - 5-4-1 should be: attack=0.82, defense=0.78 (concede much less, score less)
+
+**1.4 Secondary Positions (Player Versatility)**
+
+Currently every `GamePlayer` has exactly one `position`, and the `PositionSlotMapper` treats all players of the same position identically. In real football, players like Araujo can play CB and RB, Cancelo plays both flanks, and Kimmich operates as DM or RB. This is a fundamental limitation.
+
+**Data model:**
+- Add `alternate_positions` JSON column to `game_players` table (0-3 additional positions per player)
+- Primary position stays in the existing `position` column
+- Example: Araujo → `position: "Centre-Back"`, `alternate_positions: ["Right-Back"]`
+
+**Compatibility scoring upgrade:**
+- Add `PositionSlotMapper::getPlayerCompatibilityScore(primary, alternates, slotCode)` method
+- Alternate positions are looked up as if they were the player's primary, but capped at 85 compatibility (good but not quite natural)
+- Example: Araujo at RB slot → `max(40 from generic CB, 85 from RB alternate)` = **85** vs the old flat **40**
+- An 80-rated Araujo at RB: old system = 56 effective, new system = **74 effective** (genuinely usable)
+
+**Data sources:**
+- **Real players (reference JSON):** Add `alternate_positions` field to `data/2025/ESP1/teams.json`, etc. Curated from real-world data (Transfermarkt, FBref position history)
+- **Generated players (`PlayerGeneratorService`):** Position-based probability rules reflecting real patterns:
+  - LBs → 30% chance of Left Midfield alternate, 15% Left Winger
+  - CBs → 20% DM, 15% RB or LB
+  - DMs → 40% CM, 20% CB
+  - Wingers → 35% corresponding Midfield, 20% opposite wing, 15% CF
+  - CFs → 35% SS, 15% either wing
+  - Goalkeepers → no alternates
+  - Cap at 2 alternates per generated player
+
+**UI changes:**
+- Squad list: show alternate positions as small secondary badges next to primary → `[CB] Araujo · [LI]`
+- Lineup pitch: compatibility indicator becomes per-player (not per-position), showing actual score
+- Player detail card: list all playable positions with compatibility tiers
+
+**Files affected:**
+- New migration: `alternate_positions` JSON column on `game_players`
+- `app/Models/GamePlayer.php` — add to `$fillable`, `$casts` as array
+- `app/Support/PositionSlotMapper.php` — add `getPlayerCompatibilityScore()`, update `getEffectiveRating()` to accept alternates
+- `data/2025/ESP1/teams.json` (and ESP2, UCL, etc.) — add `alternate_positions` to real player data
+- `app/Modules/Season/Jobs/SetupNewGame.php` — read `alternate_positions` from JSON
+- `app/Modules/Squad/Services/PlayerGeneratorService.php` — generate alternates for synthetic players
+- `app/Modules/Squad/DTOs/GeneratedPlayerData.php` — add `alternatePositions` field
+- `app/Modules/Lineup/Services/FormationRecommender.php` — use player-aware compatibility
+- `app/Modules/Lineup/Services/LineupService.php` — use player-aware compatibility in auto-select
+- `app/Http/Views/ShowLineup.php` — pass `alternate_positions` to JavaScript
+- `resources/views/lineup.blade.php` — display alternate positions in player cards
 
 ---
 
@@ -279,15 +337,24 @@ The core feature. Three new tactical axes, modeled after EA FC 25's "named optio
 | Mixed | No bias | No modifier | Any squad |
 | Central | Through the middle | Goal scorer weights shift: AMs/CFs +20%, wingers −20% | Good #10 and strikers |
 
-**Why 4 axes and not more:**
+**2.5 Marking Style** (out of possession, Top Eleven-inspired)
+| Style | Identity | Effect | Squad Fit |
+|---|---|---|---|
+| Zonal | Positional defending | Default behavior — players defend space, not individuals. Solid against fluid rotations | Well-organized defenders |
+| Man Marking | Follow assigned opponent | −5% opponent xG from key creator (best player marked tightly), BUT +8% xG if marker is outclassed (physical/technical gap >15) | Physical, disciplined defenders |
+
+Marking adds a meaningful risk/reward decision. Man marking is devastating against teams with one star player (neutralize their Messi) but risky if the marker is outclassed — the attacker drags them out of position, creating space for others. Zonal is safer but can't target a specific threat.
+
+**Why 5 axes:**
 - Playing Style = how you attack (in possession)
 - Pressing = how you defend (out of possession intensity)
 - Defensive Line = where you defend (out of possession shape)
 - Attacking Focus = where you attack (in possession direction)
+- Marking = how you track opponents (out of possession method)
 
-This gives 4 × 3 × 3 × 3 = 108 possible instruction combinations (before formation and mentality). Combined with 12 formations × 5 mentalities, that's 6,480 unique tactical setups. Enough to feel like real tactical freedom without FM-level complexity.
+This gives 4 × 3 × 3 × 3 × 2 = 216 possible instruction combinations (before formation and mentality). Combined with 12 formations × 5 mentalities, that's 12,960 unique tactical setups. Enough to feel like real tactical freedom without FM-level complexity.
 
-**2.5 Instruction Interactions (the key differentiator)**
+**2.6 Instruction Interactions (the key differentiator)**
 
 What makes this system interesting is that instructions interact with each other and the opponent:
 
@@ -299,8 +366,12 @@ What makes this system interesting is that instructions interact with each other
 | Possession | Opponent plays High Press | You're under pressure, higher turnover risk |
 | Direct + Wings | Opponent plays 3-at-the-back | Wingers exploit wing-back gaps |
 | Low Block + Counter | Your squad has fast forwards | Counter-attack goals more likely |
+| Man Marking | Opponent has one star creator (>85 overall) | Star player's goal/assist contribution reduced by −30% |
+| Man Marking | Opponent has balanced squad (no clear star) | Marking is spread thin — minimal benefit, risk of positional gaps |
+| Man Marking | Your marker is outclassed (physical gap >15) | Marker gets dragged out of position — opponent xG bonus +8% |
+| Zonal Marking | Opponent uses fluid rotations (Possession style) | Zonal holds shape — no gaps to exploit |
 
-**2.6 Coach Assistant Enhancement**
+**2.7 Coach Assistant Enhancement**
 
 The coach should analyze opponent instructions and recommend counter-strategies:
 - "Opponent is expected to press high. Your squad's physical ability (avg 74) should cope, but consider a Direct style to bypass their press."
@@ -311,20 +382,56 @@ The coach should analyze opponent instructions and recommend counter-strategies:
 
 ### Phase 3: Ambitious (future, after Phase 2 stabilizes)
 
-**3.1 Formation-vs-Formation Matchups**
+**3.1 Individual Player Instructions**
+
+The most requested advanced feature. Allow the user to give specific tactical orders to individual players, overriding or specializing the team-level instructions.
+
+**Per-player instruction options (curated, not freeform):**
+
+| Position Group | Available Instructions | Effect |
+|---|---|---|
+| **Defenders** | Stay Back / Balanced / Join Attack | Modifies player's contribution to attack events (goal/assist weights) and defensive positioning risk |
+| **Defenders** | Mark Tightly / Hold Position | Tight marking reduces specific opponent's output but risks being pulled out of position |
+| **Full-backs** | Overlap / Invert / Balanced | Overlap: provides width (winger-like event weights). Invert: tucks into midfield (CM-like contribution). Changes both offensive and defensive profile |
+| **Midfielders** | Sit Deep / Box-to-Box / Push Forward | Shifts player's contribution between defensive recovery and attacking output |
+| **Midfielders** | Free Roam / Hold Position | Free roam increases creative output but reduces defensive coverage |
+| **Wingers** | Stay Wide / Cut Inside / Free Roam | Stay wide: more crosses, overlap with FB. Cut inside: more shots, inverted winger profile. Free roam: unpredictable |
+| **Forwards** | Drop Deep / Stay Central / Run Channels | Drop deep: false 9 profile (more assists, fewer goals). Stay central: poacher (more goals). Run channels: exploits high lines |
+
+**Design constraints:**
+- Maximum 1-2 instructions per player (not FM's 10+ individual toggles)
+- Only available for players in the starting XI (not bench)
+- UI: tap a player on the pitch → small popup with 2-3 instruction choices
+- Default is always "Balanced" / "Follow team instructions" — individual instructions are optional overrides
+- Each instruction has clear squad-fit requirements (e.g., "Overlap" on a full-back with physical <60 = warning)
+
+**Data model:**
+- `player_instructions` JSON column on `game_matches` (maps player_id → instruction enum)
+- Example: `{"uuid-of-fullback": "overlap", "uuid-of-winger": "cut_inside"}`
+- No migration on `game_players` — instructions are per-match, not permanent
+
+**Match engine integration:**
+- Individual instructions modify the player's event weights (goals, assists, cards) and effective rating in their slot
+- A full-back with "Overlap" instruction: +20% assist weight, −10% defensive contribution, +5% energy drain
+- A winger with "Cut Inside": shifts goal weight from winger profile toward AM/SS profile
+- A forward with "Drop Deep": reduces goal weight by 20%, increases assist weight by 30% (false 9 effect)
+
+**AI opponents:** AI managers pick 0-2 individual instructions for their key players based on squad composition and team style, adding tactical variety to matches.
+
+**3.2 Formation-vs-Formation Matchups**
 Config-driven matrix of interaction bonuses when specific formations face each other. Rewards scouting.
 
-**3.2 Tactical Familiarity**
+**3.3 Tactical Familiarity**
 Light familiarity bonus — teams get +3% effectiveness in formations used 10+ times this season, −5% in first-time formations. Encourages tactical identity.
 
-**3.3 Player Roles (the biggest feature)**
-Per-slot role selection from a curated list per position group. Start with 2-3 roles per position, not FM's 6-8. Include familiarity per player-role combination.
+**3.4 Player Roles (the biggest feature)**
+Per-slot role selection from a curated list per position group. Start with 2-3 roles per position, not FM's 6-8. Include familiarity per player-role combination. This extends individual instructions (3.1) into a full role system with training-based progression.
 
-**3.4 Event Pattern Diversity**
+**3.5 Event Pattern Diversity**
 Different instructions produce different event distributions — counter-attack goals come from fast forwards on the break, possession goals come from sustained midfield play with more assists. Makes the live match narrative feel different.
 
-**3.5 Transition Behavior**
-Add a 5th axis: Counter-Press / Standard / Regroup (what happens in the 5 seconds after losing the ball). Counter-press burns energy but recovers possession faster.
+**3.6 Transition Behavior**
+Add a 6th team axis: Counter-Press / Standard / Regroup (what happens in the 5 seconds after losing the ball). Counter-press burns energy but recovers possession faster.
 
 ---
 
@@ -335,17 +442,20 @@ Add a 5th axis: Counter-Press / Standard / Regroup (what happens in the 5 second
 | 1.1 New formations | 1 | Low | Medium | Formation variety |
 | 1.2 5-level mentality | 1 | Low | Medium | Match-state granularity |
 | 1.3 Fix formation modifiers | 1 | Very Low | Medium | Broken defensive formations |
+| 1.4 Secondary positions | 1 | Medium | **High** | **Players locked to single position** |
 | 2.1 Playing Style | 2 | Medium | **Critical** | **No attacking identity** |
 | 2.2 Pressing Intensity | 2 | Medium | **Critical** | **No pressing control** |
 | 2.3 Defensive Line | 2 | Medium | **High** | **No defensive shape** |
 | 2.4 Attacking Focus | 2 | Low | **High** | **No width/direction** |
-| 2.5 Instruction interactions | 2 | Medium | **Critical** | Instructions must matter |
-| 2.6 Coach enhancement | 2 | Low | Medium | User guidance |
-| 3.1 Formation matchups | 3 | Low | Medium | Rock-paper-scissors |
-| 3.2 Tactical familiarity | 3 | Medium | Medium | Tactical identity |
-| 3.3 Player roles | 3 | High | Very High | Role meaning |
-| 3.4 Event pattern diversity | 3 | Medium | High | Narrative variety |
-| 3.5 Transition behavior | 3 | Low | Medium | Counter-press concept |
+| 2.5 Marking Style | 2 | Low | **Medium** | **No defensive method** |
+| 2.6 Instruction interactions | 2 | Medium | **Critical** | Instructions must matter |
+| 2.7 Coach enhancement | 2 | Low | Medium | User guidance |
+| 3.1 Individual player instructions | 3 | High | **Very High** | **No per-player tactics** |
+| 3.2 Formation matchups | 3 | Low | Medium | Rock-paper-scissors |
+| 3.3 Tactical familiarity | 3 | Medium | Medium | Tactical identity |
+| 3.4 Player roles | 3 | High | Very High | Role meaning |
+| 3.5 Event pattern diversity | 3 | Medium | High | Narrative variety |
+| 3.6 Transition behavior | 3 | Low | Medium | Counter-press concept |
 
 ## Files Affected
 
@@ -358,14 +468,22 @@ Add a 5th axis: Counter-Press / Standard / Regroup (what happens in the 5 second
 - `lang/es/*.php` and `lang/en/*.php` — translation keys
 - `app/Modules/Lineup/Services/LineupService.php` — AI mentality selection
 - `app/Modules/Lineup/Services/FormationRecommender.php` — evaluate new formations
+- New migration — `alternate_positions` JSON column on `game_players`
+- `app/Models/GamePlayer.php` — add `alternate_positions` to fillable/casts
+- `app/Support/PositionSlotMapper.php` — add `getPlayerCompatibilityScore()`, update `getEffectiveRating()`
+- `data/2025/ESP1/teams.json` (and ESP2, UCL, etc.) — add `alternate_positions` to real player data
+- `app/Modules/Season/Jobs/SetupNewGame.php` — read `alternate_positions` from JSON
+- `app/Modules/Squad/Services/PlayerGeneratorService.php` — generate alternates for synthetic players
+- `app/Modules/Squad/DTOs/GeneratedPlayerData.php` — add `alternatePositions` field
+- `app/Http/Views/ShowLineup.php` — pass `alternate_positions` to JavaScript
 
 ### Phase 2
 - New migration — add columns to `games` and `game_matches` tables
-- New Enums — `PlayingStyle`, `PressingIntensity`, `DefensiveLineHeight`, `AttackingFocus`
-- `app/Modules/Match/Services/MatchSimulator.php` — integrate instruction modifiers into xG formula + goal scorer weight adjustments
+- New Enums — `PlayingStyle`, `PressingIntensity`, `DefensiveLineHeight`, `AttackingFocus`, `MarkingStyle`
+- `app/Modules/Match/Services/MatchSimulator.php` — integrate instruction modifiers into xG formula + goal scorer weight adjustments + marking effects
 - `app/Modules/Match/Services/EnergyCalculator.php` — pressing affects energy drain
 - `app/Modules/Lineup/Services/TacticalChangeService.php` — handle instruction changes mid-match
-- `app/Modules/Lineup/Services/LineupService.php` — AI instruction selection
+- `app/Modules/Lineup/Services/LineupService.php` — AI instruction selection (including marking)
 - `app/Models/Game.php` — new default columns
 - `app/Models/GameMatch.php` — new per-match columns
 - `app/Http/Views/ShowLineup.php` — pass instruction data to view
@@ -376,9 +494,12 @@ Add a 5th axis: Counter-Press / Standard / Regroup (what happens in the 5 second
 - `lang/es/*.php` and `lang/en/*.php` — translation keys
 
 ### Phase 3
+- `game_matches` migration — add `player_instructions` JSON column for per-player tactical orders
+- New Enums for individual instructions per position group (DefenderInstruction, FullbackInstruction, MidfielderInstruction, WingerInstruction, ForwardInstruction)
+- `app/Modules/Match/Services/MatchSimulator.php` — individual instruction effects on event weights and effective ratings
 - New migration for role assignments, tactical familiarity tracking
 - New Enum for player roles per position group
 - Role familiarity per player
-- Extensive match engine changes
+- `resources/views/lineup.blade.php` — tap-to-configure per-player instructions on the pitch
 - New UI for role assignment per slot
 - Formation matchup configuration
