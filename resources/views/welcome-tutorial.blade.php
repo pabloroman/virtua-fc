@@ -10,7 +10,7 @@
             {{-- Welcome Header --}}
             <div class="text-center mb-10">
                 <x-team-crest :team="$game->team" class="w-24 h-24 md:w-32 md:h-32 mx-auto mb-6 drop-shadow-lg" />
-                <h1 class="text-3xl md:text-4xl font-bold text-white mb-2">{{ __('game.welcome_team', ['team' => $game->team->name]) }}</h1>
+                <h1 class="text-3xl md:text-4xl font-bold text-white mb-2">{{ __('game.welcome_team') }}</h1>
                 <p class="text-lg text-slate-400">{{ __('game.welcome_appointed', ['team_de' => $game->team->nameWithDe()]) }}</p>
             </div>
 

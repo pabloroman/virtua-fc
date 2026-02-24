@@ -91,7 +91,7 @@ return [
     'potential' => 'Potencial',
 
     // Welcome Tutorial
-    'welcome_team' => 'Bienvenido al :team',
+    'welcome_team' => 'Bienvenido, mister',
     'welcome_appointed' => 'Has sido nombrado nuevo entrenador :team_de',
     'welcome_how_it_works' => '¿Cómo funciona?',
     'welcome_step_matches' => 'Juega los partidos',

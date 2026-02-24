@@ -52,7 +52,7 @@ $tabs = [
             <div class="text-center mb-6 md:mb-8">
                 <x-team-crest :team="$game->team" class="w-16 h-16 md:w-20 md:h-20 mx-auto mb-3 md:mb-4" />
                 <h1 class="text-2xl md:text-3xl font-bold text-white mb-1">
-                    {{ __('game.welcome_team', ['team' => $game->team->name]) }}
+                    {{ __('game.welcome_team') }}
                 </h1>
             </div>
 
