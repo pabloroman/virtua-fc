@@ -101,4 +101,21 @@ return [
     'aet_abbr' => 'PR',
     'pens_abbr' => 'PEN',
     'back_to_dashboard' => 'Volver al Inicio',
+
+    // Tournament result labels
+    'result_champion' => 'Campeón',
+    'result_runner_up' => 'Subcampeón',
+    'result_third_place' => 'Tercer puesto',
+    'result_semi_finalist' => 'Semifinalista',
+    'result_quarter_finalist' => 'Cuartofinalista',
+    'result_round_of_16' => 'Octavos de final',
+    'result_round_of_32' => 'Dieciseisavos de final',
+    'result_group_stage' => 'Fase de grupos',
+    'the_final' => 'La Final',
+    'full_tournament_results' => 'Resultados del torneo',
+    'share_result' => 'Compartir resultado',
+    'share_text' => '¡Llegué a :result en :competition con :team! Juega en VirtuaFC',
+    'play_again' => 'Jugar de nuevo',
+    'copied_to_clipboard' => '¡Copiado!',
+    'your_squad_stats' => 'Estadísticas de tu plantilla',
 ];

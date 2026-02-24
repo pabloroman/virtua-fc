@@ -101,4 +101,21 @@ return [
     'aet_abbr' => 'AET',
     'pens_abbr' => 'PEN',
     'back_to_dashboard' => 'Back to Dashboard',
+
+    // Tournament result labels
+    'result_champion' => 'Champion',
+    'result_runner_up' => 'Runner-up',
+    'result_third_place' => 'Third Place',
+    'result_semi_finalist' => 'Semi-finalist',
+    'result_quarter_finalist' => 'Quarter-finalist',
+    'result_round_of_16' => 'Round of 16',
+    'result_round_of_32' => 'Round of 32',
+    'result_group_stage' => 'Group Stage',
+    'the_final' => 'The Final',
+    'full_tournament_results' => 'Full Tournament Results',
+    'share_result' => 'Share Result',
+    'share_text' => 'I reached :result at the :competition with :team! Play VirtuaFC',
+    'play_again' => 'Play Again',
+    'copied_to_clipboard' => 'Copied!',
+    'your_squad_stats' => 'Your Squad Stats',
 ];

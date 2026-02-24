@@ -8,6 +8,9 @@ use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\GameStanding;
+use App\Models\MatchEvent;
+use App\Models\Team;
+use Illuminate\Support\Collection;
 
 class ShowTournamentEnd
 {
@@ -66,6 +69,27 @@ class ShowTournamentEnd
         $finalTie = $knockoutTies->flatten()->sortByDesc('round_number')->first();
         $championTeamId = $finalTie?->winner_id;
 
+        // Final match and goal events
+        $finalMatch = $finalTie?->firstLegMatch;
+        $finalGoalEvents = $finalMatch
+            ? MatchEvent::with(['gamePlayer.player'])
+                ->where('game_match_id', $finalMatch->id)
+                ->whereIn('event_type', [MatchEvent::TYPE_GOAL, MatchEvent::TYPE_OWN_GOAL])
+                ->orderBy('minute')
+                ->get()
+            : collect();
+
+        // Champion and finalist team models
+        $championTeam = $finalTie ? Team::find($finalTie->winner_id) : null;
+        $finalistTeam = $finalTie ? Team::find(
+            $finalTie->winner_id === $finalTie->home_team_id
+                ? $finalTie->away_team_id
+                : $finalTie->home_team_id
+        ) : null;
+
+        // Compute result label for the player's team
+        $resultLabel = $this->computeResultLabel($knockoutTies, $game->team_id);
+
         // Compute your team's record from matches
         $yourRecord = $this->computeTeamRecord($yourMatches, $game->team_id);
 
@@ -88,14 +112,18 @@ class ShowTournamentEnd
             ->limit(5)
             ->get();
 
-        // Best goalkeeper (Golden Glove) - min 3 appearances for a short tournament
-        $bestGoalkeeper = GamePlayer::with(['player', 'team'])
+        // Top 5 goalkeepers (Golden Glove) - min 3 appearances for a short tournament
+        $topGoalkeepers = GamePlayer::with(['player', 'team'])
             ->where('game_id', $gameId)
             ->where('position', 'Goalkeeper')
             ->where('appearances', '>=', 3)
             ->get()
-            ->sortBy(fn ($gk) => $gk->appearances > 0 ? $gk->goals_conceded / $gk->appearances : 999)
-            ->first();
+            ->sortBy([
+                ['clean_sheets', 'desc'],
+                [fn ($gk) => $gk->appearances > 0 ? $gk->goals_conceded / $gk->appearances : 999, 'asc'],
+            ])
+            ->take(5)
+            ->values();
 
         // Your squad stats (players who played)
         $yourSquadStats = GamePlayer::with('player')
@@ -110,14 +138,69 @@ class ShowTournamentEnd
             'groupStandings' => $groupStandings,
             'knockoutTies' => $knockoutTies,
             'championTeamId' => $championTeamId,
+            'finalMatch' => $finalMatch,
+            'finalGoalEvents' => $finalGoalEvents,
+            'championTeam' => $championTeam,
+            'finalistTeam' => $finalistTeam,
+            'resultLabel' => $resultLabel,
             'yourMatches' => $yourMatches,
             'playerStanding' => $playerStanding,
             'yourRecord' => $yourRecord,
             'topScorers' => $topScorers,
             'topAssisters' => $topAssisters,
-            'bestGoalkeeper' => $bestGoalkeeper,
+            'topGoalkeepers' => $topGoalkeepers,
             'yourSquadStats' => $yourSquadStats,
         ]);
+    }
+
+    private function computeResultLabel(Collection $knockoutTies, string $teamId): string
+    {
+        $allTies = $knockoutTies->flatten();
+
+        if ($allTies->isEmpty()) {
+            return 'group_stage';
+        }
+
+        $maxRound = $allTies->max('round_number');
+
+        // Check if team won the final (highest round)
+        $finalTie = $allTies->where('round_number', $maxRound)->first();
+        if ($finalTie && $finalTie->winner_id === $teamId) {
+            return 'champion';
+        }
+
+        // Check if team lost the final
+        if ($finalTie && ($finalTie->home_team_id === $teamId || $finalTie->away_team_id === $teamId)) {
+            return 'runner_up';
+        }
+
+        // Check third-place match (round before final, if it exists as a separate match)
+        $thirdPlaceTie = $allTies->where('round_number', $maxRound - 1)
+            ->filter(fn ($tie) => $tie->home_team_id === $teamId || $tie->away_team_id === $teamId)
+            ->first();
+
+        // Find the team's highest knockout round
+        $teamTies = $allTies->filter(fn ($tie) =>
+            $tie->home_team_id === $teamId || $tie->away_team_id === $teamId
+        );
+
+        if ($teamTies->isEmpty()) {
+            return 'group_stage';
+        }
+
+        $highestRound = $teamTies->max('round_number');
+
+        // Map round numbers to labels based on distance from the final
+        $roundsFromFinal = $maxRound - $highestRound;
+
+        return match (true) {
+            $roundsFromFinal === 0 => 'runner_up', // Already handled above, but safety
+            $roundsFromFinal === 1 => 'semi_finalist',
+            $roundsFromFinal === 2 => 'quarter_finalist',
+            $roundsFromFinal === 3 => 'round_of_16',
+            $roundsFromFinal === 4 => 'round_of_32',
+            default => 'group_stage',
+        };
     }
 
     private function computeTeamRecord($matches, string $teamId): array
