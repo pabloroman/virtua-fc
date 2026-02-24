@@ -91,7 +91,7 @@ return [
     'potential' => 'Potential',
 
     // Welcome Tutorial
-    'welcome_name' => 'Welcome, :name',
+    'welcome_team' => 'Welcome, coach',
     'welcome_appointed' => 'You have been appointed new manager :team_de',
     'welcome_how_it_works' => 'How does it work?',
     'welcome_step_matches' => 'Play matches',
@@ -102,6 +102,8 @@ return [
     'welcome_step_transfers_desc' => 'Use scouts to find talent, negotiate transfers during summer and winter windows, and manage loans.',
     'welcome_step_finances' => 'Manage finances',
     'welcome_step_finances_desc' => 'Allocate budget between transfers, academy, medical staff and facilities. Your performance affects future revenue.',
+    'welcome_step_autosave' => 'Your progress is saved automatically',
+    'welcome_step_autosave_desc' => 'Every action is saved instantly. You can close the browser and come back anytime — your game will be right where you left it.',
     'welcome_start_journey' => 'Get Started',
 
     // Onboarding
@@ -197,11 +199,12 @@ return [
 
     // Dashboard
     'your_games' => 'Your Games',
+    'game_slots_used' => ':count of :max games',
+    'last_played' => 'Last played: :time',
     'delete_game' => 'Delete Game',
     'confirm_delete_game' => 'Are you sure you want to delete this game? This action cannot be undone.',
     'start_game' => 'Start Game',
     'start_tournament' => 'Start Tournament',
-    'manager_name' => 'Manager name',
 
     // Game modes
     'mode_career' => 'Career Mode',
