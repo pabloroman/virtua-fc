@@ -5,9 +5,9 @@ This document describes how player market values evolve over seasons based on ab
 ## Overview
 
 Market value is recalculated at the end of each season based on:
-- **Current Ability** - Primary factor
+- **Current Ability** - Primary factor (average of technical and physical)
 - **Age** - Young players command premium, veterans discounted
-- **Performance Trend** - Improving players gain value, declining lose it
+- **Performance Trend** - Improving young players gain value, declining players lose it
 
 This creates a feedback loop where development affects value, and value influences potential confidence.
 
@@ -15,20 +15,20 @@ This creates a feedback loop where development affects value, and value influenc
 
 ### Step 1: Base Value from Ability
 
-Current ability determines the base market value:
+The average of technical and physical ability determines the base market value:
 
-| Overall | Base Value Range |
-|---------|------------------|
-| 92+ | €100-180M |
-| 88-91 | €60-100M |
-| 84-87 | €35-60M |
-| 80-83 | €20-35M |
-| 76-79 | €10-20M |
-| 72-75 | €5-10M |
-| 68-71 | €2-5M |
-| 64-67 | €1-2M |
-| 60-63 | €500K-1M |
-| <60 | €100-500K |
+| Average Ability | Base Value Range |
+|-----------------|------------------|
+| 88+ | €60-150M |
+| 83-87 | €35-70M |
+| 78-82 | €20-40M |
+| 73-77 | €10-25M |
+| 68-72 | €5-12M |
+| 63-67 | €2-6M |
+| 58-62 | €1-3M |
+| 50-57 | €500K-1.5M |
+| 45-49 | €200-600K |
+| Below 45 | €100-300K |
 
 ### Step 2: Age Multiplier
 
@@ -53,9 +53,10 @@ Age significantly impacts value:
 
 ### Step 3: Performance Trend Multiplier
 
-How the player changed affects value momentum:
+How the player changed this season affects value momentum. This is only applied when a previous ability is known (i.e., not the first season).
 
 #### Young Players (≤24) Improving
+
 | Improvement | Multiplier |
 |-------------|------------|
 | +5 or more | 1.4x (hot prospect) |
@@ -64,6 +65,7 @@ How the player changed affects value momentum:
 | No change | 1.0x |
 
 #### All Players Declining
+
 | Decline | Multiplier |
 |---------|------------|
 | -4 or worse | 0.7x (concerning) |
@@ -79,8 +81,8 @@ How the player changed affects value momentum:
 | Start | 17 | 81 | — | — | — | — | €120M |
 | 1 | 18 | 85 | +4 | €47M | 1.8 | 1.25 | €106M |
 | 2 | 19 | 89 | +4 | €80M | 1.8 | 1.25 | €180M |
-| 3 | 20 | 92 | +3 | €140M | 1.5 | 1.25 | €200M* |
-| 4 | 21 | 94 | +2 | €140M | 1.5 | 1.1 | €200M* |
+| 3 | 20 | 92 | +3 | €100M | 1.5 | 1.25 | €200M* |
+| 4 | 21 | 94 | +2 | €100M | 1.5 | 1.1 | €165M |
 
 *Capped at €200M
 
@@ -89,8 +91,8 @@ How the player changed affects value momentum:
 | Season | Age | Ability | Change | Base | Age× | Trend× | Final |
 |--------|-----|---------|--------|------|------|--------|-------|
 | Start | 27 | 91 | — | — | — | — | €150M |
-| 1 | 28 | 91 | 0 | €140M | 1.0 | 1.0 | €140M |
-| 2 | 29 | 90 | -1 | €140M | 0.85 | 0.95 | €113M |
+| 1 | 28 | 91 | 0 | €100M | 1.0 | 1.0 | €100M |
+| 2 | 29 | 90 | -1 | €100M | 0.85 | 0.95 | €81M |
 | 3 | 30 | 89 | -1 | €80M | 0.85 | 0.95 | €65M |
 
 ### Veteran Decline: Lewandowski
@@ -98,9 +100,9 @@ How the player changed affects value momentum:
 | Season | Age | Ability | Change | Base | Age× | Trend× | Final |
 |--------|-----|---------|--------|------|------|--------|-------|
 | Start | 36 | 88 | — | — | — | — | €15M |
-| 1 | 37 | 87 | -1 | €80M | 0.15 | 0.95 | €11M |
+| 1 | 37 | 87 | -1 | €60M | 0.15 | 0.95 | €9M |
 | 2 | 38 | 85 | -2 | €47M | 0.15 | 0.85 | €6M |
-| 3 | 39 | 83 | -2 | €47M | 0.15 | 0.85 | €6M |
+| 3 | 39 | 83 | -2 | €35M | 0.15 | 0.85 | €4.5M |
 
 ## Feedback Loop
 
@@ -113,7 +115,7 @@ Market Value Increases
         ↓
 Higher Value = Confirmed Potential
         ↓
-More Valuable Asset
+More Valuable Asset (better transfer return)
 ```
 
 ```
@@ -133,11 +135,12 @@ Consider Selling/Replacing
 
 ## Implementation
 
+See `app/Modules/Squad/Services/PlayerValuationService.php`:
+- `abilityToMarketValue()` - Full calculation with base value, age multiplier, and trend
+- `marketValueToRawAbility()` - Reverse conversion (for seeding)
+
 See `app/Modules/Squad/Services/PlayerDevelopmentService.php`:
-- `calculateMarketValue()` - Full calculation
-- `getAgeValueMultiplier()` - Age-based discount/premium
-- `getPerformanceTrendMultiplier()` - Trend bonus/penalty
-- `updateMarketValue()` - Apply new value
+- `processSeasonEndDevelopment()` - Triggers market value recalculation after development changes
 
 ## Design Rationale
 
@@ -148,7 +151,7 @@ Without updates, a player who improves from 75 to 90 over five seasons would sti
 Real football shows massive value differences by age. Bellingham (21) is worth more than Modric (38) despite similar current ability. The age multiplier reflects contract length, resale value, and career potential.
 
 ### Why a trend multiplier?
-Players on an upward trajectory are more valuable - they might improve further. Players declining are riskier investments. This creates realistic market dynamics.
+Players on an upward trajectory are more valuable — they might improve further. Players declining are riskier investments. This creates realistic market dynamics.
 
 ### Why cap at €200M?
 Only a handful of players have ever been valued above €150M. The cap prevents unrealistic inflation and keeps values grounded in reality.

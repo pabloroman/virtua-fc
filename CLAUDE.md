@@ -65,7 +65,7 @@ The codebase follows a **modular monolith** pattern. Domain logic is organized i
 | **Transfer** | Market operations | `TransferService`, `ContractService`, `LoanService`, `ScoutingService` |
 | **Competition** | Structure & config | `CountryConfig`, `StandingsCalculator`, `CupDrawService`, handlers config |
 | **Finance** | Economic model | `BudgetProjectionService`, `SeasonSimulationService` |
-| **Season** | Lifecycle orchestration | `SeasonEndPipeline`, `GameCreationService`, all 19 processors |
+| **Season** | Lifecycle orchestration | `SeasonEndPipeline`, `GameCreationService`, all 21 processors |
 | **Notification** | In-game messaging | `NotificationService`, event listeners |
 | **Academy** | Youth development | `YouthAcademyService` |
 
@@ -94,23 +94,26 @@ End-of-season processing uses ordered processors implementing `App\Modules\Seaso
 
 ```php
 // Processors run in priority order (lower = earlier)
+SeasonArchiveProcessor (0)
 LoanReturnProcessor (3)
-SeasonArchiveProcessor (5)
 ContractExpirationProcessor (5)
 PreContractTransferProcessor (5)
 ContractRenewalProcessor (6)
 PlayerRetirementProcessor (7)
+SquadReplenishmentProcessor (8)
 PlayerDevelopmentProcessor (10)
 SeasonSettlementProcessor (15)
 StatsResetProcessor (20)
+TransferMarketResetProcessor (20)
 SeasonSimulationProcessor (24)
 SupercupQualificationProcessor (25)
 PromotionRelegationProcessor (26)
-FixtureGenerationProcessor (30)
+LeagueFixtureProcessor (30)
 StandingsResetProcessor (40)
 BudgetProjectionProcessor (50)
 YouthAcademyProcessor (55)
 UefaQualificationProcessor (105)
+ContinentalAndCupInitProcessor (106)
 OnboardingResetProcessor (110)
 ```
 
@@ -179,7 +182,7 @@ app/
 │   │   └── Services/     # BudgetProjectionService, SeasonSimulationService
 │   ├── Season/           # Lifecycle orchestration
 │   │   ├── Services/     # SeasonEndPipeline, GameCreationService, etc.
-│   │   ├── Processors/   # 19 season-end processors
+│   │   ├── Processors/   # 21 season-end processors
 │   │   ├── Contracts/    # SeasonEndProcessor
 │   │   ├── DTOs/         # SeasonTransitionData
 │   │   └── Jobs/         # SetupNewGame, SetupTournamentGame
@@ -213,7 +216,7 @@ data/                     # Reference JSON (teams, players, fixtures)
 ├── TEST1/, TESTCUP/      # Test competition data
 └── academy/              # Youth academy player data
 
-docs/game-systems/        # Game design documentation (9 documents)
+docs/game-systems/        # Game systems documentation (12 documents)
 landing/                  # Cloudflare Workers landing page (separate project)
 
 resources/
@@ -451,6 +454,20 @@ When implementing backend code, pay attention to performance and scalability:
 - **Use database indices correctly** - Ensure queries filter on indexed columns; add indices for new columns used in WHERE/JOIN clauses
 - **Optimize algorithms** - Avoid unnecessary loops, redundant computations, and excessive memory usage
 - **Leverage Laravel features** - Use chunking for large datasets, queue heavy work, and cache expensive computations where appropriate
+
+## Game Systems Documentation
+
+The `docs/game-systems/` directory contains detailed documentation of all game mechanics (match simulation, player development, finances, transfers, injuries, academy, etc.). These documents use the **code as the source of truth** and include exact formulas, configuration values, and algorithmic details.
+
+**Keeping docs up to date is mandatory.** When making changes to the codebase that affect game systems, update the corresponding documentation in `docs/game-systems/`:
+
+- **New features**: Add documentation for any significant new game mechanic or system
+- **Changed formulas/values**: Update docs when modifying simulation parameters, financial config, development curves, or any gameplay-affecting values
+- **Renamed/moved services**: Update implementation file references in the docs
+- **New season processors**: Update `season-lifecycle.md` and the processor list below
+- **Removed systems**: Remove or update docs for deprecated/removed functionality
+
+The documentation index is in `docs/game-systems/README.md`. When adding a new document, add it to the index.
 
 ## Code Quality
 

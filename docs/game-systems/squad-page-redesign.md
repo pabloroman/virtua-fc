@@ -1,5 +1,7 @@
 # Squad Page Redesign: "La Plantilla"
 
+> **Note:** This is a UI/UX design reference document. It describes the target design for the squad page. Some features may be partially implemented or pending. For game mechanics referenced here (development, contracts, transfers), see the corresponding system documents which reflect the actual code.
+
 ## Overview
 
 Redesign the squad page from a flat data table into a layered, decision-oriented command center. The page should answer two fundamental questions at a glance: **"Who should play this weekend?"** (tactical, short-term) and **"What does my squad need?"** (strategic, long-term) — without overwhelming the user with all the information at once.

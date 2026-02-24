@@ -10,9 +10,11 @@ VirtuaFC aims to simulate football management with these guiding principles:
 2. **Age-Adjusted Reality** - Young players are valued for potential, veterans for proven quality
 3. **Coherent Careers** - Players develop, peak, and decline in realistic trajectories
 4. **Strength Matters** - Better teams should consistently outperform weaker ones over a season
-5. **Meaningful Decisions** - Playing time, tactics, and squad building should impact results
+5. **Meaningful Decisions** - Playing time, tactics, investment, and squad building should impact results
 
 ## System Documentation
+
+### Player Lifecycle
 
 | Document | Description |
 |----------|-------------|
@@ -20,11 +22,28 @@ VirtuaFC aims to simulate football management with these guiding principles:
 | [Player Potential](player-potential.md) | How potential is generated and influences development |
 | [Player Development](player-development.md) | How players grow and decline over seasons |
 | [Market Value Dynamics](market-value-dynamics.md) | How market value evolves with player performance |
-| [Match Simulation](match-simulation.md) | How match results are determined (live match, substitutions, tactical changes) |
-| [Injury System](injury-system.md) | Injury probability, durability, and recovery times |
-| [Club Economy System](club-economy-system.md) | Budget allocation, investment tiers, projected vs actual revenue |
-| [Transfer Market](transfer-market.md) | Scouting, buying, selling, loans, contract renewals, pre-contracts |
+
+### Match & Competition
+
+| Document | Description |
+|----------|-------------|
+| [Match Simulation](match-simulation.md) | xG formula, energy system, formations, mentality, events, penalties |
+| [Injury System](injury-system.md) | Injury probability, durability, medical tiers, and recovery times |
+| [Season Lifecycle](season-lifecycle.md) | Season progression, matchday flow, and end-of-season pipeline (21 processors) |
+
+### Club Management
+
+| Document | Description |
+|----------|-------------|
+| [Club Economy System](club-economy-system.md) | Budget allocation, investment tiers, projected vs actual revenue, debt |
+| [Transfer Market](transfer-market.md) | Scouting, buying, selling, loans, contract negotiation, pre-contracts |
 | [Youth Academy](academy-redesign.md) | La Cantera: phased stat reveals, development, end-of-season evaluations |
+
+### UI Design References
+
+| Document | Description |
+|----------|-------------|
+| [Squad Page Redesign](squad-page-redesign.md) | UI/UX design spec for the squad management page |
 
 ## The Unified Loop
 
@@ -67,8 +86,9 @@ All systems work together in a coherent feedback loop:
 
 | File | Purpose |
 |------|---------|
-| `app/Console/Commands/SeedReferenceData.php` | Initial ability calculation from market value |
+| `app/Modules/Squad/Services/PlayerValuationService.php` | Ability calculation from market value, and reverse |
 | `app/Modules/Squad/Services/PlayerDevelopmentService.php` | Development, potential, and market value updates |
+| `app/Modules/Squad/Services/DevelopmentCurve.php` | Age-based development multiplier table |
 | `app/Modules/Match/Services/MatchSimulator.php` | Match result simulation |
 | `app/Modules/Squad/Services/InjuryService.php` | Injury probability and generation |
 | `app/Modules/Transfer/Services/ContractService.php` | Wage calculation with age modifiers |

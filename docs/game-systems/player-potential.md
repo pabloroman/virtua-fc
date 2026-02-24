@@ -4,7 +4,7 @@ This document describes how player potential is calculated and how it influences
 
 ## Overview
 
-Each player has a hidden **potential** rating (1-99) representing the maximum ability they can reach. Players also have visible **potential range** (low-high) that scouts can estimate.
+Each player has a hidden **potential** rating (1-99) representing the maximum ability they can reach. Players also have a visible **potential range** (low-high) that scouts can estimate with varying accuracy.
 
 Potential is influenced by:
 - Current ability (floor)
@@ -24,11 +24,9 @@ Potential is influenced by:
 
 ### Market Value Bonus
 
-High market value for a player's age indicates **proven potential**. A €120M 17-year-old has demonstrated they belong at the elite level.
+High market value for a player's age indicates **proven potential**. The bonus is calculated by comparing actual value to a "typical" value for the player's age.
 
-#### Young Players (Under 29)
-
-Compare actual value to typical value for age:
+#### Typical Values by Age
 
 | Age | Typical Value |
 |-----|---------------|
@@ -37,7 +35,9 @@ Compare actual value to typical value for age:
 | 20-21 | €5M |
 | 22-23 | €10M |
 | 24-25 | €15M |
-| 26-28 | €20M |
+| 26+ | €20M |
+
+#### Young Players (Under 29)
 
 Calculate value ratio and apply bonus:
 
@@ -48,6 +48,10 @@ Calculate value ratio and apply bonus:
 | 20x+ typical | +6 |
 | 10x+ typical | +4 |
 | 5x+ typical | +2 |
+| Below 5x | +0 |
+
+For ages 21-24, the value bonus is scaled to **60%** of the base bonus.
+For ages 25-28, the value bonus is scaled to **30%** of the base bonus.
 
 **Example**: Lamine Yamal (17, €120M, current: 81)
 - Typical for 17: €500K
@@ -59,7 +63,14 @@ Calculate value ratio and apply bonus:
 
 #### Veterans (29+)
 
-Veterans with exceptional market value have **proven their ceiling**:
+Veterans with exceptional market value have **proven their ceiling**. They use a separate typical-value table:
+
+| Age | Typical Value |
+|-----|---------------|
+| 29-31 | €8M |
+| 32-33 | €4M |
+| 34-35 | €2M |
+| 36+ | €1M |
 
 | Value Ratio (vs age typical) | Potential Above Current |
 |------------------------------|-------------------------|
@@ -70,8 +81,8 @@ Veterans with exceptional market value have **proven their ceiling**:
 | Below 2x | +0 |
 
 **Example**: Lewandowski (36, €15M, current: 88)
-- Typical for 36: €1.5M
-- Ratio: 10x
+- Typical for 36: €1M (veteran table)
+- Ratio: 15x
 - Bonus: +8
 - Potential: 88 + 8 = **96**
 
@@ -90,6 +101,8 @@ High = min(99, potential + uncertainty)
 - Scouted range: 78-92
 - True potential (hidden): 85
 
+Higher scouting tiers reduce the ability fuzz in scout reports, making estimates more precise (see [Transfer Market](transfer-market.md)).
+
 ## How Potential Affects Development
 
 ### Growth Cap
@@ -106,13 +119,17 @@ if ($techChange > 0) {
 
 Players far from their potential develop faster (see [Player Development](player-development.md)):
 
+```
+bonus = 1.0 + (gap / 40), capped at 1.5x
+Only for players under 28 with gap > 5
+```
+
 | Gap to Potential | Development Bonus |
 |------------------|-------------------|
 | 20+ points | +50% |
-| 15 points | +38% |
+| 15 points | +37.5% |
 | 10 points | +25% |
-| 5 points | +12% |
-| <5 points | None |
+| ≤5 points | None |
 
 ## Example Potentials
 
@@ -128,22 +145,13 @@ Players far from their potential develop faster (see [Player Development](player
 | Lewandowski | 36 | €15M | 86 | 94 | 92-96 |
 | Modric | 38 | €5M | 77 | 82 | 80-84 |
 
-## Potential Recalculation
-
-Potential can be recalculated when:
-- Market value changes significantly
-- Player exceeds expected development
-- At season end based on performance
-
-This allows the game to adjust estimates based on how players actually perform.
-
 ## Implementation
 
 See `app/Modules/Squad/Services/PlayerDevelopmentService.php`:
-- `generatePotential()` - Initial potential calculation
+- `generatePotential()` - Initial potential calculation with age-based ranges
 - `getValuePotentialBonus()` - Young player value bonus
 - `getVeteranPotentialBonus()` - Veteran proven quality bonus
-- `recalculatePotential()` - Update potential based on changes
+- `calculateQualityGapBonus()` - Gap-based development acceleration
 
 ## Design Rationale
 
@@ -151,7 +159,7 @@ See `app/Modules/Squad/Services/PlayerDevelopmentService.php`:
 A €120M 17-year-old has proven themselves at the highest level. Their value reflects the football world's consensus that they have elite potential. Without this connection, a cheap wonderkid and an expensive one would have similar potential ranges.
 
 ### Why do veterans have potential above current?
-A €15M 36-year-old like Lewandowski has proven they can perform at 90+ level. Their "potential" represents their historical ceiling - what they've already demonstrated they can achieve. This affects how we view their career trajectory.
+A €15M 36-year-old like Lewandowski has proven they can perform at 90+ level. Their "potential" represents their historical ceiling — what they've already demonstrated they can achieve. This affects how we view their career trajectory.
 
 ### Why uncertainty in scouting?
 Real football scouting involves uncertainty. A scout might see a young player and estimate "could be 85-95". The game reflects this by showing a range rather than exact potential. This creates meaningful decision-making around which young players to invest in.

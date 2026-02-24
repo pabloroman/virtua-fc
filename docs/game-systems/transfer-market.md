@@ -20,30 +20,34 @@ The scouting system is the primary way to find and recruit new players.
 
 The scouting tier (determined by budget allocation) affects search speed, accuracy, and geographic scope:
 
-| Tier | Scope | Speed | Results |
-|------|-------|-------|---------|
-| Tier 1 | Your league only | Slow | 5-8 players |
-| Tier 2 | All of Spain | Normal | 5-8 players |
-| Tier 3 | Europe (top + secondary leagues) | Fast | 5-8 players |
-| Tier 4 | Global + hidden gems | Fastest | 5-8 players, more accurate estimates |
+| Tier | Scope | Weeks Reduction | Extra Results | Ability Fuzz Reduction |
+|------|-------|-----------------|---------------|------------------------|
+| Tier 0 | None | 0 | 0 | 0 |
+| Tier 1 | Your league only | 0 | 0 | 0 |
+| Tier 2 | All of Spain | 0 | +1 | −2 |
+| Tier 3 | Europe (international) | −1 week | +2 | −4 |
+| Tier 4 | Global (international) | −1 week | +3 | −6 |
+
+**Base results:** 5-8 players. **Ability fuzz:** rand(3,7) minus fuzz reduction (minimum 1).
+
+Tier 3+ is required for international searches.
+
+### Search Duration
+
+- **Narrow search** (specific position + domestic): 1 week base
+- **Medium search**: 2 weeks base
+- **Broad search** (position group like "any_defender"): 3 weeks base
+
+Tier's weeks reduction is subtracted (minimum 1 week).
 
 ### Search Flow
 
 ```
 1. User selects search filters (position, age, ability, market value, scope)
 2. Search takes 1-3 weeks depending on scope and scouting tier
-3. Results return 5-8 players biased toward availability, with 1-2 "stretch targets"
+3. Results return 5-8+ players biased toward availability, with 1-2 "stretch targets"
 4. User can bid on any player, request a loan, or submit a pre-contract offer
 ```
-
-### Search Filters
-
-- **Position** - Filter by player position
-- **Age range** - Minimum and maximum age
-- **Ability range** - Minimum and maximum ability level
-- **Market value range** - Budget-aware search
-- **Expiring contracts** - Find players available on free transfer
-- **Scope** - Domestic or international (requires higher scouting tier)
 
 ---
 
@@ -51,28 +55,116 @@ The scouting tier (determined by budget allocation) affects search speed, accura
 
 Players can be bought through the scouting system.
 
+### Asking Price Calculation
+
+When evaluating a bid, the selling club calculates an asking price:
+
+```
+asking_price = market_value × importance_multiplier × contract_modifier × age_modifier
+```
+
+**Importance multiplier** (0.0 to 1.0, based on rank within team):
+```
+importance_multiplier = 1.0 + (importance × 1.0)
+Range: 1.0x (worst player) to 2.0x (best player)
+Players with importance > 0.85 are "key players"
+```
+
+**Contract modifier:**
+
+| Years Remaining | Multiplier |
+|-----------------|------------|
+| 4+ years | 1.2x |
+| 3+ years | 1.1x |
+| 2+ years | 1.0x |
+| 1+ year | 0.85x |
+| Expiring / None | 0.5x |
+
+**Age modifier:**
+
+| Age | Modifier |
+|-----|----------|
+| Under 23 | 1.15x (young talent premium) |
+| 23-29 | 1.0x |
+| 29+ | max(0.5, 1.0 − (age − 29) × 0.05) |
+
 ### Bid Evaluation
 
-When you submit a bid, the selling club evaluates it based on:
+The selling club evaluates bids differently for key vs non-key players:
 
-- **Player importance** (0.0–1.0): How valuable the player is to their current team
-- **Contract situation**: Players with expiring contracts are cheaper
-- **Age**: Young players command a premium
+**Key players** (importance > 0.85):
 
-### Bid Responses
+| Bid / Asking Price | Response |
+|---------------------|----------|
+| ≥ 105% | Accepted |
+| 85-105% | Counter-offer |
+| < 85% | Rejected |
 
-| Response | Condition |
-|----------|-----------|
-| **Accepted** | Bid ≥ 105% of asking price (key players) or ≥ 95% (others) |
-| **Counter-offer** | Bid in the 85-105% range of asking price |
-| **Rejected** | Bid below threshold |
+**Non-key players:**
 
-Counter-offers are AI-generated bids that the user can accept. This creates a natural negotiation flow.
+| Bid / Asking Price | Response |
+|---------------------|----------|
+| ≥ 95% | Accepted |
+| 75-95% | Counter-offer |
+| < 75% | Rejected |
+
+**Counter-offer calculation:** `(bid + asking_price) / 2`, rounded to nearest €100K. If counter ≤ bid after rounding, auto-accepts instead.
 
 ### Transfer Completion
 
 - If the **transfer window is open** → transfer completes immediately
 - If the **window is closed** → marked as "agreed", completes at next window (Summer matchday 0, Winter matchday 19)
+
+---
+
+## Selling Players
+
+### Offer Generation
+
+- **Listed players:** **40%** chance per matchday of receiving a new offer (max 3 pending per player)
+- **Unsolicited offers (star players):** **5%** chance per matchday for top 5 best players on team
+- **Pre-contract offers:** **10%** chance per matchday (January-May only, expiring players)
+
+### Pricing Logic
+
+**Listed Players** (buyer has leverage):
+```
+Offer = Market Value × rand(0.85, 0.95) × Age Adjustment
+```
+
+**Unsolicited Offers** (seller has leverage):
+```
+Offer = Market Value × rand(1.00, 1.20) × Age Adjustment
+```
+
+**Age Adjustment:**
+- Under 23: ×1.10 (young talent premium)
+- 23-29: ×1.0
+- 30+: max(0.5, 1.0 − 0.05 per year over 29)
+
+All offers rounded to nearest €100K.
+
+### Offer Expiry
+
+| Type | Duration |
+|------|----------|
+| Listed | 7 days |
+| Unsolicited | 5 days |
+| Pre-contract | 14 days |
+
+### Buyer Eligibility & Selection
+
+**Eligible buyers:** AI teams in domestic leagues (excluding player's current team)
+
+**Max transfer fee:** 30% of buyer's total squad value
+
+**Buyer selection weighting** (who's most likely to bid):
+
+| Player Stage | Weighting |
+|--------------|-----------|
+| Growing (≤23) | Stronger teams preferred 3:1 |
+| Peak (24-28) | Uniform (all teams equally likely) |
+| Declining (≥29) | Weaker teams preferred 3:1 |
 
 ---
 
@@ -83,13 +175,22 @@ Bidirectional loan system for both incoming and outgoing players.
 ### Loan Out (Your Players)
 
 ```
-1. User lists a player for loan via scouting
+1. User lists a player for loan
 2. Each matchday: 50% chance of finding a destination
 3. Destination scored by: reputation match, position need, league tier, random variety
 4. Best-scoring club from top 5 candidates is selected
-5. Search expires after 21 days if no match found
+5. Search expires after 21 days if no match found (minimum score: 20 points)
 6. Player returns to your team at season end
 ```
+
+### Loan Destination Scoring (0-100 points)
+
+| Factor | Max Points | Logic |
+|--------|-----------|-------|
+| **Reputation match** | 40 | Distance between player's expected tier and destination tier. 0 tiers = 40, 1 tier = 30, 2 = 15, 3+ = 5 |
+| **Position need** | 30 | Players at that position: ≤1 = 30, 2 = 20, 3 = 10, 4+ = 0 |
+| **League tier** | 20 | Growing/low-ability players prefer smaller clubs; peak/high prefer bigger |
+| **Random variety** | 10 | Breaks ties |
 
 ### Loan In (From Other Clubs)
 
@@ -101,64 +202,109 @@ Active loans show in/out status and auto-return at season end via `LoanReturnPro
 
 ---
 
-## Selling Players
-
-### Features
-
-- **List players for transfer** - Put players on the market to receive offers
-- **Receive offers** - AI clubs make offers based on player value and age
-- **Unsolicited offers** - Top players receive poaching attempts from other clubs
-- **Accept/Reject offers** - Decide which offers to accept
-- **Transfer windows** - Sales complete at Summer (matchday 0) or Winter (matchday 19) windows
-
-### Transfer Flow
-
-```
-1. User lists player → status = 'listed'
-2. Each matchday: 40% chance of new offer (max 3 pending)
-3. User accepts offer → status = 'agreed', waiting for window
-4. Transfer window arrives → player.team_id changes, user receives fee
-5. Player leaves squad, finances updated
-```
-
-### Pricing Logic
-
-**Listed Players** (buyer has leverage):
-```
-Offer = Market Value × (0.85 to 0.95) × Age Adjustment
-```
-
-**Unsolicited Offers** (seller has leverage):
-```
-Offer = Market Value × (1.00 to 1.20) × Age Adjustment
-```
-
-**Age Adjustment**:
-- Under 23: +10% (young talent premium)
-- 23-29: no adjustment
-- 30+: -5% per year over 29 (minimum 50%)
-
----
-
 ## Contract Management
 
-### Features
+### Wage Calculation
 
-- **Expiring contracts** - Players with contracts ending at season's end
-- **Contract renewals** - Offer players a new contract to keep them
-- **Pre-contract offers** - AI clubs can poach players with expiring contracts
-- **Free transfers** - Players leave for free at end of contract if not renewed
+Annual wages are calculated from market value with age modifiers:
 
-### Contract Renewal Flow
+```
+annual_wage = market_value × wage_percentage × age_modifier × variance(±10%)
+annual_wage = max(annual_wage, league_minimum_wage)
+```
+
+**Wage percentage by market value:**
+
+| Market Value | Wage % |
+|--------------|--------|
+| €100M+ | 17.5% |
+| €50-100M | 15.0% |
+| €20-50M | 12.5% |
+| €10-20M | 11.0% |
+| €5-10M | 10.0% |
+| €2-5M | 9.0% |
+| Under €2M | 8.0% |
+
+**Age wage modifiers:**
+
+| Age | Modifier | Rationale |
+|-----|----------|-----------|
+| 17 | 0.40x | Rookie contract |
+| 18 | 0.50x | |
+| 19 | 0.60x | |
+| 20 | 0.70x | |
+| 21 | 0.80x | |
+| 22 | 0.90x | |
+| 23-29 | 1.0x | Fair market (prime years) |
+| 30 | 1.30x | Legacy premium begins |
+| 31 | 1.60x | |
+| 32 | 2.00x | |
+| 33 | 2.50x | |
+| 34 | 3.00x | |
+| 35 | 4.00x | |
+| 36 | 5.00x | |
+| 37 | 6.00x | |
+| 38+ | 7.00x | Legend-level contracts |
+
+**League minimum wages:**
+
+| League | Minimum |
+|--------|---------|
+| La Liga (Tier 1) | €200K/year |
+| La Liga 2 (Tier 2) | €100K/year |
+
+### Contract Renewal
 
 ```
 1. Player's contract expires at end of season (June 30)
 2. User can offer renewal from the Contracts page
-3. Player demands: max(current wage × 1.15, market wage)
+3. Player demands: max(current_wage × 1.15, market_wage)
 4. Contract length based on age: 3yr (<30), 2yr (30-32), 1yr (33+)
-5. If accepted: contract_until extended, pending_annual_wage stored
-6. At season end: ContractRenewalProcessor applies new wage
+5. Multi-round negotiation with counter-offers
 ```
+
+### Renewal Negotiation
+
+The player's **disposition** determines how flexible they are:
+
+**Base disposition:** 0.50
+
+| Factor | Modifier |
+|--------|----------|
+| Morale ≥ 80 | +0.15 |
+| Morale ≥ 60 | +0.08 |
+| Morale < 40 | −0.10 |
+| Appearances ≥ 25 | +0.10 |
+| Appearances ≥ 15 | +0.05 |
+| Appearances < 10 | −0.10 |
+| Age ≥ 32 | +0.12 |
+| Age ≥ 29 | +0.05 |
+| Age ≤ 23 | −0.08 |
+| Round 2 | −0.05 |
+| Round 3+ | −0.10 |
+| Has pending pre-contract | −0.15 |
+| Pre-contract window open (no offer) | −0.08 |
+
+Disposition clamped to [0.10, 0.95].
+
+**Flexibility:** `disposition × 0.30`
+
+**Minimum acceptable:** `player_demand × (1.0 − flexibility)`
+
+**Contract years modifier** (adjusts effective offer):
+
+| Years Offered vs Preferred | Modifier |
+|---------------------------|----------|
+| Same | 1.00x |
+| +1 year | 1.08x |
+| +2 years | 1.15x |
+| −1 year | 0.90x |
+| −2 years | 0.80x |
+
+**Outcomes:**
+- Effective offer ≥ minimum → **Accept**
+- Effective offer ≥ 85% of minimum AND round < 3 → **Counter** (midpoint of minimum + demand)
+- Otherwise → **Reject**
 
 ### Pre-Contract Flow
 
@@ -170,280 +316,77 @@ Offer = Market Value × (1.00 to 1.20) × Age Adjustment
 5. At season end: PreContractTransferProcessor transfers player
 ```
 
-### Key Difference from Transfers
-
-| Aspect | Transfer | Pre-Contract |
-|--------|----------|--------------|
-| Fee | Based on market value | Free (€0) |
-| Timing | Complete at transfer window | Complete at end of season |
-| Eligibility | Any listed player | Only expiring contracts |
-| User receives | Transfer fee | Nothing |
-
----
-
-## Database Schema
-
-### game_players table additions
-
-```php
-$table->string('transfer_status')->nullable();      // null, 'listed'
-$table->timestamp('transfer_listed_at')->nullable();
-$table->unsignedBigInteger('pending_annual_wage')->nullable(); // For renewals
-```
-
-### transfer_offers table
-
-```php
-Schema::create('transfer_offers', function (Blueprint $table) {
-    $table->uuid('id')->primary();
-    $table->uuid('game_id');
-    $table->uuid('game_player_id');
-    $table->uuid('offering_team_id');
-
-    $table->string('offer_type');     // 'listed', 'unsolicited', 'pre_contract'
-    $table->bigInteger('transfer_fee'); // In cents (0 for pre-contract)
-    $table->string('status');         // 'pending', 'agreed', 'rejected', 'expired', 'completed'
-
-    $table->date('expires_at');
-    $table->timestamps();
-});
-```
-
----
-
-## Services
-
-### ScoutingService
-
-Handles player search, bid evaluation, and pre-contract evaluation:
-
-```php
-class ScoutingService
-{
-    // Search
-    public function submitSearch(Game $game, array $filters): ScoutReport;
-    public function processSearch(ScoutReport $report): void;
-    public function cancelSearch(ScoutReport $report): void;
-
-    // Bid Evaluation
-    public function evaluateBid(GamePlayer $player, int $bidAmount): array;
-    public function evaluatePreContractOffer(GamePlayer $player, int $wage): array;
-}
-```
-
-### TransferService
-
-Handles all transfer-related operations:
-
-```php
-class TransferService
-{
-    // Listing
-    public function listPlayer(GamePlayer $player): void;
-    public function unlistPlayer(GamePlayer $player): void;
-
-    // Offer Generation (called on matchday advance)
-    public function generateOffersForListedPlayers(Game $game): Collection;
-    public function generateUnsolicitedOffers(Game $game): Collection;
-    public function generatePreContractOffers(Game $game): Collection;
-
-    // Offer Management
-    public function acceptOffer(TransferOffer $offer): void;
-    public function rejectOffer(TransferOffer $offer): void;
-    public function expireOffers(Game $game): int;
-
-    // Transfer Completion (at windows)
-    public function isTransferWindow(Game $game): bool;
-    public function completeAgreedTransfers(Game $game): Collection;
-    public function completePreContractTransfers(Game $game): Collection;
-
-    // Pricing
-    public function calculateOfferPrice(GamePlayer $player, string $offerType): int;
-    public function getEligibleBuyers(GamePlayer $player): Collection;
-}
-```
-
-### LoanService
-
-Handles bidirectional loan operations:
-
-```php
-class LoanService
-{
-    // Loan Out
-    public function searchLoanDestination(GamePlayer $player): ?array;
-    public function processLoanOut(GamePlayer $player, Team $destination): Loan;
-
-    // Loan In
-    public function processLoanIn(GamePlayer $player, Game $game): Loan;
-
-    // Loan Management
-    public function returnLoans(Game $game): Collection;
-    public function getActiveLoans(Game $game): Collection;
-}
-```
-
-### ContractService
-
-Handles contract-related operations including multi-round negotiation:
-
-```php
-class ContractService
-{
-    // Wage Calculation
-    public function calculateAnnualWage(int $marketValueCents, int $minimumWageCents, ?int $age): int;
-
-    // Contract Renewal (with negotiation)
-    public function calculateRenewalDemand(GamePlayer $player): array;
-    public function processRenewal(GamePlayer $player, int $newWage, int $contractYears): bool;
-    public function applyPendingWages(Game $game): Collection;
-
-    // Queries
-    public function getPlayersEligibleForRenewal(Game $game): Collection;
-    public function getPlayersWithPendingRenewals(Game $game): Collection;
-    public function getContractsByExpiryYear(Game $game): Collection;
-    public function getExpiringContracts(Game $game, int $year): Collection;
-}
-```
-
 ---
 
 ## End of Season Processing
 
-Two processors handle contract-related changes at season end:
+Three processors handle transfer-related changes at season end:
+
+### LoanReturnProcessor (Priority 3)
+- Returns all loaned players to their parent teams
+- Notifies user's team of returning players
 
 ### PreContractTransferProcessor (Priority 5)
-
-- Runs before player development
 - Transfers players who agreed to pre-contracts to their new clubs
 - No fee involved (free transfer)
-- Updates player's team_id and gives them a new contract (2-4 years)
 
 ### ContractRenewalProcessor (Priority 6)
-
-- Runs after pre-contract transfers
 - Applies pending wage increases from renewals
 - Clears pending_annual_wage field after applying
 
----
-
-## UI Pages
-
-### Transfers Page (`/game/{gameId}/transfers`)
-
-Shows:
-- Unsolicited offers (amber) - clubs poaching your players
-- Offers for listed players (blue) - responses to your listings
-- Agreed transfers (green) - waiting for transfer window
-- Listed players - your players on the market
-- Expiring contracts notice - link to Contracts page
-- Recent sales - completed transfers
-
-### Contracts Page (`/game/{gameId}/squad/contracts`)
-
-Shows:
-- Pre-contract offers received (purple) - clubs approaching expiring players
-- Players leaving on free transfer (purple) - agreed pre-contracts
-- Renewals agreed (teal) - pending wage increases
-- Expiring contracts (red) - players needing renewal with wage demands
-- Contract overview - visual grid by expiry year
-
-### Squad Page Integration
-
-- "Contracts" button with red badge showing count of expiring contracts
-- Links to dedicated Contracts page
-- Players show status badges: "Leaving (Free)", "Renewed", "Sale Agreed", "Listed"
-- Expiring contract years highlighted in red
+### ContractExpirationProcessor (Priority 5)
+- Releases user's expired-contract players
+- Auto-renews AI teams' expired contracts (2 years)
 
 ---
 
-## Routes
+## Constants Summary
 
 ```php
-// Scouting
-Route::get('/game/{gameId}/scouting', ShowScoutingHub::class);
-Route::get('/game/{gameId}/scouting/{reportId}/results', ShowScoutReportResults::class);
-Route::post('/game/{gameId}/scouting/search', SubmitScoutSearch::class);
-Route::post('/game/{gameId}/scouting/cancel', CancelScoutSearch::class);
-Route::post('/game/{gameId}/scouting/{playerId}/bid', SubmitTransferBid::class);
-Route::post('/game/{gameId}/scouting/{playerId}/loan', RequestLoan::class);
-Route::post('/game/{gameId}/scouting/{playerId}/pre-contract', SubmitPreContractOffer::class);
-Route::post('/game/{gameId}/scouting/counter/{offerId}/accept', AcceptCounterOffer::class);
+// TransferService - Pricing
+LISTED_PRICE_MIN = 0.85;
+LISTED_PRICE_MAX = 0.95;
+UNSOLICITED_PRICE_MIN = 1.00;
+UNSOLICITED_PRICE_MAX = 1.20;
+AGE_PREMIUM_UNDER_23 = 1.10;
+AGE_PENALTY_PER_YEAR_OVER_29 = 0.05;
 
-// Transfers (incoming offers, outgoing)
-Route::get('/game/{gameId}/transfers', ShowScouting::class);
-Route::get('/game/{gameId}/transfers/outgoing', ShowTransfers::class);
-Route::post('/game/{gameId}/transfers/list/{playerId}', ListPlayerForTransfer::class);
-Route::post('/game/{gameId}/transfers/unlist/{playerId}', UnlistPlayerFromTransfer::class);
-Route::post('/game/{gameId}/transfers/accept/{offerId}', AcceptTransferOffer::class);
-Route::post('/game/{gameId}/transfers/reject/{offerId}', RejectTransferOffer::class);
+// TransferService - Timing
+LISTED_OFFER_EXPIRY_DAYS = 7;
+UNSOLICITED_OFFER_EXPIRY_DAYS = 5;
+PRE_CONTRACT_OFFER_EXPIRY_DAYS = 14;
+WINTER_WINDOW_MATCHDAY = 19;
 
-// Contract Renewals (with negotiation)
-Route::post('/game/{gameId}/transfers/renew/{playerId}', SubmitRenewalOffer::class);
-Route::post('/game/{gameId}/transfers/accept-counter/{playerId}', AcceptRenewalCounter::class);
-Route::post('/game/{gameId}/transfers/decline-renewal/{playerId}', DeclineRenewal::class);
-Route::post('/game/{gameId}/transfers/reconsider-renewal/{playerId}', ReconsiderRenewal::class);
-```
+// TransferService - Probabilities
+LISTED_OFFER_CHANCE = 0.40;       // 40% per matchday
+UNSOLICITED_OFFER_CHANCE = 0.05;  // 5% per matchday
+PRE_CONTRACT_OFFER_CHANCE = 0.10; // 10% per matchday
+STAR_PLAYER_COUNT = 5;
 
----
-
-## Implementation Status
-
-### Completed
-
-- [x] Selling: list players, receive offers (listed + unsolicited), accept/reject
-- [x] Buying: scouting hub, search with filters, bid on players, counter-offer negotiation
-- [x] Loans: loan out (destination scoring), loan in (via scouting), auto-return at season end
-- [x] Pre-contracts: user and AI can submit pre-contract offers for expiring contract players
-- [x] Contract renewals: multi-round negotiation with counter-offers, decline, reconsider
-- [x] Transfer windows (Summer matchday 0, Winter matchday 19)
-- [x] `ScoutingService` with tiered search, bid evaluation, pre-contract evaluation
-- [x] `TransferService` with all transfer methods
-- [x] `ContractService` with negotiation logic
-- [x] `LoanService` with destination scoring and both-direction loans
-- [x] `PreContractTransferProcessor` for end of season
-- [x] `ContractRenewalProcessor` for end of season
-- [x] `LoanReturnProcessor` for end of season
-- [x] Financial integration (transfer fees, loan savings, wage impact)
-- [x] Notification integration (transfer results, contract events)
-
-### Not Implemented (Future)
-
-- [ ] Agent fees
-- [ ] Release clauses
-- [ ] Sell-on clauses
-
----
-
-## Constants
-
-```php
-// TransferService
-const LISTED_PRICE_MIN = 0.85;
-const LISTED_PRICE_MAX = 0.95;
-const UNSOLICITED_PRICE_MIN = 1.00;
-const UNSOLICITED_PRICE_MAX = 1.20;
-const AGE_PREMIUM_UNDER_23 = 1.10;
-const AGE_PENALTY_PER_YEAR_OVER_29 = 0.05;
-const LISTED_OFFER_EXPIRY_DAYS = 7;
-const UNSOLICITED_OFFER_EXPIRY_DAYS = 5;
-const PRE_CONTRACT_OFFER_EXPIRY_DAYS = 14;
-const UNSOLICITED_OFFER_CHANCE = 0.05;  // 5%
-const PRE_CONTRACT_OFFER_CHANCE = 0.10; // 10%
-const STAR_PLAYER_COUNT = 5;
-const WINTER_WINDOW_MATCHDAY = 19;
+// TransferService - Buyer eligibility
+MAX_BID_SQUAD_VALUE_RATIO = 0.30; // 30% of buyer's squad value
 
 // ContractService
-const RENEWAL_PREMIUM = 1.15;  // 15% raise
-const DEFAULT_RENEWAL_YEARS = 3;
+RENEWAL_PREMIUM = 1.15;           // 15% raise minimum
+DEFAULT_RENEWAL_YEARS = 3;        // <30 = 3yr, 30-32 = 2yr, 33+ = 1yr
+
+// LoanService
+LOAN_SEARCH_DAYS = 21;
+LOAN_MATCH_CHANCE = 0.50;         // 50% per matchday
+LOAN_MIN_SCORE = 20;
 ```
 
 ---
 
-## Future Improvements
+## Key Files
 
-- **Agent fees** - Agents taking a cut of transfer deals
-- **Release clauses** - Mandatory sale prices in contracts
-- **Sell-on clauses** - Percentage of future sale price owed to previous club
-- **Player happiness** - Affects likelihood of accepting renewal/transfer
-- **Contract bonuses** - Signing bonuses, performance bonuses
+| File | Purpose |
+|------|---------|
+| `app/Modules/Transfer/Services/TransferService.php` | Offer generation, pricing, buyer selection |
+| `app/Modules/Transfer/Services/ScoutingService.php` | Search, bid evaluation, asking price |
+| `app/Modules/Transfer/Services/ContractService.php` | Wage calculation, renewal negotiation |
+| `app/Modules/Transfer/Services/LoanService.php` | Loan destination scoring, search |
+| `app/Modules/Season/Processors/LoanReturnProcessor.php` | Season-end loan returns |
+| `app/Modules/Season/Processors/PreContractTransferProcessor.php` | Season-end pre-contract transfers |
+| `app/Modules/Season/Processors/ContractRenewalProcessor.php` | Season-end wage application |
+| `app/Modules/Season/Processors/ContractExpirationProcessor.php` | Season-end contract expiry |
