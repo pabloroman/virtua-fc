@@ -1,122 +1,64 @@
 # Season Lifecycle
 
-This document describes the season progression flow and the end-of-season processing pipeline.
+How seasons progress and what happens at the end of each one.
 
 ## Season Flow
 
-A season follows this general progression:
-
 ```
-GAME START / NEW SEASON
-│
-├── Budget Allocation (mandatory before first matchday)
-│   └── Allocate surplus across 5 investment areas
-│
-├── Matchday Loop (typically 38 matchdays for La Liga)
-│   ├── Pre-match: Set lineup, formation, mentality
-│   ├── Match simulation (live match with subs/tactical changes)
-│   ├── Post-match: Standings update, injuries, suspensions
-│   ├── Between matchdays:
-│   │   ├── Transfer market activity (offers, scouting)
-│   │   ├── Academy player development (gradual stat growth)
-│   │   ├── Academy stat reveals (Phase 1 at matchday 10, Phase 2 at winter)
-│   │   ├── Training injuries for non-playing squad
-│   │   └── Transfer windows (Summer: matchday 0, Winter: matchday 19)
-│   └── Cup matches interspersed (Copa del Rey, European competitions)
-│
-├── Season End Trigger
-│   └── All competitions completed for the season
-│
-└── Season End Pipeline (21 processors in priority order)
-    └── See below
+Budget allocation → Matchday loop → Season end pipeline → Next season
 ```
 
-## Season End Pipeline
+Each season starts with mandatory budget allocation, then cycles through matchdays (league, cup, and European fixtures interspersed). Between matchdays: transfer market activity, academy development, injuries, and fitness changes. When all competitions finish, the season-end pipeline runs.
 
-At the end of each season, a pipeline of 21 ordered processors handles the transition to the next season. Each processor implements `SeasonEndProcessor` with a `priority()` method (lower = runs first).
-
-### Phase 1: Roster Cleanup (Priority 0-7)
-
-| Priority | Processor | What it does |
-|----------|-----------|-------------|
-| 0 | **SeasonArchiveProcessor** | Archives standings, player stats, season awards (champion, top scorer, most assists, best goalkeeper), match results. Deletes archived data to free space. |
-| 3 | **LoanReturnProcessor** | Returns all loaned players to their parent teams. Notifies user. |
-| 5 | **ContractExpirationProcessor** | Releases user's expired-contract players. Auto-renews AI teams' contracts for 2 years. Uses June 30 cutoff. |
-| 5 | **PreContractTransferProcessor** | Completes free transfers from agreed pre-contracts (both outgoing and incoming). |
-| 6 | **ContractRenewalProcessor** | Applies pending contract renewals — new wages take effect. |
-| 7 | **PlayerRetirementProcessor** | Retires players marked for retirement. Announces new retirement candidates (age 33+ probability). |
-
-### Phase 2: Squad Management (Priority 8-20)
-
-| Priority | Processor | What it does |
-|----------|-----------|-------------|
-| 8 | **SquadReplenishmentProcessor** | Ensures AI teams have viable rosters. Enforces minimums: 2 GK, 5 DEF, 5 MID, 3 FWD, 22 total. Generates players scaled to team's average ability. |
-| 10 | **PlayerDevelopmentProcessor** | Applies ability growth/decline for all players. Recalculates market values. Uses batch upsert for performance. |
-| 15 | **SeasonSettlementProcessor** | Calculates actual season revenue (TV, matchday, commercial, transfers, cups, subsidies). Reconciles vs projections. Calculates variance and carries debt. |
-| 20 | **StatsResetProcessor** | Resets player match stats (appearances, goals, assists, cards). Clears suspensions. Updates game season number. Marks notifications as read. |
-| 20 | **TransferMarketResetProcessor** | Deletes scout reports, shortlisted players, and transfer offers. Clears transfer status on players. |
-
-### Phase 3: League Simulation & Structure (Priority 24-30)
-
-| Priority | Processor | What it does |
-|----------|-----------|-------------|
-| 24 | **SeasonSimulationProcessor** | Simulates full standings for non-played leagues (AI divisions). Skips player's own league and Swiss-format competitions. |
-| 25 | **SupercupQualificationProcessor** | Determines Supercup qualifiers (4 teams): cup finalists + league champion/runner-up. |
-| 26 | **PromotionRelegationProcessor** | Handles promotion/relegation between divisions using country-specific rules. Swaps teams. Re-simulates affected leagues. Updates game's competition if player's team moves. |
-| 30 | **LeagueFixtureProcessor** | Deletes old matches/cup ties. Generates league fixtures for the new season. |
-
-### Phase 4: New Season Setup (Priority 40-106)
-
-| Priority | Processor | What it does |
-|----------|-----------|-------------|
-| 40 | **StandingsResetProcessor** | Resets league standings for new season. Preserves team ordering from previous season. |
-| 50 | **BudgetProjectionProcessor** | Determines season goal (title, CL, survival, etc.) based on reputation. Generates budget projections (revenue, wages, surplus). |
-| 55 | **YouthAcademyProcessor** | Develops loaned academy players (1.5× rate). Returns loans. Marks players needing evaluation. Adds pending action. |
-
-### Phase 5: Continental & Cup Setup (Priority 105-110)
-
-| Priority | Processor | What it does |
-|----------|-----------|-------------|
-| 105 | **UefaQualificationProcessor** | Determines UEFA competition qualifiers (UCL/UEL/UECL) from league standings. Applies cup winner cascade logic. Qualifies UEL winner to next UCL. Fills remaining slots to reach 36 teams. |
-| 106 | **ContinentalAndCupInitProcessor** | Initializes Swiss-format competitions (UCL) with standings and fixtures. Conducts domestic cup draws. Sets `current_date` to earliest fixture. |
-| 110 | **OnboardingResetProcessor** | Resets onboarding flag so player must configure investment allocation for the upcoming season. |
+Pending actions (academy evaluation, budget allocation) block matchday advancement until resolved.
 
 ## Matchday Progression
 
-Within a season, matchday advancement follows this flow:
+1. Check for pending actions (blocks if any)
+2. Fetch unplayed matches for current matchday across all competitions
+3. Route to appropriate handler (LeagueHandler, KnockoutCupHandler, SwissFormatHandler, etc.)
+4. Set lineups (auto-select for AI, user's saved lineup otherwise)
+5. Simulate match
+6. Post-match: update standings, award prize money, apply suspensions
+7. Between-matchday: transfer market, injuries, notifications
+8. Check for season end
 
-1. **Check for pending actions** — Academy evaluation, budget allocation, etc. block advancement until resolved
-2. **Fetch unplayed matches** for current matchday across all competitions
-3. **Route to handler** — LeagueHandler, KnockoutCupHandler, SwissFormatHandler, etc.
-4. **Set lineups** — Auto-select for AI teams (respecting fitness rotation), use user's saved lineup
-5. **Simulate match** — Full match simulation with events
-6. **Post-match processing** — Update standings, award prize money, apply suspensions
-7. **Between-matchday processing** — Transfer market, injuries, notifications
-8. **Check season end** — If all fixtures complete, trigger the end pipeline
+See `MatchdayService` for the full flow.
 
-## Competition Structure
+## Competition Handlers
 
-The game runs multiple competitions simultaneously within a season:
+Different competition formats use different handlers implementing `CompetitionHandler`:
 
-| Competition | Handler | Matchdays |
-|-------------|---------|-----------|
-| La Liga / La Liga 2 | LeagueHandler | 38 (or 42 for 22-team leagues) |
-| Copa del Rey | KnockoutCupHandler | Interspersed (knockout rounds) |
-| Supercopa de España | KnockoutCupHandler | Pre-season |
-| Champions League | SwissFormatHandler → KnockoutCupHandler | Swiss phase + knockout |
-| Europa League | GroupStageCupHandler → KnockoutCupHandler | Groups + knockout |
-| Conference League | GroupStageCupHandler → KnockoutCupHandler | Groups + knockout |
+- **LeagueHandler** — Standard league with standings
+- **KnockoutCupHandler** — Bracket/draws with single-leg or two-legged ties, extra time, penalties
+- **LeagueWithPlayoffHandler** — League phase followed by playoff rounds
+- **SwissFormatHandler** — Champions League Swiss-system (all teams play, paired by points)
+- **GroupStageCupHandler** — Groups play round-robin, top teams advance to knockout
 
-Cup ties can be single-leg or two-legged, with extra time and penalties for drawn ties. See [Match Simulation](match-simulation.md) for details.
+Resolved via `CompetitionHandlerResolver` based on competition's `handler_type` field.
+
+## Season End Pipeline
+
+21 ordered processors handle the transition. Each implements `SeasonEndProcessor` with a `priority()` (lower runs first). All processors are in `app/Modules/Season/Processors/`.
+
+**Phase 1 — Roster cleanup** (priority 0-7): Archive season data, return loans, handle contract expirations and pre-contract transfers, apply renewals, process retirements.
+
+**Phase 2 — Squad management** (priority 8-20): Replenish AI squads to minimum roster sizes, apply player development changes, settle finances (actual vs projected), reset stats and transfer market.
+
+**Phase 3 — League simulation & structure** (priority 24-30): Simulate non-played leagues, determine Supercup qualifiers, handle promotion/relegation, generate new league fixtures.
+
+**Phase 4 — New season setup** (priority 40-55): Reset standings, generate budget projections and season goals, process academy (develop loaned players, trigger evaluation).
+
+**Phase 5 — Continental & cup setup** (priority 105-110): Determine UEFA competition qualifiers, initialize Swiss-format competitions and domestic cup draws, reset onboarding for budget allocation.
+
+The full processor list with priorities is in `SeasonEndPipeline`.
 
 ## Key Files
 
 | File | Purpose |
 |------|---------|
 | `app/Modules/Season/Services/SeasonEndPipeline.php` | Orchestrates all 21 processors |
-| `app/Modules/Season/Contracts/SeasonEndProcessor.php` | Interface all processors implement |
-| `app/Modules/Season/Processors/` | All 21 processor implementations |
-| `app/Modules/Season/Services/GameCreationService.php` | Creates new game, dispatches setup job |
+| `app/Modules/Season/Processors/` | Individual processor implementations |
 | `app/Modules/Match/Services/MatchdayService.php` | Matchday advancement logic |
 | `app/Modules/Match/Services/CupTieResolver.php` | Cup tie resolution (aggregate, ET, penalties) |
 | `app/Modules/Competition/Services/CupDrawService.php` | Cup draw mechanics |

@@ -457,15 +457,20 @@ When implementing backend code, pay attention to performance and scalability:
 
 ## Game Systems Documentation
 
-The `docs/game-systems/` directory contains detailed documentation of all game mechanics (match simulation, player development, finances, transfers, injuries, academy, etc.). These documents use the **code as the source of truth** and include exact formulas, configuration values, and algorithmic details.
+The `docs/game-systems/` directory contains high-level documentation of all game mechanics (match simulation, player development, finances, transfers, injuries, academy, etc.). These documents describe **what each system does and how systems connect** — they are not a mirror of exact formulas or config values. Tuning a parameter (e.g., changing `base_goals` from 1.3 to 1.4) does not require a doc update. Changing the nature of a system (e.g., replacing Poisson scoring with a different model) does.
 
-**Keeping docs up to date is mandatory.** When making changes to the codebase that affect game systems, update the corresponding documentation in `docs/game-systems/`:
+**When to update docs:**
 
-- **New features**: Add documentation for any significant new game mechanic or system
-- **Changed formulas/values**: Update docs when modifying simulation parameters, financial config, development curves, or any gameplay-affecting values
-- **Renamed/moved services**: Update implementation file references in the docs
-- **New season processors**: Update `season-lifecycle.md` and the processor list below
-- **Removed systems**: Remove or update docs for deprecated/removed functionality
+- **New game system or mechanic**: Add a document describing what it does, why, and where the code lives
+- **Structural changes**: A system works fundamentally differently (new algorithm, new inputs, removed mechanic)
+- **New season processors**: Update `season-lifecycle.md`
+- **Renamed/moved services**: Update file references
+
+**When NOT to update docs:**
+
+- Tweaking config values, thresholds, multipliers, or weights
+- Adjusting formulas without changing what they conceptually do
+- Bug fixes that don't change how a system works
 
 The documentation index is in `docs/game-systems/README.md`. When adding a new document, add it to the index.
 
