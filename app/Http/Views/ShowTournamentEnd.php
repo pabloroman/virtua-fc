@@ -8,6 +8,8 @@ use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\GameStanding;
+use App\Models\MatchEvent;
+use App\Models\Team;
 
 class ShowTournamentEnd
 {
@@ -66,8 +68,26 @@ class ShowTournamentEnd
         $finalTie = $knockoutTies->flatten()->sortByDesc('round_number')->first();
         $championTeamId = $finalTie?->winner_id;
 
+        // Load champion and finalist teams
+        $championTeam = $championTeamId ? Team::find($championTeamId) : null;
+        $finalistTeamId = $finalTie ? $finalTie->getLoserId() : null;
+        $finalistTeam = $finalistTeamId ? Team::find($finalistTeamId) : null;
+
+        // Load final match with goal events
+        $finalMatch = $finalTie?->firstLegMatch;
+        $finalGoalEvents = $finalMatch
+            ? MatchEvent::with(['gamePlayer.player', 'team'])
+                ->where('game_match_id', $finalMatch->id)
+                ->whereIn('event_type', [MatchEvent::TYPE_GOAL, MatchEvent::TYPE_OWN_GOAL])
+                ->orderBy('minute')
+                ->get()
+            : collect();
+
         // Compute your team's record from matches
         $yourRecord = $this->computeTeamRecord($yourMatches, $game->team_id);
+
+        // Determine player's finish label
+        $finishLabel = $this->computeFinishLabel($knockoutTies, $game->team_id, $championTeamId);
 
         // Tournament top scorer (Golden Boot)
         $topScorers = GamePlayer::with(['player', 'team'])
@@ -88,14 +108,15 @@ class ShowTournamentEnd
             ->limit(5)
             ->get();
 
-        // Best goalkeeper (Golden Glove) - min 3 appearances for a short tournament
-        $bestGoalkeeper = GamePlayer::with(['player', 'team'])
+        // Top 5 goalkeepers (Golden Glove) - min 3 appearances for a short tournament
+        $topGoalkeepers = GamePlayer::with(['player', 'team'])
             ->where('game_id', $gameId)
             ->where('position', 'Goalkeeper')
             ->where('appearances', '>=', 3)
             ->get()
             ->sortBy(fn ($gk) => $gk->appearances > 0 ? $gk->goals_conceded / $gk->appearances : 999)
-            ->first();
+            ->take(5)
+            ->values();
 
         // Your squad stats (players who played)
         $yourSquadStats = GamePlayer::with('player')
@@ -110,14 +131,46 @@ class ShowTournamentEnd
             'groupStandings' => $groupStandings,
             'knockoutTies' => $knockoutTies,
             'championTeamId' => $championTeamId,
+            'championTeam' => $championTeam,
+            'finalistTeam' => $finalistTeam,
+            'finalTie' => $finalTie,
+            'finalMatch' => $finalMatch,
+            'finalGoalEvents' => $finalGoalEvents,
             'yourMatches' => $yourMatches,
             'playerStanding' => $playerStanding,
             'yourRecord' => $yourRecord,
+            'finishLabel' => $finishLabel,
             'topScorers' => $topScorers,
             'topAssisters' => $topAssisters,
-            'bestGoalkeeper' => $bestGoalkeeper,
+            'topGoalkeepers' => $topGoalkeepers,
             'yourSquadStats' => $yourSquadStats,
         ]);
+    }
+
+    private function computeFinishLabel($knockoutTies, string $teamId, ?string $championTeamId): string
+    {
+        if ($championTeamId === $teamId) {
+            return 'season.finish_champion';
+        }
+
+        $allTies = $knockoutTies->flatten();
+        $teamTies = $allTies->filter(fn ($tie) => $tie->involvesTeam($teamId));
+
+        if ($teamTies->isEmpty()) {
+            return 'season.finish_group_stage';
+        }
+
+        $maxRound = $allTies->max('round_number');
+        $bestRound = $teamTies->max('round_number');
+        $roundsFromFinal = $maxRound - $bestRound;
+
+        return match ($roundsFromFinal) {
+            0 => 'season.finish_finalist',
+            1 => 'season.finish_semi_finalist',
+            2 => 'season.finish_quarter_finalist',
+            3 => 'season.finish_round_of_16',
+            default => 'season.finish_group_stage',
+        };
     }
 
     private function computeTeamRecord($matches, string $teamId): array
