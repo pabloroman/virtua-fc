@@ -640,10 +640,6 @@ class GamePlayer extends Model
     {
         $referenceDate = $this->game->current_date;
 
-        if (!$referenceDate) {
-            return $this->player->age;
-        }
-
         return (int) $this->player->date_of_birth->diffInYears($referenceDate);
     }
 

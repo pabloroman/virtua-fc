@@ -10,6 +10,7 @@ use App\Models\CompetitionEntry;
 use App\Models\CompetitionTeam;
 use App\Models\Game;
 use App\Models\GameMatch;
+use Carbon\Carbon;
 use App\Models\GamePlayer;
 use App\Models\GameStanding;
 use App\Models\Player;
@@ -65,7 +66,8 @@ class SetupTournamentGame implements ShouldQueue
         $this->createGroupStandings($groupsData, $teamKeyMap, $standingsCalculator);
 
         // Step 4: Create game players for teams with JSON rosters
-        $this->createGamePlayers($mapping, $developmentService);
+        $currentDate = $game->current_date ?? Carbon::parse('2025-06-10');
+        $this->createGamePlayers($mapping, $developmentService, $currentDate);
 
         // Send welcome notification
         $teamName = Team::find($this->teamId)?->name ?? '';
@@ -175,7 +177,7 @@ class SetupTournamentGame implements ShouldQueue
     /**
      * Create game players only for teams that have JSON roster files.
      */
-    private function createGamePlayers(array $teamMapping, PlayerDevelopmentService $developmentService): void
+    private function createGamePlayers(array $teamMapping, PlayerDevelopmentService $developmentService, Carbon $currentDate): void
     {
         if (GamePlayer::where('game_id', $this->gameId)->exists()) {
             return;
@@ -220,8 +222,9 @@ class SetupTournamentGame implements ShouldQueue
                 $currentAbility = (int) round(
                     ($player->technical_ability + $player->physical_ability) / 2
                 );
+                $age = (int) $player->date_of_birth->diffInYears($currentDate);
                 $potentialData = $developmentService->generatePotential(
-                    $player->age,
+                    $age,
                     $currentAbility
                 );
 
