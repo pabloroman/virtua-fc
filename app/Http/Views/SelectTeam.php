@@ -41,47 +41,40 @@ final class SelectTeam
             }
         }
 
-        // Load World Cup teams grouped by group letter for tournament mode
-        $wcGroups = collect();
+        // Load World Cup teams for tournament mode
+        $wcTeams = collect();
+        $wcFeaturedTeams = collect();
         $hasTournamentMode = Competition::where('id', 'WC2026')->exists();
 
         if ($hasTournamentMode) {
-            $groupsPath = base_path('data/2025/WC2026/groups.json');
             $mappingPath = base_path('data/2025/WC2026/team_mapping.json');
 
-            if (file_exists($groupsPath) && file_exists($mappingPath)) {
-                $groupsData = json_decode(file_get_contents($groupsPath), true);
+            if (file_exists($mappingPath)) {
                 $teamMapping = json_decode(file_get_contents($mappingPath), true);
 
-                // Collect all team UUIDs from the mapping, excluding placeholders
                 $uuids = collect($teamMapping)
                     ->reject(fn ($entry) => $entry['is_placeholder'] ?? false)
                     ->pluck('uuid')
                     ->all();
 
-                $wcTeamModels = Team::whereIn('id', $uuids)->get()->keyBy('id');
+                $allWcTeams = Team::whereIn('id', $uuids)->get()->sortBy('name')->values();
 
-                foreach ($groupsData as $groupLabel => $groupInfo) {
-                    $teams = collect();
-                    foreach ($groupInfo['teams'] as $fifaCode) {
-                        $mapping = $teamMapping[$fifaCode] ?? null;
-                        if ($mapping && !($mapping['is_placeholder'] ?? false)) {
-                            $team = $wcTeamModels->get($mapping['uuid']);
-                            if ($team) {
-                                $teams->push($team);
-                            }
-                        }
-                    }
-                    if ($teams->isNotEmpty()) {
-                        $wcGroups[$groupLabel] = $teams;
-                    }
-                }
+                // Featured national teams shown as larger cards
+                $featuredCodes = ['ESP', 'ARG', 'BRA', 'ENG', 'FRA', 'GER', 'POR', 'NED', 'ITA'];
+                $featuredUuids = collect($teamMapping)
+                    ->only($featuredCodes)
+                    ->pluck('uuid')
+                    ->all();
+
+                $wcFeaturedTeams = $allWcTeams->filter(fn ($t) => in_array($t->id, $featuredUuids))->values();
+                $wcTeams = $allWcTeams->reject(fn ($t) => in_array($t->id, $featuredUuids))->values();
             }
         }
 
         return view('select-team', [
             'countries' => $countries,
-            'wcGroups' => $wcGroups,
+            'wcTeams' => $wcTeams,
+            'wcFeaturedTeams' => $wcFeaturedTeams,
             'hasTournamentMode' => $hasTournamentMode,
         ]);
     }
