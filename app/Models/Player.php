@@ -64,8 +64,4 @@ class Player extends Model
         return $this->hasMany(GamePlayer::class);
     }
 
-    public function getAgeAttribute(): int
-    {
-        return $this->date_of_birth->age ?? 0;
-    }
 }

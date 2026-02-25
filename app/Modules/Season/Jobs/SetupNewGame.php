@@ -34,6 +34,7 @@ class SetupNewGame implements ShouldQueue
     public int $tries = 1;
 
     private bool $usedTemplates = false;
+    private Carbon $currentDate;
 
     public function __construct(
         public string $gameId,
@@ -55,6 +56,8 @@ class SetupNewGame implements ShouldQueue
         if (!$game || $game->isSetupComplete()) {
             return;
         }
+
+        $this->currentDate = $game->current_date ?? Carbon::parse("{$this->season}-08-15");
 
         // Pre-load all reference data (2 queries instead of ~4,600)
         $allTeams = Team::whereNotNull('transfermarkt_id')->get()->keyBy('transfermarkt_id');
@@ -220,7 +223,7 @@ class SetupNewGame implements ShouldQueue
                 $playerRows = [];
 
                 foreach ($playersData as $playerData) {
-                    $row = $this->prepareGamePlayerRow($team, $playerData, $minimumWage, $allPlayers, $contractService, $developmentService);
+                    $row = $this->prepareGamePlayerRow($team, $playerData, $minimumWage, $allPlayers, $contractService, $developmentService, $this->currentDate);
                     if ($row) {
                         $playerRows[] = $row;
                     }
@@ -375,7 +378,7 @@ class SetupNewGame implements ShouldQueue
 
             $playersData = $club['players'] ?? [];
             foreach ($playersData as $playerData) {
-                $row = $this->prepareGamePlayerRow($team, $playerData, $minimumWage, $allPlayers, $contractService, $developmentService);
+                $row = $this->prepareGamePlayerRow($team, $playerData, $minimumWage, $allPlayers, $contractService, $developmentService, $this->currentDate);
                 if ($row) {
                     $playerRows[] = $row;
                 }
@@ -394,6 +397,7 @@ class SetupNewGame implements ShouldQueue
         Collection $allPlayers,
         ContractService $contractService,
         PlayerDevelopmentService $developmentService,
+        Carbon $currentDate,
     ): ?array {
         $player = $allPlayers->get($playerData['id']);
         if (!$player) {
@@ -409,14 +413,15 @@ class SetupNewGame implements ShouldQueue
             }
         }
 
+        $age = (int) $player->date_of_birth->diffInYears($currentDate);
         $marketValueCents = Money::parseMarketValue($playerData['marketValue'] ?? null);
-        $annualWage = $contractService->calculateAnnualWage($marketValueCents, $minimumWage, $player->age);
+        $annualWage = $contractService->calculateAnnualWage($marketValueCents, $minimumWage, $age);
 
         $currentAbility = (int) round(
             ($player->technical_ability + $player->physical_ability) / 2
         );
         $potentialData = $developmentService->generatePotential(
-            $player->age,
+            $age,
             $currentAbility
         );
 

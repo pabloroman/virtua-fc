@@ -222,14 +222,16 @@ class GamePlayerTemplateService
             }
         }
 
+        $referenceDate = Carbon::parse("{$season}-08-15");
+        $age = (int) $player->date_of_birth->diffInYears($referenceDate);
         $marketValueCents = Money::parseMarketValue($playerData['marketValue'] ?? null);
-        $annualWage = $this->contractService->calculateAnnualWage($marketValueCents, $minimumWage, $player->age);
+        $annualWage = $this->contractService->calculateAnnualWage($marketValueCents, $minimumWage, $age);
 
         $currentAbility = (int) round(
             ($player->technical_ability + $player->physical_ability) / 2
         );
         $potentialData = $this->developmentService->generatePotential(
-            $player->age,
+            $age,
             $currentAbility
         );
 
