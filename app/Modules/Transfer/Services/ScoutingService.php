@@ -209,18 +209,19 @@ class ScoutingService
             $connection = $query->getQuery()->getConnection();
             $driver = $connection->getDriverName();
             $dobSubquery = '(SELECT date_of_birth FROM players WHERE players.id = game_players.player_id)';
+            $gameDate = $game->current_date->toDateString();
 
             if ($driver === 'pgsql') {
-                $ageExpr = "EXTRACT(YEAR FROM AGE(CURRENT_DATE, $dobSubquery))";
+                $ageExpr = "EXTRACT(YEAR FROM AGE(?::date, $dobSubquery))";
             } else {
-                $ageExpr = "(strftime('%Y', 'now') - strftime('%Y', $dobSubquery))";
+                $ageExpr = "(strftime('%Y', ?) - strftime('%Y', $dobSubquery))";
             }
 
             if (! empty($filters['age_min'])) {
-                $query->whereRaw("($ageExpr) >= ?", [(int) $filters['age_min']]);
+                $query->whereRaw("($ageExpr) >= ?", [$gameDate, (int) $filters['age_min']]);
             }
             if (! empty($filters['age_max'])) {
-                $query->whereRaw("($ageExpr) <= ?", [(int) $filters['age_max']]);
+                $query->whereRaw("($ageExpr) <= ?", [$gameDate, (int) $filters['age_max']]);
             }
         }
 

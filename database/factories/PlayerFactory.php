@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Player;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -23,10 +24,12 @@ class PlayerFactory extends Factory
         ];
     }
 
-    public function age(int $age): static
+    public function age(int $age, ?string $referenceDate = null): static
     {
+        $reference = Carbon::parse($referenceDate ?? '2024-08-15');
+
         return $this->state(fn (array $attributes) => [
-            'date_of_birth' => now()->subYears($age)->subMonths(6),
+            'date_of_birth' => $reference->copy()->subYears($age)->subMonths(6),
         ]);
     }
 }

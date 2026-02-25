@@ -35,9 +35,10 @@ class ProcessSeasonTransition implements ShouldQueue
         // Set current date to the first match of the new season
         $game->refresh()->setRelations([]);
         $firstMatch = $game->getFirstCompetitiveMatch();
+        $fallbackDate = ((int) $game->season) . '-08-15';
 
         $game->update([
-            'current_date' => $firstMatch?->scheduled_date,
+            'current_date' => $firstMatch?->scheduled_date ?? $fallbackDate,
             'season_transitioning_at' => null,
         ]);
 

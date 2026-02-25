@@ -53,26 +53,36 @@ class GamePlayerTemplateService
             ->flip()
             ->toArray();
 
+        // Track already-processed players to avoid duplicates across teams
+        $processedPlayerIds = DB::table('game_player_templates')
+            ->where('season', $season)
+            ->distinct()
+            ->pluck('player_id')
+            ->flip()
+            ->toArray();
+
         // Process tier + transfer pool competitions
         foreach ($competitionIds as $competitionId) {
             if (in_array($competitionId, $continentalIds)) {
                 continue;
             }
 
-            $rows = $this->generateForCompetition($competitionId, $season, $allTeams, $allPlayers, $processedTeamIds);
+            $rows = $this->generateForCompetition($competitionId, $season, $allTeams, $allPlayers, $processedTeamIds, $processedPlayerIds);
             foreach ($rows as $row) {
                 $templateRows[] = $row;
                 $processedTeamIds[$row['team_id']] = true;
+                $processedPlayerIds[$row['player_id']] = true;
             }
         }
 
         // Swiss format gap teams (UCL, UEL — teams not already covered)
         $swissIds = $countryConfig->swissFormatCompetitionIds($countryCode);
         foreach ($swissIds as $competitionId) {
-            $rows = $this->generateForSwissGapTeams($competitionId, $season, $allTeams, $allPlayers, $processedTeamIds);
+            $rows = $this->generateForSwissGapTeams($competitionId, $season, $allTeams, $allPlayers, $processedTeamIds, $processedPlayerIds);
             foreach ($rows as $row) {
                 $templateRows[] = $row;
                 $processedTeamIds[$row['team_id']] = true;
+                $processedPlayerIds[$row['player_id']] = true;
             }
         }
 
@@ -92,6 +102,7 @@ class GamePlayerTemplateService
         Collection $allTeams,
         Collection $allPlayers,
         array $processedTeamIds = [],
+        array $processedPlayerIds = [],
     ): array {
         $basePath = base_path("data/{$season}/{$competitionId}");
         $teamsFilePath = "{$basePath}/teams.json";
@@ -127,8 +138,9 @@ class GamePlayerTemplateService
 
             foreach ($club['players'] ?? [] as $playerData) {
                 $row = $this->prepareTemplateRow($season, $team, $playerData, $minimumWage, $allPlayers);
-                if ($row) {
+                if ($row && !isset($processedPlayerIds[$row['player_id']])) {
                     $rows[] = $row;
+                    $processedPlayerIds[$row['player_id']] = true;
                 }
             }
         }
@@ -145,6 +157,7 @@ class GamePlayerTemplateService
         Collection $allTeams,
         Collection $allPlayers,
         array $processedTeamIds,
+        array $processedPlayerIds = [],
     ): array {
         $teamsFilePath = base_path("data/{$season}/{$competitionId}/teams.json");
         if (!file_exists($teamsFilePath)) {
@@ -174,8 +187,9 @@ class GamePlayerTemplateService
 
             foreach ($club['players'] ?? [] as $playerData) {
                 $row = $this->prepareTemplateRow($season, $team, $playerData, $minimumWage, $allPlayers);
-                if ($row) {
+                if ($row && !isset($processedPlayerIds[$row['player_id']])) {
                     $rows[] = $row;
+                    $processedPlayerIds[$row['player_id']] = true;
                 }
             }
         }

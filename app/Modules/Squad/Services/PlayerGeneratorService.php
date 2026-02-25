@@ -52,7 +52,7 @@ class PlayerGeneratorService
         $identity = $this->pickRandomIdentity(excludedNames: $excludedNames);
         $name = $data->name ?? $identity['name'];
         $nationality = $data->nationality ?? $identity['nationality'];
-        $age = $data->dateOfBirth->age;
+        $age = (int) $data->dateOfBirth->diffInYears($game->current_date ?? now());
 
         // Create the reference Player record
         $player = Player::create([
