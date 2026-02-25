@@ -36,9 +36,14 @@ class ShowFinances
             ->where('team_id', $game->team_id)
             ->sum('annual_wage');
 
-        // Get recent transactions
+        // Get transactions for the current season (July 1 → June 30)
+        $seasonYear = (int) $game->season;
+        $seasonStart = "{$seasonYear}-07-01";
+        $seasonEnd = ($seasonYear + 1) . '-06-30';
+
         $transactions = FinancialTransaction::with('relatedPlayer.player')
             ->where('game_id', $gameId)
+            ->whereBetween('transaction_date', [$seasonStart, $seasonEnd])
             ->orderByDesc('transaction_date')
             ->limit(20)
             ->get();
