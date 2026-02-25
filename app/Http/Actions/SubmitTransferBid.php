@@ -26,11 +26,11 @@ class SubmitTransferBid
 
         $bidAmountCents = (int) ($validated['bid_amount'] * 100);
 
-        $offer = $this->transferService->submitBid($game, $player, $bidAmountCents, $this->scoutingService);
-
-        if (!$offer) {
+        try {
+            $this->transferService->submitBid($game, $player, $bidAmountCents, $this->scoutingService);
+        } catch (\InvalidArgumentException $e) {
             return redirect()->route('game.transfers', $gameId)
-                ->with('error', __('messages.bid_exceeds_budget'));
+                ->with('error', $e->getMessage());
         }
 
         return redirect()->route('game.transfers', $gameId)

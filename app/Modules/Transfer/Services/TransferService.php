@@ -1202,10 +1202,22 @@ class TransferService
     /**
      * Submit a new bid for a player. Returns the created offer or null if budget is insufficient.
      */
-    public function submitBid(Game $game, GamePlayer $player, int $bidAmountCents, ScoutingService $scoutingService): ?TransferOffer
+    public function submitBid(Game $game, GamePlayer $player, int $bidAmountCents, ScoutingService $scoutingService): TransferOffer
     {
         if ($bidAmountCents > $this->availableBudget($game)) {
-            return null;
+            throw new \InvalidArgumentException(__('messages.bid_exceeds_budget'));
+        }
+
+        // Prevent duplicate pending bids for the same player
+        $existingBid = TransferOffer::where('game_id', $game->id)
+            ->where('game_player_id', $player->id)
+            ->where('offering_team_id', $game->team_id)
+            ->where('status', TransferOffer::STATUS_PENDING)
+            ->exists();
+
+        if ($existingBid) {
+            throw new \InvalidArgumentException(__('transfers.already_bidding'));
+
         }
 
         $wageDemand = $scoutingService->calculateWageDemand($player);
