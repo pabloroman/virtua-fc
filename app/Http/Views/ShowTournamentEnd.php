@@ -195,10 +195,10 @@ class ShowTournamentEnd
 
         return match (true) {
             $roundsFromFinal === 0 => 'runner_up', // Already handled above, but safety
-            $roundsFromFinal === 1 => 'semi_finalist',
-            $roundsFromFinal === 2 => 'quarter_finalist',
-            $roundsFromFinal === 3 => 'round_of_16',
-            $roundsFromFinal === 4 => 'round_of_32',
+            $roundsFromFinal === 2 => 'semi_finalist',
+            $roundsFromFinal === 3 => 'quarter_finalist',
+            $roundsFromFinal === 4 => 'round_of_16',
+            $roundsFromFinal === 5 => 'round_of_32',
             default => 'group_stage',
         };
     }

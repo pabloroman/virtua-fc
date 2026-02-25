@@ -593,7 +593,7 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
             {{-- ============================================ --}}
             {{-- SECTION 4: Bottom CTAs                       --}}
             {{-- ============================================ --}}
-            <div class="mt-10 text-center space-y-4" x-data="{ copied: false }">
+            <div class="mt-10 mb-10 text-center space-y-4" x-data="{ copied: false }">
                 {{-- Share Button --}}
                 <div>
                     <button
@@ -634,17 +634,10 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                 </div>
 
                 {{-- Play Again --}}
-                <div>
+                <div class="mb-10">
                     <a href="{{ route('select-team') }}"
                        class="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 text-white rounded-lg text-lg font-bold shadow-lg transition-all min-h-[44px]">
                         {{ __('season.play_again') }}
-                    </a>
-                </div>
-
-                {{-- Back to Dashboard --}}
-                <div>
-                    <a href="{{ route('dashboard') }}" class="text-sm text-slate-400 hover:text-slate-600 transition-colors">
-                        {{ __('season.back_to_dashboard') }}
                     </a>
                 </div>
             </div>

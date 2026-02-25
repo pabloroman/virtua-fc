@@ -33,6 +33,10 @@ return [
     'group_stage' => 'Fase de Grupos',
     'round_of_32' => 'Dieciseisavos de final',
     'cup.round_of_32' => 'Dieciseisavos de final',
+    'cup.round_of_16' => 'Octavos de final',
+    'cup.quarter_finals' => 'Cuartos de final',
+    'cup.semi_finals' => 'Semifinales',
+    'cup.final' => 'Final',
     'third_place_match' => 'Tercer puesto',
 
     // Standings
