@@ -13,6 +13,7 @@ return [
 
     // Bid/loan submission confirmations
     'bid_submitted' => 'Your bid for :player has been submitted. You will receive a response soon.',
+    'bid_already_exists' => 'You already have a pending bid for this player.',
     'loan_request_submitted' => 'Your loan request for :player has been submitted. You will receive a response soon.',
 
     // Counter offer

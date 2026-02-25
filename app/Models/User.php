@@ -55,7 +55,6 @@ class User extends Authenticatable
         'email',
         'password',
         'feedback_requested_at',
-        'is_admin',
         'locale',
     ];
 

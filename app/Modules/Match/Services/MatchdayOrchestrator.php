@@ -28,6 +28,7 @@ use App\Models\GameStanding;
 use App\Models\PlayerSuspension;
 use App\Models\TransferOffer;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class MatchdayOrchestrator
 {
@@ -50,59 +51,64 @@ class MatchdayOrchestrator
 
     public function advance(Game $game): MatchdayAdvanceResult
     {
-        // Safety net: finalize any pending match from a previous matchday
-        // (e.g. user closed browser without clicking "Continue")
-        $this->finalizePendingMatch($game);
+        return DB::transaction(function () use ($game) {
+            // Lock the game row to prevent concurrent matchday advancement
+            $game = Game::where('id', $game->id)->lockForUpdate()->first();
 
-        // Block advancement if there are pending actions the user must resolve
-        if ($game->hasPendingActions()) {
-            return MatchdayAdvanceResult::blocked($game->getFirstPendingAction());
-        }
+            // Safety net: finalize any pending match from a previous matchday
+            // (e.g. user closed browser without clicking "Continue")
+            $this->finalizePendingMatch($game);
 
-        // Mark all existing notifications as read before processing new matchday
-        $this->notificationService->markAllAsRead($game->id);
-
-        // Process batches until one involves the player's team or the season ends
-        while ($batch = $this->matchdayService->getNextMatchBatch($game)) {
-            $result = $this->processBatch($game, $batch);
-
-            if ($result['playerMatch']) {
-                $this->autoSimulateRemainingBatches($game);
-
-                return MatchdayAdvanceResult::liveMatch($result['playerMatch']->id);
+            // Block advancement if there are pending actions the user must resolve
+            if ($game->hasPendingActions()) {
+                return MatchdayAdvanceResult::blocked($game->getFirstPendingAction());
             }
 
-            // AI-only batch — check if the player still has upcoming matches
-            $playerHasMoreMatches = GameMatch::where('game_id', $game->id)
-                ->where('played', false)
-                ->where(fn ($q) => $q->where('home_team_id', $game->team_id)
-                    ->orWhere('away_team_id', $game->team_id))
-                ->exists();
+            // Mark all existing notifications as read before processing new matchday
+            $this->notificationService->markAllAsRead($game->id);
 
-            if (! $playerHasMoreMatches) {
-                $this->autoSimulateRemainingBatches($game);
+            // Process batches until one involves the player's team or the season ends
+            while ($batch = $this->matchdayService->getNextMatchBatch($game)) {
+                $result = $this->processBatch($game, $batch);
 
-                // Re-check: new matches (e.g. playoffs) may have been generated
-                $playerNowHasMatches = GameMatch::where('game_id', $game->id)
+                if ($result['playerMatch']) {
+                    $this->autoSimulateRemainingBatches($game);
+
+                    return MatchdayAdvanceResult::liveMatch($result['playerMatch']->id);
+                }
+
+                // AI-only batch — check if the player still has upcoming matches
+                $playerHasMoreMatches = GameMatch::where('game_id', $game->id)
                     ->where('played', false)
                     ->where(fn ($q) => $q->where('home_team_id', $game->team_id)
                         ->orWhere('away_team_id', $game->team_id))
                     ->exists();
 
-                if ($playerNowHasMatches) {
-                    $game->refresh()->setRelations([]);
+                if (! $playerHasMoreMatches) {
+                    $this->autoSimulateRemainingBatches($game);
 
-                    continue;
+                    // Re-check: new matches (e.g. playoffs) may have been generated
+                    $playerNowHasMatches = GameMatch::where('game_id', $game->id)
+                        ->where('played', false)
+                        ->where(fn ($q) => $q->where('home_team_id', $game->team_id)
+                            ->orWhere('away_team_id', $game->team_id))
+                        ->exists();
+
+                    if ($playerNowHasMatches) {
+                        $game->refresh()->setRelations([]);
+
+                        continue;
+                    }
+
+                    return MatchdayAdvanceResult::done();
                 }
 
-                return MatchdayAdvanceResult::done();
+                // Player has matches coming but not in this batch — continue silently
+                $game->refresh()->setRelations([]);
             }
 
-            // Player has matches coming but not in this batch — continue silently
-            $game->refresh()->setRelations([]);
-        }
-
-        return MatchdayAdvanceResult::seasonComplete();
+            return MatchdayAdvanceResult::seasonComplete();
+        });
     }
 
     /**
