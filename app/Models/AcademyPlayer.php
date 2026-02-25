@@ -106,7 +106,13 @@ class AcademyPlayer extends Model
 
     public function getAgeAttribute(): int
     {
-        return $this->date_of_birth->age;
+        $referenceDate = $this->game->current_date;
+
+        if (!$referenceDate) {
+            return $this->date_of_birth->age;
+        }
+
+        return (int) $this->date_of_birth->diffInYears($referenceDate);
     }
 
     public function getSeasonsInAcademyAttribute(): int

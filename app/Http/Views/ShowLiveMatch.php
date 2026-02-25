@@ -11,7 +11,6 @@ use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\PlayerSuspension;
 use App\Support\PositionMapper;
-use Carbon\Carbon;
 
 class ShowLiveMatch
 {
@@ -147,7 +146,7 @@ class ShowLiveMatch
                 'positionSort' => LineupService::positionSortOrder($p->position),
                 'physicalAbility' => $p->physical_ability,
                 'technicalAbility' => $p->technical_ability,
-                'age' => Carbon::parse($p->player->date_of_birth)->age,
+                'age' => $p->age,
                 'minuteEntered' => $entryMinutes[$p->id] ?? 0,
             ])
             ->sortBy('positionSort')
@@ -181,7 +180,7 @@ class ShowLiveMatch
                 'positionSort' => LineupService::positionSortOrder($p->position),
                 'physicalAbility' => $p->physical_ability,
                 'technicalAbility' => $p->technical_ability,
-                'age' => Carbon::parse($p->player->date_of_birth)->age,
+                'age' => $p->age,
                 'minuteEntered' => null,
             ])
             ->sortBy('positionSort')

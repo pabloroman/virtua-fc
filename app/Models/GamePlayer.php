@@ -634,11 +634,17 @@ class GamePlayer extends Model
     }
 
     /**
-     * Get player's age from the reference Player model.
+     * Get player's age based on the game's current date (not wall-clock today).
      */
     public function getAgeAttribute(): int
     {
-        return $this->player->age;
+        $referenceDate = $this->game->current_date;
+
+        if (!$referenceDate) {
+            return $this->player->age;
+        }
+
+        return (int) $this->player->date_of_birth->diffInYears($referenceDate);
     }
 
     /**

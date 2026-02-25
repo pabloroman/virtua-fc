@@ -266,8 +266,15 @@ class SetupNewGame implements ShouldQueue
             ->get();
 
         $rows = [];
+        $seenPlayerIds = [];
 
         foreach ($templates as $t) {
+            // Skip duplicate players (same player listed under multiple teams)
+            if (isset($seenPlayerIds[$t->player_id])) {
+                continue;
+            }
+            $seenPlayerIds[$t->player_id] = true;
+
             $rows[] = [
                 'id' => Str::uuid()->toString(),
                 'game_id' => $this->gameId,
