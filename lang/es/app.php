@@ -25,6 +25,7 @@ return [
     // Authentication
     'log_out' => 'Cerrar Sesión',
     'new_game' => 'Nueva partida',
+    'all_teams' => 'Todas las selecciones',
     'load_game' => 'Cargar partida',
 
     // Common labels

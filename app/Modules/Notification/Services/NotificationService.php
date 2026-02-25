@@ -545,8 +545,8 @@ class NotificationService
         return $this->create(
             game: $game,
             type: GameNotification::TYPE_COMPETITION_ADVANCEMENT,
-            title: __('notifications.competition_advancement_title', ['competition' => $competitionName]),
-            message: __('notifications.competition_advancement_message', ['stage' => $nextStage]),
+            title: __('notifications.competition_advancement_title', ['competition' => __($competitionName)]),
+            message: __('notifications.competition_advancement_message', ['stage' => __($nextStage)]),
             priority: GameNotification::PRIORITY_MILESTONE,
             metadata: [
                 'competition_id' => $competitionId,
@@ -563,8 +563,8 @@ class NotificationService
         return $this->create(
             game: $game,
             type: GameNotification::TYPE_COMPETITION_ELIMINATION,
-            title: __('notifications.competition_elimination_title', ['competition' => $competitionName]),
-            message: __('notifications.competition_elimination_message', ['stage' => $stage]),
+            title: __('notifications.competition_elimination_title', ['competition' => __($competitionName)]),
+            message: __('notifications.competition_elimination_message', ['stage' => __($stage)]),
             priority: GameNotification::PRIORITY_MILESTONE,
             metadata: [
                 'competition_id' => $competitionId,

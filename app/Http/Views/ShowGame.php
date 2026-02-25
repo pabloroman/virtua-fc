@@ -43,6 +43,12 @@ class ShowGame
         $nextMatch = $this->loadNextMatch($game);
         $hasRemainingMatches = !$nextMatch && $game->matches()->where('played', false)->exists();
 
+        // Tournament mode: auto-redirect to simulate remaining matches
+        // when the player is eliminated (no next match but matches remain)
+        if ($game->isTournamentMode() && !$nextMatch && $hasRemainingMatches) {
+            return redirect()->route('game.simulate-tournament', $gameId);
+        }
+
         $notifications = $this->notificationService->getNotifications($game->id, true, 15);
         $groupedNotifications = $notifications->groupBy(fn ($n) => $n->game_date?->format('Y-m-d') ?? 'unknown');
 

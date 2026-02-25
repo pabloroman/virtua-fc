@@ -25,6 +25,7 @@ return [
     // Authentication
     'log_out' => 'Log Out',
     'new_game' => 'New game',
+    'all_teams' => 'All Teams',
     'load_game' => 'Load game',
 
     // Common labels

@@ -11,6 +11,7 @@ use App\Http\Actions\AcceptTransferOffer;
 use App\Http\Actions\DeclineRenewal;
 use App\Http\Actions\ReconsiderRenewal;
 use App\Http\Actions\AdvanceMatchday;
+use App\Http\Actions\SimulateTournament;
 use App\Http\Actions\CancelScoutSearch;
 use App\Http\Actions\MarkAllNotificationsRead;
 use App\Http\Actions\MarkNotificationRead;
@@ -152,6 +153,7 @@ Route::middleware('auth')->group(function () {
 
         // Tournament End
         Route::get('/game/{gameId}/tournament-end', ShowTournamentEnd::class)->name('game.tournament-end');
+        Route::get('/game/{gameId}/simulate-tournament', SimulateTournament::class)->name('game.simulate-tournament');
 
         // Budget Allocation
         Route::get('/game/{gameId}/budget', ShowBudgetAllocation::class)->name('game.budget');

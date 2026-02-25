@@ -36,6 +36,11 @@ export default function liveMatch(config) {
         twoLeggedInfo: config.twoLeggedInfo || null,
         preloadedExtraTimeData: config.extraTimeData || null,
 
+        // Tournament knockout config
+        isTournamentKnockout: config.isTournamentKnockout || false,
+        knockoutRoundNumber: config.knockoutRoundNumber || null,
+        knockoutRoundName: config.knockoutRoundName || '',
+
         // Tactical change state
         pendingFormation: null,
         pendingMentality: null,
@@ -730,6 +735,53 @@ export default function liveMatch(config) {
                 name: homeWon ? this.homeTeamName : this.awayTeamName,
                 image: homeWon ? this.homeTeamImage : this.awayTeamImage,
             };
+        },
+
+        // =============================
+        // Tournament result helpers
+        // =============================
+
+        get playerWon() {
+            if (!this.isTournamentKnockout) return null;
+            // Penalties decide the winner if they were played
+            if (this.penaltyResult) {
+                const penHome = this.penaltyResult.home;
+                const penAway = this.penaltyResult.away;
+                const homeWon = penHome > penAway;
+                return this.userTeamId === this.homeTeamId ? homeWon : !homeWon;
+            }
+            // ET or regular time: compare displayed scores at full time
+            const home = this.homeScore;
+            const away = this.awayScore;
+            if (home === away) return null; // shouldn't happen in knockout without pens
+            const homeWon = home > away;
+            return this.userTeamId === this.homeTeamId ? homeWon : !homeWon;
+        },
+
+        get tournamentResultType() {
+            if (!this.isTournamentKnockout || this.playerWon === null) return null;
+            const round = this.knockoutRoundNumber;
+            const won = this.playerWon;
+
+            // Round 6 = Final
+            if (round === 6) return won ? 'champion' : 'runner_up';
+            // Round 5 = Third-place match
+            if (round === 5) return won ? 'third' : 'fourth';
+            // Round 4 = Semi-final
+            if (round === 4) return won ? 'to_final' : 'to_third_place';
+            // Rounds 1-3 = R32/R16/QF
+            return won ? 'advance' : 'eliminated';
+        },
+
+        get isTournamentDecisive() {
+            const type = this.tournamentResultType;
+            if (!type) return false;
+            // Decisive = tournament is over for the player (no more matches after this)
+            return ['champion', 'runner_up', 'third', 'fourth', 'eliminated'].includes(type);
+        },
+
+        get isChampion() {
+            return this.tournamentResultType === 'champion';
         },
 
         // =============================

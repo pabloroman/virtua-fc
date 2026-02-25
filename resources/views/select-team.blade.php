@@ -11,14 +11,11 @@
                 @php
                     $allCompetitions = collect($countries)->flatMap(fn ($c) => collect($c['tiers']))->values();
                     $firstId = $allCompetitions->first()?->id;
-                    $groupKeys = $wcGroups->keys()->sort()->values();
-                    $firstGroup = $groupKeys->first() ?? '';
                 @endphp
                 <div class="p-6 sm:p-8"
                      x-data="{
                          mode: 'career',
                          openTab: '{{ $firstId }}',
-                         openGroup: '{{ $firstGroup }}',
                          loading: false,
                      }">
                     <form method="post" action="{{ route('init-game') }}" @submit="loading = true" class="space-y-6">
@@ -126,32 +123,40 @@
 
                         {{-- ===================== TOURNAMENT MODE: National teams ===================== --}}
                         @if($hasTournamentMode)
-                            <div x-show="mode === 'tournament'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
-                                {{-- Group tabs --}}
-                                <div class="flex space-x-2 overflow-x-auto scrollbar-hide">
-                                    @foreach($wcGroups as $groupLabel => $teams)
-                                        <a x-on:click="openGroup = '{{ $groupLabel }}'" :class="{ 'bg-amber-500 text-white': openGroup === '{{ $groupLabel }}' }" class="py-2 px-4 rounded-md focus:outline-none text-lg transition-all duration-300 cursor-pointer shrink-0">
-                                            {{ __('game.group') }} {{ $groupLabel }}
-                                        </a>
+                            <div x-show="mode === 'tournament'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="space-y-6">
+
+                                {{-- Featured teams (larger cards) --}}
+                                @if($wcFeaturedTeams->isNotEmpty())
+                                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                                    @foreach($wcFeaturedTeams as $team)
+                                        <label class="border text-slate-700 has-[:checked]:ring-amber-300 has-[:checked]:text-amber-900 has-[:checked]:bg-amber-100 flex flex-col items-center gap-2 rounded-xl p-4 md:p-5 ring-1 ring-transparent hover:bg-amber-50 cursor-pointer transition-all">
+                                            <x-team-crest :team="$team" class="w-14 h-14 md:w-16 md:h-16" />
+                                            <span class="text-sm md:text-base font-semibold text-center truncate w-full">{{ $team->name }}</span>
+                                            <input x-bind:required="mode === 'tournament'" x-bind:disabled="mode !== 'tournament'" type="radio" name="team_id" value="{{ $team->id }}" class="hidden">
+                                        </label>
+                                    @endforeach
+                                </div>
+                                @endif
+
+                                {{-- Divider --}}
+                                <div class="relative">
+                                    <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-200"></div></div>
+                                    <div class="relative flex justify-center">
+                                        <span class="bg-white px-3 text-xs text-slate-400 uppercase tracking-wide">{{ __('app.all_teams') }}</span>
+                                    </div>
+                                </div>
+
+                                {{-- All other teams (compact cards) --}}
+                                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
+                                    @foreach($wcTeams as $team)
+                                        <label class="border text-slate-700 has-[:checked]:ring-amber-300 has-[:checked]:text-amber-900 has-[:checked]:bg-amber-100 flex items-center gap-2.5 rounded-lg p-3 ring-1 ring-transparent hover:bg-amber-50 cursor-pointer transition-all">
+                                            <x-team-crest :team="$team" class="w-8 h-8 shrink-0" />
+                                            <span class="text-sm font-medium truncate">{{ $team->name }}</span>
+                                            <input x-bind:required="mode === 'tournament'" x-bind:disabled="mode !== 'tournament'" type="radio" name="team_id" value="{{ $team->id }}" class="hidden">
+                                        </label>
                                     @endforeach
                                 </div>
 
-                                {{-- Team grids per group --}}
-                                <div class="space-y-6">
-                                    @foreach($wcGroups as $groupLabel => $teams)
-                                        <div x-show="openGroup === '{{ $groupLabel }}'">
-                                            <div class="grid lg:grid-cols-4 md:grid-cols-2 gap-2 mt-4">
-                                                @foreach($teams as $team)
-                                                    <label class="border text-slate-700 has-[:checked]:ring-amber-200 has-[:checked]:text-amber-900 has-[:checked]:bg-amber-50 grid grid-cols-[40px_1fr_auto] items-center gap-4 rounded-lg p-4 ring-1 ring-transparent hover:bg-amber-50">
-                                                        <x-team-crest :team="$team" class="w-10 h-7 rounded shadow object-cover" onerror="this.style.display='none'" />
-                                                        <span class="text-[20px]">{{ $team->name }}</span>
-                                                        <input x-bind:required="mode === 'tournament'" x-bind:disabled="mode !== 'tournament'" type="radio" name="team_id" value="{{ $team->id }}" class="hidden appearance-none rounded-full border-[5px] border-white bg-white bg-clip-padding outline-none ring-1 ring-gray-950/10 checked:border-amber-600 checked:ring-amber-600 focus:outline-none">
-                                                    </label>
-                                                @endforeach
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
                             </div>
                         @endif
 
