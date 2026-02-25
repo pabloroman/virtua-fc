@@ -330,7 +330,7 @@ class SeedWorldCupData extends Command
                     'transfermarkt_id' => $transfermarktId,
                     'name' => $player['name'],
                     'date_of_birth' => $dateOfBirth,
-                    'nationality' => json_encode($player['nationality'] ?? []),
+                    'nationality' => json_encode(!empty($player['nationality']) ? $player['nationality'] : [$data['name']]),
                     'height' => $player['height'] ?? null,
                     'foot' => $foot,
                     'technical_ability' => $technical,
