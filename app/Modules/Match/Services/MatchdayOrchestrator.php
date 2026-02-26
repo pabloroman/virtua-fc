@@ -19,7 +19,6 @@ use App\Modules\Transfer\Services\TransferService;
 use App\Models\AcademyPlayer;
 use App\Models\ClubProfile;
 use App\Models\Competition;
-use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GameNotification;
@@ -663,54 +662,9 @@ class MatchdayOrchestrator
      */
     private function checkCompetitionProgress(Game $game, $matches, array $handlers): void
     {
-        $this->checkResolvedKnockoutTies($game, $matches);
         $this->checkSwissLeaguePhaseCompletion($game, $matches, $handlers);
         $this->checkLeagueWithPlayoffSeasonEnd($game, $matches, $handlers);
         $this->checkGroupStageCompletion($game, $matches, $handlers);
-    }
-
-    /**
-     * Check resolved knockout ties involving the player's team.
-     */
-    private function checkResolvedKnockoutTies(Game $game, $matches): void
-    {
-        $cupTieIds = $matches->pluck('cup_tie_id')->filter()->unique();
-
-        if ($cupTieIds->isEmpty()) {
-            return;
-        }
-
-        $resolvedTies = CupTie::with('competition')
-            ->whereIn('id', $cupTieIds)
-            ->where('completed', true)
-            ->where(function ($query) use ($game) {
-                $query->where('home_team_id', $game->team_id)
-                    ->orWhere('away_team_id', $game->team_id);
-            })
-            ->get();
-
-        foreach ($resolvedTies as $tie) {
-            $competition = $tie->competition;
-            $roundConfig = $tie->getRoundConfig();
-            $roundKey = $roundConfig->name ?? $tie->firstLegMatch->round_name ?? '';
-            $roundName = __($roundKey);
-
-            if ($tie->winner_id === $game->team_id) {
-                $this->notificationService->notifyCompetitionAdvancement(
-                    $game,
-                    $competition->id,
-                    $competition->name,
-                    __('cup.advanced_past_round', ['round' => __($roundName)]),
-                );
-            } else {
-                $this->notificationService->notifyCompetitionElimination(
-                    $game,
-                    $competition->id,
-                    $competition->name,
-                    __('cup.eliminated_in_round', ['round' => __($roundName)]),
-                );
-            }
-        }
     }
 
     /**

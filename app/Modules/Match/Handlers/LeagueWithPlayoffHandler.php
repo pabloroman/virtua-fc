@@ -6,6 +6,7 @@ use App\Modules\Competition\Contracts\CompetitionHandler;
 use App\Modules\Competition\Contracts\PlayoffGenerator;
 use App\Modules\Competition\DTOs\PlayoffRoundConfig;
 use App\Modules\Competition\Playoffs\PlayoffGeneratorFactory;
+use App\Modules\Match\Events\CupTieResolved;
 use App\Modules\Match\Services\CupTieResolver;
 use App\Models\CupTie;
 use App\Models\Game;
@@ -229,7 +230,7 @@ class LeagueWithPlayoffHandler implements CompetitionHandler
         $tieIds = $playoffMatches->pluck('cup_tie_id')->unique()->filter();
 
         foreach ($tieIds as $tieId) {
-            $tie = CupTie::with(['firstLegMatch', 'secondLegMatch'])->find($tieId);
+            $tie = CupTie::with(['firstLegMatch', 'secondLegMatch', 'competition'])->find($tieId);
 
             if (!$tie || $tie->completed) {
                 continue;
@@ -238,11 +239,8 @@ class LeagueWithPlayoffHandler implements CompetitionHandler
             $winnerId = $this->tieResolver->resolve($tie, $allPlayers);
 
             if ($winnerId) {
-                $tie->update([
-                    'winner_id' => $winnerId,
-                    'completed' => true,
-                    'resolution' => $tie->fresh()->resolution ?? [],
-                ]);
+                $match = $tie->secondLegMatch ?? $tie->firstLegMatch;
+                CupTieResolved::dispatch($tie, $winnerId, $match, $game, $tie->competition);
             }
         }
     }

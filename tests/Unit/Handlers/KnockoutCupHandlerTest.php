@@ -3,7 +3,6 @@
 namespace Tests\Unit\Handlers;
 
 use App\Modules\Match\Handlers\KnockoutCupHandler;
-use App\Modules\Competition\Services\CupDrawService;
 use App\Modules\Match\Services\CupTieResolver;
 use App\Modules\Squad\Services\EligibilityService;
 use App\Models\Competition;
@@ -26,18 +25,15 @@ class KnockoutCupHandlerTest extends TestCase
     private Competition $cupCompetition;
     private Team $team1;
     private Team $team2;
-    private $cupDrawServiceMock;
     private $cupTieResolverMock;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->cupDrawServiceMock = Mockery::mock(CupDrawService::class);
         $this->cupTieResolverMock = Mockery::mock(CupTieResolver::class);
 
         $this->handler = new KnockoutCupHandler(
-            $this->cupDrawServiceMock,
             $this->cupTieResolverMock,
             new EligibilityService(),
         );
@@ -151,42 +147,9 @@ class KnockoutCupHandlerTest extends TestCase
         $this->assertEquals($cupMatch->id, $batch->first()->id);
     }
 
-    public function test_before_matches_conducts_draws_when_needed(): void
+    public function test_before_matches_is_noop(): void
     {
-        // Mock that draw is needed
-        $this->cupDrawServiceMock
-            ->shouldReceive('needsDrawForRound')
-            ->with($this->game->id, $this->cupCompetition->id, 1)
-            ->andReturn(true);
-
-        // Mock the draw being conducted
-        $this->cupDrawServiceMock
-            ->shouldReceive('conductDraw')
-            ->with($this->game->id, $this->cupCompetition->id, 1)
-            ->andReturn(collect([
-                (object) ['id' => 'tie-1'],
-                (object) ['id' => 'tie-2'],
-            ]));
-
-        // Run beforeMatches
-        $this->handler->beforeMatches($this->game, '2024-11-01');
-
-        // Verify the mock was called
-        $this->assertTrue(true); // If we get here, mocks were called correctly
-    }
-
-    public function test_before_matches_skips_draw_when_not_needed(): void
-    {
-        // Mock that draw is NOT needed
-        $this->cupDrawServiceMock
-            ->shouldReceive('needsDrawForRound')
-            ->with($this->game->id, $this->cupCompetition->id, 1)
-            ->andReturn(false);
-
-        // conductDraw should NOT be called
-        $this->cupDrawServiceMock
-            ->shouldNotReceive('conductDraw');
-
+        // beforeMatches is a no-op — draws are handled by ConductNextCupRoundDraw listener
         $this->handler->beforeMatches($this->game, '2024-11-01');
 
         $this->assertTrue(true);
@@ -222,11 +185,6 @@ class KnockoutCupHandlerTest extends TestCase
             ->once()
             ->andReturn(null);
 
-        // After resolving ties, handler checks if next round needs a draw
-        $this->cupDrawServiceMock
-            ->shouldReceive('getNextRoundNeedingDraw')
-            ->andReturn(null);
-
         $matches = collect([$cupMatch]);
         $allPlayers = collect();
 
@@ -257,11 +215,6 @@ class KnockoutCupHandlerTest extends TestCase
         // Resolver should NOT be called for completed ties
         $this->cupTieResolverMock
             ->shouldNotReceive('resolve');
-
-        // After resolving ties, handler checks if next round needs a draw
-        $this->cupDrawServiceMock
-            ->shouldReceive('getNextRoundNeedingDraw')
-            ->andReturn(null);
 
         $matches = collect([$cupMatch]);
         $allPlayers = collect();
