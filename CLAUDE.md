@@ -238,6 +238,7 @@ config/
 - **All raw SQL must be PostgreSQL-compatible.** Avoid SQLite-only functions like `strftime()`. When raw SQL is unavoidable, detect the driver with `$query->getQuery()->getConnection()->getDriverName()` and branch for `pgsql` vs `sqlite`. Prefer Eloquent query builder over raw SQL whenever possible to avoid dialect issues.
 - UUID primary keys throughout
 - Key tables: `games`, `game_players`, `game_matches`, `game_standings`, `game_finances`, `game_investments`, `game_notifications`, `loans`, `scout_reports`, `transfer_offers`, `season_archives`, `simulated_seasons`, `cup_ties`, `player_suspensions`, `financial_transactions`, `competition_entries`, `competition_teams`, etc.
+- **No wall-clock timestamps on game models.** Time in VirtuaFC follows the game-universe calendar (seasons, matchdays, `current_date` on `Game`), not real-world wall-clock time. Unless explicitly needed (e.g. `users` for auth), models should set `public $timestamps = false` and omit `$table->timestamps()` from migrations.
 
 ## Models
 
