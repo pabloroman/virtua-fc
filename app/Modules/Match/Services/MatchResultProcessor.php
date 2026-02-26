@@ -470,6 +470,9 @@ class MatchResultProcessor
             return;
         }
 
+        // Aggregate stat increments in memory
+        $increments = []; // [gkId => [goals_conceded => N, clean_sheets => N]]
+
         foreach ($matchResults as $result) {
             $match = $matches->get($result['matchId']);
             if (! $match) {
@@ -478,23 +481,48 @@ class MatchResultProcessor
 
             foreach ($goalkeepers as $gk) {
                 if (in_array($gk->id, $match->home_lineup ?? [])) {
-                    $gk->goals_conceded += $result['awayScore'];
+                    if (! isset($increments[$gk->id])) {
+                        $increments[$gk->id] = ['goals_conceded' => 0, 'clean_sheets' => 0];
+                    }
+                    $increments[$gk->id]['goals_conceded'] += $result['awayScore'];
                     if ($result['awayScore'] === 0) {
-                        $gk->clean_sheets += 1;
+                        $increments[$gk->id]['clean_sheets'] += 1;
                     }
                 } elseif (in_array($gk->id, $match->away_lineup ?? [])) {
-                    $gk->goals_conceded += $result['homeScore'];
+                    if (! isset($increments[$gk->id])) {
+                        $increments[$gk->id] = ['goals_conceded' => 0, 'clean_sheets' => 0];
+                    }
+                    $increments[$gk->id]['goals_conceded'] += $result['homeScore'];
                     if ($result['homeScore'] === 0) {
-                        $gk->clean_sheets += 1;
+                        $increments[$gk->id]['clean_sheets'] += 1;
                     }
                 }
             }
         }
 
-        foreach ($goalkeepers as $gk) {
-            if ($gk->isDirty()) {
-                $gk->save();
+        if (empty($increments)) {
+            return;
+        }
+
+        // Bulk update using CASE WHEN
+        $ids = array_keys($increments);
+        $idList = "'" . implode("','", $ids) . "'";
+        $setClauses = [];
+
+        foreach (['goals_conceded', 'clean_sheets'] as $column) {
+            $cases = [];
+            foreach ($increments as $gkId => $values) {
+                if ($values[$column] !== 0) {
+                    $cases[] = "WHEN id = '{$gkId}' THEN {$column} + {$values[$column]}";
+                }
             }
+            if (! empty($cases)) {
+                $setClauses[] = "{$column} = CASE " . implode(' ', $cases) . " ELSE {$column} END";
+            }
+        }
+
+        if (! empty($setClauses)) {
+            DB::statement('UPDATE game_players SET ' . implode(', ', $setClauses) . " WHERE id IN ({$idList})");
         }
     }
 }
