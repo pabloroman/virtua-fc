@@ -17,7 +17,7 @@
                             @elseif($cupStatus === 'eliminated')
                                 <span class="px-3 py-1 text-sm bg-red-100 text-red-700 rounded-full">{{ __('cup.eliminated') }}</span>
                             @elseif($cupStatus === 'active')
-                                <span class="px-3 py-1 text-sm bg-green-100 text-green-700 rounded-full">{{ $playerRoundName }}</span>
+                                <span class="px-3 py-1 text-sm bg-green-100 text-green-700 rounded-full">{{ __($playerRoundName) }}</span>
                             @elseif($cupStatus === 'advanced')
                                 <span class="px-3 py-1 text-sm bg-green-100 text-green-700 rounded-full">{{ __('cup.advanced_to_next_round') }}</span>
                             @else
@@ -108,7 +108,7 @@
                                     @php $ties = $tiesByRound->get($round->round, collect()); @endphp
                                     <div class="flex-shrink-0 w-64">
                                         <div class="text-center mb-4">
-                                            <h4 class="font-semibold text-slate-700">{{ $round->name }}</h4>
+                                            <h4 class="font-semibold text-slate-700">{{ __($round->name) }}</h4>
                                             <div class="text-xs text-slate-400">
                                                 {{ $round->firstLegDate->format('M d') }}
                                                 @if($round->twoLegged)
