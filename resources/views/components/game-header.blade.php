@@ -21,7 +21,7 @@
                 @if($game->game_mode === \App\Models\Game::MODE_CAREER)
                     <p>{{ __('game.season') }} {{ $game->formatted_season }}</p>
                 @elseif($game->game_mode === \App\Models\Game::MODE_TOURNAMENT)
-                    <p>{{ $teamCompetitions[0]->name }}</p>
+                    <p>{{ __($teamCompetitions[0]->name) }}</p>
                 @endif
             </div>
         </div>

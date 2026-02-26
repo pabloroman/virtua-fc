@@ -700,14 +700,14 @@ class MatchdayOrchestrator
                     $game,
                     $competition->id,
                     $competition->name,
-                    __('cup.advanced_past_round', ['round' => $roundName]),
+                    __('cup.advanced_past_round', ['round' => __($roundName)]),
                 );
             } else {
                 $this->notificationService->notifyCompetitionElimination(
                     $game,
                     $competition->id,
                     $competition->name,
-                    __('cup.eliminated_in_round', ['round' => $roundName]),
+                    __('cup.eliminated_in_round', ['round' => __($roundName)]),
                 );
             }
         }

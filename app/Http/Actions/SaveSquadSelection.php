@@ -58,14 +58,6 @@ class SaveSquadSelection
                 continue;
             }
 
-            $currentAbility = (int) round(
-                ($player->technical_ability + $player->physical_ability) / 2
-            );
-            $potentialData = $this->developmentService->generatePotential(
-                $player->age,
-                $currentAbility
-            );
-
             $playerRows[] = [
                 'id' => Str::uuid()->toString(),
                 'game_id' => $gameId,
@@ -82,9 +74,6 @@ class SaveSquadSelection
                 'durability' => InjuryService::generateDurability(),
                 'game_technical_ability' => $player->technical_ability,
                 'game_physical_ability' => $player->physical_ability,
-                'potential' => $potentialData['potential'],
-                'potential_low' => $potentialData['low'],
-                'potential_high' => $potentialData['high'],
                 'season_appearances' => 0,
             ];
         }

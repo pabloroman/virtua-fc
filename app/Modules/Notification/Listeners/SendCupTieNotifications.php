@@ -29,14 +29,14 @@ class SendCupTieNotifications
                 $game,
                 $event->competition->id,
                 $competitionName,
-                __('cup.advanced_past_round', ['round' => $roundName]),
+                __('cup.advanced_past_round', ['round' => __($roundName)]),
             );
         } else {
             $this->notificationService->notifyCompetitionElimination(
                 $game,
                 $event->competition->id,
                 $competitionName,
-                __('cup.eliminated_in_round', ['round' => $roundName]),
+                __('cup.eliminated_in_round', ['round' => __($roundName)]),
             );
         }
     }
