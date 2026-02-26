@@ -109,6 +109,11 @@ class SerieAConfig implements CompetitionConfig
         return 'season.best_goalkeeper_serie_a';
     }
 
+    public function getKnockoutPrizeMoney(int $roundNumber): int
+    {
+        return 0;
+    }
+
     public function getStandingsZones(): array
     {
         $slots = config('countries.IT.continental_slots.ITA1', []);

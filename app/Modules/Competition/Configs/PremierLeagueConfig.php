@@ -110,6 +110,11 @@ class PremierLeagueConfig implements CompetitionConfig
         return 'season.golden_glove';
     }
 
+    public function getKnockoutPrizeMoney(int $roundNumber): int
+    {
+        return 0;
+    }
+
     public function getStandingsZones(): array
     {
         $slots = config('countries.EN.continental_slots.ENG1', []);

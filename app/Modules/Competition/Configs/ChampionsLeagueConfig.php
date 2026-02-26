@@ -9,6 +9,17 @@ use App\Models\Game;
 class ChampionsLeagueConfig implements CompetitionConfig
 {
     /**
+     * UCL knockout round prize money (in cents).
+     */
+    private const KNOCKOUT_PRIZE_MONEY = [
+        1 => 100_000_000,      // €1M - Knockout Playoff
+        2 => 200_000_000,      // €2M - Round of 16
+        3 => 350_000_000,      // €3.5M - Quarter-finals
+        4 => 500_000_000,      // €5M - Semi-finals
+        5 => 1_000_000_000,    // €10M - Final (winner)
+    ];
+
+    /**
      * UCL prize money by league phase position (in cents).
      * Based on UEFA coefficient + performance payments.
      */
@@ -104,6 +115,11 @@ class ChampionsLeagueConfig implements CompetitionConfig
     public function getBestGoalkeeperAwardName(): string
     {
         return 'season.best_goalkeeper';
+    }
+
+    public function getKnockoutPrizeMoney(int $roundNumber): int
+    {
+        return self::KNOCKOUT_PRIZE_MONEY[$roundNumber] ?? 0;
     }
 
     public function getStandingsZones(): array

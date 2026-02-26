@@ -68,4 +68,10 @@ interface CompetitionConfig
      * @return array<array{minPosition: int, maxPosition: int, borderColor: string, bgColor: string, label: string}>
      */
     public function getStandingsZones(): array;
+
+    /**
+     * Get prize money for advancing past a knockout round (in cents).
+     * Returns 0 for competitions without knockout prize money.
+     */
+    public function getKnockoutPrizeMoney(int $roundNumber): int;
 }

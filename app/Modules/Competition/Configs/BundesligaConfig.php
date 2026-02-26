@@ -108,6 +108,11 @@ class BundesligaConfig implements CompetitionConfig
         return 'season.best_goalkeeper_bundesliga';
     }
 
+    public function getKnockoutPrizeMoney(int $roundNumber): int
+    {
+        return 0;
+    }
+
     public function getStandingsZones(): array
     {
         $slots = config('countries.DE.continental_slots.DEU1', []);

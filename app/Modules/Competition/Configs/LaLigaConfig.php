@@ -109,6 +109,11 @@ class LaLigaConfig implements CompetitionConfig
         return 'season.zamora';
     }
 
+    public function getKnockoutPrizeMoney(int $roundNumber): int
+    {
+        return 0;
+    }
+
     public function getStandingsZones(): array
     {
         $slots = config('countries.ES.continental_slots.ESP1', []);

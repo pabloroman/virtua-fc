@@ -108,6 +108,11 @@ class Ligue1Config implements CompetitionConfig
         return 'season.best_goalkeeper_ligue1';
     }
 
+    public function getKnockoutPrizeMoney(int $roundNumber): int
+    {
+        return 0;
+    }
+
     public function getStandingsZones(): array
     {
         $slots = config('countries.FR.continental_slots.FRA1', []);

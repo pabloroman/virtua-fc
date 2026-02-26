@@ -8,6 +8,17 @@ use App\Models\Game;
 
 class EuropaLeagueConfig implements CompetitionConfig
 {
+    /**
+     * UEL knockout round prize money (in cents).
+     */
+    private const KNOCKOUT_PRIZE_MONEY = [
+        1 => 50_000_000,       // €500K - Knockout Playoff
+        2 => 100_000_000,      // €1M - Round of 16
+        3 => 150_000_000,      // €1.5M - Quarter-finals
+        4 => 250_000_000,      // €2.5M - Semi-finals
+        5 => 500_000_000,      // €5M - Final (winner)
+    ];
+
     public function getTvRevenue(int $position): int
     {
         // Europa League prize money is roughly 50-60% of UCL
@@ -54,6 +65,11 @@ class EuropaLeagueConfig implements CompetitionConfig
     public function getBestGoalkeeperAwardName(): string
     {
         return 'season.best_goalkeeper';
+    }
+
+    public function getKnockoutPrizeMoney(int $roundNumber): int
+    {
+        return self::KNOCKOUT_PRIZE_MONEY[$roundNumber] ?? 0;
     }
 
     public function getStandingsZones(): array

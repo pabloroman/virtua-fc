@@ -110,6 +110,11 @@ class LaLiga2Config implements CompetitionConfig
         return 'season.zamora';
     }
 
+    public function getKnockoutPrizeMoney(int $roundNumber): int
+    {
+        return 0;
+    }
+
     public function getStandingsZones(): array
     {
         $promotions = config('countries.ES.promotions', []);
