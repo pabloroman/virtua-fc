@@ -3,6 +3,7 @@
 namespace App\Modules\Competition\Services;
 
 use App\Models\GameStanding;
+use Illuminate\Support\Facades\DB;
 
 class StandingsCalculator
 {
@@ -18,66 +19,82 @@ class StandingsCalculator
         int $homeScore,
         int $awayScore,
     ): void {
-        // Determine match outcome
-        $homeWin = $homeScore > $awayScore;
-        $awayWin = $awayScore > $homeScore;
-        $draw = $homeScore === $awayScore;
-
-        // Update home team standing
-        $this->updateTeamStanding(
-            gameId: $gameId,
-            competitionId: $competitionId,
-            teamId: $homeTeamId,
-            goalsFor: $homeScore,
-            goalsAgainst: $awayScore,
-            won: $homeWin,
-            drawn: $draw,
-            lost: $awayWin,
-        );
-
-        // Update away team standing
-        $this->updateTeamStanding(
-            gameId: $gameId,
-            competitionId: $competitionId,
-            teamId: $awayTeamId,
-            goalsFor: $awayScore,
-            goalsAgainst: $homeScore,
-            won: $awayWin,
-            drawn: $draw,
-            lost: $homeWin,
-        );
+        $this->bulkUpdateAfterMatches($gameId, $competitionId, [[
+            'homeTeamId' => $homeTeamId,
+            'awayTeamId' => $awayTeamId,
+            'homeScore' => $homeScore,
+            'awayScore' => $awayScore,
+        ]]);
     }
 
     /**
-     * Update a single team's standing record.
+     * Update standings for multiple matches in a single query using CASE WHEN.
+     *
+     * @param  array<array{homeTeamId: string, awayTeamId: string, homeScore: int, awayScore: int}>  $matchResults
      */
-    private function updateTeamStanding(
-        string $gameId,
-        string $competitionId,
-        string $teamId,
-        int $goalsFor,
-        int $goalsAgainst,
-        bool $won,
-        bool $drawn,
-        bool $lost,
-    ): void {
-        $standing = GameStanding::where('game_id', $gameId)
-            ->where('competition_id', $competitionId)
-            ->where('team_id', $teamId)
-            ->first();
-
-        if (! $standing) {
+    public function bulkUpdateAfterMatches(string $gameId, string $competitionId, array $matchResults): void
+    {
+        if (empty($matchResults)) {
             return;
         }
 
-        $standing->played += 1;
-        $standing->won += $won ? 1 : 0;
-        $standing->drawn += $drawn ? 1 : 0;
-        $standing->lost += $lost ? 1 : 0;
-        $standing->goals_for += $goalsFor;
-        $standing->goals_against += $goalsAgainst;
-        $standing->points += $won ? 3 : ($drawn ? 1 : 0);
-        $standing->save();
+        // Aggregate increments per team across all matches
+        $increments = [];
+
+        foreach ($matchResults as $result) {
+            $homeWin = $result['homeScore'] > $result['awayScore'];
+            $awayWin = $result['awayScore'] > $result['homeScore'];
+            $draw = $result['homeScore'] === $result['awayScore'];
+
+            foreach ([
+                ['teamId' => $result['homeTeamId'], 'gf' => $result['homeScore'], 'ga' => $result['awayScore'], 'won' => $homeWin, 'drawn' => $draw, 'lost' => $awayWin],
+                ['teamId' => $result['awayTeamId'], 'gf' => $result['awayScore'], 'ga' => $result['homeScore'], 'won' => $awayWin, 'drawn' => $draw, 'lost' => $homeWin],
+            ] as $team) {
+                $id = $team['teamId'];
+                if (! isset($increments[$id])) {
+                    $increments[$id] = ['played' => 0, 'won' => 0, 'drawn' => 0, 'lost' => 0, 'goals_for' => 0, 'goals_against' => 0, 'points' => 0];
+                }
+                $increments[$id]['played'] += 1;
+                $increments[$id]['won'] += $team['won'] ? 1 : 0;
+                $increments[$id]['drawn'] += $team['drawn'] ? 1 : 0;
+                $increments[$id]['lost'] += $team['lost'] ? 1 : 0;
+                $increments[$id]['goals_for'] += $team['gf'];
+                $increments[$id]['goals_against'] += $team['ga'];
+                $increments[$id]['points'] += $team['won'] ? 3 : ($team['drawn'] ? 1 : 0);
+            }
+        }
+
+        $teamIds = array_keys($increments);
+        $standingIds = GameStanding::where('game_id', $gameId)
+            ->where('competition_id', $competitionId)
+            ->whereIn('team_id', $teamIds)
+            ->pluck('id', 'team_id');
+
+        if ($standingIds->isEmpty()) {
+            return;
+        }
+
+        $ids = $standingIds->values()->toArray();
+        $idList = "'" . implode("','", $ids) . "'";
+        $columns = ['played', 'won', 'drawn', 'lost', 'goals_for', 'goals_against', 'points'];
+        $setClauses = [];
+
+        foreach ($columns as $column) {
+            $cases = [];
+            foreach ($standingIds as $teamId => $standingId) {
+                $amount = $increments[$teamId][$column] ?? 0;
+                if ($amount !== 0) {
+                    $cases[] = "WHEN id = '{$standingId}' THEN {$column} + {$amount}";
+                }
+            }
+            if (! empty($cases)) {
+                $setClauses[] = "{$column} = CASE " . implode(' ', $cases) . " ELSE {$column} END";
+            }
+        }
+
+        if (! empty($setClauses)) {
+            DB::statement('UPDATE game_standings SET ' . implode(', ', $setClauses) . " WHERE id IN ({$idList})");
+        }
     }
 
     /**
@@ -155,7 +172,7 @@ class StandingsCalculator
 
     /**
      * Recalculate positions for all teams in a competition.
-     * Order by: points DESC, goal difference DESC, goals for DESC
+     * Uses a single bulk UPDATE with CASE WHEN instead of per-row updates.
      *
      * When standings have group_label set (e.g. World Cup), positions are
      * recalculated within each group separately.
@@ -170,32 +187,53 @@ class StandingsCalculator
             ->orderByDesc('goals_for')
             ->get();
 
-        // Check if this competition uses groups
+        if ($standings->isEmpty()) {
+            return;
+        }
+
+        // Build position assignments
+        $positionUpdates = []; // [standingId => [prev_position, position]]
         $hasGroups = $standings->whereNotNull('group_label')->isNotEmpty();
 
         if ($hasGroups) {
-            // Recalculate positions within each group separately
             foreach ($standings->groupBy('group_label') as $groupStandings) {
                 $position = 1;
                 foreach ($groupStandings as $standing) {
-                    $standing->update([
+                    $positionUpdates[$standing->id] = [
                         'prev_position' => $standing->position ?: $position,
                         'position' => $position,
-                    ]);
+                    ];
                     $position++;
                 }
             }
         } else {
-            // Flat league — single position sequence
             $position = 1;
             foreach ($standings as $standing) {
-                $standing->update([
+                $positionUpdates[$standing->id] = [
                     'prev_position' => $standing->position ?: $position,
                     'position' => $position,
-                ]);
+                ];
                 $position++;
             }
         }
+
+        // Bulk update positions in a single query
+        $ids = array_keys($positionUpdates);
+        $idList = "'" . implode("','", $ids) . "'";
+
+        $posCases = [];
+        $prevCases = [];
+        foreach ($positionUpdates as $id => $values) {
+            $posCases[] = "WHEN id = '{$id}' THEN {$values['position']}";
+            $prevCases[] = "WHEN id = '{$id}' THEN {$values['prev_position']}";
+        }
+
+        DB::statement(
+            'UPDATE game_standings SET '
+            . 'position = CASE ' . implode(' ', $posCases) . ' END, '
+            . 'prev_position = CASE ' . implode(' ', $prevCases) . ' END '
+            . "WHERE id IN ({$idList})"
+        );
     }
 
     /**
