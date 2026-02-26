@@ -118,4 +118,41 @@ return [
     'play_again' => 'Jugar de nuevo',
     'copied_to_clipboard' => '¡Copiado!',
     'your_squad_stats' => 'Estadísticas de tu plantilla',
+
+    // Squad highlights
+    'bold_picks' => 'Apuestas Arriesgadas',
+    'bold_picks_desc' => 'Jugadores infravalorados que seleccionaste y que brillaron en el gran escenario.',
+    'key_omissions' => 'Grandes Ausencias',
+    'key_omissions_desc' => 'Jugadores mejor valorados que dejaste fuera de tu convocatoria.',
+
+    // Share card
+    'create_share_card' => 'Crear Tarjeta para Compartir',
+    'generating_image' => 'Generando imagen',
+    'share_card_title' => 'Tu Tarjeta',
+    'share_card_subtitle' => 'Descarga o comparte tus resultados del torneo como imagen.',
+    'download_image' => 'Descargar',
+    'share_image' => 'Compartir',
+
+    // Challenge
+    'challenge_friend' => 'Reta a un Amigo',
+    'creating_challenge' => 'Creando reto',
+    'challenge_created' => '¡Reto creado!',
+    'copy_challenge_link' => 'Copiar Enlace del Reto',
+    'copy_link' => 'Copiar enlace',
+    'challenge_page_title' => 'Reto :team',
+    'challenge_og_title' => '¡:team llegó a :result en el Mundial!',
+    'challenge_og_description' => '¿Puedes hacerlo mejor? Acepta el reto y dirige la misma selección en VirtuaFC.',
+    'challenge_hero_text' => 'Alguien dirigió esta selección en el Mundial. ¿Puedes hacerlo mejor?',
+    'can_you_do_better' => '¿Puedes hacerlo mejor?',
+    'challenge_cta_subtitle' => 'Lleva a :team al Mundial y demuestra que lo habrías hecho mejor.',
+    'accept_their_squad' => 'Aceptar su Plantilla',
+    'accept_their_squad_desc' => 'Juega con los mismos 26 jugadores que eligieron.',
+    'pick_your_own_squad' => 'Elegir tu Propia Plantilla',
+    'pick_your_own_squad_desc' => 'Elige tus propios 26 jugadores de la lista completa.',
+    'sign_in_to_play' => 'Iniciar Sesión para Jugar',
+    'no_account_yet' => '¿Aún no tienes cuenta?',
+    'create_account' => 'Crea una',
+    'challenge_footer' => 'El mánager de fútbol donde tus convocatorias demuestran tu conocimiento futbolístico.',
+    'challenge_accepted_same_squad' => '¡Reto aceptado! Jugando con la misma plantilla.',
+    'challenge_accepted_own_squad' => '¡Reto aceptado! Elige tus 26 jugadores.',
 ];

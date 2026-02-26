@@ -118,4 +118,41 @@ return [
     'play_again' => 'Play Again',
     'copied_to_clipboard' => 'Copied!',
     'your_squad_stats' => 'Your Squad Stats',
+
+    // Squad highlights
+    'bold_picks' => 'Bold Picks',
+    'bold_picks_desc' => 'Underrated players you selected who stepped up on the big stage.',
+    'key_omissions' => 'Key Omissions',
+    'key_omissions_desc' => 'Top-rated players you left out of your squad.',
+
+    // Share card
+    'create_share_card' => 'Create Share Card',
+    'generating_image' => 'Generating image',
+    'share_card_title' => 'Your Share Card',
+    'share_card_subtitle' => 'Download or share your tournament results as an image.',
+    'download_image' => 'Download',
+    'share_image' => 'Share',
+
+    // Challenge
+    'challenge_friend' => 'Challenge a Friend',
+    'creating_challenge' => 'Creating challenge',
+    'challenge_created' => 'Challenge created!',
+    'copy_challenge_link' => 'Copy Challenge Link',
+    'copy_link' => 'Copy Link',
+    'challenge_page_title' => ':team Challenge',
+    'challenge_og_title' => ':team reached :result at the World Cup!',
+    'challenge_og_description' => 'Can you do better? Accept the challenge and manage the same team in VirtuaFC.',
+    'challenge_hero_text' => 'Someone managed this team through the World Cup. Can you do better?',
+    'can_you_do_better' => 'Can you do better?',
+    'challenge_cta_subtitle' => 'Take :team to the World Cup and prove you could have done better.',
+    'accept_their_squad' => 'Accept Their Squad',
+    'accept_their_squad_desc' => 'Play with the exact same 26 players they chose.',
+    'pick_your_own_squad' => 'Pick Your Own Squad',
+    'pick_your_own_squad_desc' => 'Choose your own 26 players from the full roster.',
+    'sign_in_to_play' => 'Sign In to Play',
+    'no_account_yet' => "Don't have an account yet?",
+    'create_account' => 'Create one',
+    'challenge_footer' => 'The football manager where your picks prove your football knowledge.',
+    'challenge_accepted_same_squad' => 'Challenge accepted! Playing with the same squad.',
+    'challenge_accepted_own_squad' => 'Challenge accepted! Pick your 26 players.',
 ];
