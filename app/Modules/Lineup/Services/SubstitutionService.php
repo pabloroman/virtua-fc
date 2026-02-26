@@ -67,6 +67,12 @@ class SubstitutionService
             $activeLineupIds[] = $sub['playerInId'];
         }
 
+        // Pre-load all suspended player IDs for this competition (single query)
+        $suspendedPlayerIds = PlayerSuspension::where('competition_id', $match->competition_id)
+            ->where('matches_remaining', '>', 0)
+            ->pluck('game_player_id')
+            ->all();
+
         // Validate each sub in the batch
         $batchOutIds = [];
         $batchInIds = [];
@@ -111,7 +117,7 @@ class SubstitutionService
                 throw new \InvalidArgumentException('game.sub_error_already_on_pitch');
             }
 
-            if (PlayerSuspension::isSuspended($playerInId, $match->competition_id)) {
+            if (in_array($playerInId, $suspendedPlayerIds)) {
                 throw new \InvalidArgumentException('game.sub_error_player_suspended');
             }
 

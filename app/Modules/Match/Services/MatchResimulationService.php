@@ -254,10 +254,16 @@ class MatchResimulationService
         $handlerType = $competition->handler_type ?? 'league';
         $rules = $this->eligibilityService->rulesForHandlerType($handlerType);
 
+        // Pre-load all suspensions for affected players in this competition (single query)
+        $suspensionsByPlayer = PlayerSuspension::where('competition_id', $competitionId)
+            ->whereIn('game_player_id', $affectedPlayerIds)
+            ->get()
+            ->keyBy('game_player_id');
+
         foreach ($eventsToRevert as $event) {
             if ($event->event_type === 'yellow_card') {
                 // Check if this yellow was at a suspension threshold before reverting
-                $record = PlayerSuspension::forPlayerInCompetition($event->game_player_id, $competitionId);
+                $record = $suspensionsByPlayer->get($event->game_player_id);
                 $yellowsBefore = $record->yellow_cards ?? 0;
                 $wasAtThreshold = $rules->checkAccumulation($yellowsBefore) !== null;
 
@@ -270,7 +276,7 @@ class MatchResimulationService
             }
 
             if ($event->event_type === 'red_card') {
-                $suspension = PlayerSuspension::forPlayerInCompetition($event->game_player_id, $competitionId);
+                $suspension = $suspensionsByPlayer->get($event->game_player_id);
                 if ($suspension && $suspension->matches_remaining > 0) {
                     $suspension->update(['matches_remaining' => 0]);
                 }

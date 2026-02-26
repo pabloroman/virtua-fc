@@ -164,8 +164,13 @@ class MatchResultProcessor
                 })
                 ->get();
 
-            foreach ($suspensions as $suspension) {
-                $suspension->serveMatch();
+            $suspensionIds = $suspensions->pluck('id')->all();
+            if (!empty($suspensionIds)) {
+                PlayerSuspension::whereIn('id', $suspensionIds)->decrement('matches_remaining');
+                // Ensure matches_remaining doesn't go negative
+                PlayerSuspension::whereIn('id', $suspensionIds)
+                    ->where('matches_remaining', '<', 0)
+                    ->update(['matches_remaining' => 0]);
             }
         }
     }
