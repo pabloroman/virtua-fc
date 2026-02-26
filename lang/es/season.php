@@ -75,6 +75,40 @@ return [
     'player_retiring' => 'Se retira',
     'and_more_retirements' => 'y :count más...',
 
+    // Season end — Section 2: Other competitions
+    'your_other_competitions' => 'Tus Otras Competiciones',
+    'champion_label' => '¡Campeón!',
+    'eliminated_in' => 'Eliminado en :round por',
+    'reached_round' => 'Alcanzó: :round',
+    'round_n' => 'Ronda :n',
+    'swiss_position' => 'Fase de Liga: :position° puesto',
+    'advanced_to_knockouts' => 'Avanzó a eliminatorias',
+    'eliminated_in_league_phase' => 'Eliminado en fase de liga',
+
+    // Season end — Section 3: Team in numbers
+    'team_in_numbers' => 'Tu Equipo en Cifras',
+    'your_top_scorer' => 'Tu Máximo Goleador',
+    'your_top_assister' => 'Tu Máximo Asistente',
+    'most_appearances' => 'Más Partidos Jugados',
+    'appearances' => 'partidos',
+    'biggest_victory' => 'Mayor Victoria',
+    'worst_defeat' => 'Peor Derrota',
+    'no_defeats' => 'Sin derrotas',
+    'home_record' => 'Récord de Local',
+    'away_record' => 'Récord de Visitante',
+    'cards' => 'Tarjetas',
+    'yellow_cards' => 'amarillas',
+    'red_cards' => 'rojas',
+    'total_clean_sheets' => 'Porterías a Cero',
+    'players_retiring' => ':count se retiran',
+    'player_retiring_singular' => '1 se retira',
+    'retiring_label' => 'Retiradas',
+    'transfer_balance' => 'Balance de Fichajes',
+    'vs' => 'vs',
+
+    // Season end — Section 4: Other leagues
+    'simulated_results' => 'Otras Ligas',
+
     // Start new season
     'start_new_season' => 'Comenzar Temporada :season',
     'new_season_coming_soon' => 'La próxima temporada estará disponible próximamente.',

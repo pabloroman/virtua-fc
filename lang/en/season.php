@@ -75,6 +75,40 @@ return [
     'player_retiring' => 'Retiring',
     'and_more_retirements' => 'and :count more...',
 
+    // Season end — Section 2: Other competitions
+    'your_other_competitions' => 'Your Other Competitions',
+    'champion_label' => 'Champions!',
+    'eliminated_in' => 'Eliminated in :round by',
+    'reached_round' => 'Reached: :round',
+    'round_n' => 'Round :n',
+    'swiss_position' => 'League Phase: :position place',
+    'advanced_to_knockouts' => 'Advanced to knockouts',
+    'eliminated_in_league_phase' => 'Eliminated in league phase',
+
+    // Season end — Section 3: Team in numbers
+    'team_in_numbers' => 'Your Team in Numbers',
+    'your_top_scorer' => 'Your Top Scorer',
+    'your_top_assister' => 'Your Top Assister',
+    'most_appearances' => 'Most Appearances',
+    'appearances' => 'appearances',
+    'biggest_victory' => 'Biggest Victory',
+    'worst_defeat' => 'Worst Defeat',
+    'no_defeats' => 'Unbeaten!',
+    'home_record' => 'Home Record',
+    'away_record' => 'Away Record',
+    'cards' => 'Cards',
+    'yellow_cards' => 'yellow',
+    'red_cards' => 'red',
+    'total_clean_sheets' => 'Clean Sheets',
+    'players_retiring' => ':count retiring',
+    'player_retiring_singular' => '1 retiring',
+    'retiring_label' => 'Retirements',
+    'transfer_balance' => 'Transfer Balance',
+    'vs' => 'vs',
+
+    // Season end — Section 4: Other leagues
+    'simulated_results' => 'Other Leagues',
+
     // Start new season
     'start_new_season' => 'Start Season :season',
     'new_season_coming_soon' => 'Next season will be available soon.',
