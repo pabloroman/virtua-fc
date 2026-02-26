@@ -2,15 +2,15 @@
 
 namespace App\Modules\Match\Handlers;
 
+use App\Models\Competition;
 use App\Modules\Competition\Contracts\CompetitionHandler;
 use App\Modules\Competition\DTOs\PlayoffRoundConfig;
-use App\Modules\Match\Services\CupTieResolver;
 use App\Modules\Competition\Services\SwissKnockoutGenerator;
-use App\Models\Competition;
+use App\Modules\Match\Events\CupTieResolved;
+use App\Modules\Match\Services\CupTieResolver;
 use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameMatch;
-use App\Models\GameStanding;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
@@ -232,7 +232,7 @@ class SwissFormatHandler implements CompetitionHandler
         $tieIds = $knockoutMatches->pluck('cup_tie_id')->unique()->filter();
 
         foreach ($tieIds as $tieId) {
-            $tie = CupTie::with(['firstLegMatch', 'secondLegMatch'])->find($tieId);
+            $tie = CupTie::with(['firstLegMatch', 'secondLegMatch', 'competition'])->find($tieId);
 
             if (!$tie || $tie->completed) {
                 continue;
@@ -241,11 +241,8 @@ class SwissFormatHandler implements CompetitionHandler
             $winnerId = $this->tieResolver->resolve($tie, $allPlayers);
 
             if ($winnerId) {
-                $tie->update([
-                    'winner_id' => $winnerId,
-                    'completed' => true,
-                    'resolution' => $tie->fresh()->resolution ?? [],
-                ]);
+                $match = $tie->secondLegMatch ?? $tie->firstLegMatch;
+                CupTieResolved::dispatch($tie, $winnerId, $match, $game, $tie->competition);
             }
         }
     }

@@ -3,12 +3,10 @@
 namespace App\Modules\Match\Handlers;
 
 use App\Modules\Competition\Contracts\CompetitionHandler;
-use App\Modules\Competition\Services\CupDrawService;
+use App\Modules\Match\Events\CupTieResolved;
 use App\Modules\Match\Services\CupTieResolver;
 use App\Modules\Squad\Services\EligibilityService;
-use App\Models\Competition;
 use App\Models\CupTie;
-use App\Models\FinancialTransaction;
 use App\Models\Game;
 use App\Models\GameMatch;
 use Illuminate\Support\Collection;
@@ -16,7 +14,6 @@ use Illuminate\Support\Collection;
 class KnockoutCupHandler implements CompetitionHandler
 {
     public function __construct(
-        private readonly CupDrawService $cupDrawService,
         private readonly CupTieResolver $cupTieResolver,
         private readonly EligibilityService $eligibilityService,
     ) {}
@@ -49,7 +46,7 @@ class KnockoutCupHandler implements CompetitionHandler
     }
 
     /**
-     * Resolve cup ties after matches have been played, then draw the next round if ready.
+     * Resolve cup ties after matches have been played.
      */
     public function afterMatches(Game $game, Collection $matches, Collection $allPlayers): void
     {
@@ -57,9 +54,6 @@ class KnockoutCupHandler implements CompetitionHandler
 
         // Reset yellow cards if a completed round matches the reset threshold
         $this->maybeResetYellowCards($game, $matches);
-
-        // After resolving ties, check if next round can be drawn
-        $this->conductNextRoundDrawIfReady($game, $matches);
     }
 
     /**
@@ -78,26 +72,6 @@ class KnockoutCupHandler implements CompetitionHandler
     }
 
     /**
-     * Conduct the next round draw if the previous round is complete.
-     */
-    private function conductNextRoundDrawIfReady(Game $game, Collection $matches): void
-    {
-        $competitionId = $matches->first()?->competition_id;
-
-        if (!$competitionId) {
-            return;
-        }
-
-        $nextRound = $this->cupDrawService->getNextRoundNeedingDraw($game->id, $competitionId);
-
-        if ($nextRound === null) {
-            return;
-        }
-
-        $this->cupDrawService->conductDraw($game->id, $competitionId, $nextRound);
-    }
-
-    /**
      * Resolve cup ties after matches have been played.
      */
     private function resolveCupTies(Game $game, Collection $cupMatches, Collection $allPlayers): void
@@ -106,6 +80,7 @@ class KnockoutCupHandler implements CompetitionHandler
         $ties = CupTie::with([
                 'firstLegMatch.homeTeam', 'firstLegMatch.awayTeam',
                 'secondLegMatch.homeTeam', 'secondLegMatch.awayTeam',
+                'competition',
             ])
             ->whereIn('id', $tieIds)
             ->where('completed', false)
@@ -122,7 +97,8 @@ class KnockoutCupHandler implements CompetitionHandler
             $winnerId = $this->cupTieResolver->resolve($tie, $allPlayers, $roundConfig);
 
             if ($winnerId) {
-                $this->awardCupPrizeMoney($game, $tie->competition_id, $tie->round_number, $winnerId);
+                $match = $tie->secondLegMatch ?? $tie->firstLegMatch;
+                CupTieResolved::dispatch($tie, $winnerId, $match, $game, $tie->competition);
             }
         }
     }
@@ -168,35 +144,4 @@ class KnockoutCupHandler implements CompetitionHandler
         }
     }
 
-    /**
-     * Award prize money for advancing in a cup competition.
-     */
-    private function awardCupPrizeMoney(Game $game, string $competitionId, int $roundNumber, string $winnerId): void
-    {
-        if ($winnerId !== $game->team_id) {
-            return;
-        }
-
-        $prizeAmounts = [
-            1 => 10_000_000,      // €100K - Round of 64/32
-            2 => 20_000_000,      // €200K - Round of 32/16
-            3 => 30_000_000,      // €300K - Round of 16
-            4 => 50_000_000,      // €500K - Quarter-finals
-            5 => 100_000_000,     // €1M - Semi-finals
-            6 => 200_000_000,     // €2M - Final
-        ];
-
-        $amount = $prizeAmounts[$roundNumber] ?? $prizeAmounts[1];
-
-        $competition = Competition::find($competitionId);
-        $competitionName = $competition->name ?? 'Cup';
-
-        FinancialTransaction::recordIncome(
-            gameId: $game->id,
-            category: FinancialTransaction::CATEGORY_CUP_BONUS,
-            amount: $amount,
-            description: __('finances.tx_cup_advancement', ['competition' => $competitionName, 'round' => $roundNumber]),
-            transactionDate: $game->current_date->toDateString(),
-        );
-    }
 }

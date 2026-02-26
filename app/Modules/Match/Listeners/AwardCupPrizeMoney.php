@@ -18,6 +18,10 @@ class AwardCupPrizeMoney
 
     public function handle(CupTieResolved $event): void
     {
+        if ($event->competition?->handler_type !== 'knockout_cup') {
+            return;
+        }
+
         if ($event->winnerId !== $event->game->team_id) {
             return;
         }
