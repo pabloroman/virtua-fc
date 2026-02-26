@@ -83,7 +83,7 @@ Route::middleware('auth')->group(function () {
     // Dashboard & Game Creation
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
     Route::get('/new-game', SelectTeam::class)->name('select-team');
-    Route::post('/new-game', InitGame::class)->name('init-game')->middleware('throttle:5,1');
+    Route::post('/new-game', InitGame::class)->name('init-game');
 
     // All game routes require ownership verification
     Route::middleware('game.owner')->group(function () {
@@ -110,11 +110,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/game/{gameId}/lineup', ShowLineup::class)->name('game.lineup');
 
         // Game Actions
-        Route::post('/game/{gameId}/advance', AdvanceMatchday::class)->name('game.advance')->middleware('throttle:5,1');
+        Route::post('/game/{gameId}/advance', AdvanceMatchday::class)->name('game.advance');
         Route::post('/game/{gameId}/lineup', SaveLineup::class)->name('game.lineup.save');
         Route::get('/game/{gameId}/lineup/auto', GetAutoLineup::class)->name('game.lineup.auto');
         Route::post('/game/{gameId}/match/{matchId}/substitute', ProcessSubstitution::class)->name('game.match.substitute');
-        Route::post('/game/{gameId}/match/{matchId}/tactics', ProcessTacticalChange::class)->name('game.match.tactics')->middleware('throttle:10,1');
+        Route::post('/game/{gameId}/match/{matchId}/tactics', ProcessTacticalChange::class)->name('game.match.tactics');
         Route::post('/game/{gameId}/match/{matchId}/extra-time', ProcessExtraTime::class)->name('game.match.extra-time');
         Route::post('/game/{gameId}/match/{matchId}/penalties', ProcessPenalties::class)->name('game.match.penalties');
         Route::post('/game/{gameId}/finalize-match', FinalizeMatch::class)->name('game.finalize-match');
@@ -131,9 +131,9 @@ Route::middleware('auth')->group(function () {
         // Scouting
         Route::get('/game/{gameId}/scouting', ShowScoutingHub::class)->name('game.scouting');
         Route::get('/game/{gameId}/scouting/{reportId}/results', ShowScoutReportResults::class)->name('game.scouting.results');
-        Route::post('/game/{gameId}/scouting/search', SubmitScoutSearch::class)->name('game.scouting.search')->middleware('throttle:5,1');
+        Route::post('/game/{gameId}/scouting/search', SubmitScoutSearch::class)->name('game.scouting.search');
         Route::post('/game/{gameId}/scouting/cancel', CancelScoutSearch::class)->name('game.scouting.cancel');
-        Route::post('/game/{gameId}/scouting/{playerId}/bid', SubmitTransferBid::class)->name('game.scouting.bid')->middleware('throttle:10,1');
+        Route::post('/game/{gameId}/scouting/{playerId}/bid', SubmitTransferBid::class)->name('game.scouting.bid');
         Route::post('/game/{gameId}/scouting/{playerId}/loan', RequestLoan::class)->name('game.scouting.loan');
         Route::post('/game/{gameId}/scouting/{playerId}/pre-contract', SubmitPreContractOffer::class)->name('game.scouting.pre-contract');
         Route::post('/game/{gameId}/scouting/counter/{offerId}/accept', AcceptCounterOffer::class)->name('game.scouting.counter.accept');
@@ -149,7 +149,7 @@ Route::middleware('auth')->group(function () {
 
         // Season End
         Route::get('/game/{gameId}/season-end', ShowSeasonEnd::class)->name('game.season-end');
-        Route::post('/game/{gameId}/start-new-season', StartNewSeason::class)->name('game.start-new-season')->middleware('throttle:3,1');
+        Route::post('/game/{gameId}/start-new-season', StartNewSeason::class)->name('game.start-new-season');
 
         // Tournament End
         Route::get('/game/{gameId}/tournament-end', ShowTournamentEnd::class)->name('game.tournament-end');
