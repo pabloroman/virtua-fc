@@ -8,6 +8,17 @@ use App\Models\Game;
 
 class ConferenceLeagueConfig implements CompetitionConfig
 {
+    /**
+     * UECL knockout round prize money (in cents).
+     */
+    private const KNOCKOUT_PRIZE_MONEY = [
+        1 => 30_000_000,       // €300K - Knockout Playoff
+        2 => 60_000_000,       // €600K - Round of 16
+        3 => 100_000_000,      // €1M - Quarter-finals
+        4 => 150_000_000,      // €1.5M - Semi-finals
+        5 => 300_000_000,      // €3M - Final (winner)
+    ];
+
     public function getTvRevenue(int $position): int
     {
         // Conference League prize money is roughly 25-30% of UCL
@@ -54,6 +65,11 @@ class ConferenceLeagueConfig implements CompetitionConfig
     public function getBestGoalkeeperAwardName(): string
     {
         return 'season.best_goalkeeper';
+    }
+
+    public function getKnockoutPrizeMoney(int $roundNumber): int
+    {
+        return self::KNOCKOUT_PRIZE_MONEY[$roundNumber] ?? 0;
     }
 
     public function getStandingsZones(): array

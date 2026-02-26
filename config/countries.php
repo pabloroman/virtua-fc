@@ -38,6 +38,7 @@ return [
         'domestic_cups' => [
             'ESPCUP' => [
                 'handler' => 'knockout_cup',
+                'config_class' => \App\Modules\Competition\Configs\KnockoutCupConfig::class,
             ],
             'ESPSUP' => [
                 'handler' => 'knockout_cup',

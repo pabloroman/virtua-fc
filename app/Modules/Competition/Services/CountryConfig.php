@@ -178,6 +178,13 @@ class CountryConfig
                 }
             }
 
+            // Check domestic cups
+            foreach ($config['domestic_cups'] ?? [] as $cupId => $cupConfig) {
+                if ($cupId === $competitionId && isset($cupConfig['config_class'])) {
+                    return $cupConfig['config_class'];
+                }
+            }
+
             // Check continental competitions
             foreach ($config['continental_competitions'] ?? [] as $continentalId => $continentalConfig) {
                 if ($continentalId === $competitionId && isset($continentalConfig['config_class'])) {
