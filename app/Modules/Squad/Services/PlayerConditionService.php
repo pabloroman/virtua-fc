@@ -18,17 +18,11 @@ class PlayerConditionService
     // Base recovery per day of rest
     private const FITNESS_RECOVERY_PER_DAY = 6;
 
-    // Fitness loss for players who don't play (lose match sharpness)
-    private const FITNESS_DECAY_NOT_PLAYING = [2, 4];
-
     // Maximum fitness
     private const MAX_FITNESS = 100;
 
     // Minimum fitness (players can't drop below this)
     private const MIN_FITNESS = 40;
-
-    // Minimum fitness for unused players (they plateau here)
-    private const MIN_FITNESS_UNUSED = 60;
 
     // Morale changes
     private const MORALE_WIN = [3, 6];
@@ -42,13 +36,10 @@ class PlayerConditionService
     private const MORALE_GOAL = [2, 4];
     private const MORALE_ASSIST = [1, 3];
     private const MORALE_OWN_GOAL = [-4, -2];
-    private const MORALE_RED_CARD = [-5, -3];
-    private const MORALE_YELLOW_CARD = [-1, 0];
-    private const MORALE_INJURY = [-3, -1];
 
     // Morale bounds
     private const MAX_MORALE = 100;
-    private const MIN_MORALE = 20;
+    private const MIN_MORALE = 40;
 
     /**
      * Batch-update fitness and morale for all players across all matches in a matchday.
@@ -162,19 +153,10 @@ class PlayerConditionService
 
             $change -= $loss;
         } else {
-            // Players who didn't play: lose "match sharpness"
-            // They're not getting game time, so fitness decays
-
-            // Only decay if above the unused minimum
-            if ($player->fitness > self::MIN_FITNESS_UNUSED) {
-                $decay = rand(self::FITNESS_DECAY_NOT_PLAYING[0], self::FITNESS_DECAY_NOT_PLAYING[1]);
-                $change -= $decay;
-
-                // Don't let them fall below the unused minimum from decay alone
-                $projectedFitness = $player->fitness + $change;
-                if ($projectedFitness < self::MIN_FITNESS_UNUSED) {
-                    $change = self::MIN_FITNESS_UNUSED - $player->fitness;
-                }
+            // Players who didn't play: they're resting, so fitness recovers
+            if ($daysSinceLastMatch > 0) {
+                $recoveryDays = min($daysSinceLastMatch, 5);
+                $change += self::FITNESS_RECOVERY_PER_DAY * $recoveryDays;
             }
         }
 
@@ -211,9 +193,6 @@ class PlayerConditionService
                     'goal' => rand(self::MORALE_GOAL[0], self::MORALE_GOAL[1]),
                     'assist' => rand(self::MORALE_ASSIST[0], self::MORALE_ASSIST[1]),
                     'own_goal' => rand(self::MORALE_OWN_GOAL[0], self::MORALE_OWN_GOAL[1]),
-                    'red_card' => rand(self::MORALE_RED_CARD[0], self::MORALE_RED_CARD[1]),
-                    'yellow_card' => rand(self::MORALE_YELLOW_CARD[0], self::MORALE_YELLOW_CARD[1]),
-                    'injury' => rand(self::MORALE_INJURY[0], self::MORALE_INJURY[1]),
                     default => 0,
                 };
             }
@@ -228,16 +207,6 @@ class PlayerConditionService
             $frustrationMultiplier = 0.3 + ($ability / 100.0) * 1.2;
             $baseFrustration = rand(self::MORALE_BENCH_FRUSTRATION[0], self::MORALE_BENCH_FRUSTRATION[1]);
             $change -= max(1, (int) round($baseFrustration * $frustrationMultiplier));
-        }
-
-        // Players with very low morale are harder to boost
-        if ($player->morale < 40 && $change > 0) {
-            $change = (int) ($change * 0.8);
-        }
-
-        // Players with very high morale don't drop as easily
-        if ($player->morale > 85 && $change < 0) {
-            $change = (int) ($change * 0.8);
         }
 
         return $change;
