@@ -63,8 +63,14 @@ class PlayerConditionService
     {
         $updates = [];
 
+        // Index by matchId for O(1) lookups instead of O(n) per match
+        $resultsByMatchId = [];
+        foreach ($matchResults as $result) {
+            $resultsByMatchId[$result['matchId']] = $result;
+        }
+
         foreach ($matches as $match) {
-            $result = collect($matchResults)->firstWhere('matchId', $match->id);
+            $result = $resultsByMatchId[$match->id] ?? null;
             $events = $result['events'] ?? [];
             $eventsByPlayer = $this->groupEventsByPlayer($events);
 

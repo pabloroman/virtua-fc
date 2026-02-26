@@ -648,7 +648,8 @@ class LineupService
         } else {
             // AI team: use squad-fitted formation with fitness rotation
             $aiFormation = $this->selectAIFormation($availablePlayers);
-            $lineup = $this->selectBestXI($availablePlayers, $aiFormation, applyFitnessRotation: true)->pluck('id')->toArray();
+            $aiSelectedXI = $this->selectBestXI($availablePlayers, $aiFormation, applyFitnessRotation: true);
+            $lineup = $aiSelectedXI->pluck('id')->toArray();
         }
 
         // Set lineup in memory (save deferred to end)
@@ -678,8 +679,8 @@ class LineupService
             $isHome = $match->home_team_id === $teamId;
             $opponentTeamId = $isHome ? $match->away_team_id : $match->home_team_id;
 
-            // Calculate team averages from pre-loaded data for mentality decision
-            $teamAvg = $this->calculateTeamAverage($this->selectBestXI($availablePlayers, $aiFormation));
+            // Reuse already-selected lineup for team average (avoids redundant selectBestXI)
+            $teamAvg = $this->calculateTeamAverage($aiSelectedXI ?? $this->selectBestXI($availablePlayers, $aiFormation));
             $opponentPlayers = $allPlayersGrouped?->get($opponentTeamId, collect()) ?? collect();
             $opponentAvg = $opponentPlayers->isNotEmpty()
                 ? $this->calculateTeamAverage($this->selectBestXI($opponentPlayers))

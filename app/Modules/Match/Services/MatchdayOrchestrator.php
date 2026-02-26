@@ -29,9 +29,14 @@ use App\Models\PlayerSuspension;
 use App\Models\TransferOffer;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MatchdayOrchestrator
 {
+    private array $batchTimings = [];
+    private int $totalAdvanceQueries = 0;
+    private float $totalAdvanceTime = 0;
+
     public function __construct(
         private readonly MatchdayService $matchdayService,
         private readonly LineupService $lineupService,
@@ -51,7 +56,14 @@ class MatchdayOrchestrator
 
     public function advance(Game $game): MatchdayAdvanceResult
     {
-        return DB::transaction(function () use ($game) {
+        $this->batchTimings = [];
+        $this->totalAdvanceQueries = 0;
+        $this->totalAdvanceTime = 0;
+        $advanceStart = microtime(true);
+
+        DB::enableQueryLog();
+
+        $result = DB::transaction(function () use ($game) {
             // Lock the game row to prevent concurrent matchday advancement
             $game = Game::where('id', $game->id)->lockForUpdate()->first();
 
@@ -109,6 +121,14 @@ class MatchdayOrchestrator
 
             return MatchdayAdvanceResult::seasonComplete();
         });
+
+        $this->totalAdvanceTime = (microtime(true) - $advanceStart) * 1000;
+        $this->logAdvanceSummary();
+
+        DB::disableQueryLog();
+        DB::flushQueryLog();
+
+        return $result;
     }
 
     /**
@@ -118,12 +138,18 @@ class MatchdayOrchestrator
      */
     private function processBatch(Game $game, array $batch): array
     {
+        $batchNumber = count($this->batchTimings) + 1;
+        $timings = [];
         $matches = $batch['matches'];
         $handlers = $batch['handlers'];
         $matchday = $batch['matchday'];
         $currentDate = $batch['currentDate'];
+        $matchCount = $matches->count();
 
-        // Load players only for teams in this match batch (avoids loading entire game)
+        // --- Load players ---
+        $t0 = microtime(true);
+        $q0 = count(DB::getQueryLog());
+
         $teamIds = $matches->pluck('home_team_id')
             ->merge($matches->pluck('away_team_id'))
             ->push($game->team_id)
@@ -133,46 +159,77 @@ class MatchdayOrchestrator
         $allPlayers = GamePlayer::with(['player', 'transferOffers', 'activeLoan', 'activeRenewalNegotiation'])
             ->where('game_id', $game->id)
             ->whereIn('team_id', $teamIds)
-            ->get()
-            ->groupBy('team_id');
+            ->get();
 
-        // Batch load suspensions for all competitions in the match batch
+        // Set game relation in-memory to prevent lazy-loading per player
+        // (avoids ~220 queries from the age accessor)
+        foreach ($allPlayers as $player) {
+            $player->setRelation('game', $game);
+        }
+
+        $allPlayers = $allPlayers->groupBy('team_id');
+
         $competitionIds = $matches->pluck('competition_id')->unique()->toArray();
         $suspendedPlayerIds = PlayerSuspension::whereIn('competition_id', $competitionIds)
             ->where('matches_remaining', '>', 0)
             ->pluck('game_player_id')
             ->toArray();
 
-        // Batch load club profiles for AI mentality selection (1 query per batch)
         $clubProfiles = ClubProfile::whereIn('team_id', $teamIds)->get()->keyBy('team_id');
+        $timings['loadPlayers'] = $this->capturePhase($t0, $q0);
 
-        // Prepare lineups for all matches (pass pre-loaded data)
+        // --- Ensure lineups ---
+        $t0 = microtime(true);
+        $q0 = count(DB::getQueryLog());
         $this->lineupService->ensureLineupsForMatches($matches, $game, $allPlayers, $suspendedPlayerIds, $clubProfiles);
+        $timings['ensureLineups'] = $this->capturePhase($t0, $q0);
 
-        // Simulate all matches (pass game for medical tier effects on injuries)
+        // --- Simulate matches ---
+        $t0 = microtime(true);
+        $q0 = count(DB::getQueryLog());
         $matchResults = $this->simulateMatches($matches, $game, $allPlayers);
+        $timings['simulateMatches'] = $this->capturePhase($t0, $q0);
 
         // Identify user's match — its score-dependent effects are deferred to finalization
         $playerMatch = $matches->first(fn ($m) => $m->involvesTeam($game->team_id));
         $deferMatchId = $playerMatch?->id;
 
-        // Process all match results (standings + GK stats skipped for user's match)
+        // --- Process results ---
+        $t0 = microtime(true);
+        $q0 = count(DB::getQueryLog());
         $this->matchResultProcessor->processAll($game->id, $matchday, $currentDate, $matchResults, $deferMatchId, $allPlayers);
+        $timings['processResults'] = $this->capturePhase($t0, $q0);
 
-        // Recalculate standings positions once per league competition (not per match)
+        // --- Recalculate positions ---
+        $t0 = microtime(true);
+        $q0 = count(DB::getQueryLog());
         $this->recalculateLeaguePositions($game->id, $matches);
+        $timings['recalcPositions'] = $this->capturePhase($t0, $q0);
 
-        // Mark user's match as pending finalization BEFORE post-match actions,
-        // so that competition progress checks can see the flag and defer
-        // notifications/knockout generation until standings are finalized.
+        // Mark user's match as pending finalization BEFORE post-match actions
         if ($playerMatch) {
             $game->update(['pending_finalization_match_id' => $playerMatch->id]);
         }
 
-        // Process post-match actions (clear cached relations so season-scoped
-        // relationships like currentInvestment lazy-load correctly after refresh)
+        // --- Post-match actions ---
+        $t0 = microtime(true);
+        $q0 = count(DB::getQueryLog());
         $game->refresh()->setRelations([]);
         $this->processPostMatchActions($game, $matches, $handlers, $allPlayers, $deferMatchId);
+        $timings['postMatchActions'] = $this->capturePhase($t0, $q0);
+
+        // Store batch timings
+        $batchTotal = array_sum(array_column($timings, 'ms'));
+        $batchQueries = array_sum(array_column($timings, 'queries'));
+        $this->totalAdvanceQueries += $batchQueries;
+
+        $this->batchTimings[] = [
+            'batch' => $batchNumber,
+            'matchCount' => $matchCount,
+            'phases' => $timings,
+            'totalMs' => $batchTotal,
+            'totalQueries' => $batchQueries,
+        ];
 
         return ['playerMatch' => $playerMatch];
     }
@@ -272,25 +329,40 @@ class MatchdayOrchestrator
 
     private function processPostMatchActions(Game $game, $matches, array $handlers, $allPlayers, ?string $deferMatchId = null): void
     {
+        $postTimings = [];
+
         // Career-mode only: transfers, scouting, loans, academy
         if ($game->isCareerMode()) {
             $this->processCareerModeActions($game, $matches, $allPlayers);
         }
 
         // Roll for training injuries (non-playing squad members)
+        $t0 = microtime(true);
+        $q0 = count(DB::getQueryLog());
         $this->processTrainingInjuries($game, $matches, $allPlayers);
+        $postTimings['trainingInjuries'] = $this->capturePhase($t0, $q0);
 
         // Check for recovered players
+        $t0 = microtime(true);
+        $q0 = count(DB::getQueryLog());
         $this->checkRecoveredPlayers($game, $allPlayers);
+        $postTimings['recoveredPlayers'] = $this->capturePhase($t0, $q0);
 
         // Check for low fitness players
+        $t0 = microtime(true);
+        $q0 = count(DB::getQueryLog());
         $this->checkLowFitnessPlayers($game, $allPlayers);
+        $postTimings['lowFitnessCheck'] = $this->capturePhase($t0, $q0);
 
         // Clean up old read notifications
+        $t0 = microtime(true);
+        $q0 = count(DB::getQueryLog());
         $this->notificationService->cleanupOldNotifications($game);
+        $postTimings['notificationCleanup'] = $this->capturePhase($t0, $q0);
 
         // Competition-specific post-match actions for each handler
-        // Skip user's match for knockout handlers (cup tie resolved at finalization)
+        $t0 = microtime(true);
+        $q0 = count(DB::getQueryLog());
         foreach ($handlers as $competitionId => $handler) {
             $competitionMatches = $matches->filter(fn ($m) => $m->competition_id === $competitionId);
             if ($deferMatchId) {
@@ -300,77 +372,110 @@ class MatchdayOrchestrator
                 $handler->afterMatches($game, $competitionMatches, $allPlayers);
             }
         }
+        $postTimings['handlerAfterMatches'] = $this->capturePhase($t0, $q0);
 
         // Check competition progress (advancement/elimination) after handlers have resolved ties
-        // Skip knockout tie check for user's deferred match (handled in FinalizeMatch)
+        $t0 = microtime(true);
+        $q0 = count(DB::getQueryLog());
         $matchesForProgress = $deferMatchId
             ? $matches->reject(fn ($m) => $m->id === $deferMatchId)
             : $matches;
         $this->checkCompetitionProgress($game, $matchesForProgress, $handlers);
+        $postTimings['competitionProgress'] = $this->capturePhase($t0, $q0);
+
+        // Log post-match action sub-timings
+        $lines = ['  [PostMatchActions breakdown]:'];
+        foreach ($postTimings as $phase => $data) {
+            $lines[] = sprintf('    %-25s %6.1fms (%d queries)', $phase . ':', $data['ms'], $data['queries']);
+        }
+        Log::channel('single')->info(implode("\n", $lines));
     }
 
     private function processCareerModeActions(Game $game, $matches, $allPlayers): void
     {
+        $careerTimings = [];
+
         // Process transfers when window is open
         if ($game->isTransferWindowOpen()) {
+            $t0 = microtime(true);
+            $q0 = count(DB::getQueryLog());
             $completedOutgoing = $this->transferService->completeAgreedTransfers($game);
             $completedIncoming = $this->transferService->completeIncomingTransfers($game);
-
             foreach ($completedOutgoing->merge($completedIncoming) as $offer) {
                 $this->notificationService->notifyTransferComplete($game, $offer);
             }
+            $careerTimings['transferCompletion'] = $this->capturePhase($t0, $q0);
         }
 
         // Generate transfer offers (can happen anytime, but more during windows)
         if ($game->isTransferWindowOpen()) {
+            $t0 = microtime(true);
+            $q0 = count(DB::getQueryLog());
             $listedOffers = $this->transferService->generateOffersForListedPlayers($game, $allPlayers);
             $unsolicitedOffers = $this->transferService->generateUnsolicitedOffers($game, $allPlayers);
-
-            // Create notifications for new offers
             foreach ($listedOffers->merge($unsolicitedOffers) as $offer) {
                 $this->notificationService->notifyTransferOffer($game, $offer);
             }
+            $careerTimings['offerGeneration'] = $this->capturePhase($t0, $q0);
         }
 
         // Resolve pending renewal negotiations
+        $t0 = microtime(true);
+        $q0 = count(DB::getQueryLog());
         $renewalResults = $this->contractService->resolveRenewalNegotiations($game);
         foreach ($renewalResults as $result) {
             $this->notificationService->notifyRenewalResult($game, $result['negotiation'], $result['result']);
         }
+        $careerTimings['renewalResolution'] = $this->capturePhase($t0, $q0);
 
         // Pre-contract offers (January onwards for expiring contracts)
+        $t0 = microtime(true);
+        $q0 = count(DB::getQueryLog());
         $preContractOffers = $this->transferService->generatePreContractOffers($game, $allPlayers);
-
-        // Create notifications for pre-contract offers
         foreach ($preContractOffers as $offer) {
             $this->notificationService->notifyTransferOffer($game, $offer);
         }
+        $careerTimings['preContractOffers'] = $this->capturePhase($t0, $q0);
 
         // Resolve pending incoming pre-contract offers (after response delay)
+        $t0 = microtime(true);
+        $q0 = count(DB::getQueryLog());
         $resolvedPreContracts = $this->transferService->resolveIncomingPreContractOffers($game, $this->scoutingService);
         foreach ($resolvedPreContracts as $result) {
             $this->notificationService->notifyPreContractResult($game, $result['offer']);
         }
+        $careerTimings['preContractResolution'] = $this->capturePhase($t0, $q0);
 
         // Resolve pending incoming bids (deferred from user submission)
+        $t0 = microtime(true);
+        $q0 = count(DB::getQueryLog());
         $resolvedBids = $this->transferService->resolveIncomingBids($game, $this->scoutingService);
         foreach ($resolvedBids as $result) {
             $this->notificationService->notifyBidResult($game, $result['offer'], $result['result']);
         }
+        $careerTimings['bidResolution'] = $this->capturePhase($t0, $q0);
 
         // Resolve pending incoming loan requests (deferred from user submission)
+        $t0 = microtime(true);
+        $q0 = count(DB::getQueryLog());
         $resolvedLoans = $this->transferService->resolveIncomingLoanRequests($game, $this->scoutingService);
         foreach ($resolvedLoans as $result) {
             $this->notificationService->notifyLoanRequestResult($game, $result['offer'], $result['result']);
         }
+        $careerTimings['loanResolution'] = $this->capturePhase($t0, $q0);
 
         // Tick scout search progress
+        $t0 = microtime(true);
+        $q0 = count(DB::getQueryLog());
         $scoutReport = $this->scoutingService->tickSearch($game);
         if ($scoutReport?->isCompleted()) {
             $this->notificationService->notifyScoutComplete($game, $scoutReport);
         }
+        $careerTimings['scoutingTick'] = $this->capturePhase($t0, $q0);
 
         // Process loan searches
+        $t0 = microtime(true);
+        $q0 = count(DB::getQueryLog());
         $loanResults = $this->loanService->processLoanSearches($game);
         foreach ($loanResults['found'] as $result) {
             $this->notificationService->notifyLoanDestinationFound(
@@ -383,12 +488,19 @@ class MatchdayOrchestrator
         foreach ($loanResults['expired'] as $result) {
             $this->notificationService->notifyLoanSearchFailed($game, $result['player']);
         }
+        $careerTimings['loanSearches'] = $this->capturePhase($t0, $q0);
 
         // Check for expiring transfer offers (2 days or less)
+        $t0 = microtime(true);
+        $q0 = count(DB::getQueryLog());
         $this->checkExpiringOffers($game);
+        $careerTimings['expiringOffers'] = $this->capturePhase($t0, $q0);
 
         // Develop academy players each matchday
+        $t0 = microtime(true);
+        $q0 = count(DB::getQueryLog());
         $this->youthAcademyService->developPlayers($game);
+        $careerTimings['academyDevelopment'] = $this->capturePhase($t0, $q0);
 
         // Add pending action if any players still need evaluation (from season-end)
         $needsEval = AcademyPlayer::where('game_id', $game->id)
@@ -402,6 +514,9 @@ class MatchdayOrchestrator
                 $this->notificationService->notifyAcademyEvaluation($game);
             }
         }
+
+        // Log career mode sub-timings
+        $this->logCareerModeTimings($careerTimings);
     }
 
     /**
@@ -409,12 +524,15 @@ class MatchdayOrchestrator
      */
     private function checkExpiringOffers(Game $game): void
     {
+        // Push date filter to DB: expires_at between tomorrow and 2 days from now
+        $currentDate = $game->current_date;
         $expiringOffers = TransferOffer::with(['gamePlayer.player', 'offeringTeam'])
             ->where('game_id', $game->id)
             ->where('status', TransferOffer::STATUS_PENDING)
             ->whereHas('gamePlayer', fn ($q) => $q->where('team_id', $game->team_id))
-            ->get()
-            ->filter(fn ($offer) => $offer->days_until_expiry <= 2 && $offer->days_until_expiry > 0);
+            ->where('expires_at', '>', $currentDate)
+            ->where('expires_at', '<=', $currentDate->copy()->addDays(2))
+            ->get();
 
         foreach ($expiringOffers as $offer) {
             // Check if we already have a recent expiring notification for this offer
@@ -422,7 +540,8 @@ class MatchdayOrchestrator
                 $game->id,
                 GameNotification::TYPE_TRANSFER_OFFER_EXPIRING,
                 ['offer_id' => $offer->id],
-                1
+                1,
+                $game->current_date,
             )) {
                 $this->notificationService->notifyExpiringOffer($game, $offer);
             }
@@ -447,7 +566,8 @@ class MatchdayOrchestrator
                     $game->id,
                     GameNotification::TYPE_PLAYER_RECOVERED,
                     ['player_id' => $player->id],
-                    7
+                    7,
+                    $game->current_date,
                 )) {
                     $this->notificationService->notifyRecovery($game, $player);
                 }
@@ -475,7 +595,8 @@ class MatchdayOrchestrator
                     $game->id,
                     GameNotification::TYPE_LOW_FITNESS,
                     ['player_id' => $player->id],
-                    7
+                    7,
+                    $game->current_date,
                 )) {
                     $this->notificationService->notifyLowFitness($game, $player);
                 }
@@ -798,5 +919,61 @@ class MatchdayOrchestrator
         if ($match) {
             $this->finalizationService->finalize($match, $game);
         }
+    }
+
+    // ==========================================
+    // Profiling Helpers
+    // ==========================================
+
+    /**
+     * Capture wall-clock time (ms) and query count for a phase.
+     *
+     * @return array{ms: float, queries: int}
+     */
+    private function capturePhase(float $startTime, int $startQueryCount): array
+    {
+        return [
+            'ms' => round((microtime(true) - $startTime) * 1000, 1),
+            'queries' => count(DB::getQueryLog()) - $startQueryCount,
+        ];
+    }
+
+    /**
+     * Log career mode sub-timings for the current batch.
+     */
+    private function logCareerModeTimings(array $timings): void
+    {
+        $lines = ['  [CareerMode breakdown]:'];
+        foreach ($timings as $phase => $data) {
+            $lines[] = sprintf('    %-25s %6.1fms (%d queries)', $phase . ':', $data['ms'], $data['queries']);
+        }
+        Log::channel('single')->info(implode("\n", $lines));
+    }
+
+    /**
+     * Log a structured summary of all batch timings for this advance() call.
+     */
+    private function logAdvanceSummary(): void
+    {
+        $lines = [];
+
+        foreach ($this->batchTimings as $batch) {
+            $lines[] = sprintf('[AdvanceMatchday] Batch %d (%d matches):', $batch['batch'], $batch['matchCount']);
+            foreach ($batch['phases'] as $phase => $data) {
+                $lines[] = sprintf('  %-25s %6.1fms (%d queries)', $phase . ':', $data['ms'], $data['queries']);
+            }
+            $lines[] = sprintf('  %-25s %6.1fms (%d queries)', 'BATCH TOTAL:', $batch['totalMs'], $batch['totalQueries']);
+        }
+
+        $batchCount = count($this->batchTimings);
+        $lines[] = sprintf(
+            '[AdvanceMatchday] Total: %.0fms (%d queries, %d %s)',
+            $this->totalAdvanceTime,
+            $this->totalAdvanceQueries,
+            $batchCount,
+            $batchCount === 1 ? 'batch' : 'batches'
+        );
+
+        Log::channel('single')->info(implode("\n", $lines));
     }
 }

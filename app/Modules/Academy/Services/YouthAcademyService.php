@@ -90,34 +90,72 @@ class YouthAcademyService
             ->where('is_on_loan', false)
             ->get();
 
+        if ($players->isEmpty()) {
+            return;
+        }
+
+        // Compute growth in memory, batch update changed players in a single query
+        $updates = []; // [id => [technical_ability => N, physical_ability => N]]
         foreach ($players as $player) {
-            $this->developPlayer($player, self::GROWTH_RATE_ACADEMY);
+            $computed = $this->computeGrowth($player, self::GROWTH_RATE_ACADEMY);
+            if ($computed) {
+                $updates[$player->id] = $computed;
+            }
+        }
+
+        if (! empty($updates)) {
+            $this->bulkUpdateAbilities($updates);
         }
     }
 
     /**
-     * Apply one matchday of development to a single player.
+     * Compute one matchday of growth for a player (pure calculation, no DB).
+     *
+     * @return array{technical_ability: int, physical_ability: int}|null Null if no change
      */
-    private function developPlayer(AcademyPlayer $player, float $seasonRate): void
+    private function computeGrowth(AcademyPlayer $player, float $seasonRate): ?array
     {
         $growthPerMatchday = fn (int $current, int $potential) => max(0, ($potential - $current) * $seasonRate / self::ESTIMATED_MATCHDAYS);
 
         $techGrowth = $growthPerMatchday($player->technical_ability, $player->potential);
         $physGrowth = $growthPerMatchday($player->physical_ability, $player->potential);
 
-        // Accumulate fractional growth — only update when it rounds up
         $newTech = min($player->potential, $player->technical_ability + $techGrowth);
         $newPhys = min($player->potential, $player->physical_ability + $physGrowth);
 
         $techInt = (int) round($newTech);
         $physInt = (int) round($newPhys);
 
-        if ($techInt !== $player->technical_ability || $physInt !== $player->physical_ability) {
-            $player->update([
-                'technical_ability' => $techInt,
-                'physical_ability' => $physInt,
-            ]);
+        if ($techInt === $player->technical_ability && $physInt === $player->physical_ability) {
+            return null;
         }
+
+        return ['technical_ability' => $techInt, 'physical_ability' => $physInt];
+    }
+
+    /**
+     * Bulk update abilities using CASE WHEN (1 query instead of N).
+     *
+     * @param  array<string, array{technical_ability: int, physical_ability: int}>  $updates
+     */
+    private function bulkUpdateAbilities(array $updates): void
+    {
+        $ids = array_keys($updates);
+        $idList = "'" . implode("','", $ids) . "'";
+
+        $techCases = [];
+        $physCases = [];
+        foreach ($updates as $id => $values) {
+            $techCases[] = "WHEN id = '{$id}' THEN {$values['technical_ability']}";
+            $physCases[] = "WHEN id = '{$id}' THEN {$values['physical_ability']}";
+        }
+
+        \Illuminate\Support\Facades\DB::statement("
+            UPDATE academy_players
+            SET technical_ability = CASE " . implode(' ', $techCases) . " ELSE technical_ability END,
+                physical_ability = CASE " . implode(' ', $physCases) . " ELSE physical_ability END
+            WHERE id IN ({$idList})
+        ");
     }
 
     /**
