@@ -11,13 +11,12 @@ class InjuryService
 {
     /**
      * Base injury chance per player per match (percentage).
-     * Halved from 4.0 — the other half of injuries now come from training.
      */
-    private const BASE_INJURY_CHANCE = 2.0;
+    private const BASE_INJURY_CHANCE = 1.2;
 
     /**
-     * Base training injury chance per non-playing player per matchday (percentage).
-     * Calibrated so training injuries ≈ 50% of total injuries per season.
+     * Base training injury chance per player per matchday (percentage).
+     * Applies to all squad members (playing and non-playing).
      */
     private const TRAINING_INJURY_CHANCE = 1.5;
 
@@ -463,10 +462,10 @@ class InjuryService
     // ==========================================
 
     /**
-     * Roll for training injuries among non-playing squad members.
+     * Roll for training injuries among squad members.
      * At most one player per team gets injured per matchday.
      *
-     * @param  Collection<GamePlayer>  $eligiblePlayers  Non-playing, non-injured squad members
+     * @param  Collection<GamePlayer>  $eligiblePlayers  Non-injured squad members
      * @param  Game|null  $game  Optional game for medical tier effects
      * @return array{player: GamePlayer, type: string, weeks: int}|null
      */
