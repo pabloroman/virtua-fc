@@ -74,14 +74,20 @@
              })"
              x-on:keydown.escape.window="if (!tacticalPanelOpen) skipToEnd()"
         >
-            {{-- Competition & Round Info --}}
-            <div class="text-center mb-4">
-                <span class="text-sm text-slate-400">
-                    {{ __($match->competition->name) }} &middot; {{ $match->round_name ? __($match->round_name) : __('game.matchday_n', ['number' => $match->round_number]) }}
-                </span>
-            </div>
+            @php
+                $comp = $match->competition;
+                $accent = match(true) {
+                    ($comp->scope ?? '') === 'continental' => 'bg-blue-600 text-blue-100',
+                    ($comp->type ?? '') === 'cup' => 'bg-emerald-600 text-emerald-100',
+                    default => 'bg-amber-600 text-amber-100',
+                };
+            @endphp
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                {{-- Competition & Round Info --}}
+                <div class="px-4 py-2.5 text-center text-sm font-semibold sm:rounded-t-lg {{ $accent }}">
+                    {{ __($match->competition->name) }} &middot; {{ $match->round_name ? __($match->round_name) : __('game.matchday_n', ['number' => $match->round_number]) }}
+                </div>
                 <div class="p-6 sm:p-8">
 
                     {{-- Scoreboard --}}
