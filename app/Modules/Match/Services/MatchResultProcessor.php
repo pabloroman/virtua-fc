@@ -54,8 +54,9 @@ class MatchResultProcessor
         $competitionIds = collect($matchResults)->pluck('competitionId')->unique();
         $competitions = Competition::whereIn('id', $competitionIds)->get()->keyBy('id');
 
-        // 3. Serve suspensions for all matches (batch)
-        $this->batchServeSuspensions($gameId, $matches, $matchResults);
+        // 3. Serve suspensions for all matches (batch, using pre-loaded player IDs)
+        $preLoadedPlayerIds = $allPlayers ? $allPlayers->flatten()->pluck('id')->toArray() : [];
+        $this->batchServeSuspensions($matches, $matchResults, $preLoadedPlayerIds);
 
         // 4. Bulk insert all match events across all matches
         $this->bulkInsertMatchEvents($gameId, $matchResults);
@@ -134,48 +135,33 @@ class MatchResultProcessor
      * Serve suspensions for all matches in the batch.
      * Decrements matches_remaining for suspended players on teams that played.
      */
-    private function batchServeSuspensions(string $gameId, $matches, array $matchResults): void
+    /**
+     * @param  array  $preLoadedPlayerIds  Player IDs from the batch (avoids whereHas subquery)
+     */
+    private function batchServeSuspensions($matches, array $matchResults, array $preLoadedPlayerIds): void
     {
-        // Group matches by competition for efficient suspension queries
-        $matchesByCompetition = [];
+        // Group matches by competition
+        $competitionIds = [];
         foreach ($matchResults as $result) {
-            $match = $matches->get($result['matchId']);
-            if (! $match) {
-                continue;
-            }
-            $competitionId = $result['competitionId'];
-            if (! isset($matchesByCompetition[$competitionId])) {
-                $matchesByCompetition[$competitionId] = [];
-            }
-            $matchesByCompetition[$competitionId][] = $match;
+            $competitionIds[$result['competitionId']] = true;
         }
 
-        foreach ($matchesByCompetition as $competitionId => $competitionMatches) {
-            // Collect all team IDs that played in this competition
-            $teamIds = [];
-            foreach ($competitionMatches as $match) {
-                $teamIds[] = $match->home_team_id;
-                $teamIds[] = $match->away_team_id;
-            }
-            $teamIds = array_unique($teamIds);
+        if (empty($competitionIds) || empty($preLoadedPlayerIds)) {
+            return;
+        }
 
-            // Find all suspensions for these teams in this competition
-            $suspensions = PlayerSuspension::where('competition_id', $competitionId)
-                ->where('matches_remaining', '>', 0)
-                ->whereHas('gamePlayer', function ($query) use ($gameId, $teamIds) {
-                    $query->where('game_id', $gameId)
-                        ->whereIn('team_id', $teamIds);
-                })
-                ->get();
+        // Use direct whereIn on pre-loaded player IDs instead of whereHas subquery
+        $suspensionIds = PlayerSuspension::whereIn('competition_id', array_keys($competitionIds))
+            ->where('matches_remaining', '>', 0)
+            ->whereIn('game_player_id', $preLoadedPlayerIds)
+            ->pluck('id')
+            ->all();
 
-            $suspensionIds = $suspensions->pluck('id')->all();
-            if (!empty($suspensionIds)) {
-                PlayerSuspension::whereIn('id', $suspensionIds)->decrement('matches_remaining');
-                // Ensure matches_remaining doesn't go negative
-                PlayerSuspension::whereIn('id', $suspensionIds)
-                    ->where('matches_remaining', '<', 0)
-                    ->update(['matches_remaining' => 0]);
-            }
+        if (! empty($suspensionIds)) {
+            PlayerSuspension::whereIn('id', $suspensionIds)->decrement('matches_remaining');
+            PlayerSuspension::whereIn('id', $suspensionIds)
+                ->where('matches_remaining', '<', 0)
+                ->update(['matches_remaining' => 0]);
         }
     }
 

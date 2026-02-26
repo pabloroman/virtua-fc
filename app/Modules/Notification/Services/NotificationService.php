@@ -9,6 +9,7 @@ use App\Models\RenewalNegotiation;
 use App\Models\ScoutReport;
 use App\Models\Team;
 use App\Models\TransferOffer;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
@@ -724,11 +725,15 @@ class NotificationService
 
     /**
      * Check if a similar notification already exists (to avoid duplicates).
+     *
+     * @param  Carbon|null  $currentDate  Game's current date (avoids Game::find query when available)
      */
-    public function hasRecentNotification(string $gameId, string $type, array $metadata, int $days = 1): bool
+    public function hasRecentNotification(string $gameId, string $type, array $metadata, int $days = 1, ?Carbon $currentDate = null): bool
     {
-        $game = Game::find($gameId);
-        $cutoff = $game->current_date->subDays($days);
+        if (! $currentDate) {
+            $currentDate = Carbon::parse(Game::where('id', $gameId)->value('current_date'));
+        }
+        $cutoff = $currentDate->copy()->subDays($days);
 
         $query = GameNotification::where('game_id', $gameId)
             ->where('type', $type)

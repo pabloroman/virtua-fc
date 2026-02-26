@@ -9,66 +9,6 @@ use Illuminate\Support\Collection;
 class FormationRecommender
 {
     /**
-     * Analyze a squad and recommend formations with scores.
-     *
-     * @param Collection $players Collection of players with 'position' and 'overall_score' attributes
-     * @return array<array{formation: Formation, score: int, coverage: array, strengths: array, weaknesses: array}>
-     */
-    public function recommend(Collection $players): array
-    {
-        $recommendations = [];
-
-        foreach (Formation::cases() as $formation) {
-            $analysis = $this->analyzeFormation($formation, $players);
-            $recommendations[] = [
-                'formation' => $formation,
-                'score' => $analysis['score'],
-                'coverage' => $analysis['coverage'],
-                'strengths' => $analysis['strengths'],
-                'weaknesses' => $analysis['weaknesses'],
-                'bestXI' => $analysis['bestXI'],
-                'averageRating' => $analysis['averageRating'],
-            ];
-        }
-
-        // Sort by score descending
-        usort($recommendations, fn ($a, $b) => $b['score'] <=> $a['score']);
-
-        return $recommendations;
-    }
-
-    /**
-     * Analyze how well a formation fits a squad.
-     */
-    public function analyzeFormation(Formation $formation, Collection $players): array
-    {
-        $slots = $formation->pitchSlots();
-        $bestXI = $this->findBestXI($slots, $players);
-
-        // Calculate coverage (how many slots have natural/good players)
-        $coverage = $this->calculateCoverage($bestXI);
-
-        // Calculate formation score
-        $score = $this->calculateFormationScore($bestXI, $coverage);
-
-        // Find strengths and weaknesses
-        $strengths = $this->findStrengths($bestXI, $players);
-        $weaknesses = $this->findWeaknesses($bestXI);
-
-        // Calculate average rating of best XI
-        $averageRating = $this->calculateAverageRating($bestXI);
-
-        return [
-            'score' => $score,
-            'coverage' => $coverage,
-            'strengths' => $strengths,
-            'weaknesses' => $weaknesses,
-            'bestXI' => $bestXI,
-            'averageRating' => $averageRating,
-        ];
-    }
-
-    /**
      * Find the best XI for a formation.
      *
      * @return array<array{slot: array, player: array|null, compatibility: int, effectiveRating: int}>
@@ -202,100 +142,35 @@ class FormationRecommender
     }
 
     /**
-     * Find formation strengths based on player positions.
-     */
-    private function findStrengths(array $bestXI, Collection $players): array
-    {
-        $strengths = [];
-
-        // Check for strong areas
-        $naturalByArea = [
-            'attack' => 0,
-            'midfield' => 0,
-            'defense' => 0,
-        ];
-
-        foreach ($bestXI as $assignment) {
-            if (!$assignment['player'] || $assignment['compatibility'] < 80) {
-                continue;
-            }
-
-            $slotGroup = PositionSlotMapper::getSlotPositionGroup($assignment['slot']['label']);
-            if ($slotGroup === 'Forward') $naturalByArea['attack']++;
-            elseif ($slotGroup === 'Midfielder') $naturalByArea['midfield']++;
-            elseif ($slotGroup === 'Defender') $naturalByArea['defense']++;
-        }
-
-        if ($naturalByArea['attack'] >= 2) {
-            $strengths[] = 'Strong attacking options';
-        }
-        if ($naturalByArea['midfield'] >= 3) {
-            $strengths[] = 'Excellent midfield depth';
-        }
-        if ($naturalByArea['defense'] >= 4) {
-            $strengths[] = 'Solid defensive foundation';
-        }
-
-        // Check for specific tactical strengths
-        $hasAM = collect($bestXI)->contains(fn ($a) =>
-            $a['slot']['label'] === 'AM' && $a['compatibility'] >= 80
-        );
-        if ($hasAM) {
-            $strengths[] = 'Creative playmaker available';
-        }
-
-        $hasWingers = collect($bestXI)->filter(fn ($a) =>
-            in_array($a['slot']['label'], ['LW', 'RW', 'LM', 'RM']) && $a['compatibility'] >= 80
-        )->count() >= 2;
-        if ($hasWingers) {
-            $strengths[] = 'Width in attack';
-        }
-
-        return $strengths;
-    }
-
-    /**
-     * Find formation weaknesses.
-     */
-    private function findWeaknesses(array $bestXI): array
-    {
-        $weaknesses = [];
-
-        foreach ($bestXI as $assignment) {
-            if (!$assignment['player']) {
-                $weaknesses[] = "No suitable player for {$assignment['slot']['label']}";
-            } elseif ($assignment['compatibility'] < 40) {
-                $slotName = PositionSlotMapper::getSlotDisplayName($assignment['slot']['label']);
-                $weaknesses[] = "Weak coverage at {$slotName}";
-            }
-        }
-
-        return array_slice($weaknesses, 0, 3); // Limit to top 3 weaknesses
-    }
-
-    /**
-     * Calculate average rating of the best XI.
-     */
-    private function calculateAverageRating(array $bestXI): int
-    {
-        $ratings = array_filter(array_column(
-            array_column($bestXI, 'player'),
-            'overallScore'
-        ));
-
-        if (empty($ratings)) {
-            return 0;
-        }
-
-        return (int) round(array_sum($ratings) / count($ratings));
-    }
-
-    /**
      * Get the single best formation recommendation.
+     * Pre-computes player data as lightweight arrays to avoid accessor overhead
+     * during the O(formations × slots × players) evaluation.
      */
     public function getBestFormation(Collection $players): Formation
     {
-        $recommendations = $this->recommend($players);
-        return $recommendations[0]['formation'] ?? Formation::F_4_4_2;
+        // Pre-compute player data once (avoids ~40,000 accessor calls per batch)
+        $preComputed = $players->map(fn ($p) => [
+            'id' => $p->id,
+            'name' => $p->name,
+            'position' => $p->position,
+            'overall_score' => $p->overall_score,
+        ])->values()->all();
+
+        $bestFormation = Formation::F_4_4_2;
+        $bestScore = -1;
+
+        foreach (Formation::cases() as $formation) {
+            $slots = $formation->pitchSlots();
+            $bestXI = $this->findBestXI($slots, collect($preComputed));
+            $coverage = $this->calculateCoverage($bestXI);
+            $score = $this->calculateFormationScore($bestXI, $coverage);
+
+            if ($score > $bestScore) {
+                $bestScore = $score;
+                $bestFormation = $formation;
+            }
+        }
+
+        return $bestFormation;
     }
 }

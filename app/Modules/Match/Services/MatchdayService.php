@@ -11,6 +11,8 @@ use App\Modules\Competition\Services\CompetitionHandlerResolver;
 
 class MatchdayService
 {
+    private ?Collection $hybridCompetitions = null;
+
     public function __construct(
         private readonly CompetitionHandlerResolver $handlerResolver,
         private readonly KnockoutCupHandler $cupHandler,
@@ -118,7 +120,7 @@ class MatchdayService
      */
     private function generatePendingMatches(Game $game): void
     {
-        $competitions = Competition::whereIn('handler_type', ['league_with_playoff', 'swiss_format', 'group_stage_cup'])->get();
+        $competitions = $this->hybridCompetitions ??= Competition::whereIn('handler_type', ['league_with_playoff', 'swiss_format', 'group_stage_cup'])->get();
 
         $targetDate = $game->current_date?->toDateString() ?? now()->toDateString();
 
