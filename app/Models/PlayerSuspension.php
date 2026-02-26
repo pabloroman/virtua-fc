@@ -12,8 +12,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $competition_id
  * @property int $matches_remaining
  * @property int $yellow_cards
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Competition|null $competition
  * @property-read \App\Models\GamePlayer $gamePlayer
  * @method static \Illuminate\Database\Eloquent\Builder<static>|PlayerSuspension newModelQuery()
@@ -30,6 +28,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class PlayerSuspension extends Model
 {
     use HasUuids;
+
+    public $timestamps = false;
 
     protected $fillable = [
         'game_player_id',
@@ -154,5 +154,55 @@ class PlayerSuspension extends Model
         return self::where('game_player_id', $gamePlayerId)
             ->where('competition_id', $competitionId)
             ->value('yellow_cards') ?? 0;
+    }
+
+    /**
+     * Batch increment yellow cards for multiple (player, competition) pairs in a single query.
+     *
+     * @param  array<string, int>  $incrementsByRecordId  [suspension_record_id => increment_amount]
+     */
+    public static function batchRecordYellowCards(array $incrementsByRecordId): void
+    {
+        if (empty($incrementsByRecordId)) {
+            return;
+        }
+
+        $ids = array_keys($incrementsByRecordId);
+        $idList = "'" . implode("','", $ids) . "'";
+
+        $cases = [];
+        foreach ($incrementsByRecordId as $recordId => $amount) {
+            $cases[] = "WHEN id = '{$recordId}' THEN yellow_cards + {$amount}";
+        }
+
+        \Illuminate\Support\Facades\DB::statement(
+            'UPDATE player_suspensions SET yellow_cards = CASE ' . implode(' ', $cases) .
+            " ELSE yellow_cards END WHERE id IN ({$idList})"
+        );
+    }
+
+    /**
+     * Batch apply suspensions for multiple records in a single query.
+     *
+     * @param  array<string, int>  $suspensionsByRecordId  [suspension_record_id => matches_remaining]
+     */
+    public static function batchApplySuspensions(array $suspensionsByRecordId): void
+    {
+        if (empty($suspensionsByRecordId)) {
+            return;
+        }
+
+        $ids = array_keys($suspensionsByRecordId);
+        $idList = "'" . implode("','", $ids) . "'";
+
+        $cases = [];
+        foreach ($suspensionsByRecordId as $recordId => $matches) {
+            $cases[] = "WHEN id = '{$recordId}' THEN {$matches}";
+        }
+
+        \Illuminate\Support\Facades\DB::statement(
+            'UPDATE player_suspensions SET matches_remaining = CASE ' . implode(' ', $cases) .
+            " ELSE matches_remaining END WHERE id IN ({$idList})"
+        );
     }
 }

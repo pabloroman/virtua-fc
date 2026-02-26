@@ -304,67 +304,73 @@ class MatchResultProcessor
         // Bulk update all stat increments in a single query
         $this->bulkUpdatePlayerStats($statIncrements);
 
-        // Process special events (cards -> suspensions, injuries)
+        // Separate card events from injury events
+        $cardEvents = [];
+        $injuryEvents = [];
         foreach ($specialEvents as $eventData) {
-            $player = $players->get($eventData['game_player_id']);
+            if (in_array($eventData['event_type'], ['yellow_card', 'red_card'])) {
+                $cardEvents[] = $eventData;
+            } elseif ($eventData['event_type'] === 'injury') {
+                $injuryEvents[] = $eventData;
+            }
+        }
+
+        // Batch process all card events (~4-5 queries total instead of ~3 per card)
+        $cardResults = $this->eligibilityService->batchProcessCards($cardEvents, $competitions);
+
+        // Build a lookup of which match each card event came from (for notification filtering)
+        $cardEventMatchLookup = [];
+        foreach ($cardEvents as $eventData) {
+            $key = $eventData['game_player_id'] . '|' . $eventData['competitionId'];
+            $cardEventMatchLookup[$key] = $eventData['matchId'];
+        }
+
+        // Send suspension notifications from batch results
+        foreach ($cardResults['suspensions'] as $suspension) {
+            $player = $players->get($suspension['game_player_id']);
             if (! $player) {
                 continue;
             }
 
             $isUserTeamPlayer = $player->team_id === $game->team_id;
+            $matchKey = $suspension['game_player_id'] . '|' . $suspension['competition_id'];
+            $isDeferredMatch = ($cardEventMatchLookup[$matchKey] ?? null) === $deferMatchId;
+
+            if ($isUserTeamPlayer && ! $isDeferredMatch) {
+                $reason = $suspension['reason'] === 'red_card'
+                    ? __('notifications.reason_red_card')
+                    : __('notifications.reason_yellow_accumulation');
+                $this->notificationService->notifySuspension(
+                    $game,
+                    $player,
+                    $suspension['ban_length'],
+                    $reason
+                );
+            }
+        }
+
+        // Process injury events individually (already efficient — one save per injury)
+        foreach ($injuryEvents as $eventData) {
+            $player = $players->get($eventData['game_player_id']);
+            if (! $player) {
+                continue;
+            }
+
+            $injuryType = $eventData['metadata']['injury_type'] ?? 'Unknown injury';
+            $weeksOut = $eventData['metadata']['weeks_out'] ?? 2;
+            $this->eligibilityService->applyInjury(
+                $player,
+                $injuryType,
+                $weeksOut,
+                Carbon::parse($eventData['matchDate'])
+            );
+
+            $isUserTeamPlayer = $player->team_id === $game->team_id;
             $isDeferredMatch = $eventData['matchId'] === $deferMatchId;
 
-            switch ($eventData['event_type']) {
-                case 'yellow_card':
-                    $competition = $competitions->get($eventData['competitionId']);
-                    $handlerType = $competition->handler_type ?? 'league';
-                    $suspension = $this->eligibilityService->processYellowCard(
-                        $player->id, $eventData['competitionId'], $handlerType
-                    );
-                    if ($suspension) {
-                        // Notifications for the deferred match are created during finalization
-                        if ($isUserTeamPlayer && ! $isDeferredMatch) {
-                            $this->notificationService->notifySuspension(
-                                $game,
-                                $player,
-                                $suspension,
-                                __('notifications.reason_yellow_accumulation')
-                            );
-                        }
-                    }
-                    break;
-
-                case 'red_card':
-                    $isSecondYellow = $eventData['metadata']['second_yellow'] ?? false;
-                    $this->eligibilityService->processRedCard($player, $isSecondYellow, $eventData['competitionId']);
-
-                    // Notifications for the deferred match are created during finalization
-                    if ($isUserTeamPlayer && ! $isDeferredMatch) {
-                        $suspensionMatches = $isSecondYellow ? 1 : 1;
-                        $this->notificationService->notifySuspension(
-                            $game,
-                            $player,
-                            $suspensionMatches,
-                            __('notifications.reason_red_card')
-                        );
-                    }
-                    break;
-
-                case 'injury':
-                    $injuryType = $eventData['metadata']['injury_type'] ?? 'Unknown injury';
-                    $weeksOut = $eventData['metadata']['weeks_out'] ?? 2;
-                    $this->eligibilityService->applyInjury(
-                        $player,
-                        $injuryType,
-                        $weeksOut,
-                        Carbon::parse($eventData['matchDate'])
-                    );
-
-                    // Notifications for the deferred match are created during finalization
-                    if ($isUserTeamPlayer && ! $isDeferredMatch) {
-                        $this->notificationService->notifyInjury($game, $player, $injuryType, $weeksOut);
-                    }
-                    break;
+            // Notifications for the deferred match are created during finalization
+            if ($isUserTeamPlayer && ! $isDeferredMatch) {
+                $this->notificationService->notifyInjury($game, $player, $injuryType, $weeksOut);
             }
         }
     }
