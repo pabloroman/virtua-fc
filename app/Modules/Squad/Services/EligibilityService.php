@@ -65,6 +65,50 @@ class EligibilityService
     }
 
     /**
+     * Batch process yellow cards for multiple players across competitions.
+     * Replaces N individual processYellowCard calls with 3 bulk queries.
+     *
+     * @param  array<int, array{game_player_id: string, competition_id: string, handler_type: string}>  $yellowCardData
+     * @return array<string, int>  Suspensions keyed by "playerId:competitionId" => banLength
+     */
+    public function batchProcessYellowCards(array $yellowCardData): array
+    {
+        if (empty($yellowCardData)) {
+            return [];
+        }
+
+        // Group by (playerId, competitionId) and count cards
+        $cardCounts = [];
+        $handlerTypes = [];
+
+        foreach ($yellowCardData as $data) {
+            $playerId = $data['game_player_id'];
+            $competitionId = $data['competition_id'];
+            $cardCounts[$playerId][$competitionId] = ($cardCounts[$playerId][$competitionId] ?? 0) + 1;
+            $handlerTypes[$competitionId] = $data['handler_type'];
+        }
+
+        // Batch record yellow cards (3 queries instead of 3-4 per card)
+        $newTotals = PlayerSuspension::batchRecordYellowCards($cardCounts);
+
+        // Check thresholds and apply suspensions where needed
+        $suspensions = [];
+        foreach ($newTotals as $playerId => $competitions) {
+            foreach ($competitions as $competitionId => $yellowCount) {
+                $handlerType = $handlerTypes[$competitionId] ?? 'league';
+                $banLength = $this->checkYellowCardAccumulation($yellowCount, $handlerType);
+
+                if ($banLength) {
+                    PlayerSuspension::applySuspension($playerId, $competitionId, $banLength);
+                    $suspensions["{$playerId}:{$competitionId}"] = $banLength;
+                }
+            }
+        }
+
+        return $suspensions;
+    }
+
+    /**
      * Check if a yellow card count triggers a suspension.
      * Returns the number of matches to suspend, or null if no suspension.
      */

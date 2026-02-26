@@ -300,7 +300,21 @@ class MatchResultProcessor
         // Bulk update all stat increments in a single query
         $this->bulkUpdatePlayerStats($statIncrements);
 
-        // Process special events (cards -> suspensions, injuries)
+        // Batch process yellow cards (replaces N individual queries with 3 bulk queries)
+        $yellowCardData = [];
+        foreach ($specialEvents as $eventData) {
+            if ($eventData['event_type'] === 'yellow_card') {
+                $competition = $competitions->get($eventData['competitionId']);
+                $yellowCardData[] = [
+                    'game_player_id' => $eventData['game_player_id'],
+                    'competition_id' => $eventData['competitionId'],
+                    'handler_type' => $competition->handler_type ?? 'league',
+                ];
+            }
+        }
+        $yellowCardSuspensions = $this->eligibilityService->batchProcessYellowCards($yellowCardData);
+
+        // Process special events (cards -> suspensions/notifications, injuries)
         foreach ($specialEvents as $eventData) {
             $player = $players->get($eventData['game_player_id']);
             if (! $player) {
@@ -312,11 +326,8 @@ class MatchResultProcessor
 
             switch ($eventData['event_type']) {
                 case 'yellow_card':
-                    $competition = $competitions->get($eventData['competitionId']);
-                    $handlerType = $competition->handler_type ?? 'league';
-                    $suspension = $this->eligibilityService->processYellowCard(
-                        $player->id, $eventData['competitionId'], $handlerType
-                    );
+                    $suspensionKey = "{$player->id}:{$eventData['competitionId']}";
+                    $suspension = $yellowCardSuspensions[$suspensionKey] ?? null;
                     if ($suspension) {
                         // Notifications for the deferred match are created during finalization
                         if ($isUserTeamPlayer && ! $isDeferredMatch) {

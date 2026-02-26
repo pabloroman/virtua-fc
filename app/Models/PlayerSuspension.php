@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 /**
  * @property string $id
@@ -101,6 +103,76 @@ class PlayerSuspension extends Model
         $record->refresh();
 
         return $record->yellow_cards;
+    }
+
+    /**
+     * Record yellow cards for multiple player-competition pairs in bulk.
+     * Replaces N calls to recordYellowCard() with 3 queries total.
+     *
+     * @param  array<string, array<string, int>>  $cardCounts  [gamePlayerId => [competitionId => count]]
+     * @return array<string, array<string, int>>  [gamePlayerId => [competitionId => newTotal]]
+     */
+    public static function batchRecordYellowCards(array $cardCounts): array
+    {
+        if (empty($cardCounts)) {
+            return [];
+        }
+
+        $now = now();
+
+        // 1. Ensure all records exist via upsert (insert if missing, no-op if exists)
+        $upsertRows = [];
+        foreach ($cardCounts as $playerId => $competitions) {
+            foreach ($competitions as $competitionId => $count) {
+                $upsertRows[] = [
+                    'id' => Str::uuid()->toString(),
+                    'game_player_id' => $playerId,
+                    'competition_id' => $competitionId,
+                    'matches_remaining' => 0,
+                    'yellow_cards' => 0,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
+            }
+        }
+
+        self::upsert($upsertRows, ['game_player_id', 'competition_id'], ['updated_at']);
+
+        // 2. Batch increment yellow_cards using a single UPDATE with CASE WHEN
+        $cases = [];
+        $wherePairs = [];
+        foreach ($cardCounts as $playerId => $competitions) {
+            foreach ($competitions as $competitionId => $count) {
+                $count = (int) $count;
+                $cases[] = "WHEN game_player_id = '{$playerId}' AND competition_id = '{$competitionId}' THEN yellow_cards + {$count}";
+                $wherePairs[] = "(game_player_id = '{$playerId}' AND competition_id = '{$competitionId}')";
+            }
+        }
+
+        $whereClause = implode(' OR ', $wherePairs);
+
+        DB::statement(
+            'UPDATE player_suspensions SET yellow_cards = CASE '.implode(' ', $cases)." ELSE yellow_cards END, updated_at = ? WHERE {$whereClause}",
+            [$now]
+        );
+
+        // 3. Load updated totals in one query
+        $allPlayerIds = array_keys($cardCounts);
+        $allCompetitionIds = collect($cardCounts)->flatMap(fn ($comps) => array_keys($comps))->unique()->values()->all();
+
+        $records = self::whereIn('game_player_id', $allPlayerIds)
+            ->whereIn('competition_id', $allCompetitionIds)
+            ->get();
+
+        $result = [];
+        foreach ($records as $record) {
+            // Only include pairs we actually incremented
+            if (isset($cardCounts[$record->game_player_id][$record->competition_id])) {
+                $result[$record->game_player_id][$record->competition_id] = $record->yellow_cards;
+            }
+        }
+
+        return $result;
     }
 
     /**
