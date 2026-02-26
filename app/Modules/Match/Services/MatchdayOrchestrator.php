@@ -604,24 +604,14 @@ class MatchdayOrchestrator
     }
 
     /**
-     * Roll for training injuries among non-playing squad members.
+     * Roll for training injuries among all squad members.
      * Each team gets at most one training injury per matchday.
      */
     private function processTrainingInjuries(Game $game, $matches, $allPlayers): void
     {
-        // Collect all lineup player IDs from this batch
-        $allLineupIds = [];
-        foreach ($matches as $match) {
-            $allLineupIds = array_merge($allLineupIds, $match->home_lineup ?? [], $match->away_lineup ?? []);
-        }
-        $allLineupIds = array_unique($allLineupIds);
-
         foreach ($allPlayers as $teamId => $teamPlayers) {
-            // Filter to non-playing, non-injured squad members
-            $eligible = $teamPlayers->filter(function ($player) use ($allLineupIds, $game) {
-                if (in_array($player->id, $allLineupIds)) {
-                    return false;
-                }
+            // Filter to non-injured squad members (playing and non-playing)
+            $eligible = $teamPlayers->filter(function ($player) use ($game) {
                 if ($player->injury_until && $player->injury_until->gt($game->current_date)) {
                     return false;
                 }
