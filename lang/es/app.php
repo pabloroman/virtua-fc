@@ -51,4 +51,8 @@ return [
     'switch_light_mode' => 'Cambiar a modo claro',
     'switch_dark_mode' => 'Cambiar a modo oscuro',
 
+    // Common UI
+    'close' => 'Cerrar',
+    'or' => 'o',
+
 ];
