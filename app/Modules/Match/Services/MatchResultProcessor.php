@@ -155,18 +155,22 @@ class MatchResultProcessor
             }
             $teamIds = array_unique($teamIds);
 
-            // Find all suspensions for these teams in this competition
-            $suspensions = PlayerSuspension::where('competition_id', $competitionId)
+            // Get IDs of suspensions to serve in a single query
+            $suspensionIds = PlayerSuspension::where('competition_id', $competitionId)
                 ->where('matches_remaining', '>', 0)
                 ->whereHas('gamePlayer', function ($query) use ($gameId, $teamIds) {
                     $query->where('game_id', $gameId)
                         ->whereIn('team_id', $teamIds);
                 })
-                ->get();
+                ->pluck('id');
 
-            foreach ($suspensions as $suspension) {
-                $suspension->serveMatch();
+            if ($suspensionIds->isEmpty()) {
+                continue;
             }
+
+            // Decrement all suspensions in a single UPDATE and floor at 0
+            PlayerSuspension::whereIn('id', $suspensionIds)
+                ->update(['matches_remaining' => DB::raw('CASE WHEN matches_remaining > 0 THEN matches_remaining - 1 ELSE 0 END')]);
         }
     }
 
