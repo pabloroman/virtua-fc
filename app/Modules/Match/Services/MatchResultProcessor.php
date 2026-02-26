@@ -440,22 +440,9 @@ class MatchResultProcessor
             ->unique()
             ->values();
 
-        // Get the most recent played match date for each team (before this batch)
+        // Get the most recent played match date for each team (before this batch) in one query
         $matchIds = $matches->pluck('id')->toArray();
-        $previousDates = collect();
-        foreach ($teamIds as $teamId) {
-            $previousMatch = GameMatch::where('game_id', $gameId)
-                ->where('played', true)
-                ->whereNotIn('id', $matchIds)
-                ->where(function ($query) use ($teamId) {
-                    $query->where('home_team_id', $teamId)
-                        ->orWhere('away_team_id', $teamId);
-                })
-                ->orderByDesc('scheduled_date')
-                ->first();
-
-            $previousDates[$teamId] = $previousMatch?->scheduled_date;
-        }
+        $previousDates = $this->getPreviousMatchDates($gameId, $teamIds->toArray(), $matchIds);
 
         foreach ($matches as $match) {
             // Find the matching result for events
@@ -474,6 +461,51 @@ class MatchResultProcessor
 
             $this->conditionService->updateAfterMatch($match, $events, $previousDate, $allPlayers);
         }
+    }
+
+    /**
+     * Get the most recent played match date for each team in a single query.
+     *
+     * @return \Illuminate\Support\Collection<string, \Carbon\Carbon|null>  Keyed by team_id
+     */
+    private function getPreviousMatchDates(string $gameId, array $teamIds, array $excludeMatchIds): \Illuminate\Support\Collection
+    {
+        if (empty($teamIds)) {
+            return collect();
+        }
+
+        // Build UNION ALL subquery: one row per (team, match_date) for each team's involvement
+        $excludeList = empty($excludeMatchIds) ? "''" : "'" . implode("','", $excludeMatchIds) . "'";
+
+        $rows = DB::select("
+            SELECT team_id, MAX(scheduled_date) as last_date
+            FROM (
+                SELECT home_team_id AS team_id, scheduled_date
+                FROM game_matches
+                WHERE game_id = ? AND played = 1 AND id NOT IN ({$excludeList})
+                  AND home_team_id IN (" . implode(',', array_fill(0, count($teamIds), '?')) . ")
+                UNION ALL
+                SELECT away_team_id AS team_id, scheduled_date
+                FROM game_matches
+                WHERE game_id = ? AND played = 1 AND id NOT IN ({$excludeList})
+                  AND away_team_id IN (" . implode(',', array_fill(0, count($teamIds), '?')) . ')
+            ) AS team_matches
+            GROUP BY team_id
+        ', array_merge([$gameId], $teamIds, [$gameId], $teamIds));
+
+        $result = collect();
+        foreach ($rows as $row) {
+            $result[$row->team_id] = $row->last_date ? Carbon::parse($row->last_date) : null;
+        }
+
+        // Fill in null for teams with no previous matches
+        foreach ($teamIds as $teamId) {
+            if (! $result->has($teamId)) {
+                $result[$teamId] = null;
+            }
+        }
+
+        return $result;
     }
 
     /**
