@@ -39,7 +39,7 @@
                                 $round = $rounds->firstWhere('round', $playerTie->round_number);
                             @endphp
                             <div class="mb-8 p-6 rounded-xl bg-gradient-to-r from-sky-50 to-sky-100 border border-sky-200">
-                                <div class="text-center text-sm text-sky-600 mb-3">{{ __('cup.your_current_cup_tie', ['round' => $round?->name]) }}</div>
+                                <div class="text-center text-sm text-sky-600 mb-3">{{ __('cup.your_current_cup_tie', ['round' => __($round?->name)]) }}</div>
                                 <div class="flex items-center justify-center gap-6">
                                     <div class="flex items-center gap-3 flex-1 justify-end">
                                         <span class="text-xl font-semibold @if($playerTie->home_team_id === $game->team_id) text-sky-700 @endif">
