@@ -47,4 +47,8 @@ return [
     'summer_window' => 'Verano',
     'winter_window' => 'Invierno',
 
+    // Common UI
+    'close' => 'Cerrar',
+    'or' => 'o',
+
 ];

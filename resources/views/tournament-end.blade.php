@@ -16,6 +16,8 @@
 /** @var \Illuminate\Support\Collection $topAssisters */
 /** @var \Illuminate\Support\Collection $topGoalkeepers */
 /** @var \Illuminate\Support\Collection $yourSquadStats */
+/** @var array $squadHighlights */
+/** @var App\Models\TournamentChallenge|null $existingChallenge */
 
 $isChampion = $championTeamId === $game->team_id;
 $yourGoalScorers = $yourSquadStats->where('goals', '>', 0)->sortByDesc('goals');
@@ -591,55 +593,241 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
             </div>
 
             {{-- ============================================ --}}
-            {{-- SECTION 4: Bottom CTAs                       --}}
+            {{-- SECTION 4: Bold Picks Highlight              --}}
             {{-- ============================================ --}}
-            <div class="mt-10 mb-10 text-center space-y-4" x-data="{ copied: false }">
-                {{-- Share Button --}}
-                <div>
-                    <button
-                        @click="
-                            const text = @js(__('season.share_text', [
-                                'result' => __('season.result_' . $resultLabel),
-                                'competition' => __($competition->name ?? 'game.wc2026_name'),
-                                'team' => $game->team->name,
-                            ]));
-                            if (navigator.share) {
-                                navigator.share({ text }).catch(() => {});
-                            } else if (navigator.clipboard) {
-                                navigator.clipboard.writeText(text).then(() => {
-                                    copied = true;
-                                    setTimeout(() => copied = false, 2000);
-                                });
-                            } else {
-                                const ta = document.createElement('textarea');
-                                ta.value = text;
-                                ta.style.position = 'fixed';
-                                ta.style.opacity = '0';
-                                document.body.appendChild(ta);
-                                ta.select();
-                                document.execCommand('copy');
-                                document.body.removeChild(ta);
-                                copied = true;
-                                setTimeout(() => copied = false, 2000);
-                            }
-                        "
-                        class="inline-flex items-center gap-2 px-6 py-3 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-lg text-sm font-semibold shadow-sm transition-all min-h-[44px]"
-                    >
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                        </svg>
-                        <span x-show="!copied">{{ __('season.share_result') }}</span>
-                        <span x-show="copied" x-cloak class="text-green-600">{{ __('season.copied_to_clipboard') }}</span>
-                    </button>
+            @if(!empty($squadHighlights['bold_picks']))
+            <div class="mt-8 mb-6">
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="bg-gradient-to-r from-violet-50 to-purple-100/50 px-5 py-4">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-lg">&#9889;</span>
+                            <span class="text-xs text-violet-700 font-semibold uppercase tracking-wide">{{ __('season.bold_picks') }}</span>
+                        </div>
+                        <p class="text-xs text-violet-600/70">{{ __('season.bold_picks_desc') }}</p>
+                    </div>
+                    <div class="px-5 py-3 space-y-2">
+                        @foreach($squadHighlights['bold_picks'] as $pick)
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-2 min-w-0">
+                                <span class="text-sm font-semibold text-slate-900 truncate">{{ $pick['name'] }}</span>
+                                <span class="shrink-0 text-[10px] text-violet-600 bg-violet-100 px-1.5 py-0.5 rounded font-semibold">{{ $pick['overall'] }} OVR</span>
+                            </div>
+                            <div class="shrink-0 flex items-center gap-2 text-xs text-slate-500">
+                                @if($pick['goals'] > 0)<span class="font-semibold text-slate-700">{{ $pick['goals'] }}G</span>@endif
+                                @if($pick['assists'] > 0)<span class="font-semibold text-slate-700">{{ $pick['assists'] }}A</span>@endif
+                                <span>{{ $pick['appearances'] }}{{ __('season.played_abbr') }}</span>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+            @endif
+
+            @if(!empty($squadHighlights['omissions']))
+            <div class="mb-6">
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="bg-gradient-to-r from-rose-50 to-red-100/50 px-5 py-4">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-lg">&#10060;</span>
+                            <span class="text-xs text-rose-700 font-semibold uppercase tracking-wide">{{ __('season.key_omissions') }}</span>
+                        </div>
+                        <p class="text-xs text-rose-600/70">{{ __('season.key_omissions_desc') }}</p>
+                    </div>
+                    <div class="px-5 py-3 space-y-2">
+                        @foreach($squadHighlights['omissions'] as $omission)
+                        <div class="flex items-center justify-between gap-3">
+                            <span class="text-sm font-medium text-slate-700 truncate">{{ $omission['name'] }}</span>
+                            <span class="shrink-0 text-[10px] text-rose-600 bg-rose-100 px-1.5 py-0.5 rounded font-semibold">{{ $omission['overall'] }} OVR</span>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+            @endif
+
+            {{-- ============================================ --}}
+            {{-- SECTION 5: Share & Challenge CTAs             --}}
+            {{-- ============================================ --}}
+            <div class="mt-10 mb-10" x-data="shareCard()">
+
+                {{-- Hidden share card for html2canvas capture --}}
+                <div x-ref="shareCard" style="display: none;">
+                    <x-share-card
+                        :team="$game->team"
+                        :competition="$competition"
+                        :resultLabel="$resultLabel"
+                        :yourRecord="$yourRecord"
+                        :squadHighlights="$squadHighlights"
+                        :isChampion="$isChampion"
+                    />
                 </div>
 
-                {{-- Play Again --}}
-                <div class="mb-10">
-                    <a href="{{ route('select-team') }}"
-                       class="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 text-white rounded-lg text-lg font-bold shadow-lg transition-all min-h-[44px]">
-                        {{ __('season.play_again') }}
-                    </a>
+                {{-- Hidden share text for Web Share API --}}
+                <input type="hidden" x-ref="shareText" value="{{ __('season.share_text', [
+                    'result' => __('season.result_' . $resultLabel),
+                    'competition' => __($competition->name ?? 'game.wc2026_name'),
+                    'team' => $game->team->name,
+                ]) }}">
+
+                {{-- Share & Challenge Buttons --}}
+                <div class="text-center space-y-4">
+
+                    {{-- Share Card Button --}}
+                    <div>
+                        <button
+                            @click="openShareModal()"
+                            :disabled="generating"
+                            class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white rounded-lg text-sm font-semibold shadow-lg transition-all min-h-[44px] disabled:opacity-50"
+                        >
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span x-show="!generating">{{ __('season.create_share_card') }}</span>
+                            <span x-show="generating" x-cloak>{{ __('season.generating_image') }}...</span>
+                        </button>
+                    </div>
+
+                    {{-- Challenge a Friend Button --}}
+                    <div x-data="{ challengeUrl: '{{ $existingChallenge?->getShareUrl() ?? '' }}', challengeCopied: false, creating: false }">
+                        @if($existingChallenge)
+                            <button
+                                @click="
+                                    if (navigator.clipboard) {
+                                        navigator.clipboard.writeText(challengeUrl).then(() => {
+                                            challengeCopied = true;
+                                            setTimeout(() => challengeCopied = false, 2000);
+                                        });
+                                    }
+                                "
+                                class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-600 hover:to-yellow-500 text-slate-900 rounded-lg text-sm font-semibold shadow-lg transition-all min-h-[44px]"
+                            >
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                <span x-show="!challengeCopied">{{ __('season.copy_challenge_link') }}</span>
+                                <span x-show="challengeCopied" x-cloak class="text-slate-700">{{ __('season.copied_to_clipboard') }}</span>
+                            </button>
+                        @else
+                            <form method="POST" action="{{ route('game.challenge.create', $game->id) }}" @submit="creating = true">
+                                @csrf
+                                <button
+                                    type="submit"
+                                    :disabled="creating"
+                                    class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-600 hover:to-yellow-500 text-slate-900 rounded-lg text-sm font-semibold shadow-lg transition-all min-h-[44px] disabled:opacity-50"
+                                >
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                    <span x-show="!creating">{{ __('season.challenge_friend') }}</span>
+                                    <span x-show="creating" x-cloak>{{ __('season.creating_challenge') }}...</span>
+                                </button>
+                            </form>
+                        @endif
+                    </div>
+
+                    {{-- Play Again --}}
+                    <div class="mb-10 pt-2">
+                        <a href="{{ route('select-team') }}"
+                           class="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 text-white rounded-lg text-lg font-bold shadow-lg transition-all min-h-[44px]">
+                            {{ __('season.play_again') }}
+                        </a>
+                    </div>
                 </div>
+
+                {{-- Share Card Modal --}}
+                <div x-show="showModal" x-cloak
+                     class="fixed inset-0 z-50 flex items-center justify-center p-4"
+                     @keydown.escape.window="closeModal()">
+
+                    {{-- Backdrop --}}
+                    <div class="absolute inset-0 bg-slate-900/80" @click="closeModal()"></div>
+
+                    {{-- Modal Content --}}
+                    <div class="relative bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden"
+                         x-transition:enter="transition ease-out duration-300"
+                         x-transition:enter-start="opacity-0 scale-95"
+                         x-transition:enter-end="opacity-100 scale-100"
+                         x-transition:leave="transition ease-in duration-200"
+                         x-transition:leave-start="opacity-100 scale-100"
+                         x-transition:leave-end="opacity-0 scale-95">
+
+                        {{-- Close button --}}
+                        <button @click="closeModal()" class="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 transition-colors">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+
+                        <div class="p-5 md:p-6">
+                            <h3 class="text-lg font-bold text-slate-900 mb-1">{{ __('season.share_card_title') }}</h3>
+                            <p class="text-xs text-slate-500 mb-4">{{ __('season.share_card_subtitle') }}</p>
+
+                            {{-- Card Preview --}}
+                            <div class="flex justify-center mb-4">
+                                <template x-if="ready && imageUrl">
+                                    <img :src="imageUrl" class="rounded-xl shadow-lg max-w-[280px] w-full" alt="Share card">
+                                </template>
+                                <template x-if="generating">
+                                    <div class="w-[280px] h-[420px] bg-slate-100 rounded-xl flex items-center justify-center">
+                                        <div class="text-center">
+                                            <svg class="animate-spin h-8 w-8 text-violet-500 mx-auto mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            <span class="text-xs text-slate-400">{{ __('season.generating_image') }}...</span>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+
+                            {{-- Action Buttons --}}
+                            <template x-if="ready">
+                                <div class="flex gap-3">
+                                    <button @click="downloadImage()"
+                                            class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-sm font-semibold transition-all min-h-[44px]">
+                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                        </svg>
+                                        {{ __('season.download_image') }}
+                                    </button>
+                                    <button @click="shareImage()"
+                                            class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white rounded-lg text-sm font-semibold transition-all min-h-[44px]">
+                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+                                        </svg>
+                                        {{ __('season.share_image') }}
+                                    </button>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Flash: challenge URL created --}}
+                @if(session('challenge_url'))
+                <div x-data="{ show: true, linkCopied: false }" x-show="show" x-cloak
+                     class="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 z-50 bg-white rounded-xl shadow-2xl border border-amber-200 p-4"
+                     x-transition>
+                    <div class="flex items-start gap-3">
+                        <span class="text-2xl shrink-0">&#127942;</span>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-semibold text-slate-900">{{ __('season.challenge_created') }}</p>
+                            <p class="text-xs text-slate-500 mt-0.5 truncate">{{ session('challenge_url') }}</p>
+                            <div class="flex gap-2 mt-2">
+                                <button @click="
+                                    navigator.clipboard.writeText('{{ session('challenge_url') }}').then(() => {
+                                        linkCopied = true;
+                                        setTimeout(() => linkCopied = false, 2000);
+                                    });
+                                " class="text-xs font-semibold text-amber-700 hover:text-amber-800 min-h-[44px] flex items-center">
+                                    <span x-show="!linkCopied">{{ __('season.copy_link') }}</span>
+                                    <span x-show="linkCopied" x-cloak class="text-green-600">{{ __('season.copied_to_clipboard') }}</span>
+                                </button>
+                                <button @click="show = false" class="text-xs text-slate-400 hover:text-slate-500 min-h-[44px] flex items-center ml-2">{{ __('app.close') }}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endif
             </div>
 
         </div>

@@ -68,6 +68,9 @@ use App\Http\Actions\ProcessSubstitution;
 use App\Http\Actions\ProcessTacticalChange;
 use App\Http\Actions\PromoteAcademyPlayer;
 use App\Http\Actions\StartNewSeason;
+use App\Http\Actions\CreateTournamentChallenge;
+use App\Http\Actions\AcceptChallenge;
+use App\Http\Views\ShowChallenge;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -78,6 +81,9 @@ Route::get('/legal', fn () => view('legal'))->name('legal');
 Route::get('/design-system', fn () => view('design-system.index', [
     'allTeams' => \App\Support\TeamColors::all(),
 ]))->name('design-system');
+
+// Public challenge page (no auth required)
+Route::get('/challenge/{shareToken}', ShowChallenge::class)->name('challenge.show');
 
 Route::middleware('auth')->group(function () {
     // Dashboard & Game Creation
@@ -154,6 +160,7 @@ Route::middleware('auth')->group(function () {
         // Tournament End
         Route::get('/game/{gameId}/tournament-end', ShowTournamentEnd::class)->name('game.tournament-end');
         Route::get('/game/{gameId}/simulate-tournament', SimulateTournament::class)->name('game.simulate-tournament');
+        Route::post('/game/{gameId}/challenge', CreateTournamentChallenge::class)->name('game.challenge.create')->middleware('throttle:5,1');
 
         // Budget Allocation
         Route::get('/game/{gameId}/budget', ShowBudgetAllocation::class)->name('game.budget');
@@ -181,6 +188,9 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
+    // Challenge acceptance (needs auth but not game.owner)
+    Route::post('/challenge/{shareToken}/accept', AcceptChallenge::class)->name('challenge.accept')->middleware('throttle:5,1');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
