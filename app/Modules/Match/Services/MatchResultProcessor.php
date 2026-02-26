@@ -32,6 +32,10 @@ class MatchResultProcessor
      */
     public function processAll(string $gameId, int $matchday, string $currentDate, array $matchResults, ?string $deferMatchId = null, $allPlayers = null): void
     {
+        // Capture previous date BEFORE updating game state (used for recovery calculation)
+        $previousDate = Game::where('id', $gameId)->value('current_date');
+        $previousDate = $previousDate ? Carbon::parse($previousDate) : null;
+
         // 1. Update game state (replaces onMatchdayAdvanced projector)
         Game::where('id', $gameId)->update([
             'current_matchday' => $matchday,
@@ -63,7 +67,7 @@ class MatchResultProcessor
         $this->bulkUpdateAppearances($matches);
 
         // 7. Batch update conditions for all matches
-        $this->batchUpdateConditions($matches, $matchResults, $allPlayers ?? collect());
+        $this->batchUpdateConditions($matches, $matchResults, $allPlayers ?? collect(), $previousDate);
 
         // 8. Batch update goalkeeper stats (skip deferred match)
         $gkResults = $deferMatchId
@@ -426,59 +430,23 @@ class MatchResultProcessor
     }
 
     /**
-     * Batch update fitness and morale for all matches.
+     * Batch update fitness and morale for all matches in a single query.
      *
-     * @param  \Illuminate\Support\Collection  $matches
-     * @param  array  $matchResults
-     * @param  \Illuminate\Support\Collection  $allPlayers  Pre-loaded players grouped by team_id
+     * Uses the game's previous current_date (before this matchday's update) to compute
+     * recovery days uniformly for all teams, instead of per-team lookups.
      */
-    private function batchUpdateConditions($matches, array $matchResults, $allPlayers): void
+    private function batchUpdateConditions($matches, array $matchResults, $allPlayers, ?Carbon $previousDate): void
     {
         if ($matches->isEmpty()) {
             return;
         }
 
-        // Batch-load previous match dates for all teams in one query per team
-        $gameId = $matches->first()->game_id;
-        $teamIds = $matches->pluck('home_team_id')
-            ->merge($matches->pluck('away_team_id'))
-            ->unique()
-            ->values();
-
-        // Get the most recent played match date for each team (before this batch)
-        $matchIds = $matches->pluck('id')->toArray();
-        $previousDates = collect();
-        foreach ($teamIds as $teamId) {
-            $previousMatch = GameMatch::where('game_id', $gameId)
-                ->where('played', true)
-                ->whereNotIn('id', $matchIds)
-                ->where(function ($query) use ($teamId) {
-                    $query->where('home_team_id', $teamId)
-                        ->orWhere('away_team_id', $teamId);
-                })
-                ->orderByDesc('scheduled_date')
-                ->first();
-
-            $previousDates[$teamId] = $previousMatch?->scheduled_date;
+        $daysSinceLastMatchday = 7; // default: full recovery for first matchday
+        if ($previousDate) {
+            $daysSinceLastMatchday = (int) $previousDate->diffInDays($matches->first()->scheduled_date);
         }
 
-        foreach ($matches as $match) {
-            // Find the matching result for events
-            $result = collect($matchResults)->firstWhere('matchId', $match->id);
-            $events = $result['events'] ?? [];
-
-            $homePreviousDate = $previousDates->get($match->home_team_id);
-            $awayPreviousDate = $previousDates->get($match->away_team_id);
-
-            $previousDate = null;
-            if ($homePreviousDate && $awayPreviousDate) {
-                $previousDate = $homePreviousDate->gt($awayPreviousDate) ? $homePreviousDate : $awayPreviousDate;
-            } else {
-                $previousDate = $homePreviousDate ?? $awayPreviousDate;
-            }
-
-            $this->conditionService->updateAfterMatch($match, $events, $previousDate, $allPlayers);
-        }
+        $this->conditionService->batchUpdateAfterMatchday($matches, $matchResults, $allPlayers, $daysSinceLastMatchday);
     }
 
     /**

@@ -2,10 +2,7 @@
 
 namespace App\Modules\Squad\Services;
 
-use App\Models\Game;
-use App\Models\GameMatch;
 use App\Models\GamePlayer;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class PlayerConditionService
@@ -54,72 +51,55 @@ class PlayerConditionService
     private const MIN_MORALE = 20;
 
     /**
-     * Update fitness and morale for all players after a match.
+     * Batch-update fitness and morale for all players across all matches in a matchday.
+     * Single UPDATE query for all players (~500 in a typical La Liga matchday).
      *
-     * @param GameMatch $match The completed match
-     * @param array $events Array of match events
-     * @param Carbon|null $previousMatchDate Date of the previous match (for recovery calculation)
-     * @param \Illuminate\Support\Collection|null $preloadedPlayers Pre-loaded players grouped by team_id (avoids redundant queries)
+     * @param  \Illuminate\Support\Collection  $matches  All matches in this matchday batch
+     * @param  array  $matchResults  Match result data including events
+     * @param  \Illuminate\Support\Collection  $allPlayersByTeam  Pre-loaded players grouped by team_id
+     * @param  int  $daysSinceLastMatchday  Calendar days since the previous matchday
      */
-    public function updateAfterMatch(GameMatch $match, array $events, ?Carbon $previousMatchDate = null, $preloadedPlayers = null): void
+    public function batchUpdateAfterMatchday($matches, array $matchResults, $allPlayersByTeam, int $daysSinceLastMatchday): void
     {
-        $gameId = $match->game_id;
-
-        // Use pre-loaded players if available, otherwise load
-        if ($preloadedPlayers && $preloadedPlayers->isNotEmpty()) {
-            $allPlayers = collect()
-                ->merge($preloadedPlayers->get($match->home_team_id, collect()))
-                ->merge($preloadedPlayers->get($match->away_team_id, collect()));
-        } else {
-            $allPlayers = GamePlayer::where('game_id', $gameId)
-                ->whereIn('team_id', [$match->home_team_id, $match->away_team_id])
-                ->get();
-        }
-
-        if ($allPlayers->isEmpty()) {
-            return;
-        }
-
-        // Get lineup player IDs
-        $homeLineupIds = $match->home_lineup ?? [];
-        $awayLineupIds = $match->away_lineup ?? [];
-        $allLineupIds = array_merge($homeLineupIds, $awayLineupIds);
-
-        // Calculate days since previous match for recovery
-        $daysSinceLastMatch = 0;
-        if ($previousMatchDate) {
-            $daysSinceLastMatch = $previousMatchDate->diffInDays($match->scheduled_date);
-        }
-
-        // Group events by player for individual morale effects
-        $eventsByPlayer = $this->groupEventsByPlayer($events);
-
-        // Determine match result for each team
-        $homeWon = $match->home_score > $match->away_score;
-        $awayWon = $match->away_score > $match->home_score;
-
-        // Calculate new values for all players
         $updates = [];
-        foreach ($allPlayers as $player) {
-            $isInLineup = in_array($player->id, $allLineupIds);
-            $isHomePlayer = $player->team_id === $match->home_team_id;
 
-            $fitnessChange = $this->calculateFitnessChange($player, $isInLineup, $daysSinceLastMatch);
-            $moraleChange = $this->calculateMoraleChange(
-                $player,
-                $isInLineup,
-                $isHomePlayer ? $homeWon : $awayWon,
-                $isHomePlayer ? $awayWon : $homeWon,
-                $eventsByPlayer[$player->id] ?? []
-            );
+        foreach ($matches as $match) {
+            $result = collect($matchResults)->firstWhere('matchId', $match->id);
+            $events = $result['events'] ?? [];
+            $eventsByPlayer = $this->groupEventsByPlayer($events);
 
-            $updates[$player->id] = [
-                'fitness' => max(self::MIN_FITNESS, min(self::MAX_FITNESS, $player->fitness + $fitnessChange)),
-                'morale' => max(self::MIN_MORALE, min(self::MAX_MORALE, $player->morale + $moraleChange)),
-            ];
+            $lineupIds = array_merge($match->home_lineup ?? [], $match->away_lineup ?? []);
+            $homeWon = $match->home_score > $match->away_score;
+            $awayWon = $match->away_score > $match->home_score;
+
+            $players = collect()
+                ->merge($allPlayersByTeam->get($match->home_team_id, collect()))
+                ->merge($allPlayersByTeam->get($match->away_team_id, collect()));
+
+            foreach ($players as $player) {
+                if (isset($updates[$player->id])) {
+                    continue; // already processed via another match
+                }
+
+                $isInLineup = in_array($player->id, $lineupIds);
+                $isHome = $player->team_id === $match->home_team_id;
+
+                $fitnessChange = $this->calculateFitnessChange($player, $isInLineup, $daysSinceLastMatchday);
+                $moraleChange = $this->calculateMoraleChange(
+                    $player,
+                    $isInLineup,
+                    $isHome ? $homeWon : $awayWon,
+                    $isHome ? $awayWon : $homeWon,
+                    $eventsByPlayer[$player->id] ?? []
+                );
+
+                $updates[$player->id] = [
+                    'fitness' => max(self::MIN_FITNESS, min(self::MAX_FITNESS, $player->fitness + $fitnessChange)),
+                    'morale' => max(self::MIN_MORALE, min(self::MAX_MORALE, $player->morale + $moraleChange)),
+                ];
+            }
         }
 
-        // Build bulk update query with CASE statements
         $this->bulkUpdateConditions($updates);
     }
 
@@ -149,28 +129,6 @@ class PlayerConditionService
                 morale = CASE " . implode(' ', $moraleCases) . " END
             WHERE id IN ({$idList})
         ");
-    }
-
-    /**
-     * Apply fitness recovery for players between matches.
-     * Call this for teams NOT playing on a matchday.
-     */
-    public function applyRecovery(string $gameId, string $teamId, int $days = 1): void
-    {
-        $players = GamePlayer::where('game_id', $gameId)
-            ->where('team_id', $teamId)
-            ->get();
-
-        foreach ($players as $player) {
-            $recovery = min(
-                self::MAX_FITNESS - $player->fitness,
-                self::FITNESS_RECOVERY_PER_DAY * $days
-            );
-
-            if ($recovery > 0) {
-                $player->increment('fitness', $recovery);
-            }
-        }
     }
 
     /**
