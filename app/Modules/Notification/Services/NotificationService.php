@@ -9,6 +9,7 @@ use App\Models\RenewalNegotiation;
 use App\Models\ScoutReport;
 use App\Models\Team;
 use App\Models\TransferOffer;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
@@ -724,11 +725,15 @@ class NotificationService
 
     /**
      * Check if a similar notification already exists (to avoid duplicates).
+     *
+     * @param  string|Carbon  $currentDate  Game's current date (avoids re-fetching the Game model)
      */
-    public function hasRecentNotification(string $gameId, string $type, array $metadata, int $days = 1): bool
+    public function hasRecentNotification(string $gameId, string $type, array $metadata, int $days = 1, string|Carbon|null $currentDate = null): bool
     {
-        $game = Game::find($gameId);
-        $cutoff = $game->current_date->subDays($days);
+        if ($currentDate === null) {
+            $currentDate = Game::find($gameId)->current_date;
+        }
+        $cutoff = Carbon::parse($currentDate)->subDays($days);
 
         $query = GameNotification::where('game_id', $gameId)
             ->where('type', $type)
@@ -743,5 +748,32 @@ class NotificationService
         }
 
         return $query->exists();
+    }
+
+    /**
+     * Batch check which entity IDs already have a recent notification of a given type.
+     * Returns a set of entity IDs that DO have a recent notification (so callers can skip them).
+     *
+     * @param  string  $metadataKey  The JSON metadata key to match on (e.g., 'player_id', 'offer_id')
+     * @param  array  $entityIds  The entity IDs to check
+     * @return array  Entity IDs that already have a recent notification
+     */
+    public function getRecentNotificationEntityIds(string $gameId, string $type, string $metadataKey, array $entityIds, Carbon $currentDate, int $days = 1): array
+    {
+        if (empty($entityIds)) {
+            return [];
+        }
+
+        $cutoff = $currentDate->copy()->subDays($days);
+
+        return GameNotification::where('game_id', $gameId)
+            ->where('type', $type)
+            ->where('game_date', '>', $cutoff)
+            ->get(['metadata'])
+            ->pluck("metadata.{$metadataKey}")
+            ->filter()
+            ->intersect($entityIds)
+            ->values()
+            ->all();
     }
 }

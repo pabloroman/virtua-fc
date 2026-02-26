@@ -416,14 +416,22 @@ class MatchdayOrchestrator
             ->get()
             ->filter(fn ($offer) => $offer->days_until_expiry <= 2 && $offer->days_until_expiry > 0);
 
+        if ($expiringOffers->isEmpty()) {
+            return;
+        }
+
+        // Batch check which offers already have a recent notification (1 query)
+        $alreadyNotified = $this->notificationService->getRecentNotificationEntityIds(
+            $game->id,
+            GameNotification::TYPE_TRANSFER_OFFER_EXPIRING,
+            'offer_id',
+            $expiringOffers->pluck('id')->all(),
+            $game->current_date,
+            1
+        );
+
         foreach ($expiringOffers as $offer) {
-            // Check if we already have a recent expiring notification for this offer
-            if (! $this->notificationService->hasRecentNotification(
-                $game->id,
-                GameNotification::TYPE_TRANSFER_OFFER_EXPIRING,
-                ['offer_id' => $offer->id],
-                1
-            )) {
+            if (! in_array($offer->id, $alreadyNotified)) {
                 $this->notificationService->notifyExpiringOffer($game, $offer);
             }
         }
@@ -436,21 +444,30 @@ class MatchdayOrchestrator
     {
         $userTeamPlayers = $allPlayers->get($game->team_id, collect());
 
-        foreach ($userTeamPlayers as $player) {
-            // Check if player was injured but is now recovered
-            if ($player->injury_until && $player->injury_until->lte($game->current_date)) {
-                // Clear the injury fields so this doesn't trigger again on future matchdays
-                $this->eligibilityService->clearInjury($player);
+        // Find all recovered players
+        $recoveredPlayers = $userTeamPlayers->filter(
+            fn ($player) => $player->injury_until && $player->injury_until->lte($game->current_date)
+        );
 
-                // Check if we haven't already notified about this recovery
-                if (! $this->notificationService->hasRecentNotification(
-                    $game->id,
-                    GameNotification::TYPE_PLAYER_RECOVERED,
-                    ['player_id' => $player->id],
-                    7
-                )) {
-                    $this->notificationService->notifyRecovery($game, $player);
-                }
+        if ($recoveredPlayers->isEmpty()) {
+            return;
+        }
+
+        // Batch check which players already have a recent recovery notification (1 query)
+        $alreadyNotified = $this->notificationService->getRecentNotificationEntityIds(
+            $game->id,
+            GameNotification::TYPE_PLAYER_RECOVERED,
+            'player_id',
+            $recoveredPlayers->pluck('id')->all(),
+            $game->current_date,
+            7
+        );
+
+        foreach ($recoveredPlayers as $player) {
+            $this->eligibilityService->clearInjury($player);
+
+            if (! in_array($player->id, $alreadyNotified)) {
+                $this->notificationService->notifyRecovery($game, $player);
             }
         }
     }
@@ -462,23 +479,32 @@ class MatchdayOrchestrator
     {
         $userTeamPlayers = $allPlayers->get($game->team_id, collect());
 
-        foreach ($userTeamPlayers as $player) {
-            // Skip injured players
+        // Find all low-fitness, non-injured players
+        $lowFitnessPlayers = $userTeamPlayers->filter(function ($player) use ($game) {
             if ($player->injury_until && $player->injury_until->gt($game->current_date)) {
-                continue;
+                return false;
             }
 
-            // Check if player has low fitness (below 60%)
-            if ($player->fitness < 60) {
-                // Only notify once per week per player
-                if (! $this->notificationService->hasRecentNotification(
-                    $game->id,
-                    GameNotification::TYPE_LOW_FITNESS,
-                    ['player_id' => $player->id],
-                    7
-                )) {
-                    $this->notificationService->notifyLowFitness($game, $player);
-                }
+            return $player->fitness < 60;
+        });
+
+        if ($lowFitnessPlayers->isEmpty()) {
+            return;
+        }
+
+        // Batch check which players already have a recent low-fitness notification (1 query)
+        $alreadyNotified = $this->notificationService->getRecentNotificationEntityIds(
+            $game->id,
+            GameNotification::TYPE_LOW_FITNESS,
+            'player_id',
+            $lowFitnessPlayers->pluck('id')->all(),
+            $game->current_date,
+            7
+        );
+
+        foreach ($lowFitnessPlayers as $player) {
+            if (! in_array($player->id, $alreadyNotified)) {
+                $this->notificationService->notifyLowFitness($game, $player);
             }
         }
     }
