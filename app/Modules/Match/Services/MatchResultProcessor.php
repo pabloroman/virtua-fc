@@ -74,7 +74,8 @@ class MatchResultProcessor
             : $matches;
         $this->batchUpdateGoalkeeperStats($gkMatches, $gkResults);
 
-        // 9. Update standings per league (skip deferred match)
+        // 9. Update standings per league in bulk (skip deferred match)
+        $leagueResultsByCompetition = [];
         foreach ($matchResults as $result) {
             if ($result['matchId'] === $deferMatchId) {
                 continue;
@@ -85,15 +86,12 @@ class MatchResultProcessor
             $isCupTie = $match?->cup_tie_id !== null;
 
             if ($competition?->isLeague() && ! $isCupTie) {
-                $this->standingsCalculator->updateAfterMatch(
-                    gameId: $gameId,
-                    competitionId: $result['competitionId'],
-                    homeTeamId: $result['homeTeamId'],
-                    awayTeamId: $result['awayTeamId'],
-                    homeScore: $result['homeScore'],
-                    awayScore: $result['awayScore'],
-                );
+                $leagueResultsByCompetition[$result['competitionId']][] = $result;
             }
+        }
+
+        foreach ($leagueResultsByCompetition as $competitionId => $results) {
+            $this->standingsCalculator->bulkUpdateAfterMatches($gameId, $competitionId, $results);
         }
     }
 
