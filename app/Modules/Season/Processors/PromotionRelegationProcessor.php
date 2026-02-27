@@ -148,10 +148,11 @@ class PromotionRelegationProcessor implements SeasonEndProcessor
 
         if ($targetHasStandings) {
             // Target division already has real standings — just add this team
-            GameStanding::create([
+            GameStanding::firstOrCreate([
                 'game_id' => $gameId,
                 'competition_id' => $toDivision,
                 'team_id' => $teamId,
+            ], [
                 'position' => 99, // Will be re-sorted
                 'played' => 0,
                 'won' => 0,
@@ -204,8 +205,15 @@ class PromotionRelegationProcessor implements SeasonEndProcessor
             ];
         }
 
-        if (!empty($rows)) {
-            GameStanding::insert($rows);
+        foreach ($rows as $row) {
+            GameStanding::firstOrCreate(
+                [
+                    'game_id' => $row['game_id'],
+                    'competition_id' => $row['competition_id'],
+                    'team_id' => $row['team_id'],
+                ],
+                $row
+            );
         }
     }
 

@@ -32,6 +32,18 @@ class SeasonArchiveProcessor implements SeasonEndProcessor
     {
         $season = $game->season;
 
+        // Idempotency: if archive already exists (re-dispatch after partial failure),
+        // re-populate metadata needed by later processors and skip
+        $existingArchive = SeasonArchive::where('game_id', $game->id)
+            ->where('season', $season)
+            ->first();
+
+        if ($existingArchive) {
+            $data->setMetadata('seasonAwards', $existingArchive->season_awards);
+            $this->captureEuropeanWinners($game, $data);
+            return $data;
+        }
+
         // Capture final standings
         $standings = $this->captureStandings($game);
 
