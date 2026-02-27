@@ -10,6 +10,7 @@ use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
+use App\Models\PlayerSuspension;
 
 class MatchFinalizationService
 {
@@ -29,21 +30,53 @@ class MatchFinalizationService
     {
         $competition = Competition::find($match->competition_id);
 
-        // 1. Resolve cup tie and dispatch CupTieResolved if applicable
+        // 1. Serve deferred suspensions for both teams in this match
+        $this->serveDeferredSuspensions($match);
+
+        // 2. Resolve cup tie and dispatch CupTieResolved if applicable
         if ($match->cup_tie_id !== null) {
             $this->resolveCupTie($match, $game, $competition);
         }
 
-        // 2. Dispatch MatchFinalized for standings, GK stats, and notifications
+        // 3. Dispatch MatchFinalized for standings, GK stats, and notifications
         MatchFinalized::dispatch($match, $game, $competition);
 
-        // 3. Clear the pending flag
+        // 4. Clear the pending flag
         $game->update(['pending_finalization_match_id' => null]);
 
-        // 4. Generate any pending knockout/playoff fixtures now that standings are final
+        // 5. Generate any pending knockout/playoff fixtures now that standings are final
         if ($match->cup_tie_id === null && $competition) {
             $handler = $this->handlerResolver->resolve($competition);
             $handler->beforeMatches($game, $game->current_date->toDateString());
+        }
+    }
+
+    /**
+     * Serve suspensions that were deferred during batch processing.
+     * These belong to players on the two teams in the deferred match.
+     */
+    private function serveDeferredSuspensions(GameMatch $match): void
+    {
+        $playerIds = GamePlayer::where('game_id', $match->game_id)
+            ->whereIn('team_id', [$match->home_team_id, $match->away_team_id])
+            ->pluck('id')
+            ->toArray();
+
+        if (empty($playerIds)) {
+            return;
+        }
+
+        $suspensionIds = PlayerSuspension::where('competition_id', $match->competition_id)
+            ->where('matches_remaining', '>', 0)
+            ->whereIn('game_player_id', $playerIds)
+            ->pluck('id')
+            ->all();
+
+        if (! empty($suspensionIds)) {
+            PlayerSuspension::whereIn('id', $suspensionIds)->decrement('matches_remaining');
+            PlayerSuspension::whereIn('id', $suspensionIds)
+                ->where('matches_remaining', '<', 0)
+                ->update(['matches_remaining' => 0]);
         }
     }
 
