@@ -525,6 +525,132 @@ class MatchSimulator
     }
 
     /**
+     * Calculate base expected goals from strength ratio, formation, mentality, and match fraction.
+     * Does not include tactical instruction modifiers, striker bonus, or max goals cap.
+     *
+     * @return array{0: float, 1: float} [homeXG, awayXG]
+     */
+    private function calculateBaseExpectedGoals(
+        float $homeStrength,
+        float $awayStrength,
+        Formation $homeFormation,
+        Formation $awayFormation,
+        Mentality $homeMentality,
+        Mentality $awayMentality,
+        float $baseGoals,
+        float $matchFraction,
+    ): array {
+        $ratioExponent = config('match_simulation.ratio_exponent', 2.0);
+        $homeAdvantageGoals = config('match_simulation.home_advantage_goals', 0.15);
+
+        $strengthRatio = $awayStrength > 0 ? $homeStrength / $awayStrength : 1.0;
+
+        $homeXG = (pow($strengthRatio, $ratioExponent) * $baseGoals + $homeAdvantageGoals)
+            * $homeFormation->attackModifier()
+            * $awayFormation->defenseModifier()
+            * $homeMentality->ownGoalsModifier()
+            * $awayMentality->opponentGoalsModifier()
+            * $matchFraction;
+
+        $awayXG = (pow(1 / $strengthRatio, $ratioExponent) * $baseGoals)
+            * $awayFormation->attackModifier()
+            * $homeFormation->defenseModifier()
+            * $awayMentality->ownGoalsModifier()
+            * $homeMentality->opponentGoalsModifier()
+            * $matchFraction;
+
+        return [$homeXG, $awayXG];
+    }
+
+    /**
+     * Apply all tactical instruction modifiers to base expected goals.
+     * Covers playing style, pressing (with minute-based fade), defensive line
+     * (with high-line nullification), and tactical interactions.
+     *
+     * @return array{0: float, 1: float} [homeXG, awayXG]
+     */
+    private function applyTacticalModifiers(
+        float $homeXG,
+        float $awayXG,
+        PlayingStyle $homePlayingStyle,
+        PlayingStyle $awayPlayingStyle,
+        PressingIntensity $homePressing,
+        PressingIntensity $awayPressing,
+        DefensiveLineHeight $homeDefLine,
+        DefensiveLineHeight $awayDefLine,
+        Mentality $homeMentality,
+        Mentality $awayMentality,
+        float $effectiveMinute,
+        Collection $homePlayers,
+        Collection $awayPlayers,
+    ): array {
+        // Playing Style: own xG modifier and opponent xG modifier
+        $homeXG *= $homePlayingStyle->ownXGModifier();
+        $homeXG *= $awayPlayingStyle->opponentXGModifier();
+        $awayXG *= $awayPlayingStyle->ownXGModifier();
+        $awayXG *= $homePlayingStyle->opponentXGModifier();
+
+        // Pressing: opponent xG modifier (with minute-based fade for High Press)
+        $homeXG *= $awayPressing->opponentXGModifier((int) $effectiveMinute);
+        $awayXG *= $homePressing->opponentXGModifier((int) $effectiveMinute);
+
+        // Defensive Line: own xG and opponent xG modifiers
+        // Check if opponent's best forward nullifies the high line
+        $homeDefLineOwn = $homeDefLine->ownXGModifier();
+        $homeDefLineOpp = $homeDefLine->opponentXGModifier();
+        $awayDefLineOwn = $awayDefLine->ownXGModifier();
+        $awayDefLineOpp = $awayDefLine->opponentXGModifier();
+
+        $homePhysicalThreshold = $homeDefLine->physicalThreshold();
+        if ($homePhysicalThreshold > 0 && $this->getBestForwardPhysical($awayPlayers) >= $homePhysicalThreshold) {
+            $homeDefLineOwn = 1.0;
+            $homeDefLineOpp = 1.0;
+        }
+        $awayPhysicalThreshold = $awayDefLine->physicalThreshold();
+        if ($awayPhysicalThreshold > 0 && $this->getBestForwardPhysical($homePlayers) >= $awayPhysicalThreshold) {
+            $awayDefLineOwn = 1.0;
+            $awayDefLineOpp = 1.0;
+        }
+
+        $homeXG *= $homeDefLineOwn;
+        $awayXG *= $homeDefLineOpp;
+        $awayXG *= $awayDefLineOwn;
+        $homeXG *= $awayDefLineOpp;
+
+        // Tactical Interactions
+        $interactions = config('match_simulation.tactical_interactions', []);
+
+        // Counter-Attack vs opponent's Attacking mentality + High Line → bonus own xG
+        $counterBonus = $interactions['counter_vs_attacking_high_line'] ?? 1.0;
+        if ($homePlayingStyle === PlayingStyle::COUNTER_ATTACK && $awayMentality === Mentality::ATTACKING && $awayDefLine === DefensiveLineHeight::HIGH_LINE) {
+            $homeXG *= $counterBonus;
+        }
+        if ($awayPlayingStyle === PlayingStyle::COUNTER_ATTACK && $homeMentality === Mentality::ATTACKING && $homeDefLine === DefensiveLineHeight::HIGH_LINE) {
+            $awayXG *= $counterBonus;
+        }
+
+        // Possession disrupted by opponent's High Press → penalty to own xG
+        $possessionPenalty = $interactions['possession_disrupted_by_high_press'] ?? 1.0;
+        if ($homePlayingStyle === PlayingStyle::POSSESSION && $awayPressing === PressingIntensity::HIGH_PRESS) {
+            $homeXG *= $possessionPenalty;
+        }
+        if ($awayPlayingStyle === PlayingStyle::POSSESSION && $homePressing === PressingIntensity::HIGH_PRESS) {
+            $awayXG *= $possessionPenalty;
+        }
+
+        // Direct bypasses opponent's High Press → bonus to own xG
+        $directBonus = $interactions['direct_bypasses_high_press'] ?? 1.0;
+        if ($homePlayingStyle === PlayingStyle::DIRECT && $awayPressing === PressingIntensity::HIGH_PRESS) {
+            $homeXG *= $directBonus;
+        }
+        if ($awayPlayingStyle === PlayingStyle::DIRECT && $homePressing === PressingIntensity::HIGH_PRESS) {
+            $awayXG *= $directBonus;
+        }
+
+        return [$homeXG, $awayXG];
+    }
+
+    /**
      * Simulate the remainder of a match from a given minute.
      * Used when a substitution changes the lineup mid-match.
      * Only generates events for the period [fromMinute+1, 93].
@@ -577,91 +703,25 @@ class MatchSimulator
         $awayStrength = $this->calculateTeamStrength($awayPlayers, $fromMinute, $awayEntryMinutes, $awayTacticalDrain);
 
         $baseGoals = config('match_simulation.base_goals', 1.3);
-        $ratioExponent = config('match_simulation.ratio_exponent', 2.0);
-        $homeAdvantageGoals = config('match_simulation.home_advantage_goals', 0.15);
 
-        // Ratio-based xG: stronger team is ALWAYS favored regardless of venue
-        $strengthRatio = $awayStrength > 0 ? $homeStrength / $awayStrength : 1.0;
+        [$homeExpectedGoals, $awayExpectedGoals] = $this->calculateBaseExpectedGoals(
+            $homeStrength, $awayStrength,
+            $homeFormation, $awayFormation,
+            $homeMentality, $awayMentality,
+            $baseGoals, $matchFraction,
+        );
 
-        $homeExpectedGoals = (pow($strengthRatio, $ratioExponent) * $baseGoals + $homeAdvantageGoals)
-            * $homeFormation->attackModifier()
-            * $awayFormation->defenseModifier()
-            * $homeMentality->ownGoalsModifier()
-            * $awayMentality->opponentGoalsModifier()
-            * $matchFraction;
-
-        $awayExpectedGoals = (pow(1 / $strengthRatio, $ratioExponent) * $baseGoals)
-            * $awayFormation->attackModifier()
-            * $homeFormation->defenseModifier()
-            * $awayMentality->ownGoalsModifier()
-            * $homeMentality->opponentGoalsModifier()
-            * $matchFraction;
-
-        // --- Tactical Instruction Multipliers ---
-
-        // Playing Style: own xG modifier and opponent xG modifier
-        $homeExpectedGoals *= $homePlayingStyle->ownXGModifier();
-        $homeExpectedGoals *= $awayPlayingStyle->opponentXGModifier();
-        $awayExpectedGoals *= $awayPlayingStyle->ownXGModifier();
-        $awayExpectedGoals *= $homePlayingStyle->opponentXGModifier();
-
-        // Pressing: opponent xG modifier (with minute-based fade for High Press)
         $effectiveMinute = $fromMinute + (93 - $fromMinute) / 2;
-        $homeExpectedGoals *= $awayPressing->opponentXGModifier((int) $effectiveMinute);
-        $awayExpectedGoals *= $homePressing->opponentXGModifier((int) $effectiveMinute);
 
-        // Defensive Line: own xG and opponent xG modifiers
-        // Check if opponent's best forward nullifies the high line
-        $homeDefLineOwn = $homeDefLine->ownXGModifier();
-        $homeDefLineOpp = $homeDefLine->opponentXGModifier();
-        $awayDefLineOwn = $awayDefLine->ownXGModifier();
-        $awayDefLineOpp = $awayDefLine->opponentXGModifier();
-
-        $homePhysicalThreshold = $homeDefLine->physicalThreshold();
-        if ($homePhysicalThreshold > 0 && $this->getBestForwardPhysical($awayPlayers) >= $homePhysicalThreshold) {
-            $homeDefLineOwn = 1.0;
-            $homeDefLineOpp = 1.0;
-        }
-        $awayPhysicalThreshold = $awayDefLine->physicalThreshold();
-        if ($awayPhysicalThreshold > 0 && $this->getBestForwardPhysical($homePlayers) >= $awayPhysicalThreshold) {
-            $awayDefLineOwn = 1.0;
-            $awayDefLineOpp = 1.0;
-        }
-
-        $homeExpectedGoals *= $homeDefLineOwn;
-        $awayExpectedGoals *= $homeDefLineOpp;
-        $awayExpectedGoals *= $awayDefLineOwn;
-        $homeExpectedGoals *= $awayDefLineOpp;
-
-        // Tactical Interactions
-        $interactions = config('match_simulation.tactical_interactions', []);
-
-        // Counter-Attack vs opponent's Attacking mentality + High Line → bonus own xG
-        $counterBonus = $interactions['counter_vs_attacking_high_line'] ?? 1.0;
-        if ($homePlayingStyle === PlayingStyle::COUNTER_ATTACK && $awayMentality === Mentality::ATTACKING && $awayDefLine === DefensiveLineHeight::HIGH_LINE) {
-            $homeExpectedGoals *= $counterBonus;
-        }
-        if ($awayPlayingStyle === PlayingStyle::COUNTER_ATTACK && $homeMentality === Mentality::ATTACKING && $homeDefLine === DefensiveLineHeight::HIGH_LINE) {
-            $awayExpectedGoals *= $counterBonus;
-        }
-
-        // Possession disrupted by opponent's High Press → penalty to own xG
-        $possessionPenalty = $interactions['possession_disrupted_by_high_press'] ?? 1.0;
-        if ($homePlayingStyle === PlayingStyle::POSSESSION && $awayPressing === PressingIntensity::HIGH_PRESS) {
-            $homeExpectedGoals *= $possessionPenalty;
-        }
-        if ($awayPlayingStyle === PlayingStyle::POSSESSION && $homePressing === PressingIntensity::HIGH_PRESS) {
-            $awayExpectedGoals *= $possessionPenalty;
-        }
-
-        // Direct bypasses opponent's High Press → bonus to own xG
-        $directBonus = $interactions['direct_bypasses_high_press'] ?? 1.0;
-        if ($homePlayingStyle === PlayingStyle::DIRECT && $awayPressing === PressingIntensity::HIGH_PRESS) {
-            $homeExpectedGoals *= $directBonus;
-        }
-        if ($awayPlayingStyle === PlayingStyle::DIRECT && $homePressing === PressingIntensity::HIGH_PRESS) {
-            $awayExpectedGoals *= $directBonus;
-        }
+        [$homeExpectedGoals, $awayExpectedGoals] = $this->applyTacticalModifiers(
+            $homeExpectedGoals, $awayExpectedGoals,
+            $homePlayingStyle, $awayPlayingStyle,
+            $homePressing, $awayPressing,
+            $homeDefLine, $awayDefLine,
+            $homeMentality, $awayMentality,
+            $effectiveMinute,
+            $homePlayers, $awayPlayers,
+        );
 
         $homeStrikerBonus = $this->calculateStrikerBonus($homePlayers) * $matchFraction;
         $awayStrikerBonus = $this->calculateStrikerBonus($awayPlayers) * $matchFraction;
@@ -937,87 +997,26 @@ class MatchSimulator
         $awayStrength = $this->calculateTeamStrength($awayPlayers, $fromMinute, $awayEntryMinutes, $awayTacticalDrain);
 
         $baseGoals = config('match_simulation.base_goals', 1.3);
-        $ratioExponent = config('match_simulation.ratio_exponent', 2.0);
-        $homeAdvantageGoals = config('match_simulation.home_advantage_goals', 0.15);
 
-        $strengthRatio = $awayStrength > 0 ? $homeStrength / $awayStrength : 1.0;
-        $etBaseGoals = $baseGoals * 0.8; // 20% fatigue reduction
+        [$homeExpectedGoals, $awayExpectedGoals] = $this->calculateBaseExpectedGoals(
+            $homeStrength, $awayStrength,
+            $homeFormation, $awayFormation,
+            $homeMentality, $awayMentality,
+            $baseGoals * 0.8, // 20% fatigue reduction
+            $etFraction,
+        );
 
-        $homeExpectedGoals = (pow($strengthRatio, $ratioExponent) * $etBaseGoals + $homeAdvantageGoals)
-            * $homeFormation->attackModifier()
-            * $awayFormation->defenseModifier()
-            * $homeMentality->ownGoalsModifier()
-            * $awayMentality->opponentGoalsModifier()
-            * $etFraction;
-
-        $awayExpectedGoals = (pow(1 / $strengthRatio, $ratioExponent) * $etBaseGoals)
-            * $awayFormation->attackModifier()
-            * $homeFormation->defenseModifier()
-            * $awayMentality->ownGoalsModifier()
-            * $homeMentality->opponentGoalsModifier()
-            * $etFraction;
-
-        // --- Tactical Instruction Multipliers (same as regular time) ---
-
-        // Playing Style
-        $homeExpectedGoals *= $homePlayingStyle->ownXGModifier();
-        $homeExpectedGoals *= $awayPlayingStyle->opponentXGModifier();
-        $awayExpectedGoals *= $awayPlayingStyle->ownXGModifier();
-        $awayExpectedGoals *= $homePlayingStyle->opponentXGModifier();
-
-        // Pressing (ET is past fade point, so High Press is at its weakest)
         $etEffectiveMinute = $fromMinute + ($etMinutesRemaining / 2);
-        $homeExpectedGoals *= $awayPressing->opponentXGModifier((int) $etEffectiveMinute);
-        $awayExpectedGoals *= $homePressing->opponentXGModifier((int) $etEffectiveMinute);
 
-        // Defensive Line (with high-line nullification)
-        $homeDefLineOwn = $homeDefLine->ownXGModifier();
-        $homeDefLineOpp = $homeDefLine->opponentXGModifier();
-        $awayDefLineOwn = $awayDefLine->ownXGModifier();
-        $awayDefLineOpp = $awayDefLine->opponentXGModifier();
-
-        $homePhysicalThreshold = $homeDefLine->physicalThreshold();
-        if ($homePhysicalThreshold > 0 && $this->getBestForwardPhysical($awayPlayers) >= $homePhysicalThreshold) {
-            $homeDefLineOwn = 1.0;
-            $homeDefLineOpp = 1.0;
-        }
-        $awayPhysicalThreshold = $awayDefLine->physicalThreshold();
-        if ($awayPhysicalThreshold > 0 && $this->getBestForwardPhysical($homePlayers) >= $awayPhysicalThreshold) {
-            $awayDefLineOwn = 1.0;
-            $awayDefLineOpp = 1.0;
-        }
-
-        $homeExpectedGoals *= $homeDefLineOwn;
-        $awayExpectedGoals *= $homeDefLineOpp;
-        $awayExpectedGoals *= $awayDefLineOwn;
-        $homeExpectedGoals *= $awayDefLineOpp;
-
-        // Tactical Interactions
-        $interactions = config('match_simulation.tactical_interactions', []);
-
-        $counterBonus = $interactions['counter_vs_attacking_high_line'] ?? 1.0;
-        if ($homePlayingStyle === PlayingStyle::COUNTER_ATTACK && $awayMentality === Mentality::ATTACKING && $awayDefLine === DefensiveLineHeight::HIGH_LINE) {
-            $homeExpectedGoals *= $counterBonus;
-        }
-        if ($awayPlayingStyle === PlayingStyle::COUNTER_ATTACK && $homeMentality === Mentality::ATTACKING && $homeDefLine === DefensiveLineHeight::HIGH_LINE) {
-            $awayExpectedGoals *= $counterBonus;
-        }
-
-        $possessionPenalty = $interactions['possession_disrupted_by_high_press'] ?? 1.0;
-        if ($homePlayingStyle === PlayingStyle::POSSESSION && $awayPressing === PressingIntensity::HIGH_PRESS) {
-            $homeExpectedGoals *= $possessionPenalty;
-        }
-        if ($awayPlayingStyle === PlayingStyle::POSSESSION && $homePressing === PressingIntensity::HIGH_PRESS) {
-            $awayExpectedGoals *= $possessionPenalty;
-        }
-
-        $directBonus = $interactions['direct_bypasses_high_press'] ?? 1.0;
-        if ($homePlayingStyle === PlayingStyle::DIRECT && $awayPressing === PressingIntensity::HIGH_PRESS) {
-            $homeExpectedGoals *= $directBonus;
-        }
-        if ($awayPlayingStyle === PlayingStyle::DIRECT && $homePressing === PressingIntensity::HIGH_PRESS) {
-            $awayExpectedGoals *= $directBonus;
-        }
+        [$homeExpectedGoals, $awayExpectedGoals] = $this->applyTacticalModifiers(
+            $homeExpectedGoals, $awayExpectedGoals,
+            $homePlayingStyle, $awayPlayingStyle,
+            $homePressing, $awayPressing,
+            $homeDefLine, $awayDefLine,
+            $homeMentality, $awayMentality,
+            $etEffectiveMinute,
+            $homePlayers, $awayPlayers,
+        );
 
         $homeScore = $this->poissonRandom($homeExpectedGoals);
         $awayScore = $this->poissonRandom($awayExpectedGoals);
