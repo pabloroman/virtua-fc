@@ -104,6 +104,12 @@ return [
     'priority_urgent' => 'Urgente',
     'priority_attention' => 'Atención',
 
+    // AI transfer market
+    'ai_transfer_title' => 'Resumen Ventana de :window',
+    'ai_transfer_message' => ':count traspasos completados en la liga.',
+    'ai_transfer_window_summer' => 'Verano',
+    'ai_transfer_window_winter' => 'Invierno',
+
     // Renewal negotiations
     'renewal_accepted_title' => ':player acepta renovar',
     'renewal_accepted_message' => ':player ha aceptado la renovación por :wage/año durante :years años.',

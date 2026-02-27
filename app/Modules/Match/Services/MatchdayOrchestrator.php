@@ -15,6 +15,7 @@ use App\Modules\Match\DTOs\MatchEventData;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Squad\Services\EligibilityService;
 use App\Modules\Squad\Services\InjuryService;
+use App\Modules\Transfer\Services\AITransferMarketService;
 use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Transfer\Services\LoanService;
 use App\Modules\Transfer\Services\ScoutingService;
@@ -54,6 +55,7 @@ class MatchdayOrchestrator
         private readonly YouthAcademyService $youthAcademyService,
         private readonly EligibilityService $eligibilityService,
         private readonly InjuryService $injuryService,
+        private readonly AITransferMarketService $aiTransferMarketService,
     ) {}
 
     public function advance(Game $game): MatchdayAdvanceResult
@@ -530,6 +532,12 @@ class MatchdayOrchestrator
             }
         }
 
+        // AI transfer market: process when a transfer window just closed
+        $t0 = microtime(true);
+        $q0 = count(DB::getQueryLog());
+        $this->processTransferWindowClose($game);
+        $careerTimings['aiTransferMarket'] = $this->capturePhase($t0, $q0);
+
         // Log career mode sub-timings
         $this->logCareerModeTimings($careerTimings);
     }
@@ -561,6 +569,41 @@ class MatchdayOrchestrator
                 $this->notificationService->notifyExpiringOffer($game, $offer);
             }
         }
+    }
+
+    /**
+     * Detect when a transfer window has just closed and trigger AI transfer activity.
+     *
+     * Summer window closes at end of August (month 9 = September means it just closed).
+     * Winter window closes at end of January (month 2 = February means it just closed).
+     * Uses notification existence as idempotency guard.
+     */
+    private function processTransferWindowClose(Game $game): void
+    {
+        $month = (int) $game->current_date->format('n');
+
+        $window = match ($month) {
+            9 => 'summer',
+            2 => 'winter',
+            default => null,
+        };
+
+        if (! $window) {
+            return;
+        }
+
+        // Already processed this window? Check if notification exists for this month
+        $alreadyProcessed = GameNotification::where('game_id', $game->id)
+            ->where('type', GameNotification::TYPE_AI_TRANSFER_ACTIVITY)
+            ->where('game_date', '>=', $game->current_date->copy()->startOfMonth())
+            ->where('game_date', '<=', $game->current_date->copy()->endOfMonth())
+            ->exists();
+
+        if ($alreadyProcessed) {
+            return;
+        }
+
+        $this->aiTransferMarketService->processWindowClose($game, $window);
     }
 
     /**
