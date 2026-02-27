@@ -117,8 +117,8 @@ return [
 
     // Tactical instruction sections
     'instructions_title' => 'Instrucciones Tácticas',
-    'instructions_in_possession' => 'En Posesión',
-    'instructions_out_of_possession' => 'Sin Posesión',
+    'instructions_in_possession' => 'Con Balón',
+    'instructions_out_of_possession' => 'Sin Balón',
 
     // Tactical Guide
     'tactical_guide_title' => 'Guía Táctica',

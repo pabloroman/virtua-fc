@@ -132,7 +132,7 @@
                         </div>
 
                         {{-- Team Instructions Panel --}}
-                        <div class="mb-4 border border-slate-200 rounded-lg overflow-hidden" x-data="{ instructionsOpen: window.innerWidth >= 768 }">
+                        <div class="mb-4 border border-slate-200 rounded-lg overflow-hidden" x-data="{ instructionsOpen: false }">
                             <button type="button" @click="instructionsOpen = !instructionsOpen"
                                 class="w-full flex items-center justify-between px-4 py-3 bg-slate-50 hover:bg-slate-100 transition-colors">
                                 <span class="text-sm font-semibold text-slate-700">{{ __('game.instructions_title') }}</span>
@@ -143,7 +143,7 @@
                             <div x-show="instructionsOpen" x-collapse class="px-4 py-4 space-y-4">
                                 {{-- In Possession --}}
                                 <div>
-                                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('game.instructions_in_possession') }}</h4>
+                                    <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">{{ __('game.instructions_in_possession') }}</h4>
                                     <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
                                         <template x-for="style in playingStyles" :key="style.value">
                                             <button type="button" @click="selectedPlayingStyle = style.value"
@@ -162,7 +162,7 @@
 
                                 {{-- Out of Possession --}}
                                 <div>
-                                    <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">{{ __('game.instructions_out_of_possession') }}</h4>
+                                    <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">{{ __('game.instructions_out_of_possession') }}</h4>
 
                                     {{-- Pressing --}}
                                     <div class="mb-3">
@@ -170,7 +170,7 @@
                                             <template x-for="p in pressingOptions" :key="p.value">
                                                 <button type="button" @click="selectedPressing = p.value"
                                                     :class="selectedPressing === p.value
-                                                        ? 'bg-amber-100 text-amber-800 border-amber-300'
+                                                        ? 'bg-sky-100 text-sky-800 border-sky-300'
                                                         : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'"
                                                     class="px-3 py-2 rounded-lg border-2 text-sm font-medium min-h-[44px] transition-colors"
                                                     x-text="p.label"
@@ -188,7 +188,7 @@
                                             <template x-for="d in defensiveLineOptions" :key="d.value">
                                                 <button type="button" @click="selectedDefLine = d.value"
                                                     :class="selectedDefLine === d.value
-                                                        ? 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                                                        ? 'bg-sky-100 text-sky-800 border-sky-300'
                                                         : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'"
                                                     class="px-3 py-2 rounded-lg border-2 text-sm font-medium min-h-[44px] transition-colors"
                                                     x-text="d.label"
@@ -201,11 +201,11 @@
                                     </div>
                                 </div>
 
-                                {{-- Tactical Guide link --}}
+                                {{-- Tactical Guide button --}}
                                 <div class="pt-2 border-t border-slate-100 text-right">
-                                    <a href="{{ route('game.tactical-guide', $game->id) }}" class="text-xs text-sky-600 hover:text-sky-800 transition-colors">
+                                    <button type="button" x-on:click="$dispatch('open-modal', 'tactical-guide')" class="text-xs text-sky-600 hover:text-sky-800 transition-colors">
                                         {{ __('game.tactical_guide_link') }} &rarr;
-                                    </a>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -567,4 +567,6 @@
             </div>
         </div>
     </div>
+
+    @include('partials.tactical-guide-modal')
 </x-app-layout>

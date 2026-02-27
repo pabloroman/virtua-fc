@@ -63,7 +63,6 @@ use App\Http\Views\GameSetupStatus;
 use App\Http\Views\ShowAcademyPlayerDetail;
 use App\Http\Views\ShowPlayerDetail;
 use App\Http\Views\ShowSquadV2;
-use App\Http\Views\ShowTacticalGuide;
 use App\Http\Views\ShowTransfers;
 use App\Http\Actions\ProcessSubstitution;
 use App\Http\Actions\ProcessTacticalChange;
@@ -109,7 +108,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/game/{gameId}/results/{competition}/{matchday}', ShowMatchResults::class)->name('game.results');
         Route::get('/game/{gameId}/live/{matchId}', ShowLiveMatch::class)->name('game.live-match');
         Route::get('/game/{gameId}/lineup', ShowLineup::class)->name('game.lineup');
-        Route::get('/game/{gameId}/tactical-guide', ShowTacticalGuide::class)->name('game.tactical-guide');
 
         // Game Actions
         Route::post('/game/{gameId}/advance', AdvanceMatchday::class)->name('game.advance');

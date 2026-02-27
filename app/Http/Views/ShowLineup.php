@@ -163,6 +163,44 @@ class ShowLineup
             'summary' => $d->summary(),
         ], DefensiveLineHeight::cases());
 
+        // Tactical guide data (for inline modal)
+        $guideFormations = collect(config('match_simulation.formations'))->map(fn ($mods, $name) => [
+            'name' => $name,
+            'attack' => $mods['attack'],
+            'defense' => $mods['defense'],
+        ])->values();
+
+        $guideMentalities = collect(config('match_simulation.mentalities'))->map(fn ($mods, $name) => [
+            'name' => $name,
+            'own_goals' => $mods['own_goals'],
+            'opponent_goals' => $mods['opponent_goals'],
+        ])->values();
+
+        $guidePlayingStyles = collect(PlayingStyle::cases())->map(fn (PlayingStyle $s) => [
+            'label' => $s->label(),
+            'own_xg' => $s->ownXGModifier(),
+            'opp_xg' => $s->opponentXGModifier(),
+            'energy' => $s->energyDrainMultiplier(),
+        ]);
+
+        $guidePressingOptions = collect(PressingIntensity::cases())->map(fn (PressingIntensity $p) => [
+            'label' => $p->label(),
+            'own_xg' => $p->ownXGModifier(),
+            'opp_xg' => config("match_simulation.pressing.{$p->value}.opp_xg"),
+            'energy' => $p->energyDrainMultiplier(),
+            'fades' => config("match_simulation.pressing.{$p->value}.fade_after") !== null,
+            'fade_to' => config("match_simulation.pressing.{$p->value}.fade_opp_xg"),
+        ]);
+
+        $guideDefensiveLines = collect(DefensiveLineHeight::cases())->map(fn (DefensiveLineHeight $d) => [
+            'label' => $d->label(),
+            'own_xg' => $d->ownXGModifier(),
+            'opp_xg' => $d->opponentXGModifier(),
+            'threshold' => $d->physicalThreshold(),
+        ]);
+
+        $tacticalInteractions = config('match_simulation.tactical_interactions');
+
         return view('lineup', [
             'game' => $game,
             'match' => $match,
@@ -197,6 +235,12 @@ class ShowLineup
             'currentPlayingStyle' => $defaultPlayingStyle,
             'currentPressing' => $defaultPressing,
             'currentDefLine' => $defaultDefLine,
+            'guideFormations' => $guideFormations,
+            'guideMentalities' => $guideMentalities,
+            'guidePlayingStyles' => $guidePlayingStyles,
+            'guidePressingOptions' => $guidePressingOptions,
+            'guideDefensiveLines' => $guideDefensiveLines,
+            'tacticalInteractions' => $tacticalInteractions,
         ]);
     }
 
