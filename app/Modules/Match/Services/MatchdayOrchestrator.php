@@ -532,6 +532,12 @@ class MatchdayOrchestrator
             }
         }
 
+        // Notify user when a transfer window opens
+        $t0 = microtime(true);
+        $q0 = count(DB::getQueryLog());
+        $this->processTransferWindowOpen($game);
+        $careerTimings['windowOpenNotification'] = $this->capturePhase($t0, $q0);
+
         // AI transfer market: process when a transfer window just closed
         $t0 = microtime(true);
         $q0 = count(DB::getQueryLog());
@@ -569,6 +575,45 @@ class MatchdayOrchestrator
                 $this->notificationService->notifyExpiringOffer($game, $offer);
             }
         }
+    }
+
+    /**
+     * Detect when a transfer window has just opened and notify the user.
+     *
+     * Summer window opens in July, winter window opens in January.
+     * Uses notification existence as idempotency guard (one per window).
+     */
+    private function processTransferWindowOpen(Game $game): void
+    {
+        $month = (int) $game->current_date->format('n');
+
+        $window = match ($month) {
+            7, 8 => 'summer',
+            1 => 'winter',
+            default => null,
+        };
+
+        if (! $window) {
+            return;
+        }
+
+        // Already notified this window?
+        $startOfWindow = $game->current_date->copy()->startOfMonth();
+        if ($window === 'summer' && $month === 8) {
+            // August is still summer window — check from July 1
+            $startOfWindow = $game->current_date->copy()->month(7)->startOfMonth();
+        }
+
+        $alreadyNotified = GameNotification::where('game_id', $game->id)
+            ->where('type', GameNotification::TYPE_TRANSFER_WINDOW_OPEN)
+            ->where('game_date', '>=', $startOfWindow)
+            ->exists();
+
+        if ($alreadyNotified) {
+            return;
+        }
+
+        $this->notificationService->notifyTransferWindowOpen($game, $window);
     }
 
     /**

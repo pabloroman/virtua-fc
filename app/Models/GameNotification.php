@@ -69,6 +69,7 @@ class GameNotification extends Model
     public const TYPE_LOAN_REQUEST_RESULT = 'loan_request_result';
     public const TYPE_TOURNAMENT_WELCOME = 'tournament_welcome';
     public const TYPE_AI_TRANSFER_ACTIVITY = 'ai_transfer_activity';
+    public const TYPE_TRANSFER_WINDOW_OPEN = 'transfer_window_open';
 
     // Priorities
     public const PRIORITY_MILESTONE = 'milestone';
@@ -102,6 +103,7 @@ class GameNotification extends Model
         self::TYPE_LOAN_REQUEST_RESULT => 'scouting',
         self::TYPE_TOURNAMENT_WELCOME => 'competition',
         self::TYPE_AI_TRANSFER_ACTIVITY => 'transfer-activity',
+        self::TYPE_TRANSFER_WINDOW_OPEN => 'scouting',
     ];
 
     protected $fillable = [
@@ -385,6 +387,13 @@ class GameNotification extends Model
                 'border' => 'border-cyan-200',
                 'text' => 'text-cyan-800',
                 'icon_bg' => 'bg-cyan-500',
+                'icon_text' => 'text-white',
+            ],
+            self::TYPE_TRANSFER_WINDOW_OPEN => [
+                'bg' => 'bg-emerald-50',
+                'border' => 'border-emerald-200',
+                'text' => 'text-emerald-800',
+                'icon_bg' => 'bg-emerald-500',
                 'icon_text' => 'text-white',
             ],
             default => [

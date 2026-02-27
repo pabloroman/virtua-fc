@@ -104,6 +104,10 @@ return [
     'priority_urgent' => 'Urgente',
     'priority_attention' => 'Atención',
 
+    // Transfer window open
+    'transfer_window_open_title' => 'Ventana de :window Abierta',
+    'transfer_window_open_message' => 'La ventana de fichajes está abierta. Los fichajes acordados se incorporarán a tu plantilla de inmediato.',
+
     // AI transfer market
     'ai_transfer_title' => 'Resumen Ventana de :window',
     'ai_transfer_message' => ':count traspasos completados en la liga.',
