@@ -200,6 +200,13 @@
                                            x-text="defensiveLineOptions.find(d => d.value === selectedDefLine)?.summary"></p>
                                     </div>
                                 </div>
+
+                                {{-- Tactical Guide link --}}
+                                <div class="pt-2 border-t border-slate-100 text-right">
+                                    <a href="{{ route('game.tactical-guide', $game->id) }}" class="text-xs text-sky-600 hover:text-sky-800 transition-colors">
+                                        {{ __('game.tactical_guide_link') }} &rarr;
+                                    </a>
+                                </div>
                             </div>
                         </div>
 
