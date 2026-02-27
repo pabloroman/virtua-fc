@@ -21,9 +21,6 @@ use Illuminate\Database\Eloquent\Builder;
  * @property int $current_matchday
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property string $default_formation
- * @property array<array-key, mixed>|null $default_lineup
- * @property string $default_mentality
  * @property bool $needs_onboarding
  * @property bool $needs_welcome
  * @property string|null $season_goal
@@ -119,10 +116,6 @@ class Game extends Model
         'season',
         'current_date',
         'current_matchday',
-        'default_formation',
-        'default_lineup',
-        'default_slot_assignments',
-        'default_mentality',
         'season_goal',
         'needs_onboarding',
         'needs_welcome',
@@ -135,10 +128,6 @@ class Game extends Model
     protected $casts = [
         'current_date' => 'date',
         'current_matchday' => 'integer',
-        'default_formation' => 'string',
-        'default_lineup' => 'array',
-        'default_slot_assignments' => 'array',
-        'default_mentality' => 'string',
         'season_goal' => 'string',
         'needs_onboarding' => 'boolean',
         'needs_welcome' => 'boolean',
@@ -252,6 +241,11 @@ class Game extends Model
     public function team(): BelongsTo
     {
         return $this->belongsTo(Team::class);
+    }
+
+    public function tactics(): HasOne
+    {
+        return $this->hasOne(GameTactics::class);
     }
 
     public function matches(): HasMany

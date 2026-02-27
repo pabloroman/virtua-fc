@@ -24,8 +24,14 @@ export default function liveMatch(config) {
         // Tactical config
         activeFormation: config.activeFormation || '4-4-2',
         activeMentality: config.activeMentality || 'balanced',
+        activePlayingStyle: config.activePlayingStyle || 'balanced',
+        activePressing: config.activePressing || 'standard',
+        activeDefLine: config.activeDefLine || 'normal',
         availableFormations: config.availableFormations || [],
         availableMentalities: config.availableMentalities || [],
+        availablePlayingStyles: config.availablePlayingStyles || [],
+        availablePressing: config.availablePressing || [],
+        availableDefLine: config.availableDefLine || [],
         tacticsUrl: config.tacticsUrl || '',
         translations: config.translations || {},
 
@@ -44,6 +50,9 @@ export default function liveMatch(config) {
         // Tactical change state
         pendingFormation: null,
         pendingMentality: null,
+        pendingPlayingStyle: null,
+        pendingPressing: null,
+        pendingDefLine: null,
         tacticsProcessing: false,
 
         // Clock state
@@ -835,7 +844,10 @@ export default function liveMatch(config) {
 
         get hasTacticalChanges() {
             return (this.pendingFormation !== null && this.pendingFormation !== this.activeFormation)
-                || (this.pendingMentality !== null && this.pendingMentality !== this.activeMentality);
+                || (this.pendingMentality !== null && this.pendingMentality !== this.activeMentality)
+                || (this.pendingPlayingStyle !== null && this.pendingPlayingStyle !== this.activePlayingStyle)
+                || (this.pendingPressing !== null && this.pendingPressing !== this.activePressing)
+                || (this.pendingDefLine !== null && this.pendingDefLine !== this.activeDefLine);
         },
 
         getMentalityLabel(value) {
@@ -857,6 +869,9 @@ export default function liveMatch(config) {
         resetTactics() {
             this.pendingFormation = null;
             this.pendingMentality = null;
+            this.pendingPlayingStyle = null;
+            this.pendingPressing = null;
+            this.pendingDefLine = null;
         },
 
         async confirmTacticalChanges() {
@@ -877,6 +892,9 @@ export default function liveMatch(config) {
                         minute,
                         formation: this.pendingFormation !== this.activeFormation ? this.pendingFormation : null,
                         mentality: this.pendingMentality !== this.activeMentality ? this.pendingMentality : null,
+                        playing_style: this.pendingPlayingStyle !== this.activePlayingStyle ? this.pendingPlayingStyle : null,
+                        pressing: this.pendingPressing !== this.activePressing ? this.pendingPressing : null,
+                        defensive_line: this.pendingDefLine !== this.activeDefLine ? this.pendingDefLine : null,
                         previousSubstitutions: this.substitutionsMade.map(s => ({
                             playerOutId: s.playerOutId,
                             playerInId: s.playerInId,
@@ -901,6 +919,15 @@ export default function liveMatch(config) {
                 }
                 if (result.mentality) {
                     this.activeMentality = result.mentality;
+                }
+                if (result.playingStyle) {
+                    this.activePlayingStyle = result.playingStyle;
+                }
+                if (result.pressing) {
+                    this.activePressing = result.pressing;
+                }
+                if (result.defensiveLine) {
+                    this.activeDefLine = result.defensiveLine;
                 }
 
                 if (isETChange) {

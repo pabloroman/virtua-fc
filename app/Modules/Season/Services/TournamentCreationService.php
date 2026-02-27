@@ -4,6 +4,7 @@ namespace App\Modules\Season\Services;
 
 use App\Modules\Season\Jobs\SetupTournamentGame;
 use App\Models\Game;
+use App\Models\GameTactics;
 use App\Models\Team;
 use Ramsey\Uuid\Uuid;
 
@@ -29,6 +30,9 @@ class TournamentCreationService
             'needs_onboarding' => true,
             'setup_completed_at' => null,
         ]);
+
+        // Create default tactical settings
+        GameTactics::create(['game_id' => $gameId]);
 
         SetupTournamentGame::dispatch(
             gameId: $gameId,

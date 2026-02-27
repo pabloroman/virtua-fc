@@ -3,8 +3,11 @@
 namespace App\Http\Views;
 
 use App\Modules\Competition\Services\CalendarService;
+use App\Modules\Lineup\Enums\DefensiveLineHeight;
 use App\Modules\Lineup\Enums\Formation;
 use App\Modules\Lineup\Enums\Mentality;
+use App\Modules\Lineup\Enums\PlayingStyle;
+use App\Modules\Lineup\Enums\PressingIntensity;
 use App\Modules\Lineup\Services\LineupService;
 use App\Models\ClubProfile;
 use App\Models\Game;
@@ -21,7 +24,7 @@ class ShowLineup
 
     public function __invoke(string $gameId)
     {
-        $game = Game::with('team')->findOrFail($gameId);
+        $game = Game::with(['team', 'tactics'])->findOrFail($gameId);
         $match = $game->next_match;
 
         abort_unless($match, 404);
@@ -44,7 +47,7 @@ class ShowLineup
         $currentLineup = $this->lineupService->getLineup($match, $game->team_id);
 
         // Get formation
-        $defaultFormation = $game->default_formation ?? '4-4-2';
+        $defaultFormation = $game->tactics?->default_formation ?? '4-4-2';
         $currentFormation = $this->lineupService->getFormation($match, $game->team_id);
 
         // If no lineup set, try to prefill from previous match
@@ -59,14 +62,14 @@ class ShowLineup
             $currentLineup = $previous['lineup'];
             // Use previous formation if available, otherwise default
             $currentFormation = $currentFormation ?? $previous['formation'] ?? $defaultFormation;
-            $currentSlotAssignments = $game->default_slot_assignments;
+            $currentSlotAssignments = $game->tactics?->default_slot_assignments;
         }
 
         $currentFormation = $currentFormation ?? $defaultFormation;
         $formationEnum = Formation::tryFrom($currentFormation) ?? Formation::F_4_4_2;
 
         // Get mentality
-        $defaultMentality = $game->default_mentality ?? 'balanced';
+        $defaultMentality = $game->tactics?->default_mentality ?? 'balanced';
         $currentMentality = $this->lineupService->getMentality($match, $game->team_id);
         $currentMentality = $currentMentality ?? $defaultMentality;
 
@@ -134,6 +137,70 @@ class ShowLineup
         // Team shirt colors for pitch visualization
         $teamColorsHex = TeamColors::toHex($game->team->colors ?? TeamColors::get($game->team->getRawOriginal('name')));
 
+        // Instruction defaults and available options
+        $defaultPlayingStyle = $game->tactics?->default_playing_style ?? 'balanced';
+        $defaultPressing = $game->tactics?->default_pressing ?? 'standard';
+        $defaultDefLine = $game->tactics?->default_defensive_line ?? 'normal';
+
+        $playingStyles = array_map(fn (PlayingStyle $s) => [
+            'value' => $s->value,
+            'label' => $s->label(),
+            'tooltip' => $s->tooltip(),
+            'summary' => $s->summary(),
+        ], PlayingStyle::cases());
+
+        $pressingOptions = array_map(fn (PressingIntensity $p) => [
+            'value' => $p->value,
+            'label' => $p->label(),
+            'tooltip' => $p->tooltip(),
+            'summary' => $p->summary(),
+        ], PressingIntensity::cases());
+
+        $defensiveLineOptions = array_map(fn (DefensiveLineHeight $d) => [
+            'value' => $d->value,
+            'label' => $d->label(),
+            'tooltip' => $d->tooltip(),
+            'summary' => $d->summary(),
+        ], DefensiveLineHeight::cases());
+
+        // Tactical guide data (for inline modal)
+        $guideFormations = collect(config('match_simulation.formations'))->map(fn ($mods, $name) => [
+            'name' => $name,
+            'attack' => $mods['attack'],
+            'defense' => $mods['defense'],
+        ])->values();
+
+        $guideMentalities = collect(config('match_simulation.mentalities'))->map(fn ($mods, $name) => [
+            'name' => $name,
+            'own_goals' => $mods['own_goals'],
+            'opponent_goals' => $mods['opponent_goals'],
+        ])->values();
+
+        $guidePlayingStyles = collect(PlayingStyle::cases())->map(fn (PlayingStyle $s) => [
+            'label' => $s->label(),
+            'own_xg' => $s->ownXGModifier(),
+            'opp_xg' => $s->opponentXGModifier(),
+            'energy' => $s->energyDrainMultiplier(),
+        ]);
+
+        $guidePressingOptions = collect(PressingIntensity::cases())->map(fn (PressingIntensity $p) => [
+            'label' => $p->label(),
+            'own_xg' => $p->ownXGModifier(),
+            'opp_xg' => config("match_simulation.pressing.{$p->value}.opp_xg"),
+            'energy' => $p->energyDrainMultiplier(),
+            'fades' => config("match_simulation.pressing.{$p->value}.fade_after") !== null,
+            'fade_to' => config("match_simulation.pressing.{$p->value}.fade_opp_xg"),
+        ]);
+
+        $guideDefensiveLines = collect(DefensiveLineHeight::cases())->map(fn (DefensiveLineHeight $d) => [
+            'label' => $d->label(),
+            'own_xg' => $d->ownXGModifier(),
+            'opp_xg' => $d->opponentXGModifier(),
+            'threshold' => $d->physicalThreshold(),
+        ]);
+
+        $tacticalInteractions = config('match_simulation.tactical_interactions');
+
         return view('lineup', [
             'game' => $game,
             'match' => $match,
@@ -146,7 +213,7 @@ class ShowLineup
             'midfielders' => $playersByGroup['midfielders'],
             'forwards' => $playersByGroup['forwards'],
             'currentLineup' => $currentLineup,
-            'currentSlotAssignments' => $game->default_slot_assignments,
+            'currentSlotAssignments' => $game->tactics?->default_slot_assignments,
             'autoLineup' => $autoLineup,
             'formations' => Formation::cases(),
             'currentFormation' => $currentFormation,
@@ -162,6 +229,18 @@ class ShowLineup
             'userTeamAverage' => $userTeamAverage,
             'formationModifiers' => $formationModifiers,
             'playerForm' => $playerForm,
+            'playingStyles' => $playingStyles,
+            'pressingOptions' => $pressingOptions,
+            'defensiveLineOptions' => $defensiveLineOptions,
+            'currentPlayingStyle' => $defaultPlayingStyle,
+            'currentPressing' => $defaultPressing,
+            'currentDefLine' => $defaultDefLine,
+            'guideFormations' => $guideFormations,
+            'guideMentalities' => $guideMentalities,
+            'guidePlayingStyles' => $guidePlayingStyles,
+            'guidePressingOptions' => $guidePressingOptions,
+            'guideDefensiveLines' => $guideDefensiveLines,
+            'tacticalInteractions' => $tacticalInteractions,
         ]);
     }
 

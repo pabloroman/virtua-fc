@@ -5,8 +5,11 @@ namespace App\Modules\Match\Services;
 use App\Modules\Match\DTOs\MatchEventData;
 use App\Modules\Match\DTOs\MatchResult;
 use App\Modules\Match\DTOs\ResimulationResult;
+use App\Modules\Lineup\Enums\DefensiveLineHeight;
 use App\Modules\Lineup\Enums\Formation;
 use App\Modules\Lineup\Enums\Mentality;
+use App\Modules\Lineup\Enums\PlayingStyle;
+use App\Modules\Lineup\Enums\PressingIntensity;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
@@ -64,11 +67,18 @@ class MatchResimulationService
         // 3. Calculate score at the minute (from remaining events)
         $scoreAtMinute = $this->calculateScoreAtMinute($match);
 
-        // 4. Read formation/mentality from match record (already updated by caller)
+        // 4. Read formation/mentality/instructions from match record (already updated by caller)
         $homeFormation = Formation::tryFrom($match->home_formation) ?? Formation::F_4_4_2;
         $awayFormation = Formation::tryFrom($match->away_formation) ?? Formation::F_4_4_2;
         $homeMentality = Mentality::tryFrom($match->home_mentality ?? '') ?? Mentality::BALANCED;
         $awayMentality = Mentality::tryFrom($match->away_mentality ?? '') ?? Mentality::BALANCED;
+
+        $homePlayingStyle = PlayingStyle::tryFrom($match->home_playing_style ?? '') ?? PlayingStyle::BALANCED;
+        $awayPlayingStyle = PlayingStyle::tryFrom($match->away_playing_style ?? '') ?? PlayingStyle::BALANCED;
+        $homePressing = PressingIntensity::tryFrom($match->home_pressing ?? '') ?? PressingIntensity::STANDARD;
+        $awayPressing = PressingIntensity::tryFrom($match->away_pressing ?? '') ?? PressingIntensity::STANDARD;
+        $homeDefLine = DefensiveLineHeight::tryFrom($match->home_defensive_line ?? '') ?? DefensiveLineHeight::NORMAL;
+        $awayDefLine = DefensiveLineHeight::tryFrom($match->away_defensive_line ?? '') ?? DefensiveLineHeight::NORMAL;
 
         // 5. Exclude red-carded players
         $redCardedPlayerIds = MatchEvent::where('game_match_id', $match->id)
@@ -123,6 +133,12 @@ class MatchResimulationService
             $existingYellowPlayerIds,
             $homeEntryMinutes,
             $awayEntryMinutes,
+            $homePlayingStyle,
+            $awayPlayingStyle,
+            $homePressing,
+            $awayPressing,
+            $homeDefLine,
+            $awayDefLine,
         );
 
         // 9. Calculate new final score
@@ -170,11 +186,18 @@ class MatchResimulationService
             // 3. Calculate ET-only score at minute (events with minute > 90 that remain)
             $scoreAtMinute = $this->calculateScoreAtMinute($match, 90);
 
-            // 4. Read formation/mentality from match record
+            // 4. Read formation/mentality/instructions from match record
             $homeFormation = Formation::tryFrom($match->home_formation) ?? Formation::F_4_4_2;
             $awayFormation = Formation::tryFrom($match->away_formation) ?? Formation::F_4_4_2;
             $homeMentality = Mentality::tryFrom($match->home_mentality ?? '') ?? Mentality::BALANCED;
             $awayMentality = Mentality::tryFrom($match->away_mentality ?? '') ?? Mentality::BALANCED;
+
+            $homePlayingStyle = PlayingStyle::tryFrom($match->home_playing_style ?? '') ?? PlayingStyle::BALANCED;
+            $awayPlayingStyle = PlayingStyle::tryFrom($match->away_playing_style ?? '') ?? PlayingStyle::BALANCED;
+            $homePressing = PressingIntensity::tryFrom($match->home_pressing ?? '') ?? PressingIntensity::STANDARD;
+            $awayPressing = PressingIntensity::tryFrom($match->away_pressing ?? '') ?? PressingIntensity::STANDARD;
+            $homeDefLine = DefensiveLineHeight::tryFrom($match->home_defensive_line ?? '') ?? DefensiveLineHeight::NORMAL;
+            $awayDefLine = DefensiveLineHeight::tryFrom($match->away_defensive_line ?? '') ?? DefensiveLineHeight::NORMAL;
 
             // 5. Exclude red-carded players
             $redCardedPlayerIds = MatchEvent::where('game_match_id', $match->id)
@@ -211,6 +234,12 @@ class MatchResimulationService
                 awayFormation: $awayFormation,
                 homeMentality: $homeMentality,
                 awayMentality: $awayMentality,
+                homePlayingStyle: $homePlayingStyle,
+                awayPlayingStyle: $awayPlayingStyle,
+                homePressing: $homePressing,
+                awayPressing: $awayPressing,
+                homeDefLine: $homeDefLine,
+                awayDefLine: $awayDefLine,
             );
 
             // 8. Calculate new ET score

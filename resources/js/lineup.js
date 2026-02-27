@@ -5,6 +5,12 @@ export default function lineupManager(config) {
         selectedPlayers: config.currentLineup || [],
         selectedFormation: config.currentFormation,
         selectedMentality: config.currentMentality,
+        selectedPlayingStyle: config.currentPlayingStyle || 'balanced',
+        selectedPressing: config.currentPressing || 'standard',
+        selectedDefLine: config.currentDefLine || 'normal',
+        playingStyles: config.playingStyles || [],
+        pressingOptions: config.pressingOptions || [],
+        defensiveLineOptions: config.defensiveLineOptions || [],
         autoLineup: config.autoLineup || [],
 
         // Manual slot assignments: { slotId: playerId }
@@ -22,6 +28,9 @@ export default function lineupManager(config) {
         _initialPlayers: null,
         _initialFormation: null,
         _initialMentality: null,
+        _initialPlayingStyle: null,
+        _initialPressing: null,
+        _initialDefLine: null,
         _initialAssignments: null,
         _isSaving: false,
 
@@ -44,6 +53,9 @@ export default function lineupManager(config) {
             this._initialPlayers = [...(config.currentLineup || [])].sort();
             this._initialFormation = config.currentFormation;
             this._initialMentality = config.currentMentality;
+            this._initialPlayingStyle = config.currentPlayingStyle || 'balanced';
+            this._initialPressing = config.currentPressing || 'standard';
+            this._initialDefLine = config.currentDefLine || 'normal';
             this._initialAssignments = JSON.stringify(config.currentSlotAssignments || {});
 
             // Warn on navigation away with unsaved changes
@@ -59,8 +71,11 @@ export default function lineupManager(config) {
             const playersChanged = JSON.stringify([...this.selectedPlayers].sort()) !== JSON.stringify(this._initialPlayers);
             const formationChanged = this.selectedFormation !== this._initialFormation;
             const mentalityChanged = this.selectedMentality !== this._initialMentality;
+            const styleChanged = this.selectedPlayingStyle !== this._initialPlayingStyle;
+            const pressingChanged = this.selectedPressing !== this._initialPressing;
+            const defLineChanged = this.selectedDefLine !== this._initialDefLine;
             const assignmentsChanged = JSON.stringify(this.manualAssignments) !== this._initialAssignments;
-            return playersChanged || formationChanged || mentalityChanged || assignmentsChanged;
+            return playersChanged || formationChanged || mentalityChanged || styleChanged || pressingChanged || defLineChanged || assignmentsChanged;
         },
 
         // Computed

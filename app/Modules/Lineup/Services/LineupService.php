@@ -2,8 +2,11 @@
 
 namespace App\Modules\Lineup\Services;
 
+use App\Modules\Lineup\Enums\DefensiveLineHeight;
 use App\Modules\Lineup\Enums\Formation;
 use App\Modules\Lineup\Enums\Mentality;
+use App\Modules\Lineup\Enums\PlayingStyle;
+use App\Modules\Lineup\Enums\PressingIntensity;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
@@ -323,6 +326,57 @@ class LineupService
     }
 
     /**
+     * Select tactical instructions for an AI team based on context.
+     *
+     * @return array{PlayingStyle, PressingIntensity, DefensiveLineHeight}
+     */
+    public function selectAIInstructions(?string $reputationLevel, bool $isHome, float $teamAvg, float $opponentAvg): array
+    {
+        $diff = $teamAvg - $opponentAvg;
+        $isStronger = $diff >= 5;
+        $isWeaker = $diff <= -5;
+
+        $tier = match ($reputationLevel) {
+            'elite', 'contenders' => 'bold',
+            'continental', 'established' => 'mid',
+            default => 'cautious',
+        };
+
+        // Playing Style
+        if ($isStronger && $isHome) {
+            $style = $tier === 'cautious' ? PlayingStyle::BALANCED : PlayingStyle::POSSESSION;
+        } elseif ($isWeaker && ! $isHome) {
+            $style = $tier === 'bold' ? PlayingStyle::COUNTER_ATTACK : PlayingStyle::COUNTER_ATTACK;
+        } elseif ($isWeaker) {
+            $style = PlayingStyle::COUNTER_ATTACK;
+        } else {
+            $style = $tier === 'bold' ? PlayingStyle::POSSESSION : PlayingStyle::BALANCED;
+        }
+
+        // Pressing Intensity
+        if ($isStronger && $tier === 'bold') {
+            $pressing = PressingIntensity::HIGH_PRESS;
+        } elseif ($isWeaker && ! $isHome) {
+            $pressing = PressingIntensity::LOW_BLOCK;
+        } elseif ($isWeaker) {
+            $pressing = $tier === 'bold' ? PressingIntensity::STANDARD : PressingIntensity::LOW_BLOCK;
+        } else {
+            $pressing = PressingIntensity::STANDARD;
+        }
+
+        // Defensive Line
+        if ($isStronger && $tier === 'bold') {
+            $defLine = $isHome ? DefensiveLineHeight::HIGH_LINE : DefensiveLineHeight::NORMAL;
+        } elseif ($isWeaker) {
+            $defLine = DefensiveLineHeight::DEEP;
+        } else {
+            $defLine = DefensiveLineHeight::NORMAL;
+        }
+
+        return [$style, $pressing, $defLine];
+    }
+
+    /**
      * Calculate the average overall score for a collection of players.
      */
     public function calculateTeamAverage(Collection $players): int
@@ -507,11 +561,15 @@ class LineupService
      */
     public function ensureLineupsForMatches($matches, Game $game, $allPlayersGrouped = null, array $suspendedPlayerIds = [], $clubProfiles = null): void
     {
-        $playerFormation = $game->default_formation
-            ? Formation::tryFrom($game->default_formation)
+        $tactics = $game->tactics;
+        $playerFormation = $tactics?->default_formation
+            ? Formation::tryFrom($tactics->default_formation)
             : null;
-        $playerPreferredLineup = $game->default_lineup;
-        $playerMentality = $game->default_mentality ?? 'balanced';
+        $playerPreferredLineup = $tactics?->default_lineup;
+        $playerMentality = $tactics?->default_mentality ?? 'balanced';
+        $playerPlayingStyle = $tactics?->default_playing_style ?? 'balanced';
+        $playerPressing = $tactics?->default_pressing ?? 'standard';
+        $playerDefLine = $tactics?->default_defensive_line ?? 'normal';
 
         foreach ($matches as $match) {
             $matchDate = $match->scheduled_date;
@@ -528,7 +586,10 @@ class LineupService
                 $playerMentality,
                 $allPlayersGrouped,
                 $suspendedPlayerIds,
-                $clubProfiles
+                $clubProfiles,
+                $playerPlayingStyle,
+                $playerPressing,
+                $playerDefLine,
             );
 
             $this->ensureTeamLineup(
@@ -542,7 +603,10 @@ class LineupService
                 $playerMentality,
                 $allPlayersGrouped,
                 $suspendedPlayerIds,
-                $clubProfiles
+                $clubProfiles,
+                $playerPlayingStyle,
+                $playerPressing,
+                $playerDefLine,
             );
 
             // Save once per match (covers lineup, formation, mentality for both sides)
@@ -570,7 +634,10 @@ class LineupService
         string $playerMentality,
         $allPlayersGrouped = null,
         array $suspendedPlayerIds = [],
-        $clubProfiles = null
+        $clubProfiles = null,
+        string $playerPlayingStyle = 'balanced',
+        string $playerPressing = 'standard',
+        string $playerDefLine = 'normal',
     ): void {
         $lineupField = $side . '_lineup';
         $teamIdField = $side . '_team_id';
@@ -659,28 +726,26 @@ class LineupService
             $match->away_lineup = $lineup;
         }
 
+        $prefix = $match->home_team_id === $teamId ? 'home' : 'away';
+
         if ($isPlayerTeam) {
-            // Player's team: use their chosen formation and mentality
+            // Player's team: use their chosen formation, mentality, and instructions
             if ($playerFormation) {
-                if ($match->home_team_id === $teamId) {
-                    $match->home_formation = $playerFormation->value;
-                } else {
-                    $match->away_formation = $playerFormation->value;
-                }
+                $match->{$prefix . '_formation'} = $playerFormation->value;
             }
-            if ($match->home_team_id === $teamId) {
-                $match->home_mentality = $playerMentality;
-            } else {
-                $match->away_mentality = $playerMentality;
-            }
+            $match->{$prefix . '_mentality'} = $playerMentality;
+            $match->{$prefix . '_playing_style'} = $playerPlayingStyle;
+            $match->{$prefix . '_pressing'} = $playerPressing;
+            $match->{$prefix . '_defensive_line'} = $playerDefLine;
         } else {
-            // AI team: set formation and reputation-driven mentality
+            // AI team: set formation, reputation-driven mentality, and AI instructions
             $aiFormation = $aiFormation ?? $this->selectAIFormation($availablePlayers);
-            $isHome = $match->home_team_id === $teamId;
+            $isHome = $prefix === 'home';
             $opponentTeamId = $isHome ? $match->away_team_id : $match->home_team_id;
 
             // Reuse already-selected lineup for team average (avoids redundant selectBestXI)
             $teamAvg = $this->calculateTeamAverage($aiSelectedXI ?? $this->selectBestXI($availablePlayers, $aiFormation));
+
             $opponentPlayers = $allPlayersGrouped?->get($opponentTeamId, collect()) ?? collect();
             $opponentAvg = $opponentPlayers->isNotEmpty()
                 ? $this->calculateTeamAverage($this->selectBestXI($opponentPlayers))
@@ -688,14 +753,13 @@ class LineupService
 
             $reputationLevel = $clubProfiles?->get($teamId)?->reputation_level;
             $aiMentality = $this->selectAIMentality($reputationLevel, $isHome, $teamAvg, $opponentAvg);
+            [$aiStyle, $aiPressing, $aiDefLine] = $this->selectAIInstructions($reputationLevel, $isHome, $teamAvg, $opponentAvg);
 
-            if ($match->home_team_id === $teamId) {
-                $match->home_formation = $aiFormation->value;
-                $match->home_mentality = $aiMentality->value;
-            } else {
-                $match->away_formation = $aiFormation->value;
-                $match->away_mentality = $aiMentality->value;
-            }
+            $match->{$prefix . '_formation'} = $aiFormation->value;
+            $match->{$prefix . '_mentality'} = $aiMentality->value;
+            $match->{$prefix . '_playing_style'} = $aiStyle->value;
+            $match->{$prefix . '_pressing'} = $aiPressing->value;
+            $match->{$prefix . '_defensive_line'} = $aiDefLine->value;
         }
     }
 

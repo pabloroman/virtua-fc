@@ -12,6 +12,12 @@
         currentLineup: @js($currentLineup ?? []),
         currentFormation: @js($currentFormation),
         currentMentality: @js($currentMentality),
+        currentPlayingStyle: @js($currentPlayingStyle ?? 'balanced'),
+        currentPressing: @js($currentPressing ?? 'standard'),
+        currentDefLine: @js($currentDefLine ?? 'normal'),
+        playingStyles: @js($playingStyles),
+        pressingOptions: @js($pressingOptions),
+        defensiveLineOptions: @js($defensiveLineOptions),
         autoLineup: @js($autoLineup ?? []),
         currentSlotAssignments: @js($currentSlotAssignments ?? (object) []),
         playersData: @js($playersData),
@@ -72,6 +78,9 @@
                         </template>
                         <input type="hidden" name="formation" :value="selectedFormation">
                         <input type="hidden" name="mentality" :value="selectedMentality">
+                        <input type="hidden" name="playing_style" :value="selectedPlayingStyle">
+                        <input type="hidden" name="pressing" :value="selectedPressing">
+                        <input type="hidden" name="defensive_line" :value="selectedDefLine">
                         {{-- Slot assignment hidden inputs --}}
                         <template x-for="slot in slotAssignments" :key="'sa-' + slot.id">
                             <input x-show="slot.player" type="hidden" :name="'slot_assignments[' + slot.id + ']'" :value="slot.player?.id">
@@ -119,6 +128,88 @@
                                 <x-primary-button x-bind:disabled="selectedCount !== 11">
                                     {{ __('app.confirm') }}
                                 </x-primary-button>
+                            </div>
+                        </div>
+
+                        {{-- Team Instructions Panel --}}
+                        <div class="mb-4 border border-slate-200 rounded-lg overflow-hidden" x-data="{ instructionsOpen: false }">
+                            <button type="button" @click="instructionsOpen = !instructionsOpen"
+                                class="w-full flex items-center justify-between px-4 py-3 bg-slate-50 hover:bg-slate-100 transition-colors">
+                                <span class="text-sm font-semibold text-slate-700 flex items-center gap-1.5">
+                                    {{ __('game.instructions_title') }}
+                                    <svg class="w-3.5 h-3.5 text-slate-300" fill="currentColor" viewBox="0 0 512 512"><path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zm0-336c-17.7 0-32 14.3-32 32 0 13.3-10.7 24-24 24s-24-10.7-24-24c0-44.2 35.8-80 80-80s80 35.8 80 80c0 47.2-36 67.2-56 74.5l0 3.8c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-8.1c0-20.5 14.8-35.2 30.1-40.2 6.4-2.1 13.2-5.5 18.2-10.3 4.3-4.2 7.7-10 7.7-19.6 0-17.7-14.3-32-32-32zM224 368a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg>
+                                </span>
+                                <svg class="w-4 h-4 text-slate-500 transition-transform" :class="instructionsOpen && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            <div x-show="instructionsOpen" x-collapse class="px-4 py-4 space-y-4">
+                                {{-- In Possession --}}
+                                <div>
+                                    <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">{{ __('game.instructions_in_possession') }}</h4>
+                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                                        <template x-for="style in playingStyles" :key="style.value">
+                                            <button type="button" @click="selectedPlayingStyle = style.value"
+                                                :class="selectedPlayingStyle === style.value
+                                                    ? 'bg-sky-100 text-sky-800 border-sky-300'
+                                                    : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'"
+                                                class="px-3 py-2 rounded-lg border-2 text-sm font-medium min-h-[44px] transition-colors"
+                                                x-text="style.label"
+                                                x-tooltip="style.tooltip">
+                                            </button>
+                                        </template>
+                                    </div>
+                                    <p class="mt-1.5 text-xs text-slate-500"
+                                       x-text="playingStyles.find(s => s.value === selectedPlayingStyle)?.summary"></p>
+                                </div>
+
+                                {{-- Out of Possession --}}
+                                <div>
+                                    <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">{{ __('game.instructions_out_of_possession') }}</h4>
+
+                                    {{-- Pressing --}}
+                                    <div class="mb-3">
+                                        <div class="grid grid-cols-3 gap-2">
+                                            <template x-for="p in pressingOptions" :key="p.value">
+                                                <button type="button" @click="selectedPressing = p.value"
+                                                    :class="selectedPressing === p.value
+                                                        ? 'bg-sky-100 text-sky-800 border-sky-300'
+                                                        : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'"
+                                                    class="px-3 py-2 rounded-lg border-2 text-sm font-medium min-h-[44px] transition-colors"
+                                                    x-text="p.label"
+                                                    x-tooltip="p.tooltip">
+                                                </button>
+                                            </template>
+                                        </div>
+                                        <p class="mt-1.5 text-xs text-slate-500"
+                                           x-text="pressingOptions.find(p => p.value === selectedPressing)?.summary"></p>
+                                    </div>
+
+                                    {{-- Defensive Line --}}
+                                    <div>
+                                        <div class="grid grid-cols-3 gap-2">
+                                            <template x-for="d in defensiveLineOptions" :key="d.value">
+                                                <button type="button" @click="selectedDefLine = d.value"
+                                                    :class="selectedDefLine === d.value
+                                                        ? 'bg-sky-100 text-sky-800 border-sky-300'
+                                                        : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'"
+                                                    class="px-3 py-2 rounded-lg border-2 text-sm font-medium min-h-[44px] transition-colors"
+                                                    x-text="d.label"
+                                                    x-tooltip="d.tooltip">
+                                                </button>
+                                            </template>
+                                        </div>
+                                        <p class="mt-1.5 text-xs text-slate-500"
+                                           x-text="defensiveLineOptions.find(d => d.value === selectedDefLine)?.summary"></p>
+                                    </div>
+                                </div>
+
+                                {{-- Tactical Guide button --}}
+                                <div class="pt-2 border-t border-slate-100 text-right">
+                                    <button type="button" x-on:click="$dispatch('open-modal', 'tactical-guide')" class="text-xs text-sky-600 hover:text-sky-800 transition-colors">
+                                        {{ __('game.tactical_guide_link') }} &rarr;
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -479,4 +570,6 @@
             </div>
         </div>
     </div>
+
+    @include('partials.tactical-guide-modal')
 </x-app-layout>
