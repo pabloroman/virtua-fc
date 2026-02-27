@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class ProcessSeasonTransition implements ShouldQueue
 {
@@ -43,5 +44,13 @@ class ProcessSeasonTransition implements ShouldQueue
         ]);
 
         event(new SeasonStarted($game));
+    }
+
+    public function failed(?\Throwable $exception): void
+    {
+        Log::error('Season transition failed', [
+            'game_id' => $this->gameId,
+            'error' => $exception?->getMessage(),
+        ]);
     }
 }
