@@ -397,7 +397,10 @@
 
                         {{-- Team Instructions --}}
                         <div class="pt-3 border-t border-slate-100">
-                            <h4 class="text-xs font-semibold text-slate-500 uppercase mb-3">{{ __('game.instructions_title') }}</h4>
+                            <h4 class="text-xs font-semibold text-slate-500 uppercase mb-3 flex items-center gap-1.5">
+                                {{ __('game.instructions_title') }}
+                                <span x-tooltip.raw="{{ __('game.tactical_guide_link') }}" class="cursor-help shrink-0"><svg class="w-3.5 h-3.5 text-slate-300 hover:text-slate-500" fill="currentColor" viewBox="0 0 512 512"><path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zm0-336c-17.7 0-32 14.3-32 32 0 13.3-10.7 24-24 24s-24-10.7-24-24c0-44.2 35.8-80 80-80s80 35.8 80 80c0 47.2-36 67.2-56 74.5l0 3.8c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-8.1c0-20.5 14.8-35.2 30.1-40.2 6.4-2.1 13.2-5.5 18.2-10.3 4.3-4.2 7.7-10 7.7-19.6 0-17.7-14.3-32-32-32zM224 368a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg></span>
+                            </h4>
 
                             {{-- Playing Style (In Possession) --}}
                             <div class="mb-3">
@@ -419,14 +422,14 @@
 
                             {{-- Pressing (Out of Possession) --}}
                             <div class="mb-3">
-                                <p class="text-[10px] font-medium text-slate-400 uppercase mb-1.5">{{ __('game.pressing_standard') }}</p>
+                                <p class="text-[10px] font-medium text-slate-400 uppercase mb-1.5">{{ __('game.instructions_out_of_possession') }}</p>
                                 <div class="grid grid-cols-3 gap-1.5">
                                     <template x-for="p in availablePressing" :key="p.value">
                                         <button
                                             @click="pendingPressing = p.value"
                                             class="px-2 py-2 rounded-lg border-2 text-xs font-semibold transition-all min-h-[44px]"
                                             :class="(pendingPressing ?? activePressing) === p.value
-                                                ? 'bg-amber-100 text-amber-800 border-amber-400'
+                                                ? 'bg-sky-100 text-sky-800 border-sky-400'
                                                 : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'"
                                             x-text="p.label"
                                             x-tooltip="p.tooltip"
@@ -437,14 +440,13 @@
 
                             {{-- Defensive Line --}}
                             <div>
-                                <p class="text-[10px] font-medium text-slate-400 uppercase mb-1.5">{{ __('game.defline_normal') }}</p>
                                 <div class="grid grid-cols-3 gap-1.5">
                                     <template x-for="d in availableDefLine" :key="d.value">
                                         <button
                                             @click="pendingDefLine = d.value"
                                             class="px-2 py-2 rounded-lg border-2 text-xs font-semibold transition-all min-h-[44px]"
                                             :class="(pendingDefLine ?? activeDefLine) === d.value
-                                                ? 'bg-emerald-100 text-emerald-800 border-emerald-400'
+                                                ? 'bg-sky-100 text-sky-800 border-sky-400'
                                                 : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'"
                                             x-text="d.label"
                                             x-tooltip="d.tooltip"

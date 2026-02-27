@@ -66,13 +66,13 @@ return [
 
     // Formation tooltips
     'formation_tip_442' => 'Equilibrada. Sin bonificación ofensiva ni defensiva.',
-    'formation_tip_433' => 'Ofensiva. :attack ataque, pero :defense goles en contra.',
-    'formation_tip_4231' => 'Control. Sin bonificación ofensiva, :defense goles en contra.',
-    'formation_tip_343' => 'Muy ofensiva. :attack ataque, pero :defense goles en contra.',
-    'formation_tip_352' => 'Ligeramente ofensiva. :attack ataque, pero :defense goles en contra.',
-    'formation_tip_4141' => 'Ligeramente defensiva. :attack ataque, pero :defense goles en contra.',
-    'formation_tip_532' => 'Defensiva. :attack ataque, pero :defense goles en contra.',
-    'formation_tip_541' => 'Muy defensiva. :attack ataque, pero :defense goles en contra.',
+    'formation_tip_433' => 'Ofensiva. :attack ataque, :defense goles en contra.',
+    'formation_tip_4231' => 'Control. :attack ataque, :defense goles en contra.',
+    'formation_tip_343' => 'Muy ofensiva. :attack ataque, :defense goles en contra.',
+    'formation_tip_352' => 'Control del mediocampo. Ataque neutro, :defense goles en contra.',
+    'formation_tip_4141' => 'Defensiva. :attack ataque, :defense goles en contra.',
+    'formation_tip_532' => 'Muy defensiva. :attack ataque, :defense goles en contra.',
+    'formation_tip_541' => 'Ultra defensiva. :attack ataque, :defense goles en contra.',
 
     // Mentality tooltips
     'mentality_tip_defensive' => 'Tus goles :own, goles rival :opponent. Cierra el partido.',

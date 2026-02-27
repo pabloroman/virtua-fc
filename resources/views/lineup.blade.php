@@ -135,7 +135,10 @@
                         <div class="mb-4 border border-slate-200 rounded-lg overflow-hidden" x-data="{ instructionsOpen: false }">
                             <button type="button" @click="instructionsOpen = !instructionsOpen"
                                 class="w-full flex items-center justify-between px-4 py-3 bg-slate-50 hover:bg-slate-100 transition-colors">
-                                <span class="text-sm font-semibold text-slate-700">{{ __('game.instructions_title') }}</span>
+                                <span class="text-sm font-semibold text-slate-700 flex items-center gap-1.5">
+                                    {{ __('game.instructions_title') }}
+                                    <svg class="w-3.5 h-3.5 text-slate-300" fill="currentColor" viewBox="0 0 512 512"><path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zm0-336c-17.7 0-32 14.3-32 32 0 13.3-10.7 24-24 24s-24-10.7-24-24c0-44.2 35.8-80 80-80s80 35.8 80 80c0 47.2-36 67.2-56 74.5l0 3.8c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-8.1c0-20.5 14.8-35.2 30.1-40.2 6.4-2.1 13.2-5.5 18.2-10.3 4.3-4.2 7.7-10 7.7-19.6 0-17.7-14.3-32-32-32zM224 368a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg>
+                                </span>
                                 <svg class="w-4 h-4 text-slate-500 transition-transform" :class="instructionsOpen && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                 </svg>

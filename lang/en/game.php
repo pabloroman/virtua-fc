@@ -66,13 +66,13 @@ return [
 
     // Formation tooltips
     'formation_tip_442' => 'Balanced. No attacking or defensive bonus.',
-    'formation_tip_433' => 'Attacking. :attack attack, but :defense goals conceded.',
-    'formation_tip_4231' => 'Control. No attacking bonus, :defense goals conceded.',
-    'formation_tip_343' => 'Very attacking. :attack attack, but :defense goals conceded.',
-    'formation_tip_352' => 'Slightly attacking. :attack attack, but :defense goals conceded.',
-    'formation_tip_4141' => 'Slightly defensive. :attack attack, but :defense goals conceded.',
-    'formation_tip_532' => 'Defensive. :attack attack, but :defense goals conceded.',
-    'formation_tip_541' => 'Very defensive. :attack attack, but :defense goals conceded.',
+    'formation_tip_433' => 'Attacking. :attack attack, :defense goals conceded.',
+    'formation_tip_4231' => 'Control. :attack attack, :defense goals conceded.',
+    'formation_tip_343' => 'Very attacking. :attack attack, :defense goals conceded.',
+    'formation_tip_352' => 'Midfield control. Neutral attack, :defense goals conceded.',
+    'formation_tip_4141' => 'Defensive. :attack attack, :defense goals conceded.',
+    'formation_tip_532' => 'Very defensive. :attack attack, :defense goals conceded.',
+    'formation_tip_541' => 'Ultra defensive. :attack attack, :defense goals conceded.',
 
     // Mentality tooltips
     'mentality_tip_defensive' => 'Your goals :own, opponent goals :opponent. Shut the game down.',
