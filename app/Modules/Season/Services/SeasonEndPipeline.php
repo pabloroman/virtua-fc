@@ -26,6 +26,7 @@ use App\Modules\Season\Processors\SquadReplenishmentProcessor;
 use App\Modules\Season\Processors\TransferMarketResetProcessor;
 use App\Modules\Season\Processors\YouthAcademyProcessor;
 use App\Models\Game;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Orchestrates season end processors in priority order.
@@ -101,7 +102,16 @@ class SeasonEndPipeline
         );
 
         foreach ($this->processors as $processor) {
-            $data = $processor->process($game, $data);
+            try {
+                $data = $processor->process($game, $data);
+            } catch (\Throwable $e) {
+                Log::error('Season processor failed', [
+                    'processor' => get_class($processor),
+                    'game_id' => $game->id,
+                    'error' => $e->getMessage(),
+                ]);
+                throw $e;
+            }
         }
 
         return $data;
