@@ -4,8 +4,11 @@ namespace App\Modules\Match\Services;
 
 use App\Modules\Academy\Services\YouthAcademyService;
 use App\Modules\Competition\Services\StandingsCalculator;
+use App\Modules\Lineup\Enums\DefensiveLineHeight;
 use App\Modules\Lineup\Enums\Formation;
 use App\Modules\Lineup\Enums\Mentality;
+use App\Modules\Lineup\Enums\PlayingStyle;
+use App\Modules\Lineup\Enums\PressingIntensity;
 use App\Modules\Lineup\Services\LineupService;
 use App\Modules\Match\DTOs\MatchdayAdvanceResult;
 use App\Modules\Match\DTOs\MatchEventData;
@@ -274,6 +277,13 @@ class MatchdayOrchestrator
         $homeMentality = Mentality::tryFrom($match->home_mentality ?? '') ?? Mentality::BALANCED;
         $awayMentality = Mentality::tryFrom($match->away_mentality ?? '') ?? Mentality::BALANCED;
 
+        $homePlayingStyle = PlayingStyle::tryFrom($match->home_playing_style ?? '') ?? PlayingStyle::BALANCED;
+        $awayPlayingStyle = PlayingStyle::tryFrom($match->away_playing_style ?? '') ?? PlayingStyle::BALANCED;
+        $homePressing = PressingIntensity::tryFrom($match->home_pressing ?? '') ?? PressingIntensity::STANDARD;
+        $awayPressing = PressingIntensity::tryFrom($match->away_pressing ?? '') ?? PressingIntensity::STANDARD;
+        $homeDefLine = DefensiveLineHeight::tryFrom($match->home_defensive_line ?? '') ?? DefensiveLineHeight::NORMAL;
+        $awayDefLine = DefensiveLineHeight::tryFrom($match->away_defensive_line ?? '') ?? DefensiveLineHeight::NORMAL;
+
         $result = $this->matchSimulator->simulate(
             $match->homeTeam,
             $match->awayTeam,
@@ -284,6 +294,12 @@ class MatchdayOrchestrator
             $homeMentality,
             $awayMentality,
             $game,
+            $homePlayingStyle,
+            $awayPlayingStyle,
+            $homePressing,
+            $awayPressing,
+            $homeDefLine,
+            $awayDefLine,
         );
 
         return [

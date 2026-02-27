@@ -79,6 +79,47 @@ return [
     'mentality_tip_balanced' => 'No modifiers. Balanced play.',
     'mentality_tip_attacking' => 'Your goals :own, opponent goals :opponent. Risk and reward.',
 
+    // Playing Style
+    'style_possession' => 'Possession',
+    'style_balanced' => 'Balanced',
+    'style_counter_attack' => 'Counter-Attack',
+    'style_direct' => 'Direct Play',
+    'style_tip_possession' => 'More goals for you, fewer for opponent, but higher energy drain.',
+    'style_tip_balanced' => 'No modifiers. Neutral style.',
+    'style_tip_counter_attack' => 'Fewer goals for you, but fewer conceded and less energy drain.',
+    'style_tip_direct' => 'Slightly more goals for you, but opponent also attacks more.',
+    'style_summary_possession' => 'Dominate with the ball. More attack, fewer goals conceded, more fatigue.',
+    'style_summary_balanced' => 'Balanced play with no bonuses.',
+    'style_summary_counter_attack' => 'Sit back and strike. Fewer chances but solid and light on energy.',
+    'style_summary_direct' => 'Long balls and quick transitions. More open game.',
+
+    // Pressing Intensity
+    'pressing_high_press' => 'High Press',
+    'pressing_standard' => 'Standard',
+    'pressing_low_block' => 'Low Block',
+    'pressing_tip_high_press' => 'Reduces opponent goals, but effectiveness fades after minute 60.',
+    'pressing_tip_standard' => 'No modifiers. Balanced pressing.',
+    'pressing_tip_low_block' => 'Fewer goals for you, but also fewer for opponent. Saves energy.',
+    'pressing_summary_high_press' => 'Press high up the pitch. Very effective early, fades after minute 60.',
+    'pressing_summary_standard' => 'Balanced pressing with no bonuses.',
+    'pressing_summary_low_block' => 'Defend deep. Fewer chances to score but solid defensively.',
+
+    // Defensive Line
+    'defline_high_line' => 'High Line',
+    'defline_normal' => 'Normal',
+    'defline_deep' => 'Deep Line',
+    'defline_tip_high_line' => 'More goals for you, fewer for opponent. Nullified by fast forwards (80+ physical).',
+    'defline_tip_normal' => 'No modifiers. Balanced defensive line.',
+    'defline_tip_deep' => 'Fewer goals for you, but also fewer for opponent.',
+    'defline_summary_high_line' => 'Push the line up. Squeeze opponents, but vulnerable to pacy forwards.',
+    'defline_summary_normal' => 'Balanced defensive line.',
+    'defline_summary_deep' => 'Defend deep. Concede less, but also attack less.',
+
+    // Tactical instruction sections
+    'instructions_title' => 'Team Instructions',
+    'instructions_in_possession' => 'In Possession',
+    'instructions_out_of_possession' => 'Out of Possession',
+
     // Alerts
     'injured' => 'Injured',
 

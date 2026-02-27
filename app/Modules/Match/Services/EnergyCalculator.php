@@ -6,8 +6,10 @@ class EnergyCalculator
 {
     /**
      * Calculate energy drain per minute for a player.
+     *
+     * @param  float  $tacticalDrainMultiplier  Combined tactical drain (playing style × pressing)
      */
-    public static function drainPerMinute(int $physicalAbility, int $age, bool $isGoalkeeper): float
+    public static function drainPerMinute(int $physicalAbility, int $age, bool $isGoalkeeper, float $tacticalDrainMultiplier = 1.0): float
     {
         $baseDrain = config('match_simulation.energy.base_drain_per_minute', 0.75);
         $physicalFactor = config('match_simulation.energy.physical_ability_factor', 0.005);
@@ -24,16 +26,18 @@ class EnergyCalculator
             $drain *= $gkMultiplier;
         }
 
+        $drain *= $tacticalDrainMultiplier;
+
         return max(0, $drain);
     }
 
     /**
      * Calculate energy at a specific minute for a player.
      */
-    public static function energyAtMinute(int $physicalAbility, int $age, bool $isGoalkeeper, int $currentMinute, int $minuteEntered = 0): float
+    public static function energyAtMinute(int $physicalAbility, int $age, bool $isGoalkeeper, int $currentMinute, int $minuteEntered = 0, float $tacticalDrainMultiplier = 1.0): float
     {
         $minutesPlayed = max(0, $currentMinute - $minuteEntered);
-        $drain = self::drainPerMinute($physicalAbility, $age, $isGoalkeeper);
+        $drain = self::drainPerMinute($physicalAbility, $age, $isGoalkeeper, $tacticalDrainMultiplier);
 
         return max(0, min(100, 100 - $drain * $minutesPlayed));
     }
@@ -41,7 +45,7 @@ class EnergyCalculator
     /**
      * Calculate average energy over a period (linear drain → midpoint).
      */
-    public static function averageEnergy(int $physicalAbility, int $age, bool $isGoalkeeper, int $entryMinute, int $fromMinute, int $toMinute = 93): float
+    public static function averageEnergy(int $physicalAbility, int $age, bool $isGoalkeeper, int $entryMinute, int $fromMinute, int $toMinute = 93, float $tacticalDrainMultiplier = 1.0): float
     {
         // Player hasn't entered yet — shouldn't happen but return full energy
         if ($entryMinute > $toMinute) {
@@ -51,8 +55,8 @@ class EnergyCalculator
         // If player entered after fromMinute, only average from entry onward
         $effectiveFrom = max($fromMinute, $entryMinute);
 
-        $energyStart = self::energyAtMinute($physicalAbility, $age, $isGoalkeeper, $effectiveFrom, $entryMinute);
-        $energyEnd = self::energyAtMinute($physicalAbility, $age, $isGoalkeeper, $toMinute, $entryMinute);
+        $energyStart = self::energyAtMinute($physicalAbility, $age, $isGoalkeeper, $effectiveFrom, $entryMinute, $tacticalDrainMultiplier);
+        $energyEnd = self::energyAtMinute($physicalAbility, $age, $isGoalkeeper, $toMinute, $entryMinute, $tacticalDrainMultiplier);
 
         return ($energyStart + $energyEnd) / 2;
     }

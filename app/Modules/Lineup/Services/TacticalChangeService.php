@@ -20,8 +20,8 @@ class TacticalChangeService
     ) {}
 
     /**
-     * Process a tactical change (formation and/or mentality) mid-match.
-     * Updates match record, game defaults, then re-simulates the remainder.
+     * Process a tactical change (formation, mentality, and/or instructions) mid-match.
+     * Updates match record, then re-simulates the remainder.
      */
     public function processTacticalChange(
         GameMatch $match,
@@ -31,20 +31,30 @@ class TacticalChangeService
         ?string $formation = null,
         ?string $mentality = null,
         bool $isExtraTime = false,
+        ?string $playingStyle = null,
+        ?string $pressing = null,
+        ?string $defensiveLine = null,
     ): array {
         $isUserHome = $match->isHomeTeam($game->team_id);
+        $prefix = $isUserHome ? 'home' : 'away';
 
-        // Update match formation/mentality fields (match-only, not game defaults)
+        // Update match tactical fields (match-only, not game defaults)
         $matchUpdates = [];
 
         if ($formation !== null) {
-            $formationField = $isUserHome ? 'home_formation' : 'away_formation';
-            $matchUpdates[$formationField] = $formation;
+            $matchUpdates["{$prefix}_formation"] = $formation;
         }
-
         if ($mentality !== null) {
-            $mentalityField = $isUserHome ? 'home_mentality' : 'away_mentality';
-            $matchUpdates[$mentalityField] = $mentality;
+            $matchUpdates["{$prefix}_mentality"] = $mentality;
+        }
+        if ($playingStyle !== null) {
+            $matchUpdates["{$prefix}_playing_style"] = $playingStyle;
+        }
+        if ($pressing !== null) {
+            $matchUpdates["{$prefix}_pressing"] = $pressing;
+        }
+        if ($defensiveLine !== null) {
+            $matchUpdates["{$prefix}_defensive_line"] = $defensiveLine;
         }
 
         if (! empty($matchUpdates)) {
@@ -62,8 +72,8 @@ class TacticalChangeService
         $awayPlayers = $isUserHome ? $opponentPlayers : $userLineup;
 
         // Capture effective values before re-simulation (which updates match scores in-place)
-        $effectiveFormation = $isUserHome ? $match->home_formation : $match->away_formation;
-        $effectiveMentality = $isUserHome ? $match->home_mentality : $match->away_mentality;
+        $effectiveFormation = $match->{"{$prefix}_formation"};
+        $effectiveMentality = $match->{"{$prefix}_mentality"};
 
         // Re-simulate with updated tactics (pass previous subs for energy calculation)
         if ($isExtraTime) {
@@ -80,6 +90,9 @@ class TacticalChangeService
             'newEvents' => $this->resimulationService->buildEventsResponse($match, $minute),
             'formation' => $effectiveFormation,
             'mentality' => $effectiveMentality,
+            'playingStyle' => $match->{"{$prefix}_playing_style"},
+            'pressing' => $match->{"{$prefix}_pressing"},
+            'defensiveLine' => $match->{"{$prefix}_defensive_line"},
         ];
 
         if ($isExtraTime) {

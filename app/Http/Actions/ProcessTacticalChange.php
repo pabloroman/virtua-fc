@@ -2,8 +2,11 @@
 
 namespace App\Http\Actions;
 
+use App\Modules\Lineup\Enums\DefensiveLineHeight;
 use App\Modules\Lineup\Enums\Formation;
 use App\Modules\Lineup\Enums\Mentality;
+use App\Modules\Lineup\Enums\PlayingStyle;
+use App\Modules\Lineup\Enums\PressingIntensity;
 use App\Modules\Lineup\Services\TacticalChangeService;
 use App\Models\Game;
 use App\Models\GameMatch;
@@ -38,14 +41,23 @@ class ProcessTacticalChange
             'minute' => 'required|integer|min:1|max:120',
             'formation' => ['nullable', 'string', Rule::enum(Formation::class)],
             'mentality' => ['nullable', 'string', Rule::enum(Mentality::class)],
+            'playing_style' => ['nullable', 'string', Rule::enum(PlayingStyle::class)],
+            'pressing' => ['nullable', 'string', Rule::enum(PressingIntensity::class)],
+            'defensive_line' => ['nullable', 'string', Rule::enum(DefensiveLineHeight::class)],
             'previousSubstitutions' => 'array',
             'previousSubstitutions.*.playerOutId' => 'required|string',
             'previousSubstitutions.*.playerInId' => 'required|string',
             'previousSubstitutions.*.minute' => 'required|integer',
         ]);
 
-        // At least one of formation/mentality must be provided
-        if (empty($validated['formation']) && empty($validated['mentality'])) {
+        // At least one tactical change must be provided
+        $hasChange = ! empty($validated['formation'])
+            || ! empty($validated['mentality'])
+            || ! empty($validated['playing_style'])
+            || ! empty($validated['pressing'])
+            || ! empty($validated['defensive_line']);
+
+        if (! $hasChange) {
             return response()->json(['error' => __('game.tactical_no_changes')], 422);
         }
 
@@ -59,6 +71,9 @@ class ProcessTacticalChange
             $validated['formation'] ?? null,
             $validated['mentality'] ?? null,
             isExtraTime: $isExtraTime,
+            playingStyle: $validated['playing_style'] ?? null,
+            pressing: $validated['pressing'] ?? null,
+            defensiveLine: $validated['defensive_line'] ?? null,
         );
 
         return response()->json($result);

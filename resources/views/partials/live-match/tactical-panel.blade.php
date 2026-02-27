@@ -395,6 +395,65 @@
                             <p class="mt-2 text-xs text-slate-400 italic min-h-[1.25rem]" x-text="getMentalityTooltip(pendingMentality ?? activeMentality)"></p>
                         </div>
 
+                        {{-- Team Instructions --}}
+                        <div class="pt-3 border-t border-slate-100">
+                            <h4 class="text-xs font-semibold text-slate-500 uppercase mb-3">{{ __('game.instructions_title') }}</h4>
+
+                            {{-- Playing Style (In Possession) --}}
+                            <div class="mb-3">
+                                <p class="text-[10px] font-medium text-slate-400 uppercase mb-1.5">{{ __('game.instructions_in_possession') }}</p>
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-1.5">
+                                    <template x-for="style in availablePlayingStyles" :key="style.value">
+                                        <button
+                                            @click="pendingPlayingStyle = style.value"
+                                            class="px-2 py-2 rounded-lg border-2 text-xs font-semibold transition-all min-h-[44px]"
+                                            :class="(pendingPlayingStyle ?? activePlayingStyle) === style.value
+                                                ? 'bg-sky-100 text-sky-800 border-sky-400'
+                                                : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'"
+                                            x-text="style.label"
+                                            x-tooltip="style.tooltip"
+                                        ></button>
+                                    </template>
+                                </div>
+                            </div>
+
+                            {{-- Pressing (Out of Possession) --}}
+                            <div class="mb-3">
+                                <p class="text-[10px] font-medium text-slate-400 uppercase mb-1.5">{{ __('game.pressing_standard') }}</p>
+                                <div class="grid grid-cols-3 gap-1.5">
+                                    <template x-for="p in availablePressing" :key="p.value">
+                                        <button
+                                            @click="pendingPressing = p.value"
+                                            class="px-2 py-2 rounded-lg border-2 text-xs font-semibold transition-all min-h-[44px]"
+                                            :class="(pendingPressing ?? activePressing) === p.value
+                                                ? 'bg-amber-100 text-amber-800 border-amber-400'
+                                                : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'"
+                                            x-text="p.label"
+                                            x-tooltip="p.tooltip"
+                                        ></button>
+                                    </template>
+                                </div>
+                            </div>
+
+                            {{-- Defensive Line --}}
+                            <div>
+                                <p class="text-[10px] font-medium text-slate-400 uppercase mb-1.5">{{ __('game.defline_normal') }}</p>
+                                <div class="grid grid-cols-3 gap-1.5">
+                                    <template x-for="d in availableDefLine" :key="d.value">
+                                        <button
+                                            @click="pendingDefLine = d.value"
+                                            class="px-2 py-2 rounded-lg border-2 text-xs font-semibold transition-all min-h-[44px]"
+                                            :class="(pendingDefLine ?? activeDefLine) === d.value
+                                                ? 'bg-emerald-100 text-emerald-800 border-emerald-400'
+                                                : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'"
+                                            x-text="d.label"
+                                            x-tooltip="d.tooltip"
+                                        ></button>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+
                         {{-- Confirm / Reset --}}
                         <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
                             <x-secondary-button

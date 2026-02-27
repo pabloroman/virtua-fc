@@ -7,6 +7,7 @@ use App\Modules\Season\Jobs\SetupNewGame;
 use App\Models\Competition;
 use App\Models\CompetitionTeam;
 use App\Models\Game;
+use App\Models\GameTactics;
 use App\Models\Team;
 use Ramsey\Uuid\Uuid;
 
@@ -52,6 +53,9 @@ class GameCreationService
             'season_goal' => null,
             'setup_completed_at' => null,
         ]);
+
+        // Create default tactical settings
+        GameTactics::create(['game_id' => $gameId]);
 
         // Dispatch heavy initialization to a queued job
         SetupNewGame::dispatch(

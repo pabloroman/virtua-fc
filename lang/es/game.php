@@ -79,6 +79,47 @@ return [
     'mentality_tip_balanced' => 'Sin modificadores. Juego equilibrado.',
     'mentality_tip_attacking' => 'Tus goles :own, goles rival :opponent. Riesgo y recompensa.',
 
+    // Playing Style
+    'style_possession' => 'Posesión',
+    'style_balanced' => 'Equilibrado',
+    'style_counter_attack' => 'Contraataque',
+    'style_direct' => 'Juego Directo',
+    'style_tip_possession' => 'Más goles tuyos, menos del rival, pero más desgaste físico.',
+    'style_tip_balanced' => 'Sin modificadores. Estilo neutro.',
+    'style_tip_counter_attack' => 'Menos goles tuyos, pero menos del rival y menos desgaste.',
+    'style_tip_direct' => 'Algo más de gol tuyo, pero el rival también ataca más.',
+    'style_summary_possession' => 'Dominar con el balón. Más ataque, menos goles en contra, más cansancio.',
+    'style_summary_balanced' => 'Juego equilibrado sin bonificaciones.',
+    'style_summary_counter_attack' => 'Esperar y golpear. Menos opciones de gol, pero sólido y ligero.',
+    'style_summary_direct' => 'Balones largos y transiciones rápidas. Más abierto.',
+
+    // Pressing Intensity
+    'pressing_high_press' => 'Presión Alta',
+    'pressing_standard' => 'Estándar',
+    'pressing_low_block' => 'Bloque Bajo',
+    'pressing_tip_high_press' => 'Reduce goles del rival, pero se agota a partir del minuto 60.',
+    'pressing_tip_standard' => 'Sin modificadores. Presión equilibrada.',
+    'pressing_tip_low_block' => 'Menos goles tuyos, pero también menos del rival. Ahorra energía.',
+    'pressing_summary_high_press' => 'Presionar arriba. Muy efectiva al inicio, pierde efecto tras el minuto 60.',
+    'pressing_summary_standard' => 'Presión equilibrada sin bonificaciones.',
+    'pressing_summary_low_block' => 'Defender atrás. Menos oportunidades de gol pero sólido defensivamente.',
+
+    // Defensive Line
+    'defline_high_line' => 'Línea Alta',
+    'defline_normal' => 'Normal',
+    'defline_deep' => 'Línea Profunda',
+    'defline_tip_high_line' => 'Más goles tuyos, menos del rival. Se anula con delanteros rápidos (físico 80+).',
+    'defline_tip_normal' => 'Sin modificadores. Línea defensiva equilibrada.',
+    'defline_tip_deep' => 'Menos goles tuyos, pero también menos del rival.',
+    'defline_summary_high_line' => 'Línea adelantada. Comprimir al rival, pero vulnerable si tienen delanteros rápidos.',
+    'defline_summary_normal' => 'Línea defensiva equilibrada.',
+    'defline_summary_deep' => 'Defender profundo. Conceder menos, pero también atacar menos.',
+
+    // Tactical instruction sections
+    'instructions_title' => 'Instrucciones Tácticas',
+    'instructions_in_possession' => 'En Posesión',
+    'instructions_out_of_possession' => 'Sin Posesión',
+
     // Alerts
     'injured' => 'Lesionado',
 

@@ -2,8 +2,11 @@
 
 namespace App\Http\Views;
 
+use App\Modules\Lineup\Enums\DefensiveLineHeight;
 use App\Modules\Lineup\Enums\Formation;
 use App\Modules\Lineup\Enums\Mentality;
+use App\Modules\Lineup\Enums\PlayingStyle;
+use App\Modules\Lineup\Enums\PressingIntensity;
 use App\Modules\Lineup\Services\LineupService;
 use App\Models\CupTie;
 use App\Models\Game;
@@ -218,6 +221,28 @@ class ShowLiveMatch
             }
         }
 
+        // User's current instructions
+        $prefix = $isUserHome ? 'home' : 'away';
+        $userPlayingStyle = $playerMatch->{"{$prefix}_playing_style"} ?? 'balanced';
+        $userPressing = $playerMatch->{"{$prefix}_pressing"} ?? 'standard';
+        $userDefLine = $playerMatch->{"{$prefix}_defensive_line"} ?? 'normal';
+
+        $availablePlayingStyles = array_map(fn (PlayingStyle $s) => [
+            'value' => $s->value,
+            'label' => $s->label(),
+            'tooltip' => $s->tooltip(),
+        ], PlayingStyle::cases());
+        $availablePressing = array_map(fn (PressingIntensity $p) => [
+            'value' => $p->value,
+            'label' => $p->label(),
+            'tooltip' => $p->tooltip(),
+        ], PressingIntensity::cases());
+        $availableDefLine = array_map(fn (DefensiveLineHeight $d) => [
+            'value' => $d->value,
+            'label' => $d->label(),
+            'tooltip' => $d->tooltip(),
+        ], DefensiveLineHeight::cases());
+
         return view('live-match', [
             'game' => $game,
             'match' => $playerMatch,
@@ -235,6 +260,12 @@ class ShowLiveMatch
             'userMentality' => $userMentality,
             'availableFormations' => $availableFormations,
             'availableMentalities' => $availableMentalities,
+            'userPlayingStyle' => $userPlayingStyle,
+            'userPressing' => $userPressing,
+            'userDefLine' => $userDefLine,
+            'availablePlayingStyles' => $availablePlayingStyles,
+            'availablePressing' => $availablePressing,
+            'availableDefLine' => $availableDefLine,
             'isKnockout' => $isKnockout,
             'extraTimeData' => $extraTimeData,
             'twoLeggedInfo' => $twoLeggedInfo,

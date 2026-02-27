@@ -119,14 +119,14 @@ return [
     |
     */
     'formations' => [
-        '4-4-2'   => ['attack' => 1.00, 'defense' => 1.00],
-        '4-3-3'   => ['attack' => 1.10, 'defense' => 1.10],
-        '4-2-3-1' => ['attack' => 1.00, 'defense' => 0.95],
-        '3-4-3'   => ['attack' => 1.10, 'defense' => 1.10],
-        '3-5-2'   => ['attack' => 1.05, 'defense' => 1.05],
-        '4-1-4-1' => ['attack' => 0.95, 'defense' => 0.95],
-        '5-3-2'   => ['attack' => 0.90, 'defense' => 0.90],
-        '5-4-1'   => ['attack' => 0.85, 'defense' => 0.85],
+        '4-4-2'   => ['attack' => 1.00, 'defense' => 1.00],   // Balanced baseline
+        '4-3-3'   => ['attack' => 1.08, 'defense' => 1.04],   // Attacking, slightly open
+        '4-2-3-1' => ['attack' => 1.03, 'defense' => 0.97],   // Solid and creative
+        '3-4-3'   => ['attack' => 1.12, 'defense' => 1.08],   // Very attacking, exposed
+        '3-5-2'   => ['attack' => 1.00, 'defense' => 0.96],   // Midfield control
+        '4-1-4-1' => ['attack' => 0.95, 'defense' => 0.92],   // Defensive midfield shield
+        '5-3-2'   => ['attack' => 0.88, 'defense' => 0.86],   // Defensive, hard to break
+        '5-4-1'   => ['attack' => 0.80, 'defense' => 0.82],   // Park the bus
     ],
 
     /*
@@ -143,6 +143,72 @@ return [
         'defensive' => ['own_goals' => 0.80, 'opponent_goals' => 0.70],
         'balanced'  => ['own_goals' => 1.00, 'opponent_goals' => 1.00],
         'attacking' => ['own_goals' => 1.15, 'opponent_goals' => 1.10],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Playing Style (In-Possession)
+    |--------------------------------------------------------------------------
+    |
+    | own_xg: multiplier on YOUR expected goals
+    | opp_xg: multiplier on OPPONENT's expected goals against you
+    | energy_drain: multiplier on energy drain rate (1.0 = normal)
+    |
+    */
+    'playing_styles' => [
+        'possession'     => ['own_xg' => 1.05, 'opp_xg' => 0.95, 'energy_drain' => 1.10],
+        'balanced'       => ['own_xg' => 1.00, 'opp_xg' => 1.00, 'energy_drain' => 1.00],
+        'counter_attack' => ['own_xg' => 0.92, 'opp_xg' => 0.95, 'energy_drain' => 0.95],
+        'direct'         => ['own_xg' => 1.02, 'opp_xg' => 1.03, 'energy_drain' => 1.00],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Pressing Intensity (Out-of-Possession)
+    |--------------------------------------------------------------------------
+    |
+    | own_xg: multiplier on YOUR expected goals (pressing can win ball high)
+    | opp_xg: multiplier on OPPONENT's expected goals against you
+    | energy_drain: multiplier on energy drain rate
+    | fade_after: minute after which High Press starts fading (null = no fade)
+    | fade_opp_xg: the opp_xg value it fades TO by minute 90
+    |
+    */
+    'pressing' => [
+        'high_press' => ['own_xg' => 1.00, 'opp_xg' => 0.90, 'energy_drain' => 1.15, 'fade_after' => 60, 'fade_opp_xg' => 0.97],
+        'standard'   => ['own_xg' => 1.00, 'opp_xg' => 1.00, 'energy_drain' => 1.00, 'fade_after' => null, 'fade_opp_xg' => null],
+        'low_block'  => ['own_xg' => 0.94, 'opp_xg' => 0.94, 'energy_drain' => 0.92, 'fade_after' => null, 'fade_opp_xg' => null],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Defensive Line Height (Out-of-Possession)
+    |--------------------------------------------------------------------------
+    |
+    | own_xg: multiplier on YOUR expected goals (high line compresses space)
+    | opp_xg: multiplier on OPPONENT's expected goals against you
+    | physical_threshold: opponent forward physical ability above which
+    |                     the high line bonus is nullified (0 = never)
+    |
+    */
+    'defensive_line' => [
+        'high_line' => ['own_xg' => 1.03, 'opp_xg' => 0.94, 'physical_threshold' => 80],
+        'normal'    => ['own_xg' => 1.00, 'opp_xg' => 1.00, 'physical_threshold' => 0],
+        'deep'      => ['own_xg' => 0.94, 'opp_xg' => 0.92, 'physical_threshold' => 0],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Tactical Interaction Bonuses
+    |--------------------------------------------------------------------------
+    |
+    | Multipliers applied when specific instruction combinations interact.
+    |
+    */
+    'tactical_interactions' => [
+        'counter_vs_attacking_high_line' => 1.16,       // Counter-Attack bonus vs Attacking mentality + High Line
+        'possession_disrupted_by_high_press' => 0.95,   // Possession own xG penalty vs opponent High Press
+        'direct_bypasses_high_press' => 1.06,            // Direct own xG bonus vs opponent High Press
     ],
 
 ];
