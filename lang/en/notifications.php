@@ -104,6 +104,10 @@ return [
     'priority_urgent' => 'Urgent',
     'priority_attention' => 'Attention',
 
+    // Transfer window open
+    'transfer_window_open_title' => ':window Transfer Window Open',
+    'transfer_window_open_message' => 'The transfer window is now open. Agreed transfers will join your squad immediately.',
+
     // AI transfer market
     'ai_transfer_title' => ':window Transfer Window Summary',
     'ai_transfer_message' => ':count transfers completed across the league.',
