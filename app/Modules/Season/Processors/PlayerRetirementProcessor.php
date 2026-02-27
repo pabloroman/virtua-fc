@@ -51,6 +51,7 @@ class PlayerRetirementProcessor implements SeasonEndProcessor
     {
         $retiringPlayers = GamePlayer::with(['player', 'team'])
             ->where('game_id', $game->id)
+            ->whereNotNull('team_id')
             ->where('retiring_at_season', $data->oldSeason)
             ->get();
 
@@ -63,7 +64,7 @@ class PlayerRetirementProcessor implements SeasonEndProcessor
                 'age' => $player->age,
                 'position' => $player->position,
                 'teamId' => $player->team_id,
-                'teamName' => $player->team->name,
+                'teamName' => $player->team?->name ?? 'Unknown',
                 'wasUserTeam' => $player->team_id === $game->team_id,
             ];
 
@@ -85,6 +86,7 @@ class PlayerRetirementProcessor implements SeasonEndProcessor
 
         $candidates = GamePlayer::with(['player', 'team'])
             ->where('game_id', $game->id)
+            ->whereNotNull('team_id')
             ->whereNull('retiring_at_season')
             ->whereHas('player', fn ($q) => $q->where('date_of_birth', '<=', $minRetirementCutoff))
             ->get()
@@ -101,7 +103,7 @@ class PlayerRetirementProcessor implements SeasonEndProcessor
                 'age' => $player->age,
                 'position' => $player->position,
                 'teamId' => $player->team_id,
-                'teamName' => $player->team->name,
+                'teamName' => $player->team?->name ?? 'Unknown',
                 'wasUserTeam' => $player->team_id === $game->team_id,
             ];
         }

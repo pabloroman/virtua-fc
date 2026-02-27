@@ -185,6 +185,7 @@ class ScoutingService
 
         $query = GamePlayer::with(['player', 'team'])
             ->where('game_id', $game->id)
+            ->whereNotNull('team_id')
             ->where('team_id', '!=', $game->team_id)
             ->whereIn('position', $positions);
 
@@ -268,6 +269,32 @@ class ScoutingService
         $query->whereNotIn('id', $agreedPlayerIds);
 
         $candidates = $query->get();
+
+        // Also include free agents matching the position filter
+        $freeAgentQuery = GamePlayer::with(['player'])
+            ->where('game_id', $game->id)
+            ->whereNull('team_id')
+            ->whereIn('position', $positions);
+
+        if (! empty($filters['age_min']) || ! empty($filters['age_max'])) {
+            /** @var \Illuminate\Database\Connection $connection */
+            $connection = $freeAgentQuery->getQuery()->getConnection();
+            $driver = $connection->getDriverName();
+            $dobSubquery = '(SELECT date_of_birth FROM players WHERE players.id = game_players.player_id)';
+            $gameDate = $game->current_date->toDateString();
+            $ageExpr = $driver === 'pgsql'
+                ? "EXTRACT(YEAR FROM AGE(?::date, $dobSubquery))"
+                : "(strftime('%Y', ?) - strftime('%Y', $dobSubquery))";
+            if (! empty($filters['age_min'])) {
+                $freeAgentQuery->whereRaw("($ageExpr) >= ?", [$gameDate, (int) $filters['age_min']]);
+            }
+            if (! empty($filters['age_max'])) {
+                $freeAgentQuery->whereRaw("($ageExpr) <= ?", [$gameDate, (int) $filters['age_max']]);
+            }
+        }
+
+        $freeAgents = $freeAgentQuery->get();
+        $candidates = $candidates->merge($freeAgents);
 
         if ($candidates->isEmpty()) {
             $report->update([
@@ -363,6 +390,11 @@ class ScoutingService
      */
     public function calculatePlayerImportance(GamePlayer $player, ?Collection $teammates = null): float
     {
+        // Free agents have no team context — return neutral importance
+        if ($player->team_id === null) {
+            return 0.0;
+        }
+
         if ($teammates === null) {
             $teammates = GamePlayer::where('game_id', $player->game_id)
                 ->where('team_id', $player->team_id)
@@ -459,7 +491,7 @@ class ScoutingService
                 'result' => 'accepted',
                 'counter_amount' => null,
                 'asking_price' => $askingPrice,
-                'message' => __('transfers.bid_accepted', ['team' => $player->team->name]),
+                'message' => __('transfers.bid_accepted', ['team' => $player->team?->name]),
             ];
         }
 
@@ -473,7 +505,7 @@ class ScoutingService
                     'result' => 'accepted',
                     'counter_amount' => null,
                     'asking_price' => $askingPrice,
-                    'message' => __('transfers.bid_accepted', ['team' => $player->team->name]),
+                    'message' => __('transfers.bid_accepted', ['team' => $player->team?->name]),
                 ];
             }
 
@@ -481,7 +513,7 @@ class ScoutingService
                 'result' => 'counter',
                 'counter_amount' => $counterAmount,
                 'asking_price' => $askingPrice,
-                'message' => __('transfers.counter_offer_made', ['team' => $player->team->name, 'amount' => Money::format($counterAmount)]),
+                'message' => __('transfers.counter_offer_made', ['team' => $player->team?->name, 'amount' => Money::format($counterAmount)]),
             ];
         }
 
@@ -489,7 +521,7 @@ class ScoutingService
             'result' => 'rejected',
             'counter_amount' => null,
             'asking_price' => $askingPrice,
-            'message' => __('transfers.bid_rejected_too_low', ['team' => $player->team->name]),
+            'message' => __('transfers.bid_rejected_too_low', ['team' => $player->team?->name]),
         ];
     }
 
@@ -519,7 +551,7 @@ class ScoutingService
         if ($importance > 0.7) {
             return [
                 'result' => 'rejected',
-                'message' => __('transfers.loan_rejected_key_player', ['team' => $player->team->name, 'player' => $player->name]),
+                'message' => __('transfers.loan_rejected_key_player', ['team' => $player->team?->name, 'player' => $player->name]),
             ];
         }
 
@@ -528,19 +560,19 @@ class ScoutingService
             if (rand(0, 1) === 1) {
                 return [
                     'result' => 'accepted',
-                    'message' => __('transfers.loan_accepted', ['team' => $player->team->name, 'player' => $player->name]),
+                    'message' => __('transfers.loan_accepted', ['team' => $player->team?->name, 'player' => $player->name]),
                 ];
             }
 
             return [
                 'result' => 'rejected',
-                'message' => __('transfers.loan_rejected_keep', ['team' => $player->team->name, 'player' => $player->name]),
+                'message' => __('transfers.loan_rejected_keep', ['team' => $player->team?->name, 'player' => $player->name]),
             ];
         }
 
         return [
             'result' => 'accepted',
-            'message' => __('transfers.loan_accepted', ['team' => $player->team->name, 'player' => $player->name]),
+            'message' => __('transfers.loan_accepted', ['team' => $player->team?->name, 'player' => $player->name]),
         ];
     }
 
@@ -607,9 +639,10 @@ class ScoutingService
      */
     public function getPlayerScoutingDetail(GamePlayer $player, Game $game): array
     {
-        $askingPrice = $this->calculateAskingPrice($player);
+        $isFreeAgent = $player->team_id === null;
+        $askingPrice = $isFreeAgent ? 0 : $this->calculateAskingPrice($player);
         $wageDemand = $this->calculateWageDemand($player);
-        $importance = $this->calculatePlayerImportance($player);
+        $importance = $isFreeAgent ? 0.0 : $this->calculatePlayerImportance($player);
 
         $investment = $game->currentInvestment;
         $finances = $game->currentFinances;
@@ -634,8 +667,9 @@ class ScoutingService
 
         return [
             'player' => $player,
+            'is_free_agent' => $isFreeAgent,
             'asking_price' => $askingPrice,
-            'formatted_asking_price' => Money::format($askingPrice),
+            'formatted_asking_price' => $isFreeAgent ? __('transfers.free_transfer') : Money::format($askingPrice),
             'wage_demand' => $wageDemand,
             'formatted_wage_demand' => Money::format($wageDemand),
             'importance' => $importance,

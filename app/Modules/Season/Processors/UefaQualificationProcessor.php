@@ -352,6 +352,7 @@ class UefaQualificationProcessor implements SeasonEndProcessor
 
             // Find filler teams: have GamePlayer records, not in any swiss competition
             $fillerTeams = GamePlayer::where('game_id', $game->id)
+                ->whereNotNull('team_id')
                 ->whereNotIn('team_id', $usedTeamIds)
                 ->groupBy('team_id')
                 ->selectRaw('team_id, AVG(market_value_cents) as avg_value')

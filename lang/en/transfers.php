@@ -40,6 +40,10 @@ return [
     'loan_request' => 'Loan Request',
     'loan_no_fee' => 'Loan (no fee)',
     'free_transfer' => 'Free (end of contract)',
+    'free_agent' => 'Free Agent',
+    'sign_free_agent' => 'Sign Free Agent',
+    'window_closed_for_signing' => 'Transfer window closed — signing unavailable.',
+    'wage_exceeds_budget' => 'Wage demand exceeds your wage budget.',
     'response_next_matchday' => 'Response on the next matchday',
 
     // Rejected bids
