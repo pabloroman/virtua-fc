@@ -59,19 +59,20 @@ class MatchResultProcessor
         // will be served during finalization, so they remain ineligible for
         // substitution while the user plays the live match.
         $preLoadedPlayerIds = $allPlayers ? $allPlayers->flatten()->pluck('id')->toArray() : [];
-        $deferredPlayerIds = [];
         if ($deferMatchId && $allPlayers) {
             $deferredMatch = $matches->get($deferMatchId);
             if ($deferredMatch) {
+                $deferredPlayerIds = [];
                 foreach ([$deferredMatch->home_team_id, $deferredMatch->away_team_id] as $teamId) {
                     $deferredPlayerIds = array_merge(
                         $deferredPlayerIds,
                         $allPlayers->get($teamId, collect())->pluck('id')->toArray()
                     );
                 }
+                $preLoadedPlayerIds = array_values(array_diff($preLoadedPlayerIds, $deferredPlayerIds));
             }
         }
-        $this->batchServeSuspensions($matches, $matchResults, $preLoadedPlayerIds, $deferredPlayerIds);
+        $this->batchServeSuspensions($matches, $matchResults, $preLoadedPlayerIds);
 
         // 4. Bulk insert all match events across all matches
         $this->bulkInsertMatchEvents($gameId, $matchResults);
@@ -150,10 +151,9 @@ class MatchResultProcessor
      * Serve suspensions for all matches in the batch.
      * Decrements matches_remaining for suspended players on teams that played.
      *
-     * @param  array  $preLoadedPlayerIds  Player IDs from the batch (avoids whereHas subquery)
-     * @param  array  $excludedPlayerIds  Player IDs to skip (deferred match teams — served during finalization)
+     * @param  array  $preLoadedPlayerIds  Eligible player IDs (deferred match teams already excluded by caller)
      */
-    private function batchServeSuspensions($matches, array $matchResults, array $preLoadedPlayerIds, array $excludedPlayerIds = []): void
+    private function batchServeSuspensions($matches, array $matchResults, array $preLoadedPlayerIds): void
     {
         // Group matches by competition
         $competitionIds = [];
@@ -165,18 +165,10 @@ class MatchResultProcessor
             return;
         }
 
-        $eligiblePlayerIds = ! empty($excludedPlayerIds)
-            ? array_values(array_diff($preLoadedPlayerIds, $excludedPlayerIds))
-            : $preLoadedPlayerIds;
-
-        if (empty($eligiblePlayerIds)) {
-            return;
-        }
-
         // Use direct whereIn on pre-loaded player IDs instead of whereHas subquery
         $suspensionIds = PlayerSuspension::whereIn('competition_id', array_keys($competitionIds))
             ->where('matches_remaining', '>', 0)
-            ->whereIn('game_player_id', $eligiblePlayerIds)
+            ->whereIn('game_player_id', $preLoadedPlayerIds)
             ->pluck('id')
             ->all();
 
