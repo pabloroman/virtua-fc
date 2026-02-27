@@ -55,7 +55,23 @@ class MatchResultProcessor
         $competitions = Competition::whereIn('id', $competitionIds)->get()->keyBy('id');
 
         // 3. Serve suspensions for all matches (batch, using pre-loaded player IDs)
+        // Exclude players from the deferred match's teams — their suspensions
+        // will be served during finalization, so they remain ineligible for
+        // substitution while the user plays the live match.
         $preLoadedPlayerIds = $allPlayers ? $allPlayers->flatten()->pluck('id')->toArray() : [];
+        if ($deferMatchId && $allPlayers) {
+            $deferredMatch = $matches->get($deferMatchId);
+            if ($deferredMatch) {
+                $deferredPlayerIds = [];
+                foreach ([$deferredMatch->home_team_id, $deferredMatch->away_team_id] as $teamId) {
+                    $deferredPlayerIds = array_merge(
+                        $deferredPlayerIds,
+                        $allPlayers->get($teamId, collect())->pluck('id')->toArray()
+                    );
+                }
+                $preLoadedPlayerIds = array_values(array_diff($preLoadedPlayerIds, $deferredPlayerIds));
+            }
+        }
         $this->batchServeSuspensions($matches, $matchResults, $preLoadedPlayerIds);
 
         // 4. Bulk insert all match events across all matches
@@ -134,9 +150,8 @@ class MatchResultProcessor
     /**
      * Serve suspensions for all matches in the batch.
      * Decrements matches_remaining for suspended players on teams that played.
-     */
-    /**
-     * @param  array  $preLoadedPlayerIds  Player IDs from the batch (avoids whereHas subquery)
+     *
+     * @param  array  $preLoadedPlayerIds  Eligible player IDs (deferred match teams already excluded by caller)
      */
     private function batchServeSuspensions($matches, array $matchResults, array $preLoadedPlayerIds): void
     {
