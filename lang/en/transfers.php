@@ -202,6 +202,22 @@ return [
     'scouting_help_shortlist_loan' => 'You can also request a loan instead of a permanent transfer.',
     'scouting_help_shortlist_precontract' => 'Players in their final year of contract can be signed for free via pre-contract from January.',
 
+    // Transfer activity summary
+    'transfer_activity_title' => ':window Transfer Window Summary',
+    'transfer_activity_summer' => 'Summer',
+    'transfer_activity_winter' => 'Winter',
+    'transfer_activity_transfers' => 'Transfers',
+    'transfer_activity_free_agents' => 'Free Agent Signings',
+    'transfer_activity_no_transfers' => 'No transfers this window.',
+    'transfer_activity_no_free_agents' => 'No free agent signings this window.',
+    'transfer_activity_player' => 'Player',
+    'transfer_activity_from' => 'From',
+    'transfer_activity_to' => 'To',
+    'transfer_activity_fee' => 'Fee',
+    'transfer_activity_position' => 'Pos',
+    'transfer_activity_age' => 'Age',
+    'transfer_activity_foreign' => 'Foreign',
+
     // Decline renewal
     'reconsider_renewal' => 'Reconsider',
     'declined_renewals' => 'Declined Renewals',

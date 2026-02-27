@@ -651,6 +651,31 @@ class NotificationService
     }
 
     // ==========================================
+    // AI Transfer Market Notifications
+    // ==========================================
+
+    /**
+     * Create a single summary notification for AI transfer window activity.
+     */
+    public function notifyAITransferSummary(Game $game, array $transfers, array $freeAgentSignings, string $window): GameNotification
+    {
+        $totalMoves = count($transfers) + count($freeAgentSignings);
+
+        return $this->create(
+            game: $game,
+            type: GameNotification::TYPE_AI_TRANSFER_ACTIVITY,
+            title: __('notifications.ai_transfer_title', ['window' => __("notifications.ai_transfer_window_{$window}")]),
+            message: __('notifications.ai_transfer_message', ['count' => $totalMoves]),
+            priority: GameNotification::PRIORITY_INFO,
+            metadata: [
+                'window' => $window,
+                'transfers' => $transfers,
+                'free_agent_signings' => $freeAgentSignings,
+            ],
+        );
+    }
+
+    // ==========================================
     // Tournament Notifications
     // ==========================================
 
@@ -702,6 +727,7 @@ class NotificationService
             GameNotification::TYPE_TRANSFER_BID_RESULT => 'transfer',
             GameNotification::TYPE_LOAN_REQUEST_RESULT => 'loan',
             GameNotification::TYPE_TOURNAMENT_WELCOME => 'trophy',
+            GameNotification::TYPE_AI_TRANSFER_ACTIVITY => 'transfer',
             default => 'bell',
         };
     }

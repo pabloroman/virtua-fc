@@ -63,6 +63,7 @@ use App\Http\Views\GameSetupStatus;
 use App\Http\Views\ShowAcademyPlayerDetail;
 use App\Http\Views\ShowPlayerDetail;
 use App\Http\Views\ShowSquadV2;
+use App\Http\Views\ShowTransferActivity;
 use App\Http\Views\ShowTransfers;
 use App\Http\Actions\ProcessSubstitution;
 use App\Http\Actions\ProcessTacticalChange;
@@ -103,6 +104,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/game/{gameId}/finances', ShowFinances::class)->name('game.finances');
         Route::get('/game/{gameId}/transfers', ShowScouting::class)->name('game.transfers');
         Route::get('/game/{gameId}/transfers/outgoing', ShowTransfers::class)->name('game.transfers.outgoing');
+        Route::get('/game/{gameId}/transfer-activity', ShowTransferActivity::class)->name('game.transfer-activity');
         Route::get('/game/{gameId}/calendar', ShowCalendar::class)->name('game.calendar');
         Route::get('/game/{gameId}/competition/{competitionId}', ShowCompetition::class)->name('game.competition');
         Route::get('/game/{gameId}/results/{competition}/{matchday}', ShowMatchResults::class)->name('game.results');
