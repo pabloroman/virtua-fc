@@ -11,6 +11,12 @@ return [
     'offer_accepted_sale' => ':player vendido :team_a por :fee.',
     'offer_accepted_pre_contract' => '¡Acuerdo cerrado! :player fichará por :team por :fee cuando abra la ventana de :window.',
 
+    // Free agent signing
+    'free_agent_signed' => '¡:player ha fichado por tu equipo como agente libre!',
+    'not_free_agent' => 'Este jugador no es agente libre.',
+    'transfer_window_closed' => 'La ventana de fichajes está cerrada.',
+    'wage_budget_exceeded' => 'Fichar a este jugador superaría tu presupuesto salarial.',
+
     // Bid/loan submission confirmations
     'bid_submitted' => 'Tu oferta por :player ha sido enviada. Recibirás respuesta próximamente.',
     'bid_already_exists' => 'Ya tienes una oferta pendiente por este jugador.',

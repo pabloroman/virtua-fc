@@ -48,6 +48,7 @@ class SeedTransferData extends Command
 
         // Pick one rival team and grab 8 of their players
         $rivalTeamId = GamePlayer::where('game_id', $game->id)
+            ->whereNotNull('team_id')
             ->where('team_id', '!=', $myTeamId)
             ->value('team_id');
 

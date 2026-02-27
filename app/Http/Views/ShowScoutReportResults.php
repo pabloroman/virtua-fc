@@ -29,7 +29,9 @@ class ShowScoutReportResults
         if (!empty($report->player_ids)) {
             $players = GamePlayer::with(['player', 'team'])
                 ->whereIn('id', $report->player_ids)
-                ->where('team_id', '!=', $game->team_id)
+                ->where(fn ($q) => $q
+                    ->whereNull('team_id')
+                    ->orWhere('team_id', '!=', $game->team_id))
                 ->get();
 
             // Gather scouting details and existing offer statuses for each player

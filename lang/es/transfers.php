@@ -40,6 +40,10 @@ return [
     'loan_request' => 'Solicitud de Cesión',
     'loan_no_fee' => 'Cesión (sin coste)',
     'free_transfer' => 'Libre (fin de contrato)',
+    'free_agent' => 'Agente Libre',
+    'sign_free_agent' => 'Fichar Agente Libre',
+    'window_closed_for_signing' => 'Ventana de fichajes cerrada — no se puede fichar.',
+    'wage_exceeds_budget' => 'El salario solicitado supera tu presupuesto salarial.',
     'response_next_matchday' => 'Respuesta en la próxima jornada',
 
     // Rejected bids

@@ -39,6 +39,7 @@
             @foreach($players as $player)
                 @php
                     $detail = $playerDetails[$player->id] ?? null;
+                    $isFreeAgent = $detail['is_free_agent'] ?? false;
                     $hasOffer = $detail['has_existing_offer'] ?? false;
                     $offerStatus = $detail['offer_status'] ?? null;
                     $offerIsCounter = $detail['offer_is_counter'] ?? false;
@@ -68,7 +69,9 @@
                                     @endif
                                 </div>
                                 <div class="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
-                                    @if($player->team)
+                                    @if($isFreeAgent)
+                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-green-100 text-green-700">{{ __('transfers.free_agent') }}</span>
+                                    @elseif($player->team)
                                         <x-team-crest :team="$player->team" class="w-4 h-4 shrink-0" />
                                         <span class="truncate">{{ $player->team->name }}</span>
                                     @endif
@@ -174,7 +177,24 @@
 
                                     {{-- Action Buttons --}}
                                     <div class="mt-4 space-y-2">
-                                        @if($hasOffer && $offerStatus === 'pending' && !$offerIsCounter)
+                                        @if($isFreeAgent)
+                                            @if($isTransferWindow && $canAffordWage)
+                                                <form method="POST" action="{{ route('game.scouting.sign-free-agent', [$game->id, $player->id]) }}">
+                                                    @csrf
+                                                    <button type="submit" class="inline-flex items-center justify-center px-4 py-1.5 min-h-[36px] bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-lg transition-colors whitespace-nowrap">
+                                                        {{ __('transfers.sign_free_agent') }}
+                                                    </button>
+                                                </form>
+                                            @elseif(!$isTransferWindow)
+                                                <div class="text-xs text-slate-500 italic">
+                                                    {{ __('transfers.window_closed_for_signing') }}
+                                                </div>
+                                            @else
+                                                <div class="text-xs text-amber-600 font-medium">
+                                                    {{ __('transfers.wage_exceeds_budget') }}
+                                                </div>
+                                            @endif
+                                        @elseif($hasOffer && $offerStatus === 'pending' && !$offerIsCounter)
                                             <div class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-amber-50 text-amber-700 border border-amber-200">
                                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                                 {{ __('transfers.bid_awaiting_response') }}

@@ -94,8 +94,9 @@ class SquadReplenishmentProcessor implements SeasonEndProcessor
     {
         $generatedPlayers = [];
 
-        // Get all AI team rosters (grouped by team)
+        // Get all AI team rosters (grouped by team, excluding free agents)
         $teamRosters = GamePlayer::where('game_id', $game->id)
+            ->whereNotNull('team_id')
             ->where('team_id', '!=', $game->team_id)
             ->get()
             ->groupBy('team_id');

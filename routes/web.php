@@ -8,6 +8,7 @@ use App\Http\Actions\AcceptCounterOffer;
 use App\Http\Actions\CompleteOnboarding;
 use App\Http\Actions\CompleteWelcome;
 use App\Http\Actions\AcceptTransferOffer;
+use App\Http\Actions\SignFreeAgent;
 use App\Http\Actions\DeclineRenewal;
 use App\Http\Actions\ReconsiderRenewal;
 use App\Http\Actions\AdvanceMatchday;
@@ -137,6 +138,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/game/{gameId}/scouting/cancel', CancelScoutSearch::class)->name('game.scouting.cancel');
         Route::post('/game/{gameId}/scouting/{playerId}/bid', SubmitTransferBid::class)->name('game.scouting.bid');
         Route::post('/game/{gameId}/scouting/{playerId}/loan', RequestLoan::class)->name('game.scouting.loan');
+        Route::post('/game/{gameId}/scouting/{playerId}/sign-free-agent', SignFreeAgent::class)->name('game.scouting.sign-free-agent');
         Route::post('/game/{gameId}/scouting/{playerId}/pre-contract', SubmitPreContractOffer::class)->name('game.scouting.pre-contract');
         Route::post('/game/{gameId}/scouting/counter/{offerId}/accept', AcceptCounterOffer::class)->name('game.scouting.counter.accept');
         Route::post('/game/{gameId}/scouting/shortlist/{playerId}', ToggleShortlist::class)->name('game.scouting.shortlist.toggle');
