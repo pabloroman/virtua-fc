@@ -207,7 +207,7 @@
                                                 {{-- Yellow card indicator --}}
                                                 <span x-show="isPlayerYellowCarded(player.id)"
                                                       x-tooltip.raw="{{ __('game.player_booked') }}"
-                                                      class="shrink-0 w-3.5 h-4.5 rounded-[1px] bg-yellow-400 border border-yellow-500"></span>
+                                                      class="shrink-0 w-2 h-3 rounded-[1px] bg-yellow-400 border border-yellow-500"></span>
                                                 {{-- Energy bar --}}
                                                 <span class="ml-auto flex items-center gap-1 shrink-0">
                                                     <span class="text-[10px] tabular-nums font-semibold"
