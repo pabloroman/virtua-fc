@@ -136,6 +136,7 @@ class GamePlayer extends Model
         'team_id',
         'number',
         'position',
+        'secondary_positions',
         'market_value',
         'market_value_cents',
         'contract_until',
@@ -168,6 +169,7 @@ class GamePlayer extends Model
 
     protected $casts = [
         'number' => 'integer',
+        'secondary_positions' => 'array',
         'market_value_cents' => 'integer',
         'contract_until' => 'date',
         'annual_wage' => 'integer',
