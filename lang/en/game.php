@@ -222,6 +222,7 @@ return [
     'live_other_results' => 'Others',
     'live_continue_dashboard' => 'Continue',
     'live_injury_alert' => 'has been injured. Make a substitution.',
+    'player_booked' => 'Booked',
     'live_injuries_report' => 'Injury Report',
     'live_weeks_out' => ':count week out|:count weeks out',
     'live_extra_time' => 'Extra Time',

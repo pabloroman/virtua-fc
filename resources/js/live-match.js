@@ -998,6 +998,16 @@ export default function liveMatch(config) {
                 .map(e => e.gamePlayerId);
         },
 
+        get yellowCardedPlayerIds() {
+            return this.revealedEvents
+                .filter(e => e.type === 'yellow_card' && e.teamId === this.userTeamId)
+                .map(e => e.gamePlayerId);
+        },
+
+        isPlayerYellowCarded(playerId) {
+            return this.yellowCardedPlayerIds.includes(playerId);
+        },
+
         // Dynamic limits: 6 subs / 4 windows during ET in knockout, 5/3 otherwise
         get effectiveMaxSubstitutions() {
             return (this.isKnockout && this.hasExtraTime) ? 6 : this.maxSubstitutions;
