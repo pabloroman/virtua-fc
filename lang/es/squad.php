@@ -243,4 +243,10 @@ return [
     'confirm_squad' => 'Confirmar convocatoria',
     'squad_confirmed' => '¡Convocatoria confirmada!',
     'invalid_selection' => 'Selección inválida. Verifica los jugadores seleccionados.',
+
+    // Grid positioning
+    'grid_mode' => 'Cuadrícula',
+    'classic_mode' => 'Clásico',
+    'reset_positions' => 'Restablecer posiciones',
+    'drag_or_tap' => 'Toca una celda o arrastra al jugador',
 ];

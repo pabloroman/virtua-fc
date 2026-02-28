@@ -17,6 +17,7 @@ class GameTactics extends Model
         'default_formation',
         'default_lineup',
         'default_slot_assignments',
+        'default_pitch_positions',
         'default_mentality',
         'default_playing_style',
         'default_pressing',
@@ -26,6 +27,7 @@ class GameTactics extends Model
     protected $casts = [
         'default_lineup' => 'array',
         'default_slot_assignments' => 'array',
+        'default_pitch_positions' => 'array',
     ];
 
     public function game(): BelongsTo
