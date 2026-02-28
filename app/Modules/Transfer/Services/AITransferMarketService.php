@@ -203,10 +203,13 @@ class AITransferMarketService
         // Load reputation data for all AI teams
         $teamReputations = $this->loadTeamReputations($teamRosters);
 
-        // Pre-compute position group counts per team
+        // Pre-compute position group counts per team (mutated as transfers happen)
         $groupCounts = $teamRosters->map(
             fn ($players) => $players->groupBy(fn ($p) => $this->getPositionGroup($p->position))->map->count()
         );
+
+        // Track net squad size changes per team (incremented/decremented as transfers happen)
+        $teamSizeDeltas = $teamRosters->map(fn () => 0);
 
         // Foreign team names for narrative
         $foreignTeams = Team::where('country', '!=', 'ES')
@@ -227,11 +230,12 @@ class AITransferMarketService
         ]);
 
         $allTransfers = collect();
-        $departingPlayerIds = collect();
+        // Set of player IDs already transferred — used only to prevent double-transfers
+        $transferredPlayerIds = [];
 
         // Build all sell candidates across all teams, tagged by type
         $sellOffers = $this->buildSellOffers(
-            $teamRosters, $teamAverages, $teamReputations, $groupCounts, $teamBudgets, $departingPlayerIds
+            $teamRosters, $teamAverages, $teamReputations, $groupCounts, $teamBudgets
         );
 
         // Shuffle to avoid systematic bias (e.g., always processing the same team first)
@@ -243,39 +247,34 @@ class AITransferMarketService
             $sellerTeamId = $offer['sellerTeamId'];
             $transferType = $offer['transferType'];
 
+            if (isset($transferredPlayerIds[$player->id])) {
+                continue;
+            }
+
             // Re-check seller budget
             $sellerBudget = $teamBudgets->get($sellerTeamId);
             if (! $sellerBudget || ($sellerBudget['sells'] + $sellerBudget['buys']) >= $sellerBudget['max']) {
                 continue;
             }
 
-            // Re-check seller squad size
-            $sellerPlayers = $teamRosters->get($sellerTeamId, collect());
-            $effectiveSellerSize = $sellerPlayers->count() - $departingPlayerIds->intersect($sellerPlayers->pluck('id'))->count();
+            // Re-check seller squad size using delta tracking
+            $sellerBaseSize = $teamRosters->get($sellerTeamId, collect())->count();
+            $effectiveSellerSize = $sellerBaseSize + ($teamSizeDeltas->get($sellerTeamId, 0));
             if ($effectiveSellerSize <= self::MIN_SQUAD_SIZE) {
                 continue;
             }
 
-            // Re-check position group minimum for seller
-            $sellerGroupCounts = $groupCounts->get($sellerTeamId, collect());
+            // Re-check position group minimum for seller (groupCounts is kept accurate)
             $posGroup = $this->getPositionGroup($player->position);
-            $effectiveGroupCount = ($sellerGroupCounts->get($posGroup, 0))
-                - $sellerPlayers->filter(
-                    fn ($p) => $this->getPositionGroup($p->position) === $posGroup
-                        && $departingPlayerIds->contains($p->id)
-                )->count();
-            if ($effectiveGroupCount <= (self::MIN_GROUP_COUNTS[$posGroup] ?? 2)) {
-                continue;
-            }
-
-            if ($departingPlayerIds->contains($player->id)) {
+            $sellerGroupCounts = $groupCounts->get($sellerTeamId, collect());
+            if (($sellerGroupCounts->get($posGroup, 0)) <= (self::MIN_GROUP_COUNTS[$posGroup] ?? 2)) {
                 continue;
             }
 
             // Find a buyer based on transfer type
             $buyer = $transferType === 'clearing'
-                ? $this->findClearingBuyer($player, $sellerTeamId, $teamRosters, $teamAverages, $teamReputations, $teamBudgets, $groupCounts, $game, $departingPlayerIds)
-                : $this->findUpgradeBuyer($player, $sellerTeamId, $teamRosters, $teamAverages, $teamReputations, $teamBudgets, $groupCounts, $game, $departingPlayerIds);
+                ? $this->findClearingBuyer($player, $sellerTeamId, $teamRosters, $teamAverages, $teamReputations, $teamBudgets, $groupCounts, $teamSizeDeltas, $game)
+                : $this->findUpgradeBuyer($player, $sellerTeamId, $teamRosters, $teamAverages, $teamReputations, $teamBudgets, $groupCounts, $teamSizeDeltas, $game);
 
             $fromTeamName = $teamNames[$sellerTeamId] ?? 'Unknown';
 
@@ -287,14 +286,17 @@ class AITransferMarketService
                     $game, $player, $sellerTeamId, $fromTeamName, $buyerTeamId, $buyer['teamName'], $teams
                 );
                 $allTransfers->push($transfer);
-                $departingPlayerIds->push($player->id);
+                $transferredPlayerIds[$player->id] = true;
 
                 // Update budgets
                 $this->incrementBudget($teamBudgets, $sellerTeamId, 'sells');
                 $this->incrementBudget($teamBudgets, $buyerTeamId, 'buys');
 
-                // Update roster & group count caches
-                $this->updateRosterCacheForTransfer($teamRosters, $groupCounts, $player, $buyerTeamId);
+                // Update caches: seller loses player, buyer gains player
+                $this->adjustGroupCount($groupCounts, $sellerTeamId, $posGroup, -1);
+                $this->adjustGroupCount($groupCounts, $buyerTeamId, $posGroup, +1);
+                $teamSizeDeltas->put($sellerTeamId, ($teamSizeDeltas->get($sellerTeamId, 0)) - 1);
+                $teamSizeDeltas->put($buyerTeamId, ($teamSizeDeltas->get($buyerTeamId, 0)) + 1);
             } else {
                 // No domestic buyer — try foreign departure
                 if (mt_rand(1, 100) <= self::FOREIGN_FALLBACK_CHANCE && ! empty($foreignTeams)) {
@@ -302,9 +304,10 @@ class AITransferMarketService
                     $foreignIndex++;
 
                     $allTransfers->push($this->executeForeignTransfer($player, $sellerTeamId, $fromTeamName, $foreignName));
-                    $departingPlayerIds->push($player->id);
+                    $transferredPlayerIds[$player->id] = true;
                     $this->incrementBudget($teamBudgets, $sellerTeamId, 'sells');
-                    $this->updateGroupCountsForDeparture($groupCounts, $sellerTeamId, $player);
+                    $this->adjustGroupCount($groupCounts, $sellerTeamId, $posGroup, -1);
+                    $teamSizeDeltas->put($sellerTeamId, ($teamSizeDeltas->get($sellerTeamId, 0)) - 1);
                 }
             }
         }
@@ -323,7 +326,6 @@ class AITransferMarketService
         Collection $teamReputations,
         Collection $groupCounts,
         Collection $teamBudgets,
-        Collection $departingPlayerIds,
     ): Collection {
         $offers = collect();
 
@@ -343,7 +345,7 @@ class AITransferMarketService
 
             $eligible = $players->filter(fn (GamePlayer $p) => ! $p->retiring_at_season);
 
-            // Determine max sells for this team (at most half the budget, at least 1)
+            // Determine max sells for this team (at most 60% of budget, at least 1)
             $maxSells = max(1, (int) ceil($budget['max'] * 0.6));
 
             // Score clearing and upgrade candidates separately
@@ -357,27 +359,26 @@ class AITransferMarketService
                 ->filter()
                 ->sortByDesc('score');
 
-            $sellsAdded = 0;
-            $usedPlayerIds = collect();
+            $usedPlayerIds = [];
 
             for ($i = 0; $i < $maxSells; $i++) {
                 $isClearing = mt_rand(1, 100) <= self::CLEARING_CHANCE;
 
                 if ($isClearing) {
-                    $candidate = $clearingCandidates->first(fn ($c) => ! $usedPlayerIds->contains($c['player']->id));
+                    $candidate = $clearingCandidates->first(fn ($c) => ! isset($usedPlayerIds[$c['player']->id]));
                     $type = 'clearing';
                 } else {
-                    $candidate = $upgradeCandidates->first(fn ($c) => ! $usedPlayerIds->contains($c['player']->id));
+                    $candidate = $upgradeCandidates->first(fn ($c) => ! isset($usedPlayerIds[$c['player']->id]));
                     $type = 'upgrade';
                 }
 
                 // Fallback to the other type if preferred type has no candidates
                 if (! $candidate) {
                     if ($isClearing) {
-                        $candidate = $upgradeCandidates->first(fn ($c) => ! $usedPlayerIds->contains($c['player']->id));
+                        $candidate = $upgradeCandidates->first(fn ($c) => ! isset($usedPlayerIds[$c['player']->id]));
                         $type = 'upgrade';
                     } else {
-                        $candidate = $clearingCandidates->first(fn ($c) => ! $usedPlayerIds->contains($c['player']->id));
+                        $candidate = $clearingCandidates->first(fn ($c) => ! isset($usedPlayerIds[$c['player']->id]));
                         $type = 'clearing';
                     }
                 }
@@ -386,14 +387,13 @@ class AITransferMarketService
                     break;
                 }
 
-                $usedPlayerIds->push($candidate['player']->id);
+                $usedPlayerIds[$candidate['player']->id] = true;
                 $offers->push([
                     'player' => $candidate['player'],
                     'sellerTeamId' => $teamId,
                     'transferType' => $type,
                     'score' => $candidate['score'],
                 ]);
-                $sellsAdded++;
             }
         }
 
@@ -513,8 +513,8 @@ class AITransferMarketService
         Collection $teamReputations,
         Collection $teamBudgets,
         Collection $groupCounts,
+        Collection $teamSizeDeltas,
         Game $game,
-        Collection $departingPlayerIds,
     ): ?array {
         $sellerRepIndex = $this->getReputationIndex($sellerTeamId, $teamReputations);
         $posGroup = $this->getPositionGroup($player->position);
@@ -538,8 +538,8 @@ class AITransferMarketService
                 continue;
             }
 
-            // Squad size check
-            $effectiveSize = $players->count() - $departingPlayerIds->intersect($players->pluck('id'))->count();
+            // Squad size check using delta tracking
+            $effectiveSize = $players->count() + ($teamSizeDeltas->get($teamId, 0));
             if ($effectiveSize >= self::MAX_SQUAD_SIZE) {
                 continue;
             }
@@ -550,20 +550,10 @@ class AITransferMarketService
                 continue;
             }
 
-            // Position need
+            // Position need (groupCounts is kept accurate via adjustGroupCount)
             $buyerGroupCounts = $groupCounts->get($teamId, collect());
             $currentGroupCount = $buyerGroupCounts->get($posGroup, 0);
-            $adjustedGroupCount = $currentGroupCount + $players->filter(
-                fn ($p) => $this->getPositionGroup($p->position) === $posGroup
-                    && $departingPlayerIds->contains($p->id)
-            )->count() * -1;
-            // Use the actual effective count considering departures from *this* team's roster
-            $effectiveGroupCount = $currentGroupCount - $players->filter(
-                fn ($p) => $this->getPositionGroup($p->position) === $posGroup
-                    && $departingPlayerIds->contains($p->id)
-            )->count();
-
-            $need = max(0, (self::IDEAL_GROUP_COUNTS[$posGroup] ?? 4) - $effectiveGroupCount);
+            $need = max(0, (self::IDEAL_GROUP_COUNTS[$posGroup] ?? 4) - $currentGroupCount);
 
             $score = $need * 10;
             // Reputation proximity bonus (closer = more realistic)
@@ -594,8 +584,8 @@ class AITransferMarketService
         Collection $teamReputations,
         Collection $teamBudgets,
         Collection $groupCounts,
+        Collection $teamSizeDeltas,
         Game $game,
-        Collection $departingPlayerIds,
     ): ?array {
         $sellerRepIndex = $this->getReputationIndex($sellerTeamId, $teamReputations);
         $posGroup = $this->getPositionGroup($player->position);
@@ -619,8 +609,8 @@ class AITransferMarketService
                 continue;
             }
 
-            // Squad size check
-            $effectiveSize = $players->count() - $departingPlayerIds->intersect($players->pluck('id'))->count();
+            // Squad size check using delta tracking
+            $effectiveSize = $players->count() + ($teamSizeDeltas->get($teamId, 0));
             if ($effectiveSize >= self::MAX_SQUAD_SIZE) {
                 continue;
             }
@@ -631,14 +621,10 @@ class AITransferMarketService
                 continue;
             }
 
-            // Position need
+            // Position need (groupCounts is kept accurate via adjustGroupCount)
             $buyerGroupCounts = $groupCounts->get($teamId, collect());
-            $effectiveGroupCount = $buyerGroupCounts->get($posGroup, 0) - $players->filter(
-                fn ($p) => $this->getPositionGroup($p->position) === $posGroup
-                    && $departingPlayerIds->contains($p->id)
-            )->count();
-
-            $need = max(0, (self::IDEAL_GROUP_COUNTS[$posGroup] ?? 4) - $effectiveGroupCount);
+            $currentGroupCount = $buyerGroupCounts->get($posGroup, 0);
+            $need = max(0, (self::IDEAL_GROUP_COUNTS[$posGroup] ?? 4) - $currentGroupCount);
 
             $score = $need * 10;
             // Reputation distance bonus: one step up is most common
@@ -851,41 +837,13 @@ class AITransferMarketService
     }
 
     /**
-     * Update roster and group count caches after a domestic transfer.
+     * Adjust a team's position group count in the cache.
      */
-    private function updateRosterCacheForTransfer(
-        Collection $teamRosters,
-        Collection $groupCounts,
-        GamePlayer $player,
-        string $newTeamId,
-    ): void {
-        $posGroup = $this->getPositionGroup($player->position);
-
-        // Add to new team's roster cache
-        if ($teamRosters->has($newTeamId)) {
-            $teamRosters[$newTeamId]->push($player);
-        }
-
-        // Update group counts for new team
-        if ($groupCounts->has($newTeamId)) {
-            $counts = $groupCounts->get($newTeamId);
-            $counts->put($posGroup, ($counts->get($posGroup, 0)) + 1);
-        }
-    }
-
-    /**
-     * Update group count caches after a foreign departure.
-     */
-    private function updateGroupCountsForDeparture(
-        Collection $groupCounts,
-        string $teamId,
-        GamePlayer $player,
-    ): void {
-        $posGroup = $this->getPositionGroup($player->position);
-
+    private function adjustGroupCount(Collection $groupCounts, string $teamId, string $posGroup, int $delta): void
+    {
         if ($groupCounts->has($teamId)) {
             $counts = $groupCounts->get($teamId);
-            $counts->put($posGroup, max(0, ($counts->get($posGroup, 0)) - 1));
+            $counts->put($posGroup, max(0, ($counts->get($posGroup, 0)) + $delta));
         }
     }
 
