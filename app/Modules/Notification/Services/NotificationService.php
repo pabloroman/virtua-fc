@@ -651,6 +651,51 @@ class NotificationService
     }
 
     // ==========================================
+    // AI Transfer Market Notifications
+    // ==========================================
+
+    /**
+     * Create a single summary notification for AI transfer window activity.
+     */
+    public function notifyAITransferSummary(Game $game, int $totalMoves, string $window): GameNotification
+    {
+        return $this->create(
+            game: $game,
+            type: GameNotification::TYPE_AI_TRANSFER_ACTIVITY,
+            title: __('notifications.ai_transfer_title', ['window' => __("notifications.ai_transfer_window_{$window}")]),
+            message: __('notifications.ai_transfer_message', ['count' => $totalMoves]),
+            priority: GameNotification::PRIORITY_INFO,
+            metadata: [
+                'window' => $window,
+                'season' => $game->season,
+            ],
+        );
+    }
+
+    // ==========================================
+    // Transfer Window Notifications
+    // ==========================================
+
+    /**
+     * Notify the user that a transfer window has opened.
+     */
+    public function notifyTransferWindowOpen(Game $game, string $window): GameNotification
+    {
+        $windowLabel = __("notifications.ai_transfer_window_{$window}");
+
+        return $this->create(
+            game: $game,
+            type: GameNotification::TYPE_TRANSFER_WINDOW_OPEN,
+            title: __('notifications.transfer_window_open_title', ['window' => $windowLabel]),
+            message: __('notifications.transfer_window_open_message'),
+            priority: GameNotification::PRIORITY_INFO,
+            metadata: [
+                'window' => $window,
+            ],
+        );
+    }
+
+    // ==========================================
     // Tournament Notifications
     // ==========================================
 
@@ -702,6 +747,8 @@ class NotificationService
             GameNotification::TYPE_TRANSFER_BID_RESULT => 'transfer',
             GameNotification::TYPE_LOAN_REQUEST_RESULT => 'loan',
             GameNotification::TYPE_TOURNAMENT_WELCOME => 'trophy',
+            GameNotification::TYPE_AI_TRANSFER_ACTIVITY => 'transfer',
+            GameNotification::TYPE_TRANSFER_WINDOW_OPEN => 'transfer',
             default => 'bell',
         };
     }

@@ -7,6 +7,7 @@ use App\Models\Competition;
 use App\Models\FinancialTransaction;
 use App\Models\Game;
 use App\Models\GamePlayer;
+use App\Models\GameTransfer;
 use App\Models\Loan;
 use App\Models\Team;
 use App\Models\TransferOffer;
@@ -81,6 +82,20 @@ class TransferService
             'transfer_status' => GamePlayer::TRANSFER_STATUS_LISTED,
             'transfer_listed_at' => $player->game->current_date,
         ]);
+    }
+
+    /**
+     * Determine the current transfer window for a game.
+     * Returns 'summer' if the summer window is open (or as default for season-end pre-contracts),
+     * 'winter' if the winter window is open.
+     */
+    public function getCurrentWindow(Game $game): string
+    {
+        if ($game->isWinterWindowOpen()) {
+            return self::WINDOW_WINTER;
+        }
+
+        return self::WINDOW_SUMMER;
     }
 
     /**
@@ -602,6 +617,7 @@ class TransferService
         $playerName = $player->player->name;
         $buyerName = $offer->offeringTeam->name;
         $game = $player->game;
+        $fromTeamId = $player->team_id;
 
         // Transfer player to the buying team
         $player->update([
@@ -612,6 +628,17 @@ class TransferService
             // Extend their contract with the new team
             'contract_until' => Carbon::parse($game->current_date)->addYears(rand(2, 4)),
         ]);
+
+        GameTransfer::record(
+            gameId: $game->id,
+            gamePlayerId: $player->id,
+            fromTeamId: $fromTeamId,
+            toTeamId: $offer->offering_team_id,
+            transferFee: 0,
+            type: GameTransfer::TYPE_FREE_AGENT,
+            season: $game->season,
+            window: $this->getCurrentWindow($game),
+        );
 
         // Record the transaction (free transfer, but still useful to track)
         FinancialTransaction::recordIncome(
@@ -694,6 +721,7 @@ class TransferService
         $player = $offer->gamePlayer;
         $playerName = $player->player->name;
         $buyerName = $offer->offeringTeam->name;
+        $isLoan = $offer->offer_type === TransferOffer::TYPE_LOAN_OUT;
 
         // Transfer player to the buying team
         $player->update([
@@ -704,7 +732,7 @@ class TransferService
         ]);
 
         // For loan-out offers, create a loan record so the player returns at season end
-        if ($offer->offer_type === TransferOffer::TYPE_LOAN_OUT) {
+        if ($isLoan) {
             Loan::create([
                 'game_id' => $game->id,
                 'game_player_id' => $player->id,
@@ -715,6 +743,17 @@ class TransferService
                 'status' => Loan::STATUS_ACTIVE,
             ]);
         }
+
+        GameTransfer::record(
+            gameId: $game->id,
+            gamePlayerId: $player->id,
+            fromTeamId: $game->team_id,
+            toTeamId: $offer->offering_team_id,
+            transferFee: $offer->transfer_fee,
+            type: $isLoan ? GameTransfer::TYPE_LOAN : GameTransfer::TYPE_TRANSFER,
+            season: $game->season,
+            window: $this->getCurrentWindow($game),
+        );
 
         // Update transfer budget and record the transaction
         $investment = $game->currentInvestment;
@@ -992,19 +1031,6 @@ class TransferService
     }
 
     /**
-     * Get listed players for a game.
-     */
-    public function getListedPlayers(Game $game): Collection
-    {
-        return GamePlayer::with(['player', 'activeOffers.offeringTeam'])
-            ->where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
-            ->where('transfer_status', GamePlayer::TRANSFER_STATUS_LISTED)
-            ->orderByDesc('market_value_cents')
-            ->get();
-    }
-
-    /**
      * Complete all agreed incoming transfers (user buying/loaning players).
      * Called when transfer window opens.
      */
@@ -1084,6 +1110,7 @@ class TransferService
         $player = $offer->gamePlayer;
         $playerName = $player->player->name;
         $sellerName = $offer->sellingTeam->name ?? $player->team->name ?? 'Unknown';
+        $fromTeamId = $offer->selling_team_id ?? $player->team_id;
 
         // Transfer player to user's team
         $age = $player->age;
@@ -1098,6 +1125,17 @@ class TransferService
             'contract_until' => $newContractEnd,
             'annual_wage' => $offer->offered_wage ?? $player->annual_wage,
         ]);
+
+        GameTransfer::record(
+            gameId: $game->id,
+            gamePlayerId: $player->id,
+            fromTeamId: $fromTeamId,
+            toTeamId: $game->team_id,
+            transferFee: $offer->transfer_fee,
+            type: GameTransfer::TYPE_TRANSFER,
+            season: $game->season,
+            window: $this->getCurrentWindow($game),
+        );
 
         // Deduct from transfer budget and record the transaction
         $investment = $game->currentInvestment;
@@ -1143,6 +1181,18 @@ class TransferService
             'team_id' => $game->team_id,
             'number' => GamePlayer::nextAvailableNumber($game->id, $game->team_id),
         ]);
+
+        GameTransfer::record(
+            gameId: $game->id,
+            gamePlayerId: $player->id,
+            fromTeamId: $parentTeamId,
+            toTeamId: $game->team_id,
+            transferFee: 0,
+            type: GameTransfer::TYPE_LOAN,
+            season: $game->season,
+            window: $this->getCurrentWindow($game),
+        );
+
         $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
     }
 
@@ -1283,6 +1333,18 @@ class TransferService
             'transfer_status' => null,
             'transfer_listed_at' => null,
         ]);
+
+        GameTransfer::record(
+            gameId: $game->id,
+            gamePlayerId: $player->id,
+            fromTeamId: $game->team_id,
+            toTeamId: $destinationTeamId,
+            transferFee: 0,
+            type: GameTransfer::TYPE_LOAN,
+            season: $game->season,
+            window: $this->getCurrentWindow($game),
+        );
+
         $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
     }
 }

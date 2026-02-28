@@ -40,6 +40,10 @@ return [
     'loan_request' => 'Loan Request',
     'loan_no_fee' => 'Loan (no fee)',
     'free_transfer' => 'Free (end of contract)',
+    'free_agent' => 'Free Agent',
+    'sign_free_agent' => 'Sign Free Agent',
+    'window_closed_for_signing' => 'Transfer window closed — signing unavailable.',
+    'wage_exceeds_budget' => 'Wage demand exceeds your wage budget.',
     'response_next_matchday' => 'Response on the next matchday',
 
     // Rejected bids
@@ -201,6 +205,25 @@ return [
     'scouting_help_shortlist_bid' => 'Submit a bid from the shortlist. The selling club responds next matchday — they may accept, reject, or counter.',
     'scouting_help_shortlist_loan' => 'You can also request a loan instead of a permanent transfer.',
     'scouting_help_shortlist_precontract' => 'Players in their final year of contract can be signed for free via pre-contract from January.',
+
+    // Transfer activity summary
+    'transfer_activity_title' => ':window Transfer Window Summary',
+    'transfer_activity_summer' => 'Summer',
+    'transfer_activity_winter' => 'Winter',
+    'transfer_activity_transfers' => 'Transfers',
+    'transfer_activity_free_agents' => 'Free Agent Signings',
+    'transfer_activity_no_transfers' => 'No transfers this window.',
+    'transfer_activity_no_free_agents' => 'No free agent signings this window.',
+    'transfer_activity_player' => 'Player',
+    'transfer_activity_from' => 'From',
+    'transfer_activity_to' => 'To',
+    'transfer_activity_fee' => 'Fee',
+    'transfer_activity_position' => 'Pos',
+    'transfer_activity_age' => 'Age',
+    'transfer_activity_foreign' => 'Foreign',
+    'transfer_activity_other_leagues' => 'Other leagues',
+    'transfer_activity_out' => 'Out',
+    'transfer_activity_in' => 'In',
 
     // Decline renewal
     'reconsider_renewal' => 'Reconsider',

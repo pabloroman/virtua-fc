@@ -40,6 +40,10 @@ return [
     'loan_request' => 'Solicitud de Cesión',
     'loan_no_fee' => 'Cesión (sin coste)',
     'free_transfer' => 'Libre (fin de contrato)',
+    'free_agent' => 'Agente Libre',
+    'sign_free_agent' => 'Fichar Agente Libre',
+    'window_closed_for_signing' => 'Ventana de fichajes cerrada — no se puede fichar.',
+    'wage_exceeds_budget' => 'El salario solicitado supera tu presupuesto salarial.',
     'response_next_matchday' => 'Respuesta en la próxima jornada',
 
     // Rejected bids
@@ -206,6 +210,25 @@ return [
     'scouting_help_shortlist_bid' => 'Envía una oferta desde la lista de seguimiento. El club vendedor responde en la siguiente jornada — puede aceptar, rechazar o contraofertar.',
     'scouting_help_shortlist_loan' => 'También puedes solicitar una cesión en vez de un traspaso permanente.',
     'scouting_help_shortlist_precontract' => 'Los jugadores en su último año de contrato pueden ficharse gratis mediante precontrato a partir de enero.',
+
+    // Transfer activity summary
+    'transfer_activity_title' => 'Resumen Ventana de :window',
+    'transfer_activity_summer' => 'Verano',
+    'transfer_activity_winter' => 'Invierno',
+    'transfer_activity_transfers' => 'Traspasos',
+    'transfer_activity_free_agents' => 'Fichajes de Agentes Libres',
+    'transfer_activity_no_transfers' => 'Sin traspasos en esta ventana.',
+    'transfer_activity_no_free_agents' => 'Sin fichajes de agentes libres en esta ventana.',
+    'transfer_activity_player' => 'Jugador',
+    'transfer_activity_from' => 'De',
+    'transfer_activity_to' => 'A',
+    'transfer_activity_fee' => 'Coste',
+    'transfer_activity_position' => 'Pos',
+    'transfer_activity_age' => 'Edad',
+    'transfer_activity_foreign' => 'Extranjero',
+    'transfer_activity_other_leagues' => 'Otras ligas',
+    'transfer_activity_out' => 'Salida',
+    'transfer_activity_in' => 'Entrada',
 
     // Decline renewal
     'reconsider_renewal' => 'Reconsiderar',

@@ -11,6 +11,12 @@ return [
     'offer_accepted_sale' => ':player sold :team_a for :fee.',
     'offer_accepted_pre_contract' => 'Deal agreed! :player will sign for :team for :fee when the :window window opens.',
 
+    // Free agent signing
+    'free_agent_signed' => ':player has signed for your team as a free agent!',
+    'not_free_agent' => 'This player is not a free agent.',
+    'transfer_window_closed' => 'The transfer window is closed.',
+    'wage_budget_exceeded' => 'Signing this player would exceed your wage budget.',
+
     // Bid/loan submission confirmations
     'bid_submitted' => 'Your bid for :player has been submitted. You will receive a response soon.',
     'bid_already_exists' => 'You already have a pending bid for this player.',

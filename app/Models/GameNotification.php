@@ -68,6 +68,8 @@ class GameNotification extends Model
     public const TYPE_TRANSFER_BID_RESULT = 'transfer_bid_result';
     public const TYPE_LOAN_REQUEST_RESULT = 'loan_request_result';
     public const TYPE_TOURNAMENT_WELCOME = 'tournament_welcome';
+    public const TYPE_AI_TRANSFER_ACTIVITY = 'ai_transfer_activity';
+    public const TYPE_TRANSFER_WINDOW_OPEN = 'transfer_window_open';
 
     // Priorities
     public const PRIORITY_MILESTONE = 'milestone';
@@ -100,6 +102,8 @@ class GameNotification extends Model
         self::TYPE_TRANSFER_BID_RESULT => 'scouting',
         self::TYPE_LOAN_REQUEST_RESULT => 'scouting',
         self::TYPE_TOURNAMENT_WELCOME => 'competition',
+        self::TYPE_AI_TRANSFER_ACTIVITY => 'transfer-activity',
+        self::TYPE_TRANSFER_WINDOW_OPEN => 'scouting',
     ];
 
     protected $fillable = [
@@ -219,6 +223,7 @@ class GameNotification extends Model
             'scouting' => 'game.scouting',
             'competition' => 'game.competition',
             'academy' => 'game.squad.academy',
+            'transfer-activity' => 'game.transfer-activity',
             default => 'game.squad.academy',
         };
     }
@@ -375,6 +380,20 @@ class GameNotification extends Model
                 'border' => 'border-yellow-300',
                 'text' => 'text-yellow-900',
                 'icon_bg' => 'bg-yellow-500',
+                'icon_text' => 'text-white',
+            ],
+            self::TYPE_AI_TRANSFER_ACTIVITY => [
+                'bg' => 'bg-cyan-50',
+                'border' => 'border-cyan-200',
+                'text' => 'text-cyan-800',
+                'icon_bg' => 'bg-cyan-500',
+                'icon_text' => 'text-white',
+            ],
+            self::TYPE_TRANSFER_WINDOW_OPEN => [
+                'bg' => 'bg-emerald-50',
+                'border' => 'border-emerald-200',
+                'text' => 'text-emerald-800',
+                'icon_bg' => 'bg-emerald-500',
                 'icon_text' => 'text-white',
             ],
             default => [
