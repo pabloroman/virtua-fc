@@ -38,6 +38,25 @@ Players lose energy per minute based on physical ability and age. Goalkeepers dr
 
 Energy parameters are in `config/match_simulation.php` under the `energy` key.
 
+## Between-Match Fatigue
+
+Players lose fitness from playing matches and recover between them, but recovery uses a **nonlinear formula** that makes it harder to stay at peak fitness. Near 100, recovery is slow; at lower fitness, it accelerates. This creates natural equilibria based on how often a player plays:
+
+```
+recoveryRate = baseRecovery × physicalModifier × (1 + scaling × (100 − fitness) / 100)
+```
+
+**Key dynamics:**
+- **Single-match weeks** (7-day gaps): Average players stabilize around 88–93 fitness. Young, fit players stay near 98.
+- **Congested periods** (2+ matches/week): Fitness drops into the 70s–80s, forcing squad rotation.
+- **Rest**: One matchday off recovers ~15 fitness points. Very responsive.
+
+**Modifiers:**
+- **Age** affects fitness loss per match — veterans (32+) lose ~12% more than average, young players (<24) lose ~8% less.
+- **Physical ability** affects recovery rate — high physical (≥80) recovers 10% faster, low physical (<60) recovers 10% slower.
+
+AI teams use a fitness rotation threshold (configurable) to bench fatigued players. All parameters are in `config/match_simulation.php` under the `fatigue` key.
+
 ## Match Performance Variance
 
 Each player gets a random "form on the day" modifier using a normal distribution, shifted by morale and fitness. The tight variance range ensures the better squad reliably wins while still allowing occasional upsets. See `getMatchPerformance()`.

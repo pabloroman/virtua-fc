@@ -7,17 +7,6 @@ use Illuminate\Support\Facades\DB;
 
 class PlayerConditionService
 {
-    // Fitness loss by position group (midfielders run the most)
-    private const FITNESS_LOSS = [
-        'Goalkeeper' => [3, 6],
-        'Defender' => [8, 14],
-        'Midfielder' => [10, 16],
-        'Forward' => [8, 14],
-    ];
-
-    // Base recovery per day of rest
-    private const FITNESS_RECOVERY_PER_DAY = 6;
-
     // Maximum fitness
     private const MAX_FITNESS = 100;
 
@@ -129,38 +118,73 @@ class PlayerConditionService
     }
 
     /**
-     * Calculate fitness change for a player.
+     * Calculate fitness change for a player using nonlinear recovery.
+     *
+     * Recovery is slow near fitness 100 and faster at lower fitness, creating
+     * natural equilibria based on match frequency. Players who play every week
+     * stabilize around 88-93; congested periods push them into the 70s-80s.
+     *
+     * Formula: recoveryRate = base × physicalMod × (1 + scaling × (100 − fitness) / 100)
      */
     private function calculateFitnessChange(GamePlayer $player, bool $playedMatch, int $daysSinceLastMatch): int
     {
-        $change = 0;
+        $config = config('match_simulation.fatigue');
+        $currentFitness = $player->fitness;
+
+        // Nonlinear recovery: faster when far below 100, slow near the top
+        $baseRecovery = $config['base_recovery_per_day'];
+        $scaling = $config['recovery_scaling'];
+        $maxRecoveryDays = $config['max_recovery_days'];
+        $physicalModifier = $this->getPhysicalRecoveryModifier($player, $config);
+
+        $effectiveBase = $baseRecovery * $physicalModifier;
+        $recoveryRate = $effectiveBase * (1 + $scaling * (self::MAX_FITNESS - $currentFitness) / 100);
+
+        $recoveryDays = min($daysSinceLastMatch, $maxRecoveryDays);
+        $recovery = (int) round($recoveryRate * $recoveryDays);
 
         if ($playedMatch) {
-            // Players who played: lose fitness from exertion, but recover from rest days
-
-            // Recovery from rest days since last match
-            if ($daysSinceLastMatch > 0) {
-                // Cap recovery at 5 days (beyond that, diminishing returns)
-                $recoveryDays = min($daysSinceLastMatch, 5);
-                $recovery = self::FITNESS_RECOVERY_PER_DAY * $recoveryDays;
-                $change += $recovery;
-            }
-
-            // Fatigue from playing
+            // Position-based match loss with age modifier
             $positionGroup = $player->position_group;
-            $lossRange = self::FITNESS_LOSS[$positionGroup] ?? [8, 14];
-            $loss = rand($lossRange[0], $lossRange[1]);
+            $lossRange = $config['fitness_loss'][$positionGroup] ?? [9, 13];
+            $ageModifier = $this->getAgeLossModifier($player, $config);
+            $loss = (int) round(rand($lossRange[0], $lossRange[1]) * $ageModifier);
 
-            $change -= $loss;
-        } else {
-            // Players who didn't play: they're resting, so fitness recovers
-            if ($daysSinceLastMatch > 0) {
-                $recoveryDays = min($daysSinceLastMatch, 5);
-                $change += self::FITNESS_RECOVERY_PER_DAY * $recoveryDays;
-            }
+            return $recovery - $loss;
         }
 
-        return $change;
+        return $recovery;
+    }
+
+    /**
+     * Get age-based modifier for fitness loss (veterans lose more per match).
+     */
+    private function getAgeLossModifier(GamePlayer $player, array $config): float
+    {
+        $age = $player->age;
+        $ageMod = $config['age_loss_modifier'];
+
+        return match (true) {
+            $age < $ageMod['young_threshold'] => $ageMod['young'],
+            $age < $ageMod['peak_threshold'] => $ageMod['peak'],
+            $age < $ageMod['veteran_threshold'] => $ageMod['experienced'],
+            default => $ageMod['veteran'],
+        };
+    }
+
+    /**
+     * Get physical ability modifier for recovery rate (fitter players recover faster).
+     */
+    private function getPhysicalRecoveryModifier(GamePlayer $player, array $config): float
+    {
+        $physical = $player->current_physical_ability;
+        $physMod = $config['physical_recovery_modifier'];
+
+        return match (true) {
+            $physical >= $physMod['high_threshold'] => $physMod['high'],
+            $physical >= $physMod['low_threshold'] => $physMod['medium'],
+            default => $physMod['low'],
+        };
     }
 
     /**
