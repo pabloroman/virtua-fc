@@ -101,6 +101,19 @@ class GameInvestment extends Model
     ];
 
     /**
+     * Default investment tiers by club reputation level.
+     */
+    public const DEFAULT_TIERS_BY_REPUTATION = [
+        'elite' => ['youth_academy' => 4, 'medical' => 4, 'scouting' => 4, 'facilities' => 4],
+        'contenders' => ['youth_academy' => 3, 'medical' => 4, 'scouting' => 4, 'facilities' => 3],
+        'continental' => ['youth_academy' => 3, 'medical' => 3, 'scouting' => 3, 'facilities' => 3],
+        'established' => ['youth_academy' => 2, 'medical' => 3, 'scouting' => 3, 'facilities' => 2],
+        'modest' => ['youth_academy' => 1, 'medical' => 2, 'scouting' => 2, 'facilities' => 2],
+        'professional' => ['youth_academy' => 1, 'medical' => 2, 'scouting' => 2, 'facilities' => 1],
+        'local' => ['youth_academy' => 1, 'medical' => 1, 'scouting' => 1, 'facilities' => 1],
+    ];
+
+    /**
      * Minimum required investment for professional leagues (Tier 1 in all areas).
      */
     public const MINIMUM_TOTAL_INVESTMENT = 150_000_000; // €1.5M in cents
@@ -188,6 +201,34 @@ class GameInvestment extends Model
             && $this->medical_tier >= 1
             && $this->scouting_tier >= 1
             && $this->facilities_tier >= 1;
+    }
+
+    /**
+     * Get default investment tiers for a reputation level, reduced if surplus is insufficient.
+     */
+    public static function defaultTiersForReputation(string $reputation, int $availableSurplus): array
+    {
+        $tiers = self::DEFAULT_TIERS_BY_REPUTATION[$reputation]
+            ?? self::DEFAULT_TIERS_BY_REPUTATION['professional'];
+
+        while (true) {
+            $totalCost = 0;
+            foreach ($tiers as $area => $tier) {
+                $totalCost += self::TIER_THRESHOLDS[$area][$tier];
+            }
+
+            if ($totalCost <= $availableSurplus) {
+                return $tiers;
+            }
+
+            // All already at minimum — can't reduce further
+            if (max($tiers) <= 1) {
+                return $tiers;
+            }
+
+            // Uniformly reduce all tiers by 1 (minimum 1)
+            $tiers = array_map(fn (int $t) => max(1, $t - 1), $tiers);
+        }
     }
 
     // Formatted accessors
