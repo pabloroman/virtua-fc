@@ -130,11 +130,56 @@ class ShowTransferActivity
         usort($restOfWorldTransfers, fn ($a, $b) => ($b['fee'] ?? 0) <=> ($a['fee'] ?? 0));
         $restOfWorldTransfers = array_slice($restOfWorldTransfers, 0, 20);
 
+        // Group rest-of-world transfers by team (same structure as league)
+        $restOfWorldTeamActivity = [];
+        foreach ($restOfWorldTransfers as $transfer) {
+            $fromId = $transfer['fromTeamId'] ?? null;
+            $toId = $transfer['toTeamId'] ?? null;
+
+            if ($fromId) {
+                $restOfWorldTeamActivity[$fromId]['out'][] = [
+                    'playerName' => $transfer['playerName'],
+                    'position' => $transfer['position'] ?? null,
+                    'toTeamName' => $transfer['toTeamName'] ?? null,
+                    'toTeamId' => $toId,
+                    'formattedFee' => $transfer['formattedFee'],
+                    'fee' => $transfer['fee'] ?? 0,
+                    'type' => $transfer['type'] ?? 'foreign',
+                ];
+            }
+
+            if ($toId) {
+                $restOfWorldTeamActivity[$toId]['in'][] = [
+                    'playerName' => $transfer['playerName'],
+                    'position' => $transfer['position'] ?? null,
+                    'fromTeamName' => $transfer['fromTeamName'] ?? null,
+                    'fromTeamId' => $fromId,
+                    'formattedFee' => $transfer['formattedFee'],
+                    'fee' => $transfer['fee'] ?? 0,
+                    'type' => $transfer['type'] ?? 'foreign',
+                ];
+            }
+        }
+
+        foreach ($restOfWorldTeamActivity as $teamId => &$activity) {
+            $team = $teams->get($teamId);
+            $activity['teamId'] = $teamId;
+            $activity['teamName'] = $team?->name ?? 'Unknown';
+            $activity['in'] = $activity['in'] ?? [];
+            $activity['out'] = $activity['out'] ?? [];
+            usort($activity['out'], fn ($a, $b) => $b['fee'] <=> $a['fee']);
+            usort($activity['in'], fn ($a, $b) => $b['fee'] <=> $a['fee']);
+        }
+        unset($activity);
+
+        uasort($restOfWorldTeamActivity, fn ($a, $b) => strcasecmp($a['teamName'], $b['teamName']));
+
         return view('transfer-activity', [
             'game' => $game,
             'leagueTeamActivity' => $leagueTeamActivity,
             'leagueTransferCount' => $leagueTransferCount,
-            'restOfWorldTransfers' => $restOfWorldTransfers,
+            'restOfWorldTeamActivity' => $restOfWorldTeamActivity,
+            'restOfWorldCount' => count($restOfWorldTransfers),
             'competitionName' => $competitionName,
             'teams' => $teams,
             'window' => $window,

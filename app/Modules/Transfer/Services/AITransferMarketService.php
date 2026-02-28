@@ -212,7 +212,7 @@ class AITransferMarketService
         $teamSizeDeltas = $teamRosters->map(fn () => 0);
 
         // Foreign team names for narrative
-        $foreignTeams = Team::where('country', '!=', 'ES')
+        $foreignTeams = Team::where('country', '!=', $game->country)
             ->where('type', 'club')
             ->whereNotIn('id', $teamRosters->keys())
             ->inRandomOrder()
