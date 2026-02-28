@@ -80,8 +80,8 @@ class AITransferMarketService
     {
         $isSummer = $window === 'summer';
 
-        // Single load: all AI players with team relation, grouped by team
-        $teamRosters = GamePlayer::with('team')
+        // Single load: all AI players with team + player relations, grouped by team
+        $teamRosters = GamePlayer::with(['team', 'player'])
             ->where('game_id', $game->id)
             ->whereNotNull('team_id')
             ->where('team_id', '!=', $game->team_id)
@@ -126,7 +126,8 @@ class AITransferMarketService
         Collection $teamNames,
         Collection $teams,
     ): Collection {
-        $freeAgents = GamePlayer::where('game_id', $game->id)
+        $freeAgents = GamePlayer::with('player')
+            ->where('game_id', $game->id)
             ->whereNull('team_id')
             ->get();
 
