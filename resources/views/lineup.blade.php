@@ -257,7 +257,7 @@
                                     </button>
                                 </div>
 
-                                <div id="pitch-container" class="bg-emerald-600 rounded-lg p-4 relative" style="aspect-ratio: 3/4;"
+                                <div id="pitch-container" class="bg-emerald-600 rounded-lg p-4 relative aspect-[3/4]"
                                     :style="gridMode && (positioningSlotId !== null || draggingSlotId !== null) ? 'touch-action: none' : ''">
                                     {{-- Pitch markings --}}
                                     <div class="absolute inset-4 border-2 border-emerald-400/50 rounded">
@@ -296,7 +296,7 @@
                                                         <template x-for="col in gridConfig.cols" :key="'gc-' + (row-1) + '-' + (col-1)">
                                                             <div
                                                                 class="absolute transition-colors duration-150 border"
-                                                                :style="`left: ${((col-1) / gridConfig.cols) * 100}%; top: ${(1 - (row / gridConfig.rows)) * 100}%; width: ${100 / gridConfig.cols}%; height: ${100 / gridConfig.rows}%`"
+                                                                :style="`left: ${((col-1) / gridConfig.cols) * 100}%; top: ${(1 - (row / gridConfig.rows)) * 100}%; width: ${100 / gridConfig.cols}%; height: ${100 / gridConfig.rows}%; ${(positioningSlotId !== null && getGridCellState(col-1, row-1) === 'valid') ? 'cursor: pointer; pointer-events: auto' : ''}`"
                                                                 :class="{
                                                                     [getZoneColorClass(currentSlots.find(s => s.id === (positioningSlotId ?? draggingSlotId))?.role)]: getGridCellState(col-1, row-1) === 'valid',
                                                                     'bg-white/5 border-white/5': getGridCellState(col-1, row-1) === 'occupied',
@@ -304,7 +304,6 @@
                                                                     'border-transparent': getGridCellState(col-1, row-1) === 'neutral',
                                                                 }"
                                                                 @click="positioningSlotId !== null && getGridCellState(col-1, row-1) === 'valid' && handleGridCellClick(col-1, row-1)"
-                                                                :style="(positioningSlotId !== null && getGridCellState(col-1, row-1) === 'valid') ? 'cursor: pointer; pointer-events: auto' : ''"
                                                             ></div>
                                                         </template>
                                                     </template>
