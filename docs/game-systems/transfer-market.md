@@ -58,6 +58,32 @@ From the winter window onward, AI clubs can approach players with expiring contr
 - **Winter**: Configured matchday (typically matchday 19)
 - Agreed transfers complete at the next open window
 
+## AI Transfer Market
+
+When a transfer window closes, `AITransferMarketService` simulates AI-to-AI transfer activity in two phases:
+
+### Phase 1: Free Agent Signings
+
+Free agents (players without a team) are matched to AI teams based on position need and ability fit. Teams within 20 ability points of the player and below 26 squad size are eligible.
+
+### Phase 2: AI-to-AI Transfers
+
+Each AI team gets a transfer activity budget (1–5 moves in summer, 1–3 in winter). Transfers are split into two types based on club reputation:
+
+**Squad Clearing** (~65% of transfers): Teams sell surplus/backup players to clubs of **equal or lower reputation**. Candidates are scored by position group surplus, below-average ability, and age. This represents teams trimming their squad of players they don't need.
+
+**Talent Upgrading** (~35% of transfers): Teams sell quality players to clubs of **equal or higher reputation**. Candidates must be at or above the team average ability, with prime-age players (22–28) most attractive. This represents realistic upward mobility — good players moving to bigger clubs.
+
+Both types respect:
+- Position group minimums (2 GK, 5 DEF, 5 MID, 3 FWD) — teams won't sell below these
+- Squad size floor of 20 — teams won't sell if their squad is too thin
+- Squad size cap of 26 for buyers
+- Per-team transfer budget caps (both buys and sells counted)
+
+When no domestic buyer is found, there's a 50% chance of a foreign departure (player leaves the game). The user's team is excluded from all AI-to-AI activity.
+
+See `AITransferMarketService` for the full algorithm.
+
 ## Season-End Processing
 
 Four processors handle transfer-related transitions:
@@ -77,3 +103,4 @@ Four processors handle transfer-related transitions:
 | `app/Modules/Transfer/Services/ScoutingService.php` | Search, bid evaluation, asking price |
 | `app/Modules/Transfer/Services/ContractService.php` | Wages, renewal negotiation |
 | `app/Modules/Transfer/Services/LoanService.php` | Loan destination scoring, search |
+| `app/Modules/Transfer/Services/AITransferMarketService.php` | AI-to-AI transfer market (window close) |

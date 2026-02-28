@@ -2,6 +2,7 @@
 
 namespace App\Modules\Transfer\Services;
 
+use App\Models\ClubProfile;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\Team;
@@ -14,17 +15,57 @@ use Illuminate\Support\Collection;
  * Simulates AI transfer market activity at the end of each transfer window.
  *
  * Called from MatchdayOrchestrator when a transfer window closes:
- * - Summer (September): free agent signings + AI-to-AI transfers (0-3 per team)
- * - Winter (February): remaining free agents + AI-to-AI transfers (0-1 per team)
+ * - Summer (September): free agent signings + AI-to-AI transfers (1-5 per team)
+ * - Winter (February): remaining free agents + AI-to-AI transfers (1-3 per team)
+ *
+ * Two types of AI-to-AI transfers:
+ * 1. Squad Clearing — surplus/backup players move to equal or lower reputation clubs
+ * 2. Talent Upgrading — quality players move to equal or higher reputation clubs
  */
 class AITransferMarketService
 {
-    /** Probability distribution for number of departures (summer) */
-    private const DEPARTURE_WEIGHTS_SUMMER = [0 => 35, 1 => 30, 2 => 20, 3 => 15];
-    private const DEPARTURE_WEIGHTS_WINTER = [0 => 60, 1 => 40];
+    /** Per-team transfer activity budget (summer: 1-5, winter: 1-3) */
+    private const TRANSFER_COUNT_WEIGHTS_SUMMER = [1 => 15, 2 => 30, 3 => 30, 4 => 15, 5 => 10];
+    private const TRANSFER_COUNT_WEIGHTS_WINTER = [1 => 50, 2 => 35, 3 => 15];
 
-    /** Chance of a departure going to a foreign club (vs domestic transfer) */
-    private const FOREIGN_DEPARTURE_CHANCE = 40;
+    /** Percentage chance each sell is a squad clearing type (vs talent upgrade) */
+    private const CLEARING_CHANCE = 65;
+
+    /** Chance of foreign departure when no domestic buyer is found */
+    private const FOREIGN_FALLBACK_CHANCE = 50;
+
+    /** Ideal squad depth per position group */
+    private const IDEAL_GROUP_COUNTS = [
+        'Goalkeeper' => 3,
+        'Defender' => 6,
+        'Midfielder' => 6,
+        'Forward' => 4,
+    ];
+
+    /** Minimum group counts — never sell below this */
+    private const MIN_GROUP_COUNTS = [
+        'Goalkeeper' => 2,
+        'Defender' => 5,
+        'Midfielder' => 5,
+        'Forward' => 3,
+    ];
+
+    /** Minimum squad size below which a team will not sell */
+    private const MIN_SQUAD_SIZE = 20;
+
+    /** Maximum squad size — buyers can't exceed this */
+    private const MAX_SQUAD_SIZE = 26;
+
+    /** Reputation tiers ordered highest to lowest (index 0 = highest) */
+    private const REPUTATION_TIERS = [
+        ClubProfile::REPUTATION_ELITE,
+        ClubProfile::REPUTATION_CONTENDERS,
+        ClubProfile::REPUTATION_CONTINENTAL,
+        ClubProfile::REPUTATION_ESTABLISHED,
+        ClubProfile::REPUTATION_MODEST,
+        ClubProfile::REPUTATION_PROFESSIONAL,
+        ClubProfile::REPUTATION_LOCAL,
+    ];
 
     public function __construct(
         private readonly ContractService $contractService,
@@ -59,7 +100,7 @@ class AITransferMarketService
         // Phase 1: Sign free agents (players with null team_id)
         $freeAgentSignings = $this->processFreeAgentSignings($game, $teamRosters, $teamAverages, $teamNames, $teams);
 
-        // Phase 2: AI-to-AI transfers (reuse same rosters — now updated with free agent signings)
+        // Phase 2: AI-to-AI transfers with reputation-based matching
         $transfers = $this->processAITransfers($game, $isSummer, $teamRosters, $teamAverages, $teamNames, $teams);
 
         // Phase 3: Create summary notification (only if there's activity)
@@ -146,7 +187,10 @@ class AITransferMarketService
     }
 
     /**
-     * Phase 2: Process AI-to-AI transfers across all divisions.
+     * Phase 2: Process AI-to-AI transfers with two transfer types.
+     *
+     * Type 1 (Squad Clearing): surplus players → equal or lower reputation buyers
+     * Type 2 (Talent Upgrading): quality players → equal or higher reputation buyers
      */
     private function processAITransfers(
         Game $game,
@@ -156,132 +200,573 @@ class AITransferMarketService
         Collection $teamNames,
         Collection $teams,
     ): Collection {
-        $weights = $isSummer ? self::DEPARTURE_WEIGHTS_SUMMER : self::DEPARTURE_WEIGHTS_WINTER;
+        // Load reputation data for all AI teams
+        $teamReputations = $this->loadTeamReputations($teamRosters);
 
-        // Get foreign team names for narrative — exclude teams that exist in this game
+        // Pre-compute position group counts per team
+        $groupCounts = $teamRosters->map(
+            fn ($players) => $players->groupBy(fn ($p) => $this->getPositionGroup($p->position))->map->count()
+        );
+
+        // Foreign team names for narrative
         $foreignTeams = Team::where('country', '!=', 'ES')
             ->where('type', 'club')
             ->whereNotIn('id', $teamRosters->keys())
             ->inRandomOrder()
-            ->limit(30)
+            ->limit(40)
             ->pluck('name')
             ->all();
         $foreignIndex = 0;
 
+        // Determine each team's transfer activity budget (1-5 total moves)
+        $weights = $isSummer ? self::TRANSFER_COUNT_WEIGHTS_SUMMER : self::TRANSFER_COUNT_WEIGHTS_WINTER;
+        $teamBudgets = $teamRosters->map(fn () => [
+            'max' => $this->weightedRandom($weights),
+            'sells' => 0,
+            'buys' => 0,
+        ]);
+
         $allTransfers = collect();
         $departingPlayerIds = collect();
 
-        foreach ($teamRosters as $teamId => $players) {
-            $teamAvg = $teamAverages[$teamId] ?? 55;
-            $numDepartures = $this->weightedRandom($weights);
+        // Build all sell candidates across all teams, tagged by type
+        $sellOffers = $this->buildSellOffers(
+            $teamRosters, $teamAverages, $teamReputations, $groupCounts, $teamBudgets, $departingPlayerIds
+        );
 
-            if ($numDepartures === 0) {
+        // Shuffle to avoid systematic bias (e.g., always processing the same team first)
+        $sellOffers = $sellOffers->shuffle();
+
+        // Match each sell offer with a buyer
+        foreach ($sellOffers as $offer) {
+            $player = $offer['player'];
+            $sellerTeamId = $offer['sellerTeamId'];
+            $transferType = $offer['transferType'];
+
+            // Re-check seller budget
+            $sellerBudget = $teamBudgets->get($sellerTeamId);
+            if (! $sellerBudget || ($sellerBudget['sells'] + $sellerBudget['buys']) >= $sellerBudget['max']) {
                 continue;
             }
 
-            // Only consider non-retiring players for departure
-            $eligible = $players->filter(fn (GamePlayer $p) => ! $p->retiring_at_season);
+            // Re-check seller squad size
+            $sellerPlayers = $teamRosters->get($sellerTeamId, collect());
+            $effectiveSellerSize = $sellerPlayers->count() - $departingPlayerIds->intersect($sellerPlayers->pluck('id'))->count();
+            if ($effectiveSellerSize <= self::MIN_SQUAD_SIZE) {
+                continue;
+            }
 
-            $candidates = $this->scoreExpendability($eligible, $teamAvg);
-            $departures = $candidates->sortByDesc('score')->take($numDepartures);
+            // Re-check position group minimum for seller
+            $sellerGroupCounts = $groupCounts->get($sellerTeamId, collect());
+            $posGroup = $this->getPositionGroup($player->position);
+            $effectiveGroupCount = ($sellerGroupCounts->get($posGroup, 0))
+                - $sellerPlayers->filter(
+                    fn ($p) => $this->getPositionGroup($p->position) === $posGroup
+                        && $departingPlayerIds->contains($p->id)
+                )->count();
+            if ($effectiveGroupCount <= (self::MIN_GROUP_COUNTS[$posGroup] ?? 2)) {
+                continue;
+            }
 
-            foreach ($departures as $candidate) {
-                /** @var GamePlayer $player */
-                $player = $candidate['player'];
+            if ($departingPlayerIds->contains($player->id)) {
+                continue;
+            }
 
-                if ($departingPlayerIds->contains($player->id)) {
-                    continue;
-                }
+            // Find a buyer based on transfer type
+            $buyer = $transferType === 'clearing'
+                ? $this->findClearingBuyer($player, $sellerTeamId, $teamRosters, $teamAverages, $teamReputations, $teamBudgets, $groupCounts, $game, $departingPlayerIds)
+                : $this->findUpgradeBuyer($player, $sellerTeamId, $teamRosters, $teamAverages, $teamReputations, $teamBudgets, $groupCounts, $game, $departingPlayerIds);
 
-                $fromTeamName = $teamNames[$teamId] ?? 'Unknown';
-                $fromTeamId = $teamId;
-                $fee = $player->market_value_cents;
+            $fromTeamName = $teamNames[$sellerTeamId] ?? 'Unknown';
 
-                if (mt_rand(1, 100) <= self::FOREIGN_DEPARTURE_CHANCE) {
-                    $foreignName = $foreignTeams[$foreignIndex % count($foreignTeams)] ?? 'Foreign Club';
+            if ($buyer) {
+                $buyerTeamId = $buyer['teamId'];
+
+                // Execute domestic transfer
+                $transfer = $this->executeDomesticTransfer(
+                    $game, $player, $sellerTeamId, $fromTeamName, $buyerTeamId, $buyer['teamName'], $teams
+                );
+                $allTransfers->push($transfer);
+                $departingPlayerIds->push($player->id);
+
+                // Update budgets
+                $this->incrementBudget($teamBudgets, $sellerTeamId, 'sells');
+                $this->incrementBudget($teamBudgets, $buyerTeamId, 'buys');
+
+                // Update roster & group count caches
+                $this->updateRosterCacheForTransfer($teamRosters, $groupCounts, $player, $buyerTeamId);
+            } else {
+                // No domestic buyer — try foreign departure
+                if (mt_rand(1, 100) <= self::FOREIGN_FALLBACK_CHANCE && ! empty($foreignTeams)) {
+                    $foreignName = $foreignTeams[$foreignIndex % count($foreignTeams)];
                     $foreignIndex++;
 
-                    $allTransfers->push([
-                        'playerName' => $player->name,
-                        'position' => $player->position,
-                        'fromTeamId' => $fromTeamId,
-                        'fromTeamName' => $fromTeamName,
-                        'toTeamId' => null,
-                        'toTeamName' => $foreignName,
-                        'fee' => $fee,
-                        'formattedFee' => Money::format($fee),
-                        'type' => 'foreign',
-                    ]);
-
+                    $allTransfers->push($this->executeForeignTransfer($player, $sellerTeamId, $fromTeamName, $foreignName));
                     $departingPlayerIds->push($player->id);
-                    $player->delete();
-                } else {
-                    $buyer = $this->findBuyerTeam($player, $teamRosters, $teamAverages, $teamNames, $game, $departingPlayerIds);
-
-                    if ($buyer) {
-                        $buyerTeamId = $buyer['teamId'];
-                        $buyerTeamName = $buyer['teamName'];
-
-                        $seasonYear = (int) $game->season;
-                        $contractYears = mt_rand(2, 3);
-                        $newContractEnd = Carbon::createFromDate($seasonYear + $contractYears + 1, 6, 30);
-
-                        $team = $teams->get($buyerTeamId);
-                        $minimumWage = $team ? $this->contractService->getMinimumWageForTeam($team) : 0;
-                        $newWage = $this->contractService->calculateAnnualWage(
-                            $player->market_value_cents,
-                            $minimumWage,
-                            $player->age,
-                        );
-
-                        $player->update([
-                            'team_id' => $buyerTeamId,
-                            'number' => GamePlayer::nextAvailableNumber($game->id, $buyerTeamId),
-                            'contract_until' => $newContractEnd,
-                            'annual_wage' => $newWage,
-                        ]);
-
-                        $allTransfers->push([
-                            'playerName' => $player->name,
-                            'position' => $player->position,
-                            'fromTeamId' => $fromTeamId,
-                            'fromTeamName' => $fromTeamName,
-                            'toTeamId' => $buyerTeamId,
-                            'toTeamName' => $buyerTeamName,
-                            'fee' => $fee,
-                            'formattedFee' => Money::format($fee),
-                            'type' => 'domestic',
-                        ]);
-
-                        $departingPlayerIds->push($player->id);
-
-                        if ($teamRosters->has($buyerTeamId)) {
-                            $teamRosters[$buyerTeamId]->push($player);
-                        }
-                    } else {
-                        $foreignName = $foreignTeams[$foreignIndex % count($foreignTeams)] ?? 'Foreign Club';
-                        $foreignIndex++;
-
-                        $allTransfers->push([
-                            'playerName' => $player->name,
-                            'position' => $player->position,
-                            'fromTeamId' => $fromTeamId,
-                            'fromTeamName' => $fromTeamName,
-                            'toTeamId' => null,
-                            'toTeamName' => $foreignName,
-                            'fee' => $fee,
-                            'formattedFee' => Money::format($fee),
-                            'type' => 'foreign',
-                        ]);
-
-                        $departingPlayerIds->push($player->id);
-                        $player->delete();
-                    }
+                    $this->incrementBudget($teamBudgets, $sellerTeamId, 'sells');
+                    $this->updateGroupCountsForDeparture($groupCounts, $sellerTeamId, $player);
                 }
             }
         }
 
         return $allTransfers;
+    }
+
+    /**
+     * Build all sell offers across all teams, scored and tagged by type.
+     *
+     * @return Collection<int, array{player: GamePlayer, sellerTeamId: string, transferType: string, score: int}>
+     */
+    private function buildSellOffers(
+        Collection $teamRosters,
+        Collection $teamAverages,
+        Collection $teamReputations,
+        Collection $groupCounts,
+        Collection $teamBudgets,
+        Collection $departingPlayerIds,
+    ): Collection {
+        $offers = collect();
+
+        foreach ($teamRosters as $teamId => $players) {
+            $budget = $teamBudgets->get($teamId);
+            if (! $budget || $budget['max'] <= 0) {
+                continue;
+            }
+
+            if ($players->count() <= self::MIN_SQUAD_SIZE) {
+                continue;
+            }
+
+            $teamAvg = $teamAverages[$teamId] ?? 55;
+            $teamRepIndex = $this->getReputationIndex($teamId, $teamReputations);
+            $teamGroupCounts = $groupCounts->get($teamId, collect());
+
+            $eligible = $players->filter(fn (GamePlayer $p) => ! $p->retiring_at_season);
+
+            // Determine max sells for this team (at most half the budget, at least 1)
+            $maxSells = max(1, (int) ceil($budget['max'] * 0.6));
+
+            // Score clearing and upgrade candidates separately
+            $clearingCandidates = $eligible
+                ->map(fn ($p) => $this->scoreClearingCandidate($p, $teamAvg, $teamGroupCounts))
+                ->filter()
+                ->sortByDesc('score');
+
+            $upgradeCandidates = $eligible
+                ->map(fn ($p) => $this->scoreUpgradeCandidate($p, $teamAvg, $teamRepIndex, $teamGroupCounts))
+                ->filter()
+                ->sortByDesc('score');
+
+            $sellsAdded = 0;
+            $usedPlayerIds = collect();
+
+            for ($i = 0; $i < $maxSells; $i++) {
+                $isClearing = mt_rand(1, 100) <= self::CLEARING_CHANCE;
+
+                if ($isClearing) {
+                    $candidate = $clearingCandidates->first(fn ($c) => ! $usedPlayerIds->contains($c['player']->id));
+                    $type = 'clearing';
+                } else {
+                    $candidate = $upgradeCandidates->first(fn ($c) => ! $usedPlayerIds->contains($c['player']->id));
+                    $type = 'upgrade';
+                }
+
+                // Fallback to the other type if preferred type has no candidates
+                if (! $candidate) {
+                    if ($isClearing) {
+                        $candidate = $upgradeCandidates->first(fn ($c) => ! $usedPlayerIds->contains($c['player']->id));
+                        $type = 'upgrade';
+                    } else {
+                        $candidate = $clearingCandidates->first(fn ($c) => ! $usedPlayerIds->contains($c['player']->id));
+                        $type = 'clearing';
+                    }
+                }
+
+                if (! $candidate) {
+                    break;
+                }
+
+                $usedPlayerIds->push($candidate['player']->id);
+                $offers->push([
+                    'player' => $candidate['player'],
+                    'sellerTeamId' => $teamId,
+                    'transferType' => $type,
+                    'score' => $candidate['score'],
+                ]);
+                $sellsAdded++;
+            }
+        }
+
+        return $offers;
+    }
+
+    /**
+     * Score a player as a squad clearing candidate (surplus/backup player).
+     */
+    private function scoreClearingCandidate(GamePlayer $player, int $teamAvg, Collection $teamGroupCounts): ?array
+    {
+        $ability = $this->getPlayerAbility($player);
+        $group = $this->getPositionGroup($player->position);
+        $groupCount = $teamGroupCounts->get($group, 0);
+
+        // Never sell below minimum depth
+        if ($groupCount <= (self::MIN_GROUP_COUNTS[$group] ?? 2)) {
+            return null;
+        }
+
+        $score = 0;
+
+        // Position surplus: more surplus = more expendable
+        $surplus = $groupCount - (self::IDEAL_GROUP_COUNTS[$group] ?? 4);
+        if ($surplus > 0) {
+            $score += $surplus * 3;
+        }
+
+        // Below-average ability
+        $abilityGap = $teamAvg - $ability;
+        if ($abilityGap > 15) {
+            $score += 5;
+        } elseif ($abilityGap > 5) {
+            $score += 3;
+        } elseif ($abilityGap > 0) {
+            $score += 1;
+        }
+
+        // Aging player
+        if ($player->age >= 33) {
+            $score += 3;
+        } elseif ($player->age >= 30) {
+            $score += 2;
+        }
+
+        // Random variance
+        $score += mt_rand(0, 2);
+
+        if ($score < 3) {
+            return null;
+        }
+
+        return ['player' => $player, 'score' => $score];
+    }
+
+    /**
+     * Score a player as a talent upgrade candidate (quality player attractive to bigger clubs).
+     */
+    private function scoreUpgradeCandidate(GamePlayer $player, int $teamAvg, int $teamRepIndex, Collection $teamGroupCounts): ?array
+    {
+        // Elite clubs have no higher-reputation domestic buyer
+        if ($teamRepIndex <= 0) {
+            return null;
+        }
+
+        $ability = $this->getPlayerAbility($player);
+        $group = $this->getPositionGroup($player->position);
+        $groupCount = $teamGroupCounts->get($group, 0);
+
+        // Never sell below minimum depth
+        if ($groupCount <= (self::MIN_GROUP_COUNTS[$group] ?? 2)) {
+            return null;
+        }
+
+        // Must be at or above team average — this is a quality player
+        if ($ability < $teamAvg) {
+            return null;
+        }
+
+        $score = 0;
+
+        // How much above average (more = more attractive to bigger clubs)
+        $abilityGap = $ability - $teamAvg;
+        $score += min(5, (int) ($abilityGap / 3));
+
+        // Prime age premium
+        if ($player->age >= 22 && $player->age <= 28) {
+            $score += 3;
+        } elseif ($player->age >= 19 && $player->age <= 21) {
+            $score += 1;
+        }
+
+        // Surplus bonus — easier to let go if position group is stocked
+        $surplus = $groupCount - (self::IDEAL_GROUP_COUNTS[$group] ?? 4);
+        if ($surplus > 0) {
+            $score += min(4, $surplus * 2);
+        }
+
+        // Random variance
+        $score += mt_rand(0, 2);
+
+        if ($score < 3) {
+            return null;
+        }
+
+        return ['player' => $player, 'score' => $score];
+    }
+
+    /**
+     * Find a buyer for a squad clearing transfer (equal or lower reputation).
+     */
+    private function findClearingBuyer(
+        GamePlayer $player,
+        string $sellerTeamId,
+        Collection $teamRosters,
+        Collection $teamAverages,
+        Collection $teamReputations,
+        Collection $teamBudgets,
+        Collection $groupCounts,
+        Game $game,
+        Collection $departingPlayerIds,
+    ): ?array {
+        $sellerRepIndex = $this->getReputationIndex($sellerTeamId, $teamReputations);
+        $posGroup = $this->getPositionGroup($player->position);
+        $playerAbility = $this->getPlayerAbility($player);
+        $candidates = [];
+
+        foreach ($teamRosters as $teamId => $players) {
+            if ($teamId === $sellerTeamId || $teamId === $game->team_id) {
+                continue;
+            }
+
+            // Check buyer budget
+            $budget = $teamBudgets->get($teamId);
+            if ($budget && ($budget['sells'] + $budget['buys']) >= $budget['max']) {
+                continue;
+            }
+
+            // Buyer must be equal or lower reputation (higher or equal index)
+            $buyerRepIndex = $this->getReputationIndex($teamId, $teamReputations);
+            if ($buyerRepIndex < $sellerRepIndex) {
+                continue;
+            }
+
+            // Squad size check
+            $effectiveSize = $players->count() - $departingPlayerIds->intersect($players->pluck('id'))->count();
+            if ($effectiveSize >= self::MAX_SQUAD_SIZE) {
+                continue;
+            }
+
+            // Ability fit
+            $buyerAvg = $teamAverages[$teamId] ?? 55;
+            if (abs($playerAbility - $buyerAvg) > 15) {
+                continue;
+            }
+
+            // Position need
+            $buyerGroupCounts = $groupCounts->get($teamId, collect());
+            $currentGroupCount = $buyerGroupCounts->get($posGroup, 0);
+            $adjustedGroupCount = $currentGroupCount + $players->filter(
+                fn ($p) => $this->getPositionGroup($p->position) === $posGroup
+                    && $departingPlayerIds->contains($p->id)
+            )->count() * -1;
+            // Use the actual effective count considering departures from *this* team's roster
+            $effectiveGroupCount = $currentGroupCount - $players->filter(
+                fn ($p) => $this->getPositionGroup($p->position) === $posGroup
+                    && $departingPlayerIds->contains($p->id)
+            )->count();
+
+            $need = max(0, (self::IDEAL_GROUP_COUNTS[$posGroup] ?? 4) - $effectiveGroupCount);
+
+            $score = $need * 10;
+            // Reputation proximity bonus (closer = more realistic)
+            $repDistance = $buyerRepIndex - $sellerRepIndex;
+            $score += max(0, 8 - $repDistance * 2);
+            $score += mt_rand(0, 5);
+
+            if ($score > 0) {
+                $candidates[] = [
+                    'teamId' => $teamId,
+                    'teamName' => $teamRosters[$teamId]->first()?->team?->name ?? 'Unknown',
+                    'score' => $score,
+                ];
+            }
+        }
+
+        return $this->selectBestCandidate($candidates);
+    }
+
+    /**
+     * Find a buyer for a talent upgrade transfer (equal or higher reputation).
+     */
+    private function findUpgradeBuyer(
+        GamePlayer $player,
+        string $sellerTeamId,
+        Collection $teamRosters,
+        Collection $teamAverages,
+        Collection $teamReputations,
+        Collection $teamBudgets,
+        Collection $groupCounts,
+        Game $game,
+        Collection $departingPlayerIds,
+    ): ?array {
+        $sellerRepIndex = $this->getReputationIndex($sellerTeamId, $teamReputations);
+        $posGroup = $this->getPositionGroup($player->position);
+        $playerAbility = $this->getPlayerAbility($player);
+        $candidates = [];
+
+        foreach ($teamRosters as $teamId => $players) {
+            if ($teamId === $sellerTeamId || $teamId === $game->team_id) {
+                continue;
+            }
+
+            // Check buyer budget
+            $budget = $teamBudgets->get($teamId);
+            if ($budget && ($budget['sells'] + $budget['buys']) >= $budget['max']) {
+                continue;
+            }
+
+            // Buyer must be equal or higher reputation (lower or equal index)
+            $buyerRepIndex = $this->getReputationIndex($teamId, $teamReputations);
+            if ($buyerRepIndex > $sellerRepIndex) {
+                continue;
+            }
+
+            // Squad size check
+            $effectiveSize = $players->count() - $departingPlayerIds->intersect($players->pluck('id'))->count();
+            if ($effectiveSize >= self::MAX_SQUAD_SIZE) {
+                continue;
+            }
+
+            // Ability fit: player should not be too weak for the buying team
+            $buyerAvg = $teamAverages[$teamId] ?? 55;
+            if ($playerAbility < $buyerAvg - 10) {
+                continue;
+            }
+
+            // Position need
+            $buyerGroupCounts = $groupCounts->get($teamId, collect());
+            $effectiveGroupCount = $buyerGroupCounts->get($posGroup, 0) - $players->filter(
+                fn ($p) => $this->getPositionGroup($p->position) === $posGroup
+                    && $departingPlayerIds->contains($p->id)
+            )->count();
+
+            $need = max(0, (self::IDEAL_GROUP_COUNTS[$posGroup] ?? 4) - $effectiveGroupCount);
+
+            $score = $need * 10;
+            // Reputation distance bonus: one step up is most common
+            $repDistance = $sellerRepIndex - $buyerRepIndex;
+            $score += match (true) {
+                $repDistance === 0 => 8,
+                $repDistance === 1 => 12,
+                $repDistance === 2 => 6,
+                default => 2,
+            };
+            // Ability fit bonus
+            if (abs($playerAbility - $buyerAvg) <= 5) {
+                $score += 5;
+            }
+            $score += mt_rand(0, 5);
+
+            if ($score > 0) {
+                $candidates[] = [
+                    'teamId' => $teamId,
+                    'teamName' => $teamRosters[$teamId]->first()?->team?->name ?? 'Unknown',
+                    'score' => $score,
+                ];
+            }
+        }
+
+        return $this->selectBestCandidate($candidates);
+    }
+
+    /**
+     * Select the best candidate from a scored list using weighted random among top 3.
+     */
+    private function selectBestCandidate(array $candidates): ?array
+    {
+        if (empty($candidates)) {
+            return null;
+        }
+
+        usort($candidates, fn ($a, $b) => $b['score'] <=> $a['score']);
+        $top = array_slice($candidates, 0, 3);
+
+        $totalWeight = array_sum(array_column($top, 'score'));
+        if ($totalWeight <= 0) {
+            return $top[0];
+        }
+
+        $roll = mt_rand(1, $totalWeight);
+        $cumulative = 0;
+        foreach ($top as $c) {
+            $cumulative += $c['score'];
+            if ($roll <= $cumulative) {
+                return $c;
+            }
+        }
+
+        return $top[0];
+    }
+
+    /**
+     * Execute a domestic transfer between two AI teams.
+     */
+    private function executeDomesticTransfer(
+        Game $game,
+        GamePlayer $player,
+        string $fromTeamId,
+        string $fromTeamName,
+        string $toTeamId,
+        string $toTeamName,
+        Collection $teams,
+    ): array {
+        $fee = $player->market_value_cents;
+        $seasonYear = (int) $game->season;
+        $contractYears = mt_rand(2, 3);
+        $newContractEnd = Carbon::createFromDate($seasonYear + $contractYears + 1, 6, 30);
+
+        $team = $teams->get($toTeamId);
+        $minimumWage = $team ? $this->contractService->getMinimumWageForTeam($team) : 0;
+        $newWage = $this->contractService->calculateAnnualWage(
+            $player->market_value_cents,
+            $minimumWage,
+            $player->age,
+        );
+
+        $player->update([
+            'team_id' => $toTeamId,
+            'number' => GamePlayer::nextAvailableNumber($game->id, $toTeamId),
+            'contract_until' => $newContractEnd,
+            'annual_wage' => $newWage,
+        ]);
+
+        return [
+            'playerName' => $player->name,
+            'position' => $player->position,
+            'fromTeamId' => $fromTeamId,
+            'fromTeamName' => $fromTeamName,
+            'toTeamId' => $toTeamId,
+            'toTeamName' => $toTeamName,
+            'fee' => $fee,
+            'formattedFee' => Money::format($fee),
+            'type' => 'domestic',
+        ];
+    }
+
+    /**
+     * Execute a foreign transfer (player leaves the game entirely).
+     */
+    private function executeForeignTransfer(
+        GamePlayer $player,
+        string $fromTeamId,
+        string $fromTeamName,
+        string $foreignTeamName,
+    ): array {
+        $fee = $player->market_value_cents;
+
+        $transfer = [
+            'playerName' => $player->name,
+            'position' => $player->position,
+            'fromTeamId' => $fromTeamId,
+            'fromTeamName' => $fromTeamName,
+            'toTeamId' => null,
+            'toTeamName' => $foreignTeamName,
+            'fee' => $fee,
+            'formattedFee' => Money::format($fee),
+            'type' => 'foreign',
+        ];
+
+        $player->delete();
+
+        return $transfer;
     }
 
     /**
@@ -295,7 +780,7 @@ class AITransferMarketService
         $bestTeamId = null;
 
         foreach ($teamRosters as $teamId => $players) {
-            if ($players->count() >= 26) {
+            if ($players->count() >= self::MAX_SQUAD_SIZE) {
                 continue;
             }
 
@@ -309,13 +794,7 @@ class AITransferMarketService
                 fn ($p) => $this->getPositionGroup($p->position) === $positionGroup
             )->count();
 
-            $groupNeed = match ($positionGroup) {
-                'Goalkeeper' => max(0, 2 - $groupCount),
-                'Defender' => max(0, 5 - $groupCount),
-                'Midfielder' => max(0, 5 - $groupCount),
-                'Forward' => max(0, 3 - $groupCount),
-                default => 0,
-            };
+            $groupNeed = max(0, (self::MIN_GROUP_COUNTS[$positionGroup] ?? 2) - $groupCount);
 
             $score = $groupNeed * 10 + mt_rand(0, 5);
 
@@ -336,104 +815,78 @@ class AITransferMarketService
     }
 
     /**
-     * Find a suitable buying team for a domestic transfer.
+     * Load reputation tier indices for all AI teams.
+     *
+     * @return Collection<string, int> teamId => reputation index (0 = elite, 6 = local)
      */
-    private function findBuyerTeam(
-        GamePlayer $player,
-        Collection $teamRosters,
-        Collection $teamAverages,
-        Collection $teamNames,
-        Game $game,
-        Collection $departingPlayerIds,
-    ): ?array {
-        $positionGroup = $this->getPositionGroup($player->position);
-        $playerAbility = $this->getPlayerAbility($player);
-        $candidates = [];
+    private function loadTeamReputations(Collection $teamRosters): Collection
+    {
+        $clubProfiles = ClubProfile::whereIn('team_id', $teamRosters->keys())
+            ->get()
+            ->keyBy('team_id');
 
-        foreach ($teamRosters as $teamId => $players) {
-            if ($teamId === $player->team_id || $teamId === $game->team_id) {
-                continue;
-            }
+        return $teamRosters->keys()->mapWithKeys(function ($teamId) use ($clubProfiles) {
+            $level = $clubProfiles->get($teamId)?->reputation_level ?? ClubProfile::REPUTATION_LOCAL;
+            $index = array_search($level, self::REPUTATION_TIERS);
 
-            $effectiveSize = $players->count() - $departingPlayerIds->intersect($players->pluck('id'))->count();
-            if ($effectiveSize >= 26) {
-                continue;
-            }
+            return [$teamId => $index !== false ? $index : 6];
+        });
+    }
 
-            $teamAvg = $teamAverages[$teamId] ?? 55;
-
-            if (abs($playerAbility - $teamAvg) > 15) {
-                continue;
-            }
-
-            $groupCount = $players->filter(
-                fn ($p) => $this->getPositionGroup($p->position) === $positionGroup
-                    && ! $departingPlayerIds->contains($p->id)
-            )->count();
-
-            $groupNeed = match ($positionGroup) {
-                'Goalkeeper' => max(0, 2 - $groupCount),
-                'Defender' => max(0, 6 - $groupCount),
-                'Midfielder' => max(0, 6 - $groupCount),
-                'Forward' => max(0, 4 - $groupCount),
-                default => 0,
-            };
-
-            $score = $groupNeed * 10 + mt_rand(0, 8);
-
-            if ($score > 0) {
-                $candidates[] = [
-                    'teamId' => $teamId,
-                    'teamName' => $teamNames[$teamId] ?? 'Unknown',
-                    'score' => $score,
-                ];
-            }
-        }
-
-        if (empty($candidates)) {
-            return null;
-        }
-
-        usort($candidates, fn ($a, $b) => $b['score'] <=> $a['score']);
-
-        return $candidates[0];
+    private function getReputationIndex(string $teamId, Collection $teamReputations): int
+    {
+        return $teamReputations->get($teamId, 6);
     }
 
     /**
-     * Score each player's expendability for transfer selection.
+     * Increment a team's budget counter.
      */
-    private function scoreExpendability(Collection $players, int $teamAvg): Collection
+    private function incrementBudget(Collection $teamBudgets, string $teamId, string $field): void
     {
-        return $players
-            ->map(function (GamePlayer $player) use ($teamAvg) {
-                $ability = $this->getPlayerAbility($player);
-                $score = 0;
+        $budget = $teamBudgets->get($teamId);
+        if ($budget) {
+            $budget[$field]++;
+            $teamBudgets->put($teamId, $budget);
+        }
+    }
 
-                // Below average ability
-                if ($ability < $teamAvg - 15) {
-                    $score += 4;
-                } elseif ($ability < $teamAvg - 5) {
-                    $score += 2;
-                }
+    /**
+     * Update roster and group count caches after a domestic transfer.
+     */
+    private function updateRosterCacheForTransfer(
+        Collection $teamRosters,
+        Collection $groupCounts,
+        GamePlayer $player,
+        string $newTeamId,
+    ): void {
+        $posGroup = $this->getPositionGroup($player->position);
 
-                // Declining development status (age 29+)
-                if ($player->age >= 29) {
-                    $score += 2;
-                    if ($player->age >= 32) {
-                        $score += 1;
-                    }
-                }
+        // Add to new team's roster cache
+        if ($teamRosters->has($newTeamId)) {
+            $teamRosters[$newTeamId]->push($player);
+        }
 
-                // Random variance
-                $score += mt_rand(0, 2);
+        // Update group counts for new team
+        if ($groupCounts->has($newTeamId)) {
+            $counts = $groupCounts->get($newTeamId);
+            $counts->put($posGroup, ($counts->get($posGroup, 0)) + 1);
+        }
+    }
 
-                if ($score < 3) {
-                    return null;
-                }
+    /**
+     * Update group count caches after a foreign departure.
+     */
+    private function updateGroupCountsForDeparture(
+        Collection $groupCounts,
+        string $teamId,
+        GamePlayer $player,
+    ): void {
+        $posGroup = $this->getPositionGroup($player->position);
 
-                return ['player' => $player, 'score' => $score];
-            })
-            ->filter();
+        if ($groupCounts->has($teamId)) {
+            $counts = $groupCounts->get($teamId);
+            $counts->put($posGroup, max(0, ($counts->get($posGroup, 0)) - 1));
+        }
     }
 
     private function calculateTeamAverage(Collection $players): int
