@@ -77,7 +77,7 @@ class ShowTransfers
 
         // Get listed players (even those without offers, excluding those with agreed deals)
         $agreedPlayerIds = $agreedTransfers->pluck('game_player_id')->toArray();
-        $listedPlayers = GamePlayer::with(['player', 'activeOffers.offeringTeam'])
+        $listedPlayers = GamePlayer::with(['player'])
             ->where('game_id', $gameId)
             ->where('team_id', $game->team_id)
             ->where('transfer_status', GamePlayer::TRANSFER_STATUS_LISTED)

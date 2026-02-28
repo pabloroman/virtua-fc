@@ -574,7 +574,6 @@ namespace App\Models{
  * @property string|null $retiring_at_season
  * @property int|null $number
  * @property-read \App\Models\Loan|null $activeLoan
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TransferOffer> $activeOffers
  * @property-read int|null $active_offers_count
  * @property-read \App\Models\RenewalNegotiation|null $activeRenewalNegotiation
  * @property-read \App\Models\Game $game

@@ -1031,19 +1031,6 @@ class TransferService
     }
 
     /**
-     * Get listed players for a game.
-     */
-    public function getListedPlayers(Game $game): Collection
-    {
-        return GamePlayer::with(['player', 'activeOffers.offeringTeam'])
-            ->where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
-            ->where('transfer_status', GamePlayer::TRANSFER_STATUS_LISTED)
-            ->orderByDesc('market_value_cents')
-            ->get();
-    }
-
-    /**
      * Complete all agreed incoming transfers (user buying/loaning players).
      * Called when transfer window opens.
      */

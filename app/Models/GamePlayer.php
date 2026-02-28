@@ -50,7 +50,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property string|null $retiring_at_season
  * @property int|null $number
  * @property-read \App\Models\Loan|null $activeLoan
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TransferOffer> $activeOffers
  * @property-read int|null $active_offers_count
  * @property-read \App\Models\RenewalNegotiation|null $activeRenewalNegotiation
  * @property-read \App\Models\Game $game
@@ -345,16 +344,6 @@ class GamePlayer extends Model
             ->where('loan_team_id', $userTeamId)
             ->where('status', Loan::STATUS_ACTIVE)
             ->exists();
-    }
-
-    /**
-     * Get active (pending, non-expired) transfer offers for this player.
-     */
-    public function activeOffers(): HasMany
-    {
-        return $this->transferOffers()
-            ->where('status', TransferOffer::STATUS_PENDING)
-            ->where('expires_at', '>=', Game::where('id', $this->game_id)->select('current_date'));
     }
 
     /**

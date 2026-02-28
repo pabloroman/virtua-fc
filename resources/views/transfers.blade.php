@@ -478,10 +478,6 @@
                                 </p>
                                 <div class="space-y-3">
                                     @foreach($listedPlayers as $player)
-                                    @php
-                                        $playerOffers = $player->activeOffers;
-                                        $bestOffer = $playerOffers->sortByDesc('transfer_fee')->first();
-                                    @endphp
                                     <div class="bg-amber-50 rounded-lg p-4">
                                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                             <div class="flex items-center gap-4">
@@ -496,14 +492,6 @@
                                                         {{ $player->position_name }} &middot; {{ $player->age }} {{ __('app.years') }} &middot;
                                                         {{ __('app.value') }}: {{ $player->formatted_market_value }}
                                                     </div>
-                                                    @if($playerOffers->isNotEmpty())
-                                                    <div class="text-sm text-slate-600 mt-0.5">
-                                                        {{ __('transfers.offers_count', ['count' => $playerOffers->count()]) }} &middot;
-                                                        {{ __('transfers.best') }}: <span class="font-semibold text-green-600">{{ $bestOffer->formatted_transfer_fee }}</span>
-                                                    </div>
-                                                    @else
-                                                    <div class="text-sm text-slate-400 mt-0.5">{{ __('transfers.no_offers_yet') }}</div>
-                                                    @endif
                                                 </div>
                                             </div>
                                             <form method="post" action="{{ route('game.transfers.unlist', [$game->id, $player->id]) }}">
