@@ -86,10 +86,17 @@
                                 <x-checkbox-input name="scope[]" value="domestic" x-model="scopeDomestic" />
                                 <span class="text-sm text-slate-700">{{ __('transfers.scope_domestic') }}</span>
                             </label>
-                            <label class="flex items-center gap-2 {{ $canSearchInternationally ? 'cursor-pointer' : 'opacity-40 cursor-not-allowed' }}">
-                                <x-checkbox-input name="scope[]" value="international" x-model="scopeInternational" {{ $canSearchInternationally ? '' : 'disabled' }} />
+                            @if($canSearchInternationally)
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <x-checkbox-input name="scope[]" value="international" x-model="scopeInternational" />
                                 <span class="text-sm text-slate-700">{{ __('transfers.scope_international') }}</span>
                             </label>
+                            @else
+                            <label class="flex items-center gap-2 opacity-40 cursor-not-allowed">
+                                <x-checkbox-input name="scope[]" value="international" x-model="scopeInternational" disabled />
+                                <span class="text-sm text-slate-700">{{ __('transfers.scope_international') }}</span>
+                            </label>
+                            @endif
                         </div>
                         @unless($canSearchInternationally)
                             <p class="text-xs text-slate-400 mt-1">{{ __('transfers.scope_international_locked') }}</p>
