@@ -211,4 +211,56 @@ return [
         'direct_bypasses_high_press' => 1.06,            // Direct own xG bonus vs opponent High Press
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Between-Match Fatigue
+    |--------------------------------------------------------------------------
+    |
+    | Controls how fitness changes between matches. Uses nonlinear recovery:
+    | recovery is slow near fitness 100 and faster at lower fitness levels.
+    | This creates natural equilibria based on match frequency:
+    |
+    |   recoveryRate = base × physicalMod × (1 + scaling × (100 − fitness) / 100)
+    |
+    | Players who play every week stabilize around 88-93 fitness (depending
+    | on age and physical ability). Congested periods (2+ matches/week)
+    | push fitness into the 70s-80s, forcing squad rotation.
+    |
+    | Age modifies fitness loss per match (veterans tire more).
+    | Physical ability modifies recovery rate (fitter players recover faster).
+    |
+    */
+    'fatigue' => [
+        'base_recovery_per_day' => 1.0,         // recovery rate per day at fitness 100
+        'recovery_scaling' => 2.5,              // how much faster recovery is at low fitness
+        'max_recovery_days' => 5,               // cap recovery calculation at this many days
+
+        'fitness_loss' => [                     // [min, max] fitness loss per match by position
+            'Goalkeeper' => [3, 6],             // GKs barely tire
+            'Defender' => [9, 13],              // moderate
+            'Midfielder' => [10, 15],           // highest — midfielders run the most
+            'Forward' => [9, 13],               // moderate
+        ],
+
+        'age_loss_modifier' => [                // multiplier on fitness loss by age bracket
+            'young_threshold' => 24,
+            'peak_threshold' => 29,
+            'veteran_threshold' => 32,
+            'young' => 0.92,                    // < 24: less fatigue per match
+            'peak' => 1.0,                      // 24-28: baseline
+            'experienced' => 1.05,              // 29-31: slightly more
+            'veteran' => 1.12,                  // 32+: noticeably more
+        ],
+
+        'physical_recovery_modifier' => [       // multiplier on base recovery rate
+            'high_threshold' => 80,
+            'low_threshold' => 60,
+            'high' => 1.10,                     // physical >= 80: faster recovery
+            'medium' => 1.0,                    // 60-79: baseline
+            'low' => 0.90,                      // < 60: slower recovery
+        ],
+
+        'ai_rotation_threshold' => 80,          // AI benches players below this fitness
+    ],
+
 ];

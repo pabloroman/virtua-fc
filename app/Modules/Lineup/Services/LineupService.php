@@ -259,12 +259,19 @@ class LineupService
 
     /**
      * Calculate effective score for AI rotation: penalizes low-fitness players.
-     * Players at fitness >= 65 are unaffected. Below that, score degrades linearly.
-     * Example: 80-rated player at fitness 50 → effective ~71.5
+     * Players above the threshold are unaffected. Below it, score degrades linearly.
+     * Example with threshold 80: 85-rated player at fitness 60 → effective ~72.3
      */
     private function effectiveScore(GamePlayer $player): float
     {
-        $fitnessMultiplier = $player->fitness >= 65 ? 1.0 : 0.85 + $player->fitness * 0.0023;
+        $threshold = (int) config('match_simulation.fatigue.ai_rotation_threshold', 80);
+
+        if ($player->fitness >= $threshold) {
+            return (float) $player->overall_score;
+        }
+
+        // Linear penalty: 1.0 at threshold, 0.80 at fitness 0
+        $fitnessMultiplier = 0.80 + ($player->fitness / $threshold) * 0.20;
 
         return $player->overall_score * $fitnessMultiplier;
     }
