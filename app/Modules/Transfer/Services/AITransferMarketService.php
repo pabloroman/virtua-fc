@@ -158,9 +158,10 @@ class AITransferMarketService
     ): Collection {
         $weights = $isSummer ? self::DEPARTURE_WEIGHTS_SUMMER : self::DEPARTURE_WEIGHTS_WINTER;
 
-        // Get foreign team names for narrative (single query)
+        // Get foreign team names for narrative — exclude teams that exist in this game
         $foreignTeams = Team::where('country', '!=', 'ES')
             ->where('type', 'club')
+            ->whereNotIn('id', $teamRosters->keys())
             ->inRandomOrder()
             ->limit(30)
             ->pluck('name')

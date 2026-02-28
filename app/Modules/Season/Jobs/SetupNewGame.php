@@ -3,6 +3,7 @@
 namespace App\Modules\Season\Jobs;
 
 use App\Modules\Competition\Services\CountryConfig;
+use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Season\Services\SeasonSetupRunner;
 use App\Modules\Transfer\Services\ContractService;
@@ -103,6 +104,11 @@ class SetupNewGame implements ShouldQueue
 
         // Mark setup as complete
         Game::where('id', $this->gameId)->update(['setup_completed_at' => now()]);
+
+        // Notify the user that the summer transfer window is open
+        if ($this->gameMode === Game::MODE_CAREER) {
+            app(NotificationService::class)->notifyTransferWindowOpen($game->refresh(), 'summer');
+        }
     }
 
     private function copyCompetitionTeamsToGame(): void

@@ -587,22 +587,13 @@ class MatchdayOrchestrator
     {
         $month = (int) $game->current_date->format('n');
 
-        $window = match ($month) {
-            7, 8 => 'summer',
-            1 => 'winter',
-            default => null,
-        };
-
-        if (! $window) {
+        // Summer window notification is handled at season start
+        // (SetupNewGame + OnboardingResetProcessor). Only detect winter here.
+        if ($month !== 1) {
             return;
         }
 
-        // Already notified this window?
         $startOfWindow = $game->current_date->copy()->startOfMonth();
-        if ($window === 'summer' && $month === 8) {
-            // August is still summer window — check from July 1
-            $startOfWindow = $game->current_date->copy()->month(7)->startOfMonth();
-        }
 
         $alreadyNotified = GameNotification::where('game_id', $game->id)
             ->where('type', GameNotification::TYPE_TRANSFER_WINDOW_OPEN)
@@ -613,7 +604,7 @@ class MatchdayOrchestrator
             return;
         }
 
-        $this->notificationService->notifyTransferWindowOpen($game, $window);
+        $this->notificationService->notifyTransferWindowOpen($game, 'winter');
     }
 
     /**
