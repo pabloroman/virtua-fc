@@ -221,6 +221,9 @@ return [
     'transfer_activity_position' => 'Pos',
     'transfer_activity_age' => 'Age',
     'transfer_activity_foreign' => 'Foreign',
+    'transfer_activity_other_leagues' => 'Other leagues',
+    'transfer_activity_out' => 'Out',
+    'transfer_activity_in' => 'In',
 
     // Decline renewal
     'reconsider_renewal' => 'Reconsider',

@@ -226,6 +226,9 @@ return [
     'transfer_activity_position' => 'Pos',
     'transfer_activity_age' => 'Edad',
     'transfer_activity_foreign' => 'Extranjero',
+    'transfer_activity_other_leagues' => 'Otras ligas',
+    'transfer_activity_out' => 'Salida',
+    'transfer_activity_in' => 'Entrada',
 
     // Decline renewal
     'reconsider_renewal' => 'Reconsiderar',
