@@ -70,14 +70,7 @@ class ShowTransferActivity
             $fee = $transfer->transfer_fee;
             $formattedFee = $isFreeAgent ? __('transfers.free_transfer') : Money::format($fee);
 
-            // Determine display type
-            if ($isFreeAgent) {
-                $type = 'free_agent';
-            } elseif (! $fromInLeague || ! $toInLeague) {
-                $type = 'foreign';
-            } else {
-                $type = 'domestic';
-            }
+            $type = $isFreeAgent ? 'free_agent' : 'transfer';
 
             $fromTeamName = $transfer->fromTeam?->name;
             $toTeamName = $transfer->toTeam?->name;
@@ -163,7 +156,7 @@ class ShowTransferActivity
                     'toTeamId' => $toId,
                     'formattedFee' => $transfer['formattedFee'],
                     'fee' => $transfer['fee'] ?? 0,
-                    'type' => $transfer['type'] ?? 'foreign',
+                    'type' => $transfer['type'] ?? 'transfer',
                 ];
             }
 
@@ -175,7 +168,7 @@ class ShowTransferActivity
                     'fromTeamId' => $fromId,
                     'formattedFee' => $transfer['formattedFee'],
                     'fee' => $transfer['fee'] ?? 0,
-                    'type' => $transfer['type'] ?? 'foreign',
+                    'type' => $transfer['type'] ?? 'transfer',
                 ];
             }
         }

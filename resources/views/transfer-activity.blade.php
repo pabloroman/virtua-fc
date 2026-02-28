@@ -63,11 +63,11 @@
                                                     <x-position-badge :position="$transfer['position']" size="sm" />
                                                     <span class="text-slate-800 truncate min-w-0">{{ $transfer['playerName'] }}</span>
                                                     <span class="text-slate-400 shrink-0">&rarr;</span>
-                                                    <span class="flex items-center gap-1 truncate min-w-0 {{ ($transfer['type'] ?? '') === 'foreign' ? 'text-amber-600 italic' : 'text-slate-500' }}">
+                                                    <span class="flex items-center gap-1 truncate min-w-0 text-slate-500">
                                                         @if(isset($transfer['toTeamId']) && $teams->has($transfer['toTeamId']))
                                                             <x-team-crest :team="$teams->get($transfer['toTeamId'])" class="w-4 h-4 shrink-0" />
                                                         @endif
-                                                        <span class="truncate">{{ $transfer['toTeamName'] ?? __('transfers.transfer_activity_foreign') }}</span>
+                                                        <span class="truncate">{{ $transfer['toTeamName'] }}</span>
                                                     </span>
                                                     <span class="ml-auto text-slate-600 whitespace-nowrap text-xs font-medium">{{ $transfer['formattedFee'] }}</span>
                                                 </div>
@@ -127,11 +127,11 @@
                                                     <x-position-badge :position="$transfer['position']" size="sm" />
                                                     <span class="text-slate-800 truncate min-w-0">{{ $transfer['playerName'] }}</span>
                                                     <span class="text-slate-400 shrink-0">&rarr;</span>
-                                                    <span class="flex items-center gap-1 truncate min-w-0 {{ ($transfer['type'] ?? '') === 'foreign' ? 'text-amber-600 italic' : 'text-slate-500' }}">
+                                                    <span class="flex items-center gap-1 truncate min-w-0 text-slate-500">
                                                         @if(isset($transfer['toTeamId']) && $teams->has($transfer['toTeamId']))
                                                             <x-team-crest :team="$teams->get($transfer['toTeamId'])" class="w-4 h-4 shrink-0" />
                                                         @endif
-                                                        <span class="truncate">{{ $transfer['toTeamName'] ?? __('transfers.transfer_activity_foreign') }}</span>
+                                                        <span class="truncate">{{ $transfer['toTeamName'] }}</span>
                                                     </span>
                                                     <span class="ml-auto text-slate-600 whitespace-nowrap text-xs font-medium">{{ $transfer['formattedFee'] }}</span>
                                                 </div>
