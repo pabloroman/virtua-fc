@@ -28,18 +28,16 @@ class ShowBudgetAllocation
         // Calculate available surplus
         $availableSurplus = $finances->available_surplus ?? 0;
 
-        // Get current tiers (0-4 for each area), default to Tier 1
+        // Get current tiers (0-4 for each area), default based on club reputation
         $tiers = $investment ? [
             'youth_academy' => $investment->youth_academy_tier,
             'medical' => $investment->medical_tier,
             'scouting' => $investment->scouting_tier,
             'facilities' => $investment->facilities_tier,
-        ] : [
-            'youth_academy' => 1,
-            'medical' => 1,
-            'scouting' => 1,
-            'facilities' => 1,
-        ];
+        ] : GameInvestment::defaultTiersForReputation(
+            $game->team->clubProfile?->reputation_level ?? 'professional',
+            $availableSurplus,
+        );
 
         return view('budget-allocation', [
             'game' => $game,
