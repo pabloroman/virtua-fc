@@ -24,6 +24,15 @@ export default function lineupManager(config) {
         // Player being hovered in the list (for pitch highlight)
         hoveredPlayerId: null,
 
+        // Grid positioning state
+        gridConfig: config.gridConfig || null,
+        pitchPositions: config.currentPitchPositions || {},
+        gridMode: false,
+        positioningSlotId: null,
+        draggingSlotId: null,
+        dragPosition: null, // { x, y } in percentage coordinates during drag
+        _pitchEl: null, // reference to pitch container DOM element
+
         // Dirty tracking: snapshot of initial state to detect unsaved changes
         _initialPlayers: null,
         _initialFormation: null,
@@ -32,6 +41,7 @@ export default function lineupManager(config) {
         _initialPressing: null,
         _initialDefLine: null,
         _initialAssignments: null,
+        _initialPitchPositions: null,
         _isSaving: false,
 
         // Server data
@@ -57,6 +67,7 @@ export default function lineupManager(config) {
             this._initialPressing = config.currentPressing || 'standard';
             this._initialDefLine = config.currentDefLine || 'normal';
             this._initialAssignments = JSON.stringify(config.currentSlotAssignments || {});
+            this._initialPitchPositions = JSON.stringify(config.currentPitchPositions || {});
 
             // Warn on navigation away with unsaved changes
             window.addEventListener('beforeunload', (e) => {
@@ -65,6 +76,12 @@ export default function lineupManager(config) {
                     e.preventDefault();
                 }
             });
+
+            // Global event listeners for drag-and-drop (cleaned up is not needed since page-scoped)
+            document.addEventListener('mousemove', (e) => this._onDragMove(e));
+            document.addEventListener('mouseup', (e) => this._onDragEnd(e));
+            document.addEventListener('touchmove', (e) => this._onDragMove(e), { passive: false });
+            document.addEventListener('touchend', (e) => this._onDragEnd(e));
         },
 
         get isDirty() {
@@ -75,7 +92,8 @@ export default function lineupManager(config) {
             const pressingChanged = this.selectedPressing !== this._initialPressing;
             const defLineChanged = this.selectedDefLine !== this._initialDefLine;
             const assignmentsChanged = JSON.stringify(this.manualAssignments) !== this._initialAssignments;
-            return playersChanged || formationChanged || mentalityChanged || styleChanged || pressingChanged || defLineChanged || assignmentsChanged;
+            const positionsChanged = JSON.stringify(this.pitchPositions) !== this._initialPitchPositions;
+            return playersChanged || formationChanged || mentalityChanged || styleChanged || pressingChanged || defLineChanged || assignmentsChanged || positionsChanged;
         },
 
         // Computed
@@ -367,15 +385,19 @@ export default function lineupManager(config) {
         quickSelect() {
             this.selectedPlayers = [...this.autoLineup];
             this.manualAssignments = {};
+            this.pitchPositions = {};
             this.selectedSlot = null;
             this.selectedSlotPlayer = null;
+            this.positioningSlotId = null;
         },
 
         clearSelection() {
             this.selectedPlayers = [];
             this.manualAssignments = {};
+            this.pitchPositions = {};
             this.selectedSlot = null;
             this.selectedSlotPlayer = null;
+            this.positioningSlotId = null;
         },
 
         async updateAutoLineup() {
@@ -385,8 +407,10 @@ export default function lineupManager(config) {
                 this.autoLineup = data.autoLineup;
                 this.selectedPlayers = [...this.autoLineup];
                 this.manualAssignments = {};
+                this.pitchPositions = {};
                 this.selectedSlot = null;
                 this.selectedSlotPlayer = null;
+                this.positioningSlotId = null;
             } catch (e) {
                 console.error('Failed to fetch auto lineup', e);
             }
@@ -499,6 +523,272 @@ export default function lineupManager(config) {
                 }
             }
             this.manualAssignments = newAssignments;
+        },
+
+        // =====================================================================
+        // Grid Positioning System
+        // =====================================================================
+
+        /**
+         * Convert a grid cell to pitch coordinates (0-100%).
+         */
+        cellToCoords(col, row) {
+            const gc = this.gridConfig;
+            if (!gc) return null;
+            return {
+                x: col * (100 / gc.cols) + (100 / (gc.cols * 2)),
+                y: row * (100 / gc.rows) + (100 / (gc.rows * 2)),
+            };
+        },
+
+        /**
+         * Get effective (x, y) position for a slot, using custom grid position if set.
+         * Falls back to the formation's default coordinate.
+         */
+        getEffectivePosition(slotId) {
+            const customPos = this.pitchPositions[String(slotId)];
+            if (customPos) {
+                return this.cellToCoords(customPos[0], customPos[1]);
+            }
+            // Fall back to formation default
+            const slot = this.currentSlots.find(s => s.id === slotId);
+            return slot ? { x: slot.x, y: slot.y } : null;
+        },
+
+        /**
+         * Get the grid cell for a slot (custom or default).
+         */
+        getSlotCell(slotId) {
+            const customPos = this.pitchPositions[String(slotId)];
+            if (customPos) return { col: customPos[0], row: customPos[1] };
+
+            // Use formation default cell
+            const gc = this.gridConfig;
+            if (!gc) return null;
+            const defaultCells = gc.defaultCells[this.selectedFormation];
+            return defaultCells ? defaultCells[slotId] : null;
+        },
+
+        /**
+         * Check if a grid cell is within a slot's valid zone.
+         */
+        isValidGridCell(slotLabel, col, row) {
+            const gc = this.gridConfig;
+            if (!gc) return false;
+            const zone = gc.zones[slotLabel];
+            if (!zone) return false;
+            return col >= zone[0] && col <= zone[1] && row >= zone[2] && row <= zone[3];
+        },
+
+        /**
+         * Check if a cell is occupied by another slot.
+         */
+        isCellOccupied(col, row, excludeSlotId) {
+            const assignments = this.slotAssignments;
+            for (const slot of assignments) {
+                if (slot.id === excludeSlotId || !slot.player) continue;
+                const cell = this.getSlotCell(slot.id);
+                if (cell && cell.col === col && cell.row === row) return true;
+            }
+            return false;
+        },
+
+        /**
+         * Toggle grid positioning mode.
+         */
+        toggleGridMode() {
+            this.gridMode = !this.gridMode;
+            this.positioningSlotId = null;
+            this.draggingSlotId = null;
+            this.dragPosition = null;
+            if (this.gridMode) {
+                // Deselect any slot assignment mode
+                this.selectedSlot = null;
+                this.selectedSlotPlayer = null;
+            }
+        },
+
+        /**
+         * Select a slot for grid repositioning (click-to-place mode).
+         */
+        selectForRepositioning(slotId) {
+            if (!this.gridMode) return;
+            if (this.positioningSlotId === slotId) {
+                this.positioningSlotId = null;
+            } else {
+                this.positioningSlotId = slotId;
+            }
+        },
+
+        /**
+         * Place a slot at a specific grid cell.
+         */
+        setSlotGridPosition(slotId, col, row) {
+            const slot = this.currentSlots.find(s => s.id === slotId);
+            if (!slot) return;
+
+            if (!this.isValidGridCell(slot.label, col, row)) return;
+            if (this.isCellOccupied(col, row, slotId)) return;
+
+            this.pitchPositions = { ...this.pitchPositions, [String(slotId)]: [col, row] };
+            this.positioningSlotId = null;
+        },
+
+        /**
+         * Reset a single slot's position to formation default.
+         */
+        resetSlotPosition(slotId) {
+            const newPositions = { ...this.pitchPositions };
+            delete newPositions[String(slotId)];
+            this.pitchPositions = newPositions;
+        },
+
+        /**
+         * Reset all custom positions.
+         */
+        resetAllPositions() {
+            this.pitchPositions = {};
+            this.positioningSlotId = null;
+        },
+
+        /**
+         * Handle clicking a grid cell (in grid mode, when a slot is selected for repositioning).
+         */
+        handleGridCellClick(col, row) {
+            if (!this.gridMode || this.positioningSlotId === null) return;
+            this.setSlotGridPosition(this.positioningSlotId, col, row);
+        },
+
+        /**
+         * Get the zone highlight color class for a position group.
+         */
+        getZoneColorClass(role) {
+            switch (role) {
+                case 'Goalkeeper': return 'bg-amber-500/30 border-amber-400';
+                case 'Defender': return 'bg-blue-500/30 border-blue-400';
+                case 'Midfielder': return 'bg-emerald-500/30 border-emerald-400';
+                case 'Forward': return 'bg-red-500/30 border-red-400';
+                default: return 'bg-white/20 border-white/40';
+            }
+        },
+
+        /**
+         * Get the cell state for a grid cell relative to the currently positioning slot.
+         * Returns: 'valid', 'occupied', 'invalid', or 'neutral'
+         */
+        getGridCellState(col, row) {
+            if (this.positioningSlotId === null && this.draggingSlotId === null) return 'neutral';
+
+            const activeSlotId = this.positioningSlotId ?? this.draggingSlotId;
+            const slot = this.currentSlots.find(s => s.id === activeSlotId);
+            if (!slot) return 'neutral';
+
+            if (!this.isValidGridCell(slot.label, col, row)) return 'invalid';
+            if (this.isCellOccupied(col, row, activeSlotId)) return 'occupied';
+            return 'valid';
+        },
+
+        // ----- Drag-and-drop -----
+
+        /**
+         * Begin dragging a player badge in grid mode.
+         */
+        startDrag(slotId, event) {
+            if (!this.gridMode) return;
+
+            // Prevent default to avoid text selection and scroll on touch
+            event.preventDefault();
+
+            this.draggingSlotId = slotId;
+            this.positioningSlotId = null;
+
+            const coords = this._getEventCoords(event);
+            this._updateDragPosition(coords.clientX, coords.clientY);
+        },
+
+        _onDragMove(event) {
+            if (this.draggingSlotId === null) return;
+            event.preventDefault();
+
+            const coords = this._getEventCoords(event);
+            this._updateDragPosition(coords.clientX, coords.clientY);
+        },
+
+        _onDragEnd(event) {
+            if (this.draggingSlotId === null) return;
+
+            const coords = this._getEventCoords(event);
+            const cell = this._getCellFromClientCoords(coords.clientX, coords.clientY);
+
+            if (cell) {
+                const slot = this.currentSlots.find(s => s.id === this.draggingSlotId);
+                if (slot && this.isValidGridCell(slot.label, cell.col, cell.row) && !this.isCellOccupied(cell.col, cell.row, this.draggingSlotId)) {
+                    this.pitchPositions = { ...this.pitchPositions, [String(this.draggingSlotId)]: [cell.col, cell.row] };
+                }
+            }
+
+            this.draggingSlotId = null;
+            this.dragPosition = null;
+        },
+
+        _updateDragPosition(clientX, clientY) {
+            const pitchEl = this._getPitchElement();
+            if (!pitchEl) return;
+
+            const rect = pitchEl.getBoundingClientRect();
+            const x = ((clientX - rect.left) / rect.width) * 100;
+            const y = ((clientY - rect.top) / rect.height) * 100;
+
+            this.dragPosition = {
+                x: Math.max(0, Math.min(100, x)),
+                y: Math.max(0, Math.min(100, y)),
+            };
+        },
+
+        _getCellFromClientCoords(clientX, clientY) {
+            const pitchEl = this._getPitchElement();
+            if (!pitchEl) return null;
+
+            const rect = pitchEl.getBoundingClientRect();
+            const xPct = ((clientX - rect.left) / rect.width) * 100;
+            const yPct = ((clientY - rect.top) / rect.height) * 100;
+
+            // Convert to grid coordinates (y is inverted: top of element = high row)
+            // The pitch renders y=0 at bottom, so top: 100-y%
+            // Screen top = y=100, screen bottom = y=0
+            const pitchY = 100 - yPct;
+
+            const gc = this.gridConfig;
+            if (!gc) return null;
+
+            const col = Math.round((xPct - 100 / (gc.cols * 2)) / (100 / gc.cols));
+            const row = Math.round((pitchY - 100 / (gc.rows * 2)) / (100 / gc.rows));
+
+            return {
+                col: Math.max(0, Math.min(gc.cols - 1, col)),
+                row: Math.max(0, Math.min(gc.rows - 1, row)),
+            };
+        },
+
+        _getEventCoords(event) {
+            if (event.touches && event.touches.length > 0) {
+                return { clientX: event.touches[0].clientX, clientY: event.touches[0].clientY };
+            }
+            if (event.changedTouches && event.changedTouches.length > 0) {
+                return { clientX: event.changedTouches[0].clientX, clientY: event.changedTouches[0].clientY };
+            }
+            return { clientX: event.clientX, clientY: event.clientY };
+        },
+
+        _getPitchElement() {
+            if (!this._pitchEl) {
+                this._pitchEl = document.getElementById('pitch-container');
+            }
+            return this._pitchEl;
+        },
+
+        get hasCustomPositions() {
+            return Object.keys(this.pitchPositions).length > 0;
         },
     };
 }
