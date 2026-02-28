@@ -26,6 +26,9 @@ class SeedReferenceData extends Command
 
     protected $description = 'Seed teams, competitions, fixtures, and players from 2025 season JSON data files';
 
+    /** @var array<string, true> Track competitions already seeded to avoid redundant work */
+    private array $seededCompetitions = [];
+
     public function handle(): int
     {
         $profile = $this->option('profile');
@@ -65,17 +68,41 @@ class SeedReferenceData extends Command
         }
 
         foreach ($countryCodes as $countryCode) {
-            $this->seedCountry($countryCode, $countryConfig);
+            try {
+                $this->seedCountry($countryCode, $countryConfig);
+            } catch (\Throwable $e) {
+                $this->error("FAILED seeding country {$countryCode}: {$e->getMessage()}");
+                $this->error("  at {$e->getFile()}:{$e->getLine()}");
+                $this->newLine();
+                $this->error($e->getTraceAsString());
+                return CommandAlias::FAILURE;
+            }
         }
 
         // Seed club profiles for all teams
-        $this->info('Seeding club profiles...');
-        $seeder = new ClubProfilesSeeder();
-        $seeder->setCommand($this);
-        $seeder->run();
+        try {
+            $this->info('Seeding club profiles...');
+            $seeder = new ClubProfilesSeeder();
+            $seeder->setCommand($this);
+            $seeder->run();
+        } catch (\Throwable $e) {
+            $this->error("FAILED seeding club profiles: {$e->getMessage()}");
+            $this->error("  at {$e->getFile()}:{$e->getLine()}");
+            $this->newLine();
+            $this->error($e->getTraceAsString());
+            return CommandAlias::FAILURE;
+        }
 
         // Generate pre-computed game player templates
-        $this->generateGamePlayerTemplates($countryCodes);
+        try {
+            $this->generateGamePlayerTemplates($countryCodes);
+        } catch (\Throwable $e) {
+            $this->error("FAILED generating game player templates: {$e->getMessage()}");
+            $this->error("  at {$e->getFile()}:{$e->getLine()}");
+            $this->newLine();
+            $this->error($e->getTraceAsString());
+            return CommandAlias::FAILURE;
+        }
 
         $this->displaySummary();
 
@@ -98,7 +125,9 @@ class SeedReferenceData extends Command
         $this->info("=== {$config['name']} ({$countryCode}) ===");
 
         // Step 1: Seed tier competitions (leagues with teams + players)
-        foreach ($config['tiers'] ?? [] as $tier => $tierConfig) {
+        $tiers = $config['tiers'] ?? [];
+        $this->line("  Step 1/4: Seeding " . count($tiers) . " tier competition(s)...");
+        foreach ($tiers as $tier => $tierConfig) {
             $this->seedCompetition([
                 'code' => $tierConfig['competition'],
                 'path' => "data/2025/{$tierConfig['competition']}",
@@ -108,10 +137,12 @@ class SeedReferenceData extends Command
                 'role' => 'league',
             ]);
         }
+        $this->line("  Step 1/4: Done.");
 
         // Step 2: Seed domestic cups — supercup first so main cup can look up
         // supercup teams for entry_round calculation
         $cupIds = array_keys($config['domestic_cups'] ?? []);
+        $this->line("  Step 2/4: Seeding " . count($cupIds) . " domestic cup(s)...");
         $supercupConfig = $countryConfig->supercup($countryCode);
         if ($supercupConfig) {
             $supercupId = $supercupConfig['competition'];
@@ -130,10 +161,13 @@ class SeedReferenceData extends Command
                 'role' => 'domestic_cup',
             ]);
         }
+        $this->line("  Step 2/4: Done.");
 
         // Step 3: Seed transfer pool (foreign leagues + EUR pool)
         $support = $countryConfig->support($countryCode);
-        foreach ($support['transfer_pool'] ?? [] as $code => $poolConfig) {
+        $transferPool = $support['transfer_pool'] ?? [];
+        $this->line("  Step 3/4: Seeding " . count($transferPool) . " transfer pool competition(s)...");
+        foreach ($transferPool as $code => $poolConfig) {
             $this->seedCompetition([
                 'code' => $code,
                 'path' => "data/2025/{$code}",
@@ -143,9 +177,12 @@ class SeedReferenceData extends Command
                 'role' => $poolConfig['role'] ?? 'league',
             ]);
         }
+        $this->line("  Step 3/4: Done.");
 
         // Step 4: Seed continental competitions (link existing teams)
-        foreach ($support['continental'] ?? [] as $code => $continentalConfig) {
+        $continental = $support['continental'] ?? [];
+        $this->line("  Step 4/4: Seeding " . count($continental) . " continental competition(s)...");
+        foreach ($continental as $code => $continentalConfig) {
             $this->seedCompetition([
                 'code' => $code,
                 'path' => "data/2025/{$code}",
@@ -155,6 +192,7 @@ class SeedReferenceData extends Command
                 'role' => 'european',
             ]);
         }
+        $this->line("  Step 4/4: Done.");
     }
 
     private function createDefaultUser(): void
@@ -206,7 +244,14 @@ class SeedReferenceData extends Command
         $isSwiss = $handler === 'swiss_format';
         $isTeamPool = $handler === 'team_pool';
 
-        $this->info("Seeding {$code}...");
+        // Skip competitions already seeded by a previous country
+        if (isset($this->seededCompetitions[$code])) {
+            $this->line("  Skipping {$code} (already seeded)");
+            return;
+        }
+        $this->seededCompetitions[$code] = true;
+
+        $this->info("Seeding {$code} ({$handler})...");
 
         if ($isTeamPool) {
             $this->seedTeamPoolCompetition($basePath, $code, $tier, $handler, $country, $role, $configName);
@@ -217,6 +262,7 @@ class SeedReferenceData extends Command
         } else {
             $this->seedLeagueCompetition($basePath, $code, $tier, $handler, $country, $role, $configName);
         }
+        $this->line("  ✓ {$code} done.");
     }
 
     private function seedLeagueCompetition(string $basePath, string $code, int $tier, string $handler, string $country, string $role = 'league', ?string $configName = null): void
@@ -637,12 +683,17 @@ class SeedReferenceData extends Command
     private function loadJson(string $path): array
     {
         if (!file_exists($path)) {
-            $this->error("File not found: {$path}");
-            return [];
+            throw new \RuntimeException("JSON file not found: {$path}");
         }
 
         $content = file_get_contents($path);
-        return json_decode($content, true) ?? [];
+        $data = json_decode($content, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new \RuntimeException("Invalid JSON in {$path}: " . json_last_error_msg());
+        }
+
+        return $data;
     }
 
     /**
