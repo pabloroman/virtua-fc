@@ -243,4 +243,10 @@ return [
     'confirm_squad' => 'Confirm squad',
     'squad_confirmed' => 'Squad confirmed!',
     'invalid_selection' => 'Invalid selection. Please check the selected players.',
+
+    // Grid positioning
+    'grid_mode' => 'Grid',
+    'classic_mode' => 'Classic',
+    'reset_positions' => 'Reset positions',
+    'drag_or_tap' => 'Tap a cell or drag the player',
 ];

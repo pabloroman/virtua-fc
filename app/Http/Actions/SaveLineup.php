@@ -9,6 +9,7 @@ use App\Modules\Lineup\Enums\PlayingStyle;
 use App\Modules\Lineup\Enums\PressingIntensity;
 use App\Modules\Lineup\Services\LineupService;
 use App\Models\Game;
+use App\Support\PitchGrid;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Enum;
 
@@ -35,6 +36,8 @@ class SaveLineup
             'defensive_line' => ['required', 'string', new Enum(DefensiveLineHeight::class)],
             'slot_assignments' => 'nullable|array',
             'slot_assignments.*' => 'nullable|string|uuid',
+            'pitch_positions' => 'nullable|array',
+            'pitch_positions.*' => 'nullable|string',
         ]);
 
         $playerIds = array_values(array_filter($validated['players']));
@@ -44,6 +47,7 @@ class SaveLineup
         $pressing = PressingIntensity::from($validated['pressing']);
         $defensiveLine = DefensiveLineHeight::from($validated['defensive_line']);
         $slotAssignments = $validated['slot_assignments'] ?? null;
+        $pitchPositions = $this->parsePitchPositions($validated['pitch_positions'] ?? null, $formation);
 
         // Get match details for validation
         $matchDate = $match->scheduled_date;
@@ -84,6 +88,7 @@ class SaveLineup
         $game->tactics->update([
             'default_lineup' => $playerIds,
             'default_slot_assignments' => $slotAssignments,
+            'default_pitch_positions' => $pitchPositions,
             'default_formation' => $formation->value,
             'default_mentality' => $mentality->value,
             'default_playing_style' => $playingStyle->value,
@@ -94,5 +99,55 @@ class SaveLineup
         // Redirect to game page - user clicks Continue to advance
         return redirect()->route('show-game', $gameId)
             ->with('message', 'Lineup confirmed! Click Continue to play the match.');
+    }
+
+    /**
+     * Parse and validate pitch position data from the form.
+     * Input format: {"slotId": "col,row", ...}
+     * Output format: {"slotId": [col, row], ...} (only valid, non-default positions kept)
+     */
+    private function parsePitchPositions(?array $raw, Formation $formation): ?array
+    {
+        if (empty($raw)) {
+            return null;
+        }
+
+        $slots = $formation->pitchSlots();
+        $slotLabels = [];
+        foreach ($slots as $slot) {
+            $slotLabels[$slot['id']] = $slot['label'];
+        }
+
+        $defaultCells = PitchGrid::getDefaultCells($formation);
+        $positions = [];
+
+        foreach ($raw as $slotId => $value) {
+            if (empty($value) || ! isset($slotLabels[$slotId])) {
+                continue;
+            }
+
+            $parts = explode(',', $value);
+            if (count($parts) !== 2) {
+                continue;
+            }
+
+            $col = (int) $parts[0];
+            $row = (int) $parts[1];
+
+            // Validate within grid bounds and slot zone
+            if (! PitchGrid::isValidCell($slotLabels[$slotId], $col, $row)) {
+                continue;
+            }
+
+            // Only store if different from default
+            $default = $defaultCells[$slotId] ?? null;
+            if ($default && $default['col'] === $col && $default['row'] === $row) {
+                continue;
+            }
+
+            $positions[(string) $slotId] = [$col, $row];
+        }
+
+        return empty($positions) ? null : $positions;
     }
 }

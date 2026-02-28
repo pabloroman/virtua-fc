@@ -11,6 +11,7 @@ use App\Modules\Lineup\Enums\PressingIntensity;
 use App\Modules\Lineup\Services\LineupService;
 use App\Models\ClubProfile;
 use App\Models\Game;
+use App\Support\PitchGrid;
 use App\Support\PositionMapper;
 use App\Support\PositionSlotMapper;
 use App\Support\TeamColors;
@@ -201,6 +202,10 @@ class ShowLineup
 
         $tacticalInteractions = config('match_simulation.tactical_interactions');
 
+        // Pitch grid config for advanced positioning
+        $gridConfig = PitchGrid::getGridConfig();
+        $currentPitchPositions = $game->tactics?->default_pitch_positions;
+
         return view('lineup', [
             'game' => $game,
             'match' => $match,
@@ -241,6 +246,8 @@ class ShowLineup
             'guidePressingOptions' => $guidePressingOptions,
             'guideDefensiveLines' => $guideDefensiveLines,
             'tacticalInteractions' => $tacticalInteractions,
+            'gridConfig' => $gridConfig,
+            'currentPitchPositions' => $currentPitchPositions,
         ]);
     }
 
