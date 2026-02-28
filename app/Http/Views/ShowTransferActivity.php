@@ -6,7 +6,9 @@ use App\Models\Competition;
 use App\Models\CompetitionEntry;
 use App\Models\Game;
 use App\Models\GameNotification;
+use App\Models\GameTransfer;
 use App\Models\Team;
+use App\Support\Money;
 
 class ShowTransferActivity
 {
@@ -28,9 +30,15 @@ class ShowTransferActivity
         $notification->markAsRead();
 
         $metadata = $notification->metadata ?? [];
-        $transfers = $metadata['transfers'] ?? [];
-        $freeAgentSignings = $metadata['free_agent_signings'] ?? [];
         $window = $metadata['window'] ?? 'summer';
+        $season = $metadata['season'] ?? $game->season;
+
+        // Query all transfers for this window from the ledger
+        $transfers = GameTransfer::with(['gamePlayer.player', 'fromTeam', 'toTeam'])
+            ->where('game_id', $game->id)
+            ->where('season', $season)
+            ->where('window', $window)
+            ->get();
 
         // Get teams in the user's primary competition
         $leagueTeamIds = CompetitionEntry::where('game_id', $game->id)
@@ -40,73 +48,84 @@ class ShowTransferActivity
 
         $competitionName = Competition::where('id', $game->competition_id)->value('name') ?? '';
 
-        // Split transfers by league relevance (fromTeamId OR toTeamId in league)
-        $restOfWorldTransfers = [];
+        // Collect all team IDs and load Team models for crests/names
+        $allTeamIds = $transfers
+            ->flatMap(fn ($t) => array_filter([$t->from_team_id, $t->to_team_id]))
+            ->unique()
+            ->values();
+        $teams = Team::whereIn('id', $allTeamIds)->get()->keyBy('id');
+
+        // Split transfers by league relevance
         $leagueTeamActivity = [];
         $leagueTransferCount = 0;
+        $restOfWorldTransfers = [];
 
         foreach ($transfers as $transfer) {
-            $fromInLeague = in_array($transfer['fromTeamId'] ?? null, $leagueTeamIds);
-            $toInLeague = in_array($transfer['toTeamId'] ?? null, $leagueTeamIds);
+            $fromInLeague = in_array($transfer->from_team_id, $leagueTeamIds);
+            $toInLeague = in_array($transfer->to_team_id, $leagueTeamIds);
+            $isFreeAgent = $transfer->type === GameTransfer::TYPE_FREE_AGENT;
+
+            $playerName = $transfer->gamePlayer->name ?? 'Unknown';
+            $position = $transfer->gamePlayer->position ?? null;
+            $fee = $transfer->transfer_fee;
+            $formattedFee = $isFreeAgent ? __('transfers.free_transfer') : Money::format($fee);
+
+            // Determine display type
+            if ($isFreeAgent) {
+                $type = 'free_agent';
+            } elseif (! $fromInLeague || ! $toInLeague) {
+                $type = 'foreign';
+            } else {
+                $type = 'domestic';
+            }
+
+            $fromTeamName = $transfer->fromTeam?->name;
+            $toTeamName = $transfer->toTeam?->name;
 
             if ($fromInLeague || $toInLeague) {
                 $leagueTransferCount++;
 
-                // Add to selling team's OUT
-                if ($fromInLeague && ($transfer['fromTeamId'] ?? null)) {
-                    $teamId = $transfer['fromTeamId'];
+                // Add to selling team's OUT (skip free agents — they have no from team)
+                if ($fromInLeague && $transfer->from_team_id) {
+                    $teamId = $transfer->from_team_id;
                     $leagueTeamActivity[$teamId]['out'][] = [
-                        'playerName' => $transfer['playerName'],
-                        'position' => $transfer['position'] ?? null,
-                        'toTeamName' => $transfer['toTeamName'] ?? null,
-                        'toTeamId' => $transfer['toTeamId'] ?? null,
-                        'formattedFee' => $transfer['formattedFee'],
-                        'fee' => $transfer['fee'] ?? 0,
-                        'type' => $transfer['type'] ?? 'domestic',
+                        'playerName' => $playerName,
+                        'position' => $position,
+                        'toTeamName' => $toTeamName,
+                        'toTeamId' => $transfer->to_team_id,
+                        'formattedFee' => $formattedFee,
+                        'fee' => $fee,
+                        'type' => $type,
                     ];
                 }
 
                 // Add to buying team's IN
-                if ($toInLeague && ($transfer['toTeamId'] ?? null)) {
-                    $teamId = $transfer['toTeamId'];
+                if ($toInLeague && $transfer->to_team_id) {
+                    $teamId = $transfer->to_team_id;
                     $leagueTeamActivity[$teamId]['in'][] = [
-                        'playerName' => $transfer['playerName'],
-                        'position' => $transfer['position'] ?? null,
-                        'fromTeamName' => $transfer['fromTeamName'] ?? null,
-                        'fromTeamId' => $transfer['fromTeamId'] ?? null,
-                        'formattedFee' => $transfer['formattedFee'],
-                        'fee' => $transfer['fee'] ?? 0,
-                        'type' => $transfer['type'] ?? 'domestic',
+                        'playerName' => $playerName,
+                        'position' => $position,
+                        'fromTeamName' => $fromTeamName,
+                        'fromTeamId' => $transfer->from_team_id,
+                        'formattedFee' => $formattedFee,
+                        'fee' => $fee,
+                        'type' => $type,
                     ];
                 }
             } else {
-                $restOfWorldTransfers[] = $transfer;
-            }
-        }
-
-        // Free agent signings → add to buying team's IN
-        foreach ($freeAgentSignings as $signing) {
-            if (in_array($signing['toTeamId'] ?? null, $leagueTeamIds)) {
-                $leagueTransferCount++;
-                $teamId = $signing['toTeamId'];
-                $leagueTeamActivity[$teamId]['in'][] = [
-                    'playerName' => $signing['playerName'],
-                    'position' => $signing['position'] ?? null,
-                    'fromTeamName' => null,
-                    'fromTeamId' => null,
-                    'formattedFee' => $signing['formattedFee'],
-                    'fee' => 0,
-                    'type' => 'free_agent',
+                $restOfWorldTransfers[] = [
+                    'playerName' => $playerName,
+                    'position' => $position,
+                    'fromTeamId' => $transfer->from_team_id,
+                    'fromTeamName' => $fromTeamName,
+                    'toTeamId' => $transfer->to_team_id,
+                    'toTeamName' => $toTeamName,
+                    'fee' => $fee,
+                    'formattedFee' => $formattedFee,
+                    'type' => $type,
                 ];
             }
         }
-
-        // Collect all team IDs and load Team models for crests/names
-        $allTeamIds = collect(array_merge($transfers, $freeAgentSignings))
-            ->flatMap(fn ($t) => array_filter([$t['fromTeamId'] ?? null, $t['toTeamId'] ?? null]))
-            ->unique()
-            ->values();
-        $teams = Team::whereIn('id', $allTeamIds)->get()->keyBy('id');
 
         // Fill in team names + sort each team's transfers
         foreach ($leagueTeamActivity as $teamId => &$activity) {

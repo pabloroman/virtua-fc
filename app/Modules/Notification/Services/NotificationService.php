@@ -657,10 +657,8 @@ class NotificationService
     /**
      * Create a single summary notification for AI transfer window activity.
      */
-    public function notifyAITransferSummary(Game $game, array $transfers, array $freeAgentSignings, string $window): GameNotification
+    public function notifyAITransferSummary(Game $game, int $totalMoves, string $window): GameNotification
     {
-        $totalMoves = count($transfers) + count($freeAgentSignings);
-
         return $this->create(
             game: $game,
             type: GameNotification::TYPE_AI_TRANSFER_ACTIVITY,
@@ -669,8 +667,7 @@ class NotificationService
             priority: GameNotification::PRIORITY_INFO,
             metadata: [
                 'window' => $window,
-                'transfers' => $transfers,
-                'free_agent_signings' => $freeAgentSignings,
+                'season' => $game->season,
             ],
         );
     }

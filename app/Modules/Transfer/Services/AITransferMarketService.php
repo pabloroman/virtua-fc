@@ -8,7 +8,6 @@ use App\Models\GamePlayer;
 use App\Models\GameTransfer;
 use App\Models\Team;
 use App\Modules\Notification\Services\NotificationService;
-use App\Support\Money;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
@@ -91,27 +90,21 @@ class AITransferMarketService
         // Set game relation in-memory to avoid lazy-loading from age accessor
         $teamRosters->flatten()->each(fn (GamePlayer $p) => $p->setRelation('game', $game));
 
-        // Pre-calculate team averages and build team name lookup
+        // Pre-calculate team averages
         $teamAverages = $teamRosters->map(fn ($players) => $this->calculateTeamAverage($players));
-        $teamNames = $teamRosters->map(fn ($players) => $players->first()?->team?->name ?? 'Unknown');
 
         // Pre-load Team models for wage calculation (single query)
         $teams = Team::whereIn('id', $teamRosters->keys())->get()->keyBy('id');
 
         // Phase 1: Sign free agents (players with null team_id)
-        $freeAgentSignings = $this->processFreeAgentSignings($game, $window, $teamRosters, $teamAverages, $teamNames, $teams);
+        $freeAgentCount = $this->processFreeAgentSignings($game, $window, $teamRosters, $teamAverages, $teams);
 
         // Phase 2: AI-to-AI transfers with reputation-based matching
-        $transfers = $this->processAITransfers($game, $isSummer, $window, $teamRosters, $teamAverages, $teamNames, $teams);
+        $transferCount = $this->processAITransfers($game, $isSummer, $window, $teamRosters, $teamAverages, $teams);
 
         // Phase 3: Create summary notification (only if there's activity)
-        if ($freeAgentSignings->isNotEmpty() || $transfers->isNotEmpty()) {
-            $this->notificationService->notifyAITransferSummary(
-                $game,
-                $transfers->toArray(),
-                $freeAgentSignings->toArray(),
-                $window,
-            );
+        if ($freeAgentCount + $transferCount > 0) {
+            $this->notificationService->notifyAITransferSummary($game, $freeAgentCount + $transferCount, $window);
         }
     }
 
@@ -123,22 +116,21 @@ class AITransferMarketService
         string $window,
         Collection $teamRosters,
         Collection $teamAverages,
-        Collection $teamNames,
         Collection $teams,
-    ): Collection {
+    ): int {
         $freeAgents = GamePlayer::with('player')
             ->where('game_id', $game->id)
             ->whereNull('team_id')
             ->get();
 
         if ($freeAgents->isEmpty()) {
-            return collect();
+            return 0;
         }
 
         // Set game relation in-memory for age accessor
         $freeAgents->each(fn (GamePlayer $p) => $p->setRelation('game', $game));
 
-        $signings = collect();
+        $count = 0;
 
         foreach ($freeAgents->shuffle() as $freeAgent) {
             $bestTeam = $this->findBestTeamForFreeAgent($freeAgent, $teamRosters, $teamAverages);
@@ -180,15 +172,7 @@ class AITransferMarketService
                 window: $window,
             );
 
-            $signings->push([
-                'playerName' => $freeAgent->name,
-                'position' => $freeAgent->position,
-                'toTeamId' => $teamId,
-                'toTeamName' => $teamNames[$teamId] ?? 'Unknown',
-                'age' => $freeAgent->age,
-                'formattedFee' => __('transfers.free_transfer'),
-                'type' => 'free_agent',
-            ]);
+            $count++;
 
             // Update roster cache
             if (! $teamRosters->has($teamId)) {
@@ -197,7 +181,7 @@ class AITransferMarketService
             $teamRosters[$teamId]->push($freeAgent);
         }
 
-        return $signings;
+        return $count;
     }
 
     /**
@@ -212,9 +196,8 @@ class AITransferMarketService
         string $window,
         Collection $teamRosters,
         Collection $teamAverages,
-        Collection $teamNames,
         Collection $teams,
-    ): Collection {
+    ): int {
         // Load reputation data for all AI teams
         $teamReputations = $this->loadTeamReputations($teamRosters);
 
@@ -251,7 +234,7 @@ class AITransferMarketService
             'buys' => 0,
         ]);
 
-        $allTransfers = collect();
+        $count = 0;
         // Set of player IDs already transferred — used only to prevent double-transfers
         $transferredPlayerIds = [];
 
@@ -298,16 +281,12 @@ class AITransferMarketService
                 ? $this->findClearingBuyer($player, $sellerTeamId, $teamRosters, $teamAverages, $teamReputations, $teamBudgets, $groupCounts, $teamSizeDeltas, $game)
                 : $this->findUpgradeBuyer($player, $sellerTeamId, $teamRosters, $teamAverages, $teamReputations, $teamBudgets, $groupCounts, $teamSizeDeltas, $game);
 
-            $fromTeamName = $teamNames[$sellerTeamId] ?? 'Unknown';
-
             if ($buyer) {
                 $buyerTeamId = $buyer['teamId'];
 
                 // Execute domestic transfer
-                $transfer = $this->executeDomesticTransfer(
-                    $game, $player, $sellerTeamId, $fromTeamName, $buyerTeamId, $buyer['teamName'], $teams, $window
-                );
-                $allTransfers->push($transfer);
+                $this->executeDomesticTransfer($game, $player, $sellerTeamId, $buyerTeamId, $teams, $window);
+                $count++;
                 $transferredPlayerIds[$player->id] = true;
 
                 // Update budgets
@@ -325,7 +304,8 @@ class AITransferMarketService
                     $foreignTeam = $foreignTeams[$foreignIndex % count($foreignTeams)];
                     $foreignIndex++;
 
-                    $allTransfers->push($this->executeForeignTransfer($game, $player, $sellerTeamId, $fromTeamName, $foreignTeam, $window));
+                    $this->executeForeignTransfer($game, $player, $sellerTeamId, $foreignTeam, $window);
+                    $count++;
                     $transferredPlayerIds[$player->id] = true;
                     $this->incrementBudget($teamBudgets, $sellerTeamId, 'sells');
                     $this->adjustGroupCount($groupCounts, $sellerTeamId, $posGroup, -1);
@@ -334,7 +314,7 @@ class AITransferMarketService
             }
         }
 
-        return $allTransfers;
+        return $count;
     }
 
     /**
@@ -714,12 +694,10 @@ class AITransferMarketService
         Game $game,
         GamePlayer $player,
         string $fromTeamId,
-        string $fromTeamName,
         string $toTeamId,
-        string $toTeamName,
         Collection $teams,
         string $window,
-    ): array {
+    ): void {
         $fee = $player->market_value_cents;
         $seasonYear = (int) $game->season;
         $contractYears = mt_rand(2, 3);
@@ -750,18 +728,6 @@ class AITransferMarketService
             season: $game->season,
             window: $window,
         );
-
-        return [
-            'playerName' => $player->name,
-            'position' => $player->position,
-            'fromTeamId' => $fromTeamId,
-            'fromTeamName' => $fromTeamName,
-            'toTeamId' => $toTeamId,
-            'toTeamName' => $toTeamName,
-            'fee' => $fee,
-            'formattedFee' => Money::format($fee),
-            'type' => 'domestic',
-        ];
     }
 
     /**
@@ -771,10 +737,9 @@ class AITransferMarketService
         Game $game,
         GamePlayer $player,
         string $fromTeamId,
-        string $fromTeamName,
         Team $foreignTeam,
         string $window,
-    ): array {
+    ): void {
         $fee = $player->market_value_cents;
 
         $seasonYear = (int) $game->season;
@@ -805,18 +770,6 @@ class AITransferMarketService
             season: $game->season,
             window: $window,
         );
-
-        return [
-            'playerName' => $player->name,
-            'position' => $player->position,
-            'fromTeamId' => $fromTeamId,
-            'fromTeamName' => $fromTeamName,
-            'toTeamId' => $foreignTeam->id,
-            'toTeamName' => $foreignTeam->name,
-            'fee' => $fee,
-            'formattedFee' => Money::format($fee),
-            'type' => 'foreign',
-        ];
     }
 
     /**
