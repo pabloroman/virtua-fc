@@ -37,6 +37,9 @@ class SetupNewGame implements ShouldQueue
     private bool $usedTemplates = false;
     private Carbon $currentDate;
 
+    /** @var array<string, list<string>> Transfermarkt ID → secondary positions */
+    private ?array $secondaryPositionsMap = null;
+
     public function __construct(
         public string $gameId,
         public string $teamId,
@@ -291,6 +294,7 @@ class SetupNewGame implements ShouldQueue
                 'team_id' => $t->team_id,
                 'number' => $t->number,
                 'position' => $t->position,
+                'secondary_positions' => $t->secondary_positions,
                 'market_value' => $t->market_value,
                 'market_value_cents' => $t->market_value_cents,
                 'contract_until' => $t->contract_until,
@@ -431,6 +435,8 @@ class SetupNewGame implements ShouldQueue
             $currentAbility
         );
 
+        $secondaryPositions = $this->getSecondaryPositions($playerData['id']);
+
         return [
             'id' => Str::uuid()->toString(),
             'game_id' => $this->gameId,
@@ -438,6 +444,7 @@ class SetupNewGame implements ShouldQueue
             'team_id' => $team->id,
             'number' => isset($playerData['number']) ? (int) $playerData['number'] : null,
             'position' => $playerData['position'] ?? 'Unknown',
+            'secondary_positions' => json_encode($secondaryPositions),
             'market_value' => $playerData['marketValue'] ?? null,
             'market_value_cents' => $marketValueCents,
             'contract_until' => $contractUntil,
@@ -486,5 +493,28 @@ class SetupNewGame implements ShouldQueue
             return $matches[1];
         }
         return null;
+    }
+
+    /**
+     * Get secondary positions for a player by Transfermarkt ID.
+     *
+     * @return list<string>
+     */
+    private function getSecondaryPositions(string $transfermarktId): array
+    {
+        if ($this->secondaryPositionsMap === null) {
+            $path = base_path('data/players/player_positions_ES.json');
+            if (!file_exists($path)) {
+                $this->secondaryPositionsMap = [];
+            } else {
+                $entries = json_decode(file_get_contents($path), true);
+                $this->secondaryPositionsMap = [];
+                foreach ($entries as $entry) {
+                    $this->secondaryPositionsMap[$entry['id']] = $entry['positions'] ?? [];
+                }
+            }
+        }
+
+        return $this->secondaryPositionsMap[$transfermarktId] ?? [];
     }
 }

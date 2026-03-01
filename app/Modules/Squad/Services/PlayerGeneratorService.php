@@ -98,6 +98,7 @@ class PlayerGeneratorService
             'team_id' => $data->teamId,
             'number' => $number,
             'position' => $data->position,
+            'secondary_positions' => [],
             'market_value_cents' => $marketValue,
             'contract_until' => $contractUntil,
             'annual_wage' => $annualWage,

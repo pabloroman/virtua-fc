@@ -21,6 +21,7 @@ class GamePlayerFactory extends Factory
             'player_id' => Player::factory(),
             'team_id' => Team::factory(),
             'position' => 'Central Midfield',
+            'secondary_positions' => [],
             'market_value_cents' => $this->faker->numberBetween(100_000_00, 50_000_000_00),
             'contract_until' => now()->addYears(2),
             'annual_wage' => $this->faker->numberBetween(10_000_00, 1_000_000_00),
