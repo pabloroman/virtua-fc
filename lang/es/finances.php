@@ -147,8 +147,8 @@ return [
     'facilities_tier_4' => 'Estadio clase mundial - 1.6x ingresos',
 
     // Categories
-    'category_transfer_in' => 'Fichaje',
-    'category_transfer_out' => 'Venta',
+    'category_transfer_in' => 'Venta',
+    'category_transfer_out' => 'Fichaje',
     'category_wage' => 'Salarios',
     'category_tv' => 'Derechos TV',
     'category_cup_bonus' => 'Bonificación Copa',

@@ -147,8 +147,8 @@ return [
     'facilities_tier_4' => 'World-class stadium - 1.6x revenue',
 
     // Categories
-    'category_transfer_in' => 'Transfer In',
-    'category_transfer_out' => 'Sale',
+    'category_transfer_in' => 'Sale',
+    'category_transfer_out' => 'Signing',
     'category_wage' => 'Wages',
     'category_tv' => 'TV Rights',
     'category_cup_bonus' => 'Cup Bonus',
