@@ -68,11 +68,12 @@ class BudgetProjectionService
         // Calculate projected surplus
         $projectedSurplus = $projectedTotalRevenue - $projectedWages - $projectedOperatingExpenses;
 
-        // Get carried debt from previous season
+        // Get carried debt and surplus from previous season
         $carriedDebt = $this->getCarriedDebt($game);
+        $carriedSurplus = $this->getCarriedSurplus($game);
 
         // Calculate public subsidy if needed to guarantee minimum viable budget
-        $projectedSubsidyRevenue = $this->calculateSubsidy($projectedSurplus, $carriedDebt);
+        $projectedSubsidyRevenue = $this->calculateSubsidy($projectedSurplus, $carriedDebt, $carriedSurplus);
         if ($projectedSubsidyRevenue > 0) {
             $projectedTotalRevenue += $projectedSubsidyRevenue;
             $projectedSurplus += $projectedSubsidyRevenue;
@@ -96,6 +97,7 @@ class BudgetProjectionService
                 'projected_operating_expenses' => $projectedOperatingExpenses,
                 'projected_surplus' => $projectedSurplus,
                 'carried_debt' => $carriedDebt,
+                'carried_surplus' => $carriedSurplus,
             ]
         );
 
@@ -264,6 +266,29 @@ class BudgetProjectionService
     }
 
     /**
+     * Get carried surplus from previous season.
+     */
+    public function getCarriedSurplus(Game $game): int
+    {
+        $previousSeason = (int) $game->season - 1;
+
+        $previousFinances = GameFinances::where('game_id', $game->id)
+            ->where('season', $previousSeason)
+            ->first();
+
+        if (!$previousFinances) {
+            return 0;
+        }
+
+        // Positive variance from previous season becomes carried surplus
+        if ($previousFinances->variance > 0) {
+            return $previousFinances->variance;
+        }
+
+        return 0;
+    }
+
+    /**
      * Get base commercial revenue for budget projections.
      * Season 2+: uses previous season's actual commercial revenue.
      * Season 1: calculates from stadium_seats × config rate.
@@ -298,10 +323,10 @@ class BudgetProjectionService
      * Calculate public subsidy (Subvenciones Públicas) to guarantee a minimum viable budget.
      * Ensures every team can cover mandatory infrastructure + a minimum transfer budget.
      */
-    private function calculateSubsidy(int $projectedSurplus, int $carriedDebt): int
+    private function calculateSubsidy(int $projectedSurplus, int $carriedDebt, int $carriedSurplus): int
     {
         $minimumAvailable = GameInvestment::MINIMUM_TOTAL_INVESTMENT + self::MINIMUM_TRANSFER_BUDGET;
-        $rawAvailable = $projectedSurplus - $carriedDebt;
+        $rawAvailable = $projectedSurplus + $carriedSurplus - $carriedDebt;
 
         if ($rawAvailable >= $minimumAvailable) {
             return 0;

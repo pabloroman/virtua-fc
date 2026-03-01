@@ -22,6 +22,7 @@ return [
     'operating_expenses' => 'Gastos Operativos',
     'taxes' => 'Impuestos y Cargas Sociales',
     'carried_debt' => 'Deuda Arrastrada',
+    'carried_surplus' => 'Superávit Arrastrado',
     'available_surplus' => 'Superávit Disponible',
 
     // Season results
@@ -71,6 +72,7 @@ return [
     'tooltip_taxes' => 'Impuestos y cargas sociales sobre los ingresos del club.',
     'tooltip_surplus' => 'Diferencia entre ingresos y gastos. Este importe se reparte entre infraestructura y fichajes.',
     'tooltip_carried_debt' => 'Déficit de la temporada anterior. Si los ingresos reales fueron menores a los proyectados, la diferencia se arrastra.',
+    'tooltip_carried_surplus' => 'Excedente de la temporada anterior. Si los ingresos reales superaron las proyecciones, la diferencia se traslada.',
     'tooltip_infrastructure' => 'Inversión en cantera, medicina deportiva, ojeadores e instalaciones. Se descuenta antes de calcular el presupuesto de fichajes.',
     'tooltip_transfer_budget' => 'Lo que queda del superávit tras cubrir deuda e infraestructura. Es tu capacidad para fichar jugadores.',
 
@@ -109,6 +111,7 @@ return [
     'tier_n' => 'Nivel',
     'confirm_budget_allocation' => 'Confirmar Asignación de Presupuesto',
     'after_debt_deduction' => 'Después de :amount de deducción por deuda',
+    'includes_carried_surplus' => 'Incluye :amount de superávit de la temporada anterior',
 
     // Budget allocation component
     'infrastructure' => 'Infraestructura:',

@@ -48,6 +48,7 @@ class BudgetProjectionProcessor implements SeasonEndProcessor
             'projected_wages' => $finances->projected_wages,
             'projected_surplus' => $finances->projected_surplus,
             'carried_debt' => $finances->carried_debt,
+            'carried_surplus' => $finances->carried_surplus,
             'available_surplus' => $finances->available_surplus,
             'season_goal' => $seasonGoal,
         ]);
