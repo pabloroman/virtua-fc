@@ -23,6 +23,13 @@ class ShowAcademyEvaluation
             ->get()
             ->sortBy(fn ($p) => $this->sortOrder($p));
 
+        if ($players->isEmpty()) {
+            $game->removePendingAction('academy_evaluation');
+
+            return redirect()->route('game.squad.academy', $gameId)
+                ->with('success', __('messages.academy_evaluation_complete'));
+        }
+
         $loanedCount = AcademyPlayer::where('game_id', $gameId)
             ->where('team_id', $game->team_id)
             ->where('is_on_loan', true)

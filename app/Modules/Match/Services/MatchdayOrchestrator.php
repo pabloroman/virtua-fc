@@ -522,6 +522,7 @@ class MatchdayOrchestrator
         // Add pending action if any players still need evaluation (from season-end)
         $needsEval = AcademyPlayer::where('game_id', $game->id)
             ->where('team_id', $game->team_id)
+            ->where('is_on_loan', false)
             ->where('evaluation_needed', true)
             ->exists();
 

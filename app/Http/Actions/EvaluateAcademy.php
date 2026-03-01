@@ -18,6 +18,20 @@ class EvaluateAcademy
         $game = Game::findOrFail($gameId);
         abort_if($game->isTournamentMode(), 404);
 
+        // Load all non-loaned academy players first to detect stuck state
+        $players = AcademyPlayer::where('game_id', $gameId)
+            ->where('team_id', $game->team_id)
+            ->where('is_on_loan', false)
+            ->get()
+            ->keyBy('id');
+
+        if ($players->isEmpty()) {
+            $game->removePendingAction('academy_evaluation');
+
+            return redirect()->route('game.squad.academy', $gameId)
+                ->with('success', __('messages.academy_evaluation_complete'));
+        }
+
         $decisions = $request->input('decisions', []);
 
         if (empty($decisions)) {
@@ -27,13 +41,6 @@ class EvaluateAcademy
 
         $tier = $game->currentInvestment->youth_academy_tier ?? 0;
         $capacity = YouthAcademyService::getCapacity($tier);
-
-        // Load all non-loaned academy players
-        $players = AcademyPlayer::where('game_id', $gameId)
-            ->where('team_id', $game->team_id)
-            ->where('is_on_loan', false)
-            ->get()
-            ->keyBy('id');
 
         // Validate: every player must have a decision
         foreach ($players as $player) {
@@ -84,6 +91,7 @@ class EvaluateAcademy
         // Remove pending action only when all players have been evaluated
         $stillNeedsEval = AcademyPlayer::where('game_id', $gameId)
             ->where('team_id', $game->team_id)
+            ->where('is_on_loan', false)
             ->where('evaluation_needed', true)
             ->exists();
 
