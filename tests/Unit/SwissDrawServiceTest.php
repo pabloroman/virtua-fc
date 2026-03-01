@@ -17,6 +17,80 @@ class SwissDrawServiceTest extends TestCase
     }
 
     /**
+     * Assert all hard invariants that must hold for any valid Swiss draw output.
+     */
+    private function assertHardInvariants(array $fixtures): void
+    {
+        // 144 total matches
+        $this->assertCount(144, $fixtures, 'Expected 144 matches');
+
+        // Each team has exactly 8 matches
+        $matchCounts = [];
+        foreach ($fixtures as $fixture) {
+            $matchCounts[$fixture['homeTeamId']] = ($matchCounts[$fixture['homeTeamId']] ?? 0) + 1;
+            $matchCounts[$fixture['awayTeamId']] = ($matchCounts[$fixture['awayTeamId']] ?? 0) + 1;
+        }
+        foreach ($matchCounts as $teamId => $count) {
+            $this->assertEquals(8, $count, "Team {$teamId} has {$count} matches instead of 8");
+        }
+
+        // Each team has exactly 4 home and 4 away
+        $homeCounts = [];
+        $awayCounts = [];
+        foreach ($fixtures as $fixture) {
+            $homeCounts[$fixture['homeTeamId']] = ($homeCounts[$fixture['homeTeamId']] ?? 0) + 1;
+            $awayCounts[$fixture['awayTeamId']] = ($awayCounts[$fixture['awayTeamId']] ?? 0) + 1;
+        }
+        foreach ($homeCounts as $teamId => $count) {
+            $this->assertEquals(4, $count, "Team {$teamId} has {$count} home games instead of 4");
+        }
+        foreach ($awayCounts as $teamId => $count) {
+            $this->assertEquals(4, $count, "Team {$teamId} has {$count} away games instead of 4");
+        }
+
+        // No team plays itself
+        foreach ($fixtures as $fixture) {
+            $this->assertNotEquals($fixture['homeTeamId'], $fixture['awayTeamId'], 'A team is playing itself');
+        }
+
+        // No duplicate pairings
+        $pairs = [];
+        foreach ($fixtures as $fixture) {
+            $a = $fixture['homeTeamId'];
+            $b = $fixture['awayTeamId'];
+            $key = $a < $b ? "{$a}|{$b}" : "{$b}|{$a}";
+            $this->assertArrayNotHasKey($key, $pairs, "Duplicate pairing: {$a} vs {$b}");
+            $pairs[$key] = true;
+        }
+
+        // 8 matchdays with 18 matches each
+        $matchdayCounts = [];
+        foreach ($fixtures as $fixture) {
+            $md = $fixture['matchday'];
+            $matchdayCounts[$md] = ($matchdayCounts[$md] ?? 0) + 1;
+        }
+        $this->assertCount(8, $matchdayCounts, 'Expected 8 matchdays');
+        foreach ($matchdayCounts as $md => $count) {
+            $this->assertEquals(18, $count, "Matchday {$md} has {$count} matches instead of 18");
+        }
+
+        // No team plays twice in same round
+        $roundTeams = [];
+        foreach ($fixtures as $fixture) {
+            $md = $fixture['matchday'];
+            $roundTeams[$md][] = $fixture['homeTeamId'];
+            $roundTeams[$md][] = $fixture['awayTeamId'];
+        }
+        foreach ($roundTeams as $md => $teamIds) {
+            $duplicates = array_diff_assoc($teamIds, array_unique($teamIds));
+            $this->assertEmpty(
+                $duplicates,
+                "Round {$md} has double-booked teams: " . implode(', ', array_unique($duplicates))
+            );
+        }
+    }
+
+    /**
      * Build matchday dates array for 8 matchdays.
      *
      * @return array<int, string>
@@ -252,5 +326,106 @@ class SwissDrawServiceTest extends TestCase
         foreach ($matchCounts as $teamId => $count) {
             $this->assertEquals(8, $count, "Team {$teamId} has {$count} matches instead of 8");
         }
+    }
+
+    /**
+     * Concentrated country distribution (3 countries × 3 teams/pot) forces relaxation.
+     * Verifies that progressive relaxation produces valid fixtures instead of throwing.
+     */
+    public function test_handles_concentrated_country_distribution(): void
+    {
+        // 3 countries with 3 teams per pot — makes diversity cap hard to satisfy
+        $countries = ['ES', 'ES', 'ES', 'EN', 'EN', 'EN', 'DE', 'DE', 'DE'];
+        $teams = [];
+
+        for ($pot = 1; $pot <= 4; $pot++) {
+            for ($i = 0; $i < 9; $i++) {
+                $teams[] = [
+                    'id' => "team-pot{$pot}-{$i}",
+                    'pot' => $pot,
+                    'country' => $countries[$i],
+                ];
+            }
+        }
+
+        $fixtures = $this->service->generateFixtures($teams, $this->makeMatchdayDates());
+
+        $this->assertHardInvariants($fixtures);
+    }
+
+    /**
+     * All 36 teams from the same country — country protection is impossible.
+     * Must fall through to circle-method fallback (Level 3).
+     */
+    public function test_all_same_country_uses_fallback(): void
+    {
+        $teams = [];
+
+        for ($pot = 1; $pot <= 4; $pot++) {
+            for ($i = 0; $i < 9; $i++) {
+                $teams[] = [
+                    'id' => "team-pot{$pot}-{$i}",
+                    'pot' => $pot,
+                    'country' => 'ES',
+                ];
+            }
+        }
+
+        $fixtures = $this->service->generateFixtures($teams, $this->makeMatchdayDates());
+
+        $this->assertHardInvariants($fixtures);
+    }
+
+    /**
+     * Realistic adversarial distribution: 5 ES in pot 1, 4 ES in pot 2.
+     * This mimics the production scenario that caused RuntimeException.
+     */
+    public function test_handles_realistic_adversarial_distribution(): void
+    {
+        $teams = [];
+
+        // Pot 1: 5 ES + 4 others
+        $pot1Countries = ['ES', 'ES', 'ES', 'ES', 'ES', 'EN', 'DE', 'IT', 'FR'];
+        for ($i = 0; $i < 9; $i++) {
+            $teams[] = [
+                'id' => "team-pot1-{$i}",
+                'pot' => 1,
+                'country' => $pot1Countries[$i],
+            ];
+        }
+
+        // Pot 2: 4 ES + 5 others
+        $pot2Countries = ['ES', 'ES', 'ES', 'ES', 'EN', 'DE', 'IT', 'FR', 'PT'];
+        for ($i = 0; $i < 9; $i++) {
+            $teams[] = [
+                'id' => "team-pot2-{$i}",
+                'pot' => 2,
+                'country' => $pot2Countries[$i],
+            ];
+        }
+
+        // Pot 3: 3 ES + 6 others
+        $pot3Countries = ['ES', 'ES', 'ES', 'EN', 'DE', 'IT', 'FR', 'PT', 'NL'];
+        for ($i = 0; $i < 9; $i++) {
+            $teams[] = [
+                'id' => "team-pot3-{$i}",
+                'pot' => 3,
+                'country' => $pot3Countries[$i],
+            ];
+        }
+
+        // Pot 4: 2 ES + 7 others
+        $pot4Countries = ['ES', 'ES', 'EN', 'DE', 'IT', 'FR', 'PT', 'NL', 'BE'];
+        for ($i = 0; $i < 9; $i++) {
+            $teams[] = [
+                'id' => "team-pot4-{$i}",
+                'pot' => 4,
+                'country' => $pot4Countries[$i],
+            ];
+        }
+
+        $fixtures = $this->service->generateFixtures($teams, $this->makeMatchdayDates());
+
+        $this->assertHardInvariants($fixtures);
     }
 }

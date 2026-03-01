@@ -2,6 +2,8 @@
 
 namespace App\Modules\Competition\Services;
 
+use Illuminate\Support\Facades\Log;
+
 /**
  * Generates league phase fixtures for Swiss format competitions.
  *
@@ -10,7 +12,13 @@ namespace App\Modules\Competition\Services;
  * - Country protection: teams from the same country never face each other
  * - Diversity cap: max 2 opponents from any single foreign country
  *
- * Two-phase approach:
+ * Uses progressive constraint relaxation to guarantee fixture generation:
+ * Level 0: Full constraints (country protection + diversity cap)
+ * Level 1: No diversity cap, keep country protection
+ * Level 2: No country protection, no diversity cap
+ * Level 3: Circle-method fallback (mathematically guaranteed)
+ *
+ * Two-phase approach per level:
  * 1. Opponent assignment: pot-by-pot with bidirectional tracking
  * 2. Scheduling: extract perfect matchings (one per round) using augmenting paths
  */
@@ -21,7 +29,11 @@ class SwissDrawService
     private const MATCHDAYS = 8;
 
     /**
-     * Generate league phase fixtures.
+     * Generate league phase fixtures with progressive constraint relaxation.
+     *
+     * Never throws — falls back through increasingly relaxed constraint levels
+     * until fixtures are produced. The circle-method fallback (Level 3) is
+     * mathematically guaranteed to succeed.
      *
      * @param array<array{id: string, pot: int, country: string}> $teams
      * @param array<int, string> $matchdayDates Matchday number => ISO date (YYYY-MM-DD)
@@ -41,9 +53,43 @@ class SwissDrawService
             }
         }
 
-        // Retry full pipeline: different random seeds produce different assignments
-        for ($attempt = 0; $attempt < 500; $attempt++) {
-            $matches = $this->tryAssignMatches($teams, $pots);
+        // Level 0: Full constraints (country protection + diversity cap ≤ 2)
+        $result = $this->tryLevel($teams, $pots, $matchdayDates, 500, true, 2);
+        if ($result !== null) {
+            return $result;
+        }
+
+        $distribution = $this->countryDistribution($pots);
+
+        // Level 1: No diversity cap, keep country protection
+        $this->logEscalation('Level 1 (no diversity cap)', $distribution);
+        $result = $this->tryLevel($teams, $pots, $matchdayDates, 200, true, 0);
+        if ($result !== null) {
+            return $result;
+        }
+
+        // Level 2: No country protection, no diversity cap
+        $this->logEscalation('Level 2 (no country protection)', $distribution);
+        $result = $this->tryLevel($teams, $pots, $matchdayDates, 200, false, 0);
+        if ($result !== null) {
+            return $result;
+        }
+
+        // Level 3: Circle-method fallback (guaranteed)
+        $this->logEscalation('Level 3 (circle-method fallback)', $distribution);
+
+        return $this->generateCircleMethodFixtures($teams, $matchdayDates);
+    }
+
+    /**
+     * Attempt fixture generation at a given constraint level.
+     *
+     * @return array|null Formatted fixtures or null if all attempts exhausted
+     */
+    private function tryLevel(array $teams, array $pots, array $matchdayDates, int $maxAttempts, bool $enforceCountryProtection, int $maxCountryOpponents): ?array
+    {
+        for ($attempt = 0; $attempt < $maxAttempts; $attempt++) {
+            $matches = $this->tryAssignMatches($teams, $pots, $enforceCountryProtection, $maxCountryOpponents);
             if ($matches === null) {
                 continue;
             }
@@ -54,8 +100,125 @@ class SwissDrawService
             }
         }
 
-        throw new \RuntimeException('Failed to generate valid Swiss format fixtures');
+        return null;
     }
+
+    /**
+     * Generate fixtures using the circle (polygon) method — guaranteed to succeed.
+     *
+     * 1. Fix teams[0], rotate teams[1..35] through 35 rounds, pick 8 rounds
+     * 2. Each round produces 18 undirected pairings (no conflicts)
+     * 3. Orient using Euler circuit for exactly 4H/4A per team
+     * 4. Map directed edges back to their original round assignments
+     *
+     * Mathematical guarantee: circle method produces valid rounds (no double-booking).
+     * Every team has degree 8 (even), so an Euler circuit exists and gives exactly
+     * 4 home / 4 away.
+     */
+    private function generateCircleMethodFixtures(array $teams, array $matchdayDates): array
+    {
+        // Build a stable ordering of team IDs
+        $teamIds = array_map(fn($t) => $t['id'], $teams);
+
+        // Fix the first team, rotate the rest (circle method)
+        $fixed = $teamIds[0];
+        $rotating = array_slice($teamIds, 1); // 35 elements
+        $n = count($teamIds); // 36
+
+        // Generate all 35 possible rounds
+        $allRounds = [];
+        for ($round = 0; $round < $n - 1; $round++) {
+            $roundPairings = [];
+
+            // Fixed team pairs with rotating[0]
+            $roundPairings[] = [$fixed, $rotating[0]];
+
+            // Remaining pairs: rotating[i] pairs with rotating[n-1-i]
+            $halfRotating = intdiv(count($rotating), 2);
+            for ($i = 1; $i <= $halfRotating; $i++) {
+                $roundPairings[] = [$rotating[$i], $rotating[$n - 1 - $i]];
+            }
+
+            $allRounds[] = $roundPairings;
+
+            // Rotate: shift rotating array by 1 position
+            $last = array_pop($rotating);
+            array_unshift($rotating, $last);
+        }
+
+        // Pick 8 rounds randomly for variety
+        $roundIndices = array_keys($allRounds);
+        shuffle($roundIndices);
+        $selectedRounds = array_slice($roundIndices, 0, self::MATCHDAYS);
+
+        // Build undirected pairings with round tracking
+        $paired = [];
+        $roundOf = []; // pairKey => matchday (1-indexed)
+        $matchday = 1;
+        foreach ($selectedRounds as $roundIdx) {
+            foreach ($allRounds[$roundIdx] as [$a, $b]) {
+                $key = $this->pairKey($a, $b);
+                $paired[$key] = true;
+                $roundOf[$key] = $matchday;
+            }
+            $matchday++;
+        }
+
+        // Orient edges for balanced home/away using Euler circuit
+        $directedMatches = $this->orientEdgesBalanced($paired);
+
+        // Assign each match to its original round
+        $schedule = array_fill(1, self::MATCHDAYS, []);
+        foreach ($directedMatches as $match) {
+            $key = $this->pairKey($match['homeTeamId'], $match['awayTeamId']);
+            $schedule[$roundOf[$key]][] = $match;
+        }
+
+        return $this->formatSchedule($schedule, $matchdayDates);
+    }
+
+    /**
+     * Per-pot country distribution for diagnostic logging.
+     *
+     * @return array<int, array<string, int>> Pot => [country => count]
+     */
+    private function countryDistribution(array $pots): array
+    {
+        $distribution = [];
+        foreach ($pots as $pot => $teams) {
+            $counts = [];
+            foreach ($teams as $team) {
+                $counts[$team['country']] = ($counts[$team['country']] ?? 0) + 1;
+            }
+            arsort($counts);
+            $distribution[$pot] = $counts;
+        }
+
+        return $distribution;
+    }
+
+    /**
+     * Log a constraint escalation warning. Gracefully skips if no app context (e.g. unit tests).
+     */
+    private function logEscalation(string $level, array $distribution): void
+    {
+        try {
+            Log::warning("Swiss draw: escalating to {$level}", [
+                'country_distribution' => $distribution,
+            ]);
+        } catch (\RuntimeException) {
+            // No facade root (unit tests without Laravel container) — skip
+        }
+    }
+
+    private function pairKey(string $a, string $b): string
+    {
+        return $a < $b ? "{$a}|{$b}" : "{$b}|{$a}";
+    }
+
+    // ──────────────────────────────────────────────────────────────────────
+    // Opponent assignment
+    // ──────────────────────────────────────────────────────────────────────
 
     /**
      * Try to assign opponents pot-by-pot. Returns 144 matches or null on failure.
@@ -64,9 +227,11 @@ class SwissDrawService
      * when A picks B, B also gets A. This means a team can accumulate opponents from
      * other teams' picks, so we guard against exceeding 8 total.
      *
+     * @param  bool  $enforceCountryProtection  When true, teams from the same country never face each other
+     * @param  int   $maxCountryOpponents  Max opponents from any single foreign country (0 = no limit)
      * @return array<array{homeTeamId: string, awayTeamId: string}>|null
      */
-    private function tryAssignMatches(array $teams, array $pots): ?array
+    private function tryAssignMatches(array $teams, array $pots, bool $enforceCountryProtection = true, int $maxCountryOpponents = 2): ?array
     {
         $teamPot = [];
         foreach ($teams as $team) {
@@ -101,21 +266,20 @@ class SwissDrawService
                 $needed = min($needed, $remaining);
 
                 $candidates = collect($pots[$pot])
-                    ->filter(function ($c) use ($team, $opponents, $paired, $countryCount) {
+                    ->filter(function ($c) use ($team, $opponents, $paired, $countryCount, $enforceCountryProtection, $maxCountryOpponents) {
                         if ($c['id'] === $team['id']) return false;
                         if (count($opponents[$c['id']]) >= self::MATCHES_PER_TEAM) return false;
 
-                        $key = $team['id'] < $c['id']
-                            ? "{$team['id']}|{$c['id']}"
-                            : "{$c['id']}|{$team['id']}";
-                        if (isset($paired[$key])) return false;
+                        if (isset($paired[$this->pairKey($team['id'], $c['id'])])) return false;
 
-                        // Same-country teams never face each other
-                        if ($team['country'] === $c['country']) return false;
+                        // Country protection (relaxable)
+                        if ($enforceCountryProtection && $team['country'] === $c['country']) return false;
 
-                        // Max 2 opponents from any single foreign country
-                        if (($countryCount[$team['id']][$c['country']] ?? 0) >= 2) return false;
-                        if (($countryCount[$c['id']][$team['country']] ?? 0) >= 2) return false;
+                        // Diversity cap (relaxable — 0 = no limit)
+                        if ($maxCountryOpponents > 0) {
+                            if (($countryCount[$team['id']][$c['country']] ?? 0) >= $maxCountryOpponents) return false;
+                            if (($countryCount[$c['id']][$team['country']] ?? 0) >= $maxCountryOpponents) return false;
+                        }
 
                         return true;
                     })
@@ -132,10 +296,7 @@ class SwissDrawService
                     $countryCount[$team['id']][$c['country']] = ($countryCount[$team['id']][$c['country']] ?? 0) + 1;
                     $countryCount[$c['id']][$team['country']] = ($countryCount[$c['id']][$team['country']] ?? 0) + 1;
 
-                    $key = $team['id'] < $c['id']
-                        ? "{$team['id']}|{$c['id']}"
-                        : "{$c['id']}|{$team['id']}";
-                    $paired[$key] = true;
+                    $paired[$this->pairKey($team['id'], $c['id'])] = true;
                 }
             }
         }
