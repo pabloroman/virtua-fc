@@ -156,6 +156,11 @@ class ContractService
      * @param Team $team
      * @return int Minimum wage in cents
      */
+    public function getDefaultMinimumWage(): int
+    {
+        return self::DEFAULT_MINIMUM_WAGE;
+    }
+
     public function getMinimumWageForTeam(Team $team): int
     {
         if (isset($this->minimumWageCache[$team->id])) {

@@ -585,7 +585,9 @@ class ScoutingService
      */
     public function calculateWageDemand(GamePlayer $player): int
     {
-        $minimumWage = $this->contractService->getMinimumWageForTeam($player->team);
+        $minimumWage = $player->team
+            ? $this->contractService->getMinimumWageForTeam($player->team)
+            : $this->contractService->getDefaultMinimumWage();
 
         $wage = $this->contractService->calculateAnnualWage(
             $player->market_value_cents,
