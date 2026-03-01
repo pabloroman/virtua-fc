@@ -36,6 +36,12 @@
             <div
             {{ $attributes->merge(['class' => 'w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg']) }}
             >
+                @if(session('warning'))
+                    <div class="mb-4 p-4 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-sm">
+                        {{ session('warning') }}
+                    </div>
+                @endif
+
                 {{ $slot }}
             </div>
         </div>

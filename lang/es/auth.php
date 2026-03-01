@@ -35,4 +35,5 @@ return [
     'failed' => 'Las credenciales no coinciden con nuestros registros.',
     'password' => 'La contraseña proporcionada es incorrecta.',
     'throttle' => 'Demasiados intentos de acceso. Por favor intenta de nuevo en :seconds segundos.',
+    'session_expired' => 'Tu sesión ha expirado. Por favor, inicia sesión de nuevo.',
 ];

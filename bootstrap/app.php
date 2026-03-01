@@ -25,5 +25,15 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->render(function (\Illuminate\Session\TokenMismatchException $e, $request) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => __('auth.session_expired'),
+                    'redirect' => route('login'),
+                ], 419);
+            }
+
+            return redirect()->route('login')
+                ->with('warning', __('auth.session_expired'));
+        });
     })->create();
