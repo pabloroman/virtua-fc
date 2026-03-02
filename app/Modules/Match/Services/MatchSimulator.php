@@ -131,8 +131,9 @@ class MatchSimulator
      * Reassign goal/assist events from players who were removed from the match
      * (via injury or red card) to available teammates.
      *
-     * Since scores are determined before events are generated, this only changes
-     * WHO scored, not HOW MANY goals were scored.
+     * For red cards, the first red card per team triggers a full xG recalculation
+     * via simulateGoalsWithRedCardSplit(). This method handles any remaining cases
+     * (injuries, or a second red card in the same match) by reassigning WHO scored.
      *
      * @return Collection<MatchEventData>
      */
@@ -292,8 +293,8 @@ class MatchSimulator
      */
     private function calculateTeamStrength(Collection $lineup, int $fromMinute = 0, array $playerEntryMinutes = [], float $tacticalDrainMultiplier = 1.0): float
     {
-        if ($lineup->count() < 11) {
-            // Fallback for incomplete lineup - reflects amateur/semi-pro level
+        if ($lineup->count() < 7) {
+            // Fallback for severely depleted lineup - reflects amateur/semi-pro level
             return 0.30;
         }
 
@@ -731,29 +732,50 @@ class MatchSimulator
         $homeScore = $this->poissonRandom($homeExpectedGoals);
         $awayScore = $this->poissonRandom($awayExpectedGoals);
 
-        $maxGoalsCap = config('match_simulation.max_goals_cap', 0);
-        if ($maxGoalsCap > 0) {
-            $homeScore = min($homeScore, $maxGoalsCap);
-            $awayScore = min($awayScore, $maxGoalsCap);
-        }
-
         if ($homePlayers->isNotEmpty() && $awayPlayers->isNotEmpty()) {
-            $homeGoalEvents = $this->generateGoalEventsInRange(
-                $homeScore, $homeTeam->id, $awayTeam->id,
-                $homePlayers, $awayPlayers, $fromMinute + 1, 93
-            );
-
-            $awayGoalEvents = $this->generateGoalEventsInRange(
-                $awayScore, $awayTeam->id, $homeTeam->id,
-                $awayPlayers, $homePlayers, $fromMinute + 1, 93
-            );
-
-            $events = $events->merge($homeGoalEvents)->merge($awayGoalEvents);
-
+            // Generate cards first using the initial Poisson score for goal-difference bias
             $goalDifference = $homeScore - $awayScore;
             $homeCardEvents = $this->generateCardEventsInRange($homeTeam->id, $homePlayers, -$goalDifference, $fromMinute + 1, 93, $matchFraction, $existingYellowPlayerIds);
             $awayCardEvents = $this->generateCardEventsInRange($awayTeam->id, $awayPlayers, $goalDifference, $fromMinute + 1, 93, $matchFraction, $existingYellowPlayerIds);
             $events = $events->merge($homeCardEvents)->merge($awayCardEvents);
+
+            // Check for red cards — if found, split goal generation into two periods
+            $homeRedCard = $homeCardEvents->first(fn (MatchEventData $e) => $e->type === 'red_card');
+            $awayRedCard = $awayCardEvents->first(fn (MatchEventData $e) => $e->type === 'red_card');
+
+            if ($homeRedCard || $awayRedCard) {
+                [$homeScore, $awayScore, $goalEvents] = $this->simulateGoalsWithRedCardSplit(
+                    $homeTeam, $awayTeam,
+                    $homePlayers, $awayPlayers,
+                    $homeFormation, $awayFormation,
+                    $homeMentality, $awayMentality,
+                    $homePlayingStyle, $awayPlayingStyle,
+                    $homePressing, $awayPressing,
+                    $homeDefLine, $awayDefLine,
+                    $homeStrength, $awayStrength,
+                    $homeEntryMinutes, $awayEntryMinutes,
+                    $homeTacticalDrain, $awayTacticalDrain,
+                    $fromMinute, $baseGoals, $homeRedCard, $awayRedCard,
+                );
+                $events = $events->merge($goalEvents);
+            } else {
+                // No red cards: single-period goal generation (existing path)
+                $maxGoalsCap = config('match_simulation.max_goals_cap', 0);
+                if ($maxGoalsCap > 0) {
+                    $homeScore = min($homeScore, $maxGoalsCap);
+                    $awayScore = min($awayScore, $maxGoalsCap);
+                }
+
+                $homeGoalEvents = $this->generateGoalEventsInRange(
+                    $homeScore, $homeTeam->id, $awayTeam->id,
+                    $homePlayers, $awayPlayers, $fromMinute + 1, 93
+                );
+                $awayGoalEvents = $this->generateGoalEventsInRange(
+                    $awayScore, $awayTeam->id, $homeTeam->id,
+                    $awayPlayers, $homePlayers, $fromMinute + 1, 93
+                );
+                $events = $events->merge($homeGoalEvents)->merge($awayGoalEvents);
+            }
 
             if (! in_array($homeTeam->id, $existingInjuryTeamIds)) {
                 $homeInjuryEvents = $this->generateInjuryEventsInRange($homeTeam->id, $homePlayers, $fromMinute + 1, 93, $game);
@@ -772,6 +794,149 @@ class MatchSimulator
         }
 
         return new MatchResult($homeScore, $awayScore, $events);
+    }
+
+    /**
+     * Re-generate goals when a red card splits the match into two periods.
+     *
+     * Period 1: [fromMinute+1, splitMinute] — full-strength teams.
+     * Period 2: [splitMinute+1, 93] — red-carded player removed, strength
+     * recalculated, and man-down xG modifiers applied.
+     *
+     * @return array{0: int, 1: int, 2: Collection<MatchEventData>} [homeScore, awayScore, goalEvents]
+     */
+    private function simulateGoalsWithRedCardSplit(
+        Team $homeTeam,
+        Team $awayTeam,
+        Collection $homePlayers,
+        Collection $awayPlayers,
+        Formation $homeFormation,
+        Formation $awayFormation,
+        Mentality $homeMentality,
+        Mentality $awayMentality,
+        PlayingStyle $homePlayingStyle,
+        PlayingStyle $awayPlayingStyle,
+        PressingIntensity $homePressing,
+        PressingIntensity $awayPressing,
+        DefensiveLineHeight $homeDefLine,
+        DefensiveLineHeight $awayDefLine,
+        float $homeStrength,
+        float $awayStrength,
+        array $homeEntryMinutes,
+        array $awayEntryMinutes,
+        float $homeTacticalDrain,
+        float $awayTacticalDrain,
+        int $fromMinute,
+        float $baseGoals,
+        ?MatchEventData $homeRedCard,
+        ?MatchEventData $awayRedCard,
+    ): array {
+        $splitMinute = min(
+            $homeRedCard ? $homeRedCard->minute : 94,
+            $awayRedCard ? $awayRedCard->minute : 94,
+        );
+
+        // --- Period 1: [fromMinute+1, splitMinute] with full-strength teams ---
+        $fraction1 = max(0, $splitMinute - $fromMinute) / 93;
+        $effectiveMinute1 = $fromMinute + ($splitMinute - $fromMinute) / 2;
+
+        [$homeXG1, $awayXG1] = $this->calculateBaseExpectedGoals(
+            $homeStrength, $awayStrength,
+            $homeFormation, $awayFormation,
+            $homeMentality, $awayMentality,
+            $baseGoals, $fraction1,
+        );
+
+        [$homeXG1, $awayXG1] = $this->applyTacticalModifiers(
+            $homeXG1, $awayXG1,
+            $homePlayingStyle, $awayPlayingStyle,
+            $homePressing, $awayPressing,
+            $homeDefLine, $awayDefLine,
+            $homeMentality, $awayMentality,
+            $effectiveMinute1,
+            $homePlayers, $awayPlayers,
+        );
+
+        $homeXG1 += $this->calculateStrikerBonus($homePlayers) * $fraction1;
+        $awayXG1 += $this->calculateStrikerBonus($awayPlayers) * $fraction1;
+
+        $homeScore1 = $this->poissonRandom($homeXG1);
+        $awayScore1 = $this->poissonRandom($awayXG1);
+
+        $goalEvents = collect();
+        $goalEvents = $goalEvents
+            ->merge($this->generateGoalEventsInRange($homeScore1, $homeTeam->id, $awayTeam->id, $homePlayers, $awayPlayers, $fromMinute + 1, $splitMinute))
+            ->merge($this->generateGoalEventsInRange($awayScore1, $awayTeam->id, $homeTeam->id, $awayPlayers, $homePlayers, $fromMinute + 1, $splitMinute));
+
+        // --- Remove red-carded player(s) for period 2 ---
+        $homePlayers2 = $homePlayers;
+        $awayPlayers2 = $awayPlayers;
+
+        if ($homeRedCard && $homeRedCard->minute <= $splitMinute) {
+            $homePlayers2 = $homePlayers2->reject(fn ($p) => $p->id === $homeRedCard->gamePlayerId);
+        }
+        if ($awayRedCard && $awayRedCard->minute <= $splitMinute) {
+            $awayPlayers2 = $awayPlayers2->reject(fn ($p) => $p->id === $awayRedCard->gamePlayerId);
+        }
+
+        // --- Period 2: [splitMinute+1, 93] with reduced team(s) ---
+        $fraction2 = max(0, 93 - $splitMinute) / 93;
+        $effectiveMinute2 = $splitMinute + (93 - $splitMinute) / 2;
+
+        $homeStrength2 = $this->calculateTeamStrength($homePlayers2, $splitMinute, $homeEntryMinutes, $homeTacticalDrain);
+        $awayStrength2 = $this->calculateTeamStrength($awayPlayers2, $splitMinute, $awayEntryMinutes, $awayTacticalDrain);
+
+        [$homeXG2, $awayXG2] = $this->calculateBaseExpectedGoals(
+            $homeStrength2, $awayStrength2,
+            $homeFormation, $awayFormation,
+            $homeMentality, $awayMentality,
+            $baseGoals, $fraction2,
+        );
+
+        [$homeXG2, $awayXG2] = $this->applyTacticalModifiers(
+            $homeXG2, $awayXG2,
+            $homePlayingStyle, $awayPlayingStyle,
+            $homePressing, $awayPressing,
+            $homeDefLine, $awayDefLine,
+            $homeMentality, $awayMentality,
+            $effectiveMinute2,
+            $homePlayers2, $awayPlayers2,
+        );
+
+        // Apply man-down xG modifiers from config
+        $attackModifier = config('match_simulation.red_card_impact.attack_modifier', 0.80);
+        $defenseModifier = config('match_simulation.red_card_impact.defense_modifier', 1.15);
+
+        if ($homePlayers2->count() < $homePlayers->count()) {
+            $homeXG2 *= $attackModifier;
+            $awayXG2 *= $defenseModifier;
+        }
+        if ($awayPlayers2->count() < $awayPlayers->count()) {
+            $awayXG2 *= $attackModifier;
+            $homeXG2 *= $defenseModifier;
+        }
+
+        $homeXG2 += $this->calculateStrikerBonus($homePlayers2) * $fraction2;
+        $awayXG2 += $this->calculateStrikerBonus($awayPlayers2) * $fraction2;
+
+        $homeScore2 = $this->poissonRandom($homeXG2);
+        $awayScore2 = $this->poissonRandom($awayXG2);
+
+        $goalEvents = $goalEvents
+            ->merge($this->generateGoalEventsInRange($homeScore2, $homeTeam->id, $awayTeam->id, $homePlayers2, $awayPlayers2, $splitMinute + 1, 93))
+            ->merge($this->generateGoalEventsInRange($awayScore2, $awayTeam->id, $homeTeam->id, $awayPlayers2, $homePlayers2, $splitMinute + 1, 93));
+
+        // Combine scores and apply cap
+        $homeScore = $homeScore1 + $homeScore2;
+        $awayScore = $awayScore1 + $awayScore2;
+
+        $maxGoalsCap = config('match_simulation.max_goals_cap', 0);
+        if ($maxGoalsCap > 0) {
+            $homeScore = min($homeScore, $maxGoalsCap);
+            $awayScore = min($awayScore, $maxGoalsCap);
+        }
+
+        return [$homeScore, $awayScore, $goalEvents];
     }
 
     /**
