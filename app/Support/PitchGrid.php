@@ -39,35 +39,6 @@ class PitchGrid
     ];
 
     /**
-     * Convert a grid cell to pitch coordinates (0-100 range).
-     *
-     * @return array{x: float, y: float}
-     */
-    public static function cellToCoordinates(int $col, int $row): array
-    {
-        return [
-            'x' => round($col * (100 / self::GRID_COLS) + (100 / (self::GRID_COLS * 2)), 1),
-            'y' => round($row * (100 / self::GRID_ROWS) + (100 / (self::GRID_ROWS * 2)), 1),
-        ];
-    }
-
-    /**
-     * Find the nearest grid cell for given pitch coordinates.
-     *
-     * @return array{col: int, row: int}
-     */
-    public static function coordinatesToCell(float $x, float $y): array
-    {
-        $col = (int) round(($x - 100 / (self::GRID_COLS * 2)) / (100 / self::GRID_COLS));
-        $row = (int) round(($y - 100 / (self::GRID_ROWS * 2)) / (100 / self::GRID_ROWS));
-
-        return [
-            'col' => max(0, min(self::GRID_COLS - 1, $col)),
-            'row' => max(0, min(self::GRID_ROWS - 1, $row)),
-        ];
-    }
-
-    /**
      * Check if a cell is within a slot's valid zone.
      */
     public static function isValidCell(string $slotLabel, int $col, int $row): bool
@@ -83,31 +54,7 @@ class PitchGrid
     }
 
     /**
-     * Get all cells in a slot's zone.
-     *
-     * @return array<array{col: int, row: int}>
-     */
-    public static function getZoneCells(string $slotLabel): array
-    {
-        $zone = self::SLOT_ZONES[$slotLabel] ?? null;
-        if (! $zone) {
-            return [];
-        }
-
-        [$colMin, $colMax, $rowMin, $rowMax] = $zone;
-        $cells = [];
-
-        for ($col = $colMin; $col <= $colMax; $col++) {
-            for ($row = $rowMin; $row <= $rowMax; $row++) {
-                $cells[] = ['col' => $col, 'row' => $row];
-            }
-        }
-
-        return $cells;
-    }
-
-    /**
-     * Map a formation's pitch slots to their nearest default grid cells.
+     * Map a formation's pitch slots to their default grid cells.
      *
      * @return array<int, array{col: int, row: int}> Keyed by slot ID
      */

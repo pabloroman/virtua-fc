@@ -279,15 +279,16 @@
                                                     <template x-for="row in gridConfig.rows" :key="'gr-' + row">
                                                         <template x-for="col in gridConfig.cols" :key="'gc-' + (row-1) + '-' + (col-1)">
                                                             <div
+                                                                x-data="{ get state() { return getGridCellState(col-1, row-1) } }"
                                                                 class="absolute transition-colors duration-150 border"
-                                                                :style="`left: ${((col-1) / gridConfig.cols) * 100}%; top: ${(1 - (row / gridConfig.rows)) * 100}%; width: ${100 / gridConfig.cols}%; height: ${100 / gridConfig.rows}%; ${(positioningSlotId !== null && getGridCellState(col-1, row-1) === 'valid') ? 'cursor: pointer; pointer-events: auto' : ''}`"
+                                                                :style="`left: ${((col-1) / gridConfig.cols) * 100}%; top: ${(1 - (row / gridConfig.rows)) * 100}%; width: ${100 / gridConfig.cols}%; height: ${100 / gridConfig.rows}%; ${(positioningSlotId !== null && state === 'valid') ? 'cursor: pointer; pointer-events: auto' : ''}`"
                                                                 :class="{
-                                                                    [getZoneColorClass(currentSlots.find(s => s.id === (positioningSlotId ?? draggingSlotId))?.role)]: getGridCellState(col-1, row-1) === 'valid',
-                                                                    'bg-white/5 border-white/5': getGridCellState(col-1, row-1) === 'occupied',
-                                                                    'bg-black/15 border-transparent': getGridCellState(col-1, row-1) === 'invalid',
-                                                                    'border-transparent': getGridCellState(col-1, row-1) === 'neutral',
+                                                                    [getZoneColorClass(currentSlots.find(s => s.id === (positioningSlotId ?? draggingSlotId))?.role)]: state === 'valid',
+                                                                    'bg-white/5 border-white/5': state === 'occupied',
+                                                                    'bg-black/15 border-transparent': state === 'invalid',
+                                                                    'border-transparent': state === 'neutral',
                                                                 }"
-                                                                @click="positioningSlotId !== null && getGridCellState(col-1, row-1) === 'valid' && handleGridCellClick(col-1, row-1)"
+                                                                @click="positioningSlotId !== null && state === 'valid' && handleGridCellClick(col-1, row-1)"
                                                             ></div>
                                                         </template>
                                                     </template>
@@ -548,9 +549,8 @@
                                                                 cursor-pointer hover:bg-slate-50
                                                             @endif"
                                                         :class="{
-                                                            'bg-sky-50': isSelected('{{ $player->id }}') && selectedSlot === null,
-                                                            'bg-sky-100 ring-1 ring-sky-300': selectedSlot !== null && !{{ $isUnavailable ? 'true' : 'false' }} && getSelectedSlotCompatibility('{{ $player->position }}')?.score >= 40,
-                                                            'opacity-50': !isSelected('{{ $player->id }}') && selectedCount >= 11 && selectedSlot === null && !{{ $isUnavailable ? 'true' : 'false' }}
+                                                            'bg-sky-50': isSelected('{{ $player->id }}'),
+                                                            'opacity-50': !isSelected('{{ $player->id }}') && selectedCount >= 11 && !{{ $isUnavailable ? 'true' : 'false' }}
                                                         }"
                                                     >
                                                         {{-- Checkbox --}}
@@ -592,18 +592,8 @@
                                                         </td>
                                                         {{-- Compatibility indicator --}}
                                                         <td class="py-2 text-right">
-                                                            {{-- When a slot is selected: show compatibility with that slot --}}
-                                                            @if(!$isUnavailable)
-                                                                <template x-if="selectedSlot !== null && getSelectedSlotCompatibility('{{ $player->position }}')">
-                                                                    <span
-                                                                        class="text-xs font-medium px-1.5 py-0.5 rounded whitespace-nowrap"
-                                                                        :class="getSelectedSlotCompatibility('{{ $player->position }}').class"
-                                                                        x-text="getSelectedSlotCompatibility('{{ $player->position }}').label"
-                                                                    ></span>
-                                                                </template>
-                                                            @endif
-                                                            {{-- When no slot selected: show assigned slot info --}}
-                                                            <template x-if="selectedSlot === null && isSelected('{{ $player->id }}') && getPlayerSlot('{{ $player->id }}')">
+                                                            {{-- Show assigned slot info --}}
+                                                            <template x-if="isSelected('{{ $player->id }}') && getPlayerSlot('{{ $player->id }}')">
                                                                 <span
                                                                     class="text-xs font-medium px-1.5 py-0.5 rounded whitespace-nowrap"
                                                                     :class="getCompatibilityDisplay('{{ $player->position }}', getPlayerSlot('{{ $player->id }}')).class"

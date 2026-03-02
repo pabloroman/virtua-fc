@@ -76,7 +76,6 @@ return [
 
     // Lineup editor
     'pitch' => 'Pitch',
-    'select_player_for_slot' => 'Select a player for this position',
 
     // Opponent scout
     'injured' => 'injured',

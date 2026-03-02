@@ -17,17 +17,12 @@ export default function lineupManager(config) {
         // When a user explicitly assigns a player to a slot, it's tracked here.
         manualAssignments: config.currentSlotAssignments || {},
 
-        // Currently selected slot for manual assignment (null = no slot selected)
-        selectedSlot: null,
-        // Player currently occupying the selected slot (for replacement tracking)
-        selectedSlotPlayer: null,
         // Player being hovered in the list (for pitch highlight)
         hoveredPlayerId: null,
 
         // Grid positioning state
         gridConfig: config.gridConfig || null,
         pitchPositions: config.currentPitchPositions || {},
-        gridMode: true,
         positioningSlotId: null,
         draggingSlotId: null,
         dragPosition: null, // { x, y } in percentage coordinates during drag
@@ -77,23 +72,22 @@ export default function lineupManager(config) {
                 }
             });
 
-            // Global event listeners for drag-and-drop (cleaned up is not needed since page-scoped)
-            document.addEventListener('mousemove', (e) => this._onDragMove(e));
-            document.addEventListener('mouseup', (e) => this._onDragEnd(e));
-            document.addEventListener('touchmove', (e) => this._onDragMove(e), { passive: false });
-            document.addEventListener('touchend', (e) => this._onDragEnd(e));
+            // Bound drag handlers (created once, registered lazily during drag)
+            this._boundDragMove = (e) => this._onDragMove(e);
+            this._boundDragEnd = (e) => this._onDragEnd(e);
         },
 
         get isDirty() {
-            const playersChanged = JSON.stringify([...this.selectedPlayers].sort()) !== JSON.stringify(this._initialPlayers);
-            const formationChanged = this.selectedFormation !== this._initialFormation;
-            const mentalityChanged = this.selectedMentality !== this._initialMentality;
-            const styleChanged = this.selectedPlayingStyle !== this._initialPlayingStyle;
-            const pressingChanged = this.selectedPressing !== this._initialPressing;
-            const defLineChanged = this.selectedDefLine !== this._initialDefLine;
-            const assignmentsChanged = JSON.stringify(this.manualAssignments) !== this._initialAssignments;
-            const positionsChanged = JSON.stringify(this.pitchPositions) !== this._initialPitchPositions;
-            return playersChanged || formationChanged || mentalityChanged || styleChanged || pressingChanged || defLineChanged || assignmentsChanged || positionsChanged;
+            // Cheap comparisons first, expensive serialization last
+            if (this.selectedFormation !== this._initialFormation) return true;
+            if (this.selectedMentality !== this._initialMentality) return true;
+            if (this.selectedPlayingStyle !== this._initialPlayingStyle) return true;
+            if (this.selectedPressing !== this._initialPressing) return true;
+            if (this.selectedDefLine !== this._initialDefLine) return true;
+            if (JSON.stringify(this.manualAssignments) !== this._initialAssignments) return true;
+            if (JSON.stringify(this.pitchPositions) !== this._initialPitchPositions) return true;
+            if (JSON.stringify([...this.selectedPlayers].sort()) !== JSON.stringify(this._initialPlayers)) return true;
+            return false;
         },
 
         // Computed
@@ -305,12 +299,6 @@ export default function lineupManager(config) {
         toggle(id, isUnavailable) {
             if (isUnavailable) return;
 
-            // If a slot is selected, assign this player to that slot instead of toggling
-            if (this.selectedSlot !== null) {
-                this.assignPlayerToSelectedSlot(id, isUnavailable);
-                return;
-            }
-
             if (this.isSelected(id)) {
                 this.selectedPlayers = this.selectedPlayers.filter(p => p !== id);
                 // Remove any manual assignments for this player
@@ -320,74 +308,10 @@ export default function lineupManager(config) {
             }
         },
 
-        // Select an empty slot on the pitch for manual assignment
-        selectSlot(slotId) {
-            if (this.selectedSlot === slotId) {
-                this.selectedSlot = null;
-                this.selectedSlotPlayer = null;
-            } else {
-                this.selectedSlot = slotId;
-                this.selectedSlotPlayer = null;
-            }
-        },
-
-        // Assign a player to the currently selected slot
-        assignPlayerToSelectedSlot(playerId, isUnavailable) {
-            if (isUnavailable || this.selectedSlot === null) return;
-
-            const slotId = this.selectedSlot;
-            const slot = this.currentSlots.find(s => s.id === slotId);
-            if (!slot) return;
-
-            // Enforce minimum 40 compatibility for manual assignments
-            const player = this.playersData[playerId];
-            if (player) {
-                const compatibility = this.getSlotCompatibility(player.position, slot.label);
-                if (compatibility < 40) return;
-            }
-
-            // If this player is already manually assigned elsewhere, remove old assignment
-            this._removePlayerFromManualAssignments(playerId);
-
-            // Find who currently occupies this slot (manual or auto-assigned)
-            const previousPlayerId = this.selectedSlotPlayer || this.manualAssignments[slotId];
-
-            // Set the manual assignment
-            this.manualAssignments = { ...this.manualAssignments, [slotId]: playerId };
-
-            // Ensure the player is in the selected 11
-            if (!this.isSelected(playerId)) {
-                if (this.selectedCount >= 11 && previousPlayerId && this.isSelected(previousPlayerId)) {
-                    // Remove the current occupant to make room
-                    this.selectedPlayers = this.selectedPlayers.filter(p => p !== previousPlayerId);
-                    this._removePlayerFromManualAssignments(previousPlayerId);
-                }
-                if (this.selectedCount < 11) {
-                    this.selectedPlayers.push(playerId);
-                }
-            }
-
-            this.selectedSlot = null;
-            this.selectedSlotPlayer = null;
-        },
-
-        // Click on a filled slot on the pitch
-        handleSlotClick(slotId, playerId) {
-            if (this.selectedSlot === slotId) {
-                this.selectedSlot = null;
-                this.selectedSlotPlayer = null;
-            } else {
-                this.selectedSlot = slotId;
-                this.selectedSlotPlayer = playerId || null;
-            }
-        },
-
         quickSelect() {
             this.selectedPlayers = [...this.autoLineup];
             this.manualAssignments = {};
             this.pitchPositions = {};
-            this.selectedSlot = null;
-            this.selectedSlotPlayer = null;
             this.positioningSlotId = null;
         },
 
@@ -395,8 +319,6 @@ export default function lineupManager(config) {
             this.selectedPlayers = [];
             this.manualAssignments = {};
             this.pitchPositions = {};
-            this.selectedSlot = null;
-            this.selectedSlotPlayer = null;
             this.positioningSlotId = null;
         },
 
@@ -408,8 +330,6 @@ export default function lineupManager(config) {
                 this.selectedPlayers = [...this.autoLineup];
                 this.manualAssignments = {};
                 this.pitchPositions = {};
-                this.selectedSlot = null;
-                this.selectedSlotPlayer = null;
                 this.positioningSlotId = null;
             } catch (e) {
                 console.error('Failed to fetch auto lineup', e);
@@ -504,14 +424,6 @@ export default function lineupManager(config) {
             const g = parseInt(hex.slice(3, 5), 16) / 255;
             const b = parseInt(hex.slice(5, 7), 16) / 255;
             return 0.299 * r + 0.587 * g + 0.114 * b;
-        },
-
-        // Get the compatibility display for a player in the currently selected slot
-        getSelectedSlotCompatibility(position) {
-            if (this.selectedSlot === null) return null;
-            const slot = this.currentSlots.find(s => s.id === this.selectedSlot);
-            if (!slot) return null;
-            return this.getCompatibilityDisplay(position, slot.label);
         },
 
         // Remove a player from all manual assignments
@@ -672,6 +584,12 @@ export default function lineupManager(config) {
             this.draggingSlotId = slotId;
             this.positioningSlotId = null;
 
+            // Register drag listeners lazily to avoid permanent non-passive touchmove
+            document.addEventListener('mousemove', this._boundDragMove);
+            document.addEventListener('mouseup', this._boundDragEnd);
+            document.addEventListener('touchmove', this._boundDragMove, { passive: false });
+            document.addEventListener('touchend', this._boundDragEnd);
+
             const coords = this._getEventCoords(event);
             this._updateDragPosition(coords.clientX, coords.clientY);
         },
@@ -691,14 +609,17 @@ export default function lineupManager(config) {
             const cell = this._getCellFromClientCoords(coords.clientX, coords.clientY);
 
             if (cell) {
-                const slot = this.currentSlots.find(s => s.id === this.draggingSlotId);
-                if (slot && this.isValidGridCell(slot.label, cell.col, cell.row) && !this.isCellOccupied(cell.col, cell.row, this.draggingSlotId)) {
-                    this.pitchPositions = { ...this.pitchPositions, [String(this.draggingSlotId)]: [cell.col, cell.row] };
-                }
+                this.setSlotGridPosition(this.draggingSlotId, cell.col, cell.row);
             }
 
             this.draggingSlotId = null;
             this.dragPosition = null;
+
+            // Clean up drag listeners
+            document.removeEventListener('mousemove', this._boundDragMove);
+            document.removeEventListener('mouseup', this._boundDragEnd);
+            document.removeEventListener('touchmove', this._boundDragMove);
+            document.removeEventListener('touchend', this._boundDragEnd);
         },
 
         _updateDragPosition(clientX, clientY) {
