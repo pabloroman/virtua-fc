@@ -272,6 +272,9 @@
                                                 <div class="absolute left-0 right-0 border-t border-white/10"
                                                     :style="`top: ${(row / gridConfig.rows) * 100}%`"></div>
                                             </template>
+                                            {{-- Grid outer edges (right + bottom) --}}
+                                            <div class="absolute top-0 bottom-0 right-0 border-r border-white/10"></div>
+                                            <div class="absolute left-0 right-0 bottom-0 border-b border-white/10"></div>
 
                                             {{-- Clickable zone cells (shown when positioning a player) --}}
                                             <template x-if="positioningSlotId !== null || draggingSlotId !== null">
@@ -280,7 +283,7 @@
                                                         <template x-for="col in gridConfig.cols" :key="'gc-' + (row-1) + '-' + (col-1)">
                                                             <div
                                                                 x-data="{ get state() { return getGridCellState(col-1, row-1) } }"
-                                                                class="absolute transition-colors duration-150 border"
+                                                                class="absolute transition-colors duration-150 border-t border-l"
                                                                 :style="`left: ${((col-1) / gridConfig.cols) * 100}%; top: ${(1 - (row / gridConfig.rows)) * 100}%; width: ${100 / gridConfig.cols}%; height: ${100 / gridConfig.rows}%; ${(positioningSlotId !== null && state === 'valid') ? 'cursor: pointer; pointer-events: auto' : ''}`"
                                                                 :class="{
                                                                     [getZoneColorClass(currentSlots.find(s => s.id === (positioningSlotId ?? draggingSlotId))?.role)]: state === 'valid',
@@ -300,9 +303,11 @@
                                     {{-- Player Slots --}}
                                     <template x-for="slot in slotAssignments" :key="slot.id">
                                         <div
-                                            class="absolute transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 hover:z-30"
+                                            class="absolute transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 group/slot"
                                             :class="{ 'opacity-30': draggingSlotId === slot.id }"
                                             :style="(() => { const pos = getEffectivePosition(slot.id); return pos ? `left: ${pos.x}%; top: ${100 - pos.y}%; z-index: ${positioningSlotId === slot.id ? 20 : 10}` : '' })()"
+                                            @mouseenter="$el.style.zIndex = 30"
+                                            @mouseleave="$el.style.zIndex = positioningSlotId === slot.id ? 20 : 10"
                                         >
                                             {{-- Empty Slot (clickable for assignment) --}}
                                             <div
@@ -340,7 +345,7 @@
                                                 </div>
 
                                                 {{-- Hover tooltip --}}
-                                                <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-slate-900/95 backdrop-blur-sm text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-20 shadow-xl">
+                                                <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-slate-900/95 backdrop-blur-sm text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-50 shadow-xl">
                                                     <div class="flex items-center gap-2">
                                                         <span class="font-semibold" x-text="slot.player?.name"></span>
                                                         <span class="px-1.5 py-0.5 bg-white/15 rounded font-bold text-[10px]" x-text="slot.player?.overallScore"></span>

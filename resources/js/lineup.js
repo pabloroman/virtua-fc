@@ -545,11 +545,11 @@ export default function lineupManager(config) {
          */
         getZoneColorClass(role) {
             switch (role) {
-                case 'Goalkeeper': return 'bg-amber-500/30 border-amber-400';
-                case 'Defender': return 'bg-blue-500/30 border-blue-400';
-                case 'Midfielder': return 'bg-emerald-500/30 border-emerald-400';
-                case 'Forward': return 'bg-red-500/30 border-red-400';
-                default: return 'bg-white/20 border-white/40';
+                case 'Goalkeeper': return 'bg-amber-500/30 border-amber-400/40';
+                case 'Defender': return 'bg-blue-500/30 border-blue-400/40';
+                case 'Midfielder': return 'bg-emerald-500/30 border-emerald-400/40';
+                case 'Forward': return 'bg-red-500/30 border-red-400/40';
+                default: return 'bg-white/20 border-white/30';
             }
         },
 
