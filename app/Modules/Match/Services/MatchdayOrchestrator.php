@@ -65,9 +65,7 @@ class MatchdayOrchestrator
             $this->finalizePendingMatch($game);
 
             // Block advancement if career actions from a previous advance are still processing
-            if ($game->isProcessingCareerActions()) {
-                $game->clearStuckCareerActions();
-            }
+            $game->clearStuckCareerActions();
             if ($game->isProcessingCareerActions()) {
                 return MatchdayAdvanceResult::blocked(null);
             }

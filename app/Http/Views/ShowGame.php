@@ -46,9 +46,7 @@ class ShowGame
         }
 
         // Show loading screen while career actions are processing in background
-        if ($game->isProcessingCareerActions()) {
-            $game->clearStuckCareerActions();
-        }
+        $game->clearStuckCareerActions();
         if ($game->isProcessingCareerActions()) {
             return view('game-loading', [
                 'game' => $game,
