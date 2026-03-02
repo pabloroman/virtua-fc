@@ -66,10 +66,9 @@ class MatchdayOrchestrator
 
             // Block advancement if career actions from a previous advance are still processing
             if ($game->isProcessingCareerActions()) {
-                if ($game->career_actions_processing_at->lt(now()->subMinutes(2))) {
-                    $game->update(['career_actions_processing_at' => null]);
-                }
-
+                $game->clearStuckCareerActions();
+            }
+            if ($game->isProcessingCareerActions()) {
                 return MatchdayAdvanceResult::blocked(null);
             }
 
@@ -131,7 +130,15 @@ class MatchdayOrchestrator
                 ->update(['career_actions_processing_at' => now()]);
 
             if ($updated) {
-                ProcessCareerActions::dispatch($game->id, $this->careerActionTicks);
+                try {
+                    ProcessCareerActions::dispatch($game->id, $this->careerActionTicks);
+                } catch (\Throwable $e) {
+                    Game::where('id', $game->id)->update(['career_actions_processing_at' => null]);
+                    Log::error('Failed to dispatch career actions job', [
+                        'game_id' => $game->id,
+                        'error' => $e->getMessage(),
+                    ]);
+                }
             }
         }
 

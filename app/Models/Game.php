@@ -167,6 +167,25 @@ class Game extends Model
         return $this->career_actions_processing_at !== null;
     }
 
+    /**
+     * Clear a stuck career actions flag (> 2 minutes old).
+     * Returns true if the flag was cleared.
+     */
+    public function clearStuckCareerActions(): bool
+    {
+        if (! $this->isProcessingCareerActions()) {
+            return false;
+        }
+
+        if (! $this->career_actions_processing_at->lt(now()->subMinutes(2))) {
+            return false;
+        }
+
+        $this->update(['career_actions_processing_at' => null]);
+
+        return true;
+    }
+
     // ==========================================
     // Pending Actions (Game Progress Blocking)
     // ==========================================

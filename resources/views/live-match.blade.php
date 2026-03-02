@@ -55,7 +55,7 @@
                 isTournamentKnockout: {{ $isTournamentKnockout ? 'true' : 'false' }},
                 knockoutRoundNumber: {{ $knockoutRoundNumber ?? 'null' }},
                 knockoutRoundName: '{{ $knockoutRoundName ?? '' }}',
-                processingStatusUrl: '{{ $processingStatusUrl }}',
+                processingStatusUrl: {!! $processingStatusUrl ? "'" . $processingStatusUrl . "'" : 'null' !!},
                 translations: {
                     unsavedTacticalChanges: '{{ __('game.tactical_unsaved_changes') }}',
                     extraTime: '{{ __('game.live_extra_time') }}',

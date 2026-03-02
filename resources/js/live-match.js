@@ -1439,8 +1439,13 @@ export default function liveMatch(config) {
                 }
             };
 
-            check();
-            this._processingPollTimer = setInterval(check, 1000);
+            // Career actions run in background while user watches the match.
+            // Delay first check and poll every 3s — the job usually finishes
+            // well before the match animation ends (~15-30s).
+            setTimeout(() => {
+                check();
+                this._processingPollTimer = setInterval(check, 3000);
+            }, 3000);
         },
 
         destroy() {

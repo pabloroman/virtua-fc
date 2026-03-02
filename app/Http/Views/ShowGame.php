@@ -42,15 +42,14 @@ class ShowGame
 
         // Show loading screen while career actions are processing in background
         if ($game->isProcessingCareerActions()) {
-            if ($game->career_actions_processing_at->lt(now()->subMinutes(2))) {
-                $game->update(['career_actions_processing_at' => null]);
-            } else {
-                return view('game-setup-loading', [
-                    'game' => $game,
-                    'title' => __('game.processing_career_actions'),
-                    'message' => __('game.processing_career_actions_message'),
-                ]);
-            }
+            $game->clearStuckCareerActions();
+        }
+        if ($game->isProcessingCareerActions()) {
+            return view('game-setup-loading', [
+                'game' => $game,
+                'title' => __('game.processing_career_actions'),
+                'message' => __('game.processing_career_actions_message'),
+            ]);
         }
 
         $nextMatch = $this->loadNextMatch($game);
