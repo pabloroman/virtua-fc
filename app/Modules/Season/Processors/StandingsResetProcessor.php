@@ -61,9 +61,10 @@ class StandingsResetProcessor implements SeasonEndProcessor
             'goalDifference' => $s->goal_difference,
         ])->toArray());
 
-        // Reset all standings - keep positions from last season
-        foreach ($finalStandings as $standing) {
-            $standing->update([
+        // Reset all standings in a single query - keep positions from last season
+        GameStanding::where('game_id', $game->id)
+            ->where('competition_id', $data->competitionId)
+            ->update([
                 'prev_position' => null,
                 'played' => 0,
                 'won' => 0,
@@ -73,7 +74,6 @@ class StandingsResetProcessor implements SeasonEndProcessor
                 'goals_against' => 0,
                 'points' => 0,
             ]);
-        }
 
         return $data;
     }

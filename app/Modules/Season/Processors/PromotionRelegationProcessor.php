@@ -9,6 +9,7 @@ use App\Modules\Competition\Promotions\PromotionRelegationFactory;
 use App\Models\Game;
 use App\Models\CompetitionEntry;
 use App\Models\GameStanding;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Handles promotion and relegation between divisions.
@@ -205,16 +206,11 @@ class PromotionRelegationProcessor implements SeasonEndProcessor
             ];
         }
 
-        foreach ($rows as $row) {
-            GameStanding::firstOrCreate(
-                [
-                    'game_id' => $row['game_id'],
-                    'competition_id' => $row['competition_id'],
-                    'team_id' => $row['team_id'],
-                ],
-                $row
-            );
-        }
+        GameStanding::upsert(
+            $rows,
+            ['game_id', 'competition_id', 'team_id'],
+            ['position', 'played', 'won', 'drawn', 'lost', 'goals_for', 'goals_against', 'points']
+        );
     }
 
     /**
@@ -235,9 +231,22 @@ class PromotionRelegationProcessor implements SeasonEndProcessor
             ->orderBy('position')
             ->get();
 
-        $position = 1;
-        foreach ($standings as $standing) {
-            $standing->update(['position' => $position++]);
+        if ($standings->isEmpty()) {
+            return;
         }
+
+        $cases = [];
+        foreach ($standings->values() as $index => $standing) {
+            $position = $index + 1;
+            $cases[] = "WHEN id = '{$standing->id}' THEN {$position}";
+        }
+
+        $ids = $standings->pluck('id')->map(fn ($id) => "'{$id}'")->implode(',');
+
+        DB::statement(
+            'UPDATE game_standings SET position = CASE '
+            . implode(' ', $cases)
+            . " ELSE position END WHERE id IN ({$ids})"
+        );
     }
 }

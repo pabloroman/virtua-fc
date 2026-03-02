@@ -227,9 +227,11 @@ class UefaQualificationProcessor implements SeasonEndProcessor
             $byCompetition[$competitionId][] = $teamId;
         }
 
+        // Validate competition IDs exist
+        $validCompetitionIds = Competition::whereIn('id', array_keys($byCompetition))->pluck('id')->toArray();
+
         foreach ($byCompetition as $competitionId => $teamIds) {
-            $competition = Competition::find($competitionId);
-            if (!$competition) {
+            if (!in_array($competitionId, $validCompetitionIds)) {
                 continue;
             }
 
@@ -239,19 +241,19 @@ class UefaQualificationProcessor implements SeasonEndProcessor
                 ->whereIn('team_id', $countryTeamIds)
                 ->delete();
 
-            // Add new qualifiers
-            foreach ($teamIds as $teamId) {
-                CompetitionEntry::updateOrCreate(
-                    [
-                        'game_id' => $gameId,
-                        'competition_id' => $competitionId,
-                        'team_id' => $teamId,
-                    ],
-                    [
-                        'entry_round' => 1,
-                    ]
-                );
-            }
+            // Add new qualifiers in bulk
+            $rows = array_map(fn (string $teamId) => [
+                'game_id' => $gameId,
+                'competition_id' => $competitionId,
+                'team_id' => $teamId,
+                'entry_round' => 1,
+            ], $teamIds);
+
+            CompetitionEntry::upsert(
+                $rows,
+                ['game_id', 'competition_id', 'team_id'],
+                ['entry_round']
+            );
         }
     }
 
@@ -288,13 +290,17 @@ class UefaQualificationProcessor implements SeasonEndProcessor
             ->filter(fn (string $code) => !empty($this->countryConfig->continentalSlots($code)))
             ->all();
 
-        $replaceable = CompetitionEntry::where('game_id', $game->id)
+        $uclEntries = CompetitionEntry::where('game_id', $game->id)
             ->where('competition_id', 'UCL')
-            ->get()
-            ->filter(function (CompetitionEntry $entry) use ($configuredCountries) {
-                $team = Team::find($entry->team_id);
-                return $team && !in_array($team->country, $configuredCountries);
-            });
+            ->get();
+
+        $uclTeamIds = $uclEntries->pluck('team_id')->toArray();
+        $teams = Team::whereIn('id', $uclTeamIds)->get()->keyBy('id');
+
+        $replaceable = $uclEntries->filter(function (CompetitionEntry $entry) use ($configuredCountries, $teams) {
+            $team = $teams->get($entry->team_id);
+            return $team && !in_array($team->country, $configuredCountries);
+        });
 
         if ($replaceable->isNotEmpty()) {
             // Remove a random non-configured-country team
@@ -361,20 +367,22 @@ class UefaQualificationProcessor implements SeasonEndProcessor
                 ->pluck('team_id')
                 ->toArray();
 
-            foreach ($fillerTeams as $teamId) {
-                CompetitionEntry::updateOrCreate(
-                    [
-                        'game_id' => $game->id,
-                        'competition_id' => $competitionId,
-                        'team_id' => $teamId,
-                    ],
-                    [
-                        'entry_round' => 1,
-                    ]
+            if (!empty($fillerTeams)) {
+                $rows = array_map(fn (string $teamId) => [
+                    'game_id' => $game->id,
+                    'competition_id' => $competitionId,
+                    'team_id' => $teamId,
+                    'entry_round' => 1,
+                ], $fillerTeams);
+
+                CompetitionEntry::upsert(
+                    $rows,
+                    ['game_id', 'competition_id', 'team_id'],
+                    ['entry_round']
                 );
 
                 // Track used teams across competitions
-                $usedTeamIds[] = $teamId;
+                $usedTeamIds = array_merge($usedTeamIds, $fillerTeams);
             }
         }
     }
