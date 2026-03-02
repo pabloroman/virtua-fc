@@ -12,14 +12,12 @@ use App\Models\GamePlayer;
 use App\Models\GameStanding;
 use App\Models\SimulatedSeason;
 use App\Models\Team;
-use App\Modules\Competition\Services\CountryConfig;
 use App\Modules\Season\Services\SeasonGoalService;
 
 class ShowSeasonEnd
 {
     public function __construct(
         private readonly SeasonGoalService $seasonGoalService,
-        private readonly CountryConfig $countryConfig,
     ) {}
 
     public function __invoke(string $gameId)
@@ -42,7 +40,7 @@ class ShowSeasonEnd
                 ->with('error', 'Season is not complete yet.');
         }
 
-        $competition = Competition::find($game->competition_id);
+        $competition = Competition::findOrFail($game->competition_id);
 
         // Get final standings for player's league
         $standings = GameStanding::with('team')
@@ -114,12 +112,12 @@ class ShowSeasonEnd
         // Match stats for user's team (league matches only)
         [$biggestVictory, $worstDefeat, $homeRecord, $awayRecord] = $this->buildMatchStats($game);
 
-        // Transfer balance
-        $transferIncome = FinancialTransaction::where('game_id', $gameId)
+        // Transfer balance (income from sales minus spending on purchases)
+        $transferIncome = (int) FinancialTransaction::where('game_id', $gameId)
             ->where('category', FinancialTransaction::CATEGORY_TRANSFER_IN)
             ->where('type', FinancialTransaction::TYPE_INCOME)
             ->sum('amount');
-        $transferSpend = FinancialTransaction::where('game_id', $gameId)
+        $transferSpend = (int) FinancialTransaction::where('game_id', $gameId)
             ->where('category', FinancialTransaction::CATEGORY_TRANSFER_OUT)
             ->where('type', FinancialTransaction::TYPE_EXPENSE)
             ->sum('amount');
@@ -175,25 +173,20 @@ class ShowSeasonEnd
         foreach ($entries as $entry) {
             $comp = $entry->competition;
 
-            // Get cup ties involving user's team in this competition
-            $teamTies = CupTie::with(['homeTeam', 'awayTeam', 'winner', 'firstLegMatch'])
+            // Fetch all completed ties for this competition in one query, then filter
+            $allTies = CupTie::with(['homeTeam', 'awayTeam', 'winner', 'firstLegMatch'])
                 ->where('game_id', $game->id)
                 ->where('competition_id', $comp->id)
-                ->where(fn ($q) => $q
-                    ->where('home_team_id', $game->team_id)
-                    ->orWhere('away_team_id', $game->team_id))
                 ->where('completed', true)
                 ->orderByDesc('round_number')
                 ->get();
 
-            // Check if user won the entire competition
-            $competitionFinal = CupTie::with('winner')
-                ->where('game_id', $game->id)
-                ->where('competition_id', $comp->id)
-                ->where('completed', true)
-                ->orderByDesc('round_number')
-                ->first();
+            $competitionFinal = $allTies->first();
             $wonCompetition = $competitionFinal && $competitionFinal->winner_id === $game->team_id;
+
+            $teamTies = $allTies->filter(fn ($t) =>
+                $t->home_team_id === $game->team_id || $t->away_team_id === $game->team_id
+            );
 
             $result = [
                 'competition' => $comp,
@@ -283,13 +276,14 @@ class ShowSeasonEnd
                 ];
             }
 
-            $record = $isHome ? 'homeRecord' : 'awayRecord';
-            if ($diff > 0) {
-                $$record['w']++;
-            } elseif ($diff === 0) {
-                $$record['d']++;
+            if ($isHome) {
+                if ($diff > 0) $homeRecord['w']++;
+                elseif ($diff === 0) $homeRecord['d']++;
+                else $homeRecord['l']++;
             } else {
-                $$record['l']++;
+                if ($diff > 0) $awayRecord['w']++;
+                elseif ($diff === 0) $awayRecord['d']++;
+                else $awayRecord['l']++;
             }
         }
 
@@ -306,13 +300,22 @@ class ShowSeasonEnd
             ->where('season', $season)
             ->get();
 
+        // Collect all winner IDs first to batch-load teams
+        $winnerIds = $simulatedSeasons
+            ->map(fn ($s) => $s->getWinnerTeamId())
+            ->filter()
+            ->values()
+            ->all();
+
+        $teams = Team::whereIn('id', $winnerIds)->get()->keyBy('id');
+
         $results = [];
         foreach ($simulatedSeasons as $simulated) {
             $winnerTeamId = $simulated->getWinnerTeamId();
-            if ($winnerTeamId) {
+            if ($winnerTeamId && $teams->has($winnerTeamId)) {
                 $results[] = [
                     'competition' => $simulated->competition,
-                    'champion' => Team::find($winnerTeamId),
+                    'champion' => $teams[$winnerTeamId],
                 ];
             }
         }
