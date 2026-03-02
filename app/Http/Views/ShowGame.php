@@ -37,7 +37,12 @@ class ShowGame
             if ($game->season_transitioning_at->lt(now()->subMinutes(2))) {
                 ProcessSeasonTransition::dispatch($game->id);
             }
-            return view('game-setup-loading', ['game' => $game]);
+            return view('game-loading', [
+                'game' => $game,
+                'title' => __('game.preparing_season'),
+                'message' => __('game.setup_loading_message'),
+                'showCrest' => true,
+            ]);
         }
 
         // Show loading screen while career actions are processing in background
@@ -45,7 +50,7 @@ class ShowGame
             $game->clearStuckCareerActions();
         }
         if ($game->isProcessingCareerActions()) {
-            return view('game-setup-loading', [
+            return view('game-loading', [
                 'game' => $game,
                 'title' => __('game.processing_career_actions'),
                 'message' => __('game.processing_career_actions_message'),

@@ -3,11 +3,13 @@
 @endphp
 
 <x-app-layout>
-    <div class="min-h-screen flex items-center justify-center py-8" x-data="setupPoller()" x-init="startPolling()">
+    <div class="min-h-screen flex items-center justify-center py-8" x-data="loadingPoller()" x-init="startPolling()">
         <div class="text-center px-4">
-            {{-- Team Logo --}}
-            <x-team-crest :team="$game->team"
-                 class="w-24 h-24 mx-auto mb-6 animate-pulse" />
+            @if($showCrest ?? false)
+                {{-- Team Logo --}}
+                <x-team-crest :team="$game->team"
+                     class="w-24 h-24 mx-auto mb-6 animate-pulse" />
+            @endif
 
             {{-- Spinner --}}
             <div class="flex justify-center mb-6">
@@ -18,18 +20,17 @@
             </div>
 
             {{-- Title --}}
-            <h1 class="text-2xl font-bold text-white mb-2">{{ $title ?? __('game.preparing_season') }}</h1>
+            <h1 class="text-2xl font-bold text-white mb-2">{{ $title }}</h1>
 
             {{-- Description --}}
-            <p class="text-slate-400 max-w-md mx-auto">{{ $message ?? __('game.setup_loading_message') }}</p>
+            <p class="text-slate-400 max-w-md mx-auto">{{ $message }}</p>
         </div>
     </div>
 
     <script>
-        function setupPoller() {
+        function loadingPoller() {
             return {
                 startPolling() {
-                    const gameId = '{{ $game->id }}';
                     const pollUrl = '{{ route("game.setup-status", $game->id) }}';
 
                     const interval = setInterval(async () => {
