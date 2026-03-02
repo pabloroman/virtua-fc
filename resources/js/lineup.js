@@ -27,7 +27,7 @@ export default function lineupManager(config) {
         // Grid positioning state
         gridConfig: config.gridConfig || null,
         pitchPositions: config.currentPitchPositions || {},
-        gridMode: false,
+        gridMode: true,
         positioningSlotId: null,
         draggingSlotId: null,
         dragPosition: null, // { x, y } in percentage coordinates during drag
@@ -550,9 +550,9 @@ export default function lineupManager(config) {
             if (customPos) {
                 return this.cellToCoords(customPos[0], customPos[1]);
             }
-            // Fall back to formation default
+            // Fall back to formation default (col/row grid cell)
             const slot = this.currentSlots.find(s => s.id === slotId);
-            return slot ? { x: slot.x, y: slot.y } : null;
+            return slot ? this.cellToCoords(slot.col, slot.row) : null;
         },
 
         /**
@@ -594,25 +594,11 @@ export default function lineupManager(config) {
         },
 
         /**
-         * Toggle grid positioning mode.
-         */
-        toggleGridMode() {
-            this.gridMode = !this.gridMode;
-            this.positioningSlotId = null;
-            this.draggingSlotId = null;
-            this.dragPosition = null;
-            if (this.gridMode) {
-                // Deselect any slot assignment mode
-                this.selectedSlot = null;
-                this.selectedSlotPlayer = null;
-            }
-        },
-
-        /**
          * Select a slot for grid repositioning (click-to-place mode).
          */
         selectForRepositioning(slotId) {
-            if (!this.gridMode) return;
+            const slot = this.currentSlots.find(s => s.id === slotId);
+            if (slot && slot.role === 'Goalkeeper') return;
             if (this.positioningSlotId === slotId) {
                 this.positioningSlotId = null;
             } else {
@@ -655,7 +641,7 @@ export default function lineupManager(config) {
          * Handle clicking a grid cell (in grid mode, when a slot is selected for repositioning).
          */
         handleGridCellClick(col, row) {
-            if (!this.gridMode || this.positioningSlotId === null) return;
+            if (this.positioningSlotId === null) return;
             this.setSlotGridPosition(this.positioningSlotId, col, row);
         },
 
@@ -694,7 +680,8 @@ export default function lineupManager(config) {
          * Begin dragging a player badge in grid mode.
          */
         startDrag(slotId, event) {
-            if (!this.gridMode) return;
+            const slot = this.currentSlots.find(s => s.id === slotId);
+            if (slot && slot.role === 'Goalkeeper') return;
 
             // Prevent default to avoid text selection and scroll on touch
             event.preventDefault();
@@ -782,7 +769,7 @@ export default function lineupManager(config) {
 
         _getPitchElement() {
             if (!this._pitchEl) {
-                this._pitchEl = document.getElementById('pitch-container');
+                this._pitchEl = document.getElementById('pitch-field');
             }
             return this._pitchEl;
         },

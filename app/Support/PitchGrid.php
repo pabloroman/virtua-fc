@@ -22,7 +22,7 @@ class PitchGrid
      * Zones per slot label: [colMin, colMax, rowMin, rowMax] (inclusive).
      */
     public const SLOT_ZONES = [
-        'GK' => [3, 5, 0, 1],
+        'GK' => [4, 4, 0, 0],
         'CB' => [2, 6, 2, 4],
         'LB' => [0, 2, 2, 5],
         'RB' => [6, 8, 2, 5],
@@ -115,7 +115,7 @@ class PitchGrid
     {
         $cells = [];
         foreach ($formation->pitchSlots() as $slot) {
-            $cells[$slot['id']] = self::coordinatesToCell($slot['x'], $slot['y']);
+            $cells[$slot['id']] = ['col' => $slot['col'], 'row' => $slot['row']];
         }
 
         return $cells;
