@@ -245,6 +245,5 @@ return [
     'invalid_selection' => 'Selección inválida. Verifica los jugadores seleccionados.',
 
     // Grid positioning
-    'reset_positions' => 'Restablecer posiciones',
     'drag_or_tap' => 'Toca una celda o arrastra al jugador',
 ];

@@ -621,23 +621,6 @@ export default function lineupManager(config) {
         },
 
         /**
-         * Reset a single slot's position to formation default.
-         */
-        resetSlotPosition(slotId) {
-            const newPositions = { ...this.pitchPositions };
-            delete newPositions[String(slotId)];
-            this.pitchPositions = newPositions;
-        },
-
-        /**
-         * Reset all custom positions.
-         */
-        resetAllPositions() {
-            this.pitchPositions = {};
-            this.positioningSlotId = null;
-        },
-
-        /**
          * Handle clicking a grid cell (in grid mode, when a slot is selected for repositioning).
          */
         handleGridCellClick(col, row) {
@@ -774,8 +757,5 @@ export default function lineupManager(config) {
             return this._pitchEl;
         },
 
-        get hasCustomPositions() {
-            return Object.keys(this.pitchPositions).length > 0;
-        },
     };
 }

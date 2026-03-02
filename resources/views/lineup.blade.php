@@ -238,15 +238,6 @@
                             {{-- Pitch Visualization --}}
 
                             <div class="col-span-1 lg:sticky lg:top-[100px] lg:self-start" :class="{ 'hidden lg:block': activeLineupTab !== 'pitch' }">
-                                {{-- Grid positioning controls --}}
-                                <div class="flex items-center justify-end mb-2">
-                                    <button type="button" x-show="hasCustomPositions" x-cloak
-                                        @click="resetAllPositions()"
-                                        class="text-xs text-slate-500 hover:text-slate-700 transition-colors">
-                                        {{ __('squad.reset_positions') }}
-                                    </button>
-                                </div>
-
                                 <div id="pitch-container" class="bg-emerald-600 rounded-lg p-4 relative aspect-[3/4]"
                                     :style="(positioningSlotId !== null || draggingSlotId !== null) ? 'touch-action: none' : ''">
                                     {{-- Pitch markings --}}
