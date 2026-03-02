@@ -11,6 +11,7 @@ use App\Models\GameFinances;
 use App\Models\GameInvestment;
 use App\Models\GamePlayer;
 use App\Models\Team;
+use Carbon\Carbon;
 
 class BudgetProjectionService
 {
@@ -291,8 +292,11 @@ class BudgetProjectionService
         $infrastructure = $previousInvestment?->total_infrastructure ?? 0;
 
         // Actual transfer spending (player purchases) during the previous season
+        $seasonStart = Carbon::createFromDate($previousSeason, 7, 1);
+        $seasonEnd = Carbon::createFromDate($previousSeason + 1, 6, 30);
+
         $transferSpending = FinancialTransaction::where('game_id', $game->id)
-            ->where('season', $previousSeason)
+            ->whereBetween('transaction_date', [$seasonStart, $seasonEnd])
             ->where('category', FinancialTransaction::CATEGORY_TRANSFER_OUT)
             ->where('type', FinancialTransaction::TYPE_EXPENSE)
             ->sum('amount');

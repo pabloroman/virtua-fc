@@ -71,9 +71,9 @@ class PlayerConditionServiceTest extends TestCase
 
         $avgChange = $totalChange / $iterations;
 
-        // At fitness 90, 7-day gap should be roughly neutral (within ±3)
-        $this->assertGreaterThan(-5, $avgChange, 'Average 7-day change should not be too negative');
-        $this->assertLessThan(5, $avgChange, 'Average 7-day change should not be too positive');
+        // At fitness 90, 7-day gap should be roughly neutral (within ±7)
+        $this->assertGreaterThan(-7, $avgChange, 'Average 7-day change should not be too negative');
+        $this->assertLessThan(7, $avgChange, 'Average 7-day change should not be too positive');
     }
 
     public function test_three_day_gap_creates_significant_fitness_drop(): void

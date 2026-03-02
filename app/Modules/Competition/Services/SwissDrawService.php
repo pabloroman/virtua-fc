@@ -206,7 +206,7 @@ class SwissDrawService
             Log::warning("Swiss draw: escalating to {$level}", [
                 'country_distribution' => $distribution,
             ]);
-        } catch (\RuntimeException) {
+        } catch (\Throwable) {
             // No facade root (unit tests without Laravel container) — skip
         }
     }
