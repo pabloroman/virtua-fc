@@ -18,10 +18,10 @@
             </div>
 
             {{-- Title --}}
-            <h1 class="text-2xl font-bold text-white mb-2">{{ __('game.preparing_season') }}</h1>
+            <h1 class="text-2xl font-bold text-white mb-2">{{ $title ?? __('game.preparing_season') }}</h1>
 
             {{-- Description --}}
-            <p class="text-slate-400 max-w-md mx-auto">{{ __('game.setup_loading_message') }}</p>
+            <p class="text-slate-400 max-w-md mx-auto">{{ $message ?? __('game.setup_loading_message') }}</p>
         </div>
     </div>
 

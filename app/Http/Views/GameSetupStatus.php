@@ -3,6 +3,7 @@
 namespace App\Http\Views;
 
 use App\Models\Game;
+use App\Modules\Match\Jobs\ProcessCareerActions;
 use App\Modules\Season\Jobs\ProcessSeasonTransition;
 use App\Modules\Season\Jobs\SetupNewGame;
 use Illuminate\Http\JsonResponse;
@@ -31,8 +32,16 @@ class GameSetupStatus
             );
         }
 
+        // Recovery: clear flag if career actions are stuck for > 2 minutes
+        if ($game->isProcessingCareerActions() && $game->career_actions_processing_at->lt(now()->subMinutes(2))) {
+            ProcessCareerActions::dispatch($game->id, 1);
+            $game->update(['career_actions_processing_at' => now()]);
+        }
+
         return response()->json([
-            'ready' => $game->isSetupComplete() && !$game->isTransitioningSeason(),
+            'ready' => $game->isSetupComplete()
+                && !$game->isTransitioningSeason()
+                && !$game->isProcessingCareerActions(),
         ]);
     }
 }

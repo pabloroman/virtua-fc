@@ -1,0 +1,22 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::table('games', function (Blueprint $table) {
+            $table->timestamp('career_actions_processing_at')->nullable()->after('season_transitioning_at');
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::table('games', function (Blueprint $table) {
+            $table->dropColumn('career_actions_processing_at');
+        });
+    }
+};

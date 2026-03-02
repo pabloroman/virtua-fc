@@ -272,6 +272,7 @@ class ShowLiveMatch
             'isTournamentKnockout' => $isTournamentKnockout,
             'knockoutRoundNumber' => $knockoutRoundNumber,
             'knockoutRoundName' => $knockoutRoundName,
+            'processingStatusUrl' => route('game.setup-status', $game->id),
         ]);
     }
 

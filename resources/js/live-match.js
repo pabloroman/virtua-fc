@@ -114,6 +114,11 @@ export default function liveMatch(config) {
         // Ticker state for other matches
         otherMatchScores: [],
 
+        // Career actions processing state
+        processingReady: false,
+        processingStatusUrl: config.processingStatusUrl || '',
+        _processingPollTimer: null,
+
         // Animation loop
         _lastTick: null,
         _animFrame: null,
@@ -127,6 +132,9 @@ export default function liveMatch(config) {
         },
 
         init() {
+            // Start polling for career actions completion
+            this.startProcessingPoll();
+
             // Initialize other match scores
             this.otherMatchScores = this.otherMatches.map(() => ({
                 homeScore: 0,
@@ -1411,6 +1419,30 @@ export default function liveMatch(config) {
                 }));
         },
 
+        startProcessingPoll() {
+            if (!this.processingStatusUrl) {
+                this.processingReady = true;
+                return;
+            }
+
+            const check = async () => {
+                try {
+                    const response = await fetch(this.processingStatusUrl);
+                    const data = await response.json();
+                    if (data.ready) {
+                        this.processingReady = true;
+                        clearInterval(this._processingPollTimer);
+                        this._processingPollTimer = null;
+                    }
+                } catch (e) {
+                    // Silently retry on next interval
+                }
+            };
+
+            check();
+            this._processingPollTimer = setInterval(check, 1000);
+        },
+
         destroy() {
             if (this._animFrame) {
                 cancelAnimationFrame(this._animFrame);
@@ -1419,6 +1451,7 @@ export default function liveMatch(config) {
             clearTimeout(this._kickoffTimeout);
             clearTimeout(this._startETTimeout);
             clearTimeout(this._penaltyRevealTimer);
+            clearInterval(this._processingPollTimer);
             document.body.classList.remove('overflow-y-hidden');
         },
     };

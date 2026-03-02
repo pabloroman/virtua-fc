@@ -2,7 +2,6 @@
 
 namespace App\Modules\Match\Services;
 
-use App\Modules\Academy\Services\YouthAcademyService;
 use App\Modules\Competition\Services\StandingsCalculator;
 use App\Modules\Lineup\Enums\DefensiveLineHeight;
 use App\Modules\Lineup\Enums\Formation;
@@ -12,15 +11,10 @@ use App\Modules\Lineup\Enums\PressingIntensity;
 use App\Modules\Lineup\Services\LineupService;
 use App\Modules\Match\DTOs\MatchdayAdvanceResult;
 use App\Modules\Match\DTOs\MatchEventData;
+use App\Modules\Match\Jobs\ProcessCareerActions;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Squad\Services\EligibilityService;
 use App\Modules\Squad\Services\InjuryService;
-use App\Modules\Transfer\Services\AITransferMarketService;
-use App\Modules\Transfer\Services\ContractService;
-use App\Modules\Transfer\Services\LoanService;
-use App\Modules\Transfer\Services\ScoutingService;
-use App\Modules\Transfer\Services\TransferService;
-use App\Models\AcademyPlayer;
 use App\Models\ClubProfile;
 use App\Models\Competition;
 use App\Models\Game;
@@ -29,7 +23,6 @@ use App\Models\GameNotification;
 use App\Models\GamePlayer;
 use App\Models\GameStanding;
 use App\Models\PlayerSuspension;
-use App\Models\TransferOffer;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -39,6 +32,7 @@ class MatchdayOrchestrator
     private array $batchTimings = [];
     private int $totalAdvanceQueries = 0;
     private float $totalAdvanceTime = 0;
+    private int $careerActionTicks = 0;
 
     public function __construct(
         private readonly MatchdayService $matchdayService,
@@ -46,16 +40,10 @@ class MatchdayOrchestrator
         private readonly MatchSimulator $matchSimulator,
         private readonly MatchResultProcessor $matchResultProcessor,
         private readonly MatchFinalizationService $finalizationService,
-        private readonly TransferService $transferService,
-        private readonly ContractService $contractService,
-        private readonly ScoutingService $scoutingService,
         private readonly StandingsCalculator $standingsCalculator,
         private readonly NotificationService $notificationService,
-        private readonly LoanService $loanService,
-        private readonly YouthAcademyService $youthAcademyService,
         private readonly EligibilityService $eligibilityService,
         private readonly InjuryService $injuryService,
-        private readonly AITransferMarketService $aiTransferMarketService,
     ) {}
 
     public function advance(Game $game): MatchdayAdvanceResult
@@ -63,6 +51,7 @@ class MatchdayOrchestrator
         $this->batchTimings = [];
         $this->totalAdvanceQueries = 0;
         $this->totalAdvanceTime = 0;
+        $this->careerActionTicks = 0;
         $advanceStart = microtime(true);
 
         DB::enableQueryLog();
@@ -74,6 +63,15 @@ class MatchdayOrchestrator
             // Safety net: finalize any pending match from a previous matchday
             // (e.g. user closed browser without clicking "Continue")
             $this->finalizePendingMatch($game);
+
+            // Block advancement if career actions from a previous advance are still processing
+            if ($game->isProcessingCareerActions()) {
+                if ($game->career_actions_processing_at->lt(now()->subMinutes(2))) {
+                    $game->update(['career_actions_processing_at' => null]);
+                }
+
+                return MatchdayAdvanceResult::blocked(null);
+            }
 
             // Block advancement if there are pending actions the user must resolve
             if ($game->hasPendingActions()) {
@@ -125,6 +123,17 @@ class MatchdayOrchestrator
 
             return MatchdayAdvanceResult::seasonComplete();
         });
+
+        // Dispatch career actions to background after transaction commits
+        if ($this->careerActionTicks > 0) {
+            $updated = Game::where('id', $game->id)
+                ->whereNull('career_actions_processing_at')
+                ->update(['career_actions_processing_at' => now()]);
+
+            if ($updated) {
+                ProcessCareerActions::dispatch($game->id, $this->careerActionTicks);
+            }
+        }
 
         $this->totalAdvanceTime = (microtime(true) - $advanceStart) * 1000;
         $this->logAdvanceSummary();
@@ -348,9 +357,9 @@ class MatchdayOrchestrator
     {
         $postTimings = [];
 
-        // Career-mode only: transfers, scouting, loans, academy
+        // Career-mode only: count tick for background processing
         if ($game->isCareerMode()) {
-            $this->processCareerModeActions($game, $matches, $allPlayers);
+            $this->careerActionTicks++;
         }
 
         // Roll for training injuries (non-playing squad members)
@@ -406,241 +415,6 @@ class MatchdayOrchestrator
             $lines[] = sprintf('    %-25s %6.1fms (%d queries)', $phase . ':', $data['ms'], $data['queries']);
         }
         Log::channel('single')->info(implode("\n", $lines));
-    }
-
-    private function processCareerModeActions(Game $game, $matches, $allPlayers): void
-    {
-        $careerTimings = [];
-
-        // Process transfers when window is open
-        if ($game->isTransferWindowOpen()) {
-            $t0 = microtime(true);
-            $q0 = count(DB::getQueryLog());
-            $completedOutgoing = $this->transferService->completeAgreedTransfers($game);
-            $completedIncoming = $this->transferService->completeIncomingTransfers($game);
-            foreach ($completedOutgoing->merge($completedIncoming) as $offer) {
-                $this->notificationService->notifyTransferComplete($game, $offer);
-            }
-            $careerTimings['transferCompletion'] = $this->capturePhase($t0, $q0);
-        }
-
-        // Generate transfer offers (can happen anytime, but more during windows)
-        if ($game->isTransferWindowOpen()) {
-            $t0 = microtime(true);
-            $q0 = count(DB::getQueryLog());
-            $listedOffers = $this->transferService->generateOffersForListedPlayers($game, $allPlayers);
-            $unsolicitedOffers = $this->transferService->generateUnsolicitedOffers($game, $allPlayers);
-            foreach ($listedOffers->merge($unsolicitedOffers) as $offer) {
-                $this->notificationService->notifyTransferOffer($game, $offer);
-            }
-            $careerTimings['offerGeneration'] = $this->capturePhase($t0, $q0);
-        }
-
-        // Resolve pending renewal negotiations
-        $t0 = microtime(true);
-        $q0 = count(DB::getQueryLog());
-        $renewalResults = $this->contractService->resolveRenewalNegotiations($game);
-        foreach ($renewalResults as $result) {
-            $this->notificationService->notifyRenewalResult($game, $result['negotiation'], $result['result']);
-        }
-        $careerTimings['renewalResolution'] = $this->capturePhase($t0, $q0);
-
-        // Pre-contract offers (January onwards for expiring contracts)
-        $t0 = microtime(true);
-        $q0 = count(DB::getQueryLog());
-        $preContractOffers = $this->transferService->generatePreContractOffers($game, $allPlayers);
-        foreach ($preContractOffers as $offer) {
-            $this->notificationService->notifyTransferOffer($game, $offer);
-        }
-        $careerTimings['preContractOffers'] = $this->capturePhase($t0, $q0);
-
-        // Resolve pending incoming pre-contract offers (after response delay)
-        $t0 = microtime(true);
-        $q0 = count(DB::getQueryLog());
-        $resolvedPreContracts = $this->transferService->resolveIncomingPreContractOffers($game, $this->scoutingService);
-        foreach ($resolvedPreContracts as $result) {
-            $this->notificationService->notifyPreContractResult($game, $result['offer']);
-        }
-        $careerTimings['preContractResolution'] = $this->capturePhase($t0, $q0);
-
-        // Resolve pending incoming bids (deferred from user submission)
-        $t0 = microtime(true);
-        $q0 = count(DB::getQueryLog());
-        $resolvedBids = $this->transferService->resolveIncomingBids($game, $this->scoutingService);
-        foreach ($resolvedBids as $result) {
-            $this->notificationService->notifyBidResult($game, $result['offer'], $result['result']);
-        }
-        $careerTimings['bidResolution'] = $this->capturePhase($t0, $q0);
-
-        // Resolve pending incoming loan requests (deferred from user submission)
-        $t0 = microtime(true);
-        $q0 = count(DB::getQueryLog());
-        $resolvedLoans = $this->transferService->resolveIncomingLoanRequests($game, $this->scoutingService);
-        foreach ($resolvedLoans as $result) {
-            $this->notificationService->notifyLoanRequestResult($game, $result['offer'], $result['result']);
-        }
-        $careerTimings['loanResolution'] = $this->capturePhase($t0, $q0);
-
-        // Tick scout search progress
-        $t0 = microtime(true);
-        $q0 = count(DB::getQueryLog());
-        $scoutReport = $this->scoutingService->tickSearch($game);
-        if ($scoutReport?->isCompleted()) {
-            $this->notificationService->notifyScoutComplete($game, $scoutReport);
-        }
-        $careerTimings['scoutingTick'] = $this->capturePhase($t0, $q0);
-
-        // Process loan searches
-        $t0 = microtime(true);
-        $q0 = count(DB::getQueryLog());
-        $loanResults = $this->loanService->processLoanSearches($game);
-        foreach ($loanResults['found'] as $result) {
-            $this->notificationService->notifyLoanDestinationFound(
-                $game,
-                $result['player'],
-                $result['destination'],
-                $result['windowOpen'],
-            );
-        }
-        foreach ($loanResults['expired'] as $result) {
-            $this->notificationService->notifyLoanSearchFailed($game, $result['player']);
-        }
-        $careerTimings['loanSearches'] = $this->capturePhase($t0, $q0);
-
-        // Check for expiring transfer offers (2 days or less)
-        $t0 = microtime(true);
-        $q0 = count(DB::getQueryLog());
-        $this->checkExpiringOffers($game);
-        $careerTimings['expiringOffers'] = $this->capturePhase($t0, $q0);
-
-        // Develop academy players each matchday
-        $t0 = microtime(true);
-        $q0 = count(DB::getQueryLog());
-        $this->youthAcademyService->developPlayers($game);
-        $careerTimings['academyDevelopment'] = $this->capturePhase($t0, $q0);
-
-        // Add pending action if any players still need evaluation (from season-end)
-        $needsEval = AcademyPlayer::where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
-            ->where('is_on_loan', false)
-            ->where('evaluation_needed', true)
-            ->exists();
-
-        if ($needsEval) {
-            if (! $game->hasPendingAction('academy_evaluation')) {
-                $game->addPendingAction('academy_evaluation', 'game.squad.academy.evaluate');
-                $this->notificationService->notifyAcademyEvaluation($game);
-            }
-        }
-
-        // Notify user when a transfer window opens
-        $t0 = microtime(true);
-        $q0 = count(DB::getQueryLog());
-        $this->processTransferWindowOpen($game);
-        $careerTimings['windowOpenNotification'] = $this->capturePhase($t0, $q0);
-
-        // AI transfer market: process when a transfer window just closed
-        $t0 = microtime(true);
-        $q0 = count(DB::getQueryLog());
-        $this->processTransferWindowClose($game);
-        $careerTimings['aiTransferMarket'] = $this->capturePhase($t0, $q0);
-
-        // Log career mode sub-timings
-        $this->logCareerModeTimings($careerTimings);
-    }
-
-    /**
-     * Check for transfer offers that are about to expire and notify.
-     */
-    private function checkExpiringOffers(Game $game): void
-    {
-        // Push date filter to DB: expires_at between tomorrow and 2 days from now
-        $currentDate = $game->current_date;
-        $expiringOffers = TransferOffer::with(['gamePlayer.player', 'offeringTeam'])
-            ->where('game_id', $game->id)
-            ->where('status', TransferOffer::STATUS_PENDING)
-            ->whereHas('gamePlayer', fn ($q) => $q->where('team_id', $game->team_id))
-            ->where('expires_at', '>', $currentDate)
-            ->where('expires_at', '<=', $currentDate->copy()->addDays(2))
-            ->get();
-
-        foreach ($expiringOffers as $offer) {
-            // Check if we already have a recent expiring notification for this offer
-            if (! $this->notificationService->hasRecentNotification(
-                $game->id,
-                GameNotification::TYPE_TRANSFER_OFFER_EXPIRING,
-                ['offer_id' => $offer->id],
-                1,
-                $game->current_date,
-            )) {
-                $this->notificationService->notifyExpiringOffer($game, $offer);
-            }
-        }
-    }
-
-    /**
-     * Detect when a transfer window has just opened and notify the user.
-     *
-     * Summer window opens in July, winter window opens in January.
-     * Uses notification existence as idempotency guard (one per window).
-     */
-    private function processTransferWindowOpen(Game $game): void
-    {
-        $month = (int) $game->current_date->format('n');
-
-        // Summer window notification is handled at season start
-        // (SetupNewGame + OnboardingResetProcessor). Only detect winter here.
-        if ($month !== 1) {
-            return;
-        }
-
-        $startOfWindow = $game->current_date->copy()->startOfMonth();
-
-        $alreadyNotified = GameNotification::where('game_id', $game->id)
-            ->where('type', GameNotification::TYPE_TRANSFER_WINDOW_OPEN)
-            ->where('game_date', '>=', $startOfWindow)
-            ->exists();
-
-        if ($alreadyNotified) {
-            return;
-        }
-
-        $this->notificationService->notifyTransferWindowOpen($game, 'winter');
-    }
-
-    /**
-     * Detect when a transfer window has just closed and trigger AI transfer activity.
-     *
-     * Summer window closes at end of August (month 9 = September means it just closed).
-     * Winter window closes at end of January (month 2 = February means it just closed).
-     * Uses notification existence as idempotency guard.
-     */
-    private function processTransferWindowClose(Game $game): void
-    {
-        $month = (int) $game->current_date->format('n');
-
-        $window = match ($month) {
-            9 => 'summer',
-            2 => 'winter',
-            default => null,
-        };
-
-        if (! $window) {
-            return;
-        }
-
-        // Already processed this window? Check if notification exists for this month
-        $alreadyProcessed = GameNotification::where('game_id', $game->id)
-            ->where('type', GameNotification::TYPE_AI_TRANSFER_ACTIVITY)
-            ->where('game_date', '>=', $game->current_date->copy()->startOfMonth())
-            ->where('game_date', '<=', $game->current_date->copy()->endOfMonth())
-            ->exists();
-
-        if ($alreadyProcessed) {
-            return;
-        }
-
-        $this->aiTransferMarketService->processWindowClose($game, $window);
     }
 
     /**
@@ -976,18 +750,6 @@ class MatchdayOrchestrator
             'ms' => round((microtime(true) - $startTime) * 1000, 1),
             'queries' => count(DB::getQueryLog()) - $startQueryCount,
         ];
-    }
-
-    /**
-     * Log career mode sub-timings for the current batch.
-     */
-    private function logCareerModeTimings(array $timings): void
-    {
-        $lines = ['  [CareerMode breakdown]:'];
-        foreach ($timings as $phase => $data) {
-            $lines[] = sprintf('    %-25s %6.1fms (%d queries)', $phase . ':', $data['ms'], $data['queries']);
-        }
-        Log::channel('single')->info(implode("\n", $lines));
     }
 
     /**
