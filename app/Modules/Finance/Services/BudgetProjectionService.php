@@ -5,6 +5,7 @@ namespace App\Modules\Finance\Services;
 use App\Models\ClubProfile;
 use App\Models\Competition;
 use App\Models\CompetitionEntry;
+use App\Models\FinancialTransaction;
 use App\Models\Game;
 use App\Models\GameFinances;
 use App\Models\GameInvestment;
@@ -68,11 +69,12 @@ class BudgetProjectionService
         // Calculate projected surplus
         $projectedSurplus = $projectedTotalRevenue - $projectedWages - $projectedOperatingExpenses;
 
-        // Get carried debt from previous season
+        // Get carried debt and surplus from previous season
         $carriedDebt = $this->getCarriedDebt($game);
+        $carriedSurplus = $this->getCarriedSurplus($game);
 
         // Calculate public subsidy if needed to guarantee minimum viable budget
-        $projectedSubsidyRevenue = $this->calculateSubsidy($projectedSurplus, $carriedDebt);
+        $projectedSubsidyRevenue = $this->calculateSubsidy($projectedSurplus, $carriedDebt, $carriedSurplus);
         if ($projectedSubsidyRevenue > 0) {
             $projectedTotalRevenue += $projectedSubsidyRevenue;
             $projectedSurplus += $projectedSubsidyRevenue;
@@ -96,6 +98,7 @@ class BudgetProjectionService
                 'projected_operating_expenses' => $projectedOperatingExpenses,
                 'projected_surplus' => $projectedSurplus,
                 'carried_debt' => $carriedDebt,
+                'carried_surplus' => $carriedSurplus,
             ]
         );
 
@@ -245,22 +248,60 @@ class BudgetProjectionService
      */
     public function getCarriedDebt(Game $game): int
     {
+        $netPosition = $this->getPreviousSeasonNetPosition($game);
+
+        return $netPosition < 0 ? abs($netPosition) : 0;
+    }
+
+    /**
+     * Get carried surplus from previous season.
+     */
+    public function getCarriedSurplus(Game $game): int
+    {
+        $netPosition = $this->getPreviousSeasonNetPosition($game);
+
+        return $netPosition > 0 ? $netPosition : 0;
+    }
+
+    /**
+     * Calculate the net cash position at the end of the previous season.
+     *
+     * Net = actual_surplus + carried_surplus - carried_debt - infrastructure - transfer_purchases
+     *
+     * This accounts for ALL money flows: revenue performance (variance),
+     * unspent transfer budget, and prior carry-overs.
+     */
+    private function getPreviousSeasonNetPosition(Game $game): int
+    {
         $previousSeason = (int) $game->season - 1;
 
         $previousFinances = GameFinances::where('game_id', $game->id)
             ->where('season', $previousSeason)
             ->first();
 
-        if (!$previousFinances) {
+        if (!$previousFinances || $previousFinances->actual_surplus === 0 && $previousFinances->actual_total_revenue === 0) {
             return 0;
         }
 
-        // Negative variance from previous season becomes carried debt
-        if ($previousFinances->variance < 0) {
-            return abs($previousFinances->variance);
-        }
+        // Infrastructure committed during the previous season
+        $previousInvestment = GameInvestment::where('game_id', $game->id)
+            ->where('season', $previousSeason)
+            ->first();
 
-        return 0;
+        $infrastructure = $previousInvestment?->total_infrastructure ?? 0;
+
+        // Actual transfer spending (player purchases) during the previous season
+        $transferSpending = FinancialTransaction::where('game_id', $game->id)
+            ->where('season', $previousSeason)
+            ->where('category', FinancialTransaction::CATEGORY_TRANSFER_OUT)
+            ->where('type', FinancialTransaction::TYPE_EXPENSE)
+            ->sum('amount');
+
+        return $previousFinances->actual_surplus
+            + $previousFinances->carried_surplus
+            - $previousFinances->carried_debt
+            - $infrastructure
+            - $transferSpending;
     }
 
     /**
@@ -298,10 +339,10 @@ class BudgetProjectionService
      * Calculate public subsidy (Subvenciones Públicas) to guarantee a minimum viable budget.
      * Ensures every team can cover mandatory infrastructure + a minimum transfer budget.
      */
-    private function calculateSubsidy(int $projectedSurplus, int $carriedDebt): int
+    private function calculateSubsidy(int $projectedSurplus, int $carriedDebt, int $carriedSurplus): int
     {
         $minimumAvailable = GameInvestment::MINIMUM_TOTAL_INVESTMENT + self::MINIMUM_TRANSFER_BUDGET;
-        $rawAvailable = $projectedSurplus - $carriedDebt;
+        $rawAvailable = $projectedSurplus + $carriedSurplus - $carriedDebt;
 
         if ($rawAvailable >= $minimumAvailable) {
             return 0;

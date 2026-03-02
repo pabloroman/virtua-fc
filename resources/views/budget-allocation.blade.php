@@ -47,6 +47,11 @@
                         ({{ __('finances.after_debt_deduction', ['amount' => \App\Support\Money::format($finances->carried_debt)]) }})
                     </div>
                     @endif
+                    @if($finances->carried_surplus > 0)
+                    <div class="text-sm text-green-600 mt-1">
+                        ({{ __('finances.includes_carried_surplus', ['amount' => \App\Support\Money::format($finances->carried_surplus)]) }})
+                    </div>
+                    @endif
                 </div>
 
                 <x-budget-allocation

@@ -22,6 +22,7 @@ return [
     'operating_expenses' => 'Operating Expenses',
     'taxes' => 'Taxes & Social Charges',
     'carried_debt' => 'Carried Debt',
+    'carried_surplus' => 'Carried Surplus',
     'available_surplus' => 'Available Surplus',
 
     // Season results
@@ -71,6 +72,7 @@ return [
     'tooltip_taxes' => 'Taxes and social charges on club revenue.',
     'tooltip_surplus' => 'Difference between revenue and expenses. This amount is split between infrastructure and transfers.',
     'tooltip_carried_debt' => 'Deficit from last season. If actual revenue was lower than projected, the difference carries over.',
+    'tooltip_carried_surplus' => 'Surplus from last season. If actual revenue exceeded projections, the difference carries over.',
     'tooltip_infrastructure' => 'Investment in academy, medical, scouting and facilities. Deducted before calculating transfer budget.',
     'tooltip_transfer_budget' => 'What remains of the surplus after covering debt and infrastructure. This is your capacity to sign players.',
 
@@ -109,6 +111,7 @@ return [
     'tier_n' => 'Tier',
     'confirm_budget_allocation' => 'Confirm Budget Allocation',
     'after_debt_deduction' => 'After :amount debt deduction',
+    'includes_carried_surplus' => 'Includes :amount surplus from last season',
 
     // Budget allocation component
     'infrastructure' => 'Infrastructure:',

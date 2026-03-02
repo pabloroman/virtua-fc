@@ -29,6 +29,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $actual_surplus
  * @property int $variance
  * @property int $carried_debt
+ * @property int $carried_surplus
  * @property int $projected_operating_expenses
  * @property int $projected_taxes
  * @property int $actual_operating_expenses
@@ -50,6 +51,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property-read string $formatted_actual_wages
  * @property-read string $formatted_available_surplus
  * @property-read string $formatted_carried_debt
+ * @property-read string $formatted_carried_surplus
  * @property-read string $formatted_projected_commercial_revenue
  * @property-read string $formatted_projected_matchday_revenue
  * @property-read string $formatted_projected_operating_expenses
@@ -127,6 +129,7 @@ class GameFinances extends Model
         'actual_surplus',
         'variance',
         'carried_debt',
+        'carried_surplus',
     ];
 
     protected $casts = [
@@ -159,6 +162,7 @@ class GameFinances extends Model
         // Settlement
         'variance' => 'integer',
         'carried_debt' => 'integer',
+        'carried_surplus' => 'integer',
     ];
 
     public function game(): BelongsTo
@@ -175,6 +179,14 @@ class GameFinances extends Model
     }
 
     /**
+     * Check if the club has surplus carried from previous season.
+     */
+    public function hasCarriedSurplus(): bool
+    {
+        return $this->carried_surplus > 0;
+    }
+
+    /**
      * Check if season ended with negative variance (underperformed).
      */
     public function hasNegativeVariance(): bool
@@ -184,11 +196,11 @@ class GameFinances extends Model
 
     /**
      * Calculate available surplus for budget allocation.
-     * Projected surplus minus any carried debt.
+     * Projected surplus plus carried surplus minus carried debt.
      */
     public function getAvailableSurplusAttribute(): int
     {
-        return max(0, $this->projected_surplus - $this->carried_debt);
+        return max(0, $this->projected_surplus + $this->carried_surplus - $this->carried_debt);
     }
 
     // Formatted accessors for projections
@@ -297,6 +309,11 @@ class GameFinances extends Model
     public function getFormattedCarriedDebtAttribute(): string
     {
         return Money::format($this->carried_debt);
+    }
+
+    public function getFormattedCarriedSurplusAttribute(): string
+    {
+        return Money::format($this->carried_surplus);
     }
 
     public function getFormattedAvailableSurplusAttribute(): string
