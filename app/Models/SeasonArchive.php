@@ -49,6 +49,7 @@ class SeasonArchive extends Model
         'player_season_stats',
         'season_awards',
         'match_results',
+        'transfer_activity',
         'match_events_archive',
     ];
 
@@ -57,6 +58,7 @@ class SeasonArchive extends Model
         'player_season_stats' => 'array',
         'season_awards' => 'array',
         'match_results' => 'array',
+        'transfer_activity' => 'array',
     ];
 
     public function game(): BelongsTo

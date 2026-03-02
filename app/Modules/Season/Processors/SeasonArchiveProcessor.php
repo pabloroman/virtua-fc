@@ -11,6 +11,7 @@ use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\GameStanding;
+use App\Models\GameTransfer;
 use App\Models\MatchEvent;
 use App\Models\SeasonArchive;
 
@@ -56,6 +57,9 @@ class SeasonArchiveProcessor implements SeasonEndProcessor
         // Capture match results (lightweight)
         $matchResults = $this->captureMatchResults($game);
 
+        // Capture transfer activity
+        $transferActivity = $this->captureTransferActivity($game);
+
         // Compress detailed match events
         $eventsArchive = $this->compressMatchEvents($game);
 
@@ -67,6 +71,7 @@ class SeasonArchiveProcessor implements SeasonEndProcessor
             'player_season_stats' => $playerStats,
             'season_awards' => $awards,
             'match_results' => $matchResults,
+            'transfer_activity' => $transferActivity,
             'match_events_archive' => $eventsArchive,
         ]);
 
@@ -311,6 +316,27 @@ class SeasonArchiveProcessor implements SeasonEndProcessor
     }
 
     /**
+     * Capture all transfer activity for the season.
+     */
+    private function captureTransferActivity(Game $game): array
+    {
+        return GameTransfer::where('game_id', $game->id)
+            ->where('season', $game->season)
+            ->get()
+            ->map(function ($transfer) {
+                return [
+                    'game_player_id' => $transfer->game_player_id,
+                    'from_team_id' => $transfer->from_team_id,
+                    'to_team_id' => $transfer->to_team_id,
+                    'transfer_fee' => $transfer->transfer_fee,
+                    'type' => $transfer->type,
+                    'window' => $transfer->window,
+                ];
+            })
+            ->toArray();
+    }
+
+    /**
      * Delete archived data from active tables.
      */
     private function deleteArchivedData(Game $game): void
@@ -321,6 +347,11 @@ class SeasonArchiveProcessor implements SeasonEndProcessor
         // Delete played matches (keep unplayed fixtures for potential reference)
         GameMatch::where('game_id', $game->id)
             ->where('played', true)
+            ->delete();
+
+        // Delete transfer records for this season
+        GameTransfer::where('game_id', $game->id)
+            ->where('season', $game->season)
             ->delete();
     }
 }
