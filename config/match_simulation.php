@@ -263,4 +263,26 @@ return [
         'ai_rotation_threshold' => 80,          // AI benches players below this fitness
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Red Card Impact
+    |--------------------------------------------------------------------------
+    |
+    | When a red card occurs during simulation, the match is split into two
+    | periods at the red card minute. The second period recalculates team
+    | strength with the reduced lineup, then applies these modifiers on top:
+    |
+    | attack_modifier: xG multiplier for the 10-man team's own attack
+    | defense_modifier: xG multiplier for the opponent facing 10 men
+    |
+    | These represent the structural disadvantage of fewer players on the
+    | pitch (less coverage, more space). They stack with the natural strength
+    | reduction from recalculating with 10 players instead of 11.
+    |
+    */
+    'red_card_impact' => [
+        'attack_modifier' => 0.80,      // 20% reduction in xG for the 10-man team
+        'defense_modifier' => 1.15,     // 15% boost in opponent xG when facing 10 men
+    ],
+
 ];
