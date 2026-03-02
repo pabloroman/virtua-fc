@@ -31,8 +31,13 @@ class GameSetupStatus
             );
         }
 
+        // Recovery: clear flag if career actions are stuck for > 2 minutes
+        $game->clearStuckCareerActions();
+
         return response()->json([
-            'ready' => $game->isSetupComplete() && !$game->isTransitioningSeason(),
+            'ready' => $game->isSetupComplete()
+                && !$game->isTransitioningSeason()
+                && !$game->isProcessingCareerActions(),
         ]);
     }
 }

@@ -204,6 +204,9 @@ return [
     // Setup loading
     'preparing_season' => 'Preparing your season...',
     'setup_loading_message' => 'We are setting up teams, players and competitions. This will only take a few seconds.',
+    'processing_actions' => 'Processing...',
+    'processing_career_actions' => 'Processing game actions...',
+    'processing_career_actions_message' => 'Transfers, contracts, and other actions are being processed.',
 
     // Live match
     'live_pre_match' => 'Pre-match',

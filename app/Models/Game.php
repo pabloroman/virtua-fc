@@ -122,6 +122,7 @@ class Game extends Model
         'pending_actions',
         'setup_completed_at',
         'season_transitioning_at',
+        'career_actions_processing_at',
         'pending_finalization_match_id',
     ];
 
@@ -134,6 +135,7 @@ class Game extends Model
         'pending_actions' => 'array',
         'setup_completed_at' => 'datetime',
         'season_transitioning_at' => 'datetime',
+        'career_actions_processing_at' => 'datetime',
     ];
 
     // ==========================================
@@ -158,6 +160,30 @@ class Game extends Model
     public function isTransitioningSeason(): bool
     {
         return $this->season_transitioning_at !== null;
+    }
+
+    public function isProcessingCareerActions(): bool
+    {
+        return $this->career_actions_processing_at !== null;
+    }
+
+    /**
+     * Clear a stuck career actions flag (> 2 minutes old).
+     * Returns true if the flag was cleared.
+     */
+    public function clearStuckCareerActions(): bool
+    {
+        if (! $this->isProcessingCareerActions()) {
+            return false;
+        }
+
+        if (! $this->career_actions_processing_at->lt(now()->subMinutes(2))) {
+            return false;
+        }
+
+        $this->update(['career_actions_processing_at' => null]);
+
+        return true;
     }
 
     // ==========================================

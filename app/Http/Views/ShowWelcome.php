@@ -31,7 +31,12 @@ class ShowWelcome
                     gameMode: $game->game_mode ?? Game::MODE_CAREER,
                 );
             }
-            return view('game-setup-loading', ['game' => $game]);
+            return view('game-loading', [
+                'game' => $game,
+                'title' => __('game.preparing_season'),
+                'message' => __('game.setup_loading_message'),
+                'showCrest' => true,
+            ]);
         }
 
         $competition = Competition::find($game->competition_id);
