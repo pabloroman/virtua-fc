@@ -5,6 +5,7 @@ namespace App\Modules\Finance\Services;
 use App\Models\ClubProfile;
 use App\Models\Competition;
 use App\Models\CompetitionEntry;
+use App\Models\FinancialTransaction;
 use App\Models\Game;
 use App\Models\GameFinances;
 use App\Models\GameInvestment;
@@ -247,22 +248,9 @@ class BudgetProjectionService
      */
     public function getCarriedDebt(Game $game): int
     {
-        $previousSeason = (int) $game->season - 1;
+        $netPosition = $this->getPreviousSeasonNetPosition($game);
 
-        $previousFinances = GameFinances::where('game_id', $game->id)
-            ->where('season', $previousSeason)
-            ->first();
-
-        if (!$previousFinances) {
-            return 0;
-        }
-
-        // Negative variance from previous season becomes carried debt
-        if ($previousFinances->variance < 0) {
-            return abs($previousFinances->variance);
-        }
-
-        return 0;
+        return $netPosition < 0 ? abs($netPosition) : 0;
     }
 
     /**
@@ -270,22 +258,50 @@ class BudgetProjectionService
      */
     public function getCarriedSurplus(Game $game): int
     {
+        $netPosition = $this->getPreviousSeasonNetPosition($game);
+
+        return $netPosition > 0 ? $netPosition : 0;
+    }
+
+    /**
+     * Calculate the net cash position at the end of the previous season.
+     *
+     * Net = actual_surplus + carried_surplus - carried_debt - infrastructure - transfer_purchases
+     *
+     * This accounts for ALL money flows: revenue performance (variance),
+     * unspent transfer budget, and prior carry-overs.
+     */
+    private function getPreviousSeasonNetPosition(Game $game): int
+    {
         $previousSeason = (int) $game->season - 1;
 
         $previousFinances = GameFinances::where('game_id', $game->id)
             ->where('season', $previousSeason)
             ->first();
 
-        if (!$previousFinances) {
+        if (!$previousFinances || $previousFinances->actual_surplus === 0 && $previousFinances->actual_total_revenue === 0) {
             return 0;
         }
 
-        // Positive variance from previous season becomes carried surplus
-        if ($previousFinances->variance > 0) {
-            return $previousFinances->variance;
-        }
+        // Infrastructure committed during the previous season
+        $previousInvestment = GameInvestment::where('game_id', $game->id)
+            ->where('season', $previousSeason)
+            ->first();
 
-        return 0;
+        $infrastructure = $previousInvestment?->total_infrastructure ?? 0;
+
+        // Actual transfer spending (player purchases) during the previous season
+        $transferSpending = FinancialTransaction::where('game_id', $game->id)
+            ->where('season', $previousSeason)
+            ->where('category', FinancialTransaction::CATEGORY_TRANSFER_OUT)
+            ->where('type', FinancialTransaction::TYPE_EXPENSE)
+            ->sum('amount');
+
+        return $previousFinances->actual_surplus
+            + $previousFinances->carried_surplus
+            - $previousFinances->carried_debt
+            - $infrastructure
+            - $transferSpending;
     }
 
     /**
