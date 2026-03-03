@@ -10,6 +10,7 @@ use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
+use App\Models\MatchEvent;
 use App\Models\PlayerSuspension;
 
 class MatchFinalizationService
@@ -54,6 +55,9 @@ class MatchFinalizationService
     /**
      * Serve suspensions that were deferred during batch processing.
      * These belong to players on the two teams in the deferred match.
+     *
+     * Excludes players who received new suspensions FROM this match's card
+     * events — those suspensions apply to future matches, not this one.
      */
     private function serveDeferredSuspensions(GameMatch $match): void
     {
@@ -66,11 +70,20 @@ class MatchFinalizationService
             return;
         }
 
-        $suspensionIds = PlayerSuspension::where('competition_id', $match->competition_id)
+        // Find players who received cards in this match and now have active
+        // suspensions. These suspensions were created during processAll() from
+        // this match's events and must NOT be served — they apply to future matches.
+        $newlySuspendedIds = $this->getNewlySuspendedPlayerIds($match, $playerIds);
+
+        $query = PlayerSuspension::where('competition_id', $match->competition_id)
             ->where('matches_remaining', '>', 0)
-            ->whereIn('game_player_id', $playerIds)
-            ->pluck('id')
-            ->all();
+            ->whereIn('game_player_id', $playerIds);
+
+        if (! empty($newlySuspendedIds)) {
+            $query->whereNotIn('game_player_id', $newlySuspendedIds);
+        }
+
+        $suspensionIds = $query->pluck('id')->all();
 
         if (! empty($suspensionIds)) {
             PlayerSuspension::whereIn('id', $suspensionIds)->decrement('matches_remaining');
@@ -78,6 +91,32 @@ class MatchFinalizationService
                 ->where('matches_remaining', '<', 0)
                 ->update(['matches_remaining' => 0]);
         }
+    }
+
+    /**
+     * Find players who received cards in this match and have active suspensions.
+     * A player who participated in the match cannot have had a pre-existing
+     * suspension (suspended players are excluded from lineups), so any active
+     * suspension they carry was created from this match's card events.
+     */
+    private function getNewlySuspendedPlayerIds(GameMatch $match, array $teamPlayerIds): array
+    {
+        $cardRecipientIds = MatchEvent::where('game_match_id', $match->id)
+            ->whereIn('event_type', ['red_card', 'yellow_card'])
+            ->whereIn('game_player_id', $teamPlayerIds)
+            ->pluck('game_player_id')
+            ->unique()
+            ->toArray();
+
+        if (empty($cardRecipientIds)) {
+            return [];
+        }
+
+        return PlayerSuspension::where('competition_id', $match->competition_id)
+            ->where('matches_remaining', '>', 0)
+            ->whereIn('game_player_id', $cardRecipientIds)
+            ->pluck('game_player_id')
+            ->toArray();
     }
 
     private function resolveCupTie(GameMatch $match, Game $game, ?Competition $competition): void

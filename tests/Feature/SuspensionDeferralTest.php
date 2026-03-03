@@ -9,6 +9,7 @@ use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\GameStanding;
+use App\Models\MatchEvent;
 use App\Models\Player;
 use App\Models\PlayerSuspension;
 use App\Models\Team;
@@ -199,6 +200,210 @@ class SuspensionDeferralTest extends TestCase
             $suspendedPlayer->id,
             $benchPlayerIds,
             'Suspended player should NOT appear in the bench during the live match'
+        );
+    }
+
+    public function test_red_card_suspension_not_consumed_during_finalization(): void
+    {
+        // Create squads for both teams
+        $this->createSquad($this->playerTeam);
+        $this->createSquad($this->opponentTeam);
+
+        // Pick a starter from the user's team who will "receive" a red card
+        $redCardPlayer = GamePlayer::where('game_id', $this->game->id)
+            ->where('team_id', $this->playerTeam->id)
+            ->where('position', 'Centre-Forward')
+            ->first();
+
+        // Create match and standings
+        $match = GameMatch::factory()->create([
+            'game_id' => $this->game->id,
+            'competition_id' => $this->competition->id,
+            'round_number' => 1,
+            'home_team_id' => $this->playerTeam->id,
+            'away_team_id' => $this->opponentTeam->id,
+            'scheduled_date' => Carbon::parse('2024-08-16'),
+            'played' => true,
+            'home_score' => 1,
+            'away_score' => 0,
+            'home_lineup' => GamePlayer::where('game_id', $this->game->id)
+                ->where('team_id', $this->playerTeam->id)
+                ->limit(11)
+                ->pluck('id')
+                ->toArray(),
+            'away_lineup' => GamePlayer::where('game_id', $this->game->id)
+                ->where('team_id', $this->opponentTeam->id)
+                ->limit(11)
+                ->pluck('id')
+                ->toArray(),
+        ]);
+
+        foreach ([$this->playerTeam, $this->opponentTeam] as $team) {
+            GameStanding::create([
+                'game_id' => $this->game->id,
+                'competition_id' => $this->competition->id,
+                'team_id' => $team->id,
+                'position' => 0,
+                'played' => 0,
+                'won' => 0,
+                'drawn' => 0,
+                'lost' => 0,
+                'goals_for' => 0,
+                'goals_against' => 0,
+                'points' => 0,
+            ]);
+        }
+
+        // Simulate what processAll does: create a red card event and suspension
+        MatchEvent::create([
+            'game_id' => $this->game->id,
+            'game_match_id' => $match->id,
+            'game_player_id' => $redCardPlayer->id,
+            'team_id' => $this->playerTeam->id,
+            'minute' => 75,
+            'event_type' => 'red_card',
+            'metadata' => ['second_yellow' => false],
+        ]);
+
+        PlayerSuspension::create([
+            'game_player_id' => $redCardPlayer->id,
+            'competition_id' => $this->competition->id,
+            'matches_remaining' => 1,
+            'yellow_cards' => 0,
+        ]);
+
+        // Set pending finalization
+        $this->game->update(['pending_finalization_match_id' => $match->id]);
+
+        // Finalize the match
+        app(MatchFinalizationService::class)->finalize($match, $this->game);
+
+        // The red card suspension should NOT have been consumed — the player
+        // must miss the NEXT match, not the one where they received the card
+        $suspension = PlayerSuspension::where('game_player_id', $redCardPlayer->id)
+            ->where('competition_id', $this->competition->id)
+            ->first();
+
+        $this->assertNotNull($suspension);
+        $this->assertEquals(
+            1,
+            $suspension->matches_remaining,
+            'Red card suspension from the just-played match should NOT be served during finalization — the ban applies to the next match'
+        );
+
+        // Player should be unavailable for the next match
+        $this->assertFalse(
+            $redCardPlayer->isAvailable(Carbon::parse('2024-08-23'), $this->competition->id),
+            'Red-carded player should be unavailable for the next match'
+        );
+    }
+
+    public function test_preexisting_suspension_still_served_when_other_player_gets_card(): void
+    {
+        // Create squads for both teams
+        $this->createSquad($this->playerTeam);
+        $this->createSquad($this->opponentTeam);
+
+        // One player has a pre-existing suspension (sat out this match)
+        $suspendedPlayer = GamePlayer::factory()
+            ->forGame($this->game)
+            ->forTeam($this->playerTeam)
+            ->create(['position' => 'Right Winger']);
+
+        PlayerSuspension::create([
+            'game_player_id' => $suspendedPlayer->id,
+            'competition_id' => $this->competition->id,
+            'matches_remaining' => 1,
+            'yellow_cards' => 5,
+        ]);
+
+        // Another player (starter) gets a red card during the match
+        $redCardPlayer = GamePlayer::where('game_id', $this->game->id)
+            ->where('team_id', $this->playerTeam->id)
+            ->where('position', 'Centre-Forward')
+            ->first();
+
+        // Create match (suspendedPlayer is NOT in lineup)
+        $lineup = GamePlayer::where('game_id', $this->game->id)
+            ->where('team_id', $this->playerTeam->id)
+            ->where('id', '!=', $suspendedPlayer->id)
+            ->limit(11)
+            ->pluck('id')
+            ->toArray();
+
+        $match = GameMatch::factory()->create([
+            'game_id' => $this->game->id,
+            'competition_id' => $this->competition->id,
+            'round_number' => 1,
+            'home_team_id' => $this->playerTeam->id,
+            'away_team_id' => $this->opponentTeam->id,
+            'scheduled_date' => Carbon::parse('2024-08-16'),
+            'played' => true,
+            'home_score' => 1,
+            'away_score' => 0,
+            'home_lineup' => $lineup,
+            'away_lineup' => GamePlayer::where('game_id', $this->game->id)
+                ->where('team_id', $this->opponentTeam->id)
+                ->limit(11)
+                ->pluck('id')
+                ->toArray(),
+        ]);
+
+        foreach ([$this->playerTeam, $this->opponentTeam] as $team) {
+            GameStanding::create([
+                'game_id' => $this->game->id,
+                'competition_id' => $this->competition->id,
+                'team_id' => $team->id,
+                'position' => 0,
+                'played' => 0,
+                'won' => 0,
+                'drawn' => 0,
+                'lost' => 0,
+                'goals_for' => 0,
+                'goals_against' => 0,
+                'points' => 0,
+            ]);
+        }
+
+        // Red card event and suspension for the starter
+        MatchEvent::create([
+            'game_id' => $this->game->id,
+            'game_match_id' => $match->id,
+            'game_player_id' => $redCardPlayer->id,
+            'team_id' => $this->playerTeam->id,
+            'minute' => 75,
+            'event_type' => 'red_card',
+            'metadata' => ['second_yellow' => false],
+        ]);
+
+        PlayerSuspension::create([
+            'game_player_id' => $redCardPlayer->id,
+            'competition_id' => $this->competition->id,
+            'matches_remaining' => 1,
+            'yellow_cards' => 0,
+        ]);
+
+        $this->game->update(['pending_finalization_match_id' => $match->id]);
+        app(MatchFinalizationService::class)->finalize($match, $this->game);
+
+        // Pre-existing suspension SHOULD be served (player sat out the match)
+        $existingSuspension = PlayerSuspension::where('game_player_id', $suspendedPlayer->id)
+            ->where('competition_id', $this->competition->id)
+            ->first();
+        $this->assertEquals(
+            0,
+            $existingSuspension->matches_remaining,
+            'Pre-existing suspension should be served during finalization'
+        );
+
+        // New red card suspension should NOT be served
+        $newSuspension = PlayerSuspension::where('game_player_id', $redCardPlayer->id)
+            ->where('competition_id', $this->competition->id)
+            ->first();
+        $this->assertEquals(
+            1,
+            $newSuspension->matches_remaining,
+            'New red card suspension should NOT be served — it applies to the next match'
         );
     }
 
