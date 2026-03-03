@@ -79,6 +79,34 @@
         </div>
     </div>
 
+    {{-- Radar Chart --}}
+    <div class="border-t border-slate-200 pt-3 mb-3">
+        <div class="flex items-center justify-center gap-4 mb-1">
+            <span class="flex items-center gap-1 text-[10px] text-slate-500">
+                <span class="w-2 h-1 rounded-sm bg-sky-400 inline-block"></span>
+                {{ $game->team->short_name ?? $game->team->name }}
+            </span>
+            <span class="flex items-center gap-1 text-[10px] text-slate-500">
+                <span class="w-2 h-1 rounded-sm bg-red-400 inline-block"></span>
+                {{ $opponent->short_name ?? $opponent->name }}
+            </span>
+        </div>
+        <x-radar-chart
+            :userValues="$userRadar"
+            :opponentValues="$opponentRadar"
+            :labels="[
+                'goalkeeper' => __('squad.radar_gk'),
+                'defense' => __('squad.radar_def'),
+                'midfield' => __('squad.radar_mid'),
+                'attack' => __('squad.radar_att'),
+                'fitness' => __('squad.radar_fit'),
+                'morale' => __('squad.radar_mor'),
+                'technical' => __('squad.radar_tec'),
+                'physical' => __('squad.radar_phy'),
+            ]"
+        />
+    </div>
+
     {{-- Tips Section --}}
     <div class="border-t border-slate-200 pt-3">
         <div class="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-2">{{ __('squad.coach_recommendations') }}</div>

@@ -123,6 +123,10 @@ class ShowLineup
         // Get opponent scouting data (including predicted formation and mentality)
         $opponentData = $this->getOpponentData($gameId, $opponent->id, $matchDate, $competitionId, !$isHome, $userTeamAverage);
 
+        // Radar chart data for coach assistant
+        $userRadar = $this->calculateRadarValues($userBestXI['players']);
+        $opponentRadar = $this->calculateRadarValues($opponentData['bestXIPlayers']);
+
         // Formation modifiers for coach assistant tips (attack/defense per formation)
         $formationModifiers = [];
         foreach (Formation::cases() as $formation) {
@@ -248,6 +252,8 @@ class ShowLineup
             'tacticalInteractions' => $tacticalInteractions,
             'gridConfig' => $gridConfig,
             'currentPitchPositions' => $currentPitchPositions,
+            'userRadar' => $userRadar,
+            'opponentRadar' => $opponentRadar,
         ]);
     }
 
@@ -286,6 +292,37 @@ class ShowLineup
             'form' => $form,
             'formation' => $predictedFormation->value,
             'mentality' => $predictedMentality->value,
+            'bestXIPlayers' => $bestXI,
+        ];
+    }
+
+    /**
+     * Calculate radar chart values from a collection of best XI players.
+     * Returns 8 axes: GK, DEF, MID, FWD averages + fitness, morale, technical, physical.
+     *
+     * @return array<string, int>
+     */
+    private function calculateRadarValues(\Illuminate\Support\Collection $players): array
+    {
+        if ($players->isEmpty()) {
+            return array_fill_keys(['goalkeeper', 'defense', 'midfield', 'attack', 'fitness', 'morale', 'technical', 'physical'], 0);
+        }
+
+        $grouped = $players->groupBy(fn ($p) => $p->position_group);
+
+        $avgOverall = fn (string $group) => (int) round(
+            ($grouped->get($group) ?? collect())->avg('overall_score') ?? 0
+        );
+
+        return [
+            'goalkeeper' => $avgOverall('Goalkeeper'),
+            'defense' => $avgOverall('Defender'),
+            'midfield' => $avgOverall('Midfielder'),
+            'attack' => $avgOverall('Forward'),
+            'fitness' => (int) round($players->avg('fitness')),
+            'morale' => (int) round($players->avg('morale')),
+            'technical' => (int) round($players->avg('technical_ability')),
+            'physical' => (int) round($players->avg('physical_ability')),
         ];
     }
 }

@@ -243,6 +243,16 @@ return [
     'squad_confirmed' => '¡Convocatoria confirmada!',
     'invalid_selection' => 'Selección inválida. Verifica los jugadores seleccionados.',
 
+    // Radar chart
+    'radar_gk' => 'Portería',
+    'radar_def' => 'Defensa',
+    'radar_mid' => 'Mediocampo',
+    'radar_att' => 'Ataque',
+    'radar_fit' => 'Forma',
+    'radar_mor' => 'Moral',
+    'radar_tec' => 'Técnica',
+    'radar_phy' => 'Físico',
+
     // Grid positioning
     'drag_or_tap' => 'Toca una celda o arrastra al jugador',
     'select_player_for_slot' => 'Selecciona un jugador de la lista',

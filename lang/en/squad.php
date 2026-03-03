@@ -243,6 +243,16 @@ return [
     'squad_confirmed' => 'Squad confirmed!',
     'invalid_selection' => 'Invalid selection. Please check the selected players.',
 
+    // Radar chart
+    'radar_gk' => 'Goalkeeping',
+    'radar_def' => 'Defense',
+    'radar_mid' => 'Midfield',
+    'radar_att' => 'Attack',
+    'radar_fit' => 'Fitness',
+    'radar_mor' => 'Morale',
+    'radar_tec' => 'Technical',
+    'radar_phy' => 'Physical',
+
     // Grid positioning
     'drag_or_tap' => 'Tap a cell or drag the player',
     'select_player_for_slot' => 'Select a player from the list',
