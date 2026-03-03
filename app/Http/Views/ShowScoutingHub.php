@@ -111,7 +111,7 @@ class ShowScoutingHub
                 'offerType' => $existingOfferStatuses[$gp->id]['offerType'] ?? null,
                 'canAffordWage' => $detail['can_afford_wage'],
                 'bidEuros' => (int) ($detail['asking_price'] / 100),
-                'wageEuros' => (int) ($detail['wage_demand'] / 100),
+                'wageEuros' => (int) (($detail['pre_contract_wage_demand'] ?? $detail['wage_demand']) / 100),
             ];
         }
 

@@ -134,6 +134,7 @@ return [
     'bid_accepted' => ':team has accepted your bid.',
     'counter_offer_made' => ':team has made a counter offer of :amount.',
     'bid_rejected_too_low' => ':team has rejected your bid. It was well below their valuation.',
+    'bid_rejected_not_interested' => 'The player is not interested in joining your club.',
     'loan_rejected_key_player' => ':team rejected the loan request. :player is a key player for them.',
     'loan_accepted' => ':team has agreed to loan :player to your club.',
     'loan_rejected_keep' => ':team has decided to keep :player for now.',

@@ -59,9 +59,22 @@ class TransferService
     private const MAX_FEE_TO_SQUAD_VALUE_RATIO = 0.25;
 
     /**
-     * Chance of pre-contract offer per expiring player per matchday.
+     * Default chance of pre-contract offer per expiring player per matchday.
      */
     private const PRE_CONTRACT_OFFER_CHANCE = 0.10; // 10%
+
+    /**
+     * Value-based pre-contract offer chance per matchday.
+     * Higher-value players attract more aggressive AI competition.
+     * [min_market_value_cents => chance]
+     */
+    private const PRE_CONTRACT_OFFER_CHANCE_BY_VALUE = [
+        5_000_000_000  => 0.35, // €50M+ → 35%
+        2_000_000_000  => 0.25, // €20M+ → 25%
+        1_000_000_000  => 0.20, // €10M+ → 20%
+        500_000_000    => 0.15, // €5M+  → 15%
+        0              => 0.10, // < €5M → 10%
+    ];
 
     /**
      * Pre-contract offer expiry in days.
@@ -287,6 +300,21 @@ class TransferService
     }
 
     /**
+     * Get the pre-contract offer chance for a player based on their market value.
+     * Higher-value players attract more aggressive AI competition.
+     */
+    public function getPreContractOfferChance(GamePlayer $player): float
+    {
+        foreach (self::PRE_CONTRACT_OFFER_CHANCE_BY_VALUE as $minValue => $chance) {
+            if ($player->market_value_cents >= $minValue) {
+                return $chance;
+            }
+        }
+
+        return self::PRE_CONTRACT_OFFER_CHANCE;
+    }
+
+    /**
      * Generate pre-contract offers for players with expiring contracts.
      * Called on each matchday advance (typically from January onwards).
      *
@@ -373,8 +401,9 @@ class TransferService
                 continue;
             }
 
-            // Random chance for an offer
-            if (rand(1, 100) <= self::PRE_CONTRACT_OFFER_CHANCE * 100) {
+            // Random chance for an offer (scales with player market value)
+            $offerChance = $this->getPreContractOfferChance($player);
+            if (rand(1, 100) <= $offerChance * 100) {
                 ['buyers' => $buyers, 'squadValues' => $squadValues] = $this->getEligibleBuyersWithSquadValues($player);
 
                 if ($buyers->isNotEmpty()) {
@@ -478,7 +507,7 @@ class TransferService
         $resolvedOffers = collect();
 
         foreach ($pendingOffers as $offer) {
-            $evaluation = $scoutingService->evaluatePreContractOffer($offer->gamePlayer, $offer->offered_wage);
+            $evaluation = $scoutingService->evaluatePreContractOffer($offer->gamePlayer, $offer->offered_wage, $game);
 
             $offer->update([
                 'status' => $evaluation['accepted'] ? TransferOffer::STATUS_AGREED : TransferOffer::STATUS_REJECTED,
@@ -511,7 +540,7 @@ class TransferService
         $resolvedOffers = collect();
 
         foreach ($pendingBids as $offer) {
-            $evaluation = $scoutingService->evaluateBid($offer->gamePlayer, $offer->transfer_fee);
+            $evaluation = $scoutingService->evaluateBid($offer->gamePlayer, $offer->transfer_fee, $game);
 
             if ($evaluation['result'] === 'accepted') {
                 $offer->update([

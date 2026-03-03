@@ -211,11 +211,12 @@
                                             </div>
                                         @elseif($isExpiring && $isPreContractPeriod)
                                             {{-- Pre-contract offer form --}}
+                                            @php $preContractWage = $detail['pre_contract_wage_demand'] ?? $wageDemand; @endphp
                                             <form method="POST" action="{{ route('game.scouting.pre-contract', [$game->id, $player->id]) }}" class="space-y-2">
                                                 @csrf
                                                 <label class="block text-xs font-medium text-slate-600">{{ __('transfers.offered_wage_euros') }}</label>
                                                 <div class="flex items-center gap-2">
-                                                    <x-money-input name="offered_wage" :value="(int)($wageDemand / 100)" :min="0" size="sm" />
+                                                    <x-money-input name="offered_wage" :value="(int)($preContractWage / 100)" :min="0" size="sm" />
                                                     <button type="submit" class="inline-flex items-center justify-center px-3 py-1.5 min-h-[36px] bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg transition-colors whitespace-nowrap">
                                                         {{ __('transfers.submit_pre_contract') }}
                                                     </button>
