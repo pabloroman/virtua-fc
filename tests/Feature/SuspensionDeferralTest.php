@@ -84,21 +84,7 @@ class SuspensionDeferralTest extends TestCase
             'scheduled_date' => Carbon::parse('2024-08-16'),
         ]);
 
-        foreach ([$this->playerTeam, $this->opponentTeam] as $team) {
-            GameStanding::create([
-                'game_id' => $this->game->id,
-                'competition_id' => $this->competition->id,
-                'team_id' => $team->id,
-                'position' => 0,
-                'played' => 0,
-                'won' => 0,
-                'drawn' => 0,
-                'lost' => 0,
-                'goals_for' => 0,
-                'goals_against' => 0,
-                'points' => 0,
-            ]);
-        }
+        $this->createStandings();
 
         // Advance matchday — match is simulated but finalization is deferred
         $action = app(AdvanceMatchday::class);
@@ -159,21 +145,7 @@ class SuspensionDeferralTest extends TestCase
             'scheduled_date' => Carbon::parse('2024-08-16'),
         ]);
 
-        foreach ([$this->playerTeam, $this->opponentTeam] as $team) {
-            GameStanding::create([
-                'game_id' => $this->game->id,
-                'competition_id' => $this->competition->id,
-                'team_id' => $team->id,
-                'position' => 0,
-                'played' => 0,
-                'won' => 0,
-                'drawn' => 0,
-                'lost' => 0,
-                'goals_for' => 0,
-                'goals_against' => 0,
-                'points' => 0,
-            ]);
-        }
+        $this->createStandings();
 
         // Advance matchday
         $action = app(AdvanceMatchday::class);
@@ -238,21 +210,7 @@ class SuspensionDeferralTest extends TestCase
                 ->toArray(),
         ]);
 
-        foreach ([$this->playerTeam, $this->opponentTeam] as $team) {
-            GameStanding::create([
-                'game_id' => $this->game->id,
-                'competition_id' => $this->competition->id,
-                'team_id' => $team->id,
-                'position' => 0,
-                'played' => 0,
-                'won' => 0,
-                'drawn' => 0,
-                'lost' => 0,
-                'goals_for' => 0,
-                'goals_against' => 0,
-                'points' => 0,
-            ]);
-        }
+        $this->createStandings();
 
         // Simulate what processAll does: create a red card event and suspension
         MatchEvent::create([
@@ -261,7 +219,7 @@ class SuspensionDeferralTest extends TestCase
             'game_player_id' => $redCardPlayer->id,
             'team_id' => $this->playerTeam->id,
             'minute' => 75,
-            'event_type' => 'red_card',
+            'event_type' => MatchEvent::TYPE_RED_CARD,
             'metadata' => ['second_yellow' => false],
         ]);
 
@@ -349,21 +307,7 @@ class SuspensionDeferralTest extends TestCase
                 ->toArray(),
         ]);
 
-        foreach ([$this->playerTeam, $this->opponentTeam] as $team) {
-            GameStanding::create([
-                'game_id' => $this->game->id,
-                'competition_id' => $this->competition->id,
-                'team_id' => $team->id,
-                'position' => 0,
-                'played' => 0,
-                'won' => 0,
-                'drawn' => 0,
-                'lost' => 0,
-                'goals_for' => 0,
-                'goals_against' => 0,
-                'points' => 0,
-            ]);
-        }
+        $this->createStandings();
 
         // Red card event and suspension for the starter
         MatchEvent::create([
@@ -372,7 +316,7 @@ class SuspensionDeferralTest extends TestCase
             'game_player_id' => $redCardPlayer->id,
             'team_id' => $this->playerTeam->id,
             'minute' => 75,
-            'event_type' => 'red_card',
+            'event_type' => MatchEvent::TYPE_RED_CARD,
             'metadata' => ['second_yellow' => false],
         ]);
 
@@ -407,6 +351,25 @@ class SuspensionDeferralTest extends TestCase
         );
     }
 
+    private function createStandings(): void
+    {
+        foreach ([$this->playerTeam, $this->opponentTeam] as $team) {
+            GameStanding::create([
+                'game_id' => $this->game->id,
+                'competition_id' => $this->competition->id,
+                'team_id' => $team->id,
+                'position' => 0,
+                'played' => 0,
+                'won' => 0,
+                'drawn' => 0,
+                'lost' => 0,
+                'goals_for' => 0,
+                'goals_against' => 0,
+                'points' => 0,
+            ]);
+        }
+    }
+
     /**
      * Create a minimal 11-player squad for a team (1 GK + 10 outfield).
      */
@@ -428,12 +391,11 @@ class SuspensionDeferralTest extends TestCase
         }
 
         // 4 Midfielders
-        foreach (['Central Midfield', 'Central Midfield', 'Central Midfield', 'Central Midfield'] as $position) {
-            GamePlayer::factory()
-                ->forGame($this->game)
-                ->forTeam($team)
-                ->create(['position' => $position]);
-        }
+        GamePlayer::factory()
+            ->forGame($this->game)
+            ->forTeam($team)
+            ->count(4)
+            ->create(['position' => 'Central Midfield']);
 
         // 2 Forwards
         foreach (['Centre-Forward', 'Centre-Forward'] as $position) {
