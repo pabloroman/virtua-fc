@@ -245,4 +245,5 @@ return [
 
     // Grid positioning
     'drag_or_tap' => 'Tap a cell or drag the player',
+    'select_player_for_slot' => 'Select a player from the list',
 ];

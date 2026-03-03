@@ -54,9 +54,9 @@
                     const s = tc.secondary;
                     switch (tc.pattern) {
                         case 'stripes':
-                            return `background: repeating-linear-gradient(90deg, ${p} 0px, ${p} 6px, ${s} 6px, ${s} 12px)`;
+                            return `background: linear-gradient(90deg, ${s} 3px, ${p} 3px, ${p} 9px, ${s} 9px); background-size: 12px 100%; background-position: center`;
                         case 'hoops':
-                            return `background: repeating-linear-gradient(0deg, ${p} 0px, ${p} 6px, ${s} 6px, ${s} 12px)`;
+                            return `background: linear-gradient(0deg, ${s} 3px, ${p} 3px, ${p} 9px, ${s} 9px); background-size: 100% 12px; background-position: center`;
                         case 'sash':
                             return `background: linear-gradient(135deg, ${p} 0%, ${p} 35%, ${s} 35%, ${s} 65%, ${p} 65%, ${p} 100%)`;
                         case 'bar':

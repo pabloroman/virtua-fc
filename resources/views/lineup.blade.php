@@ -93,8 +93,8 @@
                         </template>
 
                         {{-- Top Bar: Formation, Stats, Actions --}}
-                        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-6 p-4 bg-slate-50 rounded-lg sticky top-0 z-10">
-                            <div class="flex flex-wrap items-center gap-3 md:gap-6">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-6 md:p-4 md:bg-slate-50 md:rounded-lg sticky top-0 z-10">
+                            <div class="flex flex-wrap items-center gap-2 md:gap-6">
                                 {{-- Formation Selector --}}
                                 <div class="flex items-center gap-2">
                                     <label class="text-sm font-medium text-slate-700">{{ __('squad.formation') }}:</label>
@@ -124,15 +124,15 @@
 
                             </div>
 
-                            <div class="flex items-center gap-3 shrink-0">
+                            <div class="flex items-center gap-2 md:gap-3 md:shrink-0 border-t border-slate-200 pt-3 md:border-0 md:pt-0">
                                 <button type="button" @click="clearSelection()" class="px-4 py-2 text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-200 rounded transition-colors">
                                     {{ __('app.clear') }}
                                 </button>
                                 <x-secondary-button type="button" @click="quickSelect()">
                                     {{ __('squad.auto_select') }}
                                 </x-secondary-button>
-                                <x-primary-button x-bind:disabled="selectedCount !== 11">
-                                    {{ __('app.confirm') }}
+                                <x-primary-button x-bind:disabled="selectedCount !== 11" class="flex-1 md:flex-none justify-center">
+                                    {{ __('app.confirm') }}<span class="md:hidden" x-text="'&nbsp;(' + selectedCount + '/11)'"></span>
                                 </x-primary-button>
                             </div>
                         </div>
@@ -231,6 +231,11 @@
                                 :class="activeLineupTab === 'pitch' ? 'border-sky-500 text-sky-600' : 'border-transparent text-slate-500'">
                                 {{ __('squad.pitch') }}
                             </button>
+                            <button type="button" @click="activeLineupTab = 'coach'"
+                                class="flex-1 px-4 py-2.5 text-sm font-medium text-center border-b-2 transition-colors"
+                                :class="activeLineupTab === 'coach' ? 'border-sky-500 text-sky-600' : 'border-transparent text-slate-500'">
+                                {{ __('squad.coach_assistant') }}
+                            </button>
                         </div>
 
                         {{-- Main Content: Pitch + Player List --}}
@@ -312,13 +317,13 @@
                                             {{-- Empty Slot (clickable for assignment) --}}
                                             <div
                                                 x-show="!slot.player"
-                                                @click="selectForRepositioning(slot.id)"
+                                                @click="assigningSlotId = assigningSlotId === slot.id ? null : slot.id; positioningSlotId = null; if (assigningSlotId !== null) activeLineupTab = 'squad'"
                                                 class="w-11 h-11 rounded-full border-2 flex items-center justify-center backdrop-blur-sm cursor-pointer transition-all duration-200"
-                                                :class="positioningSlotId === slot.id
-                                                    ? 'border-white bg-white/30 ring-2 ring-white/60 scale-110'
+                                                :class="assigningSlotId === slot.id
+                                                    ? 'border-white bg-white/30 ring-2 ring-white/60 scale-110 animate-pulse'
                                                     : 'border-dashed border-white/40 bg-white/5 hover:border-white/70 hover:bg-white/15'"
                                             >
-                                                <span class="text-[10px] font-semibold tracking-wide" :class="positioningSlotId === slot.id ? 'text-white' : 'text-white/60'" x-text="slot.displayLabel"></span>
+                                                <span class="text-[10px] font-semibold tracking-wide" :class="assigningSlotId === slot.id ? 'text-white' : 'text-white/60'" x-text="slot.displayLabel"></span>
                                             </div>
 
                                             {{-- Filled Slot (clickable for reassignment or repositioning) --}}
@@ -395,115 +400,24 @@
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                                         </button>
                                     </div>
-                                </div>
 
-                                {{-- Coach Assistant Panel --}}
-                                <div class="mt-4 bg-slate-50 rounded-lg p-4 border border-slate-200">
-                                    <div class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">{{ __('squad.coach_assistant') }}</div>
-
-                                    {{-- Face to Face Comparison --}}
-                                    <div class="flex items-center justify-between gap-2 mb-1">
-                                        {{-- User Team --}}
-                                        <div class="flex items-center gap-2 min-w-0">
-                                            <x-team-crest :team="$game->team" class="w-7 h-7 shrink-0" />
-                                            <span class="text-lg font-bold text-slate-900" x-text="teamAverage || '-'"></span>
-                                        </div>
-
-                                        {{-- Advantage Badge --}}
-                                        <template x-if="teamAverage && {{ $opponentData['teamAverage'] ?: 0 }}">
-                                            <span
-                                                class="text-xs font-semibold px-2 py-0.5 rounded-full shrink-0"
-                                                :class="{
-                                                    'bg-green-100 text-green-700': teamAverage > {{ $opponentData['teamAverage'] ?: 0 }},
-                                                    'bg-red-100 text-red-700': teamAverage < {{ $opponentData['teamAverage'] ?: 0 }},
-                                                    'bg-slate-100 text-slate-600': teamAverage === {{ $opponentData['teamAverage'] ?: 0 }}
-                                                }"
-                                                x-text="teamAverage > {{ $opponentData['teamAverage'] ?: 0 }} ? '+' + (teamAverage - {{ $opponentData['teamAverage'] ?: 0 }}) : (teamAverage < {{ $opponentData['teamAverage'] ?: 0 }} ? (teamAverage - {{ $opponentData['teamAverage'] ?: 0 }}) : '=')"
-                                            ></span>
-                                        </template>
-                                        <template x-if="!teamAverage || !{{ $opponentData['teamAverage'] ?: 0 }}">
-                                            <span class="text-xs text-slate-400">vs</span>
-                                        </template>
-
-                                        {{-- Opponent Team --}}
-                                        <div class="flex items-center gap-2 min-w-0">
-                                            <span class="text-lg font-bold text-slate-900">{{ $opponentData['teamAverage'] ?: '-' }}</span>
-                                            <x-team-crest :team="$opponent" class="w-7 h-7 shrink-0" />
-                                        </div>
-                                    </div>
-
-                                    {{-- Opponent Expected Tactics --}}
-                                    @if(!empty($opponentData['formation']))
-                                        <div class="flex items-center justify-end gap-1.5 mb-2">
-                                            <span class="text-[10px] text-slate-400 uppercase tracking-wide">{{ __('squad.coach_opponent_expected_label') }}</span>
-                                            <span class="text-xs font-semibold text-slate-700 bg-slate-100 px-1.5 py-0.5 rounded">{{ $opponentData['formation'] }}</span>
-                                            <span class="text-slate-300">&middot;</span>
-                                            <span class="text-xs font-medium
-                                                @if($opponentData['mentality'] === 'defensive') text-blue-600
-                                                @elseif($opponentData['mentality'] === 'attacking') text-red-600
-                                                @else text-slate-600
-                                                @endif">{{ __('squad.mentality_' . $opponentData['mentality']) }}</span>
-                                        </div>
-                                    @endif
-
-                                    {{-- Form (symmetrical) --}}
-                                    <div class="flex items-center justify-between gap-2 mb-3">
-                                        {{-- User Form --}}
-                                        <div class="flex gap-1">
-                                            @forelse($playerForm as $result)
-                                                <span class="w-5 h-5 rounded text-xs font-bold flex items-center justify-center
-                                                    @if($result === 'W') bg-green-500 text-white
-                                                    @elseif($result === 'D') bg-slate-400 text-white
-                                                    @else bg-red-500 text-white @endif">
-                                                    {{ $result }}
-                                                </span>
-                                            @empty
-                                                <span class="text-[10px] text-slate-400">—</span>
-                                            @endforelse
-                                        </div>
-
-                                        <span class="text-[10px] text-slate-400">{{ __('game.form') }}</span>
-
-                                        {{-- Opponent Form --}}
-                                        <div class="flex gap-1">
-                                            @forelse($opponentData['form'] as $result)
-                                                <span class="w-5 h-5 rounded text-xs font-bold flex items-center justify-center
-                                                    @if($result === 'W') bg-green-500 text-white
-                                                    @elseif($result === 'D') bg-slate-400 text-white
-                                                    @else bg-red-500 text-white @endif">
-                                                    {{ $result }}
-                                                </span>
-                                            @empty
-                                                <span class="text-[10px] text-slate-400">—</span>
-                                            @endforelse
-                                        </div>
-                                    </div>
-
-                                    {{-- Tips Section --}}
-                                    <div class="border-t border-slate-200 pt-3">
-                                        <div class="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-2">{{ __('squad.coach_recommendations') }}</div>
-
-                                        {{-- Dynamic Tips --}}
-                                        <template x-if="coachTips.length > 0">
-                                            <div class="space-y-2">
-                                                <template x-for="tip in coachTips" :key="tip.id">
-                                                    <div class="flex items-start gap-2">
-                                                        <span
-                                                            class="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0"
-                                                            :class="tip.type === 'warning' ? 'bg-amber-400' : 'bg-sky-400'"
-                                                        ></span>
-                                                        <span class="text-xs text-slate-600 leading-relaxed" x-text="tip.message"></span>
-                                                    </div>
-                                                </template>
-                                            </div>
-                                        </template>
-
-                                        {{-- Empty State --}}
-                                        <template x-if="coachTips.length === 0">
-                                            <p class="text-xs text-slate-400 italic" x-text="translations.coach_no_tips"></p>
-                                        </template>
+                                    {{-- Slot assignment indicator banner --}}
+                                    <div
+                                        x-show="assigningSlotId !== null"
+                                        x-cloak
+                                        class="absolute bottom-2 left-1/2 -translate-x-1/2 px-4 py-2 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg text-xs font-medium text-slate-700 flex items-center gap-2 z-20"
+                                    >
+                                        <span class="w-2 h-2 rounded-full bg-sky-500 animate-pulse"></span>
+                                        {{ __('squad.select_player_for_slot') }}
+                                        <button type="button" @click="assigningSlotId = null" class="ml-1 text-slate-400 hover:text-slate-600">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                        </button>
                                     </div>
                                 </div>
+
+                                {{-- Coach Assistant Panel (desktop: below pitch) --}}
+                                @include('partials.lineup-coach-panel', ['class' => 'hidden lg:block mt-4'])
+
                             </div>
 
                             {{-- Player List --}}
@@ -513,13 +427,12 @@
                                         <tr>
                                             <th class="font-semibold py-2 w-10"></th>
                                             <th class="font-semibold py-2 w-10"></th>
-                                            <th class="font-semibold py-2">{{ __('app.name') }}</th>
-                                            <th class="font-semibold py-2 w-10"></th>
-                                            <th class="font-semibold py-2 text-center w-8">{{ __('squad.overall') }}</th>
-                                            <th class="font-semibold py-2 text-center w-8 hidden md:table-cell">{{ __('squad.technical') }}</th>
-                                            <th class="font-semibold py-2 text-center w-8 hidden md:table-cell">{{ __('squad.physical') }}</th>
-                                            <th class="font-semibold py-2 text-center w-8 hidden md:table-cell">{{ __('squad.fitness') }}</th>
-                                            <th class="font-semibold py-2 text-center w-8 hidden md:table-cell">{{ __('squad.morale') }}</th>
+                                            <th class="py-2"></th>
+                                            <th class="font-semibold py-2 text-center w-16 hidden md:table-cell">{{ __('squad.technical_full') }}</th>
+                                            <th class="font-semibold py-2 text-center w-16 hidden md:table-cell">{{ __('squad.physical_full') }}</th>
+                                            <th class="font-semibold py-2 text-center w-16">{{ __('squad.fitness_full') }}</th>
+                                            <th class="font-semibold py-2 text-center w-16">{{ __('squad.morale_full') }}</th>
+                                            <th class="font-semibold py-2 w-8"></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -531,7 +444,7 @@
                                         ] as $group)
                                             @if($group['players']->isNotEmpty())
                                                 <tr class="bg-slate-200">
-                                                    <td colspan="9" class="py-2 px-2 text-xs font-semibold text-slate-600 uppercase tracking-wide">
+                                                    <td colspan="8" class="py-2 px-2 text-xs font-semibold text-slate-600 uppercase tracking-wide">
                                                         {{ $group['name'] }}
                                                         <span class="font-normal text-slate-400">
                                                             ({{ __('squad.need') }} <span x-text="currentSlots.filter(s => s.role === '{{ $group['role'] }}').length"></span>)
@@ -583,9 +496,9 @@
                                                                         <path fill-rule="evenodd" d="M19.5 21a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3h-5.379a.75.75 0 0 1-.53-.22L11.47 3.66A2.25 2.25 0 0 0 9.879 3H4.5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h15Zm-6.75-10.5a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V10.5Z" clip-rule="evenodd" />
                                                                     </svg>
                                                                 </button>
-                                                                <span class="text-xs text-slate-400 w-4 text-right">{{ $player->number ?? '-' }}</span>
+                                                                <span class="text-xs text-slate-400 w-4 text-right hidden md:inline">{{ $player->number ?? '-' }}</span>
                                                                 @if($player->nationality_flag)
-                                                                    <img src="/flags/{{ $player->nationality_flag['code'] }}.svg" class="w-4 h-3 rounded-sm shadow-sm" title="{{ $player->nationality_flag['name'] }}">
+                                                                    <img src="/flags/{{ $player->nationality_flag['code'] }}.svg" class="w-4 h-3 rounded-sm shadow-sm hidden md:inline" title="{{ $player->nationality_flag['name'] }}">
                                                                 @endif
                                                                 <div class="font-medium @if($isUnavailable) text-slate-400 @else text-slate-900 @endif">
                                                                     {{ $player->name }}
@@ -595,38 +508,30 @@
                                                                 <div class="text-xs text-red-500">{{ $unavailabilityReason }}</div>
                                                             @endif
                                                         </td>
-                                                        {{-- Compatibility indicator --}}
-                                                        <td class="py-2 text-right">
-                                                            {{-- Show assigned slot info --}}
-                                                            <template x-if="isSelected('{{ $player->id }}') && getPlayerSlot('{{ $player->id }}')">
-                                                                <span
-                                                                    class="text-xs font-medium px-1.5 py-0.5 rounded whitespace-nowrap"
-                                                                    :class="getCompatibilityDisplay('{{ $player->position }}', getPlayerSlot('{{ $player->id }}')).class"
-                                                                    x-text="getPlayerSlotDisplay('{{ $player->id }}') + (getCompatibilityDisplay('{{ $player->position }}', getPlayerSlot('{{ $player->id }}')).label !== '{{ __('squad.natural') }}' ? ' (' + getCompatibilityDisplay('{{ $player->position }}', getPlayerSlot('{{ $player->id }}')).label + ')' : '')"
-                                                                ></span>
-                                                            </template>
-                                                        </td>
-                                                        {{-- Overall --}}
-                                                        <td class="py-2 text-center">
-                                                            <span class="font-semibold @if($player->overall_score >= 80) text-green-600 @elseif($player->overall_score >= 70) text-lime-600 @elseif($player->overall_score >= 60) text-yellow-600 @else text-slate-500 @endif">
-                                                                {{ $player->overall_score }}
-                                                            </span>
-                                                        </td>
                                                         {{-- Technical --}}
-                                                        <td class="py-2 text-center text-slate-400 hidden md:table-cell">
-                                                            {{ $player->technical_ability }}
+                                                        <td class="py-2 px-2 w-16 hidden md:table-cell">
+                                                            <x-ability-bar :value="$player->technical_ability" size="sm" class="text-xs font-medium justify-center @if($player->technical_ability >= 80) text-green-600 @elseif($player->technical_ability >= 70) text-lime-600 @elseif($player->technical_ability < 60) text-slate-400 @endif" />
                                                         </td>
                                                         {{-- Physical --}}
-                                                        <td class="py-2 text-center text-slate-400 hidden md:table-cell">
-                                                            {{ $player->physical_ability }}
+                                                        <td class="py-2 px-2 w-16 hidden md:table-cell">
+                                                            <x-ability-bar :value="$player->physical_ability" size="sm" class="text-xs font-medium justify-center @if($player->physical_ability >= 80) text-green-600 @elseif($player->physical_ability >= 70) text-lime-600 @elseif($player->physical_ability < 60) text-slate-400 @endif" />
                                                         </td>
                                                         {{-- Fitness --}}
-                                                        <td class="py-2 text-center hidden md:table-cell @if($player->fitness < 70) text-yellow-500 @elseif($player->fitness < 50) text-red-500 @else text-slate-400 @endif">
-                                                            {{ $player->fitness }}
+                                                        <td class="py-2 px-2 w-16">
+                                                            <x-ability-bar :value="$player->fitness" :max="100" size="sm" class="text-xs font-medium justify-center @if($player->fitness >= 90) text-green-600 @elseif($player->fitness >= 80) text-lime-600 @elseif($player->fitness < 70) text-amber-600 @endif" />
                                                         </td>
                                                         {{-- Morale --}}
-                                                        <td class="py-2 text-center hidden md:table-cell @if($player->morale < 60) text-red-500 @elseif($player->morale < 70) text-yellow-500 @else text-slate-400 @endif">
-                                                            {{ $player->morale }}
+                                                        <td class="py-2 px-2 w-16">
+                                                            <x-ability-bar :value="$player->morale" :max="100" size="sm" class="text-xs font-medium justify-center @if($player->morale >= 85) text-green-600 @elseif($player->morale >= 75) text-lime-600 @elseif($player->morale < 65) text-amber-600 @endif" />
+                                                        </td>
+                                                        {{-- Overall --}}
+                                                        <td class="py-2 pr-3 text-center">
+                                                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold
+                                                                @if($player->overall_score >= 80) bg-emerald-500 text-white
+                                                                @elseif($player->overall_score >= 70) bg-lime-500 text-white
+                                                                @elseif($player->overall_score >= 60) bg-amber-500 text-white
+                                                                @else bg-slate-300 text-slate-700
+                                                                @endif">{{ $player->overall_score }}</span>
                                                         </td>
                                                     </tr>
                                                 @endforeach
@@ -634,6 +539,11 @@
                                         @endforeach
                                     </tbody>
                                 </table>
+                            </div>
+
+                            {{-- Coach Assistant Panel (mobile: own tab) --}}
+                            <div :class="{ 'hidden': activeLineupTab !== 'coach' }" class="lg:hidden">
+                                @include('partials.lineup-coach-panel')
                             </div>
                         </div>
                     </form>

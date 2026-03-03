@@ -9,11 +9,11 @@
         default => 'bg-slate-400',
     };
     $barHeight = match($size) {
-        'sm' => 'h-1',
+        'sm' => 'h-1.5',
         default => 'h-1.5',
     };
     $barWidth = match($size) {
-        'sm' => 'w-12',
+        'sm' => 'w-10',
         default => 'w-16',
     };
 @endphp

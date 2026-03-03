@@ -24,6 +24,7 @@ export default function lineupManager(config) {
         gridConfig: config.gridConfig || null,
         pitchPositions: config.currentPitchPositions || {},
         positioningSlotId: null,
+        assigningSlotId: null, // empty slot waiting for a player to be picked from the list
         draggingSlotId: null,
         dragPosition: null, // { x, y } in percentage coordinates during drag
         _pitchEl: null, // reference to pitch container DOM element
@@ -299,13 +300,24 @@ export default function lineupManager(config) {
         toggle(id, isUnavailable) {
             if (isUnavailable) return;
 
+            // If an empty slot is waiting for assignment, assign this player to it
+            if (this.assigningSlotId !== null && !this.isSelected(id)) {
+                if (this.selectedCount < 11) {
+                    this.selectedPlayers.push(id);
+                    this.manualAssignments = { ...this.manualAssignments, [this.assigningSlotId]: id };
+                }
+                this.assigningSlotId = null;
+                return;
+            }
+
             if (this.isSelected(id)) {
+                // Preserve current slot assignments so remaining players don't get reshuffled
+                this._preserveCurrentAssignments(id);
                 this.selectedPlayers = this.selectedPlayers.filter(p => p !== id);
-                // Remove any manual assignments for this player
-                this._removePlayerFromManualAssignments(id);
             } else if (this.selectedCount < 11) {
                 this.selectedPlayers.push(id);
             }
+            this.assigningSlotId = null;
         },
 
         quickSelect() {
@@ -313,6 +325,7 @@ export default function lineupManager(config) {
             this.manualAssignments = {};
             this.pitchPositions = {};
             this.positioningSlotId = null;
+            this.assigningSlotId = null;
         },
 
         clearSelection() {
@@ -320,6 +333,7 @@ export default function lineupManager(config) {
             this.manualAssignments = {};
             this.pitchPositions = {};
             this.positioningSlotId = null;
+            this.assigningSlotId = null;
         },
 
         async updateAutoLineup() {
@@ -331,14 +345,16 @@ export default function lineupManager(config) {
                 this.manualAssignments = {};
                 this.pitchPositions = {};
                 this.positioningSlotId = null;
+                this.assigningSlotId = null;
             } catch (e) {
                 console.error('Failed to fetch auto lineup', e);
             }
         },
 
         removeFromSlot(playerId) {
+            // Preserve current slot assignments so remaining players don't get reshuffled
+            this._preserveCurrentAssignments(playerId);
             this.selectedPlayers = this.selectedPlayers.filter(p => p !== playerId);
-            this._removePlayerFromManualAssignments(playerId);
         },
 
         // Find which slot a player is assigned to (internal code for compatibility lookup)
@@ -377,9 +393,9 @@ export default function lineupManager(config) {
 
             switch (tc.pattern) {
                 case 'stripes':
-                    return `background: repeating-linear-gradient(90deg, ${p} 0px, ${p} 6px, ${s} 6px, ${s} 12px)`;
+                    return `background: linear-gradient(90deg, ${s} 3px, ${p} 3px, ${p} 9px, ${s} 9px); background-size: 12px 100%; background-position: center`;
                 case 'hoops':
-                    return `background: repeating-linear-gradient(0deg, ${p} 0px, ${p} 6px, ${s} 6px, ${s} 12px)`;
+                    return `background: linear-gradient(0deg, ${s} 3px, ${p} 3px, ${p} 9px, ${s} 9px); background-size: 100% 12px; background-position: center`;
                 case 'sash':
                     return `background: linear-gradient(135deg, ${p} 0%, ${p} 35%, ${s} 35%, ${s} 65%, ${p} 65%, ${p} 100%)`;
                 case 'bar':
@@ -424,6 +440,20 @@ export default function lineupManager(config) {
             const g = parseInt(hex.slice(3, 5), 16) / 255;
             const b = parseInt(hex.slice(5, 7), 16) / 255;
             return 0.299 * r + 0.587 * g + 0.114 * b;
+        },
+
+        // Snapshot all current slot assignments (manual + auto) as manual,
+        // excluding a specific player. This prevents remaining players from
+        // being reshuffled when someone is deselected.
+        _preserveCurrentAssignments(excludePlayerId) {
+            const current = this.slotAssignments;
+            const newManual = {};
+            for (const slot of current) {
+                if (slot.player && slot.player.id !== excludePlayerId) {
+                    newManual[slot.id] = slot.player.id;
+                }
+            }
+            this.manualAssignments = newManual;
         },
 
         // Remove a player from all manual assignments
@@ -511,6 +541,7 @@ export default function lineupManager(config) {
         selectForRepositioning(slotId) {
             const slot = this.currentSlots.find(s => s.id === slotId);
             if (slot && slot.role === 'Goalkeeper') return;
+            this.assigningSlotId = null;
             if (this.positioningSlotId === slotId) {
                 this.positioningSlotId = null;
             } else {
