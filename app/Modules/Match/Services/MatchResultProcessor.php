@@ -80,8 +80,11 @@ class MatchResultProcessor
         // 5. Batch process player stats across all matches
         $this->batchProcessPlayerStats($game, $matchResults, $matches, $competitions, $deferMatchId);
 
-        // 6. Bulk update appearances across all matches
-        $this->bulkUpdateAppearances($matches);
+        // 6. Bulk update appearances across all matches (including auto-subbed-in players)
+        $this->bulkUpdateAppearances($matches, $matchResults);
+
+        // 6b. Record auto-substitutions in match substitutions JSON
+        $this->recordAutoSubstitutions($matches, $matchResults);
 
         // 7. Batch update conditions for all matches
         $this->batchUpdateConditions($matches, $matchResults, $allPlayers ?? collect(), $previousDate);
@@ -418,14 +421,24 @@ class MatchResultProcessor
     }
 
     /**
-     * Bulk update appearances — 1 query for all lineup players across all matches.
+     * Bulk update appearances — 1 query for all lineup + auto-subbed-in players across all matches.
      */
-    private function bulkUpdateAppearances($matches): void
+    private function bulkUpdateAppearances($matches, array $matchResults): void
     {
         $allLineupIds = [];
         foreach ($matches as $match) {
             $allLineupIds = array_merge($allLineupIds, $match->home_lineup ?? [], $match->away_lineup ?? []);
         }
+
+        // Include auto-subbed-in players (they also made an appearance)
+        foreach ($matchResults as $result) {
+            foreach ($result['events'] as $eventData) {
+                if ($eventData['event_type'] === 'substitution' && isset($eventData['metadata']['player_in_id'])) {
+                    $allLineupIds[] = $eventData['metadata']['player_in_id'];
+                }
+            }
+        }
+
         $allLineupIds = array_unique($allLineupIds);
 
         if (! empty($allLineupIds)) {
@@ -433,6 +446,35 @@ class MatchResultProcessor
                 'appearances' => DB::raw('appearances + 1'),
                 'season_appearances' => DB::raw('season_appearances + 1'),
             ]);
+        }
+    }
+
+    /**
+     * Record auto-substitutions from match simulation in each match's substitutions JSON column.
+     */
+    private function recordAutoSubstitutions($matches, array $matchResults): void
+    {
+        foreach ($matchResults as $result) {
+            $autoSubs = [];
+            foreach ($result['events'] as $eventData) {
+                if ($eventData['event_type'] === 'substitution' && isset($eventData['metadata']['player_in_id'])) {
+                    $autoSubs[] = [
+                        'team_id' => $eventData['team_id'],
+                        'player_out_id' => $eventData['game_player_id'],
+                        'player_in_id' => $eventData['metadata']['player_in_id'],
+                        'minute' => $eventData['minute'],
+                        'auto' => true,
+                    ];
+                }
+            }
+
+            if (! empty($autoSubs)) {
+                $match = $matches->get($result['matchId']);
+                if ($match) {
+                    $existing = $match->substitutions ?? [];
+                    $match->update(['substitutions' => array_merge($existing, $autoSubs)]);
+                }
+            }
         }
     }
 

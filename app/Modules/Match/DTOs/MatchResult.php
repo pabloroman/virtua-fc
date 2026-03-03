@@ -69,6 +69,14 @@ readonly class MatchResult
     }
 
     /**
+     * Get all substitution events.
+     */
+    public function substitutions(): Collection
+    {
+        return $this->events->filter(fn (MatchEventData $e) => $e->type === 'substitution');
+    }
+
+    /**
      * Get events for a specific team.
      */
     public function eventsForTeam(string $teamId): Collection

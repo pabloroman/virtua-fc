@@ -41,9 +41,11 @@ class MatchResimulationService
         Collection $homePlayers,
         Collection $awayPlayers,
         array $allSubstitutions = [],
+        ?Collection $homeBenchPlayers = null,
+        ?Collection $awayBenchPlayers = null,
     ): ResimulationResult {
-        return DB::transaction(function () use ($match, $game, $minute, $homePlayers, $awayPlayers, $allSubstitutions) {
-            return $this->doResimulate($match, $game, $minute, $homePlayers, $awayPlayers, $allSubstitutions);
+        return DB::transaction(function () use ($match, $game, $minute, $homePlayers, $awayPlayers, $allSubstitutions, $homeBenchPlayers, $awayBenchPlayers) {
+            return $this->doResimulate($match, $game, $minute, $homePlayers, $awayPlayers, $allSubstitutions, $homeBenchPlayers, $awayBenchPlayers);
         });
     }
 
@@ -54,6 +56,8 @@ class MatchResimulationService
         Collection $homePlayers,
         Collection $awayPlayers,
         array $allSubstitutions = [],
+        ?Collection $homeBenchPlayers = null,
+        ?Collection $awayBenchPlayers = null,
     ): ResimulationResult {
         $competitionId = $match->competition_id;
 
@@ -139,6 +143,8 @@ class MatchResimulationService
             $awayPressing,
             $homeDefLine,
             $awayDefLine,
+            $homeBenchPlayers,
+            $awayBenchPlayers,
         );
 
         // 9. Calculate new final score
@@ -172,6 +178,8 @@ class MatchResimulationService
         Collection $homePlayers,
         Collection $awayPlayers,
         array $allSubstitutions = [],
+        ?Collection $homeBenchPlayers = null,
+        ?Collection $awayBenchPlayers = null,
     ): ResimulationResult {
         return DB::transaction(function () use ($match, $game, $minute, $homePlayers, $awayPlayers, $allSubstitutions) {
             $competitionId = $match->competition_id;

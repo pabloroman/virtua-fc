@@ -14,6 +14,7 @@ use App\Models\GamePlayer;
 use App\Models\Team;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use App\Support\PositionMapper;
 use App\Modules\Squad\Services\InjuryService;
 use App\Modules\Match\Services\EnergyCalculator;
 
@@ -110,6 +111,8 @@ class MatchSimulator
         ?PressingIntensity $awayPressing = null,
         ?DefensiveLineHeight $homeDefLine = null,
         ?DefensiveLineHeight $awayDefLine = null,
+        ?Collection $homeBenchPlayers = null,
+        ?Collection $awayBenchPlayers = null,
     ): MatchResult {
         return $this->simulateRemainder(
             $homeTeam, $awayTeam,
@@ -124,6 +127,8 @@ class MatchSimulator
             awayPressing: $awayPressing,
             homeDefLine: $homeDefLine,
             awayDefLine: $awayDefLine,
+            homeBenchPlayers: $homeBenchPlayers,
+            awayBenchPlayers: $awayBenchPlayers,
         );
     }
 
@@ -677,6 +682,8 @@ class MatchSimulator
         ?PressingIntensity $awayPressing = null,
         ?DefensiveLineHeight $homeDefLine = null,
         ?DefensiveLineHeight $awayDefLine = null,
+        ?Collection $homeBenchPlayers = null,
+        ?Collection $awayBenchPlayers = null,
     ): MatchResult {
         $this->resetMatchPerformance();
 
@@ -699,11 +706,11 @@ class MatchSimulator
         $matchFraction = max(0, (93 - $fromMinute)) / 93;
 
         $events = collect();
+        $baseGoals = config('match_simulation.base_goals', 1.3);
 
+        // Preliminary strength calculation (used for card bias and as final strength if no injury sub)
         $homeStrength = $this->calculateTeamStrength($homePlayers, $fromMinute, $homeEntryMinutes, $homeTacticalDrain);
         $awayStrength = $this->calculateTeamStrength($awayPlayers, $fromMinute, $awayEntryMinutes, $awayTacticalDrain);
-
-        $baseGoals = config('match_simulation.base_goals', 1.3);
 
         [$homeExpectedGoals, $awayExpectedGoals] = $this->calculateBaseExpectedGoals(
             $homeStrength, $awayStrength,
@@ -724,10 +731,8 @@ class MatchSimulator
             $homePlayers, $awayPlayers,
         );
 
-        $homeStrikerBonus = $this->calculateStrikerBonus($homePlayers) * $matchFraction;
-        $awayStrikerBonus = $this->calculateStrikerBonus($awayPlayers) * $matchFraction;
-        $homeExpectedGoals += $homeStrikerBonus;
-        $awayExpectedGoals += $awayStrikerBonus;
+        $homeExpectedGoals += $this->calculateStrikerBonus($homePlayers) * $matchFraction;
+        $awayExpectedGoals += $this->calculateStrikerBonus($awayPlayers) * $matchFraction;
 
         $homeScore = $this->poissonRandom($homeExpectedGoals);
         $awayScore = $this->poissonRandom($awayExpectedGoals);
@@ -738,6 +743,67 @@ class MatchSimulator
             $homeCardEvents = $this->generateCardEventsInRange($homeTeam->id, $homePlayers, -$goalDifference, $fromMinute + 1, 93, $matchFraction, $existingYellowPlayerIds);
             $awayCardEvents = $this->generateCardEventsInRange($awayTeam->id, $awayPlayers, $goalDifference, $fromMinute + 1, 93, $matchFraction, $existingYellowPlayerIds);
             $events = $events->merge($homeCardEvents)->merge($awayCardEvents);
+
+            // Generate injuries and auto-substitute before goal generation
+            // so team strength reflects the replacement player
+            $injuryMaxMinute = 85;
+            $lineupChanged = false;
+
+            if (! in_array($homeTeam->id, $existingInjuryTeamIds) && $fromMinute + 1 <= $injuryMaxMinute) {
+                $homeInjuryEvents = $this->generateInjuryEventsInRange($homeTeam->id, $homePlayers, $fromMinute + 1, $injuryMaxMinute, $game);
+                $events = $events->merge($homeInjuryEvents);
+                if ($homeInjuryEvents->isNotEmpty() && $homeBenchPlayers !== null && $homeBenchPlayers->isNotEmpty()) {
+                    [$subEvents, $homePlayers, $homeBenchPlayers] = $this->processInjurySubstitution(
+                        $homeTeam->id, $homeInjuryEvents, $homePlayers, $homeBenchPlayers
+                    );
+                    $events = $events->merge($subEvents);
+                    if ($subEvents->isNotEmpty()) {
+                        $lineupChanged = true;
+                    }
+                }
+            }
+            if (! in_array($awayTeam->id, $existingInjuryTeamIds) && $fromMinute + 1 <= $injuryMaxMinute) {
+                $awayInjuryEvents = $this->generateInjuryEventsInRange($awayTeam->id, $awayPlayers, $fromMinute + 1, $injuryMaxMinute, $game);
+                $events = $events->merge($awayInjuryEvents);
+                if ($awayInjuryEvents->isNotEmpty() && $awayBenchPlayers !== null && $awayBenchPlayers->isNotEmpty()) {
+                    [$subEvents, $awayPlayers, $awayBenchPlayers] = $this->processInjurySubstitution(
+                        $awayTeam->id, $awayInjuryEvents, $awayPlayers, $awayBenchPlayers
+                    );
+                    $events = $events->merge($subEvents);
+                    if ($subEvents->isNotEmpty()) {
+                        $lineupChanged = true;
+                    }
+                }
+            }
+
+            // Recalculate strength and goals with updated lineup if an injury sub occurred
+            if ($lineupChanged) {
+                $homeStrength = $this->calculateTeamStrength($homePlayers, $fromMinute, $homeEntryMinutes, $homeTacticalDrain);
+                $awayStrength = $this->calculateTeamStrength($awayPlayers, $fromMinute, $awayEntryMinutes, $awayTacticalDrain);
+
+                [$homeExpectedGoals, $awayExpectedGoals] = $this->calculateBaseExpectedGoals(
+                    $homeStrength, $awayStrength,
+                    $homeFormation, $awayFormation,
+                    $homeMentality, $awayMentality,
+                    $baseGoals, $matchFraction,
+                );
+
+                [$homeExpectedGoals, $awayExpectedGoals] = $this->applyTacticalModifiers(
+                    $homeExpectedGoals, $awayExpectedGoals,
+                    $homePlayingStyle, $awayPlayingStyle,
+                    $homePressing, $awayPressing,
+                    $homeDefLine, $awayDefLine,
+                    $homeMentality, $awayMentality,
+                    $effectiveMinute,
+                    $homePlayers, $awayPlayers,
+                );
+
+                $homeExpectedGoals += $this->calculateStrikerBonus($homePlayers) * $matchFraction;
+                $awayExpectedGoals += $this->calculateStrikerBonus($awayPlayers) * $matchFraction;
+
+                $homeScore = $this->poissonRandom($homeExpectedGoals);
+                $awayScore = $this->poissonRandom($awayExpectedGoals);
+            }
 
             // Check for red cards — if found, split goal generation into two periods
             $homeRedCard = $homeCardEvents->first(fn (MatchEventData $e) => $e->type === 'red_card');
@@ -775,15 +841,6 @@ class MatchSimulator
                     $awayPlayers, $homePlayers, $fromMinute + 1, 93
                 );
                 $events = $events->merge($homeGoalEvents)->merge($awayGoalEvents);
-            }
-
-            if (! in_array($homeTeam->id, $existingInjuryTeamIds)) {
-                $homeInjuryEvents = $this->generateInjuryEventsInRange($homeTeam->id, $homePlayers, $fromMinute + 1, 93, $game);
-                $events = $events->merge($homeInjuryEvents);
-            }
-            if (! in_array($awayTeam->id, $existingInjuryTeamIds)) {
-                $awayInjuryEvents = $this->generateInjuryEventsInRange($awayTeam->id, $awayPlayers, $fromMinute + 1, 93, $game);
-                $events = $events->merge($awayInjuryEvents);
             }
 
             $events = $events->sortBy('minute')->values();
@@ -937,6 +994,86 @@ class MatchSimulator
         }
 
         return [$homeScore, $awayScore, $goalEvents];
+    }
+
+    /**
+     * Process an injury substitution: replace the injured player with the best bench option.
+     *
+     * @return array{0: Collection, 1: Collection, 2: Collection} [subEvents, updatedLineup, updatedBench]
+     */
+    private function processInjurySubstitution(
+        string $teamId,
+        Collection $injuryEvents,
+        Collection $lineup,
+        Collection $bench,
+    ): array {
+        $subEvents = collect();
+
+        // Only process the first injury (max 1 per team per match)
+        $injury = $injuryEvents->first();
+        if (! $injury) {
+            return [$subEvents, $lineup, $bench];
+        }
+
+        $injuredPlayer = $lineup->firstWhere('id', $injury->gamePlayerId);
+        if (! $injuredPlayer) {
+            return [$subEvents, $lineup, $bench];
+        }
+
+        $replacement = $this->findBestBenchReplacement($injuredPlayer, $bench);
+        if (! $replacement) {
+            return [$subEvents, $lineup, $bench];
+        }
+
+        // Create substitution event at injury minute + 1
+        $subMinute = min($injury->minute + 1, 93);
+        $subEvents->push(MatchEventData::substitution($teamId, $injuredPlayer->id, $replacement->id, $subMinute));
+
+        // Update lineup: remove injured, add replacement
+        $lineup = $lineup->reject(fn ($p) => $p->id === $injuredPlayer->id)->push($replacement)->values();
+
+        // Update bench: remove replacement
+        $bench = $bench->reject(fn ($p) => $p->id === $replacement->id)->values();
+
+        return [$subEvents, $lineup, $bench];
+    }
+
+    /**
+     * Find the best bench player to replace an injured player.
+     *
+     * Priority: same exact position > same position group > best available (excluding GKs for outfield).
+     */
+    private function findBestBenchReplacement(GamePlayer $injuredPlayer, Collection $benchPlayers): ?GamePlayer
+    {
+        if ($benchPlayers->isEmpty()) {
+            return null;
+        }
+
+        $injuredPosition = $injuredPlayer->position;
+        $injuredGroup = PositionMapper::getPositionGroup($injuredPosition);
+
+        // Priority 1: Same exact position, highest overall score
+        $samePosition = $benchPlayers->filter(fn ($p) => $p->position === $injuredPosition);
+        if ($samePosition->isNotEmpty()) {
+            return $samePosition->sortByDesc(fn ($p) => $p->overall_score)->first();
+        }
+
+        // Priority 2: Same position group, highest overall score
+        $sameGroup = $benchPlayers->filter(fn ($p) => PositionMapper::getPositionGroup($p->position) === $injuredGroup);
+        if ($sameGroup->isNotEmpty()) {
+            return $sameGroup->sortByDesc(fn ($p) => $p->overall_score)->first();
+        }
+
+        // Priority 3: Best available (exclude GKs unless injured player was GK)
+        $candidates = $injuredGroup === 'Goalkeeper'
+            ? $benchPlayers
+            : $benchPlayers->reject(fn ($p) => $p->position === 'Goalkeeper');
+
+        if ($candidates->isEmpty()) {
+            $candidates = $benchPlayers;
+        }
+
+        return $candidates->sortByDesc(fn ($p) => $p->overall_score)->first();
     }
 
     /**

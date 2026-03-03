@@ -63,13 +63,38 @@ class TacticalChangeService
 
         // Build active lineup (applying previous subs)
         $userLineup = $this->substitutionService->buildActiveLineup($match, $game->team_id, $previousSubstitutions);
-        $opponentLineupIds = $isUserHome ? ($match->away_lineup ?? []) : ($match->home_lineup ?? []);
-        $opponentPlayers = GamePlayer::with('player')
-            ->whereIn('id', $opponentLineupIds)
+
+        // Load opponent full squad to derive both lineup and bench
+        $opponentTeamId = $isUserHome ? $match->away_team_id : $match->home_team_id;
+        $opponentSquad = GamePlayer::with('player')
+            ->where('game_id', $game->id)
+            ->where('team_id', $opponentTeamId)
             ->get();
+
+        $opponentLineupIds = $isUserHome ? ($match->away_lineup ?? []) : ($match->home_lineup ?? []);
+        $opponentPlayers = $opponentSquad->filter(fn ($p) => in_array($p->id, $opponentLineupIds));
+        $opponentBench = $opponentSquad
+            ->reject(fn ($p) => in_array($p->id, $opponentLineupIds))
+            ->reject(fn ($p) => $p->isInjured($match->scheduled_date))
+            ->values();
+
+        // User bench: squad minus active lineup minus subbed-out players minus injured
+        $activeLineupIds = $userLineup->pluck('id')->all();
+        $subbedOutIds = array_column($previousSubstitutions, 'playerOutId');
+        $userSquad = GamePlayer::with('player')
+            ->where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->get();
+        $userBench = $userSquad
+            ->reject(fn ($p) => in_array($p->id, $activeLineupIds))
+            ->reject(fn ($p) => in_array($p->id, $subbedOutIds))
+            ->reject(fn ($p) => $p->isInjured($match->scheduled_date))
+            ->values();
 
         $homePlayers = $isUserHome ? $userLineup : $opponentPlayers;
         $awayPlayers = $isUserHome ? $opponentPlayers : $userLineup;
+        $homeBench = $isUserHome ? $userBench : $opponentBench;
+        $awayBench = $isUserHome ? $opponentBench : $userBench;
 
         // Capture effective values before re-simulation (which updates match scores in-place)
         $effectiveFormation = $match->{"{$prefix}_formation"};
@@ -77,9 +102,9 @@ class TacticalChangeService
 
         // Re-simulate with updated tactics (pass previous subs for energy calculation)
         if ($isExtraTime) {
-            $result = $this->resimulationService->resimulateExtraTime($match, $game, $minute, $homePlayers, $awayPlayers, $previousSubstitutions);
+            $result = $this->resimulationService->resimulateExtraTime($match, $game, $minute, $homePlayers, $awayPlayers, $previousSubstitutions, $homeBench, $awayBench);
         } else {
-            $result = $this->resimulationService->resimulate($match, $game, $minute, $homePlayers, $awayPlayers, $previousSubstitutions);
+            $result = $this->resimulationService->resimulate($match, $game, $minute, $homePlayers, $awayPlayers, $previousSubstitutions, $homeBench, $awayBench);
         }
 
         $response = [

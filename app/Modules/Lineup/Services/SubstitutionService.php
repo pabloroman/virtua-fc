@@ -166,19 +166,44 @@ class SubstitutionService
         );
 
         $userLineup = $this->buildActiveLineup($match, $game->team_id, $allSubs);
-        $opponentLineupIds = $isUserHome ? ($match->away_lineup ?? []) : ($match->home_lineup ?? []);
-        $opponentPlayers = GamePlayer::with('player')
-            ->whereIn('id', $opponentLineupIds)
+
+        // Load opponent full squad (1 query) to derive both lineup and bench
+        $opponentTeamId = $isUserHome ? $match->away_team_id : $match->home_team_id;
+        $opponentSquad = GamePlayer::with('player')
+            ->where('game_id', $game->id)
+            ->where('team_id', $opponentTeamId)
             ->get();
+
+        $opponentLineupIds = $isUserHome ? ($match->away_lineup ?? []) : ($match->home_lineup ?? []);
+        $opponentPlayers = $opponentSquad->filter(fn ($p) => in_array($p->id, $opponentLineupIds));
+        $opponentBench = $opponentSquad
+            ->reject(fn ($p) => in_array($p->id, $opponentLineupIds))
+            ->reject(fn ($p) => $p->isInjured($match->scheduled_date))
+            ->values();
+
+        // User bench: squad minus active lineup minus subbed-out players minus injured
+        $activeLineupIds = $userLineup->pluck('id')->all();
+        $subbedOutIds = array_column($allSubs, 'playerOutId');
+        $userSquad = GamePlayer::with('player')
+            ->where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->get();
+        $userBench = $userSquad
+            ->reject(fn ($p) => in_array($p->id, $activeLineupIds))
+            ->reject(fn ($p) => in_array($p->id, $subbedOutIds))
+            ->reject(fn ($p) => $p->isInjured($match->scheduled_date))
+            ->values();
 
         $homePlayers = $isUserHome ? $userLineup : $opponentPlayers;
         $awayPlayers = $isUserHome ? $opponentPlayers : $userLineup;
+        $homeBench = $isUserHome ? $userBench : $opponentBench;
+        $awayBench = $isUserHome ? $opponentBench : $userBench;
 
         // Delegate re-simulation to shared service (pass all subs for energy calculation)
         if ($isExtraTime) {
-            $result = $this->resimulationService->resimulateExtraTime($match, $game, $minute, $homePlayers, $awayPlayers, $allSubs);
+            $result = $this->resimulationService->resimulateExtraTime($match, $game, $minute, $homePlayers, $awayPlayers, $allSubs, $homeBench, $awayBench);
         } else {
-            $result = $this->resimulationService->resimulate($match, $game, $minute, $homePlayers, $awayPlayers, $allSubs);
+            $result = $this->resimulationService->resimulate($match, $game, $minute, $homePlayers, $awayPlayers, $allSubs, $homeBench, $awayBench);
         }
 
         // Increment appearances and record each sub in the batch
