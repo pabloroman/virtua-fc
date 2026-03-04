@@ -39,7 +39,7 @@
             <div class="bg-slate-800 text-white px-4 py-3 sm:px-6 sm:py-4">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3 min-w-0">
-                        <h2 class="text-sm sm:text-base font-bold uppercase tracking-wide truncate">{{ __('game.tactical_center') }}</h2>
+                        <h2 class="text-sm sm:text-base font-semibold uppercase tracking-wide truncate">{{ __('game.tactical_center') }}</h2>
                         <span class="inline-flex items-center gap-1.5 text-xs font-semibold rounded-full px-2.5 py-0.5 bg-amber-500/20 text-amber-300 shrink-0">
                             <span class="relative flex h-1.5 w-1.5">
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
@@ -113,10 +113,13 @@
             </div>
 
             {{-- Tab panels --}}
-            <div class="max-h-[70vh] sm:max-h-[65vh] overflow-y-auto">
+            <div class="max-h-[70vh] sm:max-h-[50vh] overflow-y-auto">
+              <div class="grid [&>div]:col-start-1 [&>div]:row-start-1">
 
                 {{-- Substitutions tab --}}
-                <div x-show="tacticalTab === 'substitutions'" class="p-4 sm:p-6">
+                <div class="p-4 sm:p-6 transition-opacity duration-150"
+                     :class="tacticalTab === 'substitutions' ? 'opacity-100 relative z-10' : 'opacity-0 invisible pointer-events-none'"
+                >
 
                     {{-- Injury alert banner --}}
                     <div x-show="injuryAlertPlayer" x-transition class="flex items-center gap-2.5 p-3 mb-4 bg-red-50 border border-red-200 rounded-lg">
@@ -135,11 +138,41 @@
                         </button>
                     </div>
 
-                    {{-- Window + sub budget summary --}}
+                    {{-- Window + sub budget summary + action buttons --}}
                     <div class="flex items-center gap-3 mb-4 text-xs text-slate-500">
                         <span>{{ __('game.sub_title') }}: <span class="font-semibold text-slate-700" x-text="substitutionsMade.length + '/' + effectiveMaxSubstitutions"></span></span>
                         <span class="text-slate-300">&middot;</span>
                         <span>{{ __('game.sub_windows') }}: <span class="font-semibold text-slate-700" x-text="windowsUsed + '/' + effectiveMaxWindows"></span></span>
+
+                        <div class="ml-auto flex items-center gap-1.5">
+                            <x-secondary-button
+                                size="xs"
+                                @click="resetSubstitutions()"
+                                x-show="selectedPlayerOut || selectedPlayerIn || pendingSubs.length > 0"
+                            >
+                                {{ __('game.sub_reset') }}
+                            </x-secondary-button>
+
+                            <x-secondary-button
+                                size="xs"
+                                @click="addPendingSub()"
+                                x-show="selectedPlayerOut && selectedPlayerIn && canAddMoreToPending && subsRemaining > 1"
+                            >
+                                {{ __('game.sub_add_another') }}
+                            </x-secondary-button>
+
+                            <x-primary-button
+                                size="xs"
+                                color="sky"
+                                type="button"
+                                @click="confirmSubstitutions()"
+                                x-bind:disabled="(!selectedPlayerOut || !selectedPlayerIn) && pendingSubs.length === 0 || subProcessing"
+                                x-show="(canSubstitute && hasWindowsLeft) || pendingSubs.length > 0"
+                            >
+                                <span x-show="!subProcessing">{{ __('game.sub_confirm') }}</span>
+                                <span x-show="subProcessing">{{ __('game.sub_processing') }}</span>
+                            </x-primary-button>
+                        </div>
                     </div>
 
                     {{-- All windows exhausted --}}
@@ -190,7 +223,7 @@
                                 {{-- Player Out --}}
                                 <div>
                                     <h4 class="text-xs font-semibold text-slate-500 uppercase mb-2">{{ __('game.sub_player_out') }}</h4>
-                                    <div class="space-y-1 max-h-52 overflow-y-auto">
+                                    <div class="space-y-1 max-h-52 sm:max-h-80 overflow-y-auto">
                                         <template x-for="player in availableLineupForPicker" :key="player.id">
                                             <button
                                                 @click="selectedPlayerOut = player"
@@ -203,7 +236,7 @@
                                                       :class="getPositionBadgeColor(player.positionGroup)">
                                                     <span class="skew-x-12" x-text="player.positionAbbr"></span>
                                                 </span>
-                                                <span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold shrink-0"
+                                                <span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-semibold shrink-0"
                                                       :class="getOvrBadgeClasses(player.overallScore)"
                                                       x-text="player.overallScore"></span>
                                                 <span class="flex-1 truncate font-medium" x-text="player.name"></span>
@@ -231,7 +264,7 @@
                                 {{-- Player In --}}
                                 <div>
                                     <h4 class="text-xs font-semibold text-slate-500 uppercase mb-2">{{ __('game.sub_player_in') }}</h4>
-                                    <div class="space-y-1 max-h-52 overflow-y-auto">
+                                    <div class="space-y-1 max-h-52 sm:max-h-80 overflow-y-auto">
                                         <template x-for="player in availableBenchForPicker" :key="player.id">
                                             <button
                                                 @click="selectedPlayerIn = player"
@@ -246,7 +279,7 @@
                                                 </span>
                                                 <span class="flex-1 truncate font-medium" x-text="player.name"></span>
                                                 {{-- OVR badge with fitness/morale tooltip --}}
-                                                <span class="ml-auto inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold shrink-0"
+                                                <span class="ml-auto inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-semibold shrink-0"
                                                       :class="getOvrBadgeClasses(player.overallScore)"
                                                       :x-tooltip="'{{ __('game.ovr_fitness') }}: ' + player.fitness + ' · {{ __('game.ovr_morale') }}: ' + player.morale"
                                                       x-text="player.overallScore"></span>
@@ -256,52 +289,6 @@
                                 </div>
                             </div>
 
-                            {{-- Add to pending / Confirm --}}
-                            <div class="flex items-center justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
-                                <x-secondary-button
-                                    @click="resetSubstitutions()"
-                                    x-show="selectedPlayerOut || selectedPlayerIn || pendingSubs.length > 0"
-                                >
-                                    {{ __('game.sub_reset') }}
-                                </x-secondary-button>
-
-                                {{-- "Add another" button: queues current pair and keeps panel open --}}
-                                <x-secondary-button
-                                    @click="addPendingSub()"
-                                    x-show="selectedPlayerOut && selectedPlayerIn && canAddMoreToPending && subsRemaining > 1"
-                                >
-                                    {{ __('game.sub_add_another') }}
-                                </x-secondary-button>
-
-                                {{-- Confirm button: sends the whole batch --}}
-                                <x-primary-button
-                                    color="sky"
-                                    type="button"
-                                    @click="confirmSubstitutions()"
-                                    x-bind:disabled="(!selectedPlayerOut || !selectedPlayerIn) && pendingSubs.length === 0 || subProcessing"
-                                >
-                                    <span x-show="!subProcessing">{{ __('game.sub_confirm') }}</span>
-                                    <span x-show="subProcessing">{{ __('game.sub_processing') }}</span>
-                                </x-primary-button>
-                            </div>
-                        </div>
-                    </template>
-
-                    {{-- Confirm pending subs when picker is hidden (windows/subs exhausted but pending exists) --}}
-                    <template x-if="pendingSubs.length > 0 && (!canSubstitute || !hasWindowsLeft)">
-                        <div class="flex items-center justify-end gap-2 mt-4 pt-4 border-t border-slate-100">
-                            <x-secondary-button @click="resetSubstitutions()">
-                                {{ __('game.sub_reset') }}
-                            </x-secondary-button>
-                            <x-primary-button
-                                color="sky"
-                                type="button"
-                                @click="confirmSubstitutions()"
-                                x-bind:disabled="subProcessing"
-                            >
-                                <span x-show="!subProcessing">{{ __('game.sub_confirm') }}</span>
-                                <span x-show="subProcessing">{{ __('game.sub_processing') }}</span>
-                            </x-primary-button>
                         </div>
                     </template>
 
@@ -325,7 +312,9 @@
                 </div>
 
                 {{-- Tactics tab --}}
-                <div x-show="tacticalTab === 'tactics'" class="p-4 sm:p-6">
+                <div class="p-4 sm:p-6 transition-opacity duration-150"
+                     :class="tacticalTab === 'tactics' ? 'opacity-100 relative z-10' : 'opacity-0 invisible pointer-events-none'"
+                >
                     <div class="space-y-5">
                         {{-- Formation picker --}}
                         <div>
@@ -337,7 +326,7 @@
                                 <template x-for="formation in availableFormations" :key="formation.value">
                                     <button
                                         @click="pendingFormation = formation.value"
-                                        class="px-3 py-2.5 rounded-lg text-sm font-bold tabular-nums border-2 transition-all min-h-[44px]"
+                                        class="px-3 py-2.5 rounded-lg text-sm font-semibold tabular-nums border-2 transition-all min-h-[44px]"
                                         :class="(pendingFormation ?? activeFormation) === formation.value
                                             ? 'bg-slate-800 text-white border-slate-800'
                                             : 'bg-white text-slate-700 border-slate-200 hover:border-slate-400'"
@@ -355,47 +344,30 @@
                                 <span x-tooltip.raw="{{ __('game.tactical_mentality_hint') }}" class="cursor-help shrink-0"><svg class="w-3.5 h-3.5 text-slate-300 hover:text-slate-500" fill="currentColor" viewBox="0 0 512 512"><path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zm0-336c-17.7 0-32 14.3-32 32 0 13.3-10.7 24-24 24s-24-10.7-24-24c0-44.2 35.8-80 80-80s80 35.8 80 80c0 47.2-36 67.2-56 74.5l0 3.8c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-8.1c0-20.5 14.8-35.2 30.1-40.2 6.4-2.1 13.2-5.5 18.2-10.3 4.3-4.2 7.7-10 7.7-19.6 0-17.7-14.3-32-32-32zM224 368a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg></span>
                             </h4>
                             <div class="grid grid-cols-3 gap-2">
-                                {{-- Defensive --}}
                                 <button
                                     @click="pendingMentality = 'defensive'"
-                                    class="flex flex-col items-center gap-1.5 px-3 py-3 rounded-lg border-2 transition-all min-h-[44px]"
+                                    class="px-3 py-2.5 rounded-lg text-sm font-semibold border-2 transition-all min-h-[44px]"
                                     :class="(pendingMentality ?? activeMentality) === 'defensive'
-                                        ? 'bg-blue-100 text-blue-800 border-blue-500'
-                                        : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'"
-                                >
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                                    </svg>
-                                    <span class="text-xs font-semibold" x-text="getMentalityLabel('defensive')"></span>
-                                </button>
-
-                                {{-- Balanced --}}
+                                        ? 'bg-slate-800 text-white border-slate-800'
+                                        : 'bg-white text-slate-700 border-slate-200 hover:border-slate-400'"
+                                    x-text="getMentalityLabel('defensive')"
+                                ></button>
                                 <button
                                     @click="pendingMentality = 'balanced'"
-                                    class="flex flex-col items-center gap-1.5 px-3 py-3 rounded-lg border-2 transition-all min-h-[44px]"
+                                    class="px-3 py-2.5 rounded-lg text-sm font-semibold border-2 transition-all min-h-[44px]"
                                     :class="(pendingMentality ?? activeMentality) === 'balanced'
-                                        ? 'bg-slate-200 text-slate-800 border-slate-500'
-                                        : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'"
-                                >
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/>
-                                    </svg>
-                                    <span class="text-xs font-semibold" x-text="getMentalityLabel('balanced')"></span>
-                                </button>
-
-                                {{-- Attacking --}}
+                                        ? 'bg-slate-800 text-white border-slate-800'
+                                        : 'bg-white text-slate-700 border-slate-200 hover:border-slate-400'"
+                                    x-text="getMentalityLabel('balanced')"
+                                ></button>
                                 <button
                                     @click="pendingMentality = 'attacking'"
-                                    class="flex flex-col items-center gap-1.5 px-3 py-3 rounded-lg border-2 transition-all min-h-[44px]"
+                                    class="px-3 py-2.5 rounded-lg text-sm font-semibold border-2 transition-all min-h-[44px]"
                                     :class="(pendingMentality ?? activeMentality) === 'attacking'
-                                        ? 'bg-red-100 text-red-800 border-red-500'
-                                        : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'"
-                                >
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                                    </svg>
-                                    <span class="text-xs font-semibold" x-text="getMentalityLabel('attacking')"></span>
-                                </button>
+                                        ? 'bg-slate-800 text-white border-slate-800'
+                                        : 'bg-white text-slate-700 border-slate-200 hover:border-slate-400'"
+                                    x-text="getMentalityLabel('attacking')"
+                                ></button>
                             </div>
                             <p class="mt-2 text-xs text-slate-400 italic min-h-[1.25rem]" x-text="getMentalityTooltip(pendingMentality ?? activeMentality)"></p>
                         </div>
@@ -410,54 +382,57 @@
                             {{-- Playing Style (In Possession) --}}
                             <div class="mb-3">
                                 <p class="text-[10px] font-medium text-slate-400 uppercase mb-1.5">{{ __('game.instructions_in_possession') }}</p>
-                                <div class="grid grid-cols-2 md:grid-cols-4 gap-1.5">
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
                                     <template x-for="style in availablePlayingStyles" :key="style.value">
                                         <button
                                             @click="pendingPlayingStyle = style.value"
-                                            class="px-2 py-2 rounded-lg border-2 text-xs font-semibold transition-all min-h-[44px]"
+                                            class="px-3 py-2.5 rounded-lg text-sm font-semibold border-2 transition-all min-h-[44px]"
                                             :class="(pendingPlayingStyle ?? activePlayingStyle) === style.value
-                                                ? 'bg-sky-100 text-sky-800 border-sky-400'
-                                                : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'"
+                                                ? 'bg-slate-800 text-white border-slate-800'
+                                                : 'bg-white text-slate-700 border-slate-200 hover:border-slate-400'"
                                             x-text="style.label"
-                                            x-tooltip="style.tooltip"
                                         ></button>
                                     </template>
                                 </div>
+                                <p class="mt-2 text-xs text-slate-400 italic min-h-[1.25rem]"
+                                   x-text="(availablePlayingStyles.find(s => s.value === (pendingPlayingStyle ?? activePlayingStyle)) || {}).tooltip || ''"></p>
                             </div>
 
                             {{-- Pressing (Out of Possession) --}}
                             <div class="mb-3">
                                 <p class="text-[10px] font-medium text-slate-400 uppercase mb-1.5">{{ __('game.instructions_out_of_possession') }}</p>
-                                <div class="grid grid-cols-3 gap-1.5">
+                                <div class="grid grid-cols-3 gap-2">
                                     <template x-for="p in availablePressing" :key="p.value">
                                         <button
                                             @click="pendingPressing = p.value"
-                                            class="px-2 py-2 rounded-lg border-2 text-xs font-semibold transition-all min-h-[44px]"
+                                            class="px-3 py-2.5 rounded-lg text-sm font-semibold border-2 transition-all min-h-[44px]"
                                             :class="(pendingPressing ?? activePressing) === p.value
-                                                ? 'bg-sky-100 text-sky-800 border-sky-400'
-                                                : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'"
+                                                ? 'bg-slate-800 text-white border-slate-800'
+                                                : 'bg-white text-slate-700 border-slate-200 hover:border-slate-400'"
                                             x-text="p.label"
-                                            x-tooltip="p.tooltip"
                                         ></button>
                                     </template>
                                 </div>
+                                <p class="mt-2 text-xs text-slate-400 italic min-h-[1.25rem]"
+                                   x-text="(availablePressing.find(p => p.value === (pendingPressing ?? activePressing)) || {}).tooltip || ''"></p>
                             </div>
 
                             {{-- Defensive Line --}}
                             <div>
-                                <div class="grid grid-cols-3 gap-1.5">
+                                <div class="grid grid-cols-3 gap-2">
                                     <template x-for="d in availableDefLine" :key="d.value">
                                         <button
                                             @click="pendingDefLine = d.value"
-                                            class="px-2 py-2 rounded-lg border-2 text-xs font-semibold transition-all min-h-[44px]"
+                                            class="px-3 py-2.5 rounded-lg text-sm font-semibold border-2 transition-all min-h-[44px]"
                                             :class="(pendingDefLine ?? activeDefLine) === d.value
-                                                ? 'bg-sky-100 text-sky-800 border-sky-400'
-                                                : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'"
+                                                ? 'bg-slate-800 text-white border-slate-800'
+                                                : 'bg-white text-slate-700 border-slate-200 hover:border-slate-400'"
                                             x-text="d.label"
-                                            x-tooltip="d.tooltip"
                                         ></button>
                                     </template>
                                 </div>
+                                <p class="mt-2 text-xs text-slate-400 italic min-h-[1.25rem]"
+                                   x-text="(availableDefLine.find(d => d.value === (pendingDefLine ?? activeDefLine)) || {}).tooltip || ''"></p>
                             </div>
                         </div>
 
@@ -482,6 +457,7 @@
                     </div>
                 </div>
 
+              </div>{{-- /grid --}}
             </div>
 
             {{-- Footer: resume match --}}

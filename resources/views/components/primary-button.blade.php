@@ -1,4 +1,4 @@
-@props(['color' => 'red'])
+@props(['color' => 'red', 'size' => 'default'])
 
 @php
 $colors = [
@@ -9,8 +9,13 @@ $colors = [
     'amber' => 'bg-amber-600 hover:bg-amber-700 focus:ring-amber-500 active:bg-amber-800',
 ];
 $colorClasses = $colors[$color] ?? $colors['red'];
+
+$sizeClasses = match($size) {
+    'xs' => 'px-2.5 py-1 text-xs rounded-md',
+    default => 'px-4 py-2 min-h-[44px] sm:min-h-0 text-sm rounded-lg',
+};
 @endphp
 
-<button {{ $attributes->merge(['type' => 'submit', 'class' => "inline-flex items-center justify-center px-4 py-2 min-h-[44px] sm:min-h-0 {$colorClasses} border border-transparent rounded-lg font-semibold text-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition ease-in-out duration-150"]) }}>
+<button {{ $attributes->merge(['type' => 'submit', 'class' => "inline-flex items-center justify-center {$sizeClasses} {$colorClasses} border border-transparent font-semibold text-white focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition ease-in-out duration-150"]) }}>
     {{ $slot }}
 </button>
