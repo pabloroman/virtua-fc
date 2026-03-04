@@ -105,7 +105,11 @@ class ShowLiveMatch
             : ($playerMatch->away_lineup ?? []);
 
         // Existing substitutions already made on this match (for page reload scenario)
-        $existingSubstitutions = $playerMatch->substitutions ?? [];
+        // Filter to user's team only — opponent auto-subs should not affect the user's count or display.
+        $existingSubstitutions = collect($playerMatch->substitutions ?? [])
+            ->filter(fn ($s) => ($s['team_id'] ?? null) === $game->team_id)
+            ->values()
+            ->all();
 
         // Build entry minutes map from existing substitutions
         $entryMinutes = collect($existingSubstitutions)
