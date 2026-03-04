@@ -288,6 +288,9 @@ class MatchdayOrchestrator
         $homePlayers = $this->getLineupPlayers($match, $allPlayers, 'home');
         $awayPlayers = $this->getLineupPlayers($match, $allPlayers, 'away');
 
+        $homeBenchPlayers = $this->getBenchPlayers($match, $allPlayers, 'home', $game);
+        $awayBenchPlayers = $this->getBenchPlayers($match, $allPlayers, 'away', $game);
+
         $homeFormation = Formation::tryFrom($match->home_formation) ?? Formation::F_4_4_2;
         $awayFormation = Formation::tryFrom($match->away_formation) ?? Formation::F_4_4_2;
         $homeMentality = Mentality::tryFrom($match->home_mentality ?? '') ?? Mentality::BALANCED;
@@ -316,6 +319,8 @@ class MatchdayOrchestrator
             $awayPressing,
             $homeDefLine,
             $awayDefLine,
+            $homeBenchPlayers,
+            $awayBenchPlayers,
         );
 
         return [
@@ -327,6 +332,24 @@ class MatchdayOrchestrator
             'competitionId' => $match->competition_id,
             'events' => $result->events->map(fn (MatchEventData $e) => $e->toArray())->all(),
         ];
+    }
+
+    /**
+     * Get bench players for a team from the already-loaded player collection.
+     * Filters out lineup players and injured players. Zero additional queries.
+     */
+    private function getBenchPlayers(GameMatch $match, $allPlayers, string $side, Game $game): \Illuminate\Support\Collection
+    {
+        $lineupField = $side . '_lineup';
+        $teamIdField = $side . '_team_id';
+
+        $lineupIds = $match->$lineupField ?? [];
+        $teamPlayers = $allPlayers->get($match->$teamIdField, collect());
+
+        return $teamPlayers
+            ->reject(fn ($player) => in_array($player->id, $lineupIds))
+            ->reject(fn ($player) => $player->isInjured($game->current_date))
+            ->values();
     }
 
     private function getLineupPlayers(GameMatch $match, $allPlayers, string $side)

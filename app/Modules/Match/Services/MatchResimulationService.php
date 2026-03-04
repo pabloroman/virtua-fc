@@ -41,9 +41,11 @@ class MatchResimulationService
         Collection $homePlayers,
         Collection $awayPlayers,
         array $allSubstitutions = [],
+        ?Collection $homeBenchPlayers = null,
+        ?Collection $awayBenchPlayers = null,
     ): ResimulationResult {
-        return DB::transaction(function () use ($match, $game, $minute, $homePlayers, $awayPlayers, $allSubstitutions) {
-            return $this->doResimulate($match, $game, $minute, $homePlayers, $awayPlayers, $allSubstitutions);
+        return DB::transaction(function () use ($match, $game, $minute, $homePlayers, $awayPlayers, $allSubstitutions, $homeBenchPlayers, $awayBenchPlayers) {
+            return $this->doResimulate($match, $game, $minute, $homePlayers, $awayPlayers, $allSubstitutions, $homeBenchPlayers, $awayBenchPlayers);
         });
     }
 
@@ -54,6 +56,8 @@ class MatchResimulationService
         Collection $homePlayers,
         Collection $awayPlayers,
         array $allSubstitutions = [],
+        ?Collection $homeBenchPlayers = null,
+        ?Collection $awayBenchPlayers = null,
     ): ResimulationResult {
         $competitionId = $match->competition_id;
 
@@ -139,6 +143,8 @@ class MatchResimulationService
             $awayPressing,
             $homeDefLine,
             $awayDefLine,
+            $homeBenchPlayers,
+            $awayBenchPlayers,
         );
 
         // 9. Calculate new final score
@@ -172,8 +178,10 @@ class MatchResimulationService
         Collection $homePlayers,
         Collection $awayPlayers,
         array $allSubstitutions = [],
+        ?Collection $homeBenchPlayers = null,
+        ?Collection $awayBenchPlayers = null,
     ): ResimulationResult {
-        return DB::transaction(function () use ($match, $game, $minute, $homePlayers, $awayPlayers, $allSubstitutions) {
+        return DB::transaction(function () use ($match, $game, $minute, $homePlayers, $awayPlayers, $allSubstitutions, $homeBenchPlayers, $awayBenchPlayers) {
             $competitionId = $match->competition_id;
 
             // 1. Capture old ET scores
@@ -535,21 +543,60 @@ class MatchResimulationService
             ->orderBy('minute')
             ->get();
 
-        $formattedEvents = $newEvents
-            ->filter(fn ($e) => $e->event_type !== 'assist')
-            ->map(fn ($e) => [
-                'minute' => $e->minute,
-                'type' => $e->event_type,
-                'playerName' => $e->gamePlayer->player->name ?? '',
-                'teamId' => $e->team_id,
-                'gamePlayerId' => $e->game_player_id,
-                'metadata' => $e->metadata,
-            ])
+        return self::formatMatchEvents($newEvents);
+    }
+
+    /**
+     * Format a collection of MatchEvent models for the frontend.
+     *
+     * Resolves player-in names for substitution events, pairs assists with goals,
+     * and returns a sorted array ready for JSON serialization.
+     */
+    public static function formatMatchEvents(Collection $events): array
+    {
+        // Batch-load player-in names for substitution events
+        $playerInIds = $events
+            ->filter(fn ($e) => $e->event_type === 'substitution')
+            ->map(fn ($e) => $e->metadata['player_in_id'] ?? null)
+            ->filter()
+            ->unique()
             ->values()
             ->all();
 
-        // Pair assists with goals
-        $assists = $newEvents
+        $playerInNames = [];
+        if (! empty($playerInIds)) {
+            $playerInNames = GamePlayer::with('player')
+                ->whereIn('id', $playerInIds)
+                ->get()
+                ->mapWithKeys(fn ($gp) => [$gp->id => $gp->player->name ?? ''])
+                ->all();
+        }
+
+        $formatted = $events
+            ->filter(fn ($e) => $e->event_type !== 'assist')
+            ->map(function ($e) use ($playerInNames) {
+                $data = [
+                    'minute' => $e->minute,
+                    'type' => $e->event_type,
+                    'playerName' => $e->gamePlayer->player->name ?? '',
+                    'teamId' => $e->team_id,
+                    'gamePlayerId' => $e->game_player_id,
+                    'metadata' => $e->metadata,
+                ];
+
+                if ($e->event_type === 'substitution') {
+                    $playerInId = $e->metadata['player_in_id'] ?? null;
+                    $data['playerInName'] = $playerInNames[$playerInId] ?? '';
+                }
+
+                return $data;
+            })
+            ->sortBy('minute')
+            ->values()
+            ->all();
+
+        // Pair assists with their goals
+        $assists = $events
             ->filter(fn ($e) => $e->event_type === 'assist')
             ->keyBy('minute');
 
@@ -559,6 +606,6 @@ class MatchResimulationService
             }
 
             return $event;
-        }, $formattedEvents);
+        }, $formatted);
     }
 }

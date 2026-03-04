@@ -2,11 +2,8 @@
 
 namespace App\Modules\Lineup\Services;
 
-use App\Modules\Lineup\Enums\Formation;
-use App\Modules\Lineup\Enums\Mentality;
 use App\Models\Game;
 use App\Models\GameMatch;
-use App\Models\GamePlayer;
 use App\Modules\Match\Services\ExtraTimeAndPenaltyService;
 use App\Modules\Match\Services\MatchResimulationService;
 use App\Modules\Lineup\Services\SubstitutionService;
@@ -63,13 +60,8 @@ class TacticalChangeService
 
         // Build active lineup (applying previous subs)
         $userLineup = $this->substitutionService->buildActiveLineup($match, $game->team_id, $previousSubstitutions);
-        $opponentLineupIds = $isUserHome ? ($match->away_lineup ?? []) : ($match->home_lineup ?? []);
-        $opponentPlayers = GamePlayer::with('player')
-            ->whereIn('id', $opponentLineupIds)
-            ->get();
-
-        $homePlayers = $isUserHome ? $userLineup : $opponentPlayers;
-        $awayPlayers = $isUserHome ? $opponentPlayers : $userLineup;
+        $teams = $this->substitutionService->loadTeamsForResimulation($match, $game, $userLineup, $previousSubstitutions);
+        ['homePlayers' => $homePlayers, 'awayPlayers' => $awayPlayers, 'homeBench' => $homeBench, 'awayBench' => $awayBench] = $teams;
 
         // Capture effective values before re-simulation (which updates match scores in-place)
         $effectiveFormation = $match->{"{$prefix}_formation"};
@@ -77,9 +69,9 @@ class TacticalChangeService
 
         // Re-simulate with updated tactics (pass previous subs for energy calculation)
         if ($isExtraTime) {
-            $result = $this->resimulationService->resimulateExtraTime($match, $game, $minute, $homePlayers, $awayPlayers, $previousSubstitutions);
+            $result = $this->resimulationService->resimulateExtraTime($match, $game, $minute, $homePlayers, $awayPlayers, $previousSubstitutions, $homeBench, $awayBench);
         } else {
-            $result = $this->resimulationService->resimulate($match, $game, $minute, $homePlayers, $awayPlayers, $previousSubstitutions);
+            $result = $this->resimulationService->resimulate($match, $game, $minute, $homePlayers, $awayPlayers, $previousSubstitutions, $homeBench, $awayBench);
         }
 
         $response = [

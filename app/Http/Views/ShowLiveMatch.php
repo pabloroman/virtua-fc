@@ -13,6 +13,7 @@ use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\PlayerSuspension;
+use App\Modules\Match\Services\MatchResimulationService;
 use App\Support\PositionMapper;
 
 class ShowLiveMatch
@@ -53,31 +54,7 @@ class ShowLiveMatch
         $allEvents = $playerMatch->events;
         $regularEvents = $allEvents->filter(fn ($e) => $e->minute <= 93);
 
-        $events = $regularEvents
-            ->filter(fn ($e) => $e->event_type !== 'assist')
-            ->map(fn ($e) => [
-                'minute' => $e->minute,
-                'type' => $e->event_type,
-                'playerName' => $e->gamePlayer->player->name ?? '',
-                'teamId' => $e->team_id,
-                'gamePlayerId' => $e->game_player_id,
-                'metadata' => $e->metadata,
-            ])
-            ->sortBy('minute')
-            ->values()
-            ->all();
-
-        // Pair assists with their goals
-        $assists = $regularEvents
-            ->filter(fn ($e) => $e->event_type === 'assist')
-            ->keyBy('minute');
-
-        $events = array_map(function ($event) use ($assists) {
-            if (in_array($event['type'], ['goal', 'own_goal']) && isset($assists[$event['minute']])) {
-                $event['assistPlayerName'] = $assists[$event['minute']]->gamePlayer->player->name ?? null;
-            }
-            return $event;
-        }, $events);
+        $events = MatchResimulationService::formatMatchEvents($regularEvents);
 
         // Load other matches from the same competition/matchday for the ticker
         // For Swiss-format competitions, round_number overlaps between league phase
@@ -129,7 +106,11 @@ class ShowLiveMatch
             : ($playerMatch->away_lineup ?? []);
 
         // Existing substitutions already made on this match (for page reload scenario)
-        $existingSubstitutions = $playerMatch->substitutions ?? [];
+        // Filter to user's team only — opponent auto-subs should not affect the user's count or display.
+        $existingSubstitutions = collect($playerMatch->substitutions ?? [])
+            ->filter(fn ($s) => ($s['team_id'] ?? null) === $game->team_id)
+            ->values()
+            ->all();
 
         // Build entry minutes map from existing substitutions
         $entryMinutes = collect($existingSubstitutions)
@@ -286,30 +267,7 @@ class ShowLiveMatch
         $etEvents = $match->events
             ->filter(fn ($e) => $e->minute > 93);
 
-        $formattedEvents = $etEvents
-            ->filter(fn ($e) => $e->event_type !== 'assist')
-            ->map(fn ($e) => [
-                'minute' => $e->minute,
-                'type' => $e->event_type,
-                'playerName' => $e->gamePlayer->player->name ?? '',
-                'teamId' => $e->team_id,
-                'gamePlayerId' => $e->game_player_id,
-                'metadata' => $e->metadata,
-            ])
-            ->sortBy('minute')
-            ->values()
-            ->all();
-
-        $assists = $etEvents
-            ->filter(fn ($e) => $e->event_type === 'assist')
-            ->keyBy('minute');
-
-        $formattedEvents = array_map(function ($event) use ($assists) {
-            if (in_array($event['type'], ['goal', 'own_goal']) && isset($assists[$event['minute']])) {
-                $event['assistPlayerName'] = $assists[$event['minute']]->gamePlayer->player->name ?? null;
-            }
-            return $event;
-        }, $formattedEvents);
+        $formattedEvents = MatchResimulationService::formatMatchEvents($etEvents);
 
         $data = [
             'extraTimeEvents' => $formattedEvents,
