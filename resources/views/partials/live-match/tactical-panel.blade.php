@@ -203,6 +203,9 @@
                                                       :class="getPositionBadgeColor(player.positionGroup)">
                                                     <span class="skew-x-12" x-text="player.positionAbbr"></span>
                                                 </span>
+                                                <span class="inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold shrink-0"
+                                                      :class="getOvrBadgeClasses(player.overallScore)"
+                                                      x-text="player.overallScore"></span>
                                                 <span class="flex-1 truncate font-medium" x-text="player.name"></span>
                                                 {{-- Yellow card indicator --}}
                                                 <span x-show="isPlayerYellowCarded(player.id)"
@@ -242,13 +245,11 @@
                                                     <span class="skew-x-12" x-text="player.positionAbbr"></span>
                                                 </span>
                                                 <span class="flex-1 truncate font-medium" x-text="player.name"></span>
-                                                {{-- Energy bar (always 100% for bench) --}}
-                                                <span class="ml-auto flex items-center gap-1 shrink-0">
-                                                    <span class="text-[10px] tabular-nums font-semibold text-emerald-600">100%</span>
-                                                    <span class="w-10 h-1.5 rounded-full overflow-hidden bg-emerald-500/20">
-                                                        <span class="h-full rounded-full block bg-emerald-500" style="width:100%"></span>
-                                                    </span>
-                                                </span>
+                                                {{-- OVR badge with fitness/morale tooltip --}}
+                                                <span class="ml-auto inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold shrink-0"
+                                                      :class="getOvrBadgeClasses(player.overallScore)"
+                                                      :x-tooltip="'{{ __('game.ovr_fitness') }}: ' + player.fitness + ' · {{ __('game.ovr_morale') }}: ' + player.morale"
+                                                      x-text="player.overallScore"></span>
                                             </button>
                                         </template>
                                     </div>

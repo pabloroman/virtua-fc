@@ -1357,6 +1357,13 @@ export default function liveMatch(config) {
             return colors[group] || 'bg-emerald-600';
         },
 
+        getOvrBadgeClasses(score) {
+            if (score >= 80) return 'bg-emerald-500 text-white';
+            if (score >= 70) return 'bg-lime-500 text-white';
+            if (score >= 60) return 'bg-amber-500 text-white';
+            return 'bg-slate-300 text-slate-700';
+        },
+
         // =============================
         // Energy / Stamina
         // =============================

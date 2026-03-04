@@ -131,6 +131,9 @@ class ShowLiveMatch
                 'physicalAbility' => $p->physical_ability,
                 'technicalAbility' => $p->technical_ability,
                 'age' => $p->age,
+                'overallScore' => $p->overall_score,
+                'fitness' => $p->fitness,
+                'morale' => $p->morale,
                 'minuteEntered' => $entryMinutes[$p->id] ?? 0,
             ])
             ->sortBy('positionSort')
@@ -165,6 +168,9 @@ class ShowLiveMatch
                 'physicalAbility' => $p->physical_ability,
                 'technicalAbility' => $p->technical_ability,
                 'age' => $p->age,
+                'overallScore' => $p->overall_score,
+                'fitness' => $p->fitness,
+                'morale' => $p->morale,
                 'minuteEntered' => null,
             ])
             ->sortBy('positionSort')
