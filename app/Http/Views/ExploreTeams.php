@@ -16,7 +16,6 @@ class ExploreTeams
 
         $teamIds = CompetitionEntry::where('game_id', $gameId)
             ->where('competition_id', $competitionId)
-            ->where('team_id', '!=', $game->team_id)
             ->pluck('team_id');
 
         $teams = Team::whereIn('id', $teamIds)
@@ -27,9 +26,6 @@ class ExploreTeams
                 'id' => $team->id,
                 'name' => $team->name,
                 'image' => $team->image,
-                'stadiumName' => $team->stadium_name,
-                'stadiumSeats' => $team->stadium_seats,
-                'reputationLevel' => $team->clubProfile?->reputation_level,
             ]);
 
         return response()->json($teams);

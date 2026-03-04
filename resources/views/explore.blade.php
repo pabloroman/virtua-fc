@@ -95,9 +95,7 @@
                                                     class="w-full flex items-center gap-3 p-3 rounded-lg border transition-all text-left min-h-[44px]">
                                                 <img :src="team.image" :alt="team.name" class="w-8 h-8 shrink-0 object-contain">
                                                 <div class="min-w-0">
-                                                    <div class="text-sm font-medium text-slate-900 truncate" x-text="team.name"></div>
-                                                    <div class="text-xs text-slate-400 truncate" x-text="team.stadiumName"></div>
-                                                </div>
+                                                    <div class="text-sm font-medium text-slate-900 truncate" x-text="team.name"></div></div>
                                             </button>
                                         </template>
                                     </div>
@@ -141,12 +139,6 @@
                                             <img :src="squad.team.image" :alt="squad.team.name" class="w-14 h-14 md:w-16 md:h-16 shrink-0 object-contain">
                                             <div class="min-w-0">
                                                 <h3 class="text-lg font-bold text-slate-900 truncate" x-text="squad.team.name"></h3>
-                                                <p class="text-sm text-slate-500" x-show="squad.team.stadiumName">
-                                                    <span x-text="squad.team.stadiumName"></span>
-                                                    <template x-if="squad.team.stadiumSeats">
-                                                        <span class="text-slate-400" x-text="' (' + Number(squad.team.stadiumSeats).toLocaleString() + ')'"></span>
-                                                    </template>
-                                                </p>
                                             </div>
                                         </div>
 

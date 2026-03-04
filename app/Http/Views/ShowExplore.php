@@ -23,14 +23,13 @@ class ShowExplore
             ->pluck('competition_id');
 
         $competitions = Competition::whereIn('id', $competitionIds)
-            ->where('role', '!=', Competition::ROLE_TEAM_POOL)
-            ->orderBy('scope')
+            ->where('role', Competition::ROLE_LEAGUE)
+            ->where('scope', Competition::SCOPE_DOMESTIC)
             ->orderBy('tier')
             ->get()
             ->map(function (Competition $comp) use ($gameId, $game) {
                 $teamCount = CompetitionEntry::where('game_id', $gameId)
                     ->where('competition_id', $comp->id)
-                    ->where('team_id', '!=', $game->team_id)
                     ->count();
 
                 return [
