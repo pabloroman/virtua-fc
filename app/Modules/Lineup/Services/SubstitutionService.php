@@ -166,38 +166,8 @@ class SubstitutionService
         );
 
         $userLineup = $this->buildActiveLineup($match, $game->team_id, $allSubs);
-
-        // Load opponent full squad (1 query) to derive both lineup and bench
-        $opponentTeamId = $isUserHome ? $match->away_team_id : $match->home_team_id;
-        $opponentSquad = GamePlayer::with('player')
-            ->where('game_id', $game->id)
-            ->where('team_id', $opponentTeamId)
-            ->get();
-
-        $opponentLineupIds = $isUserHome ? ($match->away_lineup ?? []) : ($match->home_lineup ?? []);
-        $opponentPlayers = $opponentSquad->filter(fn ($p) => in_array($p->id, $opponentLineupIds));
-        $opponentBench = $opponentSquad
-            ->reject(fn ($p) => in_array($p->id, $opponentLineupIds))
-            ->reject(fn ($p) => $p->isInjured($match->scheduled_date))
-            ->values();
-
-        // User bench: squad minus active lineup minus subbed-out players minus injured
-        $activeLineupIds = $userLineup->pluck('id')->all();
-        $subbedOutIds = array_column($allSubs, 'playerOutId');
-        $userSquad = GamePlayer::with('player')
-            ->where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
-            ->get();
-        $userBench = $userSquad
-            ->reject(fn ($p) => in_array($p->id, $activeLineupIds))
-            ->reject(fn ($p) => in_array($p->id, $subbedOutIds))
-            ->reject(fn ($p) => $p->isInjured($match->scheduled_date))
-            ->values();
-
-        $homePlayers = $isUserHome ? $userLineup : $opponentPlayers;
-        $awayPlayers = $isUserHome ? $opponentPlayers : $userLineup;
-        $homeBench = $isUserHome ? $userBench : $opponentBench;
-        $awayBench = $isUserHome ? $opponentBench : $userBench;
+        $teams = $this->loadTeamsForResimulation($match, $game, $userLineup, $allSubs);
+        ['homePlayers' => $homePlayers, 'awayPlayers' => $awayPlayers, 'homeBench' => $homeBench, 'awayBench' => $awayBench] = $teams;
 
         // Delegate re-simulation to shared service (pass all subs for energy calculation)
         if ($isExtraTime) {
@@ -206,14 +176,21 @@ class SubstitutionService
             $result = $this->resimulationService->resimulate($match, $game, $minute, $homePlayers, $awayPlayers, $allSubs, $homeBench, $awayBench);
         }
 
-        // Increment appearances and record each sub in the batch
+        // Increment appearances, create events, and collect sub records for batch write
+        $substitutions = $match->substitutions ?? [];
         foreach ($newSubstitutions as $sub) {
             GamePlayer::where('id', $sub['playerInId'])
-                ->increment('appearances');
-            GamePlayer::where('id', $sub['playerInId'])
-                ->increment('season_appearances');
+                ->update([
+                    'appearances' => \Illuminate\Support\Facades\DB::raw('appearances + 1'),
+                    'season_appearances' => \Illuminate\Support\Facades\DB::raw('season_appearances + 1'),
+                ]);
 
-            $this->recordSubstitution($match, $game->team_id, $sub['playerOutId'], $sub['playerInId'], $minute);
+            $substitutions[] = [
+                'team_id' => $game->team_id,
+                'player_out_id' => $sub['playerOutId'],
+                'player_in_id' => $sub['playerInId'],
+                'minute' => $minute,
+            ];
 
             MatchEvent::create([
                 'id' => Str::uuid()->toString(),
@@ -226,6 +203,7 @@ class SubstitutionService
                 'metadata' => json_encode(['player_in_id' => $sub['playerInId']]),
             ]);
         }
+        $match->update(['substitutions' => $substitutions]);
 
         // Build the response for the frontend
         return $this->buildBatchResponse($match, $game, $minute, $newSubstitutions, $result->newHomeScore, $result->newAwayScore, $isExtraTime);
@@ -252,19 +230,51 @@ class SubstitutionService
     }
 
     /**
-     * Record the substitution in the match's substitutions JSON column.
+     * Load both teams' lineups and benches for resimulation.
+     *
+     * @return array{homePlayers: \Illuminate\Support\Collection, awayPlayers: \Illuminate\Support\Collection, homeBench: \Illuminate\Support\Collection, awayBench: \Illuminate\Support\Collection}
      */
-    private function recordSubstitution(GameMatch $match, string $teamId, string $playerOutId, string $playerInId, int $minute): void
-    {
-        $substitutions = $match->substitutions ?? [];
-        $substitutions[] = [
-            'team_id' => $teamId,
-            'player_out_id' => $playerOutId,
-            'player_in_id' => $playerInId,
-            'minute' => $minute,
-        ];
+    public function loadTeamsForResimulation(
+        GameMatch $match,
+        Game $game,
+        \Illuminate\Support\Collection $userLineup,
+        array $substitutions,
+    ): array {
+        $isUserHome = $match->isHomeTeam($game->team_id);
 
-        $match->update(['substitutions' => $substitutions]);
+        // Load opponent full squad (1 query) to derive both lineup and bench
+        $opponentTeamId = $isUserHome ? $match->away_team_id : $match->home_team_id;
+        $opponentSquad = GamePlayer::with('player')
+            ->where('game_id', $game->id)
+            ->where('team_id', $opponentTeamId)
+            ->get();
+
+        $opponentLineupIds = $isUserHome ? ($match->away_lineup ?? []) : ($match->home_lineup ?? []);
+        $opponentPlayers = $opponentSquad->filter(fn ($p) => in_array($p->id, $opponentLineupIds));
+        $opponentBench = $opponentSquad
+            ->reject(fn ($p) => in_array($p->id, $opponentLineupIds))
+            ->reject(fn ($p) => $p->isInjured($match->scheduled_date))
+            ->values();
+
+        // User bench: squad minus active lineup minus subbed-out players minus injured
+        $activeLineupIds = $userLineup->pluck('id')->all();
+        $subbedOutIds = array_column($substitutions, 'playerOutId');
+        $userSquad = GamePlayer::with('player')
+            ->where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->get();
+        $userBench = $userSquad
+            ->reject(fn ($p) => in_array($p->id, $activeLineupIds))
+            ->reject(fn ($p) => in_array($p->id, $subbedOutIds))
+            ->reject(fn ($p) => $p->isInjured($match->scheduled_date))
+            ->values();
+
+        return [
+            'homePlayers' => $isUserHome ? $userLineup : $opponentPlayers,
+            'awayPlayers' => $isUserHome ? $opponentPlayers : $userLineup,
+            'homeBench' => $isUserHome ? $userBench : $opponentBench,
+            'awayBench' => $isUserHome ? $opponentBench : $userBench,
+        ];
     }
 
     /**

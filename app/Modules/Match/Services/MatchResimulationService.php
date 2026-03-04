@@ -181,7 +181,7 @@ class MatchResimulationService
         ?Collection $homeBenchPlayers = null,
         ?Collection $awayBenchPlayers = null,
     ): ResimulationResult {
-        return DB::transaction(function () use ($match, $game, $minute, $homePlayers, $awayPlayers, $allSubstitutions) {
+        return DB::transaction(function () use ($match, $game, $minute, $homePlayers, $awayPlayers, $allSubstitutions, $homeBenchPlayers, $awayBenchPlayers) {
             $competitionId = $match->competition_id;
 
             // 1. Capture old ET scores
@@ -543,8 +543,19 @@ class MatchResimulationService
             ->orderBy('minute')
             ->get();
 
-        // Collect player_in_ids from substitution events to batch-load names
-        $playerInIds = $newEvents
+        return self::formatMatchEvents($newEvents);
+    }
+
+    /**
+     * Format a collection of MatchEvent models for the frontend.
+     *
+     * Resolves player-in names for substitution events, pairs assists with goals,
+     * and returns a sorted array ready for JSON serialization.
+     */
+    public static function formatMatchEvents(Collection $events): array
+    {
+        // Batch-load player-in names for substitution events
+        $playerInIds = $events
             ->filter(fn ($e) => $e->event_type === 'substitution')
             ->map(fn ($e) => $e->metadata['player_in_id'] ?? null)
             ->filter()
@@ -561,7 +572,7 @@ class MatchResimulationService
                 ->all();
         }
 
-        $formattedEvents = $newEvents
+        $formatted = $events
             ->filter(fn ($e) => $e->event_type !== 'assist')
             ->map(function ($e) use ($playerInNames) {
                 $data = [
@@ -580,11 +591,12 @@ class MatchResimulationService
 
                 return $data;
             })
+            ->sortBy('minute')
             ->values()
             ->all();
 
-        // Pair assists with goals
-        $assists = $newEvents
+        // Pair assists with their goals
+        $assists = $events
             ->filter(fn ($e) => $e->event_type === 'assist')
             ->keyBy('minute');
 
@@ -594,6 +606,6 @@ class MatchResimulationService
             }
 
             return $event;
-        }, $formattedEvents);
+        }, $formatted);
     }
 }

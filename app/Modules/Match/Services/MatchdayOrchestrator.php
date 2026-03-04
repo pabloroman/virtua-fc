@@ -346,18 +346,10 @@ class MatchdayOrchestrator
         $lineupIds = $match->$lineupField ?? [];
         $teamPlayers = $allPlayers->get($match->$teamIdField, collect());
 
-        return $teamPlayers->reject(function ($player) use ($lineupIds, $game) {
-            // Exclude lineup players
-            if (in_array($player->id, $lineupIds)) {
-                return true;
-            }
-            // Exclude injured players
-            if ($player->injury_until && Carbon::parse($player->injury_until)->gt($game->current_date)) {
-                return true;
-            }
-
-            return false;
-        })->values();
+        return $teamPlayers
+            ->reject(fn ($player) => in_array($player->id, $lineupIds))
+            ->reject(fn ($player) => $player->isInjured($game->current_date))
+            ->values();
     }
 
     private function getLineupPlayers(GameMatch $match, $allPlayers, string $side)

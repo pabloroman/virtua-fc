@@ -2,11 +2,8 @@
 
 namespace App\Modules\Lineup\Services;
 
-use App\Modules\Lineup\Enums\Formation;
-use App\Modules\Lineup\Enums\Mentality;
 use App\Models\Game;
 use App\Models\GameMatch;
-use App\Models\GamePlayer;
 use App\Modules\Match\Services\ExtraTimeAndPenaltyService;
 use App\Modules\Match\Services\MatchResimulationService;
 use App\Modules\Lineup\Services\SubstitutionService;
@@ -63,38 +60,8 @@ class TacticalChangeService
 
         // Build active lineup (applying previous subs)
         $userLineup = $this->substitutionService->buildActiveLineup($match, $game->team_id, $previousSubstitutions);
-
-        // Load opponent full squad to derive both lineup and bench
-        $opponentTeamId = $isUserHome ? $match->away_team_id : $match->home_team_id;
-        $opponentSquad = GamePlayer::with('player')
-            ->where('game_id', $game->id)
-            ->where('team_id', $opponentTeamId)
-            ->get();
-
-        $opponentLineupIds = $isUserHome ? ($match->away_lineup ?? []) : ($match->home_lineup ?? []);
-        $opponentPlayers = $opponentSquad->filter(fn ($p) => in_array($p->id, $opponentLineupIds));
-        $opponentBench = $opponentSquad
-            ->reject(fn ($p) => in_array($p->id, $opponentLineupIds))
-            ->reject(fn ($p) => $p->isInjured($match->scheduled_date))
-            ->values();
-
-        // User bench: squad minus active lineup minus subbed-out players minus injured
-        $activeLineupIds = $userLineup->pluck('id')->all();
-        $subbedOutIds = array_column($previousSubstitutions, 'playerOutId');
-        $userSquad = GamePlayer::with('player')
-            ->where('game_id', $game->id)
-            ->where('team_id', $game->team_id)
-            ->get();
-        $userBench = $userSquad
-            ->reject(fn ($p) => in_array($p->id, $activeLineupIds))
-            ->reject(fn ($p) => in_array($p->id, $subbedOutIds))
-            ->reject(fn ($p) => $p->isInjured($match->scheduled_date))
-            ->values();
-
-        $homePlayers = $isUserHome ? $userLineup : $opponentPlayers;
-        $awayPlayers = $isUserHome ? $opponentPlayers : $userLineup;
-        $homeBench = $isUserHome ? $userBench : $opponentBench;
-        $awayBench = $isUserHome ? $opponentBench : $userBench;
+        $teams = $this->substitutionService->loadTeamsForResimulation($match, $game, $userLineup, $previousSubstitutions);
+        ['homePlayers' => $homePlayers, 'awayPlayers' => $awayPlayers, 'homeBench' => $homeBench, 'awayBench' => $awayBench] = $teams;
 
         // Capture effective values before re-simulation (which updates match scores in-place)
         $effectiveFormation = $match->{"{$prefix}_formation"};
