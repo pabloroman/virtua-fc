@@ -54,6 +54,9 @@ use App\Http\Views\ShowMatchResults;
 use App\Http\Views\ShowScouting;
 use App\Http\Views\ShowScoutingHub;
 use App\Http\Views\ShowScoutReportResults;
+use App\Http\Views\ShowExplore;
+use App\Http\Views\ExploreTeams;
+use App\Http\Views\ExploreSquad;
 use App\Http\Views\ShowSeasonEnd;
 use App\Http\Views\ShowTournamentEnd;
 use App\Http\Actions\DismissAcademyPlayer;
@@ -146,6 +149,11 @@ Route::middleware('auth')->group(function () {
         Route::post('/game/{gameId}/scouting/shortlist/{playerId}', ToggleShortlist::class)->name('game.scouting.shortlist.toggle');
         Route::post('/game/{gameId}/scouting/shortlist/{playerId}/remove', RemoveFromShortlist::class)->name('game.scouting.shortlist.remove');
         Route::delete('/game/{gameId}/scouting/{reportId}', DeleteScoutSearch::class)->name('game.scouting.delete');
+
+        // Explorer
+        Route::get('/game/{gameId}/explore', ShowExplore::class)->name('game.explore');
+        Route::get('/game/{gameId}/explore/teams/{competitionId}', ExploreTeams::class)->name('game.explore.teams');
+        Route::get('/game/{gameId}/explore/squad/{teamId}', ExploreSquad::class)->name('game.explore.squad');
 
         // Loans (redirect old URL to transfers)
         Route::get('/game/{gameId}/loans', function (string $gameId) {
