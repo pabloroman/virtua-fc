@@ -119,6 +119,8 @@ return [
     'budget_locked' => 'Budget Locked',
     'budget_locked_desc' => 'Budget allocation is fixed for the season. Changes can be made at the start of next pre-season.',
     'remainder_after_infrastructure' => 'Remainder after infrastructure',
+    'available_remaining' => 'Available:',
+    'budget_exceeds_surplus' => 'Infrastructure investment exceeds the available surplus. Lower the tier of an area to continue.',
     'tier_minimum_warning' => 'All infrastructure areas must be at least Tier 1 to maintain professional status.',
 
     // Youth academy tier descriptions

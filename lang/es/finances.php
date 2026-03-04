@@ -119,6 +119,8 @@ return [
     'budget_locked' => 'Presupuesto Bloqueado',
     'budget_locked_desc' => 'La asignación presupuestaria está fijada para la temporada. Se podrán realizar cambios en la próxima pretemporada.',
     'remainder_after_infrastructure' => 'Restante tras infraestructura',
+    'available_remaining' => 'Disponible:',
+    'budget_exceeds_surplus' => 'La inversión en infraestructura supera el superávit disponible. Reduce el nivel de alguna área para continuar.',
     'tier_minimum_warning' => 'Todas las áreas de infraestructura deben ser al menos Nivel 1 para mantener el estatus profesional.',
 
     // Youth academy tier descriptions

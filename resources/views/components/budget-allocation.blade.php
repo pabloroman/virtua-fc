@@ -38,6 +38,10 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
         return Math.max(0, this.availableSurplus - this.infrastructureTotal);
     },
 
+    get exceedsBudget() {
+        return this.infrastructureTotal > this.availableSurplus;
+    },
+
     get meetsMinimumRequirements() {
         return this.youth_academy_tier >= 1 && this.medical_tier >= 1 && this.scouting_tier >= 1 && this.facilities_tier >= 1;
     },
@@ -58,14 +62,15 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
 }">
 
     {{-- Allocation Summary --}}
-    <div class="mb-6 p-3 bg-slate-50 rounded-lg flex items-center justify-between text-sm">
+    <div class="mb-6 p-3 rounded-lg flex items-center justify-between text-sm transition-colors duration-200"
+         :class="exceedsBudget ? 'bg-red-50 ring-1 ring-red-200' : 'bg-slate-50'">
         <div class="flex items-center gap-2">
             <span class="text-slate-500">{{ __('finances.infrastructure') }}</span>
-            <span class="font-bold text-slate-900" x-text="formatMoney(infrastructureTotal)"></span>
+            <span class="font-bold" :class="exceedsBudget ? 'text-red-700' : 'text-slate-900'" x-text="formatMoney(infrastructureTotal)"></span>
         </div>
         <div class="flex items-center gap-2">
-            <span class="text-slate-500">{{ __('finances.transfers') }}</span>
-            <span class="font-bold text-sky-600" x-text="formatMoney(transfer_budget)"></span>
+            <span class="text-slate-500">{{ __('finances.available_remaining') }}</span>
+            <span class="font-bold" :class="exceedsBudget ? 'text-red-600' : 'text-green-600'" x-text="exceedsBudget ? '-' + formatMoney(infrastructureTotal - availableSurplus) : formatMoney(availableSurplus - infrastructureTotal)"></span>
         </div>
     </div>
 
@@ -199,8 +204,11 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
             <input type="hidden" name="transfer_budget" :value="transfer_budget / 100">
         </div>
 
-        {{-- Warning --}}
-        <div x-show="!meetsMinimumRequirements" x-cloak class="mb-6 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+        {{-- Warnings --}}
+        <div x-show="exceedsBudget" x-cloak class="mb-6 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+            {{ __('finances.budget_exceeds_surplus') }}
+        </div>
+        <div x-show="!meetsMinimumRequirements && !exceedsBudget" x-cloak class="mb-6 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
             {{ __('finances.tier_minimum_warning') }}
         </div>
 
@@ -208,7 +216,7 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
         @unless($isLocked)
         <button type="submit"
                 class="w-full uppercase py-3 bg-red-600 text-white font-semibold rounded-lg tracking-wide hover:bg-red-700 focus:bg-red-700 active:bg-red-900 ease-in-out duration-150 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                :disabled="!meetsMinimumRequirements">
+                :disabled="!meetsMinimumRequirements || exceedsBudget">
             {{ $submitLabel }}
         </button>
         @endunless
