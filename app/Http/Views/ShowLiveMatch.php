@@ -53,31 +53,7 @@ class ShowLiveMatch
         $allEvents = $playerMatch->events;
         $regularEvents = $allEvents->filter(fn ($e) => $e->minute <= 93);
 
-        $events = $regularEvents
-            ->filter(fn ($e) => $e->event_type !== 'assist')
-            ->map(fn ($e) => [
-                'minute' => $e->minute,
-                'type' => $e->event_type,
-                'playerName' => $e->gamePlayer->player->name ?? '',
-                'teamId' => $e->team_id,
-                'gamePlayerId' => $e->game_player_id,
-                'metadata' => $e->metadata,
-            ])
-            ->sortBy('minute')
-            ->values()
-            ->all();
-
-        // Pair assists with their goals
-        $assists = $regularEvents
-            ->filter(fn ($e) => $e->event_type === 'assist')
-            ->keyBy('minute');
-
-        $events = array_map(function ($event) use ($assists) {
-            if (in_array($event['type'], ['goal', 'own_goal']) && isset($assists[$event['minute']])) {
-                $event['assistPlayerName'] = $assists[$event['minute']]->gamePlayer->player->name ?? null;
-            }
-            return $event;
-        }, $events);
+        $events = $this->formatEvents($regularEvents);
 
         // Load other matches from the same competition/matchday for the ticker
         // For Swiss-format competitions, round_number overlaps between league phase
@@ -279,6 +255,66 @@ class ShowLiveMatch
     }
 
     /**
+     * Format match events for the frontend, resolving player-in names for substitutions.
+     */
+    private function formatEvents(\Illuminate\Support\Collection $events): array
+    {
+        // Collect player_in_ids from substitution events to batch-load names
+        $playerInIds = $events
+            ->filter(fn ($e) => $e->event_type === 'substitution')
+            ->map(fn ($e) => $e->metadata['player_in_id'] ?? null)
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+
+        $playerInNames = [];
+        if (! empty($playerInIds)) {
+            $playerInNames = GamePlayer::with('player')
+                ->whereIn('id', $playerInIds)
+                ->get()
+                ->mapWithKeys(fn ($gp) => [$gp->id => $gp->player->name ?? ''])
+                ->all();
+        }
+
+        $formatted = $events
+            ->filter(fn ($e) => $e->event_type !== 'assist')
+            ->map(function ($e) use ($playerInNames) {
+                $data = [
+                    'minute' => $e->minute,
+                    'type' => $e->event_type,
+                    'playerName' => $e->gamePlayer->player->name ?? '',
+                    'teamId' => $e->team_id,
+                    'gamePlayerId' => $e->game_player_id,
+                    'metadata' => $e->metadata,
+                ];
+
+                if ($e->event_type === 'substitution') {
+                    $playerInId = $e->metadata['player_in_id'] ?? null;
+                    $data['playerInName'] = $playerInNames[$playerInId] ?? '';
+                }
+
+                return $data;
+            })
+            ->sortBy('minute')
+            ->values()
+            ->all();
+
+        // Pair assists with their goals
+        $assists = $events
+            ->filter(fn ($e) => $e->event_type === 'assist')
+            ->keyBy('minute');
+
+        return array_map(function ($event) use ($assists) {
+            if (in_array($event['type'], ['goal', 'own_goal']) && isset($assists[$event['minute']])) {
+                $event['assistPlayerName'] = $assists[$event['minute']]->gamePlayer->player->name ?? null;
+            }
+
+            return $event;
+        }, $formatted);
+    }
+
+    /**
      * Build ET data for page-refresh scenario (ET already simulated).
      */
     private function buildExtraTimeData(GameMatch $match): array
@@ -286,30 +322,7 @@ class ShowLiveMatch
         $etEvents = $match->events
             ->filter(fn ($e) => $e->minute > 93);
 
-        $formattedEvents = $etEvents
-            ->filter(fn ($e) => $e->event_type !== 'assist')
-            ->map(fn ($e) => [
-                'minute' => $e->minute,
-                'type' => $e->event_type,
-                'playerName' => $e->gamePlayer->player->name ?? '',
-                'teamId' => $e->team_id,
-                'gamePlayerId' => $e->game_player_id,
-                'metadata' => $e->metadata,
-            ])
-            ->sortBy('minute')
-            ->values()
-            ->all();
-
-        $assists = $etEvents
-            ->filter(fn ($e) => $e->event_type === 'assist')
-            ->keyBy('minute');
-
-        $formattedEvents = array_map(function ($event) use ($assists) {
-            if (in_array($event['type'], ['goal', 'own_goal']) && isset($assists[$event['minute']])) {
-                $event['assistPlayerName'] = $assists[$event['minute']]->gamePlayer->player->name ?? null;
-            }
-            return $event;
-        }, $formattedEvents);
+        $formattedEvents = $this->formatEvents($etEvents);
 
         $data = [
             'extraTimeEvents' => $formattedEvents,

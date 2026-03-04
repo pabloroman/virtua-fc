@@ -543,16 +543,43 @@ class MatchResimulationService
             ->orderBy('minute')
             ->get();
 
+        // Collect player_in_ids from substitution events to batch-load names
+        $playerInIds = $newEvents
+            ->filter(fn ($e) => $e->event_type === 'substitution')
+            ->map(fn ($e) => $e->metadata['player_in_id'] ?? null)
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+
+        $playerInNames = [];
+        if (! empty($playerInIds)) {
+            $playerInNames = GamePlayer::with('player')
+                ->whereIn('id', $playerInIds)
+                ->get()
+                ->mapWithKeys(fn ($gp) => [$gp->id => $gp->player->name ?? ''])
+                ->all();
+        }
+
         $formattedEvents = $newEvents
             ->filter(fn ($e) => $e->event_type !== 'assist')
-            ->map(fn ($e) => [
-                'minute' => $e->minute,
-                'type' => $e->event_type,
-                'playerName' => $e->gamePlayer->player->name ?? '',
-                'teamId' => $e->team_id,
-                'gamePlayerId' => $e->game_player_id,
-                'metadata' => $e->metadata,
-            ])
+            ->map(function ($e) use ($playerInNames) {
+                $data = [
+                    'minute' => $e->minute,
+                    'type' => $e->event_type,
+                    'playerName' => $e->gamePlayer->player->name ?? '',
+                    'teamId' => $e->team_id,
+                    'gamePlayerId' => $e->game_player_id,
+                    'metadata' => $e->metadata,
+                ];
+
+                if ($e->event_type === 'substitution') {
+                    $playerInId = $e->metadata['player_in_id'] ?? null;
+                    $data['playerInName'] = $playerInNames[$playerInId] ?? '';
+                }
+
+                return $data;
+            })
             ->values()
             ->all();
 
