@@ -25,7 +25,7 @@ class ShowExplore
         $competitions = Competition::whereIn('id', $competitionIds)
             ->where('role', Competition::ROLE_LEAGUE)
             ->where('scope', Competition::SCOPE_DOMESTIC)
-            ->orderBy('tier')
+            ->orderBy('country')
             ->get()
             ->map(function (Competition $comp) use ($gameId, $game) {
                 $teamCount = CompetitionEntry::where('game_id', $gameId)
@@ -36,6 +36,7 @@ class ShowExplore
                     'id' => $comp->id,
                     'name' => __($comp->name),
                     'country' => $comp->country,
+                    'flag' => $comp->flag,
                     'tier' => $comp->tier,
                     'scope' => $comp->scope,
                     'teamCount' => $teamCount,

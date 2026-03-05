@@ -15,6 +15,7 @@ class CompetitionFactory extends Factory
             'id' => strtoupper($this->faker->unique()->lexify('???')),
             'name' => $this->faker->words(2, true) . ' League',
             'country' => 'ES',
+            'flag' => 'es',
             'tier' => 1,
             'type' => 'league',
             'role' => Competition::ROLE_LEAGUE,

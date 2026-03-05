@@ -94,7 +94,7 @@
                                 @foreach($countries as $countryCode => $country)
                                     @foreach($country['tiers'] as $tier => $competition)
                                         <a x-on:click="openTab = '{{ $competition->id }}'" :class="{ 'bg-red-600 text-white': openTab === '{{ $competition->id }}' }" class="flex items-center space-x-2 py-2 px-4 rounded-md focus:outline-none text-lg transition-all duration-300 cursor-pointer shrink-0">
-                                            <img class="w-5 h-4 rounded shadow" src="/flags/{{ $country['flag'] }}.svg">
+                                            <img class="w-5 h-4 rounded shadow" src="/flags/{{ $competition->flag }}.svg">
                                             <span>{{ __($competition->name) }}</span>
                                         </a>
                                     @endforeach

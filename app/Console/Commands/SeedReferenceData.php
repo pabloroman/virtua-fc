@@ -126,6 +126,7 @@ class SeedReferenceData extends Command
 
         // Step 1: Seed tier competitions (leagues with teams + players)
         $tiers = $config['tiers'] ?? [];
+        $flag = $countryConfig->flag($countryCode);
         $this->line("  Step 1/4: Seeding " . count($tiers) . " tier competition(s)...");
         foreach ($tiers as $tier => $tierConfig) {
             $this->seedCompetition([
@@ -134,6 +135,7 @@ class SeedReferenceData extends Command
                 'tier' => $tier,
                 'handler' => $tierConfig['handler'] ?? 'league',
                 'country' => $countryCode,
+                'flag' => $flag,
                 'role' => 'league',
             ]);
         }
@@ -158,6 +160,7 @@ class SeedReferenceData extends Command
                 'tier' => 0,
                 'handler' => $cupConfig['handler'] ?? 'knockout_cup',
                 'country' => $countryCode,
+                'flag' => $flag,
                 'role' => 'domestic_cup',
             ]);
         }
@@ -168,12 +171,15 @@ class SeedReferenceData extends Command
         $transferPool = $support['transfer_pool'] ?? [];
         $this->line("  Step 3/4: Seeding " . count($transferPool) . " transfer pool competition(s)...");
         foreach ($transferPool as $code => $poolConfig) {
+            $poolCountry = $poolConfig['country'] ?? 'EU';
+            $poolFlag = $countryConfig->flag($poolCountry);
             $this->seedCompetition([
                 'code' => $code,
                 'path' => "data/2025/{$code}",
                 'tier' => 1,
                 'handler' => $poolConfig['handler'] ?? 'league',
-                'country' => $poolConfig['country'] ?? 'EU',
+                'country' => $poolCountry,
+                'flag' => $poolFlag,
                 'role' => $poolConfig['role'] ?? 'league',
             ]);
         }
@@ -183,12 +189,15 @@ class SeedReferenceData extends Command
         $continental = $support['continental'] ?? [];
         $this->line("  Step 4/4: Seeding " . count($continental) . " continental competition(s)...");
         foreach ($continental as $code => $continentalConfig) {
+            $contCountry = $continentalConfig['country'] ?? 'EU';
+            $contFlag = $countryConfig->flag($contCountry);
             $this->seedCompetition([
                 'code' => $code,
                 'path' => "data/2025/{$code}",
                 'tier' => 0,
                 'handler' => $continentalConfig['handler'] ?? 'swiss_format',
-                'country' => $continentalConfig['country'] ?? 'EU',
+                'country' => $contCountry,
+                'flag' => $contFlag,
                 'role' => 'european',
             ]);
         }
@@ -237,6 +246,7 @@ class SeedReferenceData extends Command
         $tier = $config['tier'];
         $handler = $config['handler'] ?? 'league';
         $country = $config['country'] ?? 'ES';
+        $flag = $config['flag'] ?? strtolower($country);
         $role = $config['role'] ?? 'league';
         $configName = $config['name'] ?? null;
 
@@ -254,18 +264,18 @@ class SeedReferenceData extends Command
         $this->info("Seeding {$code} ({$handler})...");
 
         if ($isTeamPool) {
-            $this->seedTeamPoolCompetition($basePath, $code, $tier, $handler, $country, $role, $configName);
+            $this->seedTeamPoolCompetition($basePath, $code, $tier, $handler, $country, $flag, $role, $configName);
         } elseif ($isSwiss) {
-            $this->seedSwissFormatCompetition($basePath, $code, $tier, $handler, $country, $role);
+            $this->seedSwissFormatCompetition($basePath, $code, $tier, $handler, $country, $flag, $role);
         } elseif ($isCup) {
-            $this->seedCupCompetition($basePath, $code, $tier, $handler, $country, $role);
+            $this->seedCupCompetition($basePath, $code, $tier, $handler, $country, $flag, $role);
         } else {
-            $this->seedLeagueCompetition($basePath, $code, $tier, $handler, $country, $role, $configName);
+            $this->seedLeagueCompetition($basePath, $code, $tier, $handler, $country, $flag, $role, $configName);
         }
         $this->line("  ✓ {$code} done.");
     }
 
-    private function seedLeagueCompetition(string $basePath, string $code, int $tier, string $handler, string $country, string $role = 'league', ?string $configName = null): void
+    private function seedLeagueCompetition(string $basePath, string $code, int $tier, string $handler, string $country, string $flag, string $role = 'league', ?string $configName = null): void
     {
         $teamsData = $this->loadJson("{$basePath}/teams.json");
 
@@ -280,7 +290,7 @@ class SeedReferenceData extends Command
         ];
 
         // Seed competition record
-        $this->seedCompetitionRecord($code, $normalizedData, $tier, 'league', $handler, $country, $role);
+        $this->seedCompetitionRecord($code, $normalizedData, $tier, 'league', $handler, $country, $flag, $role);
 
         // Build team ID mapping (transfermarktId -> UUID)
         $teamIdMap = $this->seedTeams($teamsData['clubs'], $code, $seasonId, $country);
@@ -290,27 +300,27 @@ class SeedReferenceData extends Command
 
     }
 
-    private function seedCupCompetition(string $basePath, string $code, int $tier, string $handler, string $country, string $role = 'domestic_cup'): void
+    private function seedCupCompetition(string $basePath, string $code, int $tier, string $handler, string $country, string $flag, string $role = 'domestic_cup'): void
     {
         $teamsData = $this->loadJson("{$basePath}/teams.json");
 
         $season = '2025';
 
         // Seed competition record
-        $this->seedCompetitionRecord($code, $teamsData, $tier, 'cup', $handler, $country, $role);
+        $this->seedCompetitionRecord($code, $teamsData, $tier, 'cup', $handler, $country, $flag, $role);
 
         // Seed cup teams (link existing teams to cup)
         $this->seedCupTeams($teamsData['clubs'], $code, $season, $country);
     }
 
-    private function seedSwissFormatCompetition(string $basePath, string $code, int $tier, string $handler, string $country, string $role = 'european'): void
+    private function seedSwissFormatCompetition(string $basePath, string $code, int $tier, string $handler, string $country, string $flag, string $role = 'european'): void
     {
         $teamsData = $this->loadJson("{$basePath}/teams.json");
 
         $season = $teamsData['seasonID'] ?? '2025';
 
         // Swiss format uses 'league' type so standings are updated during league phase
-        $this->seedCompetitionRecord($code, $teamsData, $tier, 'league', $handler, $country, $role);
+        $this->seedCompetitionRecord($code, $teamsData, $tier, 'league', $handler, $country, $flag, $role);
 
         // Seed teams (links existing teams by transfermarkt_id, like cups)
         $teamIdMap = $this->seedSwissFormatTeams($teamsData['clubs'], $code, $season);
@@ -328,11 +338,11 @@ class SeedReferenceData extends Command
      * Each file is named {transfermarkt_id}.json and contains {id, players}.
      * Teams must already exist from their league seeding.
      */
-    private function seedTeamPoolCompetition(string $basePath, string $code, int $tier, string $handler, string $country, string $role, ?string $configName = null): void
+    private function seedTeamPoolCompetition(string $basePath, string $code, int $tier, string $handler, string $country, string $flag, string $role, ?string $configName = null): void
     {
         $season = '2025';
 
-        $this->seedCompetitionRecord($code, ['name' => $configName ?? $code, 'seasonID' => $season], $tier, 'league', $handler, $country, $role);
+        $this->seedCompetitionRecord($code, ['name' => $configName ?? $code, 'seasonID' => $season], $tier, 'league', $handler, $country, $flag, $role);
 
         // Get existing teams by transfermarkt_id
         $teamsByTransfermarktId = DB::table('teams')
@@ -446,7 +456,7 @@ class SeedReferenceData extends Command
         return $teamIdMap;
     }
 
-    private function seedCompetitionRecord(string $code, array $data, int $tier, string $type, string $handler, string $country, string $role = 'league'): void
+    private function seedCompetitionRecord(string $code, array $data, int $tier, string $type, string $handler, string $country, string $flag, string $role = 'league'): void
     {
         $season = $data['seasonID'] ?? '2025';
         $scope = ($role === 'european') ? 'continental' : 'domestic';
@@ -456,6 +466,7 @@ class SeedReferenceData extends Command
             [
                 'name' => $data['name'],
                 'country' => $country,
+                'flag' => $flag,
                 'tier' => $tier,
                 'type' => $type,
                 'role' => $role,
