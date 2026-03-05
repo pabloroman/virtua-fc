@@ -59,11 +59,17 @@ class CountryConfig
     }
 
     /**
-     * Get the flag code for a country.
+     * Get the flag code for a country code.
+     *
+     * Maps country codes to flag-icon codes (used during seeding).
+     * Most codes are just lowercased, except special cases like EN → gb-eng.
      */
-    public function flag(string $countryCode): ?string
+    public function flag(string $countryCode): string
     {
-        return $this->get($countryCode)['flag'] ?? null;
+        return match ($countryCode) {
+            'EN' => 'gb-eng',
+            default => strtolower($countryCode),
+        };
     }
 
     /**

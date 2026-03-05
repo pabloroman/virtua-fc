@@ -18,7 +18,6 @@ return [
 
     'ES' => [
         'name' => 'España',
-        'flag' => 'es',
 
         'tiers' => [
             1 => [
@@ -123,7 +122,6 @@ return [
 
     'EN' => [
         'name' => 'England',
-        'flag' => 'gb-eng',
 
         'tiers' => [
             1 => [
@@ -176,7 +174,6 @@ return [
 
     'DE' => [
         'name' => 'Deutschland',
-        'flag' => 'de',
 
         'tiers' => [
             1 => [
@@ -229,7 +226,6 @@ return [
 
     'IT' => [
         'name' => 'Italia',
-        'flag' => 'it',
 
         'tiers' => [
             1 => [
@@ -282,7 +278,6 @@ return [
 
     'FR' => [
         'name' => 'France',
-        'flag' => 'fr',
 
         'tiers' => [
             1 => [
@@ -346,7 +341,6 @@ return [
 
     'WC' => [
         'name' => 'Copa del Mundo',
-        'flag' => 'wc',
         'tournament' => true,
 
         'tiers' => [
@@ -370,7 +364,6 @@ return [
 
     'XX' => [
         'name' => 'Test Country',
-        'flag' => 'xx',
 
         'tiers' => [
             1 => [

@@ -43,7 +43,7 @@
                                             : 'bg-white text-slate-700 border-slate-200 hover:border-slate-400'"
                                         class="shrink-0 flex items-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition-colors min-h-[44px]">
                                     <template x-if="comp.country">
-                                        <img :src="'/flags/' + comp.country.toLowerCase() + '.svg'" class="w-5 h-3.5 rounded-sm shadow-sm" :alt="comp.country">
+                                        <img :src="'/flags/' + comp.flag + '.svg'" class="w-5 h-3.5 rounded-sm shadow-sm" :alt="comp.country">
                                     </template>
                                     <span x-text="comp.name"></span>
                                     <span class="text-xs px-1.5 py-0.5 rounded-full"
@@ -122,7 +122,7 @@
                                 </template>
 
                                 {{-- Empty state: no team selected --}}
-                                <template x-if="!loadingSquad && !squad">
+                                <template x-if="!loadingSquad && !squadHtml">
                                     <div class="flex flex-col items-center justify-center py-16 text-center">
                                         <svg class="w-16 h-16 text-slate-200 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -131,96 +131,8 @@
                                     </div>
                                 </template>
 
-                                {{-- Squad content --}}
-                                <template x-if="!loadingSquad && squad">
-                                    <div>
-                                        {{-- Team header --}}
-                                        <div class="flex items-center gap-4 mb-5 pb-4 border-b border-slate-100">
-                                            <img :src="squad.team.image" :alt="squad.team.name" class="w-14 h-14 md:w-16 md:h-16 shrink-0 object-contain">
-                                            <div class="min-w-0">
-                                                <h3 class="text-lg font-bold text-slate-900 truncate" x-text="squad.team.name"></h3>
-                                            </div>
-                                        </div>
-
-                                        {{-- Scouting nudge --}}
-                                        <div class="flex items-center gap-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800 mb-5">
-                                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
-                                            <span>{{ __('transfers.explore_scouting_nudge') }}</span>
-                                        </div>
-
-                                        {{-- Position groups --}}
-                                        <template x-for="[groupKey, groupLabel] in positionGroups" :key="groupKey">
-                                            <div x-show="squad.positions[groupKey] && squad.positions[groupKey].length > 0" class="mb-5">
-                                                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2" x-text="groupLabel"></h4>
-                                                <div class="overflow-x-auto">
-                                                    <table class="w-full text-sm">
-                                                        <thead>
-                                                            <tr class="text-left text-xs text-slate-400 border-b border-slate-100">
-                                                                <th class="pb-2 font-medium"></th>
-                                                                <th class="pb-2 font-medium">{{ __('transfers.transfer_activity_player') }}</th>
-                                                                <th class="pb-2 font-medium hidden md:table-cell">{{ __('transfers.explore_age') }}</th>
-                                                                <th class="pb-2 font-medium hidden md:table-cell">{{ __('transfers.explore_value') }}</th>
-                                                                <th class="pb-2 font-medium hidden md:table-cell">{{ __('transfers.explore_contract_year') }}</th>
-                                                                <th class="pb-2 font-medium w-10"></th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            <template x-for="player in squad.positions[groupKey]" :key="player.id">
-                                                                <tr class="border-b border-slate-50 hover:bg-slate-50/50">
-                                                                    {{-- Position badge --}}
-                                                                    <td class="py-2 pr-2">
-                                                                        <span :class="player.positionBg + ' ' + player.positionText"
-                                                                              class="inline-flex items-center justify-center text-[10px] font-bold rounded px-1.5 py-0.5 min-w-[28px]"
-                                                                              x-text="player.positionAbbr"></span>
-                                                                    </td>
-                                                                    {{-- Name + nationality + mobile details --}}
-                                                                    <td class="py-2 pr-3">
-                                                                        <div class="flex items-center gap-2">
-                                                                            <template x-if="player.nationalityCode">
-                                                                                <img :src="'/flags/' + player.nationalityCode + '.svg'" class="w-4 h-3 rounded-sm shadow-sm shrink-0" :title="player.nationalityName">
-                                                                            </template>
-                                                                            <a :href="`/game/${gameId}/player/${player.id}/detail`"
-                                                                               class="font-medium text-slate-900 hover:text-sky-600 truncate"
-                                                                               x-text="player.name"></a>
-                                                                            <template x-if="player.isLoanedIn">
-                                                                                <span class="text-[10px] bg-violet-100 text-violet-700 px-1.5 py-0.5 rounded font-medium shrink-0">{{ __('transfers.loans') }}</span>
-                                                                            </template>
-                                                                        </div>
-                                                                        {{-- Mobile-only details --}}
-                                                                        <div class="md:hidden text-xs text-slate-400 mt-0.5">
-                                                                            <span x-text="player.age + ' {{ __('transfers.explore_age') }}'"></span>
-                                                                            <span class="mx-1">&middot;</span>
-                                                                            <span x-text="player.formattedMarketValue"></span>
-                                                                        </div>
-                                                                    </td>
-                                                                    {{-- Age --}}
-                                                                    <td class="py-2 pr-3 hidden md:table-cell text-slate-600" x-text="player.age"></td>
-                                                                    {{-- Market value --}}
-                                                                    <td class="py-2 pr-3 hidden md:table-cell text-slate-600 font-medium" x-text="player.formattedMarketValue"></td>
-                                                                    {{-- Contract --}}
-                                                                    <td class="py-2 pr-3 hidden md:table-cell text-slate-500" x-text="player.contractUntil || '—'"></td>
-                                                                    {{-- Shortlist star --}}
-                                                                    <td class="py-2 text-center">
-                                                                        <button @click.prevent="toggleShortlist(player)"
-                                                                                class="p-1.5 rounded-full transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
-                                                                                :class="player.isShortlisted ? 'text-amber-500 hover:text-amber-600' : 'text-slate-300 hover:text-amber-400'"
-                                                                                :title="player.isShortlisted ? '{{ __('transfers.remove_from_shortlist') }}' : '{{ __('transfers.add_to_shortlist') }}'">
-                                                                            <svg class="w-5 h-5" :fill="player.isShortlisted ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24">
-                                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                                                                            </svg>
-                                                                        </button>
-                                                                    </td>
-                                                                </tr>
-                                                            </template>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </template>
-                                    </div>
-                                </template>
+                                {{-- Squad content (server-rendered HTML) --}}
+                                <div x-show="!loadingSquad && squadHtml" x-ref="squadPanel"></div>
                             </div>
                         </div>
                     </div>
@@ -236,19 +148,11 @@
                 selectedCompetition: null,
                 teams: [],
                 selectedTeam: null,
-                squad: null,
+                squadHtml: '',
                 loadingTeams: false,
                 loadingSquad: false,
                 mobileView: 'teams',
                 gameId: '{{ $game->id }}',
-                shortlistUrl: '{{ route('game.scouting.shortlist.toggle', [$game->id, '__PLAYER_ID__']) }}',
-                csrfToken: '{{ csrf_token() }}',
-                positionGroups: [
-                    ['GK', '{{ __('transfers.explore_goalkeepers') }}'],
-                    ['DEF', '{{ __('transfers.explore_defenders') }}'],
-                    ['MID', '{{ __('transfers.explore_midfielders') }}'],
-                    ['FWD', '{{ __('transfers.explore_forwards') }}'],
-                ],
 
                 init() {
                     if (this.competitions.length > 0) {
@@ -259,7 +163,8 @@
                 async selectCompetition(comp) {
                     this.selectedCompetition = comp;
                     this.selectedTeam = null;
-                    this.squad = null;
+                    this.squadHtml = '';
+                    if (this.$refs.squadPanel) this.$refs.squadPanel.innerHTML = '';
                     this.loadingTeams = true;
 
                     try {
@@ -279,34 +184,18 @@
 
                     try {
                         const response = await fetch(`/game/${this.gameId}/explore/squad/${team.id}`);
-                        this.squad = await response.json();
+                        const html = await response.text();
+                        this.squadHtml = html;
+                        this.$refs.squadPanel.innerHTML = html;
+                        this.$nextTick(() => Alpine.initTree(this.$refs.squadPanel));
                     } catch (e) {
-                        this.squad = null;
+                        this.squadHtml = '';
+                        this.$refs.squadPanel.innerHTML = '';
                     } finally {
                         this.loadingSquad = false;
                     }
                 },
 
-                async toggleShortlist(player) {
-                    const url = this.shortlistUrl.replace('__PLAYER_ID__', player.id);
-
-                    try {
-                        const response = await fetch(url, {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': this.csrfToken,
-                                'X-Requested-With': 'XMLHttpRequest',
-                                'Accept': 'application/json',
-                            },
-                        });
-                        const data = await response.json();
-                        if (data.success) {
-                            player.isShortlisted = data.action === 'added';
-                        }
-                    } catch (e) {
-                        // Silently fail
-                    }
-                },
             };
         }
     </script>

@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property string $id
  * @property string $name
  * @property string $country
+ * @property string|null $flag
  * @property int $tier
  * @property string $type
  * @property string $season
@@ -60,6 +61,7 @@ class Competition extends Model
         'id',
         'name',
         'country',
+        'flag',
         'tier',
         'type',
         'role',

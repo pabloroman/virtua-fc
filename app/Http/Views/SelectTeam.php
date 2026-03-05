@@ -35,7 +35,6 @@ final class SelectTeam
             if (!empty($tiers)) {
                 $countries[$code] = [
                     'name' => $config['name'],
-                    'flag' => $config['flag'],
                     'tiers' => $tiers,
                 ];
             }
