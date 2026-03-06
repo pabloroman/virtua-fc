@@ -269,4 +269,23 @@ return [
     'explore_forwards' => 'Forwards',
     'explore_age' => 'Age',
     'explore_value' => 'Value',
+
+    // Tracking
+    'tracking_slots' => ':used/:max tracking slots',
+    'start_tracking' => 'Track',
+    'stop_tracking' => 'Stop',
+    'track_to_unlock' => 'Track to unlock intel',
+    'track_to_unlock_desc' => 'Assign your scout to track this player. Intel unlocks over matchdays.',
+    'tracking_in_progress' => 'Tracking...',
+    'no_tracking_slots' => 'No tracking slots available',
+    'willingness' => 'Willingness',
+    'rival_interest' => 'Other clubs interested',
+    'willingness_very_interested' => 'Very interested',
+    'willingness_open' => 'Open to move',
+    'willingness_undecided' => 'Undecided',
+    'willingness_reluctant' => 'Reluctant',
+    'willingness_not_interested' => 'Not interested',
+    'intel_surface' => 'Surface',
+    'intel_report' => 'Report',
+    'intel_deep' => 'Deep Intel',
 ];

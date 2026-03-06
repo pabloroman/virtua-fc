@@ -82,6 +82,12 @@ class CareerActionProcessor
             $this->notificationService->notifyScoutComplete($game, $scoutReport);
         }
 
+        // Tick player tracking progress
+        $leveledUpEntries = $this->scoutingService->tickTracking($game);
+        foreach ($leveledUpEntries as $entry) {
+            $this->notificationService->notifyTrackingIntelReady($game, $entry);
+        }
+
         // Process loan searches
         $loanResults = $this->loanService->processLoanSearches($game);
         foreach ($loanResults['found'] as $result) {

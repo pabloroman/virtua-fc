@@ -8,6 +8,7 @@ use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\Loan;
 use App\Models\ScoutReport;
+use App\Models\ShortlistedPlayer;
 use App\Models\Team;
 use App\Models\TransferOffer;
 use App\Support\Money;
@@ -74,6 +75,18 @@ class ScoutingService
 
     /** Minimum scouting tier required for international searches. */
     private const INTERNATIONAL_SEARCH_MIN_TIER = 3;
+
+    /**
+     * Tracking tier configuration.
+     * [max_concurrent_slots, matchdays_to_level_1, matchdays_to_level_2]
+     */
+    private const TRACKING_TIER_CONFIG = [
+        0 => [0, 0, 0],
+        1 => [1, 1, 3],
+        2 => [2, 1, 2],
+        3 => [3, 1, 2],
+        4 => [4, 1, 1],
+    ];
 
     public function __construct(
         private readonly ContractService $contractService,
@@ -821,5 +834,168 @@ class ScoutingService
             'tech_range' => [max(1, $techAbility - $fuzz), min(99, $techAbility + $fuzz)],
             'phys_range' => [max(1, $physAbility - $fuzz), min(99, $physAbility + $fuzz)],
         ];
+    }
+
+    // =========================================
+    // PLAYER TRACKING
+    // =========================================
+
+    /**
+     * Get surface-level data for a shortlisted player (intel level 0).
+     */
+    public function getPlayerSurfaceDetail(GamePlayer $player, Game $game): array
+    {
+        $isFreeAgent = $player->team_id === null;
+
+        return [
+            'player' => $player,
+            'is_free_agent' => $isFreeAgent,
+            'market_value' => $player->market_value_cents,
+            'formatted_market_value' => Money::format($player->market_value_cents),
+            'contract_until' => $player->contract_until?->format('Y'),
+            'is_expiring' => $player->contract_until && $player->contract_until <= $game->getSeasonEndDate(),
+        ];
+    }
+
+    /**
+     * Get tracking capacity info for a game.
+     *
+     * @return array{max_slots: int, used_slots: int, available_slots: int}
+     */
+    public function getTrackingCapacity(Game $game): array
+    {
+        $tier = $game->currentInvestment->scouting_tier ?? 0;
+        $config = self::TRACKING_TIER_CONFIG[$tier] ?? self::TRACKING_TIER_CONFIG[0];
+        $maxSlots = $config[0];
+
+        $usedSlots = ShortlistedPlayer::where('game_id', $game->id)
+            ->where('is_tracking', true)
+            ->count();
+
+        return [
+            'max_slots' => $maxSlots,
+            'used_slots' => $usedSlots,
+            'available_slots' => max(0, $maxSlots - $usedSlots),
+        ];
+    }
+
+    /**
+     * Start tracking a shortlisted player.
+     */
+    public function startTracking(ShortlistedPlayer $entry, Game $game): bool
+    {
+        if ($entry->is_tracking) {
+            return false;
+        }
+
+        $capacity = $this->getTrackingCapacity($game);
+        if ($capacity['available_slots'] <= 0) {
+            return false;
+        }
+
+        $entry->update(['is_tracking' => true]);
+
+        return true;
+    }
+
+    /**
+     * Stop tracking a shortlisted player (retains gathered intel).
+     */
+    public function stopTracking(ShortlistedPlayer $entry): void
+    {
+        $entry->update(['is_tracking' => false]);
+    }
+
+    /**
+     * Tick tracking progress for all tracked players. Called each matchday.
+     * Returns entries that leveled up.
+     */
+    public function tickTracking(Game $game): Collection
+    {
+        $tier = $game->currentInvestment->scouting_tier ?? 0;
+        $config = self::TRACKING_TIER_CONFIG[$tier] ?? self::TRACKING_TIER_CONFIG[0];
+        $matchdaysToL1 = $config[1];
+        $matchdaysToL2 = $config[1] + $config[2]; // cumulative
+
+        $trackedEntries = ShortlistedPlayer::where('game_id', $game->id)
+            ->where('is_tracking', true)
+            ->where('intel_level', '<', ShortlistedPlayer::INTEL_DEEP)
+            ->get();
+
+        $leveledUp = collect();
+
+        foreach ($trackedEntries as $entry) {
+            $entry->increment('matchdays_tracked');
+            $newMatchdays = $entry->matchdays_tracked;
+            $oldLevel = $entry->intel_level;
+
+            if ($newMatchdays >= $matchdaysToL2 && $oldLevel < ShortlistedPlayer::INTEL_DEEP) {
+                $entry->update(['intel_level' => ShortlistedPlayer::INTEL_DEEP]);
+                $leveledUp->push($entry);
+            } elseif ($newMatchdays >= $matchdaysToL1 && $oldLevel < ShortlistedPlayer::INTEL_REPORT) {
+                $entry->update(['intel_level' => ShortlistedPlayer::INTEL_REPORT]);
+                $leveledUp->push($entry);
+            }
+        }
+
+        return $leveledUp;
+    }
+
+    /**
+     * Calculate a player's willingness to transfer (0-100 score mapped to label).
+     *
+     * @return array{score: int, label: string}
+     */
+    public function calculateWillingness(GamePlayer $player, Game $game): array
+    {
+        $importance = $this->calculatePlayerImportance($player);
+
+        // Base willingness: low importance players are more willing
+        $score = (int) ((1.0 - $importance) * 50);
+
+        // Contract length factor: fewer years left = more willing
+        if ($player->contract_until) {
+            $yearsLeft = max(0, $player->contract_until->diffInYears($game->current_date));
+            if ($yearsLeft <= 1) {
+                $score += 30;
+            } elseif ($yearsLeft <= 2) {
+                $score += 15;
+            }
+        } else {
+            $score += 25; // No contract = very willing
+        }
+
+        // Age factor: older players at lower-rep clubs more open
+        if ($player->age >= 30) {
+            $score += 10;
+        } elseif ($player->age <= 22) {
+            $score += 5; // Young players seeking opportunities
+        }
+
+        $score = min(100, max(0, $score + rand(-5, 5)));
+
+        $label = match (true) {
+            $score >= 80 => 'very_interested',
+            $score >= 60 => 'open',
+            $score >= 40 => 'undecided',
+            $score >= 20 => 'reluctant',
+            default => 'not_interested',
+        };
+
+        return ['score' => $score, 'label' => $label];
+    }
+
+    /**
+     * Calculate whether rival clubs are also interested in a player.
+     */
+    public function calculateRivalInterest(GamePlayer $player): bool
+    {
+        $overallAbility = ($player->current_technical_ability + $player->current_physical_ability) / 2;
+        $importance = $this->calculatePlayerImportance($player);
+
+        // Higher ability + lower importance = more likely rivals want them
+        $chance = ($overallAbility / 99) * 0.4 + (1.0 - $importance) * 0.3;
+
+        return rand(1, 100) <= (int) ($chance * 100);
     }
 }

@@ -128,4 +128,9 @@ return [
     'renewal_countered_message' => ':player is asking for :wage/yr over :years years to renew.',
     'renewal_rejected_title' => ':player rejects renewal',
     'renewal_rejected_message' => ':player has rejected your renewal offer. They will leave at the end of the season.',
+
+    // Tracking intel
+    'tracking_intel_title' => 'Intel on :player ready',
+    'tracking_report_ready' => 'Your scout has gathered a report on :player — ability range and financial details are now available.',
+    'tracking_deep_intel_ready' => 'Your scout has completed deep intel on :player — transfer willingness and rival interest revealed.',
 ];

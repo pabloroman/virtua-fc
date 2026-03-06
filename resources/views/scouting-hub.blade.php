@@ -88,6 +88,8 @@
                             {{-- Shortlist Section (Reactive Alpine.js) --}}
                             <div x-data="{
                                 players: {{ Js::from($shortlistData) }},
+                                trackingMax: {{ $trackingCapacity['max_slots'] }},
+                                trackingUsed: {{ $trackingCapacity['used_slots'] }},
                                 sortBy: 'default',
                                 sortDir: 'asc',
                                 expandedId: null,
@@ -95,6 +97,7 @@
                                 isPreContractPeriod: {{ $isPreContractPeriod ? 'true' : 'false' }},
                                 isTransferWindow: {{ $isTransferWindow ? 'true' : 'false' }},
                                 csrfToken: '{{ csrf_token() }}',
+                                get trackingAvailable() { return Math.max(0, this.trackingMax - this.trackingUsed) },
                                 get sortedPlayers() {
                                     if (this.sortBy === 'default') return this.players;
                                     const dir = this.sortDir === 'asc' ? 1 : -1;
@@ -103,8 +106,16 @@
                                             case 'name': return dir * a.name.localeCompare(b.name);
                                             case 'age': return dir * (a.age - b.age);
                                             case 'position': return dir * a.positionAbbr.localeCompare(b.positionAbbr);
-                                            case 'ability': return dir * ((a.techRange[0] + a.techRange[1]) - (b.techRange[0] + b.techRange[1]));
-                                            case 'price': return dir * (a.askingPrice - b.askingPrice);
+                                            case 'ability': {
+                                                const aVal = a.techRange ? (a.techRange[0] + a.techRange[1]) : 0;
+                                                const bVal = b.techRange ? (b.techRange[0] + b.techRange[1]) : 0;
+                                                return dir * (aVal - bVal);
+                                            }
+                                            case 'price': {
+                                                const aPrice = a.askingPrice ?? a.marketValue ?? 0;
+                                                const bPrice = b.askingPrice ?? b.marketValue ?? 0;
+                                                return dir * (aPrice - bPrice);
+                                            }
                                             default: return 0;
                                         }
                                     });
@@ -123,6 +134,8 @@
                                             this.players.unshift(detail.player);
                                         }
                                     } else if (detail.action === 'removed') {
+                                        const removed = this.players.find(p => p.id === detail.playerId);
+                                        if (removed && removed.isTracking) this.trackingUsed = Math.max(0, this.trackingUsed - 1);
                                         this.players = this.players.filter(p => p.id !== detail.playerId);
                                         if (this.expandedId === detail.playerId) this.expandedId = null;
                                     }
@@ -133,11 +146,38 @@
                                         method: 'POST',
                                         headers: { 'X-CSRF-TOKEN': this.csrfToken, 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
                                     }).then(r => r.json()).then(() => {
+                                        if (player.isTracking) this.trackingUsed = Math.max(0, this.trackingUsed - 1);
                                         this.players = this.players.filter(p => p.id !== player.id);
                                         if (this.expandedId === player.id) this.expandedId = null;
                                         this.confirmRemoveId = null;
                                         window.dispatchEvent(new CustomEvent('shortlist-toggled', { detail: { action: 'removed', playerId: player.id } }));
                                     }).catch(() => { this.confirmRemoveId = null; });
+                                },
+                                startTracking(player) {
+                                    if (this.trackingAvailable <= 0 || player.isTracking || player.intelLevel >= 2) return;
+                                    const url = '{{ route('game.scouting.track.start', [$game->id, '__ID__']) }}'.replace('__ID__', player.id);
+                                    fetch(url, {
+                                        method: 'POST',
+                                        headers: { 'X-CSRF-TOKEN': this.csrfToken, 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+                                    }).then(r => r.json()).then(data => {
+                                        if (data.success) {
+                                            player.isTracking = true;
+                                            this.trackingUsed = data.trackingCapacity.used_slots;
+                                        }
+                                    });
+                                },
+                                stopTracking(player) {
+                                    if (!player.isTracking) return;
+                                    const url = '{{ route('game.scouting.track.stop', [$game->id, '__ID__']) }}'.replace('__ID__', player.id);
+                                    fetch(url, {
+                                        method: 'POST',
+                                        headers: { 'X-CSRF-TOKEN': this.csrfToken, 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+                                    }).then(r => r.json()).then(data => {
+                                        if (data.success) {
+                                            player.isTracking = false;
+                                            this.trackingUsed = data.trackingCapacity.used_slots;
+                                        }
+                                    });
                                 },
                                 toggleExpand(player) {
                                     this.expandedId = this.expandedId === player.id ? null : player.id;
@@ -160,24 +200,31 @@
                                                 {{ __('transfers.shortlist') }}
                                                 <span class="text-xs font-normal text-slate-400" x-text="'(' + players.length + ')'"></span>
                                             </h4>
-                                            {{-- Sort controls --}}
-                                            <div class="flex items-center gap-1 overflow-x-auto scrollbar-hide" x-show="players.length > 1">
-                                                <span class="text-[10px] text-slate-400 shrink-0 hidden sm:inline">{{ __('transfers.sort_by') }}:</span>
-                                                <template x-for="col in [
-                                                    { key: 'name', label: '{{ __('transfers.sort_name') }}' },
-                                                    { key: 'age', label: '{{ __('transfers.sort_age') }}' },
-                                                    { key: 'ability', label: '{{ __('transfers.sort_ability') }}' },
-                                                    { key: 'price', label: '{{ __('transfers.sort_price') }}' },
-                                                ]" :key="col.key">
-                                                    <button @click="toggleSort(col.key)"
-                                                        class="inline-flex items-center gap-0.5 px-2 py-1 text-[10px] font-medium rounded-full transition-colors shrink-0"
-                                                        :class="sortBy === col.key ? 'bg-amber-200 text-amber-800' : 'bg-white/70 text-slate-500 hover:bg-white hover:text-slate-700'">
-                                                        <span x-text="col.label"></span>
-                                                        <svg x-show="sortBy === col.key" class="w-3 h-3 transition-transform" :class="sortDir === 'desc' ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
-                                                        </svg>
-                                                    </button>
-                                                </template>
+                                            <div class="flex items-center gap-3">
+                                                {{-- Tracking slots indicator --}}
+                                                <div x-show="trackingMax > 0" class="flex items-center gap-1.5 text-xs text-teal-700 bg-teal-50 px-2.5 py-1 rounded-full border border-teal-200">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                                    <span class="font-medium tabular-nums" x-text="trackingUsed + '/' + trackingMax"></span>
+                                                </div>
+                                                {{-- Sort controls --}}
+                                                <div class="flex items-center gap-1 overflow-x-auto scrollbar-hide" x-show="players.length > 1">
+                                                    <span class="text-[10px] text-slate-400 shrink-0 hidden sm:inline">{{ __('transfers.sort_by') }}:</span>
+                                                    <template x-for="col in [
+                                                        { key: 'name', label: '{{ __('transfers.sort_name') }}' },
+                                                        { key: 'age', label: '{{ __('transfers.sort_age') }}' },
+                                                        { key: 'ability', label: '{{ __('transfers.sort_ability') }}' },
+                                                        { key: 'price', label: '{{ __('transfers.sort_price') }}' },
+                                                    ]" :key="col.key">
+                                                        <button @click="toggleSort(col.key)"
+                                                            class="inline-flex items-center gap-0.5 px-2 py-1 text-[10px] font-medium rounded-full transition-colors shrink-0"
+                                                            :class="sortBy === col.key ? 'bg-amber-200 text-amber-800' : 'bg-white/70 text-slate-500 hover:bg-white hover:text-slate-700'">
+                                                            <span x-text="col.label"></span>
+                                                            <svg x-show="sortBy === col.key" class="w-3 h-3 transition-transform" :class="sortDir === 'desc' ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
+                                                            </svg>
+                                                        </button>
+                                                    </template>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -201,6 +248,13 @@
                                                             <template x-if="!player.isFreeAgent && player.isExpiring">
                                                                 <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-100 text-amber-700">{{ __('transfers.expiring_contract') }}</span>
                                                             </template>
+                                                            {{-- Active tracking indicator --}}
+                                                            <template x-if="player.isTracking && player.intelLevel < 2">
+                                                                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-teal-100 text-teal-700">
+                                                                    <span class="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse"></span>
+                                                                    {{ __('transfers.tracking_in_progress') }}
+                                                                </span>
+                                                            </template>
                                                         </div>
                                                         <div class="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
                                                             <template x-if="player.teamImage">
@@ -209,18 +263,50 @@
                                                             <span class="truncate" x-text="player.teamName"></span>
                                                         </div>
                                                     </div>
-                                                    {{-- Ability range --}}
+                                                    {{-- Ability range (locked if level 0) --}}
                                                     <div class="text-right hidden sm:block shrink-0">
                                                         <div class="text-xs text-slate-400">{{ __('transfers.ability') }}</div>
-                                                        <div class="text-sm font-semibold text-slate-700 tabular-nums" x-text="player.techRange[0] + '-' + player.techRange[1]"></div>
+                                                        <template x-if="player.techRange">
+                                                            <div class="text-sm font-semibold text-slate-700 tabular-nums" x-text="player.techRange[0] + '-' + player.techRange[1]"></div>
+                                                        </template>
+                                                        <template x-if="!player.techRange">
+                                                            <div class="flex items-center justify-end gap-1 text-slate-300">
+                                                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
+                                                            </div>
+                                                        </template>
                                                     </div>
-                                                    {{-- Asking price --}}
+                                                    {{-- Asking price (locked if level 0) --}}
                                                     <div class="text-right shrink-0">
                                                         <div class="text-xs text-slate-400">{{ __('transfers.asking_price') }}</div>
-                                                        <div class="text-sm font-semibold" :class="player.canAffordFee ? 'text-slate-900' : 'text-red-600'" x-text="player.formattedAskingPrice"></div>
+                                                        <template x-if="player.formattedAskingPrice">
+                                                            <div class="text-sm font-semibold" :class="player.canAffordFee ? 'text-slate-900' : 'text-red-600'" x-text="player.formattedAskingPrice"></div>
+                                                        </template>
+                                                        <template x-if="!player.formattedAskingPrice">
+                                                            <div class="flex items-center justify-end gap-1 text-slate-300">
+                                                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
+                                                            </div>
+                                                        </template>
                                                     </div>
-                                                    {{-- Expand + Remove buttons --}}
+                                                    {{-- Track / Expand / Remove buttons --}}
                                                     <div class="flex items-center gap-1 shrink-0">
+                                                        {{-- Track button (for level < 2 players, not currently tracking) --}}
+                                                        <template x-if="player.intelLevel < 2 && !player.isTracking && trackingMax > 0">
+                                                            <button @click.stop="startTracking(player)"
+                                                                :disabled="trackingAvailable <= 0"
+                                                                :class="trackingAvailable > 0 ? 'text-teal-500 hover:text-teal-700 hover:bg-teal-50' : 'text-slate-300 cursor-not-allowed'"
+                                                                class="p-1.5 rounded transition-colors min-h-[44px] sm:min-h-0"
+                                                                :title="trackingAvailable > 0 ? '{{ __('transfers.start_tracking') }}' : '{{ __('transfers.no_tracking_slots') }}'">
+                                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                                            </button>
+                                                        </template>
+                                                        {{-- Stop tracking button (for currently tracking players) --}}
+                                                        <template x-if="player.isTracking">
+                                                            <button @click.stop="stopTracking(player)"
+                                                                class="p-1.5 text-teal-600 hover:text-red-500 rounded hover:bg-red-50 transition-colors min-h-[44px] sm:min-h-0"
+                                                                title="{{ __('transfers.stop_tracking') }}">
+                                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                                                            </button>
+                                                        </template>
                                                         <svg class="w-4 h-4 text-slate-400 transition-transform" :class="expandedId === player.id ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                                         </svg>
@@ -239,7 +325,7 @@
                                                     </div>
                                                 </div>
 
-                                                {{-- Expanded Offer Section --}}
+                                                {{-- Expanded Section --}}
                                                 <div x-show="expandedId === player.id" x-cloak class="mt-3"
                                                      x-transition:enter="transition ease-out duration-200"
                                                      x-transition:enter-start="opacity-0 -translate-y-1"
@@ -247,135 +333,201 @@
                                                      x-transition:leave="transition ease-in duration-150"
                                                      x-transition:leave-start="opacity-100 translate-y-0"
                                                      x-transition:leave-end="opacity-0 -translate-y-1">
-                                                    <div class="bg-slate-50 rounded-lg p-4">
-                                                        {{-- Financial summary --}}
-                                                        <div class="flex flex-wrap gap-x-6 gap-y-1 text-xs mb-3">
-                                                            <div>
-                                                                <span class="text-slate-500">{{ __('transfers.estimated_asking_price') }}:</span>
-                                                                <span class="font-semibold" :class="player.canAffordFee ? 'text-slate-900' : 'text-red-600'" x-text="player.formattedAskingPrice"></span>
-                                                            </div>
-                                                            <div>
-                                                                <span class="text-slate-500">{{ __('transfers.wage_demand') }}:</span>
-                                                                <span class="font-semibold text-slate-700" x-text="player.formattedWageDemand + '{{ __('squad.per_year') }}'"></span>
+
+                                                    {{-- Level 0: Track to unlock prompt --}}
+                                                    <template x-if="player.intelLevel === 0">
+                                                        <div class="bg-slate-50 rounded-lg p-4">
+                                                            <div class="flex flex-col items-center text-center py-2">
+                                                                <div class="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center mb-3">
+                                                                    <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                                                </div>
+                                                                <p class="text-sm font-semibold text-slate-700 mb-1">{{ __('transfers.track_to_unlock') }}</p>
+                                                                <p class="text-xs text-slate-500 mb-3 max-w-xs">{{ __('transfers.track_to_unlock_desc') }}</p>
+                                                                <div class="flex flex-wrap items-center gap-x-5 gap-y-1 text-xs text-slate-500 mb-3">
+                                                                    <span>{{ __('transfers.market_value') }}: <span class="font-semibold text-slate-700" x-text="player.formattedMarketValue"></span></span>
+                                                                    <template x-if="player.contractYear">
+                                                                        <span>{{ __('transfers.contract_until') }}: <span class="font-semibold text-slate-700" x-text="player.contractYear"></span></span>
+                                                                    </template>
+                                                                </div>
+                                                                <template x-if="!player.isTracking && trackingMax > 0">
+                                                                    <button @click="startTracking(player)"
+                                                                        :disabled="trackingAvailable <= 0"
+                                                                        :class="trackingAvailable > 0 ? 'bg-teal-600 hover:bg-teal-700 text-white' : 'bg-slate-200 text-slate-400 cursor-not-allowed'"
+                                                                        class="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-lg transition-colors min-h-[36px]">
+                                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                                                        {{ __('transfers.start_tracking') }}
+                                                                    </button>
+                                                                </template>
+                                                                <template x-if="player.isTracking">
+                                                                    <div class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-teal-50 text-teal-700 border border-teal-200">
+                                                                        <span class="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse"></span>
+                                                                        {{ __('transfers.tracking_in_progress') }}
+                                                                    </div>
+                                                                </template>
                                                             </div>
                                                         </div>
+                                                    </template>
 
-                                                        {{-- Action: Free agent signing --}}
-                                                        <template x-if="player.isFreeAgent && !player.hasExistingOffer">
-                                                            <div>
-                                                                <template x-if="isTransferWindow && player.canAffordWage">
-                                                                    <form :action="signFreeAgentRoute(player.id)" method="POST">
-                                                                        <input type="hidden" name="_token" :value="csrfToken">
-                                                                        <button type="submit" class="inline-flex items-center justify-center px-4 py-1.5 min-h-[36px] bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-lg transition-colors whitespace-nowrap">
-                                                                            {{ __('transfers.sign_free_agent') }}
+                                                    {{-- Level 1+: Full scouting detail --}}
+                                                    <template x-if="player.intelLevel >= 1">
+                                                        <div class="bg-slate-50 rounded-lg p-4">
+                                                            {{-- Financial summary --}}
+                                                            <div class="flex flex-wrap gap-x-6 gap-y-1 text-xs mb-3">
+                                                                <div>
+                                                                    <span class="text-slate-500">{{ __('transfers.estimated_asking_price') }}:</span>
+                                                                    <span class="font-semibold" :class="player.canAffordFee ? 'text-slate-900' : 'text-red-600'" x-text="player.formattedAskingPrice"></span>
+                                                                </div>
+                                                                <div>
+                                                                    <span class="text-slate-500">{{ __('transfers.wage_demand') }}:</span>
+                                                                    <span class="font-semibold text-slate-700" x-text="player.formattedWageDemand + '{{ __('squad.per_year') }}'"></span>
+                                                                </div>
+                                                            </div>
+
+                                                            {{-- Deep Intel: Willingness & Rival Interest (Level 2) --}}
+                                                            <template x-if="player.intelLevel >= 2 && player.willingness">
+                                                                <div class="flex flex-wrap gap-2 mb-3">
+                                                                    <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-[10px] font-medium border"
+                                                                        :class="{
+                                                                            'bg-green-50 text-green-700 border-green-200': player.willingness === 'very_interested' || player.willingness === 'open',
+                                                                            'bg-amber-50 text-amber-700 border-amber-200': player.willingness === 'undecided',
+                                                                            'bg-red-50 text-red-700 border-red-200': player.willingness === 'reluctant' || player.willingness === 'not_interested',
+                                                                        }">
+                                                                        {{ __('transfers.willingness') }}: <span x-text="player.willingnessLabel"></span>
+                                                                    </span>
+                                                                    <template x-if="player.rivalInterest">
+                                                                        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-medium bg-orange-50 text-orange-700 border border-orange-200">
+                                                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+                                                                            {{ __('transfers.rival_interest') }}
+                                                                        </span>
+                                                                    </template>
+                                                                </div>
+                                                            </template>
+
+                                                            {{-- Tracking in progress indicator for Level 1 --}}
+                                                            <template x-if="player.intelLevel === 1 && player.isTracking">
+                                                                <div class="flex items-center gap-1.5 mb-3 text-xs text-teal-600">
+                                                                    <span class="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse"></span>
+                                                                    {{ __('transfers.tracking_in_progress') }} — {{ __('transfers.intel_deep') }}
+                                                                </div>
+                                                            </template>
+
+                                                            {{-- Action: Free agent signing --}}
+                                                            <template x-if="player.isFreeAgent && !player.hasExistingOffer">
+                                                                <div>
+                                                                    <template x-if="isTransferWindow && player.canAffordWage">
+                                                                        <form :action="signFreeAgentRoute(player.id)" method="POST">
+                                                                            <input type="hidden" name="_token" :value="csrfToken">
+                                                                            <button type="submit" class="inline-flex items-center justify-center px-4 py-1.5 min-h-[36px] bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-lg transition-colors whitespace-nowrap">
+                                                                                {{ __('transfers.sign_free_agent') }}
+                                                                            </button>
+                                                                        </form>
+                                                                    </template>
+                                                                    <template x-if="!isTransferWindow">
+                                                                        <div class="text-xs text-slate-500 italic">
+                                                                            {{ __('transfers.window_closed_for_signing') }}
+                                                                        </div>
+                                                                    </template>
+                                                                    <template x-if="isTransferWindow && !player.canAffordWage">
+                                                                        <div class="text-xs text-amber-600 font-medium">
+                                                                            {{ __('transfers.wage_exceeds_budget') }}
+                                                                        </div>
+                                                                    </template>
+                                                                </div>
+                                                            </template>
+
+                                                            {{-- Action: Offer awaiting response (pending, no counter) --}}
+                                                            <template x-if="!player.isFreeAgent && player.hasExistingOffer && player.offerStatus === 'pending' && !player.offerIsCounter">
+                                                                <div class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-amber-50 text-amber-700 border border-amber-200">
+                                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                                                    {{ __('transfers.bid_awaiting_response') }}
+                                                                </div>
+                                                            </template>
+
+                                                            {{-- Action: Counter-offer received (pending with counter) --}}
+                                                            <template x-if="!player.isFreeAgent && player.hasExistingOffer && player.offerStatus === 'pending' && player.offerIsCounter">
+                                                                <div class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-blue-50 text-blue-700 border border-blue-200">
+                                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                                                                    {{ __('transfers.counter_offer_received') }}
+                                                                </div>
+                                                            </template>
+
+                                                            {{-- Action: Transfer agreed, waiting for window --}}
+                                                            <template x-if="!player.isFreeAgent && player.hasExistingOffer && player.offerStatus === 'agreed'">
+                                                                <div class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-green-50 text-green-700 border border-green-200">
+                                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                                                    {{ __('transfers.transfer_agreed') }}
+                                                                </div>
+                                                            </template>
+
+                                                            {{-- Action: Pre-contract --}}
+                                                            <template x-if="!player.isFreeAgent && !player.hasExistingOffer && player.isExpiring && isPreContractPeriod">
+                                                                <form :action="preContractRoute(player.id)" method="POST" class="space-y-2">
+                                                                    <input type="hidden" name="_token" :value="csrfToken">
+                                                                    <label class="block text-xs font-medium text-slate-600">{{ __('transfers.offered_wage_euros') }}</label>
+                                                                    <div class="flex items-center gap-2" x-data="{
+                                                                        holdTimer: null, holdInterval: null,
+                                                                        get step() { return player.wageEuros >= 1000000 ? 100000 : 10000 },
+                                                                        get display() { return '€ ' + new Intl.NumberFormat('es-ES').format(player.wageEuros) },
+                                                                        get atMin() { return player.wageEuros <= 0 },
+                                                                        increment() { player.wageEuros += this.step },
+                                                                        decrement() { player.wageEuros = Math.max(player.wageEuros - this.step, 0) },
+                                                                        startHold(fn) { fn(); this.holdTimer = setTimeout(() => { this.holdInterval = setInterval(() => fn(), 80) }, 400) },
+                                                                        stopHold() { clearTimeout(this.holdTimer); clearInterval(this.holdInterval) }
+                                                                    }">
+                                                                        <div class="inline-flex items-stretch border border-slate-300 rounded-lg overflow-hidden h-[36px]">
+                                                                            <input type="hidden" name="offered_wage" :value="player.wageEuros">
+                                                                            <button type="button" :disabled="atMin" :class="atMin ? 'opacity-40 cursor-not-allowed' : 'hover:bg-slate-100 active:bg-slate-200'" class="min-h-[32px] sm:min-h-0 min-w-[32px] text-sm flex items-center justify-center bg-slate-50 text-slate-700 font-bold select-none transition-colors" @mousedown.prevent="startHold(() => decrement())" @mouseup="stopHold()" @mouseleave="stopHold()" @touchstart.prevent="startHold(() => decrement())" @touchend="stopHold()">&minus;</button>
+                                                                            <input type="text" readonly :value="display" class="min-h-[32px] sm:min-h-0 w-28 text-xs text-center font-semibold text-slate-800 bg-white border-x border-y-0 border-slate-300 outline-none cursor-default focus:outline-none focus:ring-0 focus:border-slate-300">
+                                                                            <button type="button" class="min-h-[32px] sm:min-h-0 min-w-[32px] text-sm flex items-center justify-center bg-slate-50 hover:bg-slate-100 active:bg-slate-200 text-slate-700 font-bold select-none transition-colors" @mousedown.prevent="startHold(() => increment())" @mouseup="stopHold()" @mouseleave="stopHold()" @touchstart.prevent="startHold(() => increment())" @touchend="stopHold()">+</button>
+                                                                        </div>
+                                                                        <button type="submit" class="inline-flex items-center justify-center px-3 py-1.5 min-h-[36px] bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg transition-colors whitespace-nowrap">
+                                                                            {{ __('transfers.submit_pre_contract') }}
                                                                         </button>
-                                                                    </form>
-                                                                </template>
-                                                                <template x-if="!isTransferWindow">
-                                                                    <div class="text-xs text-slate-500 italic">
-                                                                        {{ __('transfers.window_closed_for_signing') }}
                                                                     </div>
-                                                                </template>
-                                                                <template x-if="isTransferWindow && !player.canAffordWage">
-                                                                    <div class="text-xs text-amber-600 font-medium">
-                                                                        {{ __('transfers.wage_exceeds_budget') }}
-                                                                    </div>
-                                                                </template>
-                                                            </div>
-                                                        </template>
+                                                                </form>
+                                                            </template>
 
-                                                        {{-- Action: Offer awaiting response (pending, no counter) --}}
-                                                        <template x-if="!player.isFreeAgent && player.hasExistingOffer && player.offerStatus === 'pending' && !player.offerIsCounter">
-                                                            <div class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-amber-50 text-amber-700 border border-amber-200">
-                                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                                                {{ __('transfers.bid_awaiting_response') }}
-                                                            </div>
-                                                        </template>
+                                                            {{-- Action: Can't afford --}}
+                                                            <template x-if="!player.isFreeAgent && !player.hasExistingOffer && !(player.isExpiring && isPreContractPeriod) && !player.canAffordFee">
+                                                                <div class="text-xs text-red-600 font-medium">
+                                                                    {{ __('transfers.transfer_fee_exceeds_budget') }}
+                                                                </div>
+                                                            </template>
 
-                                                        {{-- Action: Counter-offer received (pending with counter) --}}
-                                                        <template x-if="!player.isFreeAgent && player.hasExistingOffer && player.offerStatus === 'pending' && player.offerIsCounter">
-                                                            <div class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-blue-50 text-blue-700 border border-blue-200">
-                                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
-                                                                {{ __('transfers.counter_offer_received') }}
-                                                            </div>
-                                                        </template>
-
-                                                        {{-- Action: Transfer agreed, waiting for window --}}
-                                                        <template x-if="!player.isFreeAgent && player.hasExistingOffer && player.offerStatus === 'agreed'">
-                                                            <div class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-green-50 text-green-700 border border-green-200">
-                                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                                                                {{ __('transfers.transfer_agreed') }}
-                                                            </div>
-                                                        </template>
-
-                                                        {{-- Action: Pre-contract --}}
-                                                        <template x-if="!player.isFreeAgent && !player.hasExistingOffer && player.isExpiring && isPreContractPeriod">
-                                                            <form :action="preContractRoute(player.id)" method="POST" class="space-y-2">
-                                                                <input type="hidden" name="_token" :value="csrfToken">
-                                                                <label class="block text-xs font-medium text-slate-600">{{ __('transfers.offered_wage_euros') }}</label>
-                                                                <div class="flex items-center gap-2" x-data="{
+                                                            {{-- Action: Bid + Loan --}}
+                                                            <template x-if="!player.isFreeAgent && !player.hasExistingOffer && !(player.isExpiring && isPreContractPeriod) && player.canAffordFee">
+                                                                <div class="flex flex-col sm:flex-row gap-2" x-data="{
                                                                     holdTimer: null, holdInterval: null,
-                                                                    get step() { return player.wageEuros >= 1000000 ? 100000 : 10000 },
-                                                                    get display() { return '€ ' + new Intl.NumberFormat('es-ES').format(player.wageEuros) },
-                                                                    get atMin() { return player.wageEuros <= 0 },
-                                                                    increment() { player.wageEuros += this.step },
-                                                                    decrement() { player.wageEuros = Math.max(player.wageEuros - this.step, 0) },
+                                                                    get step() { return player.bidEuros >= 1000000 ? 100000 : 10000 },
+                                                                    get display() { return '€ ' + new Intl.NumberFormat('es-ES').format(player.bidEuros) },
+                                                                    get atMin() { return player.bidEuros <= 0 },
+                                                                    increment() { player.bidEuros += this.step },
+                                                                    decrement() { player.bidEuros = Math.max(player.bidEuros - this.step, 0) },
                                                                     startHold(fn) { fn(); this.holdTimer = setTimeout(() => { this.holdInterval = setInterval(() => fn(), 80) }, 400) },
                                                                     stopHold() { clearTimeout(this.holdTimer); clearInterval(this.holdInterval) }
                                                                 }">
-                                                                    <div class="inline-flex items-stretch border border-slate-300 rounded-lg overflow-hidden h-[36px]">
-                                                                        <input type="hidden" name="offered_wage" :value="player.wageEuros">
-                                                                        <button type="button" :disabled="atMin" :class="atMin ? 'opacity-40 cursor-not-allowed' : 'hover:bg-slate-100 active:bg-slate-200'" class="min-h-[32px] sm:min-h-0 min-w-[32px] text-sm flex items-center justify-center bg-slate-50 text-slate-700 font-bold select-none transition-colors" @mousedown.prevent="startHold(() => decrement())" @mouseup="stopHold()" @mouseleave="stopHold()" @touchstart.prevent="startHold(() => decrement())" @touchend="stopHold()">&minus;</button>
-                                                                        <input type="text" readonly :value="display" class="min-h-[32px] sm:min-h-0 w-28 text-xs text-center font-semibold text-slate-800 bg-white border-x border-y-0 border-slate-300 outline-none cursor-default focus:outline-none focus:ring-0 focus:border-slate-300">
-                                                                        <button type="button" class="min-h-[32px] sm:min-h-0 min-w-[32px] text-sm flex items-center justify-center bg-slate-50 hover:bg-slate-100 active:bg-slate-200 text-slate-700 font-bold select-none transition-colors" @mousedown.prevent="startHold(() => increment())" @mouseup="stopHold()" @mouseleave="stopHold()" @touchstart.prevent="startHold(() => increment())" @touchend="stopHold()">+</button>
-                                                                    </div>
-                                                                    <button type="submit" class="inline-flex items-center justify-center px-3 py-1.5 min-h-[36px] bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg transition-colors whitespace-nowrap">
-                                                                        {{ __('transfers.submit_pre_contract') }}
-                                                                    </button>
+                                                                    <form :action="bidRoute(player.id)" method="POST" class="flex items-center gap-2 flex-1">
+                                                                        <input type="hidden" name="_token" :value="csrfToken">
+                                                                        <div class="inline-flex items-stretch border border-slate-300 rounded-lg overflow-hidden h-[36px]">
+                                                                            <input type="hidden" name="bid_amount" :value="player.bidEuros">
+                                                                            <button type="button" :disabled="atMin" :class="atMin ? 'opacity-40 cursor-not-allowed' : 'hover:bg-slate-100 active:bg-slate-200'" class="min-h-[32px] sm:min-h-0 min-w-[32px] text-sm flex items-center justify-center bg-slate-50 text-slate-700 font-bold select-none transition-colors" @mousedown.prevent="startHold(() => decrement())" @mouseup="stopHold()" @mouseleave="stopHold()" @touchstart.prevent="startHold(() => decrement())" @touchend="stopHold()">&minus;</button>
+                                                                            <input type="text" readonly :value="display" class="min-h-[32px] sm:min-h-0 w-28 text-xs text-center font-semibold text-slate-800 bg-white border-x border-y-0 border-slate-300 outline-none cursor-default focus:outline-none focus:ring-0 focus:border-slate-300">
+                                                                            <button type="button" class="min-h-[32px] sm:min-h-0 min-w-[32px] text-sm flex items-center justify-center bg-slate-50 hover:bg-slate-100 active:bg-slate-200 text-slate-700 font-bold select-none transition-colors" @mousedown.prevent="startHold(() => increment())" @mouseup="stopHold()" @mouseleave="stopHold()" @touchstart.prevent="startHold(() => increment())" @touchend="stopHold()">+</button>
+                                                                        </div>
+                                                                        <button type="submit" class="inline-flex items-center justify-center px-3 py-1.5 min-h-[36px] bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold rounded-lg transition-colors whitespace-nowrap">
+                                                                            {{ __('transfers.submit_bid') }}
+                                                                        </button>
+                                                                    </form>
+                                                                    <form :action="loanRoute(player.id)" method="POST">
+                                                                        <input type="hidden" name="_token" :value="csrfToken">
+                                                                        <button type="submit" class="inline-flex items-center justify-center px-3 py-1.5 min-h-[36px] border border-slate-300 text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-50 transition-colors whitespace-nowrap">
+                                                                            {{ __('transfers.request_loan') }}
+                                                                        </button>
+                                                                    </form>
                                                                 </div>
-                                                            </form>
-                                                        </template>
-
-                                                        {{-- Action: Can't afford --}}
-                                                        <template x-if="!player.isFreeAgent && !player.hasExistingOffer && !(player.isExpiring && isPreContractPeriod) && !player.canAffordFee">
-                                                            <div class="text-xs text-red-600 font-medium">
-                                                                {{ __('transfers.transfer_fee_exceeds_budget') }}
-                                                            </div>
-                                                        </template>
-
-                                                        {{-- Action: Bid + Loan --}}
-                                                        <template x-if="!player.isFreeAgent && !player.hasExistingOffer && !(player.isExpiring && isPreContractPeriod) && player.canAffordFee">
-                                                            <div class="flex flex-col sm:flex-row gap-2" x-data="{
-                                                                holdTimer: null, holdInterval: null,
-                                                                get step() { return player.bidEuros >= 1000000 ? 100000 : 10000 },
-                                                                get display() { return '€ ' + new Intl.NumberFormat('es-ES').format(player.bidEuros) },
-                                                                get atMin() { return player.bidEuros <= 0 },
-                                                                increment() { player.bidEuros += this.step },
-                                                                decrement() { player.bidEuros = Math.max(player.bidEuros - this.step, 0) },
-                                                                startHold(fn) { fn(); this.holdTimer = setTimeout(() => { this.holdInterval = setInterval(() => fn(), 80) }, 400) },
-                                                                stopHold() { clearTimeout(this.holdTimer); clearInterval(this.holdInterval) }
-                                                            }">
-                                                                <form :action="bidRoute(player.id)" method="POST" class="flex items-center gap-2 flex-1">
-                                                                    <input type="hidden" name="_token" :value="csrfToken">
-                                                                    <div class="inline-flex items-stretch border border-slate-300 rounded-lg overflow-hidden h-[36px]">
-                                                                        <input type="hidden" name="bid_amount" :value="player.bidEuros">
-                                                                        <button type="button" :disabled="atMin" :class="atMin ? 'opacity-40 cursor-not-allowed' : 'hover:bg-slate-100 active:bg-slate-200'" class="min-h-[32px] sm:min-h-0 min-w-[32px] text-sm flex items-center justify-center bg-slate-50 text-slate-700 font-bold select-none transition-colors" @mousedown.prevent="startHold(() => decrement())" @mouseup="stopHold()" @mouseleave="stopHold()" @touchstart.prevent="startHold(() => decrement())" @touchend="stopHold()">&minus;</button>
-                                                                        <input type="text" readonly :value="display" class="min-h-[32px] sm:min-h-0 w-28 text-xs text-center font-semibold text-slate-800 bg-white border-x border-y-0 border-slate-300 outline-none cursor-default focus:outline-none focus:ring-0 focus:border-slate-300">
-                                                                        <button type="button" class="min-h-[32px] sm:min-h-0 min-w-[32px] text-sm flex items-center justify-center bg-slate-50 hover:bg-slate-100 active:bg-slate-200 text-slate-700 font-bold select-none transition-colors" @mousedown.prevent="startHold(() => increment())" @mouseup="stopHold()" @mouseleave="stopHold()" @touchstart.prevent="startHold(() => increment())" @touchend="stopHold()">+</button>
-                                                                    </div>
-                                                                    <button type="submit" class="inline-flex items-center justify-center px-3 py-1.5 min-h-[36px] bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold rounded-lg transition-colors whitespace-nowrap">
-                                                                        {{ __('transfers.submit_bid') }}
-                                                                    </button>
-                                                                </form>
-                                                                <form :action="loanRoute(player.id)" method="POST">
-                                                                    <input type="hidden" name="_token" :value="csrfToken">
-                                                                    <button type="submit" class="inline-flex items-center justify-center px-3 py-1.5 min-h-[36px] border border-slate-300 text-slate-700 text-xs font-semibold rounded-lg hover:bg-slate-50 transition-colors whitespace-nowrap">
-                                                                        {{ __('transfers.request_loan') }}
-                                                                    </button>
-                                                                </form>
-                                                            </div>
-                                                        </template>
-                                                    </div>
+                                                            </template>
+                                                        </div>
+                                                    </template>
                                                 </div>
                                             </div>
                                         </template>

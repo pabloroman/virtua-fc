@@ -5,7 +5,7 @@ namespace App\Http\Actions;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\ShortlistedPlayer;
-use App\Modules\Transfer\Services\ScoutingService;
+use App\Support\Money;
 use App\Support\PositionMapper;
 use Illuminate\Http\Request;
 
@@ -39,8 +39,6 @@ class ToggleShortlist
 
             if ($action === 'added') {
                 $gamePlayer->load(['player', 'team']);
-                $scoutingService = app(ScoutingService::class);
-                $detail = $scoutingService->getPlayerScoutingDetail($gamePlayer, $game);
                 $positionDisplay = PositionMapper::getPositionDisplay($gamePlayer->position);
 
                 $data['player'] = [
@@ -53,18 +51,25 @@ class ToggleShortlist
                     'age' => $gamePlayer->age,
                     'teamName' => $gamePlayer->team?->name,
                     'teamImage' => $gamePlayer->team?->image,
-                    'techRange' => $detail['tech_range'],
-                    'formattedAskingPrice' => $detail['formatted_asking_price'],
-                    'askingPrice' => $detail['asking_price'],
-                    'canAffordFee' => $detail['can_afford_fee'],
-                    'canAffordWage' => $detail['can_afford_wage'],
-                    'isFreeAgent' => $detail['is_free_agent'],
-                    'isExpiring' => !$detail['is_free_agent'] && $gamePlayer->contract_until && $gamePlayer->contract_until <= $game->getSeasonEndDate(),
-                    'wageDemand' => $detail['wage_demand'],
-                    'formattedWageDemand' => $detail['formatted_wage_demand'],
+                    'isExpiring' => $gamePlayer->contract_until && $gamePlayer->contract_until <= $game->getSeasonEndDate(),
+                    'contractYear' => $gamePlayer->contract_until?->format('Y'),
+                    'marketValue' => $gamePlayer->market_value_cents,
+                    'formattedMarketValue' => Money::format($gamePlayer->market_value_cents),
+                    'intelLevel' => ShortlistedPlayer::INTEL_SURFACE,
+                    'isTracking' => false,
+                    'matchdaysTracked' => 0,
                     'hasExistingOffer' => false,
-                    'bidEuros' => (int) ($detail['asking_price'] / 100),
-                    'wageEuros' => (int) (($detail['pre_contract_wage_demand'] ?? $detail['wage_demand']) / 100),
+                    'techRange' => null,
+                    'formattedAskingPrice' => null,
+                    'askingPrice' => null,
+                    'canAffordFee' => false,
+                    'wageDemand' => null,
+                    'formattedWageDemand' => null,
+                    'bidEuros' => 0,
+                    'wageEuros' => 0,
+                    'willingness' => null,
+                    'willingnessLabel' => null,
+                    'rivalInterest' => false,
                 ];
             }
 
