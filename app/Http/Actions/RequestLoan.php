@@ -2,6 +2,7 @@
 
 namespace App\Http\Actions;
 
+use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Transfer\Services\LoanService;
 use App\Models\Game;
 use App\Models\GamePlayer;
@@ -30,6 +31,12 @@ class RequestLoan
 
     private function handleLoanIn(Game $game, GamePlayer $player)
     {
+        // Squad size cap
+        if (ContractService::isSquadFull($game)) {
+            return redirect()->route('game.transfers', $game->id)
+                ->with('error', __('messages.squad_full', ['max' => ContractService::MAX_SQUAD_SIZE]));
+        }
+
         $this->loanService->requestLoanIn($game, $player);
 
         return redirect()->route('game.transfers', $game->id)

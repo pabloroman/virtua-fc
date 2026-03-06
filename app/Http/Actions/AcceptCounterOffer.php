@@ -2,6 +2,7 @@
 
 namespace App\Http\Actions;
 
+use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Transfer\Services\TransferService;
 use App\Models\Game;
 use App\Models\TransferOffer;
@@ -20,6 +21,12 @@ class AcceptCounterOffer
         if (!$offer->isPending() || !$offer->isIncoming()) {
             return redirect()->route('game.transfers', $gameId)
                 ->with('error', __('messages.counter_offer_expired'));
+        }
+
+        // Squad size cap
+        if (ContractService::isSquadFull($game)) {
+            return redirect()->route('game.transfers', $gameId)
+                ->with('error', __('messages.squad_full', ['max' => ContractService::MAX_SQUAD_SIZE]));
         }
 
         $result = $this->transferService->acceptCounterOffer($game, $offer);

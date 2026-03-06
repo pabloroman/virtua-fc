@@ -2,6 +2,7 @@
 
 namespace App\Http\Actions;
 
+use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Transfer\Services\ScoutingService;
 use App\Modules\Transfer\Services\TransferService;
 use App\Models\Game;
@@ -25,6 +26,12 @@ class SubmitTransferBid
         ]);
 
         $bidAmountCents = (int) ($validated['bid_amount'] * 100);
+
+        // Squad size cap
+        if (ContractService::isSquadFull($game)) {
+            return redirect()->route('game.transfers', $gameId)
+                ->with('error', __('messages.squad_full', ['max' => ContractService::MAX_SQUAD_SIZE]));
+        }
 
         try {
             $this->transferService->submitBid($game, $player, $bidAmountCents, $this->scoutingService);

@@ -54,7 +54,7 @@ class AITransferMarketService
     private const MIN_SQUAD_SIZE = 20;
 
     /** Maximum squad size — buyers can't exceed this */
-    private const MAX_SQUAD_SIZE = 26;
+    private const MAX_SQUAD_SIZE = 30;
 
     /** Reputation tiers ordered highest to lowest (index 0 = highest) */
     private const REPUTATION_TIERS = [

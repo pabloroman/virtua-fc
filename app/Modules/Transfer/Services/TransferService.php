@@ -2,6 +2,7 @@
 
 namespace App\Modules\Transfer\Services;
 
+use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Transfer\Services\ScoutingService;
 use App\Models\Competition;
 use App\Models\FinancialTransaction;
@@ -1100,6 +1101,12 @@ class TransferService
      */
     private function completeIncomingTransfer(TransferOffer $offer, Game $game): void
     {
+        // Safety net: reject if squad is full
+        if (ContractService::isSquadFull($game)) {
+            $offer->update(['status' => TransferOffer::STATUS_REJECTED, 'resolved_at' => $game->current_date]);
+            return;
+        }
+
         // Safety net: reject if budget would go negative
         $investment = $game->currentInvestment;
         if ($offer->transfer_fee > 0 && $investment && $offer->transfer_fee > $investment->transfer_budget) {
@@ -1163,6 +1170,12 @@ class TransferService
      */
     private function completeLoanIn(TransferOffer $offer, Game $game): void
     {
+        // Safety net: reject if squad is full
+        if (ContractService::isSquadFull($game)) {
+            $offer->update(['status' => TransferOffer::STATUS_REJECTED, 'resolved_at' => $game->current_date]);
+            return;
+        }
+
         $player = $offer->gamePlayer;
         $parentTeamId = $player->team_id;
         $returnDate = $game->getSeasonEndDate();

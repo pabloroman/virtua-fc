@@ -793,7 +793,30 @@ class ContractService
     /**
      * Minimum squad size — cannot release if it would drop below this.
      */
-    private const MIN_SQUAD_SIZE = 20;
+    public const MIN_SQUAD_SIZE = 20;
+
+    /**
+     * Maximum squad size — cannot add players above this.
+     */
+    public const MAX_SQUAD_SIZE = 30;
+
+    /**
+     * Count first-team players in the user's squad.
+     */
+    public static function squadCount(Game $game): int
+    {
+        return GamePlayer::where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->count();
+    }
+
+    /**
+     * Check if the user's squad is at or above the maximum size.
+     */
+    public static function isSquadFull(Game $game): bool
+    {
+        return self::squadCount($game) >= self::MAX_SQUAD_SIZE;
+    }
 
     /**
      * Minimum players per position group — mirrors SquadReplenishmentProcessor.

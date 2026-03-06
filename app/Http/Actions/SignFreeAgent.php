@@ -33,6 +33,12 @@ class SignFreeAgent
                 ->with('error', __('messages.transfer_window_closed'));
         }
 
+        // Squad size cap
+        if (ContractService::isSquadFull($game)) {
+            return redirect()->route('game.transfers', $gameId)
+                ->with('error', __('messages.squad_full', ['max' => ContractService::MAX_SQUAD_SIZE]));
+        }
+
         // Check wage affordability
         $wageDemand = $this->scoutingService->calculateWageDemand($player);
         $currentWageBill = GamePlayer::where('game_id', $game->id)

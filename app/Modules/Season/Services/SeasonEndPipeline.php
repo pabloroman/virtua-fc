@@ -22,6 +22,7 @@ use App\Modules\Season\Processors\SupercupQualificationProcessor;
 use App\Modules\Season\Processors\UefaQualificationProcessor;
 use App\Modules\Season\Processors\ContinentalAndCupInitProcessor;
 use App\Modules\Season\Processors\OnboardingResetProcessor;
+use App\Modules\Season\Processors\SquadCapEnforcementProcessor;
 use App\Modules\Season\Processors\SquadReplenishmentProcessor;
 use App\Modules\Season\Processors\TransferMarketResetProcessor;
 use App\Modules\Season\Processors\YouthAcademyProcessor;
@@ -57,6 +58,7 @@ class SeasonEndPipeline
         SquadReplenishmentProcessor $squadReplenishment,
         TransferMarketResetProcessor $transferMarketReset,
         ContinentalAndCupInitProcessor $competitionInitialization,
+        SquadCapEnforcementProcessor $squadCapEnforcement,
         OnboardingResetProcessor $onboardingReset,
     ) {
         $this->processors = [
@@ -80,6 +82,7 @@ class SeasonEndPipeline
             $youthAcademy,
             $transferMarketReset,
             $competitionInitialization,
+            $squadCapEnforcement,
             $onboardingReset,
         ];
 
