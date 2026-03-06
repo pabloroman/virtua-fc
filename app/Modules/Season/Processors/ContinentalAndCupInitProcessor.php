@@ -2,7 +2,7 @@
 
 namespace App\Modules\Season\Processors;
 
-use App\Modules\Season\Contracts\SeasonEndProcessor;
+use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Competition\Services\CountryConfig;
 use App\Modules\Season\Services\SeasonInitializationService;
@@ -19,7 +19,7 @@ use App\Models\GameStanding;
  *
  * Priority: 106 (runs after UefaQualificationProcessor at 105)
  */
-class ContinentalAndCupInitProcessor implements SeasonEndProcessor
+class ContinentalAndCupInitProcessor implements SeasonProcessor
 {
     public function __construct(
         private SeasonInitializationService $service,

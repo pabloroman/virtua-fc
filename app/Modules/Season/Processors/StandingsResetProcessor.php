@@ -3,7 +3,7 @@
 namespace App\Modules\Season\Processors;
 
 use App\Modules\Competition\Services\StandingsCalculator;
-use App\Modules\Season\Contracts\SeasonEndProcessor;
+use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Models\CompetitionEntry;
 use App\Models\Game;
@@ -14,7 +14,7 @@ use App\Models\GameStanding;
  * Preserves team positions from previous season for initial ordering.
  * Priority: 40 (runs last)
  */
-class StandingsResetProcessor implements SeasonEndProcessor
+class StandingsResetProcessor implements SeasonProcessor
 {
     public function __construct(
         private readonly StandingsCalculator $standingsCalculator,

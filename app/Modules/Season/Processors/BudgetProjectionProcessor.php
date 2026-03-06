@@ -2,7 +2,7 @@
 
 namespace App\Modules\Season\Processors;
 
-use App\Modules\Season\Contracts\SeasonEndProcessor;
+use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Finance\Services\BudgetProjectionService;
 use App\Modules\Season\Services\SeasonGoalService;
@@ -13,7 +13,7 @@ use App\Models\Game;
  * Generates budget projections for the new season.
  * Runs after all other processors so we have the new squad and standings.
  */
-class BudgetProjectionProcessor implements SeasonEndProcessor
+class BudgetProjectionProcessor implements SeasonProcessor
 {
     public function __construct(
         private readonly BudgetProjectionService $projectionService,
@@ -31,12 +31,7 @@ class BudgetProjectionProcessor implements SeasonEndProcessor
         $competition = Competition::find($game->competition_id);
         $seasonGoal = $this->seasonGoalService->determineGoalForTeam($game->team, $competition);
 
-        // Update season goal (and advance season year on season transitions)
-        $updates = ['season_goal' => $seasonGoal];
-        if (!$data->isInitialSeason) {
-            $updates['season'] = $data->newSeason;
-        }
-        $game->update($updates);
+        $game->update(['season_goal' => $seasonGoal]);
 
         // Generate projections for the new season
         $finances = $this->projectionService->generateProjections($game);

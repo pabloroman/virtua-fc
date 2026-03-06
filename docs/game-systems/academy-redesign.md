@@ -41,4 +41,5 @@ Players aged 21+ **must** be promoted or dismissed — no more academy time.
 | File | Purpose |
 |------|---------|
 | `app/Modules/Academy/Services/YouthAcademyService.php` | Batch generation, development, reveal phases, capacity, all actions |
-| `app/Modules/Season/Processors/YouthAcademyProcessor.php` | Season-end: loan development, returns, evaluation trigger |
+| `app/Modules/Season/Processors/YouthAcademyClosingProcessor.php` | Season-end: loan development, returns |
+| `app/Modules/Season/Processors/YouthAcademySetupProcessor.php` | Season-setup: evaluation trigger |

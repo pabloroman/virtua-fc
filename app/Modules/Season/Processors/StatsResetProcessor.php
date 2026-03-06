@@ -2,7 +2,7 @@
 
 namespace App\Modules\Season\Processors;
 
-use App\Modules\Season\Contracts\SeasonEndProcessor;
+use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Models\Game;
 use App\Models\GameNotification;
@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
  * Resets player and game stats for the new season.
  * Priority: 20 (runs second)
  */
-class StatsResetProcessor implements SeasonEndProcessor
+class StatsResetProcessor implements SeasonProcessor
 {
     public function priority(): int
     {

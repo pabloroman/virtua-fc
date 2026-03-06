@@ -195,9 +195,9 @@ The match simulator (`App\Modules\Match\Services\MatchSimulator`) uses configura
 
 Parameters can be tuned in `config/match_simulation.php` without code changes.
 
-### Season End Pipeline
+### Season Pipelines
 
-End-of-season processing uses 21 ordered processors implementing `SeasonEndProcessor`. New processors can be added to `SeasonEndPipeline` without modifying existing code.
+Season transitions use two pipelines: `SeasonClosingPipeline` (16 processors for closing the old season) and `SeasonSetupPipeline` (7 processors for setting up the new season). All processors implement `SeasonProcessor`. The setup pipeline is shared between season transitions and new game creation.
 
 ## Game Design Documentation
 

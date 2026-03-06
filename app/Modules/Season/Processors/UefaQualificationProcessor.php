@@ -2,7 +2,7 @@
 
 namespace App\Modules\Season\Processors;
 
-use App\Modules\Season\Contracts\SeasonEndProcessor;
+use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Competition\Services\CountryConfig;
 use App\Models\Competition;
@@ -30,7 +30,7 @@ use App\Models\Team;
  * - If cup winner qualifies for UECL via league, they get upgraded to UEL and
  *   the UECL spot cascades to the next non-qualified team.
  */
-class UefaQualificationProcessor implements SeasonEndProcessor
+class UefaQualificationProcessor implements SeasonProcessor
 {
     public function __construct(
         private CountryConfig $countryConfig,

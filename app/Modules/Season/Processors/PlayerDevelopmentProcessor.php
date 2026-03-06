@@ -2,7 +2,7 @@
 
 namespace App\Modules\Season\Processors;
 
-use App\Modules\Season\Contracts\SeasonEndProcessor;
+use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Squad\Services\PlayerDevelopmentService;
 use App\Modules\Squad\Services\PlayerValuationService;
@@ -13,7 +13,7 @@ use App\Models\GamePlayer;
  * Applies player development changes at the end of the season.
  * Priority: 10 (runs first)
  */
-class PlayerDevelopmentProcessor implements SeasonEndProcessor
+class PlayerDevelopmentProcessor implements SeasonProcessor
 {
     public function __construct(
         private readonly PlayerDevelopmentService $developmentService,

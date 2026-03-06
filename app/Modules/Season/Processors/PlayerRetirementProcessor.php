@@ -2,7 +2,7 @@
 
 namespace App\Modules\Season\Processors;
 
-use App\Modules\Season\Contracts\SeasonEndProcessor;
+use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Squad\Services\PlayerRetirementService;
 use App\Models\Game;
@@ -19,7 +19,7 @@ use App\Models\GamePlayer;
  *
  * Priority: 7 (after contract expiration/renewal, before squad replenishment)
  */
-class PlayerRetirementProcessor implements SeasonEndProcessor
+class PlayerRetirementProcessor implements SeasonProcessor
 {
     public function __construct(
         private readonly PlayerRetirementService $retirementService,

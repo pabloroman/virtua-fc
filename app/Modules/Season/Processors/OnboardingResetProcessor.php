@@ -3,7 +3,7 @@
 namespace App\Modules\Season\Processors;
 
 use App\Modules\Notification\Services\NotificationService;
-use App\Modules\Season\Contracts\SeasonEndProcessor;
+use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Models\Game;
 
@@ -12,7 +12,7 @@ use App\Models\Game;
  * their investment allocation for the upcoming season.
  * Also notifies about the summer transfer window being open.
  */
-class OnboardingResetProcessor implements SeasonEndProcessor
+class OnboardingResetProcessor implements SeasonProcessor
 {
     public function __construct(
         private NotificationService $notificationService,
@@ -25,6 +25,10 @@ class OnboardingResetProcessor implements SeasonEndProcessor
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData
     {
+        if ($data->isInitialSeason) {
+            return $data;
+        }
+
         $game->update(['needs_onboarding' => true]);
 
         $this->notificationService->notifyTransferWindowOpen($game, 'summer');

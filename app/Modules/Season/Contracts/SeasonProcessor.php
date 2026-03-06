@@ -5,7 +5,7 @@ namespace App\Modules\Season\Contracts;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Models\Game;
 
-interface SeasonEndProcessor
+interface SeasonProcessor
 {
     /**
      * Process the season transition.

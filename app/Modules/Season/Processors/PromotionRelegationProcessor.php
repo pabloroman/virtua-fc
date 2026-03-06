@@ -2,7 +2,7 @@
 
 namespace App\Modules\Season\Processors;
 
-use App\Modules\Season\Contracts\SeasonEndProcessor;
+use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Season\Processors\SeasonSimulationProcessor;
 use App\Modules\Competition\Promotions\PromotionRelegationFactory;
@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\DB;
  *
  * Priority: 26 (runs after supercup qualification, before fixture generation)
  */
-class PromotionRelegationProcessor implements SeasonEndProcessor
+class PromotionRelegationProcessor implements SeasonProcessor
 {
     public function __construct(
         private PromotionRelegationFactory $ruleFactory,

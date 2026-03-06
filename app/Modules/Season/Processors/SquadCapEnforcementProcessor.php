@@ -3,11 +3,11 @@
 namespace App\Modules\Season\Processors;
 
 use App\Models\Game;
-use App\Modules\Season\Contracts\SeasonEndProcessor;
+use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Transfer\Services\ContractService;
 
-class SquadCapEnforcementProcessor implements SeasonEndProcessor
+class SquadCapEnforcementProcessor implements SeasonProcessor
 {
     public function priority(): int
     {

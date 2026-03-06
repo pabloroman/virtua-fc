@@ -65,7 +65,7 @@ The codebase follows a **modular monolith** pattern. Domain logic is organized i
 | **Transfer** | Market operations | `TransferService`, `ContractService`, `LoanService`, `ScoutingService` |
 | **Competition** | Structure & config | `CountryConfig`, `StandingsCalculator`, `CupDrawService`, handlers config |
 | **Finance** | Economic model | `BudgetProjectionService`, `SeasonSimulationService` |
-| **Season** | Lifecycle orchestration | `SeasonEndPipeline`, `GameCreationService`, all 21 processors |
+| **Season** | Lifecycle orchestration | `SeasonClosingPipeline`, `SeasonSetupPipeline`, `GameCreationService`, 22 processors |
 | **Notification** | In-game messaging | `NotificationService`, event listeners |
 | **Academy** | Youth development | `YouthAcademyService` |
 
@@ -88,16 +88,17 @@ Competition-specific configuration (revenue rates, commercial per seat, etc.) li
 - `LaLigaConfig`, `LaLiga2Config`, `DefaultLeagueConfig`
 - `ChampionsLeagueConfig`, `EuropaLeagueConfig`, `ConferenceLeagueConfig`
 
-### Season End Pipeline
+### Season Pipelines
 
-End-of-season processing uses ordered processors implementing `App\Modules\Season\Contracts\SeasonEndProcessor`:
+Season transitions use two pipelines with processors implementing `App\Modules\Season\Contracts\SeasonProcessor`:
+
+**SeasonClosingPipeline** — closes the old season (transitions only):
 
 ```php
-// Processors run in priority order (lower = earlier)
-SeasonArchiveProcessor (0)
 LoanReturnProcessor (3)
 ContractExpirationProcessor (5)
 PreContractTransferProcessor (5)
+SeasonArchiveProcessor (5)
 ContractRenewalProcessor (6)
 PlayerRetirementProcessor (7)
 SquadReplenishmentProcessor (8)
@@ -108,16 +109,23 @@ TransferMarketResetProcessor (20)
 SeasonSimulationProcessor (24)
 SupercupQualificationProcessor (25)
 PromotionRelegationProcessor (26)
+YouthAcademyClosingProcessor (55)
+UefaQualificationProcessor (105)
+```
+
+**SeasonSetupPipeline** — sets up the new season (both new games and transitions):
+
+```php
 LeagueFixtureProcessor (30)
 StandingsResetProcessor (40)
 BudgetProjectionProcessor (50)
-YouthAcademyProcessor (55)
-UefaQualificationProcessor (105)
+YouthAcademySetupProcessor (55)
 ContinentalAndCupInitProcessor (106)
+SquadCapEnforcementProcessor (109)
 OnboardingResetProcessor (110)
 ```
 
-New processors can be added to `SeasonEndPipeline` without modifying existing code.
+New processors can be added to either pipeline without modifying existing code.
 
 ### Financial Model
 
@@ -142,7 +150,8 @@ Revenue rates (commercial per seat, matchday per seat) are defined per competiti
 | Game creation | `app/Modules/Season/Services/GameCreationService.php` |
 | Match simulator | `app/Modules/Match/Services/MatchSimulator.php` |
 | Simulation config | `config/match_simulation.php` |
-| Season end pipeline | `app/Modules/Season/Services/SeasonEndPipeline.php` |
+| Season closing pipeline | `app/Modules/Season/Services/SeasonClosingPipeline.php` |
+| Season setup pipeline | `app/Modules/Season/Services/SeasonSetupPipeline.php` |
 | Financial config | `config/finances.php` |
 | Transfer service | `app/Modules/Transfer/Services/TransferService.php` |
 | Player development | `app/Modules/Squad/Services/PlayerDevelopmentService.php` |
@@ -181,9 +190,9 @@ app/
 │   ├── Finance/          # Economic model
 │   │   └── Services/     # BudgetProjectionService, SeasonSimulationService
 │   ├── Season/           # Lifecycle orchestration
-│   │   ├── Services/     # SeasonEndPipeline, GameCreationService, etc.
-│   │   ├── Processors/   # 21 season-end processors
-│   │   ├── Contracts/    # SeasonEndProcessor
+│   │   ├── Services/     # SeasonClosingPipeline, SeasonSetupPipeline, GameCreationService, etc.
+│   │   ├── Processors/   # 22 season processors (closing + setup)
+│   │   ├── Contracts/    # SeasonProcessor
 │   │   ├── DTOs/         # SeasonTransitionData
 │   │   └── Jobs/         # SetupNewGame, SetupTournamentGame
 │   ├── Notification/     # In-game messaging

@@ -2,7 +2,7 @@
 
 namespace App\Modules\Season\Processors;
 
-use App\Modules\Season\Contracts\SeasonEndProcessor;
+use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Season\Services\SeasonInitializationService;
 use App\Models\CupTie;
@@ -17,7 +17,7 @@ use App\Models\GameMatch;
  *
  * Priority: 30 (runs after promotion/relegation at 26)
  */
-class LeagueFixtureProcessor implements SeasonEndProcessor
+class LeagueFixtureProcessor implements SeasonProcessor
 {
     public function __construct(
         private readonly SeasonInitializationService $service,

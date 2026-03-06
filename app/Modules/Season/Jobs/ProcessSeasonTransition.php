@@ -4,7 +4,8 @@ namespace App\Modules\Season\Jobs;
 
 use App\Events\SeasonStarted;
 use App\Models\Game;
-use App\Modules\Season\Services\SeasonEndPipeline;
+use App\Modules\Season\Services\SeasonClosingPipeline;
+use App\Modules\Season\Services\SeasonSetupPipeline;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -22,18 +23,24 @@ class ProcessSeasonTransition implements ShouldQueue
         public string $gameId,
     ) {}
 
-    public function handle(SeasonEndPipeline $pipeline): void
-    {
+    public function handle(
+        SeasonClosingPipeline $closingPipeline,
+        SeasonSetupPipeline $setupPipeline,
+    ): void {
         $game = Game::find($this->gameId);
 
         if (!$game || !$game->isTransitioningSeason()) {
             return;
         }
 
-        // Run the full season-end pipeline
-        $pipeline->run($game);
+        // Phase 1: Close old season
+        $data = $closingPipeline->run($game);
 
-        // Set current date to the first match of the new season
+        // Phase 2: Set up new season
+        $game->refresh()->setRelations([]);
+        $setupPipeline->run($game, $data);
+
+        // Finalize: set current date and clear transition flag
         $game->refresh()->setRelations([]);
         $firstMatch = $game->getFirstCompetitiveMatch();
         $fallbackDate = ((int) $game->season) . '-08-15';
