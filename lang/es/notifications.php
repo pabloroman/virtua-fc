@@ -128,4 +128,9 @@ return [
     'renewal_countered_message' => ':player pide :wage/año durante :years años para renovar.',
     'renewal_rejected_title' => ':player rechaza renovar',
     'renewal_rejected_message' => ':player ha rechazado tu oferta de renovación. Se marchará al final de la temporada.',
+
+    // Tracking intel
+    'tracking_intel_title' => 'Intel sobre :player lista',
+    'tracking_report_ready' => 'Tu ojeador ha elaborado un informe sobre :player — rango de habilidad y detalles financieros disponibles.',
+    'tracking_deep_intel_ready' => 'Tu ojeador ha completado la intel profunda de :player — disposición a salir e interés de rivales revelados.',
 ];

@@ -12,14 +12,24 @@ class ShortlistedPlayer extends Model
 
     public $timestamps = false;
 
+    public const INTEL_SURFACE = 0;
+    public const INTEL_REPORT = 1;
+    public const INTEL_DEEP = 2;
+
     protected $fillable = [
         'game_id',
         'game_player_id',
         'added_at',
+        'intel_level',
+        'is_tracking',
+        'matchdays_tracked',
     ];
 
     protected $casts = [
         'added_at' => 'date',
+        'intel_level' => 'integer',
+        'is_tracking' => 'boolean',
+        'matchdays_tracked' => 'integer',
     ];
 
     public function game(): BelongsTo
@@ -30,5 +40,20 @@ class ShortlistedPlayer extends Model
     public function gamePlayer(): BelongsTo
     {
         return $this->belongsTo(GamePlayer::class);
+    }
+
+    public function hasReportLevel(): bool
+    {
+        return $this->intel_level >= self::INTEL_REPORT;
+    }
+
+    public function hasDeepIntel(): bool
+    {
+        return $this->intel_level >= self::INTEL_DEEP;
+    }
+
+    public function canBid(): bool
+    {
+        return $this->intel_level >= self::INTEL_REPORT;
     }
 }

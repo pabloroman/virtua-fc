@@ -7,6 +7,7 @@ use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\ShortlistedPlayer;
 use App\Models\TransferOffer;
+use App\Support\Money;
 use App\Support\PositionMapper;
 use Illuminate\Http\Request;
 
@@ -57,7 +58,10 @@ class ShowScoutingHub
             ->whereColumn('asking_price', '>', 'transfer_fee')
             ->count();
 
-        // Shortlisted players with scouting details
+        // Tracking capacity
+        $trackingCapacity = $this->scoutingService->getTrackingCapacity($game);
+
+        // Shortlisted players with intel-gated data
         $shortlistedEntries = ShortlistedPlayer::where('game_id', $gameId)
             ->with(['gamePlayer.player', 'gamePlayer.team'])
             ->get();
@@ -69,11 +73,9 @@ class ShowScoutingHub
             if (!$gp || $gp->team_id === $game->team_id) {
                 continue;
             }
-            $detail = $this->scoutingService->getPlayerScoutingDetail($gp, $game);
             $shortlistedPlayers[] = [
+                'entry' => $entry,
                 'gamePlayer' => $gp,
-                'detail' => $detail,
-                'added_at' => $entry->added_at,
             ];
             $shortlistedPlayerIds[] = $gp->id;
         }
@@ -83,11 +85,12 @@ class ShowScoutingHub
 
         // Build JSON-serializable shortlist data for Alpine.js
         $shortlistData = [];
-        foreach ($shortlistedPlayers as $entry) {
-            $gp = $entry['gamePlayer'];
-            $detail = $entry['detail'];
+        foreach ($shortlistedPlayers as $item) {
+            $gp = $item['gamePlayer'];
+            $entry = $item['entry'];
             $positionDisplay = PositionMapper::getPositionDisplay($gp->position);
-            $shortlistData[] = [
+
+            $playerData = [
                 'id' => $gp->id,
                 'name' => $gp->name,
                 'position' => $gp->position,
@@ -97,22 +100,53 @@ class ShowScoutingHub
                 'age' => $gp->age,
                 'teamName' => $gp->team?->name,
                 'teamImage' => $gp->team?->image,
-                'techRange' => $detail['tech_range'],
-                'formattedAskingPrice' => $detail['formatted_asking_price'],
-                'askingPrice' => $detail['asking_price'],
-                'canAffordFee' => $detail['can_afford_fee'],
-                'isFreeAgent' => $detail['is_free_agent'],
-                'isExpiring' => !$detail['is_free_agent'] && $gp->contract_until && $gp->contract_until <= $game->getSeasonEndDate(),
-                'wageDemand' => $detail['wage_demand'],
-                'formattedWageDemand' => $detail['formatted_wage_demand'],
+                'isExpiring' => $gp->contract_until && $gp->contract_until <= $game->getSeasonEndDate(),
+                'contractYear' => $gp->contract_until?->format('Y'),
+                'marketValue' => $gp->market_value_cents,
+                'formattedMarketValue' => Money::format($gp->market_value_cents),
+                'intelLevel' => $entry->intel_level,
+                'isTracking' => $entry->is_tracking,
+                'matchdaysTracked' => $entry->matchdays_tracked,
                 'hasExistingOffer' => isset($existingOfferStatuses[$gp->id]),
                 'offerStatus' => $existingOfferStatuses[$gp->id]['status'] ?? null,
                 'offerIsCounter' => $existingOfferStatuses[$gp->id]['isCounter'] ?? false,
                 'offerType' => $existingOfferStatuses[$gp->id]['offerType'] ?? null,
-                'canAffordWage' => $detail['can_afford_wage'],
-                'bidEuros' => (int) ($detail['asking_price'] / 100),
-                'wageEuros' => (int) (($detail['pre_contract_wage_demand'] ?? $detail['wage_demand']) / 100),
+                // Locked by default — populated below if intel level warrants it
+                'techRange' => null,
+                'formattedAskingPrice' => null,
+                'askingPrice' => null,
+                'canAffordFee' => false,
+                'wageDemand' => null,
+                'formattedWageDemand' => null,
+                'bidEuros' => 0,
+                'wageEuros' => 0,
+                'willingness' => null,
+                'willingnessLabel' => null,
+                'rivalInterest' => false,
             ];
+
+            // Level 1+: unlock full scouting detail
+            if ($entry->hasReportLevel()) {
+                $detail = $this->scoutingService->getPlayerScoutingDetail($gp, $game);
+                $playerData['techRange'] = $detail['tech_range'];
+                $playerData['formattedAskingPrice'] = $detail['formatted_asking_price'];
+                $playerData['askingPrice'] = $detail['asking_price'];
+                $playerData['canAffordFee'] = $detail['can_afford_fee'];
+                $playerData['wageDemand'] = $detail['wage_demand'];
+                $playerData['formattedWageDemand'] = $detail['formatted_wage_demand'];
+                $playerData['bidEuros'] = (int) ($detail['asking_price'] / 100);
+                $playerData['wageEuros'] = (int) ($detail['wage_demand'] / 100);
+            }
+
+            // Level 2: unlock willingness and rival interest
+            if ($entry->hasDeepIntel()) {
+                $willingness = $this->scoutingService->calculateWillingness($gp, $game);
+                $playerData['willingness'] = $willingness['label'];
+                $playerData['willingnessLabel'] = __('transfers.willingness_' . $willingness['label']);
+                $playerData['rivalInterest'] = $this->scoutingService->calculateRivalInterest($gp);
+            }
+
+            $shortlistData[] = $playerData;
         }
 
         $isPreContractPeriod = $game->isPreContractPeriod();
@@ -130,6 +164,7 @@ class ShowScoutingHub
             'salidaBadgeCount' => $salidaBadgeCount,
             'counterOfferCount' => $counterOfferCount,
             'shortlistData' => $shortlistData,
+            'trackingCapacity' => $trackingCapacity,
         ]);
     }
 }

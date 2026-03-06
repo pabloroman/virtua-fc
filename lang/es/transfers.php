@@ -274,4 +274,23 @@ return [
     'explore_forwards' => 'Delanteros',
     'explore_age' => 'Edad',
     'explore_value' => 'Valor',
+
+    // Tracking
+    'tracking_slots' => ':used/:max seguimientos',
+    'start_tracking' => 'Seguir',
+    'stop_tracking' => 'Parar',
+    'track_to_unlock' => 'Rastrea para desbloquear intel',
+    'track_to_unlock_desc' => 'Asigna a tu ojeador para rastrear a este jugador. La información se desbloquea cada jornada.',
+    'tracking_in_progress' => 'Rastreando...',
+    'no_tracking_slots' => 'Sin seguimientos disponibles',
+    'willingness' => 'Disposición',
+    'rival_interest' => 'Otros clubes interesados',
+    'willingness_very_interested' => 'Muy interesado',
+    'willingness_open' => 'Abierto a salir',
+    'willingness_undecided' => 'Indeciso',
+    'willingness_reluctant' => 'Reticente',
+    'willingness_not_interested' => 'No interesado',
+    'intel_surface' => 'Básico',
+    'intel_report' => 'Informe',
+    'intel_deep' => 'Intel Profunda',
 ];

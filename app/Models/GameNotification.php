@@ -71,6 +71,7 @@ class GameNotification extends Model
     public const TYPE_AI_TRANSFER_ACTIVITY = 'ai_transfer_activity';
     public const TYPE_TRANSFER_WINDOW_OPEN = 'transfer_window_open';
     public const TYPE_PLAYER_RELEASED = 'player_released';
+    public const TYPE_TRACKING_INTEL_READY = 'tracking_intel_ready';
 
     // Priorities
     public const PRIORITY_MILESTONE = 'milestone';
@@ -106,6 +107,7 @@ class GameNotification extends Model
         self::TYPE_AI_TRANSFER_ACTIVITY => 'transfer-activity',
         self::TYPE_TRANSFER_WINDOW_OPEN => 'scouting',
         self::TYPE_PLAYER_RELEASED => 'squad',
+        self::TYPE_TRACKING_INTEL_READY => 'scouting',
     ];
 
     protected $fillable = [
@@ -403,6 +405,13 @@ class GameNotification extends Model
                 'border' => 'border-red-200',
                 'text' => 'text-red-800',
                 'icon_bg' => 'bg-red-500',
+                'icon_text' => 'text-white',
+            ],
+            self::TYPE_TRACKING_INTEL_READY => [
+                'bg' => 'bg-teal-50',
+                'border' => 'border-teal-200',
+                'text' => 'text-teal-800',
+                'icon_bg' => 'bg-teal-500',
                 'icon_text' => 'text-white',
             ],
             default => [

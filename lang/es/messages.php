@@ -102,6 +102,11 @@ return [
     'action_required' => 'Hay acciones pendientes que debes resolver antes de continuar.',
     'action_required_short' => 'Acción Requerida',
 
+    // Tracking
+    'tracking_started' => 'Ahora rastreando a :player.',
+    'tracking_stopped' => 'Se dejó de rastrear a :player.',
+    'tracking_slots_full' => 'Todos los seguimientos están en uso. Deja de rastrear a otro jugador primero.',
+
     // Game management
     'game_deleted' => 'Partida eliminada correctamente.',
     'game_limit_reached' => 'Has alcanzado el límite máximo de 3 partidas. Elimina una para crear otra nueva.',

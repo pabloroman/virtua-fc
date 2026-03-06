@@ -8,6 +8,7 @@ use App\Models\GamePlayer;
 use App\Modules\Squad\Services\InjuryService;
 use App\Models\RenewalNegotiation;
 use App\Models\ScoutReport;
+use App\Models\ShortlistedPlayer;
 use App\Models\Team;
 use App\Models\TransferOffer;
 use Carbon\Carbon;
@@ -459,6 +460,29 @@ class NotificationService
         );
     }
 
+    /**
+     * Create a tracking intel ready notification.
+     */
+    public function notifyTrackingIntelReady(Game $game, ShortlistedPlayer $entry): GameNotification
+    {
+        $player = $entry->gamePlayer;
+        $levelKey = $entry->intel_level === ShortlistedPlayer::INTEL_DEEP
+            ? 'notifications.tracking_deep_intel_ready'
+            : 'notifications.tracking_report_ready';
+
+        return $this->create(
+            game: $game,
+            type: GameNotification::TYPE_TRACKING_INTEL_READY,
+            title: __('notifications.tracking_intel_title', ['player' => $player->name]),
+            message: __($levelKey, ['player' => $player->name]),
+            priority: GameNotification::PRIORITY_INFO,
+            metadata: [
+                'player_id' => $player->id,
+                'intel_level' => $entry->intel_level,
+            ],
+        );
+    }
+
     // ==========================================
     // Contract Notifications
     // ==========================================
@@ -789,6 +813,7 @@ class NotificationService
             GameNotification::TYPE_AI_TRANSFER_ACTIVITY => 'transfer',
             GameNotification::TYPE_TRANSFER_WINDOW_OPEN => 'transfer',
             GameNotification::TYPE_PLAYER_RELEASED => 'transfer_complete',
+            GameNotification::TYPE_TRACKING_INTEL_READY => 'scout',
             default => 'bell',
         };
     }
