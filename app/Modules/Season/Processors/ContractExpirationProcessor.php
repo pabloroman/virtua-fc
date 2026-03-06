@@ -2,7 +2,7 @@
 
 namespace App\Modules\Season\Processors;
 
-use App\Modules\Season\Contracts\SeasonEndProcessor;
+use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Transfer\Services\ContractService;
 use App\Models\Game;
@@ -19,7 +19,7 @@ use Carbon\Carbon;
  *   (team_id = null) based on age/ability criteria. Free agents may be signed
  *   by AI teams when the transfer window closes (AITransferMarketService).
  */
-class ContractExpirationProcessor implements SeasonEndProcessor
+class ContractExpirationProcessor implements SeasonProcessor
 {
     /** Max AI players per team that can become free agents per season */
     private const MAX_FREE_AGENTS_PER_TEAM = 2;

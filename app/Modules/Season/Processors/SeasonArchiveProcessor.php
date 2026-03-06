@@ -2,7 +2,7 @@
 
 namespace App\Modules\Season\Processors;
 
-use App\Modules\Season\Contracts\SeasonEndProcessor;
+use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Competition\Services\SwissKnockoutGenerator;
 use App\Models\CompetitionEntry;
@@ -19,7 +19,7 @@ use App\Models\SeasonArchive;
  * Archives season data before stats are reset.
  * Priority: 5 (runs first, before development and stats reset)
  */
-class SeasonArchiveProcessor implements SeasonEndProcessor
+class SeasonArchiveProcessor implements SeasonProcessor
 {
     // Minimum appearances for goalkeeper award (50% of league matches)
     private const MIN_GOALKEEPER_APPEARANCES = 19;

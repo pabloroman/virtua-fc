@@ -2,7 +2,7 @@
 
 namespace App\Modules\Season\Processors;
 
-use App\Modules\Season\Contracts\SeasonEndProcessor;
+use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Competition\Services\CountryConfig;
 use App\Models\CupTie;
@@ -21,7 +21,7 @@ use App\Models\GameStanding;
  *
  * Priority: 25 (runs after stats reset but before fixture generation)
  */
-class SupercupQualificationProcessor implements SeasonEndProcessor
+class SupercupQualificationProcessor implements SeasonProcessor
 {
     public function __construct(
         private CountryConfig $countryConfig,

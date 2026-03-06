@@ -2,7 +2,7 @@
 
 namespace App\Modules\Season\Processors;
 
-use App\Modules\Season\Contracts\SeasonEndProcessor;
+use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Transfer\Services\LoanService;
 use App\Modules\Notification\Services\NotificationService;
@@ -12,7 +12,7 @@ use App\Models\Game;
  * Returns all loaned players to their parent teams at end of season.
  * Priority: 3 (runs before pre-contract transfers at 5 and contract expiration)
  */
-class LoanReturnProcessor implements SeasonEndProcessor
+class LoanReturnProcessor implements SeasonProcessor
 {
     public function __construct(
         private readonly LoanService $loanService,

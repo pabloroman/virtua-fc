@@ -2,7 +2,7 @@
 
 namespace App\Modules\Season\Processors;
 
-use App\Modules\Season\Contracts\SeasonEndProcessor;
+use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Finance\Services\SeasonSimulationService;
 use App\Models\Competition;
@@ -18,7 +18,7 @@ use App\Models\GameStanding;
  *
  * Priority: 24
  */
-class SeasonSimulationProcessor implements SeasonEndProcessor
+class SeasonSimulationProcessor implements SeasonProcessor
 {
     public function __construct(
         private readonly SeasonSimulationService $simulationService,

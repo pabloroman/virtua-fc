@@ -5,7 +5,7 @@ namespace App\Modules\Season\Jobs;
 use App\Modules\Competition\Services\CountryConfig;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Season\DTOs\SeasonTransitionData;
-use App\Modules\Season\Services\SeasonSetupRunner;
+use App\Modules\Season\Services\SeasonSetupPipeline;
 use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Squad\Services\InjuryService;
 use App\Modules\Squad\Services\PlayerDevelopmentService;
@@ -48,7 +48,7 @@ class SetupNewGame implements ShouldQueue
     public function handle(
         ContractService $contractService,
         PlayerDevelopmentService $developmentService,
-        SeasonSetupRunner $setupRunner,
+        SeasonSetupPipeline $setupPipeline,
         LeagueFixtureProcessor $fixtureProcessor,
         StandingsResetProcessor $standingsProcessor,
     ): void {
@@ -83,7 +83,7 @@ class SetupNewGame implements ShouldQueue
                 metadata: $swissPotData ? [SeasonTransitionData::META_SWISS_POT_DATA => $swissPotData] : [],
             );
 
-            $setupRunner->run($game->refresh(), $data);
+            $setupPipeline->run($game->refresh(), $data);
 
             // Initialize players for Swiss format competitions (non-template path only)
             if (!$this->usedTemplates) {

@@ -2,7 +2,7 @@
 
 namespace App\Modules\Season\Processors;
 
-use App\Modules\Season\Contracts\SeasonEndProcessor;
+use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Transfer\Services\ContractService;
 use App\Models\Game;
@@ -12,7 +12,7 @@ use App\Models\Game;
  * Players who renewed their contracts get their new wages applied.
  * Priority: 6 (runs early, after pre-contract transfers but before development)
  */
-class ContractRenewalProcessor implements SeasonEndProcessor
+class ContractRenewalProcessor implements SeasonProcessor
 {
     public function __construct(
         private readonly ContractService $contractService,

@@ -2,12 +2,10 @@
 
 namespace App\Modules\Season\Services;
 
-use App\Modules\Season\Contracts\SeasonEndProcessor;
+use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
-use App\Modules\Season\Processors\BudgetProjectionProcessor;
 use App\Modules\Season\Processors\ContractExpirationProcessor;
 use App\Modules\Season\Processors\ContractRenewalProcessor;
-use App\Modules\Season\Processors\LeagueFixtureProcessor;
 use App\Modules\Season\Processors\LoanReturnProcessor;
 use App\Modules\Season\Processors\PlayerDevelopmentProcessor;
 use App\Modules\Season\Processors\PlayerRetirementProcessor;
@@ -16,25 +14,22 @@ use App\Modules\Season\Processors\PromotionRelegationProcessor;
 use App\Modules\Season\Processors\SeasonArchiveProcessor;
 use App\Modules\Season\Processors\SeasonSettlementProcessor;
 use App\Modules\Season\Processors\SeasonSimulationProcessor;
-use App\Modules\Season\Processors\StandingsResetProcessor;
+use App\Modules\Season\Processors\SquadReplenishmentProcessor;
 use App\Modules\Season\Processors\StatsResetProcessor;
 use App\Modules\Season\Processors\SupercupQualificationProcessor;
-use App\Modules\Season\Processors\UefaQualificationProcessor;
-use App\Modules\Season\Processors\ContinentalAndCupInitProcessor;
-use App\Modules\Season\Processors\OnboardingResetProcessor;
-use App\Modules\Season\Processors\SquadCapEnforcementProcessor;
-use App\Modules\Season\Processors\SquadReplenishmentProcessor;
 use App\Modules\Season\Processors\TransferMarketResetProcessor;
-use App\Modules\Season\Processors\YouthAcademyProcessor;
+use App\Modules\Season\Processors\UefaQualificationProcessor;
+use App\Modules\Season\Processors\YouthAcademyClosingProcessor;
 use App\Models\Game;
 use Illuminate\Support\Facades\Log;
 
 /**
- * Orchestrates season end processors in priority order.
+ * Closes the old season: archiving, settlements, contracts, retirements,
+ * promotions/relegations, and qualification for next season's competitions.
  */
-class SeasonEndPipeline
+class SeasonClosingPipeline
 {
-    /** @var SeasonEndProcessor[] */
+    /** @var SeasonProcessor[] */
     private array $processors = [];
 
     public function __construct(
@@ -44,22 +39,16 @@ class SeasonEndPipeline
         ContractExpirationProcessor $contractExpiration,
         ContractRenewalProcessor $contractRenewal,
         PlayerRetirementProcessor $playerRetirement,
+        SquadReplenishmentProcessor $squadReplenishment,
         PlayerDevelopmentProcessor $playerDevelopment,
         SeasonSettlementProcessor $seasonSettlement,
         StatsResetProcessor $statsReset,
-        SupercupQualificationProcessor $supercupQualification,
-        UefaQualificationProcessor $uefaQualification,
-        SeasonSimulationProcessor $seasonSimulation,
-        PromotionRelegationProcessor $promotionRelegation,
-        LeagueFixtureProcessor $fixtureGeneration,
-        StandingsResetProcessor $standingsReset,
-        BudgetProjectionProcessor $budgetProjection,
-        YouthAcademyProcessor $youthAcademy,
-        SquadReplenishmentProcessor $squadReplenishment,
         TransferMarketResetProcessor $transferMarketReset,
-        ContinentalAndCupInitProcessor $competitionInitialization,
-        SquadCapEnforcementProcessor $squadCapEnforcement,
-        OnboardingResetProcessor $onboardingReset,
+        SeasonSimulationProcessor $seasonSimulation,
+        SupercupQualificationProcessor $supercupQualification,
+        PromotionRelegationProcessor $promotionRelegation,
+        UefaQualificationProcessor $uefaQualification,
+        YouthAcademyClosingProcessor $youthAcademyClosing,
     ) {
         $this->processors = [
             $seasonArchive,
@@ -72,26 +61,19 @@ class SeasonEndPipeline
             $playerDevelopment,
             $seasonSettlement,
             $statsReset,
-            $supercupQualification,
-            $uefaQualification,
-            $seasonSimulation,
-            $promotionRelegation,
-            $fixtureGeneration,
-            $standingsReset,
-            $budgetProjection,
-            $youthAcademy,
             $transferMarketReset,
-            $competitionInitialization,
-            $squadCapEnforcement,
-            $onboardingReset,
+            $seasonSimulation,
+            $supercupQualification,
+            $promotionRelegation,
+            $uefaQualification,
+            $youthAcademyClosing,
         ];
 
-        // Sort by priority (lower numbers first)
         usort($this->processors, fn ($a, $b) => $a->priority() <=> $b->priority());
     }
 
     /**
-     * Run all processors for the season transition.
+     * Close the old season and return transition data for setup.
      */
     public function run(Game $game): SeasonTransitionData
     {
@@ -108,7 +90,7 @@ class SeasonEndPipeline
             try {
                 $data = $processor->process($game, $data);
             } catch (\Throwable $e) {
-                Log::error('Season processor failed', [
+                Log::error('Season closing processor failed', [
                     'processor' => get_class($processor),
                     'game_id' => $game->id,
                     'error' => $e->getMessage(),
@@ -125,7 +107,6 @@ class SeasonEndPipeline
      */
     private function incrementSeason(string $season): string
     {
-        // Handle formats like "2024" or "2024-25"
         if (str_contains($season, '-')) {
             $parts = explode('-', $season);
             $startYear = (int) $parts[0] + 1;
@@ -138,9 +119,7 @@ class SeasonEndPipeline
     }
 
     /**
-     * Get all registered processors.
-     *
-     * @return SeasonEndProcessor[]
+     * @return SeasonProcessor[]
      */
     public function getProcessors(): array
     {

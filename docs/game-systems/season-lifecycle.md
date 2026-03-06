@@ -37,27 +37,34 @@ Different competition formats use different handlers implementing `CompetitionHa
 
 Resolved via `CompetitionHandlerResolver` based on competition's `handler_type` field.
 
-## Season End Pipeline
+## Season Pipelines
 
-21 ordered processors handle the transition. Each implements `SeasonEndProcessor` with a `priority()` (lower runs first). All processors are in `app/Modules/Season/Processors/`.
+Season transitions run two pipelines sequentially. Each processor implements `SeasonProcessor` with a `priority()` (lower runs first). All processors are in `app/Modules/Season/Processors/`.
+
+### SeasonClosingPipeline (16 processors — transitions only)
 
 **Phase 1 — Roster cleanup** (priority 0-7): Archive season data, return loans, handle contract expirations and pre-contract transfers, apply renewals, process retirements.
 
 **Phase 2 — Squad management** (priority 8-20): Replenish AI squads to minimum roster sizes, apply player development changes, settle finances (actual vs projected), reset stats and transfer market.
 
-**Phase 3 — League simulation & structure** (priority 24-30): Simulate non-played leagues, determine Supercup qualifiers, handle promotion/relegation, generate new league fixtures.
+**Phase 3 — League simulation & structure** (priority 24-55): Simulate non-played leagues, determine Supercup qualifiers, handle promotion/relegation, develop and return academy loans.
 
-**Phase 4 — New season setup** (priority 40-55): Reset standings, generate budget projections and season goals, process academy (develop loaned players, trigger evaluation).
+**Phase 4 — Qualification** (priority 105): Determine UEFA competition qualifiers.
 
-**Phase 5 — Continental & cup setup** (priority 105-110): Determine UEFA competition qualifiers, initialize Swiss-format competitions and domestic cup draws, reset onboarding for budget allocation.
+### SeasonSetupPipeline (7 processors — both new games and transitions)
 
-The full processor list with priorities is in `SeasonEndPipeline`.
+**Phase 1 — Fixtures & standings** (priority 30-40): Generate league fixtures, reset standings.
+
+**Phase 2 — Budget & academy** (priority 50-55): Generate budget projections, trigger academy evaluation.
+
+**Phase 3 — Competitions & onboarding** (priority 106-110): Initialize continental/cup competitions, enforce squad cap, reset onboarding.
 
 ## Key Files
 
 | File | Purpose |
 |------|---------|
-| `app/Modules/Season/Services/SeasonEndPipeline.php` | Orchestrates all 21 processors |
+| `app/Modules/Season/Services/SeasonClosingPipeline.php` | Orchestrates 16 closing processors |
+| `app/Modules/Season/Services/SeasonSetupPipeline.php` | Orchestrates 7 setup processors |
 | `app/Modules/Season/Processors/` | Individual processor implementations |
 | `app/Modules/Match/Services/MatchdayService.php` | Matchday advancement logic |
 | `app/Modules/Match/Services/CupTieResolver.php` | Cup tie resolution (aggregate, ET, penalties) |

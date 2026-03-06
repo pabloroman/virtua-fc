@@ -2,7 +2,7 @@
 
 namespace App\Modules\Season\Processors;
 
-use App\Modules\Season\Contracts\SeasonEndProcessor;
+use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Models\ClubProfile;
 use App\Models\FinancialTransaction;
@@ -19,7 +19,7 @@ use Carbon\Carbon;
  * Computes variance between projected and actual, carrying debt if needed.
  * Runs after archive but before standings reset so we can use final position.
  */
-class SeasonSettlementProcessor implements SeasonEndProcessor
+class SeasonSettlementProcessor implements SeasonProcessor
 {
 
     public function priority(): int

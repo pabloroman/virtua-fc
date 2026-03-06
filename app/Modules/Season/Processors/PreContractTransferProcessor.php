@@ -2,7 +2,7 @@
 
 namespace App\Modules\Season\Processors;
 
-use App\Modules\Season\Contracts\SeasonEndProcessor;
+use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Transfer\Services\TransferService;
 use App\Models\Game;
@@ -12,7 +12,7 @@ use App\Models\Game;
  * Players who agreed to leave on a free transfer move to their new team.
  * Priority: 5 (runs before player development so new team benefits from development)
  */
-class PreContractTransferProcessor implements SeasonEndProcessor
+class PreContractTransferProcessor implements SeasonProcessor
 {
     public function __construct(
         private readonly TransferService $transferService,

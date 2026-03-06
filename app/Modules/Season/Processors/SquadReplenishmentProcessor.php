@@ -2,7 +2,7 @@
 
 namespace App\Modules\Season\Processors;
 
-use App\Modules\Season\Contracts\SeasonEndProcessor;
+use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Squad\DTOs\GeneratedPlayerData;
 use App\Modules\Squad\Services\PlayerGeneratorService;
@@ -24,7 +24,7 @@ use Carbon\Carbon;
  *
  * Priority: 8
  */
-class SquadReplenishmentProcessor implements SeasonEndProcessor
+class SquadReplenishmentProcessor implements SeasonProcessor
 {
     /**
      * Minimum total squad size for AI teams.
