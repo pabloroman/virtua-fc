@@ -135,4 +135,9 @@ return [
     'tracking_intel_title' => 'Intel on :player ready',
     'tracking_report_ready' => 'Your scout has gathered a report on :player — ability range and financial details are now available.',
     'tracking_deep_intel_ready' => 'Your scout has completed deep intel on :player — transfer willingness and rival interest revealed.',
+
+    // Reputation changes
+    'reputation_change_title' => 'Club reputation changed',
+    'reputation_improved' => 'Your club\'s reputation has grown to :tier. Sponsors, players and fans are taking notice.',
+    'reputation_declined' => 'Your club\'s reputation has dropped to :tier. Time to rebuild and return to former glory.',
 ];

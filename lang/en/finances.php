@@ -151,6 +151,17 @@ return [
     'facilities_tier_3' => 'Premium experience - 1.35x revenue',
     'facilities_tier_4' => 'World-class stadium - 1.6x revenue',
 
+    // Reputation tiers
+    'reputation' => [
+        'elite' => 'Elite',
+        'contenders' => 'Contenders',
+        'continental' => 'Continental',
+        'established' => 'Established',
+        'modest' => 'Modest',
+        'professional' => 'Professional',
+        'local' => 'Local',
+    ],
+
     // Categories
     'category_transfer_in' => 'Sale',
     'category_transfer_out' => 'Signing',

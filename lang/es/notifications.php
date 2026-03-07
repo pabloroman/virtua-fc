@@ -135,4 +135,9 @@ return [
     'tracking_intel_title' => 'Intel sobre :player lista',
     'tracking_report_ready' => 'Tu ojeador ha elaborado un informe sobre :player — rango de habilidad y detalles financieros disponibles.',
     'tracking_deep_intel_ready' => 'Tu ojeador ha completado la intel profunda de :player — disposición a salir e interés de rivales revelados.',
+
+    // Reputation changes
+    'reputation_change_title' => 'Reputación del club modificada',
+    'reputation_improved' => 'La reputación de tu club ha ascendido a :tier. Patrocinadores, jugadores y aficionados lo notan.',
+    'reputation_declined' => 'La reputación de tu club ha descendido a :tier. Es hora de reconstruir y recuperar la gloria pasada.',
 ];

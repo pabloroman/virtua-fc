@@ -8,6 +8,7 @@ use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\Loan;
 use App\Models\Team;
+use App\Models\TeamReputation;
 use App\Models\TransferOffer;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -192,7 +193,7 @@ class LoanService
     private function scoreReputation(GamePlayer $player, Team $team): int
     {
         $expectedReputation = $this->getExpectedReputation($player);
-        $teamReputation = $team->clubProfile->reputation_level ?? ClubProfile::REPUTATION_MODEST;
+        $teamReputation = TeamReputation::resolveLevel($player->game_id, $team->id);
 
         $expectedIndex = ClubProfile::getReputationTierIndex($expectedReputation);
         $teamIndex = ClubProfile::getReputationTierIndex($teamReputation);
@@ -274,7 +275,7 @@ class LoanService
      */
     private function scoreLeagueTier(GamePlayer $player, Team $team): int
     {
-        $reputation = $team->clubProfile->reputation_level ?? ClubProfile::REPUTATION_MODEST;
+        $reputation = TeamReputation::resolveLevel($player->game_id, $team->id);
         $devStatus = $player->development_status;
         $avgAbility = (int) round(($player->current_technical_ability + $player->current_physical_ability) / 2);
 

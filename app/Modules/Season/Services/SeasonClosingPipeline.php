@@ -11,6 +11,7 @@ use App\Modules\Season\Processors\PlayerDevelopmentProcessor;
 use App\Modules\Season\Processors\PlayerRetirementProcessor;
 use App\Modules\Season\Processors\PreContractTransferProcessor;
 use App\Modules\Season\Processors\PromotionRelegationProcessor;
+use App\Modules\Season\Processors\ReputationUpdateProcessor;
 use App\Modules\Season\Processors\SeasonArchiveProcessor;
 use App\Modules\Season\Processors\SeasonSettlementProcessor;
 use App\Modules\Season\Processors\SeasonSimulationProcessor;
@@ -47,6 +48,7 @@ class SeasonClosingPipeline
         SeasonSimulationProcessor $seasonSimulation,
         SupercupQualificationProcessor $supercupQualification,
         PromotionRelegationProcessor $promotionRelegation,
+        ReputationUpdateProcessor $reputationUpdate,
         UefaQualificationProcessor $uefaQualification,
         YouthAcademyClosingProcessor $youthAcademyClosing,
     ) {
@@ -65,6 +67,7 @@ class SeasonClosingPipeline
             $seasonSimulation,
             $supercupQualification,
             $promotionRelegation,
+            $reputationUpdate,
             $uefaQualification,
             $youthAcademyClosing,
         ];
