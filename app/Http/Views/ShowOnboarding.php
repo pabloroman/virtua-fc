@@ -93,6 +93,8 @@ class ShowOnboarding
             })
             ->values();
 
+        $reputationLevel = TeamReputation::resolveLevel($game->id, $game->team_id);
+
         return view('onboarding', [
             'game' => $game,
             'finances' => $finances,
@@ -104,6 +106,7 @@ class ShowOnboarding
             'seasonGoalLabel' => $seasonGoalLabel,
             'seasonGoalTarget' => $seasonGoalTarget,
             'competitions' => $competitions,
+            'reputationLevel' => $reputationLevel,
         ]);
     }
 }
