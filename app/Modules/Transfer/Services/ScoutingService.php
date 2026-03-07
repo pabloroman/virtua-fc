@@ -2,6 +2,7 @@
 
 namespace App\Modules\Transfer\Services;
 
+use App\Models\ClubProfile;
 use App\Models\Competition;
 use App\Models\Game;
 use App\Models\GamePlayer;
@@ -15,6 +16,50 @@ use App\Modules\Transfer\Services\ContractService;
 
 class ScoutingService
 {
+    /**
+     * Reputation tiers ordered from lowest to highest.
+     */
+    private const REPUTATION_TIERS = [
+        ClubProfile::REPUTATION_LOCAL,        // 0
+        ClubProfile::REPUTATION_PROFESSIONAL, // 1
+        ClubProfile::REPUTATION_MODEST,       // 2
+        ClubProfile::REPUTATION_ESTABLISHED,  // 3
+        ClubProfile::REPUTATION_CONTINENTAL,  // 4
+        ClubProfile::REPUTATION_CONTENDERS,   // 5
+        ClubProfile::REPUTATION_ELITE,        // 6
+    ];
+
+    /**
+     * Acceptance probability modifiers based on reputation gap (source - offering).
+     * Gap ≤ 0 means moving up or lateral → no penalty.
+     */
+    private const REPUTATION_GAP_MODIFIERS = [
+        0 => 1.00,
+        1 => 0.75,
+        2 => 0.45,
+        3 => 0.20,
+        4 => 0.08,
+        5 => 0.02,
+    ];
+
+    /** Default modifier for gaps of 5+. */
+    private const REPUTATION_GAP_MAX_MODIFIER = 0.02;
+
+    /**
+     * Wage premium multipliers for players on expiring contracts (pre-contract signings).
+     * Keyed by minimum market value in cents.
+     * Checked in descending order — first match wins.
+     */
+    private const FREE_AGENT_WAGE_PREMIUMS = [
+        10_000_000_000 => 1.50, // €100M+
+        5_000_000_000  => 1.45, // €50M+
+        2_000_000_000  => 1.40, // €20M+
+        1_000_000_000  => 1.35, // €10M+
+        500_000_000    => 1.30, // €5M+
+        200_000_000    => 1.25, // €2M+
+        0              => 1.20, // < €2M
+    ];
+
     /**
      * Scouting tier effects on searches.
      * [weeks_reduction, extra_results, ability_fuzz_reduction]
@@ -477,8 +522,21 @@ class ScoutingService
     /**
      * @return array{result: string, counter_amount: int|null, asking_price: int, message: string}
      */
-    public function evaluateBid(GamePlayer $player, int $bidAmount): array
+    public function evaluateBid(GamePlayer $player, int $bidAmount, ?Game $game = null): array
     {
+        // Reputation gate: player may refuse to join a lower-reputation club
+        if ($game) {
+            $reputationModifier = $this->calculateReputationModifier($game->team, $player);
+            if ($reputationModifier < 1.0 && rand(1, 100) > (int) ($reputationModifier * 100)) {
+                return [
+                    'result' => 'rejected',
+                    'counter_amount' => null,
+                    'asking_price' => $this->calculateAskingPrice($player),
+                    'message' => __('transfers.bid_rejected_not_interested', ['team' => $player->team?->name]),
+                ];
+            }
+        }
+
         $askingPrice = $this->calculateAskingPrice($player);
         $ratio = $bidAmount / max($askingPrice, 1);
         $isKeyPlayer = $this->isKeyPlayer($player);
@@ -599,29 +657,105 @@ class ScoutingService
         return (int) (round($wage / 10_000_000) * 10_000_000);
     }
 
+    /**
+     * Calculate the wage a player on an expiring contract demands for a pre-contract signing.
+     * Applies a premium on top of the base wage demand (represents signing bonus + agent fees + leverage).
+     */
+    public function calculatePreContractWageDemand(GamePlayer $player): int
+    {
+        $baseWage = $this->calculateWageDemand($player);
+        $premium = $this->getFreeAgentWagePremium($player->market_value_cents);
+
+        // Round to nearest 100K (cents)
+        return (int) (round(($baseWage * $premium) / 10_000_000) * 10_000_000);
+    }
+
+    /**
+     * Get the free agent wage premium multiplier based on market value.
+     */
+    private function getFreeAgentWagePremium(int $marketValueCents): float
+    {
+        foreach (self::FREE_AGENT_WAGE_PREMIUMS as $minValue => $premium) {
+            if ($marketValueCents >= $minValue) {
+                return $premium;
+            }
+        }
+
+        return 1.20;
+    }
+
+    // =========================================
+    // REPUTATION GATE
+    // =========================================
+
+    /**
+     * Get the numeric index of a reputation level (0 = local, 6 = elite).
+     */
+    public function getReputationIndex(string $reputationLevel): int
+    {
+        $index = array_search($reputationLevel, self::REPUTATION_TIERS, true);
+
+        return $index !== false ? $index : 0;
+    }
+
+    /**
+     * Calculate the acceptance probability modifier based on reputation gap.
+     * Compares the player's current team reputation to the bidding team's reputation.
+     *
+     * @return float Modifier between 0.02 and 1.0
+     */
+    public function calculateReputationModifier(Team $biddingTeam, GamePlayer $player): float
+    {
+        // Free agents have no current team context — no penalty
+        if ($player->team_id === null) {
+            return 1.0;
+        }
+
+        $sourceReputation = $player->team?->clubProfile?->reputation_level ?? ClubProfile::REPUTATION_LOCAL;
+        $offeringReputation = $biddingTeam->clubProfile?->reputation_level ?? ClubProfile::REPUTATION_LOCAL;
+
+        $sourceIndex = $this->getReputationIndex($sourceReputation);
+        $offeringIndex = $this->getReputationIndex($offeringReputation);
+
+        $gap = $sourceIndex - $offeringIndex;
+
+        if ($gap <= 0) {
+            return 1.0; // Moving up or lateral
+        }
+
+        return self::REPUTATION_GAP_MODIFIERS[$gap] ?? self::REPUTATION_GAP_MAX_MODIFIER;
+    }
+
     // =========================================
     // SCOUTING REPORT DATA
     // =========================================
 
     /**
-     * Evaluate whether a player accepts a pre-contract offer based on offered wage vs demand.
+     * Evaluate whether a player accepts a pre-contract offer based on offered wage vs demand,
+     * reputation gap, and free agent wage premium.
      *
      * @return array{accepted: bool, message: string}
      */
-    public function evaluatePreContractOffer(GamePlayer $player, int $offeredWage): array
+    public function evaluatePreContractOffer(GamePlayer $player, int $offeredWage, Team $biddingTeam): array
     {
-        $wageDemand = $this->calculateWageDemand($player);
+        $wageDemand = $this->calculatePreContractWageDemand($player);
 
         if ($offeredWage >= $wageDemand) {
-            // Wage meets or exceeds demand → 85% accept
-            $accepted = rand(1, 100) <= 85;
+            $baseChance = 85;
         } elseif ($offeredWage >= (int) ($wageDemand * 0.85)) {
-            // Wage is 85-99% of demand → 40% accept
-            $accepted = rand(1, 100) <= 40;
+            $baseChance = 40;
         } else {
-            // Below 85% of demand → reject
-            $accepted = false;
+            return [
+                'accepted' => false,
+                'message' => __('messages.pre_contract_rejected', ['player' => $player->name]),
+            ];
         }
+
+        // Apply reputation modifier
+        $reputationModifier = $this->calculateReputationModifier($biddingTeam, $player);
+        $finalChance = (int) ($baseChance * $reputationModifier);
+
+        $accepted = rand(1, 100) <= $finalChance;
 
         if ($accepted) {
             return [
@@ -645,6 +779,10 @@ class ScoutingService
         $askingPrice = $isFreeAgent ? 0 : $this->calculateAskingPrice($player);
         $wageDemand = $this->calculateWageDemand($player);
         $importance = $isFreeAgent ? 0.0 : $this->calculatePlayerImportance($player);
+
+        // For expiring-contract players, show the premium wage demand
+        $isExpiring = $player->contract_until && $player->contract_until <= $game->getSeasonEndDate();
+        $preContractWageDemand = $isExpiring ? $this->calculatePreContractWageDemand($player) : null;
 
         $investment = $game->currentInvestment;
         $finances = $game->currentFinances;
@@ -674,6 +812,7 @@ class ScoutingService
             'formatted_asking_price' => $isFreeAgent ? __('transfers.free_transfer') : Money::format($askingPrice),
             'wage_demand' => $wageDemand,
             'formatted_wage_demand' => Money::format($wageDemand),
+            'pre_contract_wage_demand' => $preContractWageDemand,
             'importance' => $importance,
             'can_afford_fee' => $canAffordFee,
             'can_afford_wage' => $canAffordWage,

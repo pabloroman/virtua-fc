@@ -135,6 +135,7 @@ return [
     'bid_accepted' => ':team ha aceptado tu oferta.',
     'counter_offer_made' => ':team ha hecho una contraoferta de :amount.',
     'bid_rejected_too_low' => ':team ha rechazado tu oferta. Estaba muy por debajo de su valoración.',
+    'bid_rejected_not_interested' => 'El jugador no está interesado en fichar por tu club.',
     'loan_rejected_key_player' => ':team rechazó la solicitud de cesión. :player es un jugador clave para ellos.',
     'loan_accepted' => ':team ha aceptado ceder a :player a tu club.',
     'loan_rejected_keep' => ':team ha decidido quedarse con :player por ahora.',
