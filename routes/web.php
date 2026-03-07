@@ -39,6 +39,7 @@ use App\Http\Actions\StopPlayerTracking;
 use App\Http\Actions\ToggleShortlist;
 use App\Http\Actions\RemoveFromShortlist;
 use App\Http\Actions\DeleteScoutSearch;
+use App\Http\Actions\SkipPreSeason;
 use App\Http\Actions\SubmitTransferBid;
 use App\Http\Actions\UnlistPlayerFromTransfer;
 use App\Http\Views\ShowLineup;
@@ -120,6 +121,7 @@ Route::middleware('auth')->group(function () {
 
         // Game Actions
         Route::post('/game/{gameId}/advance', AdvanceMatchday::class)->name('game.advance');
+        Route::post('/game/{gameId}/skip-pre-season', SkipPreSeason::class)->name('game.skip-pre-season');
         Route::post('/game/{gameId}/lineup', SaveLineup::class)->name('game.lineup.save');
         Route::get('/game/{gameId}/lineup/auto', GetAutoLineup::class)->name('game.lineup.auto');
         Route::post('/game/{gameId}/match/{matchId}/substitute', ProcessSubstitution::class)->name('game.match.substitute');

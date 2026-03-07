@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Builder;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property bool $needs_onboarding
  * @property bool $needs_welcome
+ * @property bool $pre_season
  * @property string|null $season_goal
  * @property string $competition_id
  * @property string $game_mode
@@ -119,6 +120,7 @@ class Game extends Model
         'season_goal',
         'needs_onboarding',
         'needs_welcome',
+        'pre_season',
         'pending_actions',
         'setup_completed_at',
         'season_transitioning_at',
@@ -132,6 +134,7 @@ class Game extends Model
         'season_goal' => 'string',
         'needs_onboarding' => 'boolean',
         'needs_welcome' => 'boolean',
+        'pre_season' => 'boolean',
         'pending_actions' => 'array',
         'setup_completed_at' => 'datetime',
         'season_transitioning_at' => 'datetime',
@@ -745,5 +748,19 @@ class Game extends Model
     public function completeOnboarding(): void
     {
         $this->update(['needs_onboarding' => false]);
+    }
+
+    // ==========================================
+    // Pre-Season
+    // ==========================================
+
+    public function isInPreSeason(): bool
+    {
+        return $this->pre_season ?? false;
+    }
+
+    public function endPreSeason(): void
+    {
+        $this->update(['pre_season' => false]);
     }
 }

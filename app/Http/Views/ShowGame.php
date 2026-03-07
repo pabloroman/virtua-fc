@@ -88,6 +88,18 @@ class ShowGame
             $viewData['tournamentTie'] = $this->getPlayerTournamentTie($game);
         }
 
+        // Add pre-season data
+        if ($game->isInPreSeason()) {
+            $firstCompetitiveMatch = GameMatch::where('game_id', $game->id)
+                ->where('competition_id', '!=', 'FR')
+                ->where('played', false)
+                ->orderBy('scheduled_date')
+                ->first();
+
+            $viewData['isPreSeason'] = true;
+            $viewData['seasonStartDate'] = $firstCompetitiveMatch?->scheduled_date;
+        }
+
         return view('game', $viewData);
     }
 

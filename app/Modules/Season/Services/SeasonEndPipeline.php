@@ -22,6 +22,7 @@ use App\Modules\Season\Processors\SupercupQualificationProcessor;
 use App\Modules\Season\Processors\UefaQualificationProcessor;
 use App\Modules\Season\Processors\ContinentalAndCupInitProcessor;
 use App\Modules\Season\Processors\OnboardingResetProcessor;
+use App\Modules\Season\Processors\PreSeasonFixtureProcessor;
 use App\Modules\Season\Processors\SquadCapEnforcementProcessor;
 use App\Modules\Season\Processors\SquadReplenishmentProcessor;
 use App\Modules\Season\Processors\TransferMarketResetProcessor;
@@ -58,6 +59,7 @@ class SeasonEndPipeline
         SquadReplenishmentProcessor $squadReplenishment,
         TransferMarketResetProcessor $transferMarketReset,
         ContinentalAndCupInitProcessor $competitionInitialization,
+        PreSeasonFixtureProcessor $preSeasonFixture,
         SquadCapEnforcementProcessor $squadCapEnforcement,
         OnboardingResetProcessor $onboardingReset,
     ) {
@@ -82,6 +84,7 @@ class SeasonEndPipeline
             $youthAcademy,
             $transferMarketReset,
             $competitionInitialization,
+            $preSeasonFixture,
             $squadCapEnforcement,
             $onboardingReset,
         ];

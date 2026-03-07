@@ -9,6 +9,7 @@ use App\Modules\Season\Services\SeasonInitializationService;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GameStanding;
+use Carbon\Carbon;
 
 /**
  * Initializes Swiss format competitions (UCL) and conducts cup draws
@@ -75,11 +76,21 @@ class ContinentalAndCupInitProcessor implements SeasonEndProcessor
     }
 
     /**
-     * Set the game's current_date to the earliest fixture across all competitions.
-     * This runs after all fixture generation (league at priority 30, Swiss/cup here at 106).
+     * Set the game's current_date. For career mode, starts at July 1 (pre-season).
+     * For other modes, uses the earliest fixture date.
      */
     private function finalizeCurrentDate(Game $game): void
     {
+        if ($game->isCareerMode()) {
+            $seasonYear = (int) $game->season;
+            $game->update([
+                'current_date' => Carbon::createFromDate($seasonYear, 7, 1)->toDateString(),
+                'pre_season' => true,
+            ]);
+
+            return;
+        }
+
         $earliestMatch = GameMatch::where('game_id', $game->id)
             ->orderBy('scheduled_date')
             ->first();

@@ -6,16 +6,18 @@ use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Season\Processors\BudgetProjectionProcessor;
 use App\Modules\Season\Processors\ContinentalAndCupInitProcessor;
 use App\Modules\Season\Processors\LeagueFixtureProcessor;
+use App\Modules\Season\Processors\PreSeasonFixtureProcessor;
 use App\Modules\Season\Processors\StandingsResetProcessor;
 use App\Models\Game;
 
 /**
- * Runs the 4 shared "setup" processors used by both initial game creation
+ * Runs the 5 shared "setup" processors used by both initial game creation
  * (SetupNewGame) and season transitions (SeasonEndPipeline).
  *
  * Processors execute in priority order:
  *   LeagueFixtureProcessor (30) → StandingsResetProcessor (40) →
- *   BudgetProjectionProcessor (50) → ContinentalAndCupInitProcessor (106)
+ *   BudgetProjectionProcessor (50) → ContinentalAndCupInitProcessor (106) →
+ *   PreSeasonFixtureProcessor (108)
  */
 class SeasonSetupRunner
 {
@@ -24,6 +26,7 @@ class SeasonSetupRunner
         private readonly StandingsResetProcessor $standingsProcessor,
         private readonly BudgetProjectionProcessor $budgetProcessor,
         private readonly ContinentalAndCupInitProcessor $cupInitProcessor,
+        private readonly PreSeasonFixtureProcessor $preSeasonProcessor,
     ) {}
 
     public function run(Game $game, SeasonTransitionData $data): SeasonTransitionData
@@ -32,6 +35,7 @@ class SeasonSetupRunner
         $data = $this->standingsProcessor->process($game, $data);
         $data = $this->budgetProcessor->process($game, $data);
         $data = $this->cupInitProcessor->process($game, $data);
+        $data = $this->preSeasonProcessor->process($game, $data);
 
         return $data;
     }
