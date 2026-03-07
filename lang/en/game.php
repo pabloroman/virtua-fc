@@ -193,6 +193,8 @@ return [
     'welcome_to_team' => 'Welcome :team_a',
     'season_preview' => 'Season Preview',
     'season_objective' => 'Season Objective',
+    'club_reputation' => 'Club Reputation',
+    'reputation_help' => 'Reputation reflects your club\'s standing in the football world. It evolves based on sustained league performance and affects finances, transfer attractiveness, and board expectations.',
     'your_competitions' => 'Your Competitions',
     'competition_role_league' => 'League',
     'competition_role_cup' => 'Cup',

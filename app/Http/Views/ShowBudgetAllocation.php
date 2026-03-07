@@ -5,6 +5,7 @@ namespace App\Http\Views;
 use App\Modules\Finance\Services\BudgetProjectionService;
 use App\Models\Game;
 use App\Models\GameInvestment;
+use App\Models\TeamReputation;
 
 class ShowBudgetAllocation
 {
@@ -35,7 +36,7 @@ class ShowBudgetAllocation
             'scouting' => $investment->scouting_tier,
             'facilities' => $investment->facilities_tier,
         ] : GameInvestment::defaultTiersForReputation(
-            $game->team->clubProfile?->reputation_level ?? 'professional',
+            TeamReputation::resolveLevel($game->id, $game->team_id),
             $availableSurplus,
         );
 

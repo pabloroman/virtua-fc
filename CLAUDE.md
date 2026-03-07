@@ -109,6 +109,7 @@ TransferMarketResetProcessor (20)
 SeasonSimulationProcessor (24)
 SupercupQualificationProcessor (25)
 PromotionRelegationProcessor (26)
+ReputationUpdateProcessor (27)
 YouthAcademyClosingProcessor (55)
 UefaQualificationProcessor (105)
 ```
@@ -251,7 +252,7 @@ config/
 
 ## Models
 
-Key Eloquent models (24 total):
+Key Eloquent models (25 total):
 
 | Model | Purpose |
 |-------|---------|
@@ -276,6 +277,7 @@ Key Eloquent models (24 total):
 | `SeasonArchive` | Historical season data |
 | `SimulatedSeason` | Simulated AI season results |
 | `Team` | Reference team data |
+| `TeamReputation` | Per-game dynamic reputation |
 | `TransferOffer` | Transfer bids |
 | `InviteCode` | Beta invite codes |
 | `User` | User accounts |

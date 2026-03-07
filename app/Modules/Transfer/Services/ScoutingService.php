@@ -10,6 +10,7 @@ use App\Models\Loan;
 use App\Models\ScoutReport;
 use App\Models\ShortlistedPlayer;
 use App\Models\Team;
+use App\Models\TeamReputation;
 use App\Models\TransferOffer;
 use App\Support\Money;
 use Illuminate\Support\Collection;
@@ -718,8 +719,13 @@ class ScoutingService
             return 1.0;
         }
 
-        $sourceReputation = $player->team?->clubProfile?->reputation_level ?? ClubProfile::REPUTATION_LOCAL;
-        $offeringReputation = $biddingTeam->clubProfile?->reputation_level ?? ClubProfile::REPUTATION_LOCAL;
+        $gameId = $player->game_id;
+        $sourceReputation = $gameId && $player->team_id
+            ? TeamReputation::resolveLevel($gameId, $player->team_id)
+            : ($player->team?->clubProfile?->reputation_level ?? ClubProfile::REPUTATION_LOCAL);
+        $offeringReputation = $gameId
+            ? TeamReputation::resolveLevel($gameId, $biddingTeam->id)
+            : ($biddingTeam->clubProfile?->reputation_level ?? ClubProfile::REPUTATION_LOCAL);
 
         $sourceIndex = ClubProfile::getReputationTierIndex($sourceReputation);
         $offeringIndex = ClubProfile::getReputationTierIndex($offeringReputation);

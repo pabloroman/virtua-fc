@@ -9,6 +9,7 @@ use App\Models\Competition;
 use App\Models\CompetitionEntry;
 use App\Models\Game;
 use App\Models\GameInvestment;
+use App\Models\TeamReputation;
 
 class ShowOnboarding
 {
@@ -67,7 +68,7 @@ class ShowOnboarding
             'scouting' => $investment->scouting_tier,
             'facilities' => $investment->facilities_tier,
         ] : GameInvestment::defaultTiersForReputation(
-            $game->team->clubProfile?->reputation_level ?? 'professional',
+            TeamReputation::resolveLevel($game->id, $game->team_id),
             $availableSurplus,
         );
 
@@ -92,6 +93,8 @@ class ShowOnboarding
             })
             ->values();
 
+        $reputationLevel = TeamReputation::resolveLevel($game->id, $game->team_id);
+
         return view('onboarding', [
             'game' => $game,
             'finances' => $finances,
@@ -103,6 +106,7 @@ class ShowOnboarding
             'seasonGoalLabel' => $seasonGoalLabel,
             'seasonGoalTarget' => $seasonGoalTarget,
             'competitions' => $competitions,
+            'reputationLevel' => $reputationLevel,
         ]);
     }
 }

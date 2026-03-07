@@ -157,6 +157,28 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
                         </div>
                     </div>
 
+                        {{-- Reputation hint --}}
+                        @if(!empty($reputationData))
+                        @php
+                            $repDirectionConfig = match($reputationData['direction']) {
+                                'rising' => ['icon' => '&#9650;', 'color' => 'text-green-600', 'label' => __('season.reputation_rising')],
+                                'declining' => ['icon' => '&#9660;', 'color' => 'text-red-500', 'label' => __('season.reputation_declining')],
+                                default => ['icon' => '&#9654;', 'color' => 'text-slate-400', 'label' => __('season.reputation_stable')],
+                            };
+                        @endphp
+                        <div class="rounded-lg border border-slate-200 bg-slate-50 p-4 flex items-center justify-between">
+                            <div>
+                                <div class="text-[10px] text-slate-400 uppercase tracking-wide font-semibold mb-1">{{ __('game.club_reputation') }}</div>
+                                <div class="text-base font-bold text-slate-900">{{ __('finances.reputation.' . $reputationData['level']) }}</div>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-lg {{ $repDirectionConfig['color'] }}">{!! $repDirectionConfig['icon'] !!}</span>
+                                <div class="text-[10px] {{ $repDirectionConfig['color'] }} font-medium">{{ $repDirectionConfig['label'] }}</div>
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+
                     {{-- Awards sidebar (right column on desktop, below on mobile) --}}
                     <div class="space-y-4">
                         <h3 class="text-xs text-slate-400 uppercase tracking-widest font-semibold">
