@@ -10,6 +10,7 @@ use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\GameTransfer;
 use App\Models\Loan;
+use App\Models\ShortlistedPlayer;
 use App\Models\Team;
 use App\Models\TransferOffer;
 use Carbon\Carbon;
@@ -806,6 +807,11 @@ class TransferService
 
         // Mark offer as completed
         $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
+
+        // Remove from shortlist to free up scouting slot
+        ShortlistedPlayer::where('game_id', $game->id)
+            ->where('game_player_id', $player->id)
+            ->delete();
     }
 
     /**
@@ -1192,6 +1198,11 @@ class TransferService
         }
 
         $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
+
+        // Remove from shortlist to free up scouting slot
+        ShortlistedPlayer::where('game_id', $game->id)
+            ->where('game_player_id', $player->id)
+            ->delete();
     }
 
     /**
@@ -1236,6 +1247,11 @@ class TransferService
         );
 
         $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
+
+        // Remove from shortlist to free up scouting slot
+        ShortlistedPlayer::where('game_id', $game->id)
+            ->where('game_player_id', $player->id)
+            ->delete();
     }
 
     /**

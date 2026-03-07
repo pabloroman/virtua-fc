@@ -75,6 +75,12 @@ class ScoutingService
         4 => [4, 1, 1],
     ];
 
+    /** Maximum players on the shortlist at any time. */
+    public const MAX_SHORTLIST_SIZE = 20;
+
+    /** Maximum scout search reports kept at any time. */
+    public const MAX_SEARCH_HISTORY = 20;
+
     public function __construct(
         private readonly ContractService $contractService,
     ) {}
@@ -868,6 +874,14 @@ class ScoutingService
     }
 
     /**
+     * Check if the shortlist is full.
+     */
+    public function isShortlistFull(Game $game): bool
+    {
+        return ShortlistedPlayer::where('game_id', $game->id)->count() >= self::MAX_SHORTLIST_SIZE;
+    }
+
+    /**
      * Start tracking a shortlisted player.
      */
     public function startTracking(ShortlistedPlayer $entry, Game $game): bool
@@ -918,7 +932,7 @@ class ScoutingService
             $oldLevel = $entry->intel_level;
 
             if ($newMatchdays >= $matchdaysToL2 && $oldLevel < ShortlistedPlayer::INTEL_DEEP) {
-                $entry->update(['intel_level' => ShortlistedPlayer::INTEL_DEEP]);
+                $entry->update(['intel_level' => ShortlistedPlayer::INTEL_DEEP, 'is_tracking' => false]);
                 $leveledUp->push($entry);
             } elseif ($newMatchdays >= $matchdaysToL1 && $oldLevel < ShortlistedPlayer::INTEL_REPORT) {
                 $entry->update(['intel_level' => ShortlistedPlayer::INTEL_REPORT]);

@@ -57,10 +57,12 @@ return [
     'scout_already_searching' => 'You already have an active search. Cancel it first or wait for results.',
     'scout_search_cancelled' => 'Scout search cancelled.',
     'scout_search_deleted' => 'Search deleted.',
+    'scout_search_limit' => 'You have reached the search limit (maximum :max). Delete an old search to start a new one.',
 
     // Shortlist messages
     'shortlist_added' => ':player added to your shortlist.',
     'shortlist_removed' => ':player removed from your shortlist.',
+    'shortlist_full' => 'Your shortlist is full (maximum :max players).',
 
     // Budget messages
     'budget_saved' => 'Budget allocation saved.',
