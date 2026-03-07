@@ -4,21 +4,19 @@ Club reputation is a dynamic tier that evolves based on sustained on-pitch perfo
 
 ## Reputation Tiers
 
-Seven tiers, ordered lowest to highest:
+Five tiers, ordered lowest to highest:
 
 | Index | Tier | Example Clubs (seed) |
 |-------|------|---------------------|
 | 0 | Local | Small/unknown clubs |
-| 1 | Professional | Burgos CF, FC Andorra |
-| 2 | Modest | Rayo Vallecano, Girona FC |
-| 3 | Established | Espanyol, Celta de Vigo |
-| 4 | Continental | Real Betis, Sevilla FC |
-| 5 | Contenders | Atletico de Madrid, Athletic |
-| 6 | Elite | Real Madrid, FC Barcelona |
+| 1 | Modest | Rayo Vallecano, Girona FC |
+| 2 | Established | Espanyol, Celta de Vigo |
+| 3 | Continental | Real Betis, Sevilla FC, Atletico |
+| 4 | Elite | Real Madrid, FC Barcelona |
 
 ## Points-Based Progression
 
-Each team has a **reputation points** score that determines their current tier. Points thresholds mirror the tier index (0, 100, 200, 300, 400, 500, 600). Teams start at the midpoint of their seeded tier.
+Each team has a **reputation points** score that determines their current tier. Points thresholds mirror the tier index (0, 100, 200, 300, 400). Teams start at the midpoint of their seeded tier.
 
 At the end of each season, points are adjusted based on:
 
@@ -29,20 +27,20 @@ After points are updated, the effective tier is recalculated from the new total.
 
 ### Approximate Pace
 
-With the default config, a modest team (200 pts) consistently finishing in Champions League places (~+30 pts/season, minus ~5 regression) reaches established (300 pts) in roughly **4 seasons**. A dominant run with title finishes (+40 pts/season) can accelerate this to ~3 seasons.
+With the default config, a modest team (100 pts) consistently finishing in Champions League places (~+30 pts/season, minus ~5 regression) reaches established (200 pts) in roughly **4 seasons**. A dominant run with title finishes (+40 pts/season) can accelerate this to ~3 seasons.
 
 Decline works similarly: an elite team that finishes mid-table (+5 pts but -5 regression) will plateau, while a team in the relegation zone (-10 pts -5 regression) will drop a tier in about 7 seasons.
 
 ## Floor Mechanism
 
-Teams cannot drop more than **2 tiers** below their seeded base reputation. This prevents historically significant clubs from falling to unrealistically low levels. For example, Real Madrid (seeded elite, index 6) can never drop below continental (index 4).
+Teams cannot drop more than **2 tiers** below their seeded base reputation. This prevents historically significant clubs from falling to unrealistically low levels. For example, Real Madrid (seeded elite, index 4) can never drop below established (index 2).
 
 ## Where Reputation Is Used
 
 | System | How reputation affects it |
 |--------|------------------------|
 | **Finances** | Operating expenses, commercial revenue per seat, and matchday revenue per seat are all keyed by reputation tier in `config/finances.php`. Higher reputation = more revenue but also higher operating costs. |
-| **Season Goals** | Each competition config maps reputation to an expected season goal (elite -> title, contenders -> CL, etc.). The goal determines what the board considers success. |
+| **Season Goals** | Each competition config maps reputation to an expected season goal (elite -> title, continental -> CL, etc.). The goal determines what the board considers success. |
 | **Transfers** | Players at higher-reputation clubs are harder to sign. The `ScoutingService` applies a reputation gap modifier that reduces transfer acceptance probability when bidding from a lower-tier club. |
 | **Loans** | `LoanService` scores loan destinations partly on reputation match, ensuring players go to clubs appropriate for their ability level. |
 | **AI Tactics** | `LineupService` uses reputation to select AI team mentality and tactical instructions (bigger clubs play more attacking football). |

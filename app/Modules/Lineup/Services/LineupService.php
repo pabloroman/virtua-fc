@@ -305,9 +305,9 @@ class LineupService
 
         // Group reputations into tactical tiers
         $tier = match ($reputationLevel) {
-            'elite', 'contenders' => 'bold',
+            'elite' => 'bold',
             'continental', 'established' => 'mid',
-            default => 'cautious', // modest, professional, local
+            default => 'cautious', // modest, local
         };
 
         if ($isHome) {
@@ -344,7 +344,7 @@ class LineupService
         $isWeaker = $diff <= -5;
 
         $tier = match ($reputationLevel) {
-            'elite', 'contenders' => 'bold',
+            'elite' => 'bold',
             'continental', 'established' => 'mid',
             default => 'cautious',
         };

@@ -27,12 +27,10 @@ class TeamReputation extends Model
      */
     public const TIER_THRESHOLDS = [
         ClubProfile::REPUTATION_LOCAL        => 0,
-        ClubProfile::REPUTATION_PROFESSIONAL => 100,
-        ClubProfile::REPUTATION_MODEST       => 200,
-        ClubProfile::REPUTATION_ESTABLISHED  => 300,
-        ClubProfile::REPUTATION_CONTINENTAL  => 400,
-        ClubProfile::REPUTATION_CONTENDERS   => 500,
-        ClubProfile::REPUTATION_ELITE        => 600,
+        ClubProfile::REPUTATION_MODEST       => 100,
+        ClubProfile::REPUTATION_ESTABLISHED  => 200,
+        ClubProfile::REPUTATION_CONTINENTAL  => 300,
+        ClubProfile::REPUTATION_ELITE        => 400,
     ];
 
     /**
