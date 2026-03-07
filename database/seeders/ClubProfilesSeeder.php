@@ -19,29 +19,27 @@ class ClubProfilesSeeder extends Seeder
         // Spain - La Liga (ESP1)
         // =============================================
 
-        // Elite
+        // Elite - Objetivo: Liga
         'Real Madrid' => ClubProfile::REPUTATION_ELITE,
         'FC Barcelona' => ClubProfile::REPUTATION_ELITE,
+        'Atlético de Madrid' => ClubProfile::REPUTATION_ELITE,
 
-        // Contenders
-        'Atlético de Madrid' => ClubProfile::REPUTATION_CONTENDERS,
-        'Athletic Bilbao' => ClubProfile::REPUTATION_CONTENDERS,
-        'Villarreal CF' => ClubProfile::REPUTATION_CONTENDERS,
-
-        // Continental
+        // Continental - Objetivo: Europa League
+        'Athletic Bilbao' => ClubProfile::REPUTATION_CONTINENTAL,
+        'Villarreal CF' => ClubProfile::REPUTATION_CONTINENTAL,
         'Real Betis Balompié' => ClubProfile::REPUTATION_CONTINENTAL,
         'Sevilla FC' => ClubProfile::REPUTATION_CONTINENTAL,
-        'Valencia CF' => ClubProfile::REPUTATION_CONTINENTAL,
         'Real Sociedad' => ClubProfile::REPUTATION_CONTINENTAL,
 
-        // Established
+        // Established - Objetivo: Top 10
+        'Valencia CF' => ClubProfile::REPUTATION_ESTABLISHED,
         'RCD Espanyol Barcelona' => ClubProfile::REPUTATION_ESTABLISHED,
         'Celta de Vigo' => ClubProfile::REPUTATION_ESTABLISHED,
         'RCD Mallorca' => ClubProfile::REPUTATION_ESTABLISHED,
         'CA Osasuna' => ClubProfile::REPUTATION_ESTABLISHED,
         'Getafe CF' => ClubProfile::REPUTATION_ESTABLISHED,
 
-        // Modest
+        // Modest - Objetivo: No descender
         'Rayo Vallecano' => ClubProfile::REPUTATION_MODEST,
         'Girona FC' => ClubProfile::REPUTATION_MODEST,
         'Deportivo Alavés' => ClubProfile::REPUTATION_MODEST,
@@ -53,19 +51,19 @@ class ClubProfilesSeeder extends Seeder
         // Spain - La Liga 2 (ESP2)
         // =============================================
 
-        // Established (historic clubs)
+        // Established (historic clubs) - Objetivo: Playoff ascenso
         'Deportivo de La Coruña' => ClubProfile::REPUTATION_ESTABLISHED,
         'Málaga CF' => ClubProfile::REPUTATION_ESTABLISHED,
         'Sporting Gijón' => ClubProfile::REPUTATION_ESTABLISHED,
         'UD Las Palmas' => ClubProfile::REPUTATION_ESTABLISHED,
         'Real Valladolid CF' => ClubProfile::REPUTATION_ESTABLISHED,
-        'Real Zaragoza' => ClubProfile::REPUTATION_ESTABLISHED,
         'Granada CF' => ClubProfile::REPUTATION_ESTABLISHED,
         'Cádiz CF' => ClubProfile::REPUTATION_ESTABLISHED,
         'Racing Santander' => ClubProfile::REPUTATION_ESTABLISHED,
         'UD Almería' => ClubProfile::REPUTATION_ESTABLISHED,
 
-        // Modest
+        // Modest - Objetivo: Top 10
+        'Real Zaragoza' => ClubProfile::REPUTATION_MODEST,
         'Córdoba CF' => ClubProfile::REPUTATION_MODEST,
         'CD Castellón' => ClubProfile::REPUTATION_MODEST,
         'Albacete Balompié' => ClubProfile::REPUTATION_MODEST,
@@ -73,13 +71,13 @@ class ClubProfilesSeeder extends Seeder
         'SD Eibar' => ClubProfile::REPUTATION_MODEST,
         'CD Leganés' => ClubProfile::REPUTATION_MODEST,
 
-        // Professional
-        'Burgos CF' => ClubProfile::REPUTATION_PROFESSIONAL,
-        'Cultural Leonesa' => ClubProfile::REPUTATION_PROFESSIONAL,
-        'CD Mirandés' => ClubProfile::REPUTATION_PROFESSIONAL,
-        'AD Ceuta FC' => ClubProfile::REPUTATION_PROFESSIONAL,
-        'FC Andorra' => ClubProfile::REPUTATION_PROFESSIONAL,
-        'Real Sociedad B' => ClubProfile::REPUTATION_PROFESSIONAL,
+        // Local - Objetivo: No descender
+        'Burgos CF' => ClubProfile::REPUTATION_LOCAL,
+        'Cultural Leonesa' => ClubProfile::REPUTATION_LOCAL,
+        'CD Mirandés' => ClubProfile::REPUTATION_LOCAL,
+        'AD Ceuta FC' => ClubProfile::REPUTATION_LOCAL,
+        'FC Andorra' => ClubProfile::REPUTATION_LOCAL,
+        'Real Sociedad B' => ClubProfile::REPUTATION_LOCAL,
 
         // =============================================
         // England - Premier League (ENG1)
@@ -91,12 +89,10 @@ class ClubProfilesSeeder extends Seeder
         'Arsenal FC' => ClubProfile::REPUTATION_ELITE,
         'Chelsea FC' => ClubProfile::REPUTATION_ELITE,
 
-        // Contenders
-        'Manchester United' => ClubProfile::REPUTATION_CONTENDERS,
-        'Tottenham Hotspur' => ClubProfile::REPUTATION_CONTENDERS,
-        'Newcastle United' => ClubProfile::REPUTATION_CONTENDERS,
-
         // Continental
+        'Manchester United' => ClubProfile::REPUTATION_CONTINENTAL,
+        'Tottenham Hotspur' => ClubProfile::REPUTATION_CONTINENTAL,
+        'Newcastle United' => ClubProfile::REPUTATION_CONTINENTAL,
         'Aston Villa' => ClubProfile::REPUTATION_CONTINENTAL,
         'West Ham United' => ClubProfile::REPUTATION_CONTINENTAL,
 
@@ -122,11 +118,9 @@ class ClubProfilesSeeder extends Seeder
         // Elite
         'Bayern Munich' => ClubProfile::REPUTATION_ELITE,
 
-        // Contenders
-        'Borussia Dortmund' => ClubProfile::REPUTATION_CONTENDERS,
-        'Bayer 04 Leverkusen' => ClubProfile::REPUTATION_CONTENDERS,
-
         // Continental
+        'Borussia Dortmund' => ClubProfile::REPUTATION_CONTINENTAL,
+        'Bayer 04 Leverkusen' => ClubProfile::REPUTATION_CONTINENTAL,
         'Eintracht Frankfurt' => ClubProfile::REPUTATION_CONTINENTAL,
         'RB Leipzig' => ClubProfile::REPUTATION_CONTINENTAL,
 
@@ -145,9 +139,7 @@ class ClubProfilesSeeder extends Seeder
         'TSG 1899 Hoffenheim' => ClubProfile::REPUTATION_MODEST,
         'FC Augsburg' => ClubProfile::REPUTATION_MODEST,
         'FC St. Pauli' => ClubProfile::REPUTATION_MODEST,
-
-        // Professional
-        '1.FC Heidenheim 1846' => ClubProfile::REPUTATION_PROFESSIONAL,
+        '1.FC Heidenheim 1846' => ClubProfile::REPUTATION_MODEST,
 
         // =============================================
         // France - Ligue 1 (FRA1)
@@ -176,10 +168,8 @@ class ClubProfilesSeeder extends Seeder
         'Stade Brestois 29' => ClubProfile::REPUTATION_MODEST,
         'AJ Auxerre' => ClubProfile::REPUTATION_MODEST,
         'Angers SCO' => ClubProfile::REPUTATION_MODEST,
-
-        // Professional
-        'Paris FC' => ClubProfile::REPUTATION_PROFESSIONAL,
-        'FC Lorient' => ClubProfile::REPUTATION_PROFESSIONAL,
+        'Paris FC' => ClubProfile::REPUTATION_MODEST,
+        'FC Lorient' => ClubProfile::REPUTATION_MODEST,
 
         // =============================================
         // Italy - Serie A (ITA1)
@@ -190,10 +180,8 @@ class ClubProfilesSeeder extends Seeder
         'Juventus FC' => ClubProfile::REPUTATION_ELITE,
         'AC Milan' => ClubProfile::REPUTATION_ELITE,
 
-        // Contenders
-        'SSC Napoli' => ClubProfile::REPUTATION_CONTENDERS,
-
         // Continental
+        'SSC Napoli' => ClubProfile::REPUTATION_CONTINENTAL,
         'Atalanta BC' => ClubProfile::REPUTATION_CONTINENTAL,
         'AS Roma' => ClubProfile::REPUTATION_CONTINENTAL,
         'SS Lazio' => ClubProfile::REPUTATION_CONTINENTAL,
@@ -211,11 +199,9 @@ class ClubProfilesSeeder extends Seeder
         'Cagliari Calcio' => ClubProfile::REPUTATION_MODEST,
         'Hellas Verona' => ClubProfile::REPUTATION_MODEST,
         'US Sassuolo' => ClubProfile::REPUTATION_MODEST,
-
-        // Professional
-        'Como 1907' => ClubProfile::REPUTATION_PROFESSIONAL,
-        'US Cremonese' => ClubProfile::REPUTATION_PROFESSIONAL,
-        'Pisa Sporting Club' => ClubProfile::REPUTATION_PROFESSIONAL,
+        'Como 1907' => ClubProfile::REPUTATION_MODEST,
+        'US Cremonese' => ClubProfile::REPUTATION_MODEST,
+        'Pisa Sporting Club' => ClubProfile::REPUTATION_MODEST,
 
         // =============================================
         // European transfer pool (EUR)
@@ -262,11 +248,9 @@ class ClubProfilesSeeder extends Seeder
         'FC Utrecht' => ClubProfile::REPUTATION_MODEST,
         'SK Brann' => ClubProfile::REPUTATION_MODEST,
         'Qarabağ FK' => ClubProfile::REPUTATION_MODEST,
-
-        // Professional
-        'Go Ahead Eagles' => ClubProfile::REPUTATION_PROFESSIONAL,
-        'Pafos FC' => ClubProfile::REPUTATION_PROFESSIONAL,
-        'Kairat Almaty' => ClubProfile::REPUTATION_PROFESSIONAL,
+        'Go Ahead Eagles' => ClubProfile::REPUTATION_MODEST,
+        'Pafos FC' => ClubProfile::REPUTATION_MODEST,
+        'Kairat Almaty' => ClubProfile::REPUTATION_MODEST,
     ];
 
     public function run(): void
