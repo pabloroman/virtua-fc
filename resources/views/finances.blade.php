@@ -2,6 +2,8 @@
 /** @var App\Models\Game $game */
 /** @var App\Models\GameFinances $finances */
 /** @var App\Models\GameInvestment|null $investment */
+/** @var array $tierThresholds */
+/** @var int $availableBudget */
 @endphp
 
 <x-app-layout>
@@ -264,7 +266,6 @@
                             <div>
                                 <div class="flex items-center justify-between mb-4">
                                     <h4 class="font-semibold text-sm text-slate-900">{{ __('finances.infrastructure_investment') }}</h4>
-{{--                                    <a href="{{ route('game.budget', $game->id) }}" class="text-xs text-sky-600 hover:text-sky-800 font-medium">{{ __('finances.adjust_allocation') }} &rarr;</a>--}}
                                 </div>
                                 <div class="space-y-4">
                                     @foreach([
@@ -273,18 +274,58 @@
                                         ['key' => 'scouting', 'tier' => $investment->scouting_tier, 'amount' => $investment->formatted_scouting_amount],
                                         ['key' => 'facilities', 'tier' => $investment->facilities_tier, 'amount' => $investment->formatted_facilities_amount],
                                     ] as $area)
-                                    <div class="border rounded-lg p-3">
+                                    <div class="border rounded-lg p-3" x-data="{ showUpgrade: false }">
                                         <div class="flex items-center justify-between mb-1">
                                             <span class="text-sm font-medium text-slate-700">{{ __('finances.' . $area['key']) }}</span>
                                             <span class="text-xs text-slate-400">{{ $area['amount'] }}</span>
                                         </div>
-                                        <div class="flex items-center gap-1.5">
-                                            @for($i = 1; $i <= 4; $i++)
-                                                <span class="w-2.5 h-2.5 rounded-full {{ $i <= $area['tier'] ? 'bg-emerald-500' : 'bg-slate-200' }}"></span>
-                                            @endfor
-                                            <span class="text-xs text-slate-500 ml-1">{{ __('finances.tier', ['level' => $area['tier']]) }}</span>
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center gap-1.5">
+                                                @for($i = 1; $i <= 4; $i++)
+                                                    <span class="w-2.5 h-2.5 rounded-full {{ $i <= $area['tier'] ? 'bg-emerald-500' : 'bg-slate-200' }}"></span>
+                                                @endfor
+                                                <span class="text-xs text-slate-500 ml-1">{{ __('finances.tier', ['level' => $area['tier']]) }}</span>
+                                            </div>
+                                            @if($area['tier'] < 4)
+                                            <button @click="showUpgrade = !showUpgrade" class="text-xs text-sky-600 hover:text-sky-800 font-medium min-h-[44px] flex items-center">
+                                                <span x-text="showUpgrade ? '{{ __('finances.upgrade_cancel') }}' : '{{ __('finances.upgrade') }}'"></span>
+                                            </button>
+                                            @endif
                                         </div>
                                         <div class="text-xs text-slate-400 mt-1">{{ __('finances.' . $area['key'] . '_tier_' . $area['tier']) }}</div>
+
+                                        {{-- Upgrade options --}}
+                                        @if($area['tier'] < 4)
+                                        <div x-show="showUpgrade" x-collapse x-cloak class="mt-3 pt-3 border-t border-slate-100 space-y-2">
+                                            @for($t = $area['tier'] + 1; $t <= 4; $t++)
+                                                @php
+                                                    $currentAmount = $investment->{$area['key'] . '_amount'};
+                                                    $targetAmount = $tierThresholds[$area['key']][$t];
+                                                    $cost = $targetAmount - $currentAmount;
+                                                    $canAfford = $cost <= $availableBudget;
+                                                @endphp
+                                                <form method="POST" action="{{ route('game.infrastructure.upgrade', $game->id) }}" class="flex items-center justify-between gap-2">
+                                                    @csrf
+                                                    <input type="hidden" name="area" value="{{ $area['key'] }}">
+                                                    <input type="hidden" name="target_tier" value="{{ $t }}">
+                                                    <div class="min-w-0">
+                                                        <div class="text-xs font-medium text-slate-700">{{ __('finances.tier', ['level' => $t]) }}</div>
+                                                        <div class="text-xs text-slate-400 truncate">{{ \App\Support\Money::format($cost) }}</div>
+                                                    </div>
+                                                    <button type="submit" @if(!$canAfford) disabled @endif
+                                                        class="shrink-0 px-3 min-h-[44px] text-xs font-medium rounded-lg transition-colors
+                                                            {{ $canAfford
+                                                                ? 'bg-slate-900 text-white hover:bg-slate-800'
+                                                                : 'bg-slate-100 text-slate-400 cursor-not-allowed' }}">
+                                                        {{ __('finances.upgrade_confirm') }}
+                                                    </button>
+                                                </form>
+                                            @endfor
+                                            @if($availableBudget <= 0)
+                                            <p class="text-xs text-amber-600">{{ __('finances.upgrade_insufficient_budget') }}</p>
+                                            @endif
+                                        </div>
+                                        @endif
                                     </div>
                                     @endforeach
                                 </div>

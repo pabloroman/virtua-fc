@@ -72,6 +72,13 @@ return [
     'budget_exceeds_surplus' => 'La asignación total supera el superávit disponible.',
     'budget_minimum_tier' => 'Todas las áreas de infraestructura deben ser al menos Nivel 1.',
 
+    // Infrastructure upgrades
+    'infrastructure_upgraded' => ':area mejorada a Nivel :tier.',
+    'infrastructure_upgrade_invalid_area' => 'Área de infraestructura no válida.',
+    'infrastructure_upgrade_not_higher' => 'El nivel objetivo debe ser superior al actual.',
+    'infrastructure_upgrade_max_tier' => 'El nivel máximo es 4.',
+    'infrastructure_upgrade_insufficient_budget' => 'Presupuesto de fichajes insuficiente. La mejora cuesta :cost.',
+
     // Onboarding
     'welcome_to_team' => '¡Bienvenido :team_a! Tu temporada te espera.',
 

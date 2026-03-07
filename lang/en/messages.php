@@ -72,6 +72,13 @@ return [
     'budget_exceeds_surplus' => 'Total allocation exceeds available surplus.',
     'budget_minimum_tier' => 'All infrastructure areas must be at least Tier 1.',
 
+    // Infrastructure upgrades
+    'infrastructure_upgraded' => ':area upgraded to Tier :tier.',
+    'infrastructure_upgrade_invalid_area' => 'Invalid infrastructure area.',
+    'infrastructure_upgrade_not_higher' => 'Target tier must be higher than current tier.',
+    'infrastructure_upgrade_max_tier' => 'Maximum tier is 4.',
+    'infrastructure_upgrade_insufficient_budget' => 'Insufficient transfer budget. Upgrade costs :cost.',
+
     // Onboarding
     'welcome_to_team' => 'Welcome :team_a! Your season awaits.',
 
