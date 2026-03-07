@@ -835,23 +835,6 @@ class ScoutingService
     // =========================================
 
     /**
-     * Get surface-level data for a shortlisted player (intel level 0).
-     */
-    public function getPlayerSurfaceDetail(GamePlayer $player, Game $game): array
-    {
-        $isFreeAgent = $player->team_id === null;
-
-        return [
-            'player' => $player,
-            'is_free_agent' => $isFreeAgent,
-            'market_value' => $player->market_value_cents,
-            'formatted_market_value' => Money::format($player->market_value_cents),
-            'contract_until' => $player->contract_until?->format('Y'),
-            'is_expiring' => $player->contract_until && $player->contract_until <= $game->getSeasonEndDate(),
-        ];
-    }
-
-    /**
      * Get tracking capacity info for a game.
      *
      * @return array{max_slots: int, used_slots: int, available_slots: int}
@@ -901,6 +884,16 @@ class ScoutingService
     }
 
     /**
+     * Check if the search history is full.
+     */
+    public function isSearchHistoryFull(Game $game): bool
+    {
+        return ScoutReport::where('game_id', $game->id)
+            ->whereIn('status', [ScoutReport::STATUS_SEARCHING, ScoutReport::STATUS_COMPLETED])
+            ->count() >= self::MAX_SEARCH_HISTORY;
+    }
+
+    /**
      * Stop tracking a shortlisted player (retains gathered intel).
      */
     public function stopTracking(ShortlistedPlayer $entry): void
@@ -922,21 +915,23 @@ class ScoutingService
         $trackedEntries = ShortlistedPlayer::where('game_id', $game->id)
             ->where('is_tracking', true)
             ->where('intel_level', '<', ShortlistedPlayer::INTEL_DEEP)
+            ->with('gamePlayer')
             ->get();
 
         $leveledUp = collect();
 
         foreach ($trackedEntries as $entry) {
-            $entry->increment('matchdays_tracked');
-            $newMatchdays = $entry->matchdays_tracked;
+            $newMatchdays = $entry->matchdays_tracked + 1;
             $oldLevel = $entry->intel_level;
 
             if ($newMatchdays >= $matchdaysToL2 && $oldLevel < ShortlistedPlayer::INTEL_DEEP) {
-                $entry->update(['intel_level' => ShortlistedPlayer::INTEL_DEEP, 'is_tracking' => false]);
+                $entry->update(['matchdays_tracked' => $newMatchdays, 'intel_level' => ShortlistedPlayer::INTEL_DEEP, 'is_tracking' => false]);
                 $leveledUp->push($entry);
             } elseif ($newMatchdays >= $matchdaysToL1 && $oldLevel < ShortlistedPlayer::INTEL_REPORT) {
-                $entry->update(['intel_level' => ShortlistedPlayer::INTEL_REPORT]);
+                $entry->update(['matchdays_tracked' => $newMatchdays, 'intel_level' => ShortlistedPlayer::INTEL_REPORT]);
                 $leveledUp->push($entry);
+            } else {
+                $entry->update(['matchdays_tracked' => $newMatchdays]);
             }
         }
 
@@ -948,9 +943,9 @@ class ScoutingService
      *
      * @return array{score: int, label: string}
      */
-    public function calculateWillingness(GamePlayer $player, Game $game): array
+    public function calculateWillingness(GamePlayer $player, Game $game, ?float $importance = null): array
     {
-        $importance = $this->calculatePlayerImportance($player);
+        $importance ??= $this->calculatePlayerImportance($player);
 
         // Base willingness: low importance players are more willing
         $score = (int) ((1.0 - $importance) * 50);
@@ -999,10 +994,10 @@ class ScoutingService
     /**
      * Calculate whether rival clubs are also interested in a player.
      */
-    public function calculateRivalInterest(GamePlayer $player): bool
+    public function calculateRivalInterest(GamePlayer $player, ?float $importance = null): bool
     {
         $overallAbility = ($player->current_technical_ability + $player->current_physical_ability) / 2;
-        $importance = $this->calculatePlayerImportance($player);
+        $importance ??= $this->calculatePlayerImportance($player);
 
         // Higher ability + lower importance = more likely rivals want them
         $chance = ($overallAbility / 99) * 0.4 + (1.0 - $importance) * 0.3;

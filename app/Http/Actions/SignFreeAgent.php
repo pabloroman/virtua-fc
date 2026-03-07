@@ -66,9 +66,7 @@ class SignFreeAgent
         ]);
 
         // Remove from shortlist to free up scouting slot
-        ShortlistedPlayer::where('game_id', $game->id)
-            ->where('game_player_id', $player->id)
-            ->delete();
+        ShortlistedPlayer::removeForPlayer($game->id, $player->id);
 
         return redirect()->route('game.transfers', $gameId)
             ->with('success', __('messages.free_agent_signed', ['player' => $player->name]));

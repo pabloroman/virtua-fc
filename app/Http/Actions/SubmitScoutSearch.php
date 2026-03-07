@@ -3,7 +3,6 @@
 namespace App\Http\Actions;
 
 use App\Models\Game;
-use App\Models\ScoutReport;
 use App\Modules\Transfer\Services\ScoutingService;
 use Illuminate\Http\Request;
 
@@ -25,10 +24,7 @@ class SubmitScoutSearch
         }
 
         // Check search history cap
-        $historyCount = ScoutReport::where('game_id', $gameId)
-            ->whereIn('status', [ScoutReport::STATUS_SEARCHING, ScoutReport::STATUS_COMPLETED])
-            ->count();
-        if ($historyCount >= ScoutingService::MAX_SEARCH_HISTORY) {
+        if ($this->scoutingService->isSearchHistoryFull($game)) {
             return redirect()->route('game.scouting', $gameId)
                 ->with('error', __('messages.scout_search_limit', ['max' => ScoutingService::MAX_SEARCH_HISTORY]));
         }

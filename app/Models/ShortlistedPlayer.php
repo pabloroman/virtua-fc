@@ -52,8 +52,13 @@ class ShortlistedPlayer extends Model
         return $this->intel_level >= self::INTEL_DEEP;
     }
 
-    public function canBid(): bool
+    /**
+     * Remove a player from the shortlist (frees tracking slot).
+     */
+    public static function removeForPlayer(string $gameId, string $playerId): void
     {
-        return $this->intel_level >= self::INTEL_REPORT;
+        static::where('game_id', $gameId)
+            ->where('game_player_id', $playerId)
+            ->delete();
     }
 }

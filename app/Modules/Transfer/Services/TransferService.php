@@ -809,9 +809,7 @@ class TransferService
         $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
 
         // Remove from shortlist to free up scouting slot
-        ShortlistedPlayer::where('game_id', $game->id)
-            ->where('game_player_id', $player->id)
-            ->delete();
+        ShortlistedPlayer::removeForPlayer($game->id, $player->id);
     }
 
     /**
@@ -1200,9 +1198,7 @@ class TransferService
         $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
 
         // Remove from shortlist to free up scouting slot
-        ShortlistedPlayer::where('game_id', $game->id)
-            ->where('game_player_id', $player->id)
-            ->delete();
+        ShortlistedPlayer::removeForPlayer($game->id, $player->id);
     }
 
     /**
@@ -1249,9 +1245,7 @@ class TransferService
         $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
 
         // Remove from shortlist to free up scouting slot
-        ShortlistedPlayer::where('game_id', $game->id)
-            ->where('game_player_id', $player->id)
-            ->delete();
+        ShortlistedPlayer::removeForPlayer($game->id, $player->id);
     }
 
     /**

@@ -83,6 +83,13 @@ class ShowScoutingHub
         // Check existing offers for shortlisted players (map player_id => status details)
         $existingOfferStatuses = TransferOffer::getOfferStatusesForPlayers($gameId, $shortlistedPlayerIds);
 
+        // Pre-load team rosters for all shortlisted players' teams (avoids N+1 in calculatePlayerImportance)
+        $teamIds = collect($shortlistedPlayers)->pluck('gamePlayer.team_id')->filter()->unique();
+        $teamRosters = GamePlayer::where('game_id', $gameId)
+            ->whereIn('team_id', $teamIds)
+            ->get()
+            ->groupBy('team_id');
+
         // Build JSON-serializable shortlist data for Alpine.js
         $shortlistData = [];
         foreach ($shortlistedPlayers as $item) {
@@ -140,10 +147,12 @@ class ShowScoutingHub
 
             // Level 2: unlock willingness and rival interest
             if ($entry->hasDeepIntel()) {
-                $willingness = $this->scoutingService->calculateWillingness($gp, $game);
+                $teammates = $teamRosters->get($gp->team_id, collect());
+                $importance = $this->scoutingService->calculatePlayerImportance($gp, $teammates);
+                $willingness = $this->scoutingService->calculateWillingness($gp, $game, $importance);
                 $playerData['willingness'] = $willingness['label'];
                 $playerData['willingnessLabel'] = __('transfers.willingness_' . $willingness['label']);
-                $playerData['rivalInterest'] = $this->scoutingService->calculateRivalInterest($gp);
+                $playerData['rivalInterest'] = $this->scoutingService->calculateRivalInterest($gp, $importance);
             }
 
             $shortlistData[] = $playerData;

@@ -22,16 +22,18 @@ class ShowExplore
             ->distinct()
             ->pluck('competition_id');
 
+        $teamCounts = CompetitionEntry::where('game_id', $gameId)
+            ->whereIn('competition_id', $competitionIds)
+            ->selectRaw('competition_id, count(*) as team_count')
+            ->groupBy('competition_id')
+            ->pluck('team_count', 'competition_id');
+
         $competitions = Competition::whereIn('id', $competitionIds)
             ->where('role', Competition::ROLE_LEAGUE)
             ->where('scope', Competition::SCOPE_DOMESTIC)
             ->orderBy('country')
             ->get()
-            ->map(function (Competition $comp) use ($gameId, $game) {
-                $teamCount = CompetitionEntry::where('game_id', $gameId)
-                    ->where('competition_id', $comp->id)
-                    ->count();
-
+            ->map(function (Competition $comp) use ($teamCounts) {
                 return [
                     'id' => $comp->id,
                     'name' => __($comp->name),
@@ -39,7 +41,7 @@ class ShowExplore
                     'flag' => $comp->flag,
                     'tier' => $comp->tier,
                     'scope' => $comp->scope,
-                    'teamCount' => $teamCount,
+                    'teamCount' => $teamCounts->get($comp->id, 0),
                 ];
             })
             ->filter(fn ($c) => $c['teamCount'] > 0)

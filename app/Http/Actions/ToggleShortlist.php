@@ -36,7 +36,6 @@ class ToggleShortlist
                 return response()->json([
                     'success' => false,
                     'message' => $message,
-                    'trackingCapacity' => $this->scoutingService->getTrackingCapacity($game),
                 ], 422);
             }
 

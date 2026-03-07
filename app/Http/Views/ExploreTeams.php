@@ -19,7 +19,6 @@ class ExploreTeams
             ->pluck('team_id');
 
         $teams = Team::whereIn('id', $teamIds)
-            ->with('clubProfile')
             ->orderBy('name')
             ->get()
             ->map(fn (Team $team) => [

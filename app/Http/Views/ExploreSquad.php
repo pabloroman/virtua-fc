@@ -2,6 +2,7 @@
 
 namespace App\Http\Views;
 
+use App\Models\CompetitionEntry;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\Loan;
@@ -16,6 +17,12 @@ class ExploreSquad
     {
         $game = Game::findOrFail($gameId);
         abort_if($game->isTournamentMode(), 404);
+
+        // Validate team belongs to this game
+        $teamInGame = CompetitionEntry::where('game_id', $gameId)
+            ->where('team_id', $teamId)
+            ->exists();
+        abort_unless($teamInGame, 404);
 
         $team = Team::findOrFail($teamId);
 
