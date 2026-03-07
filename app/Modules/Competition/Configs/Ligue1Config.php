@@ -3,10 +3,11 @@
 namespace App\Modules\Competition\Configs;
 
 use App\Modules\Competition\Contracts\CompetitionConfig;
+use App\Modules\Competition\Contracts\HasSeasonGoals;
 use App\Models\ClubProfile;
 use App\Models\Game;
 
-class Ligue1Config implements CompetitionConfig
+class Ligue1Config implements CompetitionConfig, HasSeasonGoals
 {
     /**
      * Ligue 1 TV revenue by position (in cents).

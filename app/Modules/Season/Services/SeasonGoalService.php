@@ -2,10 +2,10 @@
 
 namespace App\Modules\Season\Services;
 
-use App\Models\ClubProfile;
 use App\Models\Competition;
 use App\Models\Game;
 use App\Models\Team;
+use App\Modules\Competition\Contracts\HasSeasonGoals;
 
 class SeasonGoalService
 {
@@ -14,8 +14,13 @@ class SeasonGoalService
      */
     public function determineGoalForTeam(Team $team, Competition $competition): string
     {
-        $reputation = $team->clubProfile->reputation_level ?? ClubProfile::REPUTATION_MODEST;
         $config = $competition->getConfig();
+
+        if (!$config instanceof HasSeasonGoals) {
+            return Game::GOAL_TOP_HALF;
+        }
+
+        $reputation = $team->clubProfile->reputation_level ?? 'modest';
 
         return $config->getSeasonGoal($reputation);
     }
@@ -27,6 +32,10 @@ class SeasonGoalService
     {
         $config = $competition->getConfig();
 
+        if (!$config instanceof HasSeasonGoals) {
+            return 10;
+        }
+
         return $config->getGoalTargetPosition($goal);
     }
 
@@ -36,6 +45,11 @@ class SeasonGoalService
     public function getGoalLabel(string $goal, Competition $competition): string
     {
         $config = $competition->getConfig();
+
+        if (!$config instanceof HasSeasonGoals) {
+            return 'game.goal_top_half';
+        }
+
         $goals = $config->getAvailableGoals();
 
         return $goals[$goal]['label'] ?? 'game.goal_top_half';
@@ -104,20 +118,5 @@ class SeasonGoalService
             'achieved' => $achieved,
             'positionDiff' => $positionDiff,
         ];
-    }
-
-    /**
-     * Get all available goals for a competition with their details.
-     */
-    public function getAvailableGoals(Competition $competition): array
-    {
-        $config = $competition->getConfig();
-        $goals = $config->getAvailableGoals();
-
-        return array_map(fn ($key, $data) => [
-            'key' => $key,
-            'label' => __($data['label']),
-            'targetPosition' => $data['targetPosition'],
-        ], array_keys($goals), $goals);
     }
 }

@@ -3,10 +3,11 @@
 namespace App\Modules\Competition\Configs;
 
 use App\Modules\Competition\Contracts\CompetitionConfig;
+use App\Modules\Competition\Contracts\HasSeasonGoals;
 use App\Models\ClubProfile;
 use App\Models\Game;
 
-class BundesligaConfig implements CompetitionConfig
+class BundesligaConfig implements CompetitionConfig, HasSeasonGoals
 {
     /**
      * Bundesliga TV revenue by position (in cents).

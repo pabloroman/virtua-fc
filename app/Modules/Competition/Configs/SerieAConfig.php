@@ -3,10 +3,11 @@
 namespace App\Modules\Competition\Configs;
 
 use App\Modules\Competition\Contracts\CompetitionConfig;
+use App\Modules\Competition\Contracts\HasSeasonGoals;
 use App\Models\ClubProfile;
 use App\Models\Game;
 
-class SerieAConfig implements CompetitionConfig
+class SerieAConfig implements CompetitionConfig, HasSeasonGoals
 {
     /**
      * Serie A TV revenue by position (in cents).

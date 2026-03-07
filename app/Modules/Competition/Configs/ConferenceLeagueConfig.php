@@ -3,8 +3,6 @@
 namespace App\Modules\Competition\Configs;
 
 use App\Modules\Competition\Contracts\CompetitionConfig;
-use App\Models\ClubProfile;
-use App\Models\Game;
 
 class ConferenceLeagueConfig implements CompetitionConfig
 {
@@ -38,23 +36,6 @@ class ConferenceLeagueConfig implements CompetitionConfig
         }
 
         return 0.90;
-    }
-
-    public function getSeasonGoal(string $reputation): string
-    {
-        return Game::GOAL_EUROPA_LEAGUE;
-    }
-
-    public function getGoalTargetPosition(string $goal): int
-    {
-        return 8;
-    }
-
-    public function getAvailableGoals(): array
-    {
-        return [
-            Game::GOAL_EUROPA_LEAGUE => ['targetPosition' => 8, 'label' => 'game.goal_uecl_knockout'],
-        ];
     }
 
     public function getTopScorerAwardName(): string

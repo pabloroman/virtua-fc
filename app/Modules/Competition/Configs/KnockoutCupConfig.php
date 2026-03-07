@@ -3,7 +3,6 @@
 namespace App\Modules\Competition\Configs;
 
 use App\Modules\Competition\Contracts\CompetitionConfig;
-use App\Models\Game;
 
 class KnockoutCupConfig implements CompetitionConfig
 {
@@ -27,21 +26,6 @@ class KnockoutCupConfig implements CompetitionConfig
     public function getPositionFactor(int $position): float
     {
         return 1.0;
-    }
-
-    public function getSeasonGoal(string $reputation): string
-    {
-        return Game::GOAL_TOP_HALF;
-    }
-
-    public function getGoalTargetPosition(string $goal): int
-    {
-        return 1;
-    }
-
-    public function getAvailableGoals(): array
-    {
-        return [];
     }
 
     public function getTopScorerAwardName(): string

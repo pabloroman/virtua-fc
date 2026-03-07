@@ -3,6 +3,7 @@
 namespace App\Modules\Competition\Configs;
 
 use App\Modules\Competition\Contracts\CompetitionConfig;
+use App\Modules\Competition\Contracts\HasSeasonGoals;
 use App\Models\ClubProfile;
 use App\Models\Game;
 
@@ -10,7 +11,7 @@ use App\Models\Game;
  * Default configuration for leagues without specific config.
  * Scales TV revenue based on position and number of teams.
  */
-class DefaultLeagueConfig implements CompetitionConfig
+class DefaultLeagueConfig implements CompetitionConfig, HasSeasonGoals
 {
     private int $numTeams;
     private int $baseTvRevenue;

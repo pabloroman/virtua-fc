@@ -3,10 +3,11 @@
 namespace App\Modules\Competition\Configs;
 
 use App\Modules\Competition\Contracts\CompetitionConfig;
+use App\Modules\Competition\Contracts\HasSeasonGoals;
 use App\Models\ClubProfile;
 use App\Models\Game;
 
-class LaLigaConfig implements CompetitionConfig
+class LaLigaConfig implements CompetitionConfig, HasSeasonGoals
 {
     /**
      * La Liga TV revenue by position (in cents).

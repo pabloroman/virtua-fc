@@ -3,8 +3,6 @@
 namespace App\Modules\Competition\Configs;
 
 use App\Modules\Competition\Contracts\CompetitionConfig;
-use App\Models\ClubProfile;
-use App\Models\Game;
 
 class ChampionsLeagueConfig implements CompetitionConfig
 {
@@ -62,18 +60,6 @@ class ChampionsLeagueConfig implements CompetitionConfig
         36 => 900_000_000,     // €9M
     ];
 
-    private const SEASON_GOALS = [
-        Game::GOAL_TITLE => ['targetPosition' => 1, 'label' => 'game.goal_ucl_title'],
-        Game::GOAL_CHAMPIONS_LEAGUE => ['targetPosition' => 8, 'label' => 'game.goal_ucl_knockout'],
-    ];
-
-    private const REPUTATION_TO_GOAL = [
-        ClubProfile::REPUTATION_ELITE => Game::GOAL_TITLE,
-        ClubProfile::REPUTATION_CONTINENTAL => Game::GOAL_CHAMPIONS_LEAGUE,
-        ClubProfile::REPUTATION_ESTABLISHED => Game::GOAL_CHAMPIONS_LEAGUE,
-        ClubProfile::REPUTATION_MODEST => Game::GOAL_CHAMPIONS_LEAGUE,
-    ];
-
     public function getTvRevenue(int $position): int
     {
         return self::TV_REVENUE[$position] ?? self::TV_REVENUE[36];
@@ -89,21 +75,6 @@ class ChampionsLeagueConfig implements CompetitionConfig
         }
 
         return 0.95;
-    }
-
-    public function getSeasonGoal(string $reputation): string
-    {
-        return self::REPUTATION_TO_GOAL[$reputation] ?? Game::GOAL_CHAMPIONS_LEAGUE;
-    }
-
-    public function getGoalTargetPosition(string $goal): int
-    {
-        return self::SEASON_GOALS[$goal]['targetPosition'] ?? 8;
-    }
-
-    public function getAvailableGoals(): array
-    {
-        return self::SEASON_GOALS;
     }
 
     public function getTopScorerAwardName(): string

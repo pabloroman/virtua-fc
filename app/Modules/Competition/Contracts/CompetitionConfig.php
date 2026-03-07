@@ -21,29 +21,6 @@ interface CompetitionConfig
     public function getPositionFactor(int $position): float;
 
     /**
-     * Get the season goal for a team based on reputation level.
-     *
-     * @param string $reputation One of ClubProfile::REPUTATION_* constants
-     * @return string One of Game::GOAL_* constants
-     */
-    public function getSeasonGoal(string $reputation): string;
-
-    /**
-     * Get the target position for achieving a season goal.
-     *
-     * @param string $goal One of Game::GOAL_* constants
-     * @return int The target position (finish at or above)
-     */
-    public function getGoalTargetPosition(string $goal): int;
-
-    /**
-     * Get the available season goals for this competition.
-     *
-     * @return array<string, array{targetPosition: int, label: string}>
-     */
-    public function getAvailableGoals(): array;
-
-    /**
      * Get the translation key for the top scorer award name.
      * E.g., 'season.pichichi' for La Liga, 'season.top_scorer' for generic leagues.
      */
