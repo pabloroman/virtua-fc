@@ -75,18 +75,16 @@ class MatchResultProcessor
         $this->batchServeSuspensions($matches, $matchResults, $preLoadedPlayerIds);
 
         // 4. Bulk insert all match events across all matches
-        // Exclude auto-substitution events for the user's team in the deferred match —
-        // the user should decide their own substitutions during the live match.
-        $this->bulkInsertMatchEvents($gameId, $matchResults, $deferMatchId, $game->team_id);
+        $this->bulkInsertMatchEvents($gameId, $matchResults);
 
         // 5. Batch process player stats across all matches
         $this->batchProcessPlayerStats($game, $matchResults, $matches, $competitions, $deferMatchId);
 
         // 6. Bulk update appearances across all matches (including auto-subbed-in players)
-        $this->bulkUpdateAppearances($matches, $matchResults, $deferMatchId, $game->team_id);
+        $this->bulkUpdateAppearances($matches, $matchResults);
 
         // 6b. Record auto-substitutions in match substitutions JSON
-        $this->recordAutoSubstitutions($matches, $matchResults, $deferMatchId, $game->team_id);
+        $this->recordAutoSubstitutions($matches, $matchResults);
 
         // 7. Batch update conditions for all matches
         $this->batchUpdateConditions($matches, $matchResults, $allPlayers ?? collect(), $previousDate);
@@ -187,25 +185,14 @@ class MatchResultProcessor
 
     /**
      * Bulk insert all match events across ALL matches in one chunked insert.
-     *
-     * Skips auto-substitution events for the user's team in the deferred match,
-     * since the user should make their own substitution decisions during the live match.
      */
-    private function bulkInsertMatchEvents(string $gameId, array $matchResults, ?string $deferMatchId = null, ?string $userTeamId = null): void
+    private function bulkInsertMatchEvents(string $gameId, array $matchResults): void
     {
         $now = now();
         $allRows = [];
 
         foreach ($matchResults as $result) {
             foreach ($result['events'] as $eventData) {
-                // Skip auto-substitution events for the user's team in the deferred match
-                if ($deferMatchId && $userTeamId
-                    && $result['matchId'] === $deferMatchId
-                    && $eventData['event_type'] === 'substitution'
-                    && $eventData['team_id'] === $userTeamId) {
-                    continue;
-                }
-
                 $allRows[] = [
                     'id' => Str::uuid()->toString(),
                     'game_id' => $gameId,
@@ -436,10 +423,8 @@ class MatchResultProcessor
 
     /**
      * Bulk update appearances — 1 query for all lineup + auto-subbed-in players across all matches.
-     *
-     * Skips auto-subbed-in players for the user's team in the deferred match.
      */
-    private function bulkUpdateAppearances($matches, array $matchResults, ?string $deferMatchId = null, ?string $userTeamId = null): void
+    private function bulkUpdateAppearances($matches, array $matchResults): void
     {
         $allLineupIds = [];
         foreach ($matches as $match) {
@@ -450,13 +435,6 @@ class MatchResultProcessor
         foreach ($matchResults as $result) {
             foreach ($result['events'] as $eventData) {
                 if ($eventData['event_type'] === 'substitution' && isset($eventData['metadata']['player_in_id'])) {
-                    // Skip auto-subbed-in players for the user's team in the deferred match
-                    if ($deferMatchId && $userTeamId
-                        && $result['matchId'] === $deferMatchId
-                        && $eventData['team_id'] === $userTeamId) {
-                        continue;
-                    }
-
                     $allLineupIds[] = $eventData['metadata']['player_in_id'];
                 }
             }
@@ -474,22 +452,13 @@ class MatchResultProcessor
 
     /**
      * Record auto-substitutions from match simulation in each match's substitutions JSON column.
-     *
-     * Skips the user's team in the deferred match — they make their own subs live.
      */
-    private function recordAutoSubstitutions($matches, array $matchResults, ?string $deferMatchId = null, ?string $userTeamId = null): void
+    private function recordAutoSubstitutions($matches, array $matchResults): void
     {
         foreach ($matchResults as $result) {
             $autoSubs = [];
             foreach ($result['events'] as $eventData) {
                 if ($eventData['event_type'] === 'substitution' && isset($eventData['metadata']['player_in_id'])) {
-                    // Skip auto-substitutions for the user's team in the deferred match
-                    if ($deferMatchId && $userTeamId
-                        && $result['matchId'] === $deferMatchId
-                        && $eventData['team_id'] === $userTeamId) {
-                        continue;
-                    }
-
                     $autoSubs[] = [
                         'team_id' => $eventData['team_id'],
                         'player_out_id' => $eventData['game_player_id'],
