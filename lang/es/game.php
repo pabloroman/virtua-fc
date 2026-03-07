@@ -367,4 +367,10 @@ return [
     'goal_ucl_knockout' => 'Pasar a fase eliminatoria',
     'goal_uel_knockout' => 'Pasar a fase eliminatoria',
     'goal_uecl_knockout' => 'Pasar a fase eliminatoria',
+
+    // Team selection indicators
+    'team_strength' => 'Nivel del equipo',
+    'budget_high' => 'Presupuesto alto',
+    'budget_mid' => 'Presupuesto medio',
+    'budget_low' => 'Presupuesto bajo',
 ];

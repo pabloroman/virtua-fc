@@ -367,4 +367,10 @@ return [
     'goal_ucl_knockout' => 'Advance to knockout phase',
     'goal_uel_knockout' => 'Advance to knockout phase',
     'goal_uecl_knockout' => 'Advance to knockout phase',
+
+    // Team selection indicators
+    'team_strength' => 'Team strength',
+    'budget_high' => 'High budget',
+    'budget_mid' => 'Mid budget',
+    'budget_low' => 'Low budget',
 ];

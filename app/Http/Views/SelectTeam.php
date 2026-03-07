@@ -24,7 +24,7 @@ final class SelectTeam
             $tiers = [];
 
             foreach ($config['tiers'] as $tier => $tierConfig) {
-                $competition = Competition::with('teams')
+                $competition = Competition::with('teams.clubProfile')
                     ->find($tierConfig['competition']);
 
                 if ($competition) {

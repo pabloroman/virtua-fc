@@ -108,10 +108,52 @@
                                         <div x-show="openTab === '{{ $competition->id }}'">
                                             <div class="grid lg:grid-cols-4 md:grid-cols-2 gap-2 mt-4">
                                                 @foreach($competition->teams as $team)
-                                                    <label class="border text-slate-700 has-[:checked]:ring-sky-200 has-[:checked]:text-sky-900 has-[:checked]:bg-sky-100 grid grid-cols-[40px_1fr_auto] items-center gap-4 rounded-lg p-4 ring-1 ring-transparent hover:bg-sky-50">
-                                                        <x-team-crest :team="$team" class="w-10 h-10" />
-                                                        <span class="text-[20px]">{{ $team->name }}</span>
-                                                        <input x-bind:required="mode === 'career'" x-bind:disabled="mode !== 'career'" type="radio" name="team_id" value="{{ $team->id }}" class="hidden appearance-none rounded-full border-[5px] border-white bg-white bg-clip-padding outline-none ring-1 ring-gray-950/10 checked:border-sky-600 checked:ring-sky-600 focus:outline-none">
+                                                    @php
+                                                        $reputation = $team->clubProfile?->reputation_level ?? 'local';
+                                                        $stars = match($reputation) {
+                                                            'elite' => 5,
+                                                            'contenders' => 4.5,
+                                                            'continental' => 4,
+                                                            'established' => 3,
+                                                            'modest' => 2.5,
+                                                            'professional' => 2,
+                                                            'local' => 1.5,
+                                                        };
+                                                        $budgetCategory = match($reputation) {
+                                                            'elite', 'contenders' => 'high',
+                                                            'continental', 'established' => 'mid',
+                                                            default => 'low',
+                                                        };
+                                                        $budgetColors = match($budgetCategory) {
+                                                            'high' => 'bg-emerald-100 text-emerald-700',
+                                                            'mid' => 'bg-amber-100 text-amber-700',
+                                                            'low' => 'bg-slate-100 text-slate-600',
+                                                        };
+                                                    @endphp
+                                                    <label class="border text-slate-700 has-[:checked]:ring-sky-200 has-[:checked]:text-sky-900 has-[:checked]:bg-sky-100 flex flex-col gap-2 rounded-lg p-4 ring-1 ring-transparent hover:bg-sky-50 cursor-pointer">
+                                                        <div class="flex items-center gap-3">
+                                                            <x-team-crest :team="$team" class="w-10 h-10 shrink-0" />
+                                                            <span class="text-[20px] truncate">{{ $team->name }}</span>
+                                                            <input x-bind:required="mode === 'career'" x-bind:disabled="mode !== 'career'" type="radio" name="team_id" value="{{ $team->id }}" class="hidden appearance-none rounded-full border-[5px] border-white bg-white bg-clip-padding outline-none ring-1 ring-gray-950/10 checked:border-sky-600 checked:ring-sky-600 focus:outline-none">
+                                                        </div>
+                                                        <div class="flex items-center justify-between gap-2">
+                                                            {{-- Star rating --}}
+                                                            <div class="flex items-center gap-0.5" title="{{ __('game.team_strength') }}">
+                                                                @for($i = 1; $i <= 5; $i++)
+                                                                    @if($i <= floor($stars))
+                                                                        <svg class="w-3.5 h-3.5 text-amber-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd" /></svg>
+                                                                    @elseif($i - 0.5 == $stars)
+                                                                        <svg class="w-3.5 h-3.5 text-amber-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><defs><linearGradient id="half-star-{{ $team->id }}"><stop offset="50%" stop-color="currentColor"/><stop offset="50%" stop-color="#d1d5db"/></linearGradient></defs><path fill="url(#half-star-{{ $team->id }})" fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd" /></svg>
+                                                                    @else
+                                                                        <svg class="w-3.5 h-3.5 text-gray-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd" /></svg>
+                                                                    @endif
+                                                                @endfor
+                                                            </div>
+                                                            {{-- Budget indicator --}}
+                                                            <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-full {{ $budgetColors }}">
+                                                                {{ __('game.budget_' . $budgetCategory) }}
+                                                            </span>
+                                                        </div>
                                                     </label>
                                                 @endforeach
                                             </div>
