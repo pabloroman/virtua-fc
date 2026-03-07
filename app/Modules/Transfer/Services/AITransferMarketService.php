@@ -438,9 +438,9 @@ class AITransferMarketService
         }
 
         // Aging player
-        if ($player->age >= 33) {
+        if ($player->age >= 35) {
             $score += 3;
-        } elseif ($player->age >= 30) {
+        } elseif ($player->age >= 32) {
             $score += 2;
         }
 

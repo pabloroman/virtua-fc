@@ -154,14 +154,14 @@ class PlayerDevelopmentService
             $basePotentialRange = rand(4, 12);
             $potentialRange = $basePotentialRange + (int) ($valueBonus * 0.6);
             $uncertainty = rand(4, 7);
-        } elseif ($age <= 28) {
+        } elseif ($age <= 31) {
             // Peak players: small potential margin
             // Base range 0-5, plus small value bonus
             $basePotentialRange = rand(0, 5);
             $potentialRange = $basePotentialRange + (int) ($valueBonus * 0.3);
             $uncertainty = rand(2, 4);
         } else {
-            // Veterans (29+): potential reflects proven quality
+            // Veterans (32+): potential reflects proven quality
             // Exceptional market value = they've proven their ceiling
             $potentialRange = $this->getVeteranPotentialBonus($age, $currentAbility, $marketValueCents);
             $uncertainty = 2; // Low uncertainty - we know what they can do
@@ -234,9 +234,9 @@ class PlayerDevelopmentService
     {
         // Typical market value for veterans
         $typicalValueForAge = match (true) {
-            $age <= 31 => 800_000_000,   // €8M
-            $age <= 33 => 400_000_000,   // €4M
-            $age <= 35 => 200_000_000,   // €2M
+            $age <= 33 => 800_000_000,   // €8M
+            $age <= 35 => 400_000_000,   // €4M
+            $age <= 37 => 200_000_000,   // €2M
             default => 100_000_000,       // €1M
         };
 

@@ -93,11 +93,10 @@ class PlayerValuationService
             $age <= 21 => 1.5,
             $age <= 23 => 1.3,
             $age <= 26 => 1.1,
-            $age <= 28 => 1.0,
-            $age <= 30 => 0.85,
-            $age <= 32 => 0.65,
-            $age <= 34 => 0.45,
-            $age <= 36 => 0.30,
+            $age <= 31 => 1.0,
+            $age <= 33 => 0.75,
+            $age <= 35 => 0.45,
+            $age <= 37 => 0.30,
             default => 0.15,
         };
 
@@ -177,15 +176,15 @@ class PlayerValuationService
             return min($rawAbility, $ageCap);
         }
 
-        if ($age <= 30) {
+        if ($age <= 31) {
             return $rawAbility;
         }
 
         // Veterans: boost ability if market value proves they're still elite
         $typicalValueForAge = match (true) {
-            $age <= 32 => 500_000_000,   // €5M
-            $age <= 34 => 300_000_000,   // €3M
-            $age <= 36 => 150_000_000,   // €1.5M
+            $age <= 33 => 500_000_000,   // €5M
+            $age <= 35 => 300_000_000,   // €3M
+            $age <= 37 => 150_000_000,   // €1.5M
             default => 80_000_000,        // €800K
         };
 

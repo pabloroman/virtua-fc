@@ -1150,7 +1150,7 @@ class TransferService
 
         // Transfer player to user's team
         $age = $player->age;
-        $contractYears = $age >= 33 ? 2 : ($age >= 30 ? 3 : rand(3, 5));
+        $contractYears = $age >= 35 ? 2 : ($age >= 32 ? 3 : rand(3, 5));
         $newContractEnd = Carbon::parse($game->current_date)->addYears($contractYears);
 
         $player->update([

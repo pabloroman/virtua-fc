@@ -18,19 +18,6 @@ use App\Modules\Transfer\Services\ContractService;
 class ScoutingService
 {
     /**
-     * Reputation tiers ordered from lowest to highest.
-     */
-    private const REPUTATION_TIERS = [
-        ClubProfile::REPUTATION_LOCAL,        // 0
-        ClubProfile::REPUTATION_PROFESSIONAL, // 1
-        ClubProfile::REPUTATION_MODEST,       // 2
-        ClubProfile::REPUTATION_ESTABLISHED,  // 3
-        ClubProfile::REPUTATION_CONTINENTAL,  // 4
-        ClubProfile::REPUTATION_CONTENDERS,   // 5
-        ClubProfile::REPUTATION_ELITE,        // 6
-    ];
-
-    /**
      * Acceptance probability modifiers based on reputation gap (source - offering).
      * Gap ≤ 0 means moving up or lateral → no penalty.
      */
@@ -516,11 +503,11 @@ class ScoutingService
         if ($age < 23) {
             return 1.15;
         }
-        if ($age <= 29) {
+        if ($age <= 31) {
             return 1.0;
         }
 
-        return max(0.5, 1.0 - ($age - 29) * 0.05);
+        return max(0.5, 1.0 - ($age - 31) * 0.05);
     }
 
     // =========================================
@@ -615,8 +602,19 @@ class ScoutingService
      *
      * @return array{result: string, message: string}
      */
-    public function evaluateLoanRequest(GamePlayer $player): array
+    public function evaluateLoanRequest(GamePlayer $player, ?Game $game = null): array
     {
+        // Reputation gate: player may refuse to join a lower-reputation club
+        if ($game) {
+            $reputationModifier = $this->calculateReputationModifier($game->team, $player);
+            if ($reputationModifier < 1.0 && rand(1, 100) > (int) ($reputationModifier * 100)) {
+                return [
+                    'result' => 'rejected',
+                    'message' => __('transfers.loan_rejected_not_interested', ['player' => $player->name]),
+                ];
+            }
+        }
+
         $importance = $this->calculatePlayerImportance($player);
 
         if ($importance > 0.7) {
@@ -702,16 +700,6 @@ class ScoutingService
     // =========================================
 
     /**
-     * Get the numeric index of a reputation level (0 = local, 6 = elite).
-     */
-    public function getReputationIndex(string $reputationLevel): int
-    {
-        $index = array_search($reputationLevel, self::REPUTATION_TIERS, true);
-
-        return $index !== false ? $index : 0;
-    }
-
-    /**
      * Calculate the acceptance probability modifier based on reputation gap.
      * Compares the player's current team reputation to the bidding team's reputation.
      *
@@ -727,8 +715,8 @@ class ScoutingService
         $sourceReputation = $player->team?->clubProfile?->reputation_level ?? ClubProfile::REPUTATION_LOCAL;
         $offeringReputation = $biddingTeam->clubProfile?->reputation_level ?? ClubProfile::REPUTATION_LOCAL;
 
-        $sourceIndex = $this->getReputationIndex($sourceReputation);
-        $offeringIndex = $this->getReputationIndex($offeringReputation);
+        $sourceIndex = ClubProfile::getReputationTierIndex($sourceReputation);
+        $offeringIndex = ClubProfile::getReputationTierIndex($offeringReputation);
 
         $gap = $sourceIndex - $offeringIndex;
 
@@ -970,6 +958,15 @@ class ScoutingService
             $score += 10;
         } elseif ($player->age <= 22) {
             $score += 5; // Young players seeking opportunities
+        }
+
+        // Reputation gap penalty: players are reluctant to move to lower-rep clubs
+        $reputationModifier = $this->calculateReputationModifier($game->team, $player);
+        if ($reputationModifier < 1.0) {
+            // Scale the score down proportionally to the reputation gap
+            // e.g. modifier 0.75 (1 tier gap) → score * 0.75
+            // e.g. modifier 0.20 (3 tier gap) → score * 0.20
+            $score = (int) ($score * $reputationModifier);
         }
 
         $score = min(100, max(0, $score + rand(-5, 5)));

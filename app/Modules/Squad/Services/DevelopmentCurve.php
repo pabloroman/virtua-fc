@@ -31,9 +31,8 @@ final class DevelopmentCurve
      *
      * - 16-20: High growth (multipliers > 1.2)
      * - 21-24: Moderate growth (multipliers 1.0-1.1)
-     * - 25-28: Peak years (stable, technical ~1.0, physical starts declining)
-     * - 29-31: Early decline (both abilities declining)
-     * - 32+: Significant decline (physical declines faster than technical)
+     * - 25-31: Peak years (stable, technical ~1.0, physical starts declining)
+     * - 32+: Veteran decline (physical declines faster than technical)
      */
     public const AGE_CURVES = [
         16 => ['technical' => 1.8, 'physical' => 2.0],
@@ -123,7 +122,7 @@ final class DevelopmentCurve
             return 'growing';
         }
 
-        if ($age <= 28) {
+        if ($age <= 31) {
             return 'peak';
         }
 

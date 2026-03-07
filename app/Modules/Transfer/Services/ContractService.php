@@ -59,15 +59,13 @@ class ContractService
         20 => 0.70,
         21 => 0.80,
         22 => 0.90,
-        // 23-29: 1.0 (fair market)
-        30 => 1.30,  // Starting to be "overpaid" relative to declining value
-        31 => 1.60,
-        32 => 2.00,
-        33 => 2.50,
-        34 => 3.00,
-        35 => 4.00,  // Significant legacy premium
-        36 => 5.00,
-        37 => 6.00,
+        // 23-31: 1.0 (fair market)
+        32 => 1.30,  // Starting to be "overpaid" relative to declining value
+        33 => 1.60,
+        34 => 2.00,
+        35 => 2.50,
+        36 => 3.00,
+        37 => 4.00,  // Significant legacy premium
         38 => 7.00,  // Legends like Modric
     ];
 
