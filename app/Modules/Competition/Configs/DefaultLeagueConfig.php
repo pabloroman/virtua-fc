@@ -21,7 +21,7 @@ class DefaultLeagueConfig implements CompetitionConfig, HasSeasonGoals
      */
     private const REPUTATION_TO_GOAL = [
         ClubProfile::REPUTATION_ELITE => Game::GOAL_TITLE,
-        ClubProfile::REPUTATION_CONTINENTAL => Game::GOAL_CHAMPIONS_LEAGUE,
+        ClubProfile::REPUTATION_CONTINENTAL => Game::GOAL_EUROPA_LEAGUE,
         ClubProfile::REPUTATION_ESTABLISHED => Game::GOAL_TOP_HALF,
         ClubProfile::REPUTATION_MODEST => Game::GOAL_TOP_HALF,
         ClubProfile::REPUTATION_LOCAL => Game::GOAL_SURVIVAL,
@@ -69,13 +69,11 @@ class DefaultLeagueConfig implements CompetitionConfig, HasSeasonGoals
     {
         // Calculate target positions dynamically based on league size
         $topQuarter = (int) ceil($this->numTeams * 0.05);      // ~1st place
-        $europeanZone = (int) ceil($this->numTeams * 0.20);    // ~Top 4
         $midTable = (int) ceil($this->numTeams * 0.50);        // ~Top half
         $survivalZone = (int) ceil($this->numTeams * 0.85);    // ~17th of 20
 
         return match ($goal) {
             Game::GOAL_TITLE => max(1, $topQuarter),
-            Game::GOAL_CHAMPIONS_LEAGUE => $europeanZone,
             Game::GOAL_EUROPA_LEAGUE => (int) ceil($this->numTeams * 0.30),
             Game::GOAL_TOP_HALF => $midTable,
             Game::GOAL_SURVIVAL => $survivalZone,
@@ -89,7 +87,7 @@ class DefaultLeagueConfig implements CompetitionConfig, HasSeasonGoals
     {
         return [
             Game::GOAL_TITLE => ['targetPosition' => $this->getGoalTargetPosition(Game::GOAL_TITLE), 'label' => 'game.goal_title'],
-            Game::GOAL_CHAMPIONS_LEAGUE => ['targetPosition' => $this->getGoalTargetPosition(Game::GOAL_CHAMPIONS_LEAGUE), 'label' => 'game.goal_champions_league'],
+            Game::GOAL_EUROPA_LEAGUE => ['targetPosition' => $this->getGoalTargetPosition(Game::GOAL_EUROPA_LEAGUE), 'label' => 'game.goal_europa_league'],
             Game::GOAL_TOP_HALF => ['targetPosition' => $this->getGoalTargetPosition(Game::GOAL_TOP_HALF), 'label' => 'game.goal_top_half'],
             Game::GOAL_SURVIVAL => ['targetPosition' => $this->getGoalTargetPosition(Game::GOAL_SURVIVAL), 'label' => 'game.goal_survival'],
         ];

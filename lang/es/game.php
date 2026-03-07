@@ -304,7 +304,6 @@ return [
 
     // Season Goals
     'goal_title' => 'Ganar la Liga',
-    'goal_champions_league' => 'Clasificarse para la Champions League',
     'goal_europa_league' => 'Clasificarse para la Europa League',
     'goal_top_half' => 'Terminar en la mitad superior',
     'goal_survival' => 'Evitar el descenso',

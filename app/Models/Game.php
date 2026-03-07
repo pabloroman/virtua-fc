@@ -94,9 +94,8 @@ class Game extends Model
     public const MODE_CAREER = 'career';
     public const MODE_TOURNAMENT = 'tournament';
 
-    // La Liga season goals
+    // Season goals
     public const GOAL_TITLE = 'title';
-    public const GOAL_CHAMPIONS_LEAGUE = 'champions_league';
     public const GOAL_EUROPA_LEAGUE = 'europa_league';
     public const GOAL_TOP_HALF = 'top_half';
     public const GOAL_SURVIVAL = 'survival';
