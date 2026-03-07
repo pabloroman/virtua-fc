@@ -5,12 +5,17 @@ namespace App\Http\Actions;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\ShortlistedPlayer;
+use App\Modules\Transfer\Services\ScoutingService;
 use App\Support\Money;
 use App\Support\PositionMapper;
 use Illuminate\Http\Request;
 
 class ToggleShortlist
 {
+    public function __construct(
+        private readonly ScoutingService $scoutingService,
+    ) {}
+
     public function __invoke(Request $request, string $gameId, string $playerId)
     {
         $game = Game::findOrFail($gameId);
@@ -25,11 +30,15 @@ class ToggleShortlist
             $message = __('messages.shortlist_removed', ['player' => $gamePlayer->name]);
             $action = 'removed';
         } else {
-            ShortlistedPlayer::create([
+            $entry = ShortlistedPlayer::create([
                 'game_id' => $gameId,
                 'game_player_id' => $playerId,
                 'added_at' => $game->current_date,
             ]);
+
+            // Auto-track if slots available
+            $this->scoutingService->startTracking($entry, $game);
+
             $message = __('messages.shortlist_added', ['player' => $gamePlayer->name]);
             $action = 'added';
         }
@@ -38,6 +47,7 @@ class ToggleShortlist
             $data = ['success' => true, 'message' => $message, 'action' => $action, 'playerId' => $playerId];
 
             if ($action === 'added') {
+                $entry->refresh();
                 $gamePlayer->load(['player', 'team']);
                 $positionDisplay = PositionMapper::getPositionDisplay($gamePlayer->position);
 
@@ -55,9 +65,9 @@ class ToggleShortlist
                     'contractYear' => $gamePlayer->contract_until?->format('Y'),
                     'marketValue' => $gamePlayer->market_value_cents,
                     'formattedMarketValue' => Money::format($gamePlayer->market_value_cents),
-                    'intelLevel' => ShortlistedPlayer::INTEL_SURFACE,
-                    'isTracking' => false,
-                    'matchdaysTracked' => 0,
+                    'intelLevel' => $entry->intel_level ?? ShortlistedPlayer::INTEL_SURFACE,
+                    'isTracking' => (bool) $entry->is_tracking,
+                    'matchdaysTracked' => $entry->matchdays_tracked ?? 0,
                     'hasExistingOffer' => false,
                     'techRange' => null,
                     'formattedAskingPrice' => null,
@@ -72,6 +82,8 @@ class ToggleShortlist
                     'rivalInterest' => false,
                 ];
             }
+
+            $data['trackingCapacity'] = $this->scoutingService->getTrackingCapacity($game);
 
             return response()->json($data);
         }
