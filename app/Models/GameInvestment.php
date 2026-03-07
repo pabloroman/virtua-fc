@@ -105,11 +105,9 @@ class GameInvestment extends Model
      */
     public const DEFAULT_TIERS_BY_REPUTATION = [
         'elite' => ['youth_academy' => 4, 'medical' => 4, 'scouting' => 4, 'facilities' => 4],
-        'contenders' => ['youth_academy' => 3, 'medical' => 4, 'scouting' => 4, 'facilities' => 3],
         'continental' => ['youth_academy' => 3, 'medical' => 3, 'scouting' => 3, 'facilities' => 3],
         'established' => ['youth_academy' => 2, 'medical' => 3, 'scouting' => 3, 'facilities' => 2],
         'modest' => ['youth_academy' => 1, 'medical' => 2, 'scouting' => 2, 'facilities' => 2],
-        'professional' => ['youth_academy' => 1, 'medical' => 2, 'scouting' => 2, 'facilities' => 1],
         'local' => ['youth_academy' => 1, 'medical' => 1, 'scouting' => 1, 'facilities' => 1],
     ];
 
@@ -209,7 +207,7 @@ class GameInvestment extends Model
     public static function defaultTiersForReputation(string $reputation, int $availableSurplus): array
     {
         $tiers = self::DEFAULT_TIERS_BY_REPUTATION[$reputation]
-            ?? self::DEFAULT_TIERS_BY_REPUTATION['professional'];
+            ?? self::DEFAULT_TIERS_BY_REPUTATION['modest'];
 
         while (true) {
             $totalCost = 0;

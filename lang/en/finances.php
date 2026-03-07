@@ -154,11 +154,9 @@ return [
     // Reputation tiers
     'reputation' => [
         'elite' => 'Elite',
-        'contenders' => 'Contenders',
         'continental' => 'Continental',
         'established' => 'Established',
         'modest' => 'Modest',
-        'professional' => 'Professional',
         'local' => 'Local',
     ],
 
