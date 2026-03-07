@@ -31,28 +31,24 @@ class ClubProfile extends Model
     ];
 
     public const REPUTATION_ELITE = 'elite';
-    public const REPUTATION_CONTENDERS = 'contenders';
     public const REPUTATION_CONTINENTAL = 'continental';
     public const REPUTATION_ESTABLISHED = 'established';
     public const REPUTATION_MODEST = 'modest';
-    public const REPUTATION_PROFESSIONAL = 'professional';
     public const REPUTATION_LOCAL = 'local';
 
     /**
-     * Reputation tiers ordered from lowest to highest (0 = local, 6 = elite).
+     * Reputation tiers ordered from lowest to highest (0 = local, 4 = elite).
      */
     public const REPUTATION_TIERS = [
         self::REPUTATION_LOCAL,        // 0
-        self::REPUTATION_PROFESSIONAL, // 1
-        self::REPUTATION_MODEST,       // 2
-        self::REPUTATION_ESTABLISHED,  // 3
-        self::REPUTATION_CONTINENTAL,  // 4
-        self::REPUTATION_CONTENDERS,   // 5
-        self::REPUTATION_ELITE,        // 6
+        self::REPUTATION_MODEST,       // 1
+        self::REPUTATION_ESTABLISHED,  // 2
+        self::REPUTATION_CONTINENTAL,  // 3
+        self::REPUTATION_ELITE,        // 4
     ];
 
     /**
-     * Get the numeric index of a reputation level (0 = local, 6 = elite).
+     * Get the numeric index of a reputation level (0 = local, 4 = elite).
      */
     public static function getReputationTierIndex(string $level): int
     {

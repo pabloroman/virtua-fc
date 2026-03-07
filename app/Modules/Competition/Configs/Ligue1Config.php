@@ -56,11 +56,9 @@ class Ligue1Config implements CompetitionConfig
      */
     private const REPUTATION_TO_GOAL = [
         ClubProfile::REPUTATION_ELITE => Game::GOAL_TITLE,
-        ClubProfile::REPUTATION_CONTENDERS => Game::GOAL_CHAMPIONS_LEAGUE,
         ClubProfile::REPUTATION_CONTINENTAL => Game::GOAL_EUROPA_LEAGUE,
         ClubProfile::REPUTATION_ESTABLISHED => Game::GOAL_TOP_HALF,
         ClubProfile::REPUTATION_MODEST => Game::GOAL_SURVIVAL,
-        ClubProfile::REPUTATION_PROFESSIONAL => Game::GOAL_SURVIVAL,
         ClubProfile::REPUTATION_LOCAL => Game::GOAL_SURVIVAL,
     ];
 

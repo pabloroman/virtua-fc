@@ -218,15 +218,12 @@ class LoanService
             return ClubProfile::REPUTATION_ELITE;
         }
         if ($avgAbility >= 76) {
-            return ClubProfile::REPUTATION_CONTENDERS;
-        }
-        if ($avgAbility >= 70) {
             return ClubProfile::REPUTATION_CONTINENTAL;
         }
-        if ($avgAbility >= 64) {
+        if ($avgAbility >= 68) {
             return ClubProfile::REPUTATION_ESTABLISHED;
         }
-        if ($avgAbility >= 55) {
+        if ($avgAbility >= 60) {
             return ClubProfile::REPUTATION_MODEST;
         }
 
@@ -283,7 +280,6 @@ class LoanService
 
         $isSmallClub = in_array($reputation, [
             ClubProfile::REPUTATION_MODEST,
-            ClubProfile::REPUTATION_PROFESSIONAL,
             ClubProfile::REPUTATION_LOCAL,
         ]);
 

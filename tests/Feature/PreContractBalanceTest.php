@@ -70,23 +70,20 @@ class PreContractBalanceTest extends TestCase
             2 => 0.45,
             3 => 0.20,
             4 => 0.08,
-            5 => 0.02,
         ];
 
-        // Reputation tiers ordered: local(0), professional(1), modest(2), established(3), continental(4), contenders(5), elite(6)
+        // Reputation tiers ordered: local(0), modest(1), established(2), continental(3), elite(4)
         $tiers = [
             ClubProfile::REPUTATION_LOCAL,
-            ClubProfile::REPUTATION_PROFESSIONAL,
             ClubProfile::REPUTATION_MODEST,
             ClubProfile::REPUTATION_ESTABLISHED,
             ClubProfile::REPUTATION_CONTINENTAL,
-            ClubProfile::REPUTATION_CONTENDERS,
             ClubProfile::REPUTATION_ELITE,
         ];
 
         foreach ($expectedModifiers as $gap => $expectedModifier) {
-            // Use elite(6) as source, and offering = 6 - gap
-            $offeringIndex = 6 - $gap;
+            // Use elite(4) as source, and offering = 4 - gap
+            $offeringIndex = 4 - $gap;
             if ($offeringIndex < 0) {
                 continue;
             }
@@ -224,8 +221,8 @@ class PreContractBalanceTest extends TestCase
     public function test_evaluate_pre_contract_offer_with_no_reputation_gap_mostly_accepts(): void
     {
         [$game, $player] = $this->createGameAndPlayer(
-            offeringReputation: ClubProfile::REPUTATION_CONTENDERS,
-            sourceReputation: ClubProfile::REPUTATION_CONTENDERS,
+            offeringReputation: ClubProfile::REPUTATION_CONTINENTAL,
+            sourceReputation: ClubProfile::REPUTATION_CONTINENTAL,
             marketValueCents: 1_000_000_000,
         );
 
@@ -248,8 +245,8 @@ class PreContractBalanceTest extends TestCase
     public function test_evaluate_pre_contract_offer_rejects_below_85_percent_of_premium_demand(): void
     {
         [$game, $player] = $this->createGameAndPlayer(
-            offeringReputation: ClubProfile::REPUTATION_CONTENDERS,
-            sourceReputation: ClubProfile::REPUTATION_CONTENDERS,
+            offeringReputation: ClubProfile::REPUTATION_CONTINENTAL,
+            sourceReputation: ClubProfile::REPUTATION_CONTINENTAL,
             marketValueCents: 1_000_000_000,
         );
 
@@ -283,8 +280,8 @@ class PreContractBalanceTest extends TestCase
             }
         }
 
-        // Gap of 6 → modifier 0.02 → 98% should be rejected by reputation gate
-        $this->assertGreaterThan(85, $rejectedNotInterested, "Expected mostly reputation rejections for gap 6, got {$rejectedNotInterested}/100");
+        // Gap of 4 → modifier 0.08 → ~92% should be rejected by reputation gate
+        $this->assertGreaterThan(75, $rejectedNotInterested, "Expected mostly reputation rejections for gap 4, got {$rejectedNotInterested}/100");
     }
 
     public function test_evaluate_bid_with_no_reputation_gap_proceeds_normally(): void
@@ -372,12 +369,10 @@ class PreContractBalanceTest extends TestCase
     public function test_reputation_index_returns_correct_values(): void
     {
         $this->assertEquals(0, ClubProfile::getReputationTierIndex(ClubProfile::REPUTATION_LOCAL));
-        $this->assertEquals(1, ClubProfile::getReputationTierIndex(ClubProfile::REPUTATION_PROFESSIONAL));
-        $this->assertEquals(2, ClubProfile::getReputationTierIndex(ClubProfile::REPUTATION_MODEST));
-        $this->assertEquals(3, ClubProfile::getReputationTierIndex(ClubProfile::REPUTATION_ESTABLISHED));
-        $this->assertEquals(4, ClubProfile::getReputationTierIndex(ClubProfile::REPUTATION_CONTINENTAL));
-        $this->assertEquals(5, ClubProfile::getReputationTierIndex(ClubProfile::REPUTATION_CONTENDERS));
-        $this->assertEquals(6, ClubProfile::getReputationTierIndex(ClubProfile::REPUTATION_ELITE));
+        $this->assertEquals(1, ClubProfile::getReputationTierIndex(ClubProfile::REPUTATION_MODEST));
+        $this->assertEquals(2, ClubProfile::getReputationTierIndex(ClubProfile::REPUTATION_ESTABLISHED));
+        $this->assertEquals(3, ClubProfile::getReputationTierIndex(ClubProfile::REPUTATION_CONTINENTAL));
+        $this->assertEquals(4, ClubProfile::getReputationTierIndex(ClubProfile::REPUTATION_ELITE));
     }
 
     public function test_reputation_index_defaults_to_0_for_unknown(): void
