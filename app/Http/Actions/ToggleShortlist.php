@@ -29,6 +29,18 @@ class ToggleShortlist
             $existing->delete();
             $message = __('messages.shortlist_removed', ['player' => $gamePlayer->name]);
             $action = 'removed';
+        } elseif ($this->scoutingService->isShortlistFull($game)) {
+            $message = __('messages.shortlist_full', ['max' => ScoutingService::MAX_SHORTLIST_SIZE]);
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $message,
+                    'trackingCapacity' => $this->scoutingService->getTrackingCapacity($game),
+                ], 422);
+            }
+
+            return redirect()->back()->with('error', $message);
         } else {
             $entry = ShortlistedPlayer::create([
                 'game_id' => $gameId,

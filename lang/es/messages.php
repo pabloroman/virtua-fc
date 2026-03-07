@@ -57,10 +57,12 @@ return [
     'scout_already_searching' => 'Ya tienes una búsqueda activa. Cancélala primero o espera los resultados.',
     'scout_search_cancelled' => 'Búsqueda del ojeador cancelada.',
     'scout_search_deleted' => 'Búsqueda eliminada.',
+    'scout_search_limit' => 'Has alcanzado el límite de búsquedas (máximo :max). Elimina una búsqueda antigua para iniciar una nueva.',
 
     // Shortlist messages
     'shortlist_added' => ':player añadido a tu lista de seguimiento.',
     'shortlist_removed' => ':player eliminado de tu lista de seguimiento.',
+    'shortlist_full' => 'Tu lista de seguimiento está llena (máximo :max jugadores).',
 
     // Budget messages
     'budget_saved' => 'Asignación de presupuesto guardada.',

@@ -81,7 +81,11 @@
                                     },
                                 });
                                 const data = await response.json();
-                                if (data.success) this.isShortlisted = data.action === 'added';
+                                if (data.success) {
+                                    this.isShortlisted = data.action === 'added';
+                                } else if (data.message) {
+                                    alert(data.message);
+                                }
                             } catch (e) {}
                         }
                     }">
