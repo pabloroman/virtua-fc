@@ -194,22 +194,8 @@ class LoanService
         $expectedReputation = $this->getExpectedReputation($player);
         $teamReputation = $team->clubProfile->reputation_level ?? ClubProfile::REPUTATION_MODEST;
 
-        $tiers = [
-            ClubProfile::REPUTATION_ELITE,
-            ClubProfile::REPUTATION_CONTENDERS,
-            ClubProfile::REPUTATION_CONTINENTAL,
-            ClubProfile::REPUTATION_ESTABLISHED,
-            ClubProfile::REPUTATION_MODEST,
-            ClubProfile::REPUTATION_PROFESSIONAL,
-            ClubProfile::REPUTATION_LOCAL,
-        ];
-
-        $expectedIndex = array_search($expectedReputation, $tiers);
-        $teamIndex = array_search($teamReputation, $tiers);
-
-        if ($expectedIndex === false || $teamIndex === false) {
-            return 15;
-        }
+        $expectedIndex = ClubProfile::getReputationTierIndex($expectedReputation);
+        $teamIndex = ClubProfile::getReputationTierIndex($teamReputation);
 
         $distance = abs($expectedIndex - $teamIndex);
 

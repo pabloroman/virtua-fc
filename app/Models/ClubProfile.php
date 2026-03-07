@@ -38,6 +38,29 @@ class ClubProfile extends Model
     public const REPUTATION_PROFESSIONAL = 'professional';
     public const REPUTATION_LOCAL = 'local';
 
+    /**
+     * Reputation tiers ordered from lowest to highest (0 = local, 6 = elite).
+     */
+    public const REPUTATION_TIERS = [
+        self::REPUTATION_LOCAL,        // 0
+        self::REPUTATION_PROFESSIONAL, // 1
+        self::REPUTATION_MODEST,       // 2
+        self::REPUTATION_ESTABLISHED,  // 3
+        self::REPUTATION_CONTINENTAL,  // 4
+        self::REPUTATION_CONTENDERS,   // 5
+        self::REPUTATION_ELITE,        // 6
+    ];
+
+    /**
+     * Get the numeric index of a reputation level (0 = local, 6 = elite).
+     */
+    public static function getReputationTierIndex(string $level): int
+    {
+        $index = array_search($level, self::REPUTATION_TIERS, true);
+
+        return $index !== false ? $index : 0;
+    }
+
     public function team(): BelongsTo
     {
         return $this->belongsTo(Team::class);

@@ -371,18 +371,18 @@ class PreContractBalanceTest extends TestCase
 
     public function test_reputation_index_returns_correct_values(): void
     {
-        $this->assertEquals(0, $this->scoutingService->getReputationIndex(ClubProfile::REPUTATION_LOCAL));
-        $this->assertEquals(1, $this->scoutingService->getReputationIndex(ClubProfile::REPUTATION_PROFESSIONAL));
-        $this->assertEquals(2, $this->scoutingService->getReputationIndex(ClubProfile::REPUTATION_MODEST));
-        $this->assertEquals(3, $this->scoutingService->getReputationIndex(ClubProfile::REPUTATION_ESTABLISHED));
-        $this->assertEquals(4, $this->scoutingService->getReputationIndex(ClubProfile::REPUTATION_CONTINENTAL));
-        $this->assertEquals(5, $this->scoutingService->getReputationIndex(ClubProfile::REPUTATION_CONTENDERS));
-        $this->assertEquals(6, $this->scoutingService->getReputationIndex(ClubProfile::REPUTATION_ELITE));
+        $this->assertEquals(0, ClubProfile::getReputationTierIndex(ClubProfile::REPUTATION_LOCAL));
+        $this->assertEquals(1, ClubProfile::getReputationTierIndex(ClubProfile::REPUTATION_PROFESSIONAL));
+        $this->assertEquals(2, ClubProfile::getReputationTierIndex(ClubProfile::REPUTATION_MODEST));
+        $this->assertEquals(3, ClubProfile::getReputationTierIndex(ClubProfile::REPUTATION_ESTABLISHED));
+        $this->assertEquals(4, ClubProfile::getReputationTierIndex(ClubProfile::REPUTATION_CONTINENTAL));
+        $this->assertEquals(5, ClubProfile::getReputationTierIndex(ClubProfile::REPUTATION_CONTENDERS));
+        $this->assertEquals(6, ClubProfile::getReputationTierIndex(ClubProfile::REPUTATION_ELITE));
     }
 
     public function test_reputation_index_defaults_to_0_for_unknown(): void
     {
-        $this->assertEquals(0, $this->scoutingService->getReputationIndex('unknown_reputation'));
+        $this->assertEquals(0, ClubProfile::getReputationTierIndex('unknown_reputation'));
     }
 
     // =========================================

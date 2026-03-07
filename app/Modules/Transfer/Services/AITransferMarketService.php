@@ -56,17 +56,6 @@ class AITransferMarketService
     /** Maximum squad size — buyers can't exceed this */
     private const MAX_SQUAD_SIZE = 30;
 
-    /** Reputation tiers ordered highest to lowest (index 0 = highest) */
-    private const REPUTATION_TIERS = [
-        ClubProfile::REPUTATION_ELITE,
-        ClubProfile::REPUTATION_CONTENDERS,
-        ClubProfile::REPUTATION_CONTINENTAL,
-        ClubProfile::REPUTATION_ESTABLISHED,
-        ClubProfile::REPUTATION_MODEST,
-        ClubProfile::REPUTATION_PROFESSIONAL,
-        ClubProfile::REPUTATION_LOCAL,
-    ];
-
     public function __construct(
         private readonly ContractService $contractService,
         private readonly NotificationService $notificationService,
@@ -830,9 +819,9 @@ class AITransferMarketService
 
         return $teamRosters->keys()->mapWithKeys(function ($teamId) use ($clubProfiles) {
             $level = $clubProfiles->get($teamId)?->reputation_level ?? ClubProfile::REPUTATION_LOCAL;
-            $index = array_search($level, self::REPUTATION_TIERS);
 
-            return [$teamId => $index !== false ? $index : 6];
+            // Invert: ClubProfile uses 0=local,6=elite; this service needs 0=elite,6=local
+            return [$teamId => 6 - ClubProfile::getReputationTierIndex($level)];
         });
     }
 

@@ -599,7 +599,7 @@ class TransferService
         $resolvedOffers = collect();
 
         foreach ($pendingLoans as $offer) {
-            $evaluation = $scoutingService->evaluateLoanRequest($offer->gamePlayer);
+            $evaluation = $scoutingService->evaluateLoanRequest($offer->gamePlayer, $game);
 
             if ($evaluation['result'] === 'accepted') {
                 if ($game->isTransferWindowOpen()) {

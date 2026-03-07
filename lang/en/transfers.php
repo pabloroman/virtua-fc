@@ -138,6 +138,7 @@ return [
     'loan_rejected_key_player' => ':team rejected the loan request. :player is a key player for them.',
     'loan_accepted' => ':team has agreed to loan :player to your club.',
     'loan_rejected_keep' => ':team has decided to keep :player for now.',
+    'loan_rejected_not_interested' => ':player is not interested in joining your club on loan.',
 
     // Loans page
     'loaned_to' => 'Loaned :team_a',

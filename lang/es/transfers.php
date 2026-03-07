@@ -139,6 +139,7 @@ return [
     'loan_rejected_key_player' => ':team rechazó la solicitud de cesión. :player es un jugador clave para ellos.',
     'loan_accepted' => ':team ha aceptado ceder a :player a tu club.',
     'loan_rejected_keep' => ':team ha decidido quedarse con :player por ahora.',
+    'loan_rejected_not_interested' => ':player no está interesado en ir cedido a tu club.',
 
     // Loans page
     'loaned_to' => 'Cedido :team_a',
