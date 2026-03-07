@@ -46,7 +46,7 @@ class PreContractBalanceTest extends TestCase
             sourceReputation: ClubProfile::REPUTATION_ESTABLISHED,
         );
 
-        $modifier = $this->scoutingService->calculateReputationModifier($game, $player);
+        $modifier = $this->scoutingService->calculateReputationModifier($game->team, $player);
 
         $this->assertEquals(1.0, $modifier);
     }
@@ -58,7 +58,7 @@ class PreContractBalanceTest extends TestCase
             sourceReputation: ClubProfile::REPUTATION_MODEST,
         );
 
-        $modifier = $this->scoutingService->calculateReputationModifier($game, $player);
+        $modifier = $this->scoutingService->calculateReputationModifier($game->team, $player);
 
         $this->assertEquals(1.0, $modifier);
     }
@@ -96,7 +96,7 @@ class PreContractBalanceTest extends TestCase
                 sourceReputation: ClubProfile::REPUTATION_ELITE,
             );
 
-            $modifier = $this->scoutingService->calculateReputationModifier($game, $player);
+            $modifier = $this->scoutingService->calculateReputationModifier($game->team, $player);
 
             $this->assertEquals(
                 $expectedModifier,
@@ -123,7 +123,7 @@ class PreContractBalanceTest extends TestCase
             'team_id' => null, // Free agent
         ]);
 
-        $modifier = $this->scoutingService->calculateReputationModifier($game, $player);
+        $modifier = $this->scoutingService->calculateReputationModifier($game->team, $player);
 
         $this->assertEquals(1.0, $modifier);
     }
@@ -211,7 +211,7 @@ class PreContractBalanceTest extends TestCase
         // 85% × 0.08 = 6.8% → should rarely accept
         $acceptedCount = 0;
         for ($i = 0; $i < 100; $i++) {
-            $result = $this->scoutingService->evaluatePreContractOffer($player, $premiumWage, $game);
+            $result = $this->scoutingService->evaluatePreContractOffer($player, $premiumWage, $game->team);
             if ($result['accepted']) {
                 $acceptedCount++;
             }
@@ -229,12 +229,14 @@ class PreContractBalanceTest extends TestCase
             marketValueCents: 1_000_000_000,
         );
 
-        $premiumWage = $this->scoutingService->calculatePreContractWageDemand($player);
+        // Offer well above any possible demand to guarantee hitting the 85% base chance
+        // (wage demand has ±10% internal variance, so a single calculation may not cover subsequent rolls)
+        $generousOffer = (int) ($this->scoutingService->calculatePreContractWageDemand($player) * 1.5);
 
         // With no gap, modifier is 1.0 → 85% chance
         $acceptedCount = 0;
         for ($i = 0; $i < 100; $i++) {
-            $result = $this->scoutingService->evaluatePreContractOffer($player, $premiumWage, $game);
+            $result = $this->scoutingService->evaluatePreContractOffer($player, $generousOffer, $game->team);
             if ($result['accepted']) {
                 $acceptedCount++;
             }
@@ -254,7 +256,7 @@ class PreContractBalanceTest extends TestCase
         $premiumWage = $this->scoutingService->calculatePreContractWageDemand($player);
         $lowOffer = (int) ($premiumWage * 0.70); // Way below threshold
 
-        $result = $this->scoutingService->evaluatePreContractOffer($player, $lowOffer, $game);
+        $result = $this->scoutingService->evaluatePreContractOffer($player, $lowOffer, $game->team);
         $this->assertFalse($result['accepted']);
     }
 

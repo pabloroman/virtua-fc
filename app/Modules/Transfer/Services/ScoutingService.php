@@ -526,7 +526,7 @@ class ScoutingService
     {
         // Reputation gate: player may refuse to join a lower-reputation club
         if ($game) {
-            $reputationModifier = $this->calculateReputationModifier($game, $player);
+            $reputationModifier = $this->calculateReputationModifier($game->team, $player);
             if ($reputationModifier < 1.0 && rand(1, 100) > (int) ($reputationModifier * 100)) {
                 return [
                     'result' => 'rejected',
@@ -700,11 +700,11 @@ class ScoutingService
 
     /**
      * Calculate the acceptance probability modifier based on reputation gap.
-     * Compares the player's current team reputation to the offering team's reputation.
+     * Compares the player's current team reputation to the bidding team's reputation.
      *
      * @return float Modifier between 0.02 and 1.0
      */
-    public function calculateReputationModifier(Game $game, GamePlayer $player): float
+    public function calculateReputationModifier(Team $biddingTeam, GamePlayer $player): float
     {
         // Free agents have no current team context — no penalty
         if ($player->team_id === null) {
@@ -712,7 +712,7 @@ class ScoutingService
         }
 
         $sourceReputation = $player->team?->clubProfile?->reputation_level ?? ClubProfile::REPUTATION_LOCAL;
-        $offeringReputation = $game->team?->clubProfile?->reputation_level ?? ClubProfile::REPUTATION_LOCAL;
+        $offeringReputation = $biddingTeam->clubProfile?->reputation_level ?? ClubProfile::REPUTATION_LOCAL;
 
         $sourceIndex = $this->getReputationIndex($sourceReputation);
         $offeringIndex = $this->getReputationIndex($offeringReputation);
@@ -736,7 +736,7 @@ class ScoutingService
      *
      * @return array{accepted: bool, message: string}
      */
-    public function evaluatePreContractOffer(GamePlayer $player, int $offeredWage, ?Game $game = null): array
+    public function evaluatePreContractOffer(GamePlayer $player, int $offeredWage, Team $biddingTeam): array
     {
         $wageDemand = $this->calculatePreContractWageDemand($player);
 
@@ -752,7 +752,7 @@ class ScoutingService
         }
 
         // Apply reputation modifier
-        $reputationModifier = $game ? $this->calculateReputationModifier($game, $player) : 1.0;
+        $reputationModifier = $this->calculateReputationModifier($biddingTeam, $player);
         $finalChance = (int) ($baseChance * $reputationModifier);
 
         $accepted = rand(1, 100) <= $finalChance;
