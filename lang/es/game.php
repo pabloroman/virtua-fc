@@ -193,6 +193,8 @@ return [
     'welcome_to_team' => 'Bienvenido :team_a',
     'season_preview' => 'Previa de Temporada',
     'season_objective' => 'Objetivo de Temporada',
+    'club_reputation' => 'Reputación del Club',
+    'reputation_help' => 'La reputación refleja la posición de tu club en el mundo del fútbol. Evoluciona según el rendimiento sostenido en liga y afecta a las finanzas, el atractivo en fichajes y las expectativas de la directiva.',
     'your_competitions' => 'Tus Competiciones',
     'competition_role_league' => 'Liga',
     'competition_role_cup' => 'Copa',

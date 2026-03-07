@@ -2,6 +2,7 @@
 
 namespace App\Http\Views;
 
+use App\Models\ClubProfile;
 use App\Models\Competition;
 use App\Models\CompetitionEntry;
 use App\Models\CupTie;
@@ -12,6 +13,7 @@ use App\Models\GamePlayer;
 use App\Models\GameStanding;
 use App\Models\SimulatedSeason;
 use App\Models\Team;
+use App\Models\TeamReputation;
 use App\Modules\Season\Services\SeasonGoalService;
 
 class ShowSeasonEnd
@@ -123,6 +125,9 @@ class ShowSeasonEnd
             ->sum('amount');
         $transferBalance = $transferIncome - $transferSpend;
 
+        // === Reputation direction hint ===
+        $reputationData = $this->buildReputationHint($game, $playerStanding?->position);
+
         // === Section 4: Simulated League Results ===
         $simulatedResults = $this->buildSimulatedResults($gameId, $game->season);
 
@@ -154,6 +159,8 @@ class ShowSeasonEnd
             'transferBalance' => $transferBalance,
             // Simulated results
             'simulatedResults' => $simulatedResults,
+            // Reputation
+            'reputationData' => $reputationData,
         ]);
     }
 
@@ -288,6 +295,57 @@ class ShowSeasonEnd
         }
 
         return [$biggestVictory, $worstDefeat, $homeRecord, $awayRecord];
+    }
+
+    /**
+     * Build a reputation direction hint based on the season's performance.
+     * Calculates what the points delta would be without actually changing anything.
+     */
+    private function buildReputationHint(Game $game, ?int $position): array
+    {
+        $reputation = TeamReputation::where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->first();
+
+        if (!$reputation) {
+            return ['level' => ClubProfile::REPUTATION_LOCAL, 'direction' => 'stable'];
+        }
+
+        $level = $reputation->reputation_level;
+
+        if (!$position) {
+            return ['level' => $level, 'direction' => 'stable'];
+        }
+
+        // Calculate the projected net delta
+        $competition = Competition::find($game->competition_id);
+        $tier = $competition?->tier ?? 1;
+        $deltas = config("reputation.position_deltas.{$tier}", config('reputation.position_deltas.1'));
+        $regressionRate = config('reputation.regression_rate', 5);
+
+        $pointsDelta = 0;
+        foreach ($deltas as $maxPosition => $delta) {
+            if ($position <= $maxPosition) {
+                $pointsDelta = $delta;
+                break;
+            }
+        }
+        if ($pointsDelta === 0 && !empty($deltas)) {
+            $pointsDelta = end($deltas);
+        }
+
+        // Apply regression toward base
+        $basePoints = TeamReputation::pointsForTier($reputation->base_reputation_level);
+        $currentPoints = $reputation->reputation_points;
+        if ($currentPoints > $basePoints) {
+            $pointsDelta -= $regressionRate;
+        } elseif ($currentPoints < $basePoints) {
+            $pointsDelta += $regressionRate;
+        }
+
+        $direction = $pointsDelta > 5 ? 'rising' : ($pointsDelta < -5 ? 'declining' : 'stable');
+
+        return ['level' => $level, 'direction' => $direction];
     }
 
     /**

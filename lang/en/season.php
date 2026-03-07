@@ -108,6 +108,11 @@ return [
     // Season end — Section 4: Other leagues
     'simulated_results' => 'Other Leagues',
 
+    // Reputation
+    'reputation_rising' => 'Rising',
+    'reputation_stable' => 'Stable',
+    'reputation_declining' => 'Declining',
+
     // Start new season
     'start_new_season' => 'Start Season :season',
     'new_season_coming_soon' => 'Next season will be available soon.',
