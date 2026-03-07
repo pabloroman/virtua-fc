@@ -62,8 +62,6 @@ class ShowLineup
                 $competitionId
             );
             $currentLineup = $previous['lineup'];
-            // Use previous formation if available, otherwise default
-            $currentFormation = $currentFormation ?? $previous['formation'] ?? $defaultFormation;
             $currentSlotAssignments = $game->tactics?->default_slot_assignments;
         }
 

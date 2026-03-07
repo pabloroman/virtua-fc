@@ -531,15 +531,15 @@ class LineupService
             ->first();
 
         if (!$previousMatch) {
-            return ['lineup' => [], 'formation' => null];
+            return ['lineup' => []];
         }
 
-        // Get the lineup and formation from that match
+        // Get the lineup from that match (formation is not carried over —
+        // mid-match tactical changes are transient and should not affect defaults)
         $previousLineup = $this->getLineup($previousMatch, $teamId) ?? [];
-        $previousFormation = $this->getFormation($previousMatch, $teamId);
 
         if (empty($previousLineup)) {
-            return ['lineup' => [], 'formation' => $previousFormation];
+            return ['lineup' => []];
         }
 
         // Filter out players who are no longer available
@@ -553,7 +553,6 @@ class LineupService
 
         return [
             'lineup' => $filteredLineup,
-            'formation' => $previousFormation,
         ];
     }
 
