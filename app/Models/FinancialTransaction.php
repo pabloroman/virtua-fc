@@ -68,6 +68,7 @@ class FinancialTransaction extends Model
     public const CATEGORY_CUP_BONUS = 'cup_bonus';
     public const CATEGORY_SIGNING_BONUS = 'signing_bonus';   // Bonus paid to player on signing
     public const CATEGORY_SEVERANCE = 'severance';           // Contract termination payment
+    public const CATEGORY_INFRASTRUCTURE = 'infrastructure'; // Mid-season infrastructure upgrade
 
     public function game(): BelongsTo
     {
@@ -113,6 +114,7 @@ class FinancialTransaction extends Model
             self::CATEGORY_CUP_BONUS => __('finances.category_cup_bonus'),
             self::CATEGORY_SIGNING_BONUS => __('finances.category_signing_bonus'),
             self::CATEGORY_SEVERANCE => __('finances.category_severance'),
+            self::CATEGORY_INFRASTRUCTURE => __('finances.category_infrastructure'),
             default => ucfirst(str_replace('_', ' ', $this->category)),
         };
     }

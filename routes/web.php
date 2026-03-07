@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Actions\UpgradeInfrastructure;
 use App\Http\Actions\StartImpersonation;
 use App\Http\Actions\StopImpersonation;
 use App\Http\Views\AdminUsers;
@@ -176,6 +177,7 @@ Route::middleware('auth')->group(function () {
         // Budget Allocation
         Route::get('/game/{gameId}/budget', ShowBudgetAllocation::class)->name('game.budget');
         Route::post('/game/{gameId}/budget', SaveBudgetAllocation::class)->name('game.budget.save');
+        Route::post('/game/{gameId}/infrastructure/upgrade', UpgradeInfrastructure::class)->name('game.infrastructure.upgrade');
 
         // Welcome Tutorial (new games only)
         Route::get('/game/{gameId}/welcome', ShowWelcome::class)->name('game.welcome');

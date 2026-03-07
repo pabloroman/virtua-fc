@@ -2,6 +2,8 @@
 /** @var App\Models\Game $game */
 /** @var App\Models\GameFinances $finances */
 /** @var App\Models\GameInvestment|null $investment */
+/** @var array $tierThresholds */
+/** @var int $availableBudget */
 @endphp
 
 <x-app-layout>
@@ -264,7 +266,6 @@
                             <div>
                                 <div class="flex items-center justify-between mb-4">
                                     <h4 class="font-semibold text-sm text-slate-900">{{ __('finances.infrastructure_investment') }}</h4>
-{{--                                    <a href="{{ route('game.budget', $game->id) }}" class="text-xs text-sky-600 hover:text-sky-800 font-medium">{{ __('finances.adjust_allocation') }} &rarr;</a>--}}
                                 </div>
                                 <div class="space-y-4">
                                     @foreach([
@@ -273,18 +274,67 @@
                                         ['key' => 'scouting', 'tier' => $investment->scouting_tier, 'amount' => $investment->formatted_scouting_amount],
                                         ['key' => 'facilities', 'tier' => $investment->facilities_tier, 'amount' => $investment->formatted_facilities_amount],
                                     ] as $area)
-                                    <div class="border rounded-lg p-3">
+                                    <div class="border rounded-lg p-3" x-data="{ showUpgrade: false }">
                                         <div class="flex items-center justify-between mb-1">
                                             <span class="text-sm font-medium text-slate-700">{{ __('finances.' . $area['key']) }}</span>
                                             <span class="text-xs text-slate-400">{{ $area['amount'] }}</span>
                                         </div>
-                                        <div class="flex items-center gap-1.5">
-                                            @for($i = 1; $i <= 4; $i++)
-                                                <span class="w-2.5 h-2.5 rounded-full {{ $i <= $area['tier'] ? 'bg-emerald-500' : 'bg-slate-200' }}"></span>
-                                            @endfor
-                                            <span class="text-xs text-slate-500 ml-1">{{ __('finances.tier', ['level' => $area['tier']]) }}</span>
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center gap-1.5">
+                                                @for($i = 1; $i <= 4; $i++)
+                                                    <span class="w-2.5 h-2.5 rounded-full {{ $i <= $area['tier'] ? 'bg-emerald-500' : 'bg-slate-200' }}"></span>
+                                                @endfor
+                                                <span class="text-xs text-slate-500 ml-1">{{ __('finances.tier', ['level' => $area['tier']]) }}</span>
+                                            </div>
+                                            @if($area['tier'] < 4)
+                                            <x-ghost-button color="emerald" size="xs" @click="showUpgrade = true" x-show="!showUpgrade" class="gap-1 font-semibold px-2.5">
+                                                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18" /></svg>
+                                                {{ __('finances.upgrade') }}
+                                            </x-ghost-button>
+                                            <x-ghost-button color="slate" size="xs" @click="showUpgrade = false" x-show="showUpgrade" x-cloak class="gap-1 font-semibold px-2.5">
+                                                {{ __('finances.upgrade_cancel') }}
+                                            </x-ghost-button>
+                                            @else
+                                            <span class="inline-flex items-center px-2 py-0.5 text-xs font-semibold rounded-full bg-emerald-50 text-emerald-600">MAX</span>
+                                            @endif
                                         </div>
                                         <div class="text-xs text-slate-400 mt-1">{{ __('finances.' . $area['key'] . '_tier_' . $area['tier']) }}</div>
+
+                                        {{-- Upgrade options --}}
+                                        @if($area['tier'] < 4)
+                                        <div x-show="showUpgrade" x-collapse x-cloak class="mt-3 pt-3 border-t border-slate-100 space-y-2">
+                                            @for($t = $area['tier'] + 1; $t <= 4; $t++)
+                                                @php
+                                                    $currentAmount = $investment->{$area['key'] . '_amount'};
+                                                    $targetAmount = $tierThresholds[$area['key']][$t];
+                                                    $cost = $targetAmount - $currentAmount;
+                                                    $canAfford = $cost <= $availableBudget;
+                                                @endphp
+                                                <form method="POST" action="{{ route('game.infrastructure.upgrade', $game->id) }}" class="flex items-center justify-between gap-2 p-2 rounded-lg {{ $canAfford ? 'bg-slate-50' : '' }}">
+                                                    @csrf
+                                                    <input type="hidden" name="area" value="{{ $area['key'] }}">
+                                                    <input type="hidden" name="target_tier" value="{{ $t }}">
+                                                    <div class="min-w-0 flex items-center gap-2">
+                                                        <div class="flex items-center gap-1">
+                                                            @for($dot = 1; $dot <= 4; $dot++)
+                                                                <span class="w-1.5 h-1.5 rounded-full {{ $dot <= $t ? 'bg-emerald-500' : 'bg-slate-200' }}"></span>
+                                                            @endfor
+                                                        </div>
+                                                        <div>
+                                                            <div class="text-xs font-medium text-slate-700">{{ __('finances.tier', ['level' => $t]) }}</div>
+                                                            <div class="text-xs text-slate-400 truncate">{{ \App\Support\Money::format($cost) }}</div>
+                                                        </div>
+                                                    </div>
+                                                    <x-primary-button color="emerald" size="xs" class="shrink-0" :disabled="!$canAfford">
+                                                        {{ __('finances.upgrade_confirm') }}
+                                                    </x-primary-button>
+                                                </form>
+                                            @endfor
+                                            @if($availableBudget <= 0)
+                                            <p class="text-xs text-amber-600 px-2">{{ __('finances.upgrade_insufficient_budget') }}</p>
+                                            @endif
+                                        </div>
+                                        @endif
                                     </div>
                                     @endforeach
                                 </div>

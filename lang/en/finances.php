@@ -161,6 +161,13 @@ return [
     'category_signing_bonus' => 'Signing Bonus',
 
     'category_severance' => 'Severance',
+    'category_infrastructure' => 'Infrastructure',
+
+    // Infrastructure upgrades
+    'upgrade' => 'Upgrade',
+    'upgrade_cancel' => 'Cancel',
+    'upgrade_confirm' => 'Confirm',
+    'upgrade_insufficient_budget' => 'Insufficient transfer budget.',
 
     // Transaction descriptions
     'tx_free_transfer_out' => ':player left on free transfer to :team',
@@ -168,4 +175,5 @@ return [
     'tx_player_signed' => ':player signed from :team',
     'tx_player_released' => ':player released (severance)',
     'tx_cup_advancement' => ':competition - Round :round advancement',
+    'tx_infrastructure_upgrade' => ':area upgraded from Tier :from to Tier :to',
 ];

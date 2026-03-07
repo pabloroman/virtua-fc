@@ -658,7 +658,7 @@
                                         </div>
                                         <form method="post" action="{{ route('game.scouting.cancel', $game->id) }}">
                                             @csrf
-                                            <x-ghost-button type="submit" class="text-sm text-center">
+                                            <x-ghost-button size="xs" type="submit" class="text-sm text-center">
                                                 {{ __('transfers.cancel_search') }}
                                             </x-ghost-button>
                                         </form>

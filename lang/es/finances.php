@@ -161,6 +161,13 @@ return [
     'category_signing_bonus' => 'Prima de Fichaje',
 
     'category_severance' => 'Indemnización',
+    'category_infrastructure' => 'Infraestructura',
+
+    // Infrastructure upgrades
+    'upgrade' => 'Mejorar',
+    'upgrade_cancel' => 'Cancelar',
+    'upgrade_confirm' => 'Confirmar',
+    'upgrade_insufficient_budget' => 'Presupuesto de fichajes insuficiente.',
 
     // Transaction descriptions
     'tx_free_transfer_out' => ':player se fue libre a :team',
@@ -168,4 +175,5 @@ return [
     'tx_player_signed' => ':player fichado de :team',
     'tx_player_released' => ':player liberado (indemnización)',
     'tx_cup_advancement' => ':competition - Ronda :round superada',
+    'tx_infrastructure_upgrade' => ':area mejorada de Nivel :from a Nivel :to',
 ];

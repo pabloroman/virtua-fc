@@ -5,7 +5,9 @@ namespace App\Http\Views;
 use App\Modules\Finance\Services\BudgetProjectionService;
 use App\Models\FinancialTransaction;
 use App\Models\Game;
+use App\Models\GameInvestment;
 use App\Models\GamePlayer;
+use App\Models\TransferOffer;
 
 class ShowFinances
 {
@@ -57,6 +59,11 @@ class ShowFinances
             ? round(($finances->projected_wages / $finances->projected_total_revenue) * 100)
             : 0;
 
+        // Available transfer budget for infrastructure upgrades
+        $availableBudget = $investment
+            ? $investment->transfer_budget - TransferOffer::committedBudget($game->id)
+            : 0;
+
         return view('finances', [
             'game' => $game,
             'finances' => $finances,
@@ -67,6 +74,8 @@ class ShowFinances
             'totalIncome' => $totalIncome,
             'totalExpenses' => $totalExpenses,
             'wageRevenueRatio' => $wageRevenueRatio,
+            'tierThresholds' => GameInvestment::TIER_THRESHOLDS,
+            'availableBudget' => $availableBudget,
         ]);
     }
 }

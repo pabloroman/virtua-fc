@@ -255,7 +255,7 @@
                                                     <x-secondary-button type="button" size="sm" @click="showCounter = !showCounter">{{ __('transfers.negotiate') }}</x-secondary-button>
                                                     <form method="post" action="{{ route('game.transfers.decline-renewal', [$game->id, $player->id]) }}">
                                                         @csrf
-                                                        <x-ghost-button type="submit" color="red" size="sm">{{ __('app.reject') }}</x-ghost-button>
+                                                        <x-ghost-button type="submit" color="red" size="xs">{{ __('app.reject') }}</x-ghost-button>
                                                     </form>
                                                 </div>
                                             </div>
@@ -266,7 +266,7 @@
                                                 @csrf
                                                 <div>
                                                     <label class="text-xs text-slate-500 block mb-1">{{ __('transfers.your_offer') }}</label>
-                                                    <x-money-input name="offer_wage" :value="$midpoint" size="sm" />
+                                                    <x-money-input name="offer_wage" :value="$midpoint" size="xs" />
                                                 </div>
                                                 <div>
                                                     <label class="text-xs text-slate-500 block mb-1">{{ __('transfers.contract_duration') }}</label>
@@ -318,7 +318,7 @@
                                                 </span>
                                                 <form method="post" action="{{ route('game.transfers.decline-renewal', [$game->id, $player->id]) }}">
                                                     @csrf
-                                                    <x-ghost-button type="submit" color="red" size="sm">{{ __('app.cancel') }}</x-ghost-button>
+                                                    <x-ghost-button type="submit" color="red" size="xs">{{ __('app.cancel') }}</x-ghost-button>
                                                 </form>
                                             </div>
                                         </div>
@@ -497,7 +497,7 @@
                                             </div>
                                             <form method="post" action="{{ route('game.transfers.unlist', [$game->id, $player->id]) }}">
                                                 @csrf
-                                                <x-ghost-button type="submit" color="red">
+                                                <x-ghost-button type="submit" color="red" size="xs">
                                                     {{ __('app.remove') }}
                                                 </x-ghost-button>
                                             </form>
