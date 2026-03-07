@@ -309,11 +309,15 @@ class MatchResultProcessor
         $this->bulkUpdatePlayerStats($statIncrements);
 
         // Separate card events from injury events
+        // Skip card suspensions for friendly matches (cards are recorded but don't carry over)
         $cardEvents = [];
         $injuryEvents = [];
         foreach ($specialEvents as $eventData) {
             if (in_array($eventData['event_type'], ['yellow_card', 'red_card'])) {
-                $cardEvents[] = $eventData;
+                $competition = $competitions->get($eventData['competitionId']);
+                if ($competition?->handler_type !== 'friendly') {
+                    $cardEvents[] = $eventData;
+                }
             } elseif ($eventData['event_type'] === 'injury') {
                 $injuryEvents[] = $eventData;
             }

@@ -105,7 +105,7 @@
                 <h2 class="font-semibold text-base text-white leading-tight truncate">
                     {{ $game->team->name }}
                 </h2>
-                <p class="text-xs truncate">{{ __('game.season') }} {{ $game->formatted_season }}{{ $game->current_matchday ? ' - ' . __('game.matchday') . ' ' . $game->current_matchday : '' }}</p>
+                <p class="text-xs truncate">{{ __('game.season') }} {{ $game->formatted_season }}{{ $game->isInPreSeason() ? ' - ' . __('game.pre_season') : ($game->current_matchday ? ' - ' . __('game.matchday') . ' ' . $game->current_matchday : '') }}</p>
             </div>
         </div>
         <div class="flex items-center space-x-2 shrink-0">

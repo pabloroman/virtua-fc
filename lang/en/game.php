@@ -393,4 +393,18 @@ return [
     // Onboarding - Club Info
     'stadium' => 'Stadium',
     'seats' => ':count seats',
+
+    // Pre-season
+    'pre_season' => 'Pre-Season',
+    'pre_season_friendly' => 'Friendly',
+    'pre_season_banner_title' => 'Pre-Season',
+    'pre_season_banner_desc' => 'Season starts :date. Use this time to set up your squad, play friendlies and sign players.',
+    'pre_season_skip' => 'Skip Pre-Season',
+    'pre_season_skip_confirm' => 'Skip pre-season? Remaining friendlies will be cancelled.',
+    'pre_season_skipped' => 'Pre-season skipped. The season has begun.',
+
+    'goal_ucl_title' => 'Win the Champions League',
+    'goal_ucl_knockout' => 'Advance to knockout phase',
+    'goal_uel_knockout' => 'Advance to knockout phase',
+    'goal_uecl_knockout' => 'Advance to knockout phase',
 ];

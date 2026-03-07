@@ -230,6 +230,23 @@ class MatchdayOrchestrator
             $game->update(['pending_finalization_match_id' => $playerMatch->id]);
         }
 
+        // End pre-season when no more friendly matches remain
+        if ($game->isInPreSeason()) {
+            $hasFriendlies = GameMatch::where('game_id', $game->id)
+                ->where('competition_id', 'FR')
+                ->where('played', false)
+                ->exists();
+
+            // If the only remaining friendly is the player's current match, it counts as done
+            if (! $hasFriendlies || ($playerMatch && ! GameMatch::where('game_id', $game->id)
+                ->where('competition_id', 'FR')
+                ->where('played', false)
+                ->where('id', '!=', $playerMatch->id)
+                ->exists())) {
+                $game->endPreSeason();
+            }
+        }
+
         // --- Post-match actions ---
         $t0 = microtime(true);
         $q0 = count(DB::getQueryLog());
