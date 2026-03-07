@@ -288,8 +288,15 @@ class MatchdayOrchestrator
         $homePlayers = $this->getLineupPlayers($match, $allPlayers, 'home');
         $awayPlayers = $this->getLineupPlayers($match, $allPlayers, 'away');
 
-        $homeBenchPlayers = $this->getBenchPlayers($match, $allPlayers, 'home', $game);
-        $awayBenchPlayers = $this->getBenchPlayers($match, $allPlayers, 'away', $game);
+        // Don't pass bench players for the user's team — they make their own
+        // substitution decisions during the live match. The simulator already
+        // guards with `$benchPlayers !== null`, so injury events are still
+        // generated but no auto-substitution follows.
+        $isUserMatch = $match->involvesTeam($game->team_id);
+        $isUserHome = $isUserMatch && $match->isHomeTeam($game->team_id);
+
+        $homeBenchPlayers = $isUserHome ? null : $this->getBenchPlayers($match, $allPlayers, 'home', $game);
+        $awayBenchPlayers = ($isUserMatch && ! $isUserHome) ? null : $this->getBenchPlayers($match, $allPlayers, 'away', $game);
 
         $homeFormation = Formation::tryFrom($match->home_formation) ?? Formation::F_4_4_2;
         $awayFormation = Formation::tryFrom($match->away_formation) ?? Formation::F_4_4_2;
