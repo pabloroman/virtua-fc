@@ -5,6 +5,7 @@ namespace App\Modules\Season\Services;
 use App\Models\Competition;
 use App\Models\Game;
 use App\Models\Team;
+use App\Models\TeamReputation;
 use App\Modules\Competition\Contracts\HasSeasonGoals;
 
 class SeasonGoalService
@@ -12,7 +13,7 @@ class SeasonGoalService
     /**
      * Determine the season goal for a team based on reputation and competition.
      */
-    public function determineGoalForTeam(Team $team, Competition $competition): string
+    public function determineGoalForTeam(Team $team, Competition $competition, ?Game $game = null): string
     {
         $config = $competition->getConfig();
 
@@ -20,7 +21,9 @@ class SeasonGoalService
             return Game::GOAL_TOP_HALF;
         }
 
-        $reputation = $team->clubProfile->reputation_level ?? 'modest';
+        $reputation = $game
+            ? TeamReputation::resolveLevel($game->id, $team->id)
+            : ($team->clubProfile->reputation_level ?? 'modest');
 
         return $config->getSeasonGoal($reputation);
     }

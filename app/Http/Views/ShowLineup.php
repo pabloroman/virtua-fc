@@ -10,7 +10,7 @@ use App\Modules\Lineup\Enums\PlayingStyle;
 use App\Modules\Lineup\Enums\PressingIntensity;
 use App\Modules\Lineup\Services\LineupService;
 use App\Modules\Squad\Services\InjuryService;
-use App\Models\ClubProfile;
+use App\Models\TeamReputation;
 use App\Models\Game;
 use App\Support\PitchGrid;
 use App\Support\PositionMapper;
@@ -279,9 +279,9 @@ class ShowLineup
         $teamAverage = $this->lineupService->calculateTeamAverage($bestXI);
 
         // Predict their mentality based on reputation and context
-        $clubProfile = ClubProfile::where('team_id', $opponentTeamId)->first();
+        $opponentReputation = TeamReputation::resolveLevel($game->id, $opponentTeamId);
         $predictedMentality = $this->lineupService->selectAIMentality(
-            $clubProfile?->reputation_level,
+            $opponentReputation,
             $opponentIsHome,
             (float) $teamAverage,
             (float) $userTeamAverage

@@ -151,6 +151,17 @@ return [
     'facilities_tier_3' => 'Experiencia premium - 1.35x ingresos',
     'facilities_tier_4' => 'Estadio clase mundial - 1.6x ingresos',
 
+    // Reputation tiers
+    'reputation' => [
+        'elite' => 'Élite',
+        'contenders' => 'Aspirante',
+        'continental' => 'Continental',
+        'established' => 'Consolidado',
+        'modest' => 'Modesto',
+        'professional' => 'Profesional',
+        'local' => 'Local',
+    ],
+
     // Categories
     'category_transfer_in' => 'Venta',
     'category_transfer_out' => 'Fichaje',

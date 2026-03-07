@@ -7,6 +7,7 @@ use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\GameTransfer;
 use App\Models\Team;
+use App\Models\TeamReputation;
 use App\Modules\Notification\Services\NotificationService;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -188,7 +189,7 @@ class AITransferMarketService
         Collection $teams,
     ): int {
         // Load reputation data for all AI teams
-        $teamReputations = $this->loadTeamReputations($teamRosters);
+        $teamReputations = $this->loadTeamReputations($game, $teamRosters);
 
         // Exclude players already transferred this season (prevents summer signings being re-sold in winter)
         $alreadyTransferredIds = GameTransfer::where('game_id', $game->id)
@@ -811,14 +812,12 @@ class AITransferMarketService
      *
      * @return Collection<string, int> teamId => reputation index (0 = elite, 6 = local)
      */
-    private function loadTeamReputations(Collection $teamRosters): Collection
+    private function loadTeamReputations(Game $game, Collection $teamRosters): Collection
     {
-        $clubProfiles = ClubProfile::whereIn('team_id', $teamRosters->keys())
-            ->get()
-            ->keyBy('team_id');
+        $levels = TeamReputation::resolveLevels($game->id, $teamRosters->keys()->all());
 
-        return $teamRosters->keys()->mapWithKeys(function ($teamId) use ($clubProfiles) {
-            $level = $clubProfiles->get($teamId)?->reputation_level ?? ClubProfile::REPUTATION_LOCAL;
+        return $teamRosters->keys()->mapWithKeys(function ($teamId) use ($levels) {
+            $level = $levels->get($teamId) ?? ClubProfile::REPUTATION_LOCAL;
 
             // Invert: ClubProfile uses 0=local,6=elite; this service needs 0=elite,6=local
             return [$teamId => 6 - ClubProfile::getReputationTierIndex($level)];

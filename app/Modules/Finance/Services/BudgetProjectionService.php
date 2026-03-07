@@ -11,6 +11,7 @@ use App\Models\GameFinances;
 use App\Models\GameInvestment;
 use App\Models\GamePlayer;
 use App\Models\Team;
+use App\Models\TeamReputation;
 use Carbon\Carbon;
 
 class BudgetProjectionService
@@ -62,7 +63,7 @@ class BudgetProjectionService
         $projectedWages = $this->calculateProjectedWages($game);
 
         // Calculate operating expenses based on club reputation
-        $reputation = $team->clubProfile->reputation_level ?? ClubProfile::REPUTATION_MODEST;
+        $reputation = TeamReputation::resolveLevel($game->id, $team->id);
         $baseOperatingExpenses = config('finances.operating_expenses.' . $reputation, 700_000_000);
         $tierMultiplier = config('finances.operating_expense_tier_multiplier.' . $league->tier, 1.0);
         $projectedOperatingExpenses = (int) ($baseOperatingExpenses * $tierMultiplier);
@@ -210,7 +211,7 @@ class BudgetProjectionService
      */
     public function calculateMatchdayRevenue(Team $team, Game $game): int
     {
-        $reputation = $team->clubProfile->reputation_level ?? ClubProfile::REPUTATION_MODEST;
+        $reputation = TeamReputation::resolveLevel($game->id, $team->id);
 
         // Base matchday revenue from stadium size and competition config rates
         $base = $team->stadium_seats * config("finances.revenue_per_seat.{$reputation}", 15_000);
@@ -326,7 +327,7 @@ class BudgetProjectionService
         }
 
         // First season: calculate from stadium seats × config rate (capped)
-        $reputation = $team->clubProfile->reputation_level ?? ClubProfile::REPUTATION_MODEST;
+        $reputation = TeamReputation::resolveLevel($game->id, $team->id);
         $seats = min($team->stadium_seats, self::MAX_COMMERCIAL_SEATS);
 
         $base = $seats * config("finances.commercial_per_seat.{$reputation}", 80_000);

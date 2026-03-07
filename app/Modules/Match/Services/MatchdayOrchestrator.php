@@ -15,8 +15,8 @@ use App\Modules\Match\Jobs\ProcessCareerActions;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Squad\Services\EligibilityService;
 use App\Modules\Squad\Services\InjuryService;
-use App\Models\ClubProfile;
 use App\Models\Competition;
+use App\Models\TeamReputation;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GameNotification;
@@ -193,7 +193,8 @@ class MatchdayOrchestrator
             ->pluck('game_player_id')
             ->toArray();
 
-        $clubProfiles = ClubProfile::whereIn('team_id', $teamIds)->get()->keyBy('team_id');
+        $clubProfiles = TeamReputation::where('game_id', $game->id)
+            ->whereIn('team_id', $teamIds)->get()->keyBy('team_id');
         $timings['loadPlayers'] = $this->capturePhase($t0, $q0);
 
         // --- Ensure lineups ---

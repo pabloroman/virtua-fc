@@ -4,8 +4,8 @@ namespace App\Modules\Season\Processors;
 
 use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
-use App\Models\ClubProfile;
 use App\Models\FinancialTransaction;
+use App\Models\TeamReputation;
 use App\Models\Game;
 use App\Models\GameInvestment;
 use App\Models\GamePlayer;
@@ -118,7 +118,7 @@ class SeasonSettlementProcessor implements SeasonProcessor
     private function calculateMatchdayRevenue(Game $game, int $position): int
     {
         $team = $game->team;
-        $reputation = $team->clubProfile->reputation_level ?? ClubProfile::REPUTATION_MODEST;
+        $reputation = TeamReputation::resolveLevel($game->id, $team->id);
 
         $league = $game->competition;
 

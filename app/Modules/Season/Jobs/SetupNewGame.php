@@ -12,12 +12,14 @@ use App\Modules\Squad\Services\PlayerDevelopmentService;
 use App\Modules\Season\Processors\LeagueFixtureProcessor;
 use App\Modules\Season\Processors\StandingsResetProcessor;
 use App\Support\Money;
+use App\Models\ClubProfile;
 use App\Models\CompetitionEntry;
 use App\Models\CompetitionTeam;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\Player;
 use App\Models\Team;
+use App\Models\TeamReputation;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -68,6 +70,9 @@ class SetupNewGame implements ShouldQueue
             // Step 1: Copy competition team rosters into per-game table
             $this->copyCompetitionTeamsToGame();
 
+            // Step 1b: Initialize per-game reputation records for all teams
+            $this->initializeTeamReputations();
+    
             // Step 2: Initialize game players (template-based or fallback)
             $this->initializeGamePlayersFromTemplates($allTeams, $allPlayers, $contractService, $developmentService);
 
@@ -132,6 +137,44 @@ class SetupNewGame implements ShouldQueue
 
         foreach (array_chunk($rows, 100) as $chunk) {
             CompetitionEntry::insert($chunk);
+        }
+    }
+
+    /**
+     * Initialize per-game reputation records for all teams with competition entries.
+     * Copies the static ClubProfile reputation as the starting point.
+     */
+    private function initializeTeamReputations(): void
+    {
+        // Idempotency: skip if already done
+        if (TeamReputation::where('game_id', $this->gameId)->exists()) {
+            return;
+        }
+
+        $teamIds = CompetitionEntry::where('game_id', $this->gameId)
+            ->pluck('team_id')
+            ->unique();
+
+        $clubProfiles = ClubProfile::whereIn('team_id', $teamIds)
+            ->pluck('reputation_level', 'team_id');
+
+        $rows = [];
+        foreach ($teamIds as $teamId) {
+            $level = $clubProfiles[$teamId] ?? ClubProfile::REPUTATION_LOCAL;
+            $points = TeamReputation::pointsForTier($level);
+
+            $rows[] = [
+                'id' => Str::uuid()->toString(),
+                'game_id' => $this->gameId,
+                'team_id' => $teamId,
+                'reputation_level' => $level,
+                'base_reputation_level' => $level,
+                'reputation_points' => $points,
+            ];
+        }
+
+        foreach (array_chunk($rows, 100) as $chunk) {
+            TeamReputation::insert($chunk);
         }
     }
 
