@@ -73,19 +73,8 @@ class PlayerValuationService
      */
     public function abilityToMarketValue(int $averageAbility, int $age, ?int $previousAbility = null): int
     {
-        // Base value from ability tier (unified with marketValueToRawAbility ranges)
-        $baseValue = match (true) {
-            $averageAbility >= 88 => mt_rand(60_000_000_00, 150_000_000_00),  // €60-150M
-            $averageAbility >= 83 => mt_rand(35_000_000_00, 70_000_000_00),   // €35-70M
-            $averageAbility >= 78 => mt_rand(20_000_000_00, 40_000_000_00),   // €20-40M
-            $averageAbility >= 73 => mt_rand(10_000_000_00, 25_000_000_00),   // €10-25M
-            $averageAbility >= 68 => mt_rand(5_000_000_00, 12_000_000_00),    // €5-12M
-            $averageAbility >= 63 => mt_rand(2_000_000_00, 6_000_000_00),     // €2-6M
-            $averageAbility >= 58 => mt_rand(1_000_000_00, 3_000_000_00),     // €1-3M
-            $averageAbility >= 50 => mt_rand(500_000_00, 1_500_000_00),       // €500K-1.5M
-            $averageAbility >= 45 => mt_rand(200_000_00, 600_000_00),         // €200K-600K
-            default => mt_rand(100_000_00, 300_000_00),                        // €100-300K
-        };
+        // Deterministic base value via log-linear interpolation of forward mapping anchors
+        $baseValue = $this->abilityToBaseValue($averageAbility);
 
         // Age multiplier
         $ageMultiplier = match (true) {
@@ -200,5 +189,54 @@ class PlayerValuationService
         };
 
         return min(95, $rawAbility + $abilityBoost);
+    }
+
+    /**
+     * Deterministic ability-to-market-value mapping via log-linear interpolation.
+     *
+     * Anchor points are derived from the forward mapping tier boundaries
+     * in marketValueToRawAbility(), making this the mathematical inverse.
+     * Interpolation in log-space produces smooth exponential growth between anchors.
+     *
+     * @param int $ability Average ability (tech + phys) / 2
+     * @return int Market value in cents
+     */
+    private function abilityToBaseValue(int $ability): int
+    {
+        $anchors = [
+            [45, 10_000_000],        // €100K
+            [50, 30_000_000],        // €300K
+            [58, 100_000_000],       // €1M
+            [63, 200_000_000],       // €2M
+            [68, 500_000_000],       // €5M
+            [73, 1_000_000_000],     // €10M
+            [78, 2_000_000_000],     // €20M
+            [83, 5_000_000_000],     // €50M
+            [88, 10_000_000_000],    // €100M
+            [95, 20_000_000_000],    // €200M
+        ];
+
+        if ($ability <= $anchors[0][0]) {
+            return $anchors[0][1];
+        }
+
+        $last = count($anchors) - 1;
+        if ($ability >= $anchors[$last][0]) {
+            return $anchors[$last][1];
+        }
+
+        for ($i = 0; $i < $last; $i++) {
+            [$aLow, $vLow] = $anchors[$i];
+            [$aHigh, $vHigh] = $anchors[$i + 1];
+
+            if ($ability >= $aLow && $ability <= $aHigh) {
+                $t = ($ability - $aLow) / ($aHigh - $aLow);
+                $logValue = log($vLow) + $t * (log($vHigh) - log($vLow));
+
+                return (int) round(exp($logValue));
+            }
+        }
+
+        return $anchors[0][1];
     }
 }
