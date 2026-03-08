@@ -14,12 +14,14 @@ use App\Models\GameStanding;
 use App\Models\SimulatedSeason;
 use App\Models\Team;
 use App\Models\TeamReputation;
+use App\Modules\Competition\Promotions\PromotionRelegationFactory;
 use App\Modules\Season\Services\SeasonGoalService;
 
 class ShowSeasonEnd
 {
     public function __construct(
         private readonly SeasonGoalService $seasonGoalService,
+        private readonly PromotionRelegationFactory $promotionRelegationFactory,
     ) {}
 
     public function __invoke(string $gameId)
@@ -125,6 +127,9 @@ class ShowSeasonEnd
             ->sum('amount');
         $transferBalance = $transferIncome - $transferSpend;
 
+        // === Promotion/Relegation data ===
+        $promotionData = $this->buildPromotionData($game, $competition);
+
         // === Reputation direction hint ===
         $reputationData = $this->buildReputationHint($game, $playerStanding?->position);
 
@@ -142,6 +147,7 @@ class ShowSeasonEnd
             // Awards sidebar
             'topScorers' => $topScorers,
             'bestGoalkeeper' => $bestGoalkeeper,
+            'promotionData' => $promotionData,
             // Other competitions
             'otherCompetitionResults' => $otherCompetitionResults,
             // Team in numbers
@@ -162,6 +168,44 @@ class ShowSeasonEnd
             // Reputation
             'reputationData' => $reputationData,
         ]);
+    }
+
+    /**
+     * Build promoted/relegated team lists for the sidebar.
+     */
+    private function buildPromotionData(Game $game, Competition $competition): ?array
+    {
+        $rule = $this->promotionRelegationFactory->forCompetition($competition->id);
+
+        if (!$rule) {
+            return null;
+        }
+
+        $promoted = $rule->getPromotedTeams($game);
+        $relegated = $rule->getRelegatedTeams($game);
+
+        if (empty($promoted) && empty($relegated)) {
+            return null;
+        }
+
+        // Batch-load Team models for crests
+        $teamIds = array_merge(
+            array_column($promoted, 'teamId'),
+            array_column($relegated, 'teamId'),
+        );
+        $teams = Team::whereIn('id', $teamIds)->get()->keyBy('id');
+
+        // Load competition names for the header labels
+        $topLeague = Competition::find($rule->getTopDivision());
+        $bottomLeague = Competition::find($rule->getBottomDivision());
+
+        return [
+            'promoted' => $promoted,
+            'relegated' => $relegated,
+            'teams' => $teams,
+            'topLeagueName' => $topLeague ? __($topLeague->name) : '',
+            'bottomLeagueName' => $bottomLeague ? __($bottomLeague->name) : '',
+        ];
     }
 
     /**
