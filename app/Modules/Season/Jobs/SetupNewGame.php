@@ -151,7 +151,11 @@ class SetupNewGame implements ShouldQueue
             return;
         }
 
+        $game = Game::find($this->gameId);
+        $countryCode = $game->country ?? 'ES';
+
         $teamIds = CompetitionEntry::where('game_id', $this->gameId)
+            ->whereHas('competition', fn ($q) => $q->where('country', $countryCode))
             ->pluck('team_id')
             ->unique();
 
