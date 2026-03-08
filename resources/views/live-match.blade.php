@@ -642,6 +642,27 @@
                                         </div>
                                     @endif
 
+                                    <div class="text-center mb-4">
+                                        <template x-if="!processingReady">
+                                            <button type="button" disabled
+                                                    class="inline-flex items-center gap-2 px-6 py-2 bg-slate-200 text-slate-500 font-semibold rounded-lg cursor-wait min-h-[44px]">
+                                                <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                                </svg>
+                                                <span x-text="translations.processingActions"></span>
+                                            </button>
+                                        </template>
+                                        <template x-if="processingReady">
+                                            <form method="POST" action="{{ route('game.finalize-match', $game->id) }}">
+                                                @csrf
+                                                <x-primary-button class="px-6">
+                                                    {{ __('game.live_continue_dashboard') }}
+                                                </x-primary-button>
+                                            </form>
+                                        </template>
+                                    </div>
+
                                     {{-- Other Results --}}
                                     @if(count($otherMatches) > 0)
                                         <div class="mb-4">
@@ -665,27 +686,6 @@
                                             </div>
                                         </div>
                                     @endif
-
-                                    <div class="text-center">
-                                        <template x-if="!processingReady">
-                                            <button type="button" disabled
-                                                    class="inline-flex items-center gap-2 px-6 py-2 bg-slate-200 text-slate-500 font-semibold rounded-lg cursor-wait min-h-[44px]">
-                                                <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-                                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                                                </svg>
-                                                <span x-text="translations.processingActions"></span>
-                                            </button>
-                                        </template>
-                                        <template x-if="processingReady">
-                                            <form method="POST" action="{{ route('game.finalize-match', $game->id) }}">
-                                                @csrf
-                                                <x-primary-button class="px-6">
-                                                    {{ __('game.live_continue_dashboard') }}
-                                                </x-primary-button>
-                                            </form>
-                                        </template>
-                                    </div>
                                 </div>
                             </template>
                         </div>
