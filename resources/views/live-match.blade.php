@@ -15,7 +15,7 @@
     </head>
     <body class="font-sans antialiased">
     <div class="min-h-screen bg-gradient-to-bl from-slate-900 via-cyan-950 to-teal-950">
-    <main class="text-slate-700 py-8">
+    <main class="text-slate-700 pt-0 pb-8 sm:py-8">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8"
              x-data="liveMatch({
                 events: {{ Js::from($events) }},
@@ -94,7 +94,10 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 {{-- Competition & Round Info --}}
                 <div class="px-4 py-2.5 text-center text-sm font-semibold sm:rounded-t-lg {{ $accent }}">
-                    {{ __($match->competition->name) }} &middot; {{ $match->round_name ? __($match->round_name) : __('game.matchday_n', ['number' => $match->round_number]) }}
+                    <div>{{ __($match->competition->name) }} &middot; {{ $match->round_name ? __($match->round_name) : __('game.matchday_n', ['number' => $match->round_number]) }}</div>
+                    @if($match->homeTeam->stadium_name)
+                        <div class="text-xs font-normal opacity-80">{{ $match->homeTeam->stadium_name }}</div>
+                    @endif
                 </div>
                 <div class="p-6 sm:p-8">
 
