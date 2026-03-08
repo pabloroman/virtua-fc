@@ -112,9 +112,6 @@
                                                         <x-team-crest :team="$team" class="w-10 h-10" />
                                                         <div class="min-w-0">
                                                             <span class="text-[20px] block truncate">{{ $team->name }}</span>
-                                                            @if($team->clubProfile?->reputation_level)
-                                                                <span class="text-[11px] text-slate-400">{{ __('finances.reputation.' . $team->clubProfile->reputation_level) }}</span>
-                                                            @endif
                                                         </div>
                                                         <input x-bind:required="mode === 'career'" x-bind:disabled="mode !== 'career'" type="radio" name="team_id" value="{{ $team->id }}" class="hidden appearance-none rounded-full border-[5px] border-white bg-white bg-clip-padding outline-none ring-1 ring-gray-950/10 checked:border-sky-600 checked:ring-sky-600 focus:outline-none">
                                                     </label>

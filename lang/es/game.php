@@ -194,7 +194,7 @@ return [
     'season_preview' => 'Previa de Temporada',
     'season_objective' => 'Objetivo de Temporada',
     'club_reputation' => 'Reputación del Club',
-    'reputation_help' => 'La reputación refleja la posición de tu club en el mundo del fútbol. Evoluciona según el rendimiento sostenido en liga y afecta a las finanzas, el atractivo en fichajes y las expectativas de la directiva.',
+    'reputation_help' => 'La reputación refleja la posición de tu club en el mundo del fútbol. Evoluciona según el rendimiento sostenido en liga y afecta a tu presupuesto, la capacidad de atraer jugadores y las expectativas de la directiva.',
     'your_competitions' => 'Tus Competiciones',
     'competition_role_league' => 'Liga',
     'competition_role_cup' => 'Copa',
@@ -364,8 +364,34 @@ return [
     'tournament_view_summary' => 'Ver Resumen del Torneo',
     'tournament_simulating' => 'Simulando partidos restantes...',
 
-    'goal_ucl_title' => 'Ganar la Champions League',
-    'goal_ucl_knockout' => 'Pasar a fase eliminatoria',
-    'goal_uel_knockout' => 'Pasar a fase eliminatoria',
-    'goal_uecl_knockout' => 'Pasar a fase eliminatoria',
+    // Onboarding - Squad Snapshot
+    'your_squad' => 'Tu Plantilla',
+    'players_count' => ':count jugadores',
+    'avg_overall' => 'Media General',
+    'avg_age' => 'Edad Media',
+    'squad_size' => 'Tamaño',
+    'annual_wages' => 'Masa Salarial',
+    'ideal_range' => ':min-:max ideal',
+    'position_coverage' => 'Cobertura por Posición',
+    'areas_of_concern' => 'Puntos de Atención',
+    'concern_low_goalkeepers' => 'Solo :count portero|Solo :count porteros',
+    'concern_low_defenders' => 'Solo :count defensa|Solo :count defensas',
+    'concern_low_forwards' => 'Solo :count delantero|Solo :count delanteros',
+    'concern_aging_squad' => 'La edad media es :age',
+    'concern_small_squad' => 'Solo :count jugadores en la plantilla',
+    'squad_transfer_hint' => 'Tu plantilla tiene :count jugadores. El presupuesto de fichajes determina tu capacidad de gasto en verano.',
+
+    // Onboarding - Off-Season Recap
+    'offseason_recap' => 'Resumen del Mercado',
+    'departures' => 'Salidas',
+    'arrivals' => 'Llegadas',
+    'no_departures' => 'Sin salidas',
+    'no_arrivals' => 'Sin llegadas',
+    'show_all' => 'Ver todos',
+    'show_less' => 'Ver menos',
+    'reputation_changed' => 'Cambio de reputación',
+
+    // Onboarding - Club Info
+    'stadium' => 'Estadio',
+    'seats' => ':count localidades',
 ];

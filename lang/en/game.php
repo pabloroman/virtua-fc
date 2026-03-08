@@ -194,7 +194,7 @@ return [
     'season_preview' => 'Season Preview',
     'season_objective' => 'Season Objective',
     'club_reputation' => 'Club Reputation',
-    'reputation_help' => 'Reputation reflects your club\'s standing in the football world. It evolves based on sustained league performance and affects finances, transfer attractiveness, and board expectations.',
+    'reputation_help' => 'Reputation reflects your club\'s standing in the football world. It evolves based on sustained league performance and affects budget, transfer attractiveness, and board expectations.',
     'your_competitions' => 'Your Competitions',
     'competition_role_league' => 'League',
     'competition_role_cup' => 'Cup',
@@ -364,8 +364,34 @@ return [
     'tournament_view_summary' => 'View Tournament Summary',
     'tournament_simulating' => 'Simulating remaining matches...',
 
-    'goal_ucl_title' => 'Win the Champions League',
-    'goal_ucl_knockout' => 'Advance to knockout phase',
-    'goal_uel_knockout' => 'Advance to knockout phase',
-    'goal_uecl_knockout' => 'Advance to knockout phase',
+    // Onboarding - Squad Snapshot
+    'your_squad' => 'Your Squad',
+    'players_count' => ':count players',
+    'avg_overall' => 'Avg Overall',
+    'avg_age' => 'Avg Age',
+    'squad_size' => 'Squad Size',
+    'annual_wages' => 'Annual Wages',
+    'ideal_range' => ':min-:max ideal',
+    'position_coverage' => 'Position Coverage',
+    'areas_of_concern' => 'Areas of Concern',
+    'concern_low_goalkeepers' => 'Only :count goalkeeper|Only :count goalkeepers',
+    'concern_low_defenders' => 'Only :count defender|Only :count defenders',
+    'concern_low_forwards' => 'Only :count forward|Only :count forwards',
+    'concern_aging_squad' => 'Average age is :age',
+    'concern_small_squad' => 'Only :count players in the squad',
+    'squad_transfer_hint' => 'Your squad has :count players. The transfer budget determines your summer spending power.',
+
+    // Onboarding - Off-Season Recap
+    'offseason_recap' => 'Off-Season Recap',
+    'departures' => 'Departures',
+    'arrivals' => 'Arrivals',
+    'no_departures' => 'No departures',
+    'no_arrivals' => 'No arrivals',
+    'show_all' => 'Show all',
+    'show_less' => 'Show less',
+    'reputation_changed' => 'Reputation changed',
+
+    // Onboarding - Club Info
+    'stadium' => 'Stadium',
+    'seats' => ':count seats',
 ];

@@ -3,7 +3,6 @@
 namespace App\Http\Views;
 
 use App\Modules\Competition\Services\CountryConfig;
-use App\Models\ClubProfile;
 use App\Models\Competition;
 use App\Models\Game;
 use App\Models\Team;
@@ -25,7 +24,7 @@ final class SelectTeam
             $tiers = [];
 
             foreach ($config['tiers'] as $tier => $tierConfig) {
-                $competition = Competition::with(['teams', 'teams.clubProfile'])
+                $competition = Competition::with(['teams'])
                     ->find($tierConfig['competition']);
 
                 if ($competition) {
