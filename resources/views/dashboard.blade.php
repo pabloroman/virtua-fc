@@ -53,7 +53,7 @@
                                         @if($game->current_date)
                                             <dd class="mt-2 mb-2">
                                                 <span class="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
-                                                    {{ __('game.matchday_n', ['number' => $game->current_matchday]) }} - {{ $game->current_date->format('d/m/Y') }}
+                                                    {{ __('game.matchday_n', ['number' => $game->current_matchday + 1]) }} - {{ $game->current_date->format('d/m/Y') }}
                                                 </span>
                                             </dd>
                                         @endif

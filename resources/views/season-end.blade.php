@@ -158,7 +158,6 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
                             </div>
                             @endif
                         </div>
-                    </div>
 
                         {{-- Reputation hint --}}
                         @if(!empty($reputationData))

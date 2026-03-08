@@ -110,9 +110,7 @@
                                                 @foreach($competition->teams as $team)
                                                     <label class="border text-slate-700 has-[:checked]:ring-sky-200 has-[:checked]:text-sky-900 has-[:checked]:bg-sky-100 grid grid-cols-[40px_1fr_auto] items-center gap-4 rounded-lg p-4 ring-1 ring-transparent hover:bg-sky-50">
                                                         <x-team-crest :team="$team" class="w-10 h-10" />
-                                                        <div class="min-w-0">
-                                                            <span class="text-[20px] block truncate">{{ $team->name }}</span>
-                                                        </div>
+                                                        <span class="text-[20px]">{{ $team->name }}</span>
                                                         <input x-bind:required="mode === 'career'" x-bind:disabled="mode !== 'career'" type="radio" name="team_id" value="{{ $team->id }}" class="hidden appearance-none rounded-full border-[5px] border-white bg-white bg-clip-padding outline-none ring-1 ring-gray-950/10 checked:border-sky-600 checked:ring-sky-600 focus:outline-none">
                                                     </label>
                                                 @endforeach

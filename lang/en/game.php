@@ -379,7 +379,6 @@ return [
     'concern_low_forwards' => 'Only :count forward|Only :count forwards',
     'concern_aging_squad' => 'Average age is :age',
     'concern_small_squad' => 'Only :count players in the squad',
-    'squad_transfer_hint' => 'Your squad has :count players. The transfer budget determines your summer spending power.',
 
     // Onboarding - Off-Season Recap
     'offseason_recap' => 'Off-Season Recap',

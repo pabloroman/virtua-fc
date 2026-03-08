@@ -379,7 +379,6 @@ return [
     'concern_low_forwards' => 'Solo :count delantero|Solo :count delanteros',
     'concern_aging_squad' => 'La edad media es :age',
     'concern_small_squad' => 'Solo :count jugadores en la plantilla',
-    'squad_transfer_hint' => 'Tu plantilla tiene :count jugadores. El presupuesto de fichajes determina tu capacidad de gasto en verano.',
 
     // Onboarding - Off-Season Recap
     'offseason_recap' => 'Resumen del Mercado',

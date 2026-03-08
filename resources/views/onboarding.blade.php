@@ -278,11 +278,6 @@
                     </div>
                 </div>
 
-                {{-- Context bridge --}}
-                <div class="mb-5 text-sm text-slate-500 bg-slate-50 rounded-lg px-3 py-2">
-                    {{ __('game.squad_transfer_hint', ['count' => $squadSnapshot['total_players']]) }}
-                </div>
-
                 <x-budget-allocation
                     :available-surplus="$availableSurplus"
                     :tiers="$tiers"
