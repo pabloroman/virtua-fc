@@ -146,10 +146,21 @@
                                                         @csrf
                                                         <x-primary-button color="green">{{ __('app.accept') }}</x-primary-button>
                                                     </form>
+                                                    @php $offeredPlayer = $renewalEligiblePlayers->firstWhere('id', $offer->game_player_id); @endphp
+                                                    @if($offeredPlayer)
+                                                        <x-renewal-modal
+                                                            :game="$game"
+                                                            :game-player="$offeredPlayer"
+                                                            :renewal-demand="$renewalDemands[$offeredPlayer->id]"
+                                                            :renewal-midpoint="$renewalMidpoints[$offeredPlayer->id]"
+                                                            :renewal-mood="$renewalMoods[$offeredPlayer->id]"
+                                                        />
+                                                    @else
                                                     <form method="post" action="{{ route('game.transfers.reject', [$game->id, $offer->id]) }}">
                                                         @csrf
                                                         <x-secondary-button type="submit">{{ __('app.reject') }}</x-secondary-button>
                                                     </form>
+                                                    @endif
                                                 </div>
                                             </div>
                                         </div>
@@ -187,10 +198,21 @@
                                                         @csrf
                                                         <x-primary-button color="amber" size="sm">{{ __('squad.let_go') }}</x-primary-button>
                                                     </form>
+                                                    @php $offeredPlayer = $renewalEligiblePlayers->firstWhere('id', $offer->game_player_id); @endphp
+                                                    @if($offeredPlayer)
+                                                        <x-renewal-modal
+                                                            :game="$game"
+                                                            :game-player="$offeredPlayer"
+                                                            :renewal-demand="$renewalDemands[$offeredPlayer->id]"
+                                                            :renewal-midpoint="$renewalMidpoints[$offeredPlayer->id]"
+                                                            :renewal-mood="$renewalMoods[$offeredPlayer->id]"
+                                                        />
+                                                    @else
                                                     <form method="post" action="{{ route('game.transfers.reject', [$game->id, $offer->id]) }}">
                                                         @csrf
                                                         <x-secondary-button type="submit" size="sm">{{ __('app.reject') }}</x-secondary-button>
                                                     </form>
+                                                    @endif
                                                 </div>
                                             </div>
                                         </div>
