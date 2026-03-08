@@ -104,7 +104,7 @@ class ShowScoutingHub
                 'positionAbbr' => $positionDisplay['abbreviation'],
                 'positionBg' => $positionDisplay['bg'],
                 'positionText' => $positionDisplay['text'],
-                'age' => $gp->age,
+                'age' => $gp->age($game->current_date),
                 'teamName' => $gp->team?->name,
                 'teamImage' => $gp->team?->image,
                 'isExpiring' => $gp->contract_until && $gp->contract_until <= $game->getSeasonEndDate(),

@@ -17,7 +17,7 @@
 
     $positionDisplay = $gamePlayer->position_display;
     $nationalityFlag = $gamePlayer->nationality_flag;
-    $devStatus = $gamePlayer->development_status;
+    $devStatus = $gamePlayer->developmentStatus($game->current_date);
 
     $devLabels = [
         'growing' => __('squad.growing'),
@@ -55,7 +55,7 @@
                         <span class="text-slate-300">&middot;</span>
                     @endif
                     <span>
-                        {{ $gamePlayer->age }} {{ __('app.years') }}
+                        {{ $gamePlayer->age($game->current_date) }} {{ __('app.years') }}
                             @if($gamePlayer->player->height)
                                 / {{ $gamePlayer->player->height }}
                             @endif

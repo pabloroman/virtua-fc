@@ -55,7 +55,7 @@ class SignFreeAgent
 
         // Sign the free agent
         $seasonYear = (int) $game->season;
-        $contractYears = $player->age >= 32 ? 1 : mt_rand(2, 3);
+        $contractYears = $player->age($game->current_date) >= 32 ? 1 : mt_rand(2, 3);
         $newContractEnd = \Carbon\Carbon::createFromDate($seasonYear + $contractYears + 1, 6, 30);
 
         $player->update([

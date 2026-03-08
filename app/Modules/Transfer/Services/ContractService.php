@@ -303,7 +303,7 @@ class ContractService
         $marketWage = $this->calculateAnnualWage(
             $player->market_value_cents,
             $minimumWage,
-            $player->age
+            $player->age($player->game->current_date)
         );
 
         // Player wants the higher of: current wage + premium, or market wage
@@ -314,7 +314,7 @@ class ContractService
         $demandedWage = (int) (round($demandedWage / 10_000_000) * 10_000_000);
 
         // Contract length based on age
-        $contractYears = $this->calculateRenewalYears($player->age);
+        $contractYears = $this->calculateRenewalYears($player->age($player->game->current_date));
 
         return [
             'wage' => $demandedWage,
@@ -467,7 +467,7 @@ class ContractService
         }
 
         // Age factor
-        $age = $player->age;
+        $age = $player->age($player->game->current_date);
         if ($age >= 32) {
             $disposition += 0.12;
         } elseif ($age >= 29) {

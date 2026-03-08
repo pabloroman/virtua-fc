@@ -53,12 +53,10 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property-read int|null $active_offers_count
  * @property-read \App\Models\RenewalNegotiation|null $activeRenewalNegotiation
  * @property-read \App\Models\Game $game
- * @property-read int $age
  * @property-read int $annual_wage_euros
  * @property-read int|null $contract_expiry_year
  * @property-read int $current_physical_ability
  * @property-read int $current_technical_ability
- * @property-read string $development_status
  * @property-read string $formatted_market_value
  * @property-read string|null $formatted_pending_wage
  * @property-read string $formatted_wage
@@ -631,13 +629,11 @@ class GamePlayer extends Model
     }
 
     /**
-     * Get player's age based on the game's current date (not wall-clock today).
+     * Get player's age based on a reference date (typically the game's current date).
      */
-    public function getAgeAttribute(): int
+    public function age(Carbon|\DateTimeInterface $currentDate): int
     {
-        $referenceDate = $this->game->current_date;
-
-        return (int) $this->player->date_of_birth->diffInYears($referenceDate);
+        return (int) $this->player->date_of_birth->diffInYears($currentDate);
     }
 
     /**
@@ -760,9 +756,9 @@ class GamePlayer extends Model
     /**
      * Get development status based on age (growing/peak/declining).
      */
-    public function getDevelopmentStatusAttribute(): string
+    public function developmentStatus(Carbon|\DateTimeInterface $currentDate): string
     {
-        $age = $this->age;
+        $age = $this->age($currentDate);
         if ($age <= 23) {
             return 'growing';
         }

@@ -329,7 +329,7 @@ class MatchSimulator
             $isGK = $player->position === 'Goalkeeper';
             $avgEnergy = EnergyCalculator::averageEnergy(
                 $player->physical_ability,
-                $player->age,
+                $player->age($player->game->current_date),
                 $isGK,
                 $entryMinute,
                 $fromMinute,

@@ -872,7 +872,7 @@ class TransferService
         }
 
         // Age modifier
-        $age = $player->age;
+        $age = $player->age($player->game->current_date);
         $ageModifier = 1.0;
 
         if ($age < 23) {
@@ -994,7 +994,7 @@ class TransferService
      */
     private function calculateBuyerWeights(Collection $buyers, GamePlayer $player, Collection $squadValues): array
     {
-        $developmentStatus = $player->development_status;
+        $developmentStatus = $player->developmentStatus($player->game->current_date);
 
         // Peak players: no weighting needed
         if ($developmentStatus === 'peak') {
@@ -1153,7 +1153,7 @@ class TransferService
         $fromTeamId = $offer->selling_team_id ?? $player->team_id;
 
         // Transfer player to user's team
-        $age = $player->age;
+        $age = $player->age($game->current_date);
         $contractYears = $age >= 35 ? 2 : ($age >= 32 ? 3 : rand(3, 5));
         $newContractEnd = Carbon::parse($game->current_date)->addYears($contractYears);
 

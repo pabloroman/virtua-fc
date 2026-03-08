@@ -69,7 +69,7 @@ class ToggleShortlist
                     'positionAbbr' => $positionDisplay['abbreviation'],
                     'positionBg' => $positionDisplay['bg'],
                     'positionText' => $positionDisplay['text'],
-                    'age' => $gamePlayer->age,
+                    'age' => $gamePlayer->age($game->current_date),
                     'teamName' => $gamePlayer->team?->name,
                     'teamImage' => $gamePlayer->team?->image,
                     'isExpiring' => $gamePlayer->contract_until && $gamePlayer->contract_until <= $game->getSeasonEndDate(),

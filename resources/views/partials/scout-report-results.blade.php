@@ -63,7 +63,7 @@
                             <div class="min-w-0">
                                 <div class="flex items-center gap-2 flex-wrap">
                                     <span class="font-semibold text-slate-900 truncate">{{ $player->name }}</span>
-                                    <span class="text-xs text-slate-400">{{ $player->age }} {{ __('app.years') }}</span>
+                                    <span class="text-xs text-slate-400">{{ $player->age($game->current_date) }} {{ __('app.years') }}</span>
                                     @if($isFreeAgent)
                                         <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-green-100 text-green-700">{{ __('transfers.free_agent') }}</span>
                                     @elseif($isExpiring)

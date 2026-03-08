@@ -68,7 +68,7 @@ class PlayerRetirementService
      */
     public function shouldRetire(GamePlayer $player): bool
     {
-        $age = $player->age;
+        $age = $player->age($player->game->current_date);
         $isGoalkeeper = $player->position === 'Goalkeeper';
 
         $minAge = $isGoalkeeper ? self::MIN_RETIREMENT_AGE_GOALKEEPER : self::MIN_RETIREMENT_AGE_OUTFIELD;

@@ -276,7 +276,7 @@ class LoanService
     private function scoreLeagueTier(GamePlayer $player, Team $team): int
     {
         $reputation = TeamReputation::resolveLevel($player->game_id, $team->id);
-        $devStatus = $player->development_status;
+        $devStatus = $player->developmentStatus($player->game->current_date);
         $avgAbility = (int) round(($player->current_technical_ability + $player->current_physical_ability) / 2);
 
         $isSmallClub = in_array($reputation, [

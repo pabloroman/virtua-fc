@@ -46,7 +46,7 @@ class ShowSquadV2
 
             // Development projection
             $player->setAttribute('projection', $this->developmentService->getNextSeasonProjection($player));
-            $player->setAttribute('dev_status', DevelopmentCurve::getStatus($player->age));
+            $player->setAttribute('dev_status', DevelopmentCurve::getStatus($player->age($game->current_date)));
 
             // Computed stats
             $player->setAttribute('goal_contributions', $player->goals + $player->assists);
@@ -73,7 +73,7 @@ class ShowSquadV2
 
         // --- Squad Dashboard KPIs ---
         $squadSize = $allPlayers->count();
-        $avgAge = $squadSize > 0 ? round($allPlayers->avg(fn ($p) => $p->age), 1) : 0;
+        $avgAge = $squadSize > 0 ? round($allPlayers->avg(fn ($p) => $p->age($game->current_date)), 1) : 0;
         $avgFitness = $squadSize > 0 ? round($allPlayers->avg('fitness')) : 0;
         $avgMorale = $squadSize > 0 ? round($allPlayers->avg('morale')) : 0;
         $avgOverall = $squadSize > 0 ? round($allPlayers->avg('overall_score')) : 0;
@@ -82,9 +82,10 @@ class ShowSquadV2
         $injuredCount = $allPlayers->filter(fn ($p) => $p->isInjured($game->current_date))->count();
 
         // Age distribution
-        $youngCount = $allPlayers->filter(fn ($p) => $p->age <= 23)->count();
-        $primeCount = $allPlayers->filter(fn ($p) => $p->age >= 24 && $p->age <= 31)->count();
-        $veteranCount = $allPlayers->filter(fn ($p) => $p->age >= 32)->count();
+        $currentDate = $game->current_date;
+        $youngCount = $allPlayers->filter(fn ($p) => $p->age($currentDate) <= 23)->count();
+        $primeCount = $allPlayers->filter(fn ($p) => $p->age($currentDate) >= 24 && $p->age($currentDate) <= 31)->count();
+        $veteranCount = $allPlayers->filter(fn ($p) => $p->age($currentDate) >= 32)->count();
 
         // Career mode financial data
         $squadValue = 0;

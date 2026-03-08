@@ -41,7 +41,7 @@ class PlayerDevelopmentService
      */
     public function calculateDevelopment(GamePlayer $player): array
     {
-        $age = $player->age;
+        $age = $player->age($player->game->current_date);
         $multipliers = DevelopmentCurve::getMultipliers($age);
         $hasBonus = DevelopmentCurve::qualifiesForBonus($player->season_appearances);
 
@@ -269,7 +269,7 @@ class PlayerDevelopmentService
         $projections = [];
         $currentTech = $player->current_technical_ability;
         $currentPhys = $player->current_physical_ability;
-        $currentAge = $player->age;
+        $currentAge = $player->age($player->game->current_date);
         $potential = $player->potential ?? 99;
 
         // Assume the player will get starter bonus (optimistic projection)
@@ -374,7 +374,7 @@ class PlayerDevelopmentService
 
         // Pass market value to influence potential calculation
         $marketValueCents = $player->market_value_cents ?? 0;
-        $potentialData = $this->generatePotential($player->age, $currentAbility, $marketValueCents);
+        $potentialData = $this->generatePotential($player->age($player->game->current_date), $currentAbility, $marketValueCents);
 
         $player->update([
             'game_technical_ability' => $player->player->technical_ability,
@@ -400,7 +400,7 @@ class PlayerDevelopmentService
 
         $marketValueCents = $player->market_value_cents ?? 0;
 
-        return $this->generatePotential($player->age, $currentAbility, $marketValueCents);
+        return $this->generatePotential($player->age($player->game->current_date), $currentAbility, $marketValueCents);
     }
 
 }

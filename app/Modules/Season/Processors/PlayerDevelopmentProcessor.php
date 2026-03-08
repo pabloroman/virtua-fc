@@ -46,7 +46,7 @@ class PlayerDevelopmentProcessor implements SeasonProcessor
             $newAbility = (int) round(($change['techAfter'] + $change['physAfter']) / 2);
             $newMarketValue = $this->valuationService->abilityToMarketValue(
                 $newAbility,
-                $player->age,
+                $player->age($game->current_date),
                 $previousAbility
             );
 
@@ -67,7 +67,7 @@ class PlayerDevelopmentProcessor implements SeasonProcessor
                     'playerId' => $player->id,
                     'playerName' => $player->name,
                     'teamId' => $player->team_id,
-                    'age' => $player->age,
+                    'age' => $player->age($game->current_date),
                     'techBefore' => $change['techBefore'],
                     'techAfter' => $change['techAfter'],
                     'physBefore' => $change['physBefore'],

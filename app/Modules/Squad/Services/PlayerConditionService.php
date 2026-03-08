@@ -161,7 +161,7 @@ class PlayerConditionService
      */
     private function getAgeLossModifier(GamePlayer $player, array $config): float
     {
-        $age = $player->age;
+        $age = $player->age($player->game->current_date);
         $ageMod = $config['age_loss_modifier'];
 
         return match (true) {

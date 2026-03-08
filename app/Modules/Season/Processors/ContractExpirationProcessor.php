@@ -103,7 +103,7 @@ class ContractExpirationProcessor implements SeasonProcessor
                         'position' => $player->position,
                         'teamId' => $player->team_id,
                         'teamName' => $player->team->name,
-                        'age' => $player->age,
+                        'age' => $player->age($game->current_date),
                     ];
                     $freeAgentIds[] = $player->id;
                 } else {
@@ -140,7 +140,7 @@ class ContractExpirationProcessor implements SeasonProcessor
     private function shouldNotRenew(GamePlayer $player, int $teamAvg): bool
     {
         $ability = $this->getPlayerAbility($player);
-        $age = $player->age;
+        $age = $player->age($player->game->current_date);
 
         // Age 33+ and below team average → 70% chance
         if ($age >= 33 && $ability < $teamAvg) {
@@ -162,11 +162,12 @@ class ContractExpirationProcessor implements SeasonProcessor
     private function nonRenewalScore(GamePlayer $player, int $teamAvg): int
     {
         $ability = $this->getPlayerAbility($player);
-        $score = max(0, $player->age - 28) + max(0, $teamAvg - $ability);
+        $age = $player->age($player->game->current_date);
+        $score = max(0, $age - 28) + max(0, $teamAvg - $ability);
 
-        if ($player->age >= 33 && $ability < $teamAvg) {
+        if ($age >= 33 && $ability < $teamAvg) {
             $score += 10;
-        } elseif ($player->age >= 30 && $ability < $teamAvg - 10) {
+        } elseif ($age >= 30 && $ability < $teamAvg - 10) {
             $score += 5;
         }
 

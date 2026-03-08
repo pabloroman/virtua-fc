@@ -53,7 +53,7 @@
                     </div>
                     {{-- Mobile-only details --}}
                     <div class="md:hidden text-xs text-slate-400 mt-0.5">
-                        <span>{{ $gp->age }} {{ __('app.years') }}</span>
+                        <span>{{ $gp->age($game->current_date) }} {{ __('app.years') }}</span>
                         <span class="mx-1">&middot;</span>
                         <span>{{ \App\Support\Money::format($gp->market_value_cents) }}</span>
                         <span class="mx-1">&middot;</span>
@@ -61,7 +61,7 @@
                     </div>
                 </td>
                 {{-- Age --}}
-                <td class="py-0 pr-3 hidden md:table-cell text-slate-600">{{ $gp->age }}</td>
+                <td class="py-0 pr-3 hidden md:table-cell text-slate-600">{{ $gp->age($game->current_date) }}</td>
                 {{-- Market value --}}
                 <td class="py-0 pr-3 hidden md:table-cell text-slate-600 font-medium">{{ \App\Support\Money::format($gp->market_value_cents) }}</td>
                 {{-- Contract --}}

@@ -184,7 +184,7 @@ class InjuryService
 
         // Get multipliers
         $durabilityMultiplier = $this->getDurabilityMultiplier($player);
-        $ageMultiplier = $this->getAgeMultiplier($player->age);
+        $ageMultiplier = $this->getAgeMultiplier($player->age($player->game->current_date));
         $fitnessMultiplier = $this->getFitnessMultiplier($player->fitness);
         $congestionMultiplier = $this->getCongestionMultiplier($lastMatchDate, $currentMatchDate);
         $medicalMultiplier = $this->getMedicalInjuryMultiplier($game);
@@ -268,9 +268,10 @@ class InjuryService
         $baseWeeks = rand($minWeeks, $maxWeeks);
 
         // Older players take slightly longer to recover
-        if ($player->age >= 32) {
+        $age = $player->age($player->game->current_date);
+        if ($age >= 32) {
             $baseWeeks = (int) ceil($baseWeeks * 1.2);
-        } elseif ($player->age >= 30) {
+        } elseif ($age >= 30) {
             $baseWeeks = (int) ceil($baseWeeks * 1.1);
         }
 
@@ -490,7 +491,7 @@ class InjuryService
         $baseProbability = self::TRAINING_INJURY_CHANCE;
 
         $durabilityMultiplier = $this->getDurabilityMultiplier($player);
-        $ageMultiplier = $this->getAgeMultiplier($player->age);
+        $ageMultiplier = $this->getAgeMultiplier($player->age($player->game->current_date));
         $fitnessMultiplier = $this->getFitnessMultiplier($player->fitness);
         $medicalMultiplier = $this->getMedicalInjuryMultiplier($game);
 

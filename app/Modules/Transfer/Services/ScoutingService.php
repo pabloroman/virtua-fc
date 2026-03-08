@@ -426,7 +426,7 @@ class ScoutingService
         $contractModifier = $this->getContractModifier($player);
 
         // Age modifier
-        $ageModifier = $this->getAgeModifier($player->age);
+        $ageModifier = $this->getAgeModifier($player->age($player->game->current_date));
 
         $askingPrice = $base * $importanceMultiplier * $contractModifier * $ageModifier;
 
@@ -668,7 +668,7 @@ class ScoutingService
         $wage = $this->contractService->calculateAnnualWage(
             $player->market_value_cents,
             $minimumWage,
-            $player->age,
+            $player->age($player->game->current_date),
         );
 
         // Round to nearest 100K (cents)
@@ -969,9 +969,10 @@ class ScoutingService
         }
 
         // Age factor: older players at lower-rep clubs more open
-        if ($player->age >= 30) {
+        $age = $player->age($game->current_date);
+        if ($age >= 30) {
             $score += 10;
-        } elseif ($player->age <= 22) {
+        } elseif ($age <= 22) {
             $score += 5; // Young players seeking opportunities
         }
 

@@ -115,7 +115,7 @@
                                                         {{ $bid->gamePlayer->player->name }} &larr; {{ $bid->sellingTeam?->name ?? 'Unknown' }}
                                                     </div>
                                                     <div class="text-sm text-slate-600">
-                                                        {{ $bid->gamePlayer->position_name }} &middot; {{ $bid->gamePlayer->age }} {{ __('app.years') }}
+                                                        {{ $bid->gamePlayer->position_name }} &middot; {{ $bid->gamePlayer->age($game->current_date) }} {{ __('app.years') }}
                                                     </div>
                                                     <div class="text-sm mt-1">
                                                         <span class="text-slate-500 line-through">{{ __('transfers.your_bid_amount', ['amount' => $bid->formatted_transfer_fee]) }}</span>
@@ -159,7 +159,7 @@
                                                         {{ $bid->gamePlayer->player->name }} &larr; {{ $bid->sellingTeam?->name ?? 'Unknown' }}
                                                     </div>
                                                     <div class="text-sm text-slate-600">
-                                                        {{ $bid->gamePlayer->position_name }} &middot; {{ $bid->gamePlayer->age }} {{ __('app.years') }}
+                                                        {{ $bid->gamePlayer->position_name }} &middot; {{ $bid->gamePlayer->age($game->current_date) }} {{ __('app.years') }}
                                                         @if($bid->offer_type === 'loan_in')
                                                             &middot; <span class="text-emerald-600 font-medium">{{ __('transfers.loan_request') }}</span>
                                                         @endif
@@ -205,7 +205,7 @@
                                                         {{ $transfer->gamePlayer->player->name }} &larr; {{ $transfer->selling_team_name ?? 'Unknown' }}
                                                     </div>
                                                     <div class="text-sm text-slate-600">
-                                                        {{ $transfer->gamePlayer->position_name }} &middot; {{ $transfer->gamePlayer->age }} {{ __('app.years') }}
+                                                        {{ $transfer->gamePlayer->position_name }} &middot; {{ $transfer->gamePlayer->age($game->current_date) }} {{ __('app.years') }}
                                                         @if($transfer->offer_type === 'loan_in')
                                                             &middot; <span class="text-emerald-600 font-medium">{{ __('transfers.loans') }}</span>
                                                         @endif
@@ -250,7 +250,7 @@
                                             <div class="min-w-0">
                                                 <div class="font-medium text-sm text-slate-900 truncate">{{ $loan->gamePlayer->name }}</div>
                                                 <div class="text-xs text-slate-500">
-                                                    {{ $loan->gamePlayer->position_name }} &middot; {{ $loan->gamePlayer->age }} {{ __('app.years') }}
+                                                    {{ $loan->gamePlayer->position_name }} &middot; {{ $loan->gamePlayer->age($game->current_date) }} {{ __('app.years') }}
                                                     &middot; {{ __('transfers.loaned_from', ['team_de' => $loan->parentTeam->nameWithDe()]) }}
                                                 </div>
                                                 <div class="text-xs text-slate-400 mt-0.5">
@@ -285,7 +285,7 @@
                                                         {{ $bid->sellingTeam?->name ?? 'Unknown' }}
                                                     </div>
                                                     <div class="text-xs text-slate-500">
-                                                        {{ $bid->gamePlayer->position_name }} &middot; {{ $bid->gamePlayer->age }} {{ __('app.years') }}
+                                                        {{ $bid->gamePlayer->position_name }} &middot; {{ $bid->gamePlayer->age($game->current_date) }} {{ __('app.years') }}
                                                     </div>
                                                 </div>
                                             </div>

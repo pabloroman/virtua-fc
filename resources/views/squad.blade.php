@@ -351,7 +351,7 @@
                                                 {{-- === Planning columns (career only) === --}}
                                                 @if($isCareerMode)
                                                 <template x-if="viewMode === 'planning'">
-                                                    <td class="py-2.5 text-right w-10 tabular-nums text-slate-600 pr-2">{{ $gp->age }}</td>
+                                                    <td class="py-2.5 text-right w-10 tabular-nums text-slate-600 pr-2">{{ $gp->age($game->current_date) }}</td>
                                                 </template>
                                                 <template x-if="viewMode === 'planning'">
                                                     <td class="py-2.5 text-right w-16 tabular-nums text-slate-600 pr-2">{{ $gp->formatted_market_value }}</td>

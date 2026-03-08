@@ -131,7 +131,7 @@
                                                         {{ $offer->gamePlayer->player->name }} &larr; {{ $offer->offeringTeam->name }}
                                                     </div>
                                                     <div class="text-sm text-slate-600">
-                                                        {{ $offer->gamePlayer->position_name }} &middot; {{ $offer->gamePlayer->age }} {{ __('app.years') }} &middot;
+                                                        {{ $offer->gamePlayer->position_name }} &middot; {{ $offer->gamePlayer->age($game->current_date) }} {{ __('app.years') }} &middot;
                                                         {{ __('app.value') }}: {{ $offer->gamePlayer->formatted_market_value }}
                                                     </div>
                                                 </div>
@@ -186,7 +186,7 @@
                                                         {{ $offer->gamePlayer->player->name }} &larr; {{ $offer->offeringTeam->name }}
                                                     </div>
                                                     <div class="text-sm text-slate-600">
-                                                        {{ $offer->gamePlayer->position_name }} &middot; {{ $offer->gamePlayer->age }} {{ __('app.years') }} &middot;
+                                                        {{ $offer->gamePlayer->position_name }} &middot; {{ $offer->gamePlayer->age($game->current_date) }} {{ __('app.years') }} &middot;
                                                         {{ __('squad.expires_in_days', ['days' => $offer->days_until_expiry]) }}
                                                     </div>
                                                 </div>
@@ -243,7 +243,7 @@
                                                 <div>
                                                     <div class="font-semibold text-slate-900">{{ $player->player->name }}</div>
                                                     <div class="text-sm text-slate-600">
-                                                        {{ $player->position_name }} &middot; {{ $player->age }} {{ __('app.years') }}
+                                                        {{ $player->position_name }} &middot; {{ $player->age($game->current_date) }} {{ __('app.years') }}
                                                     </div>
                                                     <div class="text-sm text-slate-600 mt-0.5">
                                                         {{ __('transfers.your_bid_amount', ['amount' => $negotiation->formatted_user_offer]) }}
@@ -328,7 +328,7 @@
                                                 <div>
                                                     <div class="font-semibold text-slate-900">{{ $player->player->name }}</div>
                                                     <div class="text-sm text-slate-600">
-                                                        {{ $player->position_name }} &middot; {{ $player->age }} {{ __('app.years') }} &middot;
+                                                        {{ $player->position_name }} &middot; {{ $player->age($game->current_date) }} {{ __('app.years') }} &middot;
                                                         {{ __('transfers.your_bid_amount', ['amount' => $negotiation->formatted_user_offer . __('squad.per_year')]) }}
                                                     </div>
                                                 </div>
@@ -366,7 +366,7 @@
                                                         {{ $offer->gamePlayer->player->name }} &larr; {{ $offer->offeringTeam->name }}
                                                     </div>
                                                     <div class="text-sm text-slate-600">
-                                                        {{ $offer->gamePlayer->position_name }} &middot; {{ $offer->gamePlayer->age }} {{ __('app.years') }} &middot;
+                                                        {{ $offer->gamePlayer->position_name }} &middot; {{ $offer->gamePlayer->age($game->current_date) }} {{ __('app.years') }} &middot;
                                                         {{ __('app.value') }}: {{ $offer->gamePlayer->formatted_market_value }}
                                                     </div>
                                                 </div>
@@ -410,7 +410,7 @@
                                                         {{ $transfer->gamePlayer->player->name }} &rarr; {{ $transfer->offeringTeam->name }}
                                                     </div>
                                                     <div class="text-sm text-slate-600">
-                                                        {{ $transfer->gamePlayer->position_name }} &middot; {{ $transfer->gamePlayer->age }} {{ __('app.years') }}
+                                                        {{ $transfer->gamePlayer->position_name }} &middot; {{ $transfer->gamePlayer->age($game->current_date) }} {{ __('app.years') }}
                                                     </div>
                                                 </div>
                                             </div>
@@ -441,7 +441,7 @@
                                                         {{ $transfer->gamePlayer->player->name }} &rarr; {{ $transfer->offeringTeam->name }}
                                                     </div>
                                                     <div class="text-sm text-slate-600">
-                                                        {{ $transfer->gamePlayer->position_name }} &middot; {{ $transfer->gamePlayer->age }} {{ __('app.years') }}
+                                                        {{ $transfer->gamePlayer->position_name }} &middot; {{ $transfer->gamePlayer->age($game->current_date) }} {{ __('app.years') }}
                                                     </div>
                                                 </div>
                                             </div>
@@ -474,7 +474,7 @@
                                                 <div>
                                                     <div class="font-semibold text-slate-900">{{ $gamePlayer->name }}</div>
                                                     <div class="text-sm text-slate-600">
-                                                        {{ $gamePlayer->position_name }} &middot; {{ $gamePlayer->age }} {{ __('app.years') }}
+                                                        {{ $gamePlayer->position_name }} &middot; {{ $gamePlayer->age($game->current_date) }} {{ __('app.years') }}
                                                     </div>
                                                 </div>
                                             </div>
@@ -512,7 +512,7 @@
                                                 <div>
                                                     <div class="font-semibold text-slate-900">{{ $player->player->name }}</div>
                                                     <div class="text-sm text-slate-600">
-                                                        {{ $player->position_name }} &middot; {{ $player->age }} {{ __('app.years') }} &middot;
+                                                        {{ $player->position_name }} &middot; {{ $player->age($game->current_date) }} {{ __('app.years') }} &middot;
                                                         {{ __('app.value') }}: {{ $player->formatted_market_value }}
                                                     </div>
                                                 </div>
@@ -601,7 +601,7 @@
                                                         <span class="font-medium text-slate-900 truncate">{{ $player->player->name }}</span>
                                                     </div>
                                                 </td>
-                                                <td class="py-2.5 text-center text-slate-500 hidden md:table-cell">{{ $player->age }}</td>
+                                                <td class="py-2.5 text-center text-slate-500 hidden md:table-cell">{{ $player->age($game->current_date) }}</td>
                                                 <td class="py-2.5 text-center text-slate-500 hidden md:table-cell pr-3">{{ $player->formatted_wage }}</td>
                                             </tr>
                                         </tbody>
@@ -635,7 +635,7 @@
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td class="py-2.5 text-center text-slate-500 hidden md:table-cell">{{ $player->age }}</td>
+                                            <td class="py-2.5 text-center text-slate-500 hidden md:table-cell">{{ $player->age($game->current_date) }}</td>
                                             <td class="py-2.5 text-center text-slate-500 hidden md:table-cell pr-3">{{ $player->formatted_wage }}</td>
                                         </tr>
                                         @endforeach

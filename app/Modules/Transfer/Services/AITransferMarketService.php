@@ -133,7 +133,7 @@ class AITransferMarketService
 
             // Sign the free agent
             $seasonYear = (int) $game->season;
-            $contractYears = $freeAgent->age >= 32 ? 1 : mt_rand(1, 2);
+            $contractYears = $freeAgent->age($game->current_date) >= 32 ? 1 : mt_rand(1, 2);
             $newContractEnd = Carbon::createFromDate($seasonYear + $contractYears + 1, 6, 30);
 
             $team = $teams->get($teamId);
@@ -141,7 +141,7 @@ class AITransferMarketService
             $newWage = $this->contractService->calculateAnnualWage(
                 $freeAgent->market_value_cents,
                 $minimumWage,
-                $freeAgent->age,
+                $freeAgent->age($game->current_date),
             );
 
             $freeAgent->update([
@@ -428,9 +428,10 @@ class AITransferMarketService
         }
 
         // Aging player
-        if ($player->age >= 35) {
+        $age = $player->age($player->game->current_date);
+        if ($age >= 35) {
             $score += 3;
-        } elseif ($player->age >= 32) {
+        } elseif ($age >= 32) {
             $score += 2;
         }
 
@@ -475,9 +476,10 @@ class AITransferMarketService
         $score += min(5, (int) ($abilityGap / 3));
 
         // Prime age premium
-        if ($player->age >= 22 && $player->age <= 28) {
+        $age = $player->age($player->game->current_date);
+        if ($age >= 22 && $age <= 28) {
             $score += 3;
-        } elseif ($player->age >= 19 && $player->age <= 21) {
+        } elseif ($age >= 19 && $age <= 21) {
             $score += 1;
         }
 
@@ -698,7 +700,7 @@ class AITransferMarketService
         $newWage = $this->contractService->calculateAnnualWage(
             $player->market_value_cents,
             $minimumWage,
-            $player->age,
+            $player->age($game->current_date),
         );
 
         $player->update([
@@ -740,7 +742,7 @@ class AITransferMarketService
         $newWage = $this->contractService->calculateAnnualWage(
             $player->market_value_cents,
             $minimumWage,
-            $player->age,
+            $player->age($game->current_date),
         );
 
         $player->update([
