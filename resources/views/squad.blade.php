@@ -39,11 +39,15 @@
         numberAssignments: {{ Js::from(json_decode($numberAssignmentsJson, true)) }},
         numberSaving: {},
         numberErrors: {},
+        numberSaved: {},
 
         async saveNumber(playerId, routeUrl, newValue) {
             const val = newValue === '' ? null : parseInt(newValue, 10);
+            if (val === null) return;
+            if (val === this.numberAssignments[playerId]?.number) return;
             this.numberSaving[playerId] = true;
             this.numberErrors[playerId] = '';
+            this.numberSaved[playerId] = false;
             try {
                 const response = await fetch(routeUrl, {
                     method: 'POST',
@@ -57,6 +61,8 @@
                 const data = await response.json();
                 if (response.ok && data.success) {
                     this.numberAssignments[playerId].number = data.number;
+                    this.numberSaved[playerId] = true;
+                    setTimeout(() => { this.numberSaved[playerId] = false; }, 2000);
                 } else {
                     this.numberErrors[playerId] = data.message || data.errors?.number?.[0] || '{{ __('squad.number_invalid') }}';
                 }
@@ -474,15 +480,21 @@
 
                                                 {{-- === Numbers column === --}}
                                                 <template x-if="viewMode === 'numbers'">
-                                                    <td class="py-2.5 text-center w-20" x-data="{ localVal: numberAssignments['{{ $gp->id }}']?.number ?? '' }">
-                                                        <input type="number" min="1" max="99"
-                                                            x-model="localVal"
-                                                            @blur="saveNumber('{{ $gp->id }}', '{{ route('game.squad.number', [$game->id, $gp->id]) }}', localVal)"
-                                                            @keydown.enter.prevent="$el.blur()"
-                                                            :disabled="numberSaving['{{ $gp->id }}']"
-                                                            class="w-14 h-8 text-sm font-medium text-center border rounded tabular-nums focus:ring-2 focus:ring-sky-500 focus:border-sky-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                                                            :class="numberErrors['{{ $gp->id }}'] ? 'border-red-300 bg-red-50' : 'border-slate-200'">
-                                                        <p x-show="numberErrors['{{ $gp->id }}']" x-text="numberErrors['{{ $gp->id }}']" class="text-xs text-red-600 mt-0.5 max-w-[120px]"></p>
+                                                    <td class="py-2.5 w-36" x-data="{ localVal: numberAssignments['{{ $gp->id }}']?.number ?? '' }">
+                                                        <div class="flex items-center gap-1.5 justify-center">
+                                                            {{-- Status indicator (left of input) --}}
+                                                            <div class="w-4 shrink-0 flex items-center justify-center">
+                                                                <svg x-show="numberSaved['{{ $gp->id }}']" x-transition.opacity class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                                                <svg x-show="numberErrors['{{ $gp->id }}']" class="w-4 h-4 text-red-500 cursor-help" fill="none" stroke="currentColor" viewBox="0 0 24 24" :title="numberErrors['{{ $gp->id }}']"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                                            </div>
+                                                            <input type="number" min="1" max="99"
+                                                                x-model="localVal"
+                                                                @blur="saveNumber('{{ $gp->id }}', '{{ route('game.squad.number', [$game->id, $gp->id]) }}', localVal)"
+                                                                @keydown.enter.prevent="$el.blur()"
+                                                                :disabled="numberSaving['{{ $gp->id }}']"
+                                                                class="w-14 h-8 text-sm font-medium text-center border rounded tabular-nums focus:ring-2 focus:ring-sky-500 focus:border-sky-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                                                :class="numberErrors['{{ $gp->id }}'] ? 'border-red-300 bg-red-50' : 'border-slate-200'">
+                                                        </div>
                                                     </td>
                                                 </template>
 
@@ -572,13 +584,19 @@
                                                 <div class="flex items-center gap-2.5">
                                                     <x-position-badge :position="$gp->position" />
                                                     <span class="flex-1 font-medium text-slate-900 truncate min-w-0">{{ $gp->player->name }}</span>
-                                                    <input type="number" min="1" max="99"
-                                                        x-model="localVal"
-                                                        @blur="saveNumber('{{ $gp->id }}', '{{ route('game.squad.number', [$game->id, $gp->id]) }}', localVal)"
-                                                        @keydown.enter.prevent="$el.blur()"
-                                                        :disabled="numberSaving['{{ $gp->id }}']"
-                                                        class="w-14 h-9 text-sm font-medium text-center border rounded tabular-nums shrink-0 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                                                        :class="numberErrors['{{ $gp->id }}'] ? 'border-red-300 bg-red-50' : 'border-slate-200'">
+                                                    <div class="flex items-center gap-1 shrink-0">
+                                                        <div class="w-4 flex items-center justify-center">
+                                                            <svg x-show="numberSaved['{{ $gp->id }}']" x-transition.opacity class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                                            <svg x-show="numberErrors['{{ $gp->id }}']" class="w-4 h-4 text-red-500 cursor-help" fill="none" stroke="currentColor" viewBox="0 0 24 24" :title="numberErrors['{{ $gp->id }}']"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                                        </div>
+                                                        <input type="number" min="1" max="99"
+                                                            x-model="localVal"
+                                                            @blur="saveNumber('{{ $gp->id }}', '{{ route('game.squad.number', [$game->id, $gp->id]) }}', localVal)"
+                                                            @keydown.enter.prevent="$el.blur()"
+                                                            :disabled="numberSaving['{{ $gp->id }}']"
+                                                            class="w-14 h-9 text-sm font-medium text-center border rounded tabular-nums focus:ring-2 focus:ring-sky-500 focus:border-sky-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                                            :class="numberErrors['{{ $gp->id }}'] ? 'border-red-300 bg-red-50' : 'border-slate-200'">
+                                                    </div>
                                                     <span class="shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-full text-xs font-bold
                                                         @if($gp->overall_score >= 80) bg-emerald-500 text-white
                                                         @elseif($gp->overall_score >= 70) bg-lime-500 text-white
@@ -586,7 +604,6 @@
                                                         @else bg-slate-300 text-slate-700
                                                         @endif">{{ $gp->overall_score }}</span>
                                                 </div>
-                                                <p x-show="numberErrors['{{ $gp->id }}']" x-text="numberErrors['{{ $gp->id }}']" class="text-xs text-red-600 mt-1 pl-8"></p>
                                             </div>
                                         </div>
                                         @endforeach

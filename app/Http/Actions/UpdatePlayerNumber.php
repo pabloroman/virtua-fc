@@ -20,7 +20,7 @@ class UpdatePlayerNumber
 
         $validated = $request->validate([
             'number' => [
-                'nullable',
+                'required',
                 'integer',
                 'min:1',
                 'max:99',
@@ -30,6 +30,7 @@ class UpdatePlayerNumber
                     ->ignore($gamePlayer->id),
             ],
         ], [
+            'number.required' => __('squad.number_invalid'),
             'number.unique' => __('squad.number_taken'),
             'number.min' => __('squad.number_invalid'),
             'number.max' => __('squad.number_invalid'),
@@ -37,7 +38,7 @@ class UpdatePlayerNumber
         ]);
 
         try {
-            $gamePlayer->update(['number' => $validated['number'] ?? null]);
+            $gamePlayer->update(['number' => $validated['number']]);
         } catch (UniqueConstraintViolationException) {
             return response()->json([
                 'success' => false,

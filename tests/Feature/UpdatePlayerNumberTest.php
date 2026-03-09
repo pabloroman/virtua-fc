@@ -77,7 +77,7 @@ class UpdatePlayerNumberTest extends TestCase
             ->assertJson(['success' => true, 'number' => 1]);
     }
 
-    public function test_can_clear_number(): void
+    public function test_rejects_empty_number(): void
     {
         $gamePlayer = $this->createGamePlayer(['number' => 10]);
 
@@ -86,12 +86,11 @@ class UpdatePlayerNumberTest extends TestCase
                 'number' => null,
             ]);
 
-        $response->assertOk()
-            ->assertJson(['success' => true, 'number' => null]);
+        $response->assertUnprocessable();
 
         $this->assertDatabaseHas('game_players', [
             'id' => $gamePlayer->id,
-            'number' => null,
+            'number' => 10,
         ]);
     }
 
