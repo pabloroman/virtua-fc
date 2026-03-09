@@ -21,9 +21,13 @@ export default function liveMatch(config) {
         maxSubstitutions: config.maxSubstitutions || 5,
         maxWindows: config.maxWindows || 3,
 
-        // Possession
+        // Possession (base = server value, display = oscillating value shown in UI)
+        _basePossession: config.homePossession || 50,
         homePossession: config.homePossession || 50,
         awayPossession: config.awayPossession || 50,
+        _possessionTarget: config.homePossession || 50,
+        _possessionNextShift: 2 + Math.random() * 2,
+        _possessionDisplay: config.homePossession || 50,
 
         // Tactical config
         activeFormation: config.activeFormation || '4-4-2',
@@ -201,6 +205,9 @@ export default function liveMatch(config) {
 
             // Update other match tickers
             this.updateOtherMatches();
+
+            // Fluctuate possession display
+            this.updatePossession();
 
             // Check for half-time
             if (this.phase === 'first_half' && this.currentMinute >= 45) {
@@ -406,8 +413,11 @@ export default function liveMatch(config) {
                 this._needsPenalties = result.needsPenalties || false;
 
                 if (result.homePossession !== undefined) {
+                    this._basePossession = result.homePossession;
+                    this._possessionDisplay = result.homePossession;
                     this.homePossession = result.homePossession;
                     this.awayPossession = result.awayPossession;
+                    this.resetPossessionTarget();
                 }
 
                 // Brief pause showing "Extra Time" before starting
@@ -506,6 +516,27 @@ export default function liveMatch(config) {
                 }
                 this.otherMatchScores[i] = { homeScore: home, awayScore: away };
             }
+        },
+
+        updatePossession() {
+            // Every 2-4 match-minutes, pick a new random target around the base
+            if (this.currentMinute >= this._possessionNextShift) {
+                const swing = (Math.random() - 0.5) * 16; // ±8
+                this._possessionTarget = Math.max(25, Math.min(75, this._basePossession + swing));
+                this._possessionNextShift = this.currentMinute + 2 + Math.random() * 2;
+            }
+            // Lerp displayed value toward target (smooth transition)
+            this._possessionDisplay += (this._possessionTarget - this._possessionDisplay) * 0.03;
+            const rounded = Math.round(this._possessionDisplay);
+            if (rounded !== this.homePossession) {
+                this.homePossession = rounded;
+                this.awayPossession = 100 - rounded;
+            }
+        },
+
+        resetPossessionTarget() {
+            this._possessionTarget = this._basePossession;
+            this._possessionNextShift = this.currentMinute + 1 + Math.random() * 2;
         },
 
         // Speed controls
@@ -1002,8 +1033,11 @@ export default function liveMatch(config) {
 
                 // Update possession
                 if (result.homePossession !== undefined) {
+                    this._basePossession = result.homePossession;
+                    this._possessionDisplay = result.homePossession;
                     this.homePossession = result.homePossession;
                     this.awayPossession = result.awayPossession;
+                    this.resetPossessionTarget();
                 }
 
                 // Close the panel and resume
@@ -1268,8 +1302,11 @@ export default function liveMatch(config) {
 
                 // Update possession
                 if (result.homePossession !== undefined) {
+                    this._basePossession = result.homePossession;
+                    this._possessionDisplay = result.homePossession;
                     this.homePossession = result.homePossession;
                     this.awayPossession = result.awayPossession;
+                    this.resetPossessionTarget();
                 }
 
                 // Close the panel and resume
