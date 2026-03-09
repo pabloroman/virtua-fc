@@ -25,13 +25,9 @@ use App\Models\GameStanding;
 use App\Models\PlayerSuspension;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class MatchdayOrchestrator
 {
-    private array $batchTimings = [];
-    private int $totalAdvanceQueries = 0;
-    private float $totalAdvanceTime = 0;
     private int $careerActionTicks = 0;
 
     public function __construct(
@@ -48,13 +44,7 @@ class MatchdayOrchestrator
 
     public function advance(Game $game): MatchdayAdvanceResult
     {
-        $this->batchTimings = [];
-        $this->totalAdvanceQueries = 0;
-        $this->totalAdvanceTime = 0;
         $this->careerActionTicks = 0;
-        $advanceStart = microtime(true);
-
-        DB::enableQueryLog();
 
         $result = DB::transaction(function () use ($game) {
             // Lock the game row to prevent concurrent matchday advancement
@@ -132,19 +122,9 @@ class MatchdayOrchestrator
                     ProcessCareerActions::dispatch($game->id, $this->careerActionTicks);
                 } catch (\Throwable $e) {
                     Game::where('id', $game->id)->update(['career_actions_processing_at' => null]);
-                    Log::error('Failed to dispatch career actions job', [
-                        'game_id' => $game->id,
-                        'error' => $e->getMessage(),
-                    ]);
                 }
             }
         }
-
-        $this->totalAdvanceTime = (microtime(true) - $advanceStart) * 1000;
-        $this->logAdvanceSummary();
-
-        DB::disableQueryLog();
-        DB::flushQueryLog();
 
         return $result;
     }
@@ -156,18 +136,12 @@ class MatchdayOrchestrator
      */
     private function processBatch(Game $game, array $batch): array
     {
-        $batchNumber = count($this->batchTimings) + 1;
-        $timings = [];
         $matches = $batch['matches'];
         $handlers = $batch['handlers'];
         $matchday = $batch['matchday'];
         $currentDate = $batch['currentDate'];
-        $matchCount = $matches->count();
 
         // --- Load players ---
-        $t0 = microtime(true);
-        $q0 = count(DB::getQueryLog());
-
         $teamIds = $matches->pluck('home_team_id')
             ->merge($matches->pluck('away_team_id'))
             ->push($game->team_id)
@@ -195,35 +169,22 @@ class MatchdayOrchestrator
 
         $clubProfiles = TeamReputation::where('game_id', $game->id)
             ->whereIn('team_id', $teamIds)->get()->keyBy('team_id');
-        $timings['loadPlayers'] = $this->capturePhase($t0, $q0);
 
         // --- Ensure lineups ---
-        $t0 = microtime(true);
-        $q0 = count(DB::getQueryLog());
         $this->lineupService->ensureLineupsForMatches($matches, $game, $allPlayers, $suspendedPlayerIds, $clubProfiles);
-        $timings['ensureLineups'] = $this->capturePhase($t0, $q0);
 
         // --- Simulate matches ---
-        $t0 = microtime(true);
-        $q0 = count(DB::getQueryLog());
         $matchResults = $this->simulateMatches($matches, $game, $allPlayers);
-        $timings['simulateMatches'] = $this->capturePhase($t0, $q0);
 
         // Identify user's match — its score-dependent effects are deferred to finalization
         $playerMatch = $matches->first(fn ($m) => $m->involvesTeam($game->team_id));
         $deferMatchId = $playerMatch?->id;
 
         // --- Process results ---
-        $t0 = microtime(true);
-        $q0 = count(DB::getQueryLog());
         $this->matchResultProcessor->processAll($game->id, $matchday, $currentDate, $matchResults, $deferMatchId, $allPlayers);
-        $timings['processResults'] = $this->capturePhase($t0, $q0);
 
         // --- Recalculate positions ---
-        $t0 = microtime(true);
-        $q0 = count(DB::getQueryLog());
         $this->recalculateLeaguePositions($game->id, $matches);
-        $timings['recalcPositions'] = $this->capturePhase($t0, $q0);
 
         // Mark user's match as pending finalization BEFORE post-match actions
         if ($playerMatch) {
@@ -248,24 +209,8 @@ class MatchdayOrchestrator
         }
 
         // --- Post-match actions ---
-        $t0 = microtime(true);
-        $q0 = count(DB::getQueryLog());
         $game->refresh()->setRelations([]);
         $this->processPostMatchActions($game, $matches, $handlers, $allPlayers, $deferMatchId);
-        $timings['postMatchActions'] = $this->capturePhase($t0, $q0);
-
-        // Store batch timings
-        $batchTotal = array_sum(array_column($timings, 'ms'));
-        $batchQueries = array_sum(array_column($timings, 'queries'));
-        $this->totalAdvanceQueries += $batchQueries;
-
-        $this->batchTimings[] = [
-            'batch' => $batchNumber,
-            'matchCount' => $matchCount,
-            'phases' => $timings,
-            'totalMs' => $batchTotal,
-            'totalQueries' => $batchQueries,
-        ];
 
         return ['playerMatch' => $playerMatch];
     }
@@ -408,40 +353,24 @@ class MatchdayOrchestrator
 
     private function processPostMatchActions(Game $game, $matches, array $handlers, $allPlayers, ?string $deferMatchId = null): void
     {
-        $postTimings = [];
-
         // Career-mode only: count tick for background processing
         if ($game->isCareerMode()) {
             $this->careerActionTicks++;
         }
 
         // Roll for training injuries (non-playing squad members)
-        $t0 = microtime(true);
-        $q0 = count(DB::getQueryLog());
         $this->processTrainingInjuries($game, $matches, $allPlayers);
-        $postTimings['trainingInjuries'] = $this->capturePhase($t0, $q0);
 
         // Check for recovered players
-        $t0 = microtime(true);
-        $q0 = count(DB::getQueryLog());
         $this->checkRecoveredPlayers($game, $allPlayers);
-        $postTimings['recoveredPlayers'] = $this->capturePhase($t0, $q0);
 
         // Check for low fitness players
-        $t0 = microtime(true);
-        $q0 = count(DB::getQueryLog());
         $this->checkLowFitnessPlayers($game, $allPlayers);
-        $postTimings['lowFitnessCheck'] = $this->capturePhase($t0, $q0);
 
         // Clean up old read notifications
-        $t0 = microtime(true);
-        $q0 = count(DB::getQueryLog());
         $this->notificationService->cleanupOldNotifications($game);
-        $postTimings['notificationCleanup'] = $this->capturePhase($t0, $q0);
 
         // Competition-specific post-match actions for each handler
-        $t0 = microtime(true);
-        $q0 = count(DB::getQueryLog());
         foreach ($handlers as $competitionId => $handler) {
             $competitionMatches = $matches->filter(fn ($m) => $m->competition_id === $competitionId);
             if ($deferMatchId) {
@@ -451,23 +380,12 @@ class MatchdayOrchestrator
                 $handler->afterMatches($game, $competitionMatches, $allPlayers);
             }
         }
-        $postTimings['handlerAfterMatches'] = $this->capturePhase($t0, $q0);
 
         // Check competition progress (advancement/elimination) after handlers have resolved ties
-        $t0 = microtime(true);
-        $q0 = count(DB::getQueryLog());
         $matchesForProgress = $deferMatchId
             ? $matches->reject(fn ($m) => $m->id === $deferMatchId)
             : $matches;
         $this->checkCompetitionProgress($game, $matchesForProgress, $handlers);
-        $postTimings['competitionProgress'] = $this->capturePhase($t0, $q0);
-
-        // Log post-match action sub-timings
-        $lines = ['  [PostMatchActions breakdown]:'];
-        foreach ($postTimings as $phase => $data) {
-            $lines[] = sprintf('    %-25s %6.1fms (%d queries)', $phase . ':', $data['ms'], $data['queries']);
-        }
-        Log::channel('single')->info(implode("\n", $lines));
     }
 
     /**
@@ -788,47 +706,4 @@ class MatchdayOrchestrator
         }
     }
 
-    // ==========================================
-    // Profiling Helpers
-    // ==========================================
-
-    /**
-     * Capture wall-clock time (ms) and query count for a phase.
-     *
-     * @return array{ms: float, queries: int}
-     */
-    private function capturePhase(float $startTime, int $startQueryCount): array
-    {
-        return [
-            'ms' => round((microtime(true) - $startTime) * 1000, 1),
-            'queries' => count(DB::getQueryLog()) - $startQueryCount,
-        ];
-    }
-
-    /**
-     * Log a structured summary of all batch timings for this advance() call.
-     */
-    private function logAdvanceSummary(): void
-    {
-        $lines = [];
-
-        foreach ($this->batchTimings as $batch) {
-            $lines[] = sprintf('[AdvanceMatchday] Batch %d (%d matches):', $batch['batch'], $batch['matchCount']);
-            foreach ($batch['phases'] as $phase => $data) {
-                $lines[] = sprintf('  %-25s %6.1fms (%d queries)', $phase . ':', $data['ms'], $data['queries']);
-            }
-            $lines[] = sprintf('  %-25s %6.1fms (%d queries)', 'BATCH TOTAL:', $batch['totalMs'], $batch['totalQueries']);
-        }
-
-        $batchCount = count($this->batchTimings);
-        $lines[] = sprintf(
-            '[AdvanceMatchday] Total: %.0fms (%d queries, %d %s)',
-            $this->totalAdvanceTime,
-            $this->totalAdvanceQueries,
-            $batchCount,
-            $batchCount === 1 ? 'batch' : 'batches'
-        );
-
-        Log::channel('single')->info(implode("\n", $lines));
-    }
 }
