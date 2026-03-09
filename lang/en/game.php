@@ -401,9 +401,4 @@ return [
     'pre_season_banner_desc' => 'Season starts :date. Use this time to set up your squad, play friendlies and sign players.',
     'pre_season_skip' => 'Skip Pre-Season',
     'pre_season_skipped' => 'Pre-season skipped. The season has begun.',
-
-    'goal_ucl_title' => 'Win the Champions League',
-    'goal_ucl_knockout' => 'Advance to knockout phase',
-    'goal_uel_knockout' => 'Advance to knockout phase',
-    'goal_uecl_knockout' => 'Advance to knockout phase',
 ];

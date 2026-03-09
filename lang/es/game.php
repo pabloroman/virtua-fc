@@ -401,9 +401,4 @@ return [
     'pre_season_banner_desc' => 'La temporada comienza el :date. Aprovecha para configurar tu plantilla, jugar amistosos y fichar jugadores.',
     'pre_season_skip' => 'Saltar Pretemporada',
     'pre_season_skipped' => 'Pretemporada saltada. La temporada ha comenzado.',
-
-    'goal_ucl_title' => 'Ganar la Champions League',
-    'goal_ucl_knockout' => 'Pasar a fase eliminatoria',
-    'goal_uel_knockout' => 'Pasar a fase eliminatoria',
-    'goal_uecl_knockout' => 'Pasar a fase eliminatoria',
 ];
