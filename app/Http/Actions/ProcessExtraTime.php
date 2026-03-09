@@ -45,6 +45,8 @@ class ProcessExtraTime
             'homeScoreET' => $result->homeScoreET,
             'awayScoreET' => $result->awayScoreET,
             'needsPenalties' => $result->needsPenalties,
+            'homePossession' => $result->homePossession,
+            'awayPossession' => $result->awayPossession,
         ]);
     }
 

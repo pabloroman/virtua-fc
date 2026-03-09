@@ -21,6 +21,10 @@ export default function liveMatch(config) {
         maxSubstitutions: config.maxSubstitutions || 5,
         maxWindows: config.maxWindows || 3,
 
+        // Possession
+        homePossession: config.homePossession || 50,
+        awayPossession: config.awayPossession || 50,
+
         // Tactical config
         activeFormation: config.activeFormation || '4-4-2',
         activeMentality: config.activeMentality || 'balanced',
@@ -400,6 +404,11 @@ export default function liveMatch(config) {
                 this.etHomeScore = result.homeScoreET || 0;
                 this.etAwayScore = result.awayScoreET || 0;
                 this._needsPenalties = result.needsPenalties || false;
+
+                if (result.homePossession !== undefined) {
+                    this.homePossession = result.homePossession;
+                    this.awayPossession = result.awayPossession;
+                }
 
                 // Brief pause showing "Extra Time" before starting
                 this._startETTimeout = setTimeout(() => this.startExtraTime(), 2000);
@@ -991,6 +1000,12 @@ export default function liveMatch(config) {
                     this.recalculateScore();
                 }
 
+                // Update possession
+                if (result.homePossession !== undefined) {
+                    this.homePossession = result.homePossession;
+                    this.awayPossession = result.awayPossession;
+                }
+
                 // Close the panel and resume
                 this.closeTacticalPanel();
             } catch (err) {
@@ -1249,6 +1264,12 @@ export default function liveMatch(config) {
 
                     // Recalculate current displayed score
                     this.recalculateScore();
+                }
+
+                // Update possession
+                if (result.homePossession !== undefined) {
+                    this.homePossession = result.homePossession;
+                    this.awayPossession = result.awayPossession;
                 }
 
                 // Close the panel and resume

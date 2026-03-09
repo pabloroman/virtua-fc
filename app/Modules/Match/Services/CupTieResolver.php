@@ -83,6 +83,8 @@ class CupTieResolver
                 'is_extra_time' => true,
                 'home_score_et' => $homeScoreEt,
                 'away_score_et' => $awayScoreEt,
+                'home_possession' => $extraTimeResult->homePossession,
+                'away_possession' => $extraTimeResult->awayPossession,
             ]);
         }
 
@@ -175,6 +177,8 @@ class CupTieResolver
                 'is_extra_time' => true,
                 'home_score_et' => $homeScoreEt,
                 'away_score_et' => $awayScoreEt,
+                'home_possession' => $extraTimeResult->homePossession,
+                'away_possession' => $extraTimeResult->awayPossession,
             ]);
         }
 

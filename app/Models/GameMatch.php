@@ -109,6 +109,8 @@ class GameMatch extends Model
         'away_score_et',
         'home_score_penalties',
         'away_score_penalties',
+        'home_possession',
+        'away_possession',
         'substitutions',
     ];
 
@@ -135,6 +137,8 @@ class GameMatch extends Model
         'away_score_et' => 'integer',
         'home_score_penalties' => 'integer',
         'away_score_penalties' => 'integer',
+        'home_possession' => 'integer',
+        'away_possession' => 'integer',
         'substitutions' => 'array',
     ];
 

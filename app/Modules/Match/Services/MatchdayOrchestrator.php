@@ -329,6 +329,7 @@ class MatchdayOrchestrator
             $awayDefLine,
             $homeBenchPlayers,
             $awayBenchPlayers,
+            matchSeed: $match->id,
         );
 
         return [
@@ -337,6 +338,8 @@ class MatchdayOrchestrator
             'awayTeamId' => $match->away_team_id,
             'homeScore' => $result->homeScore,
             'awayScore' => $result->awayScore,
+            'homePossession' => $result->homePossession,
+            'awayPossession' => $result->awayPossession,
             'competitionId' => $match->competition_id,
             'events' => $result->events->map(fn (MatchEventData $e) => $e->toArray())->all(),
         ];

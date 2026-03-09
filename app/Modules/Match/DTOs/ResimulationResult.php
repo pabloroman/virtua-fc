@@ -9,5 +9,7 @@ readonly class ResimulationResult
         public int $newAwayScore,
         public int $oldHomeScore,
         public int $oldAwayScore,
+        public int $homePossession = 50,
+        public int $awayPossession = 50,
     ) {}
 }

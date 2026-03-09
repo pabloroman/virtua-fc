@@ -154,7 +154,7 @@ class MatchResimulationService
         // 10. Apply the new remainder events
         $this->applyNewEvents($match, $game, $remainderResult, $competitionId);
 
-        // 11. Update match score
+        // 11. Update match score and possession
         // Note: Score-dependent side effects (standings, cup ties, GK stats, prize money)
         // are NOT handled here. They are deferred to FinalizeMatch, which applies them
         // once after the user finishes the live match. This eliminates the need for
@@ -162,9 +162,14 @@ class MatchResimulationService
         $match->update([
             'home_score' => $newHomeScore,
             'away_score' => $newAwayScore,
+            'home_possession' => $remainderResult->homePossession,
+            'away_possession' => $remainderResult->awayPossession,
         ]);
 
-        return new ResimulationResult($newHomeScore, $newAwayScore, $oldHomeScore, $oldAwayScore);
+        return new ResimulationResult(
+            $newHomeScore, $newAwayScore, $oldHomeScore, $oldAwayScore,
+            $remainderResult->homePossession, $remainderResult->awayPossession,
+        );
     }
 
     /**
@@ -257,13 +262,18 @@ class MatchResimulationService
             // 9. Apply the new remainder events
             $this->applyNewEvents($match, $game, $remainderResult, $competitionId);
 
-            // 10. Update ET scores (not regular-time scores)
+            // 10. Update ET scores and possession (not regular-time scores)
             $match->update([
                 'home_score_et' => $newHomeScore,
                 'away_score_et' => $newAwayScore,
+                'home_possession' => $remainderResult->homePossession,
+                'away_possession' => $remainderResult->awayPossession,
             ]);
 
-            return new ResimulationResult($newHomeScore, $newAwayScore, $oldHomeScore, $oldAwayScore);
+            return new ResimulationResult(
+                $newHomeScore, $newAwayScore, $oldHomeScore, $oldAwayScore,
+                $remainderResult->homePossession, $remainderResult->awayPossession,
+            );
         });
     }
 

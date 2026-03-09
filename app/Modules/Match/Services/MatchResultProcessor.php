@@ -131,12 +131,18 @@ class MatchResultProcessor
         $ids = [];
         $homeCases = [];
         $awayCases = [];
+        $homePossCases = [];
+        $awayPossCases = [];
 
         foreach ($matchResults as $result) {
             $id = $result['matchId'];
             $ids[] = $id;
             $homeCases[] = "WHEN id = '{$id}' THEN {$result['homeScore']}";
             $awayCases[] = "WHEN id = '{$id}' THEN {$result['awayScore']}";
+            $homePoss = $result['homePossession'] ?? 50;
+            $awayPoss = $result['awayPossession'] ?? 50;
+            $homePossCases[] = "WHEN id = '{$id}' THEN {$homePoss}";
+            $awayPossCases[] = "WHEN id = '{$id}' THEN {$awayPoss}";
         }
 
         $idList = "'" . implode("','", $ids) . "'";
@@ -145,6 +151,8 @@ class MatchResultProcessor
             UPDATE game_matches
             SET home_score = CASE " . implode(' ', $homeCases) . " END,
                 away_score = CASE " . implode(' ', $awayCases) . " END,
+                home_possession = CASE " . implode(' ', $homePossCases) . " END,
+                away_possession = CASE " . implode(' ', $awayPossCases) . " END,
                 played = true
             WHERE id IN ({$idList})
         ");

@@ -17,5 +17,7 @@ readonly class ExtraTimeProcessResult
         public int $awayScoreET,
         public Collection $storedEvents,
         public bool $needsPenalties,
+        public int $homePossession = 50,
+        public int $awayPossession = 50,
     ) {}
 }

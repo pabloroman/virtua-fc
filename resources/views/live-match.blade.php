@@ -56,6 +56,8 @@
                 knockoutRoundNumber: {{ $knockoutRoundNumber ?? 'null' }},
                 knockoutRoundName: '{{ $knockoutRoundName ?? '' }}',
                 processingStatusUrl: {!! $processingStatusUrl ? "'" . $processingStatusUrl . "'" : 'null' !!},
+                homePossession: {{ $homePossession }},
+                awayPossession: {{ $awayPossession }},
                 translations: {
                     unsavedTacticalChanges: '{{ __('game.tactical_unsaved_changes') }}',
                     extraTime: '{{ __('game.live_extra_time') }}',
@@ -177,6 +179,21 @@
                         <template x-if="phase === 'full_time' && hasExtraTime && !penaltyResult">
                             <div class="text-xs text-slate-400 mt-1">({{ __('game.live_aet') }})</div>
                         </template>
+                    </div>
+
+                    {{-- Possession Bar --}}
+                    <div class="mb-4" x-show="phase !== 'pre_match'" x-cloak>
+                        <div class="flex items-center justify-between text-xs font-semibold mb-1">
+                            <span class="text-slate-700 tabular-nums" x-text="homePossession + '%'"></span>
+                            <span class="text-slate-400 uppercase tracking-wide text-[10px]">{{ __('game.possession') }}</span>
+                            <span class="text-slate-700 tabular-nums" x-text="awayPossession + '%'"></span>
+                        </div>
+                        <div class="flex h-1.5 rounded-full overflow-hidden bg-slate-100">
+                            <div class="bg-cyan-600 transition-all duration-700 ease-out rounded-l-full"
+                                 :style="'width: ' + homePossession + '%'"></div>
+                            <div class="bg-slate-400 transition-all duration-700 ease-out rounded-r-full"
+                                 :style="'width: ' + awayPossession + '%'"></div>
+                        </div>
                     </div>
 
                     {{-- Timeline Bar --}}

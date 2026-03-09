@@ -263,6 +263,8 @@ class ShowLiveMatch
             'processingStatusUrl' => $game->isCareerMode()
                 ? route('game.setup-status', $game->id)
                 : null,
+            'homePossession' => $playerMatch->home_possession ?? 50,
+            'awayPossession' => $playerMatch->away_possession ?? 50,
         ]);
     }
 

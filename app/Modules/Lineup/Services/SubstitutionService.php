@@ -206,7 +206,7 @@ class SubstitutionService
         $match->update(['substitutions' => $substitutions]);
 
         // Build the response for the frontend
-        return $this->buildBatchResponse($match, $game, $minute, $newSubstitutions, $result->newHomeScore, $result->newAwayScore, $isExtraTime);
+        return $this->buildBatchResponse($match, $game, $minute, $newSubstitutions, $result->newHomeScore, $result->newAwayScore, $isExtraTime, $result->homePossession, $result->awayPossession);
     }
 
     /**
@@ -280,7 +280,7 @@ class SubstitutionService
     /**
      * Build the JSON response for a batch substitution.
      */
-    private function buildBatchResponse(GameMatch $match, Game $game, int $minute, array $newSubstitutions, int $newHomeScore, int $newAwayScore, bool $isExtraTime = false): array
+    private function buildBatchResponse(GameMatch $match, Game $game, int $minute, array $newSubstitutions, int $newHomeScore, int $newAwayScore, bool $isExtraTime = false, int $homePossession = 50, int $awayPossession = 50): array
     {
         $formattedEvents = $this->resimulationService->buildEventsResponse($match, $minute);
 
@@ -308,6 +308,8 @@ class SubstitutionService
             ],
             'newEvents' => $formattedEvents,
             'substitutions' => $substitutionDetails,
+            'homePossession' => $homePossession,
+            'awayPossession' => $awayPossession,
         ];
 
         if ($isExtraTime) {
