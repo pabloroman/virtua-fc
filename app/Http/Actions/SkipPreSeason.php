@@ -17,9 +17,9 @@ class SkipPreSeason
             return redirect()->route('show-game', $gameId);
         }
 
-        // Delete all unplayed friendly matches
+        // Delete all unplayed pre-season matches
         GameMatch::where('game_id', $game->id)
-            ->where('competition_id', 'FR')
+            ->where('competition_id', 'PRESEASON')
             ->where('played', false)
             ->delete();
 

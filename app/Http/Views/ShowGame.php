@@ -98,7 +98,7 @@ class ShowGame
         // Add pre-season data
         if ($game->isInPreSeason()) {
             $firstCompetitiveMatch = GameMatch::where('game_id', $game->id)
-                ->where('competition_id', '!=', 'FR')
+                ->where('competition_id', '!=', 'PRESEASON')
                 ->where('played', false)
                 ->orderBy('scheduled_date')
                 ->first();

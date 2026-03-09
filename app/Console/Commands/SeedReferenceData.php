@@ -203,18 +203,18 @@ class SeedReferenceData extends Command
         }
         $this->line("  Step 4/4: Done.");
 
-        // Seed the friendly competition (used for pre-season matches)
+        // Seed the pre-season competition (used for pre-season matches)
         DB::table('competitions')->updateOrInsert(
-            ['id' => 'FR'],
+            ['id' => 'PRESEASON'],
             [
                 'name' => 'game.pre_season',
                 'country' => 'INT',
                 'flag' => null,
                 'tier' => 0,
                 'type' => 'league',
-                'role' => 'friendly',
+                'role' => 'preseason',
                 'scope' => 'domestic',
-                'handler_type' => 'friendly',
+                'handler_type' => 'preseason',
                 'season' => '2025',
             ]
         );

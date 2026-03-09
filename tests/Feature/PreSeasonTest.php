@@ -19,7 +19,7 @@ class PreSeasonTest extends TestCase
     private Team $playerTeam;
     private Team $opponentTeam;
     private Competition $leagueCompetition;
-    private Competition $friendlyCompetition;
+    private Competition $preSeasonCompetition;
     private Game $game;
 
     protected function setUp(): void
@@ -36,17 +36,7 @@ class PreSeasonTest extends TestCase
             'name' => 'LaLiga',
         ]);
 
-        $this->friendlyCompetition = Competition::create([
-            'id' => 'FR',
-            'name' => 'game.pre_season',
-            'country' => 'INT',
-            'tier' => 0,
-            'type' => 'friendly',
-            'role' => 'friendly',
-            'scope' => 'domestic',
-            'handler_type' => 'friendly',
-            'season' => '2025',
-        ]);
+        $this->preSeasonCompetition = Competition::find('PRESEASON');
 
         $this->game = Game::factory()->create([
             'user_id' => $this->user->id,
@@ -56,6 +46,9 @@ class PreSeasonTest extends TestCase
             'current_date' => '2025-07-01',
             'current_matchday' => 0,
             'pre_season' => true,
+            'setup_completed_at' => now(),
+            'needs_onboarding' => false,
+            'needs_welcome' => false,
         ]);
     }
 
@@ -71,10 +64,10 @@ class PreSeasonTest extends TestCase
 
     public function test_skip_pre_season_deletes_unplayed_friendlies(): void
     {
-        // Create friendly matches
+        // Create pre-season matches
         GameMatch::factory()->create([
             'game_id' => $this->game->id,
-            'competition_id' => 'FR',
+            'competition_id' => 'PRESEASON',
             'home_team_id' => $this->playerTeam->id,
             'away_team_id' => $this->opponentTeam->id,
             'scheduled_date' => Carbon::parse('2025-07-12'),
@@ -83,7 +76,7 @@ class PreSeasonTest extends TestCase
 
         GameMatch::factory()->create([
             'game_id' => $this->game->id,
-            'competition_id' => 'FR',
+            'competition_id' => 'PRESEASON',
             'home_team_id' => $this->opponentTeam->id,
             'away_team_id' => $this->playerTeam->id,
             'scheduled_date' => Carbon::parse('2025-07-22'),
@@ -109,7 +102,7 @@ class PreSeasonTest extends TestCase
         // Friendlies should be deleted
         $this->assertDatabaseMissing('game_matches', [
             'game_id' => $this->game->id,
-            'competition_id' => 'FR',
+            'competition_id' => 'PRESEASON',
         ]);
 
         // Competitive match should still exist
@@ -147,10 +140,10 @@ class PreSeasonTest extends TestCase
             'round_number' => 1,
         ]);
 
-        // Create a friendly as next match
+        // Create a pre-season match as next match
         GameMatch::factory()->create([
             'game_id' => $this->game->id,
-            'competition_id' => 'FR',
+            'competition_id' => 'PRESEASON',
             'home_team_id' => $this->playerTeam->id,
             'away_team_id' => $this->opponentTeam->id,
             'scheduled_date' => Carbon::parse('2025-07-12'),

@@ -78,7 +78,7 @@
                         @php
                             $comp = $nextMatch->competition;
                             $accent = match(true) {
-                                ($comp->handler_type ?? '') === 'friendly' => ['badge' => 'bg-sky-100 text-sky-800', 'border' => 'border-l-sky-500'],
+                                ($comp->handler_type ?? '') === 'preseason' => ['badge' => 'bg-sky-100 text-sky-800', 'border' => 'border-l-sky-500'],
                                 ($comp->scope ?? '') === 'continental' => ['badge' => 'bg-blue-100 text-blue-800', 'border' => 'border-l-blue-500'],
                                 ($comp->type ?? '') === 'cup' => ['badge' => 'bg-emerald-100 text-emerald-800', 'border' => 'border-l-emerald-500'],
                                 default => ['badge' => 'bg-amber-100 text-amber-800', 'border' => 'border-l-amber-500'],
@@ -89,7 +89,7 @@
                             <div class="text-center">
                                 <div class="flex items-center justify-center gap-2">
                                     <span class="px-3 py-1 text-sm font-semibold rounded-full {{ $accent['badge'] }}">
-                                        {{ ($comp->handler_type ?? '') === 'friendly' ? __('game.pre_season_friendly') : __($nextMatch->competition->name ?? 'League') }}
+                                        {{ ($comp->handler_type ?? '') === 'preseason' ? __('game.pre_season_friendly') : __($nextMatch->competition->name ?? 'League') }}
                                     </span>
                                     @if($nextMatch->round_name)
                                         <span class="text-sm text-slate-500">&middot; {{ __($nextMatch->round_name) }}</span>
@@ -108,7 +108,7 @@
                                 <div class="flex-1 flex flex-col items-center text-center min-w-0 px-2">
                                     <x-team-crest :team="$nextMatch->homeTeam" class="w-12 h-12 md:w-20 md:h-20 mb-2" />
                                     <h4 class="text-base md:text-xl font-bold text-slate-900 truncate max-w-full">{{ $nextMatch->homeTeam->name }}</h4>
-                                    @if(($comp->handler_type ?? '') !== 'friendly')
+                                    @if(($comp->handler_type ?? '') !== 'preseason')
                                     @if($homeStanding)
                                     <div class="text-sm text-slate-500 mt-0.5">
                                         {{ $homeStanding->position }}{{ $homeStanding->position == 1 ? 'st' : ($homeStanding->position == 2 ? 'nd' : ($homeStanding->position == 3 ? 'rd' : 'th')) }} &middot; {{ $homeStanding->points }} {{ __('game.pts') }}
@@ -134,7 +134,7 @@
                                 <div class="flex-1 flex flex-col items-center text-center min-w-0 px-2">
                                     <x-team-crest :team="$nextMatch->awayTeam" class="w-12 h-12 md:w-20 md:h-20 mb-2" />
                                     <h4 class="text-base md:text-xl font-bold text-slate-900 truncate max-w-full">{{ $nextMatch->awayTeam->name }}</h4>
-                                    @if(($comp->handler_type ?? '') !== 'friendly')
+                                    @if(($comp->handler_type ?? '') !== 'preseason')
                                     @if($awayStanding)
                                     <div class="text-sm text-slate-500 mt-0.5">
                                         {{ $awayStanding->position }}{{ $awayStanding->position == 1 ? 'st' : ($awayStanding->position == 2 ? 'nd' : ($awayStanding->position == 3 ? 'rd' : 'th')) }} &middot; {{ $awayStanding->points }} {{ __('game.pts') }}

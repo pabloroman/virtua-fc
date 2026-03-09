@@ -12,7 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Str;
 
 /**
- * Generates pre-season friendly fixtures for career mode games.
+ * Generates pre-season fixtures for career mode games.
  * Creates 4 friendlies against foreign teams of similar reputation,
  * scheduled every ~10 days from mid-July to mid-August.
  *
@@ -20,10 +20,10 @@ use Illuminate\Support\Str;
  */
 class PreSeasonFixtureProcessor implements SeasonProcessor
 {
-    private const FRIENDLY_COMPETITION_ID = 'FR';
-    private const NUM_FRIENDLIES = 4;
+    private const PRESEASON_COMPETITION_ID = 'PRESEASON';
+    private const NUM_MATCHES = 4;
 
-    private const FRIENDLY_SCHEDULE = [
+    private const PRESEASON_SCHEDULE = [
         ['day' => 12, 'month' => 7, 'home' => true],
         ['day' => 22, 'month' => 7, 'home' => false],
         ['day' => 2,  'month' => 8, 'home' => true],
@@ -44,7 +44,7 @@ class PreSeasonFixtureProcessor implements SeasonProcessor
         $seasonYear = (int) $data->newSeason;
         $opponents = $this->selectOpponents($game);
 
-        foreach (self::FRIENDLY_SCHEDULE as $i => $schedule) {
+        foreach (self::PRESEASON_SCHEDULE as $i => $schedule) {
             if (! isset($opponents[$i])) {
                 break;
             }
@@ -54,7 +54,7 @@ class PreSeasonFixtureProcessor implements SeasonProcessor
             GameMatch::create([
                 'id' => Str::uuid()->toString(),
                 'game_id' => $game->id,
-                'competition_id' => self::FRIENDLY_COMPETITION_ID,
+                'competition_id' => self::PRESEASON_COMPETITION_ID,
                 'home_team_id' => $schedule['home'] ? $game->team_id : $opponents[$i]->id,
                 'away_team_id' => $schedule['home'] ? $opponents[$i]->id : $game->team_id,
                 'scheduled_date' => $date->toDateString(),
@@ -67,7 +67,7 @@ class PreSeasonFixtureProcessor implements SeasonProcessor
     }
 
     /**
-     * Select foreign teams of similar reputation as friendly opponents.
+     * Select foreign teams of similar reputation as pre-season opponents.
      *
      * @return \Illuminate\Support\Collection<Team>
      */
@@ -93,7 +93,7 @@ class PreSeasonFixtureProcessor implements SeasonProcessor
                 $query->whereIn('reputation_level', $validLevels);
             })
             ->inRandomOrder()
-            ->limit(self::NUM_FRIENDLIES)
+            ->limit(self::NUM_MATCHES)
             ->get();
     }
 }

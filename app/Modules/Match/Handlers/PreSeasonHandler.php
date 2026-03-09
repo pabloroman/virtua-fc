@@ -7,11 +7,11 @@ use App\Models\Game;
 use App\Models\GameMatch;
 use Illuminate\Support\Collection;
 
-class FriendlyHandler implements CompetitionHandler
+class PreSeasonHandler implements CompetitionHandler
 {
     public function getType(): string
     {
-        return 'friendly';
+        return 'preseason';
     }
 
     public function getMatchBatch(string $gameId, GameMatch $nextMatch): Collection
@@ -26,7 +26,7 @@ class FriendlyHandler implements CompetitionHandler
 
     public function beforeMatches(Game $game, string $targetDate): void
     {
-        // No pre-match actions for friendlies
+        // No pre-match actions for pre-season matches
     }
 
     public function afterMatches(Game $game, Collection $matches, Collection $allPlayers): void
