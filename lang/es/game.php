@@ -400,7 +400,6 @@ return [
     'pre_season_banner_title' => 'Pretemporada',
     'pre_season_banner_desc' => 'La temporada comienza el :date. Aprovecha para configurar tu plantilla, jugar amistosos y fichar jugadores.',
     'pre_season_skip' => 'Saltar Pretemporada',
-    'pre_season_skip_confirm' => '¿Saltar la pretemporada? Los amistosos restantes se cancelarán.',
     'pre_season_skipped' => 'Pretemporada saltada. La temporada ha comenzado.',
 
     'goal_ucl_title' => 'Ganar la Champions League',

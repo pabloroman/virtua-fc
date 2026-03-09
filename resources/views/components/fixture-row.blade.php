@@ -25,6 +25,7 @@
     // Competition color-coded left border
     $comp = $match->competition;
     $borderColor = match(true) {
+        ($comp->handler_type ?? '') === 'friendly' => 'border-l-sky-500',
         ($comp->scope ?? '') === 'continental' => 'border-l-blue-500',
         ($comp->role ?? '') === 'domestic_cup' => 'border-l-emerald-500',
         default => 'border-l-amber-500',

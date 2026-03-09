@@ -13,8 +13,8 @@ return [
     'scouting_tab' => 'Ojeadores',
 
     // Window countdown
-    'window_closes_in' => ':window cierra en :matchdays jornada(s)',
-    'window_opens_in' => ':window abre en :matchdays jornada(s)',
+    'window_closes_in' => 'cierra el :date',
+    'window_opens_in' => 'abre el :date',
 
     // Wage bill
     'wage_bill' => 'Masa Salarial',

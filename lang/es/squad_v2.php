@@ -42,5 +42,5 @@ return [
     'alert_low_fitness' => ':count jugadores con baja forma física',
     'alert_thin_position' => 'Solo :count jugador(es) en :position — poca cobertura',
     'alert_no_cover' => 'Sin cobertura en :position',
-    'alert_window_closing' => ':window cierra en :matchdays jornadas',
+    'alert_window_closing' => 'La ventana de traspasos cierra el :date',
 ];

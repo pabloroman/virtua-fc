@@ -715,6 +715,7 @@ class Game extends Model
             'action' => $nearest['action'],
             'window' => $nearest['window'],
             'matchdays' => $matchdays,
+            'date' => $nearest['date'],
         ];
     }
 

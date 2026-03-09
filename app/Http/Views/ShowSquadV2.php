@@ -275,7 +275,7 @@ class ShowSquadV2
         if ($isCareerMode && $windowCountdown && $windowCountdown['action'] === 'closes' && $windowCountdown['matchdays'] <= 3) {
             $alerts[] = [
                 'type' => 'info',
-                'message' => __('squad_v2.alert_window_closing', ['window' => $windowCountdown['window'], 'matchdays' => $windowCountdown['matchdays']]),
+                'message' => __('squad_v2.alert_window_closing', ['date' => $windowCountdown['date']->locale(app()->getLocale())->translatedFormat('d M Y')]),
             ];
         }
 

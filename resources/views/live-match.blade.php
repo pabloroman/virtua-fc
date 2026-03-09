@@ -85,6 +85,7 @@
             @php
                 $comp = $match->competition;
                 $accent = match(true) {
+                    ($comp->handler_type ?? '') === 'friendly' => 'bg-sky-600 text-sky-100',
                     ($comp->scope ?? '') === 'continental' => 'bg-blue-600 text-blue-100',
                     ($comp->type ?? '') === 'cup' => 'bg-emerald-600 text-emerald-100',
                     default => 'bg-amber-600 text-amber-100',

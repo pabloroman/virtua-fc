@@ -28,9 +28,9 @@
             @if(isset($windowCountdown) && $windowCountdown)
                 <span class="text-xs text-slate-400">
                     @if($windowCountdown['action'] === 'closes')
-                        {{ __('transfers.window_closes_in', ['window' => $windowCountdown['window'], 'matchdays' => $windowCountdown['matchdays']]) }}
+                        {{ __('transfers.window_closes_in', ['date' => $windowCountdown['date']->locale(app()->getLocale())->translatedFormat('d M Y')]) }}
                     @else
-                        {{ __('transfers.window_opens_in', ['window' => $windowCountdown['window'], 'matchdays' => $windowCountdown['matchdays']]) }}
+                        {{ __('transfers.window_opens_in', ['date' => $windowCountdown['date']->locale(app()->getLocale())->translatedFormat('d M Y')]) }}
                     @endif
                 </span>
             @endif

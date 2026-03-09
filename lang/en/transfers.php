@@ -13,8 +13,8 @@ return [
     'scouting_tab' => 'Scouting',
 
     // Window countdown
-    'window_closes_in' => ':window closes in :matchdays matchday(s)',
-    'window_opens_in' => ':window opens in :matchdays matchday(s)',
+    'window_closes_in' => 'closes on :date',
+    'window_opens_in' => 'opens on :date',
 
     // Wage bill
     'wage_bill' => 'Wage Bill',

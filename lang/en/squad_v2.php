@@ -42,5 +42,5 @@ return [
     'alert_low_fitness' => ':count players with low fitness',
     'alert_thin_position' => 'Only :count player(s) at :position — thin cover',
     'alert_no_cover' => 'No cover at :position',
-    'alert_window_closing' => ':window closes in :matchdays matchdays',
+    'alert_window_closing' => 'Transfer window closes on :date',
 ];

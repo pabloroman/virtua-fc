@@ -43,20 +43,19 @@
                     </div>
                 </div>
                 <div class="shrink-0">
-                    <button @click="confirmSkip = true" x-show="!confirmSkip" class="inline-flex items-center px-4 py-2 bg-white border border-sky-300 text-sky-700 text-sm font-medium rounded-md hover:bg-sky-50 transition-colors min-h-[44px]">
+                    <x-secondary-button @click="confirmSkip = true" x-show="!confirmSkip">
                         {{ __('game.pre_season_skip') }}
-                    </button>
+                    </x-secondary-button>
                     <div x-show="confirmSkip" x-cloak class="flex items-center gap-2">
-                        <span class="text-sm text-slate-600">{{ __('game.pre_season_skip_confirm') }}</span>
                         <form action="{{ route('game.skip-pre-season', $game->id) }}" method="POST" class="inline">
                             @csrf
-                            <button type="submit" class="inline-flex items-center px-3 py-1.5 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 transition-colors min-h-[44px]">
-                                {{ __('game.pre_season_skip') }}
-                            </button>
+                            <x-danger-button>
+                                {{ __('app.confirm') }}
+                            </x-danger-button>
                         </form>
-                        <button @click="confirmSkip = false" class="inline-flex items-center px-3 py-1.5 bg-white border border-slate-300 text-slate-600 text-sm font-medium rounded-md hover:bg-slate-50 transition-colors min-h-[44px]">
+                        <x-secondary-button @click="confirmSkip = false">
                             {{ __('app.cancel') }}
-                        </button>
+                        </x-secondary-button>
                     </div>
                 </div>
             </div>
@@ -109,6 +108,7 @@
                                 <div class="flex-1 flex flex-col items-center text-center min-w-0 px-2">
                                     <x-team-crest :team="$nextMatch->homeTeam" class="w-12 h-12 md:w-20 md:h-20 mb-2" />
                                     <h4 class="text-base md:text-xl font-bold text-slate-900 truncate max-w-full">{{ $nextMatch->homeTeam->name }}</h4>
+                                    @if(($comp->handler_type ?? '') !== 'friendly')
                                     @if($homeStanding)
                                     <div class="text-sm text-slate-500 mt-0.5">
                                         {{ $homeStanding->position }}{{ $homeStanding->position == 1 ? 'st' : ($homeStanding->position == 2 ? 'nd' : ($homeStanding->position == 3 ? 'rd' : 'th')) }} &middot; {{ $homeStanding->points }} {{ __('game.pts') }}
@@ -127,12 +127,14 @@
                                             <span class="text-slate-400 text-sm">{{ __('game.no_form') }}</span>
                                         @endforelse
                                     </div>
+                                    @endif
                                 </div>
 
                                 {{-- Away Team --}}
                                 <div class="flex-1 flex flex-col items-center text-center min-w-0 px-2">
                                     <x-team-crest :team="$nextMatch->awayTeam" class="w-12 h-12 md:w-20 md:h-20 mb-2" />
                                     <h4 class="text-base md:text-xl font-bold text-slate-900 truncate max-w-full">{{ $nextMatch->awayTeam->name }}</h4>
+                                    @if(($comp->handler_type ?? '') !== 'friendly')
                                     @if($awayStanding)
                                     <div class="text-sm text-slate-500 mt-0.5">
                                         {{ $awayStanding->position }}{{ $awayStanding->position == 1 ? 'st' : ($awayStanding->position == 2 ? 'nd' : ($awayStanding->position == 3 ? 'rd' : 'th')) }} &middot; {{ $awayStanding->points }} {{ __('game.pts') }}
@@ -151,6 +153,7 @@
                                             <span class="text-slate-400 text-sm">{{ __('game.no_form') }}</span>
                                         @endforelse
                                     </div>
+                                    @endif
                                 </div>
                             </div>
 
