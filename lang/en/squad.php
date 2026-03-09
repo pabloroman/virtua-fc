@@ -168,6 +168,12 @@ return [
     'legend_own_goals' => 'Own Goals',
     'legend_clean_sheets' => 'Clean Sheets (GK only)',
 
+    // Squad number
+    'assign_number' => 'Assign number',
+    'number_taken' => 'This number is already taken',
+    'number_updated' => 'Number updated',
+    'number_invalid' => 'Number must be between 1 and 99',
+
     // Player detail modal
     'abilities' => 'Abilities',
     'technical_full' => 'Technical',

@@ -168,6 +168,12 @@ return [
     'legend_own_goals' => 'Goles en Propia',
     'legend_clean_sheets' => 'Porterías a Cero (solo PO)',
 
+    // Squad number
+    'assign_number' => 'Asignar dorsal',
+    'number_taken' => 'Este dorsal ya está asignado',
+    'number_updated' => 'Dorsal actualizado',
+    'number_invalid' => 'El dorsal debe estar entre 1 y 99',
+
     // Player detail modal
     'abilities' => 'Habilidades',
     'technical_full' => 'Técnica',

@@ -38,6 +38,7 @@ use App\Http\Actions\SubmitPreContractOffer;
 use App\Http\Actions\StartPlayerTracking;
 use App\Http\Actions\StopPlayerTracking;
 use App\Http\Actions\ToggleShortlist;
+use App\Http\Actions\UpdatePlayerNumber;
 use App\Http\Actions\RemoveFromShortlist;
 use App\Http\Actions\DeleteScoutSearch;
 use App\Http\Actions\SkipPreSeason;
@@ -140,6 +141,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/game/{gameId}/transfers/decline-renewal/{playerId}', DeclineRenewal::class)->name('game.transfers.decline-renewal');
         Route::post('/game/{gameId}/transfers/reconsider-renewal/{playerId}', ReconsiderRenewal::class)->name('game.transfers.reconsider-renewal');
         Route::post('/game/{gameId}/squad/release/{playerId}', ReleasePlayer::class)->name('game.squad.release');
+        Route::post('/game/{gameId}/squad/{playerId}/number', UpdatePlayerNumber::class)->name('game.squad.number');
 
         // Scouting
         Route::get('/game/{gameId}/scouting', ShowScoutingHub::class)->name('game.scouting');
