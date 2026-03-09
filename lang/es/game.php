@@ -214,6 +214,7 @@ return [
     'live_pre_match' => 'Previo al partido',
     'live_half_time' => 'Descanso',
     'live_full_time' => 'Final',
+    'possession' => 'Posesión',
     'live_kick_off' => 'Comienza el partido',
     'live_about_to_start' => 'El partido está a punto de comenzar...',
     'live_goal' => 'Gol',

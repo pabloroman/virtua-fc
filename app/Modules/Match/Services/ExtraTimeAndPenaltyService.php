@@ -64,6 +64,8 @@ class ExtraTimeAndPenaltyService
             'is_extra_time' => true,
             'home_score_et' => $extraTimeResult->homeScore,
             'away_score_et' => $extraTimeResult->awayScore,
+            'home_possession' => $extraTimeResult->homePossession,
+            'away_possession' => $extraTimeResult->awayPossession,
         ]);
 
         $storedEvents = $this->storeExtraTimeEvents($match, $game, $extraTimeResult->events);
@@ -75,6 +77,8 @@ class ExtraTimeAndPenaltyService
             awayScoreET: $extraTimeResult->awayScore,
             storedEvents: $storedEvents,
             needsPenalties: $needsPenalties,
+            homePossession: $extraTimeResult->homePossession,
+            awayPossession: $extraTimeResult->awayPossession,
         );
     }
 

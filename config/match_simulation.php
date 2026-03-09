@@ -265,6 +265,51 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Possession Calculation (Cosmetic)
+    |--------------------------------------------------------------------------
+    |
+    | Possession % is derived from tactical choices and team strength.
+    | It is purely cosmetic — it does NOT affect xG, energy, or simulation.
+    |
+    | Each factor adds/subtracts from a base of 50. The raw scores for both
+    | teams are then normalized so they sum to 100%.
+    |
+    | noise_range: random ± variation (seeded per match for determinism)
+    |
+    */
+    'possession' => [
+        'playing_style' => [
+            'possession' => 7,
+            'balanced' => 0,
+            'counter_attack' => -5,
+            'direct' => -2,
+        ],
+        'pressing' => [
+            'high_press' => 3,
+            'standard' => 0,
+            'low_block' => -3,
+        ],
+        'mentality' => [
+            'defensive' => -2,
+            'balanced' => 0,
+            'attacking' => 2,
+        ],
+        'formation_midfield' => [
+            '4-4-2' => 1,
+            '4-3-3' => 0,
+            '4-2-3-1' => 2,
+            '3-4-3' => 1,
+            '3-5-2' => 3,
+            '4-1-4-1' => 2,
+            '5-3-2' => 0,
+            '5-4-1' => 1,
+        ],
+        'strength_max_bonus' => 5,
+        'noise_range' => 3,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Red Card Impact
     |--------------------------------------------------------------------------
     |

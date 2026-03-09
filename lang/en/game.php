@@ -214,6 +214,7 @@ return [
     'live_pre_match' => 'Pre-match',
     'live_half_time' => 'Half Time',
     'live_full_time' => 'Full Time',
+    'possession' => 'Possession',
     'live_kick_off' => 'Kick off',
     'live_about_to_start' => 'The match is about to begin...',
     'live_goal' => 'Goal',

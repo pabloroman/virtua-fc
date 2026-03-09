@@ -85,6 +85,8 @@ class TacticalChangeService
             'playingStyle' => $match->{"{$prefix}_playing_style"},
             'pressing' => $match->{"{$prefix}_pressing"},
             'defensiveLine' => $match->{"{$prefix}_defensive_line"},
+            'homePossession' => $result->homePossession,
+            'awayPossession' => $result->awayPossession,
         ];
 
         if ($isExtraTime) {

@@ -113,6 +113,7 @@ class MatchSimulator
         ?DefensiveLineHeight $awayDefLine = null,
         ?Collection $homeBenchPlayers = null,
         ?Collection $awayBenchPlayers = null,
+        string $matchSeed = '',
     ): MatchResult {
         return $this->simulateRemainder(
             $homeTeam, $awayTeam,
@@ -129,6 +130,7 @@ class MatchSimulator
             awayDefLine: $awayDefLine,
             homeBenchPlayers: $homeBenchPlayers,
             awayBenchPlayers: $awayBenchPlayers,
+            matchSeed: $matchSeed,
         );
     }
 
@@ -531,6 +533,69 @@ class MatchSimulator
     }
 
     /**
+     * Calculate cosmetic possession percentages from tactics and team strength.
+     * Purely display — does not affect simulation outcomes.
+     *
+     * @return array{home: int, away: int} Possession percentages (sum = 100)
+     */
+    public function calculatePossession(
+        float $homeStrength,
+        float $awayStrength,
+        Formation $homeFormation,
+        Formation $awayFormation,
+        Mentality $homeMentality,
+        Mentality $awayMentality,
+        PlayingStyle $homePlayingStyle,
+        PlayingStyle $awayPlayingStyle,
+        PressingIntensity $homePressing,
+        PressingIntensity $awayPressing,
+        string $matchSeed = '',
+    ): array {
+        $cfg = config('match_simulation.possession');
+
+        $homeScore = 50.0
+            + ($cfg['playing_style'][$homePlayingStyle->value] ?? 0)
+            + ($cfg['pressing'][$homePressing->value] ?? 0)
+            + ($cfg['mentality'][$homeMentality->value] ?? 0)
+            + ($cfg['formation_midfield'][$homeFormation->value] ?? 0);
+
+        $awayScore = 50.0
+            + ($cfg['playing_style'][$awayPlayingStyle->value] ?? 0)
+            + ($cfg['pressing'][$awayPressing->value] ?? 0)
+            + ($cfg['mentality'][$awayMentality->value] ?? 0)
+            + ($cfg['formation_midfield'][$awayFormation->value] ?? 0);
+
+        // Strength bonus: stronger team gets up to ±strength_max_bonus
+        $maxBonus = $cfg['strength_max_bonus'] ?? 5;
+        if ($homeStrength + $awayStrength > 0) {
+            $strengthShare = $homeStrength / ($homeStrength + $awayStrength); // 0.0–1.0
+            $homeScore += ($strengthShare - 0.5) * 2 * $maxBonus;
+            $awayScore += (0.5 - $strengthShare) * 2 * $maxBonus;
+        }
+
+        // Deterministic noise seeded from match ID
+        $noiseRange = $cfg['noise_range'] ?? 3;
+        if ($matchSeed !== '' && $noiseRange > 0) {
+            $seed = crc32($matchSeed);
+            mt_srand($seed);
+            $homeNoise = (mt_rand(0, 2 * $noiseRange * 100) - $noiseRange * 100) / 100;
+            mt_srand($seed + 1);
+            $awayNoise = (mt_rand(0, 2 * $noiseRange * 100) - $noiseRange * 100) / 100;
+            mt_srand();
+            $homeScore += $homeNoise;
+            $awayScore += $awayNoise;
+        }
+
+        // Normalize to percentages
+        $total = max($homeScore + $awayScore, 1);
+        $homePct = (int) round($homeScore / $total * 100);
+        $homePct = max(25, min(75, $homePct)); // clamp to realistic range
+        $awayPct = 100 - $homePct;
+
+        return ['home' => $homePct, 'away' => $awayPct];
+    }
+
+    /**
      * Calculate base expected goals from strength ratio, formation, mentality, and match fraction.
      * Does not include tactical instruction modifiers, striker bonus, or max goals cap.
      *
@@ -684,6 +749,7 @@ class MatchSimulator
         ?DefensiveLineHeight $awayDefLine = null,
         ?Collection $homeBenchPlayers = null,
         ?Collection $awayBenchPlayers = null,
+        string $matchSeed = '',
     ): MatchResult {
         $this->resetMatchPerformance();
 
@@ -850,7 +916,16 @@ class MatchSimulator
             );
         }
 
-        return new MatchResult($homeScore, $awayScore, $events);
+        $possession = $this->calculatePossession(
+            $homeStrength, $awayStrength,
+            $homeFormation, $awayFormation,
+            $homeMentality, $awayMentality,
+            $homePlayingStyle, $awayPlayingStyle,
+            $homePressing, $awayPressing,
+            $matchSeed,
+        );
+
+        return new MatchResult($homeScore, $awayScore, $events, $possession['home'], $possession['away']);
     }
 
     /**
@@ -1346,7 +1421,15 @@ class MatchSimulator
             );
         }
 
-        return new MatchResult($homeScore, $awayScore, $events);
+        $possession = $this->calculatePossession(
+            $homeStrength, $awayStrength,
+            $homeFormation, $awayFormation,
+            $homeMentality, $awayMentality,
+            $homePlayingStyle, $awayPlayingStyle,
+            $homePressing, $awayPressing,
+        );
+
+        return new MatchResult($homeScore, $awayScore, $events, $possession['home'], $possession['away']);
     }
 
     /**

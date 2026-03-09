@@ -13,11 +13,15 @@ readonly class MatchResult
      * @param int $homeScore Final score for home team
      * @param int $awayScore Final score for away team
      * @param Collection<MatchEventData> $events All events that occurred during the match
+     * @param int $homePossession Home team possession percentage (0-100)
+     * @param int $awayPossession Away team possession percentage (0-100)
      */
     public function __construct(
         public int $homeScore,
         public int $awayScore,
         public Collection $events,
+        public int $homePossession = 50,
+        public int $awayPossession = 50,
     ) {}
 
     /**
