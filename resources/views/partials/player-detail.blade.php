@@ -15,7 +15,6 @@
     $isTransferWindow = $isCareerMode && $game->isTransferWindowOpen();
     $showActions = $isCareerMode && ($isListed || $canManage);
 
-    $canEditNumber = $gamePlayer->team_id === $game->team_id;
     $positionDisplay = $gamePlayer->position_display;
     $nationalityFlag = $gamePlayer->nationality_flag;
     $devStatus = $gamePlayer->developmentStatus($game->current_date);
@@ -40,73 +39,7 @@
                 </div>
                 <div class="flex items-center gap-2.5 flex-wrap">
                     <h3 class="font-bold text-xl md:text-2xl text-slate-900 truncate">{{ $gamePlayer->name }}</h3>
-                    @if($canEditNumber)
-                        <div x-data="{
-                            editing: false,
-                            number: {{ $gamePlayer->number ?? 'null' }},
-                            newNumber: '{{ $gamePlayer->number ?? '' }}',
-                            saving: false,
-                            error: '',
-                            save() {
-                                this.saving = true;
-                                this.error = '';
-                                const val = this.newNumber === '' ? null : parseInt(this.newNumber, 10);
-                                fetch('{{ route('game.squad.number', [$game->id, $gamePlayer->id]) }}', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                        'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
-                                        'Accept': 'application/json',
-                                    },
-                                    body: JSON.stringify({ number: val }),
-                                })
-                                .then(r => r.json().then(data => ({ ok: r.ok, data })))
-                                .then(({ ok, data }) => {
-                                    this.saving = false;
-                                    if (ok && data.success) {
-                                        this.number = data.number;
-                                        this.editing = false;
-                                    } else {
-                                        this.error = data.message || (data.errors?.number?.[0] ?? '{{ __('squad.number_invalid') }}');
-                                    }
-                                })
-                                .catch(() => { this.saving = false; this.error = '{{ __('squad.number_invalid') }}'; });
-                            },
-                            cancel() { this.editing = false; this.error = ''; this.newNumber = this.number ?? ''; }
-                        }" class="inline-flex items-center">
-                            {{-- Display mode --}}
-                            <template x-if="!editing">
-                                <button @click="editing = true; $nextTick(() => $refs.numberInput.select())"
-                                    class="group inline-flex items-center gap-1 text-slate-400 text-lg font-medium hover:text-slate-600 transition-colors min-h-[44px] cursor-pointer"
-                                    :title="number ? '{{ __('squad.assign_number') }}' : '{{ __('squad.assign_number') }}'">
-                                    <span x-show="number" x-text="'#' + number"></span>
-                                    <span x-show="!number" class="text-sm text-slate-400 border border-dashed border-slate-300 rounded px-1.5 py-0.5">{{ __('squad.assign_number') }}</span>
-                                    <svg class="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
-                                </button>
-                            </template>
-                            {{-- Edit mode --}}
-                            <template x-if="editing">
-                                <div class="flex flex-col">
-                                    <div class="inline-flex items-center gap-1">
-                                        <span class="text-slate-400 text-lg font-medium">#</span>
-                                        <input x-ref="numberInput" type="number" min="1" max="99"
-                                            x-model="newNumber"
-                                            @keydown.enter.prevent="save()"
-                                            @keydown.escape.prevent="cancel()"
-                                            class="w-14 h-8 text-lg font-medium text-slate-900 border border-slate-300 rounded px-1.5 text-center focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                                            :disabled="saving">
-                                        <button @click="save()" :disabled="saving" class="p-1.5 text-green-600 hover:bg-green-50 rounded transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
-                                        </button>
-                                        <button @click="cancel()" class="p-1.5 text-slate-400 hover:bg-slate-100 rounded transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                                        </button>
-                                    </div>
-                                    <p x-show="error" x-text="error" class="text-xs text-red-600 mt-1"></p>
-                                </div>
-                            </template>
-                        </div>
-                    @elseif($gamePlayer->number)
+                    @if($gamePlayer->number)
                         <span class="text-slate-400 text-lg font-medium">#{{ $gamePlayer->number }}</span>
                     @endif
                 </div>

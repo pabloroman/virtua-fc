@@ -10,6 +10,7 @@ return [
     // View modes
     'tactical' => 'Tactical',
     'planning' => 'Planning',
+    'numbers' => 'Numbers',
 
     // Table headers
     'cards' => 'Cards',
@@ -43,4 +44,9 @@ return [
     'alert_thin_position' => 'Only :count player(s) at :position — thin cover',
     'alert_no_cover' => 'No cover at :position',
     'alert_window_closing' => 'Transfer window closes on :date',
+
+    // Number grid
+    'number_grid' => 'Number Grid',
+    'assigned' => 'Assigned',
+    'available_number' => 'Available',
 ];

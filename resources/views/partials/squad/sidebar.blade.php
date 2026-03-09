@@ -4,6 +4,28 @@
 @endphp
 
 <div class="space-y-5">
+    {{-- Number Grid (visible only in numbers mode) --}}
+    <div x-show="viewMode === 'numbers'" x-cloak>
+        <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wide pb-2 border-b border-slate-200 mb-3">{{ __('squad_v2.number_grid') }}</h4>
+        <div class="grid grid-cols-10 gap-1">
+            @for($n = 1; $n <= 99; $n++)
+            <div class="aspect-square flex items-center justify-center rounded text-xs font-medium cursor-default transition-colors"
+                 :class="getNumberOwner({{ $n }}) ? 'bg-sky-100 text-sky-800 border border-sky-200' : 'bg-slate-50 text-slate-300 border border-slate-100'"
+                 :title="getNumberOwner({{ $n }})?.name ?? '{{ __('squad_v2.available_number') }}'">
+                <span class="tabular-nums">{{ $n }}</span>
+            </div>
+            @endfor
+        </div>
+        <div class="mt-3 flex items-center gap-3 text-xs text-slate-500">
+            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-sky-100 border border-sky-200"></span> {{ __('squad_v2.assigned') }}</span>
+            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-slate-50 border border-slate-100"></span> {{ __('squad_v2.available_number') }}</span>
+        </div>
+    </div>
+
+    {{-- Standard sidebar content (hidden in numbers mode) --}}
+    <template x-if="viewMode !== 'numbers'">
+    <div class="space-y-5">
+
     {{-- Alerts --}}
     @if(count($alerts) > 0)
     <div>
@@ -150,4 +172,7 @@
         </div>
     </div>
     @endif
+
+    </div>
+    </template>
 </div>

@@ -10,6 +10,7 @@ return [
     // View modes
     'tactical' => 'Táctico',
     'planning' => 'Planificación',
+    'numbers' => 'Dorsales',
 
     // Table headers
     'cards' => 'Tarjetas',
@@ -43,4 +44,9 @@ return [
     'alert_thin_position' => 'Solo :count jugador(es) en :position — poca cobertura',
     'alert_no_cover' => 'Sin cobertura en :position',
     'alert_window_closing' => 'La ventana de traspasos cierra el :date',
+
+    // Number grid
+    'number_grid' => 'Dorsales',
+    'assigned' => 'Asignado',
+    'available_number' => 'Disponible',
 ];
