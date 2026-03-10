@@ -41,6 +41,9 @@ class ProcessCareerActions implements ShouldQueue, ShouldBeUnique
         $start = microtime(true);
 
         for ($i = 0; $i < $this->ticks; $i++) {
+            if ($i > 0) {
+                $game->refresh();
+            }
             $processor->process($game);
         }
 
