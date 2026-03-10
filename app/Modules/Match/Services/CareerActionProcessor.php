@@ -28,6 +28,9 @@ class CareerActionProcessor
 
     public function process(Game $game): void
     {
+        // Pre-load buyer pool once for all offer generation (avoids repeated team/squad queries)
+        $buyerPool = $this->transferService->loadBuyerPool($game);
+
         // Process transfers when window is open
         if ($game->isTransferWindowOpen()) {
             $completedOutgoing = $this->transferService->completeAgreedTransfers($game);
@@ -39,8 +42,8 @@ class CareerActionProcessor
 
         // Generate transfer offers (can happen anytime, but more during windows)
         if ($game->isTransferWindowOpen()) {
-            $listedOffers = $this->transferService->generateOffersForListedPlayers($game);
-            $unsolicitedOffers = $this->transferService->generateUnsolicitedOffers($game);
+            $listedOffers = $this->transferService->generateOffersForListedPlayers($game, buyerPool: $buyerPool);
+            $unsolicitedOffers = $this->transferService->generateUnsolicitedOffers($game, buyerPool: $buyerPool);
             foreach ($listedOffers->merge($unsolicitedOffers) as $offer) {
                 $this->notificationService->notifyTransferOffer($game, $offer);
             }
@@ -53,7 +56,7 @@ class CareerActionProcessor
         }
 
         // Pre-contract offers (January onwards for expiring contracts)
-        $preContractOffers = $this->transferService->generatePreContractOffers($game);
+        $preContractOffers = $this->transferService->generatePreContractOffers($game, buyerPool: $buyerPool);
         foreach ($preContractOffers as $offer) {
             $this->notificationService->notifyTransferOffer($game, $offer);
         }
@@ -140,14 +143,23 @@ class CareerActionProcessor
             ->where('expires_at', '<=', $currentDate->copy()->addDays(2))
             ->get();
 
+        if ($expiringOffers->isEmpty()) {
+            return;
+        }
+
+        // Batch-load recent expiring-offer notifications to avoid per-offer queries
+        $offerIds = $expiringOffers->pluck('id')->toArray();
+        $cutoff = $currentDate->copy()->subDay();
+        $recentlyNotifiedOfferIds = GameNotification::where('game_id', $game->id)
+            ->where('type', GameNotification::TYPE_TRANSFER_OFFER_EXPIRING)
+            ->where('game_date', '>', $cutoff)
+            ->get(['metadata'])
+            ->pluck('metadata.offer_id')
+            ->filter()
+            ->toArray();
+
         foreach ($expiringOffers as $offer) {
-            if (! $this->notificationService->hasRecentNotification(
-                $game->id,
-                GameNotification::TYPE_TRANSFER_OFFER_EXPIRING,
-                ['offer_id' => $offer->id],
-                1,
-                $game->current_date,
-            )) {
+            if (! in_array($offer->id, $recentlyNotifiedOfferIds)) {
                 $this->notificationService->notifyExpiringOffer($game, $offer);
             }
         }

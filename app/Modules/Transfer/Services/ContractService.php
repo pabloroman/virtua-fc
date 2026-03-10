@@ -721,7 +721,7 @@ class ContractService
      */
     public function resolveRenewalNegotiations(Game $game): Collection
     {
-        $pending = RenewalNegotiation::with(['gamePlayer.player', 'gamePlayer.game'])
+        $pending = RenewalNegotiation::with(['gamePlayer.player', 'gamePlayer.game', 'gamePlayer.transferOffers'])
             ->where('game_id', $game->id)
             ->where('status', RenewalNegotiation::STATUS_OFFER_PENDING)
             ->get();
