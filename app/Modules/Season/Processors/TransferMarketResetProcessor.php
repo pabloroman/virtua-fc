@@ -25,7 +25,11 @@ class TransferMarketResetProcessor implements SeasonProcessor
     {
         ScoutReport::where('game_id', $game->id)->delete();
 
-        ShortlistedPlayer::where('game_id', $game->id)->delete();
+        ShortlistedPlayer::where('game_id', $game->id)->update([
+            'intel_level' => ShortlistedPlayer::INTEL_SURFACE,
+            'is_tracking' => false,
+            'matchdays_tracked' => 0,
+        ]);
 
         TransferOffer::where('game_id', $game->id)->delete();
 
