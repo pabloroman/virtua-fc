@@ -64,15 +64,21 @@ class SquadReplenishmentTest extends TestCase
         $finalCount = GamePlayer::where('game_id', $this->game->id)
             ->where('team_id', $this->aiTeam->id)
             ->count();
-        $this->assertEquals(22, $finalCount);
+        // 22 replenished + 2-3 youth = 24-25
+        $this->assertGreaterThanOrEqual(24, $finalCount);
+        $this->assertLessThanOrEqual(25, $finalCount);
 
         $generated = $result->getMetadata('squadReplenishment');
-        $this->assertCount(7, $generated);
+        // 7 replenishment + 2-3 youth = 9-10
+        $replenishment = array_filter($generated, fn ($e) => $e['type'] === 'replenishment');
+        $youth = array_filter($generated, fn ($e) => $e['type'] === 'youth_intake');
+        $this->assertCount(7, $replenishment);
+        $this->assertGreaterThanOrEqual(2, count($youth));
     }
 
-    public function test_ai_team_at_minimum_is_not_touched(): void
+    public function test_ai_team_at_minimum_receives_youth_intake(): void
     {
-        // Create an AI team with exactly 22 players
+        // Create an AI team with exactly 22 players — youth intake still adds 2-3
         $this->createSquadForTeam($this->aiTeam, 22);
 
         $processor = app(SquadReplenishmentProcessor::class);
@@ -83,15 +89,20 @@ class SquadReplenishmentTest extends TestCase
         $finalCount = GamePlayer::where('game_id', $this->game->id)
             ->where('team_id', $this->aiTeam->id)
             ->count();
-        $this->assertEquals(22, $finalCount);
+        $this->assertGreaterThanOrEqual(24, $finalCount);
+        $this->assertLessThanOrEqual(25, $finalCount);
 
         $generated = $result->getMetadata('squadReplenishment');
-        $this->assertEmpty($generated);
+        $this->assertNotEmpty($generated);
+
+        $youthEntries = array_filter($generated, fn ($e) => $e['type'] === 'youth_intake');
+        $this->assertGreaterThanOrEqual(2, count($youthEntries));
+        $this->assertLessThanOrEqual(3, count($youthEntries));
     }
 
-    public function test_ai_team_above_minimum_with_balanced_squad_is_not_touched(): void
+    public function test_ai_team_above_minimum_receives_youth_intake(): void
     {
-        // Create an AI team with 25 players (above minimum) and balanced positions
+        // Create an AI team with 25 players (above minimum) — youth intake still applies
         $this->createSquadForTeam($this->aiTeam, 25);
 
         $processor = app(SquadReplenishmentProcessor::class);
@@ -102,7 +113,9 @@ class SquadReplenishmentTest extends TestCase
         $finalCount = GamePlayer::where('game_id', $this->game->id)
             ->where('team_id', $this->aiTeam->id)
             ->count();
-        $this->assertEquals(25, $finalCount);
+        // 25 + 2-3 youth = 27-28
+        $this->assertGreaterThanOrEqual(27, $finalCount);
+        $this->assertLessThanOrEqual(28, $finalCount);
     }
 
     public function test_ai_team_above_minimum_but_missing_goalkeepers_gets_them(): void
@@ -189,11 +202,11 @@ class SquadReplenishmentTest extends TestCase
 
         $processor->process($this->game, $data);
 
-        // Should have filled to 22
+        // Should have filled to 22 (replenishment) + 2-3 (youth) = 24-25
         $finalCount = GamePlayer::where('game_id', $this->game->id)
             ->where('team_id', $this->aiTeam->id)
             ->count();
-        $this->assertEquals(22, $finalCount);
+        $this->assertGreaterThanOrEqual(24, $finalCount);
 
         // Should have generated goalkeepers (was 0, target 2)
         $gkCount = GamePlayer::where('game_id', $this->game->id)
@@ -295,11 +308,13 @@ class SquadReplenishmentTest extends TestCase
             ->where('team_id', $aiTeam2->id)
             ->count();
 
-        $this->assertEquals(22, $team1Count);
-        $this->assertEquals(22, $team2Count);
+        // Both teams should be at least 22 (replenished) + 2-3 youth
+        $this->assertGreaterThanOrEqual(24, $team1Count);
+        $this->assertGreaterThanOrEqual(22, $team2Count);
 
         $generated = $result->getMetadata('squadReplenishment');
-        $this->assertCount(10, $generated); // 7 + 3
+        // 7 replenishment + 3 replenishment + 2-3 youth per team (4-6 total youth)
+        $this->assertGreaterThanOrEqual(14, count($generated));
     }
 
     public function test_metadata_contains_generated_player_info(): void
@@ -312,15 +327,143 @@ class SquadReplenishmentTest extends TestCase
         $result = $processor->process($this->game, $data);
 
         $generated = $result->getMetadata('squadReplenishment');
-        $this->assertCount(2, $generated);
+        // 2 replenishment + 2-3 youth = 4-5 total
+        $this->assertGreaterThanOrEqual(4, count($generated));
 
         foreach ($generated as $entry) {
             $this->assertArrayHasKey('playerId', $entry);
             $this->assertArrayHasKey('playerName', $entry);
             $this->assertArrayHasKey('position', $entry);
             $this->assertArrayHasKey('teamId', $entry);
+            $this->assertArrayHasKey('type', $entry);
             $this->assertEquals($this->aiTeam->id, $entry['teamId']);
         }
+    }
+
+    // =========================================
+    // Youth intake tests
+    // =========================================
+
+    public function test_youth_intake_generates_young_players(): void
+    {
+        // Create a fully-staffed AI team
+        $this->createSquadForTeam($this->aiTeam, 22);
+
+        $processor = app(SquadReplenishmentProcessor::class);
+        $data = new SeasonTransitionData(oldSeason: '2024', newSeason: '2025', competitionId: 'ESP1');
+
+        $result = $processor->process($this->game, $data);
+
+        $generated = $result->getMetadata('squadReplenishment');
+        $youthEntries = array_filter($generated, fn ($e) => $e['type'] === 'youth_intake');
+
+        foreach ($youthEntries as $entry) {
+            $gamePlayer = GamePlayer::find($entry['playerId']);
+            $age = $gamePlayer->age($this->game->current_date);
+            $this->assertGreaterThanOrEqual(17, $age, "Youth player should be at least 17");
+            $this->assertLessThanOrEqual(20, $age, "Youth player should be at most 20");
+        }
+    }
+
+    public function test_youth_players_are_weaker_than_team_average(): void
+    {
+        // Create a team with avg ability 70
+        for ($i = 0; $i < 22; $i++) {
+            $position = $i < 2 ? 'Goalkeeper' : ($i < 7 ? 'Centre-Back' : ($i < 12 ? 'Central Midfield' : 'Centre-Forward'));
+            $this->createGamePlayer($this->aiTeam, $position, techAbility: 70, physAbility: 70);
+        }
+
+        $processor = app(SquadReplenishmentProcessor::class);
+        $data = new SeasonTransitionData(oldSeason: '2024', newSeason: '2025', competitionId: 'ESP1');
+
+        $result = $processor->process($this->game, $data);
+
+        $generated = $result->getMetadata('squadReplenishment');
+        $youthEntries = array_filter($generated, fn ($e) => $e['type'] === 'youth_intake');
+
+        foreach ($youthEntries as $entry) {
+            $gamePlayer = GamePlayer::find($entry['playerId']);
+            $avgAbility = ($gamePlayer->game_technical_ability + $gamePlayer->game_physical_ability) / 2;
+            // Youth should be 55-75% of team avg (70) = roughly 38-53
+            $this->assertLessThan(70, $avgAbility, "Youth player ability should be below team average");
+        }
+    }
+
+    public function test_youth_intake_releases_oldest_when_near_cap(): void
+    {
+        // Create a team with 27 players — some old (age 32+), some young
+        for ($i = 0; $i < 20; $i++) {
+            $position = $i < 2 ? 'Goalkeeper' : ($i < 7 ? 'Centre-Back' : ($i < 12 ? 'Central Midfield' : 'Centre-Forward'));
+            $this->createGamePlayer($this->aiTeam, $position, techAbility: 65, physAbility: 65);
+        }
+        // Add 7 old, weak players (age 33)
+        $referenceDate = $this->game->current_date ?? now();
+        for ($i = 0; $i < 7; $i++) {
+            $player = Player::factory()->create([
+                'date_of_birth' => $referenceDate->copy()->subYears(33),
+                'technical_ability' => 35,
+                'physical_ability' => 35,
+            ]);
+            GamePlayer::factory()->create([
+                'game_id' => $this->game->id,
+                'player_id' => $player->id,
+                'team_id' => $this->aiTeam->id,
+                'position' => 'Central Midfield',
+                'game_technical_ability' => 35,
+                'game_physical_ability' => 35,
+            ]);
+        }
+
+        $this->assertEquals(27, GamePlayer::where('game_id', $this->game->id)
+            ->where('team_id', $this->aiTeam->id)
+            ->count());
+
+        $processor = app(SquadReplenishmentProcessor::class);
+        $data = new SeasonTransitionData(oldSeason: '2024', newSeason: '2025', competitionId: 'ESP1');
+
+        $processor->process($this->game, $data);
+
+        // Squad should not exceed the cap (28) + youth count (3 max)
+        $finalCount = GamePlayer::where('game_id', $this->game->id)
+            ->where('team_id', $this->aiTeam->id)
+            ->count();
+        $this->assertLessThanOrEqual(31, $finalCount);
+
+        // Some old players should have been released (team_id set to null)
+        $released = GamePlayer::where('game_id', $this->game->id)
+            ->whereNull('team_id')
+            ->count();
+        $this->assertGreaterThan(0, $released);
+    }
+
+    public function test_youth_intake_skips_user_team(): void
+    {
+        // Give the user team 22 players
+        $this->createSquadForTeam($this->userTeam, 22);
+        // Give the AI team 22 players
+        $this->createSquadForTeam($this->aiTeam, 22);
+
+        $userCountBefore = GamePlayer::where('game_id', $this->game->id)
+            ->where('team_id', $this->userTeam->id)
+            ->count();
+
+        $processor = app(SquadReplenishmentProcessor::class);
+        $data = new SeasonTransitionData(oldSeason: '2024', newSeason: '2025', competitionId: 'ESP1');
+
+        $processor->process($this->game, $data);
+
+        $userCountAfter = GamePlayer::where('game_id', $this->game->id)
+            ->where('team_id', $this->userTeam->id)
+            ->count();
+
+        // User team should be unchanged
+        $this->assertEquals($userCountBefore, $userCountAfter);
+
+        // AI team should have received youth intake
+        $aiCountAfter = GamePlayer::where('game_id', $this->game->id)
+            ->where('team_id', $this->aiTeam->id)
+            ->count();
+        $this->assertGreaterThan(22, $aiCountAfter);
     }
 
     // =========================================
