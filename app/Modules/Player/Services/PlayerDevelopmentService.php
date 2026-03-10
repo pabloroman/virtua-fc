@@ -117,7 +117,7 @@ class PlayerDevelopmentService
 
         // Gap bonus: up to 50% faster development for players with 20+ point gap
         // 10 point gap = 25% bonus, 20 point gap = 50% bonus
-        return min(1.5, 1.0 + ($gap / 40));
+        return min(1.3, 1.0 + ($gap / 50));
     }
 
     /**

@@ -35,11 +35,11 @@ final class DevelopmentCurve
      * - 32+: Veteran decline (physical declines faster than technical)
      */
     public const AGE_CURVES = [
-        16 => ['technical' => 1.8, 'physical' => 2.0],
-        17 => ['technical' => 1.6, 'physical' => 1.8],
-        18 => ['technical' => 1.4, 'physical' => 1.5],
-        19 => ['technical' => 1.3, 'physical' => 1.3],
-        20 => ['technical' => 1.2, 'physical' => 1.2],
+        16 => ['technical' => 1.4, 'physical' => 1.5],
+        17 => ['technical' => 1.3, 'physical' => 1.4],
+        18 => ['technical' => 1.2, 'physical' => 1.3],
+        19 => ['technical' => 1.15, 'physical' => 1.2],
+        20 => ['technical' => 1.1, 'physical' => 1.1],
         21 => ['technical' => 1.1, 'physical' => 1.1],
         22 => ['technical' => 1.05, 'physical' => 1.0],
         23 => ['technical' => 1.0, 'physical' => 1.0],

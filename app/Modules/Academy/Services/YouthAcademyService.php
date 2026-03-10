@@ -20,8 +20,8 @@ class YouthAcademyService
         0 => [0, 0, 0, 0, 0, 0, 0],
         1 => [4, 2, 3, 60, 70, 35, 50],
         2 => [6, 3, 5, 65, 75, 40, 55],
-        3 => [8, 5, 7, 70, 82, 45, 60],
-        4 => [10, 6, 8, 75, 90, 50, 70],
+        3 => [7, 4, 6, 68, 78, 40, 55],
+        4 => [8, 4, 6, 75, 85, 45, 60],
     ];
 
     private const ESTIMATED_MATCHDAYS = 38;
@@ -29,8 +29,8 @@ class YouthAcademyService
     /**
      * Season growth rates for development.
      */
-    private const GROWTH_RATE_ACADEMY = 0.35;
-    private const GROWTH_RATE_LOAN = 0.50;
+    private const GROWTH_RATE_ACADEMY = 0.30;
+    private const GROWTH_RATE_LOAN = 0.38;
 
     /**
      * Positions with weights for random selection.
