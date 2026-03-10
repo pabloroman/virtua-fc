@@ -205,7 +205,7 @@ class ReputationUpdateProcessor implements SeasonProcessor
                         'tier' => __('finances.reputation.' . $reputation->reputation_level),
                     ]),
                 priority: $improved
-                    ? GameNotification::PRIORITY_SUCCESS
+                    ? GameNotification::PRIORITY_MILESTONE
                     : GameNotification::PRIORITY_WARNING,
                 icon: $improved ? '📈' : '📉',
             );
