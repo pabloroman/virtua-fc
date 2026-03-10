@@ -59,6 +59,14 @@ class SeasonInitializationService
             return;
         }
 
+        $teamCount = count($teamIds);
+        if ($teamCount % 2 !== 0) {
+            throw new \RuntimeException(
+                "Cannot generate fixtures for {$competitionId}: odd team count ({$teamCount}). " .
+                'This likely indicates a promotion/relegation imbalance in the season transition.'
+            );
+        }
+
         $fixtures = $this->leagueFixtureGenerator->generate($teamIds, $matchdays);
 
         $this->insertFixtures($gameId, $competitionId, $fixtures);

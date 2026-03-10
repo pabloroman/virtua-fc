@@ -46,6 +46,15 @@ class PromotionRelegationProcessor implements SeasonProcessor
                 continue;
             }
 
+            // Validate balance: promoted count must equal relegated count
+            if (count($promoted) !== count($relegated)) {
+                throw new \RuntimeException(
+                    "Promotion/relegation imbalance between {$rule->getTopDivision()} and {$rule->getBottomDivision()}: " .
+                    count($promoted) . ' promoted vs ' . count($relegated) . ' relegated. ' .
+                    'Cannot proceed with unbalanced swap.'
+                );
+            }
+
             $this->swapTeams(
                 promoted: $promoted,
                 relegated: $relegated,
