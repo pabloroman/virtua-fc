@@ -166,7 +166,7 @@ class TransferService
      *
      * @param Collection|null $allPlayersGrouped Pre-loaded players grouped by team_id (optional, for N+1 optimization)
      */
-    public function generateOffersForListedPlayers(Game $game, $allPlayersGrouped = null): Collection
+    public function generateOffersForListedPlayers(Game $game, $allPlayersGrouped = null, ?array $buyerPool = null): Collection
     {
         $offers = collect();
 
@@ -211,7 +211,7 @@ class TransferService
 
             // 40% chance of receiving a new offer each matchday
             if (rand(1, 100) <= 40) {
-                ['buyers' => $buyers, 'squadValues' => $squadValues] = $this->getEligibleBuyersWithSquadValues($player);
+                ['buyers' => $buyers, 'squadValues' => $squadValues] = $this->getEligibleBuyersWithSquadValues($player, $buyerPool);
 
                 // Exclude teams that already made offers
                 $existingOfferTeamIds = $playerOffers
@@ -243,8 +243,9 @@ class TransferService
      * Called on each matchday advance.
      *
      * @param Collection|null $allPlayersGrouped Pre-loaded players grouped by team_id (optional, for N+1 optimization)
+     * @param  array{leagueTeams: Collection, squadValues: Collection}|null  $buyerPool  Pre-loaded pool from loadBuyerPool()
      */
-    public function generateUnsolicitedOffers(Game $game, $allPlayersGrouped = null): Collection
+    public function generateUnsolicitedOffers(Game $game, $allPlayersGrouped = null, ?array $buyerPool = null): Collection
     {
         $offers = collect();
 
@@ -283,7 +284,7 @@ class TransferService
 
             // Random chance for an offer
             if (rand(1, 100) <= self::UNSOLICITED_OFFER_CHANCE * 100) {
-                ['buyers' => $buyers, 'squadValues' => $squadValues] = $this->getEligibleBuyersWithSquadValues($player);
+                ['buyers' => $buyers, 'squadValues' => $squadValues] = $this->getEligibleBuyersWithSquadValues($player, $buyerPool);
 
                 if ($buyers->isNotEmpty()) {
                     $buyer = $this->selectWeightedBuyer($buyers, $player, $squadValues);
@@ -320,8 +321,9 @@ class TransferService
      * Called on each matchday advance (typically from January onwards).
      *
      * @param Collection|null $allPlayersGrouped Pre-loaded players grouped by team_id (optional, for N+1 optimization)
+     * @param  array{leagueTeams: Collection, squadValues: Collection}|null  $buyerPool  Pre-loaded pool from loadBuyerPool()
      */
-    public function generatePreContractOffers(Game $game, $allPlayersGrouped = null): Collection
+    public function generatePreContractOffers(Game $game, $allPlayersGrouped = null, ?array $buyerPool = null): Collection
     {
         $offers = collect();
 
@@ -405,7 +407,7 @@ class TransferService
             // Random chance for an offer (scales with player market value)
             $offerChance = $this->getPreContractOfferChance($player);
             if (rand(1, 100) <= $offerChance * 100) {
-                ['buyers' => $buyers, 'squadValues' => $squadValues] = $this->getEligibleBuyersWithSquadValues($player);
+                ['buyers' => $buyers, 'squadValues' => $squadValues] = $this->getEligibleBuyersWithSquadValues($player, $buyerPool);
 
                 if ($buyers->isNotEmpty()) {
                     $buyer = $this->selectWeightedBuyer($buyers, $player, $squadValues);
@@ -897,16 +899,54 @@ class TransferService
     }
 
     /**
+     * Pre-load the buyer pool (league teams + squad values) for a game.
+     * Call once per career action tick and pass to offer-generation methods.
+     *
+     * @return array{leagueTeams: Collection, squadValues: Collection}
+     */
+    public function loadBuyerPool(Game $game): array
+    {
+        $leagueTeamIds = Team::whereHas('competitions', function ($query) {
+            $query->where('scope', Competition::SCOPE_DOMESTIC)
+                ->where('type', 'league');
+        })->where('id', '!=', $game->team_id)->pluck('id')->toArray();
+
+        $squadValues = $this->getSquadValues($game, $leagueTeamIds);
+        $leagueTeams = Team::whereIn('id', $leagueTeamIds)->get()->keyBy('id');
+
+        return ['leagueTeams' => $leagueTeams, 'squadValues' => $squadValues];
+    }
+
+    /**
      * Get eligible AI teams and their squad values in a single pass.
      * Avoids redundant squad value queries when the caller also needs weights.
      *
+     * @param  array{leagueTeams: Collection, squadValues: Collection}|null  $buyerPool  Pre-loaded pool from loadBuyerPool()
      * @return array{buyers: Collection, squadValues: Collection}
      */
-    private function getEligibleBuyersWithSquadValues(GamePlayer $player): array
+    private function getEligibleBuyersWithSquadValues(GamePlayer $player, ?array $buyerPool = null): array
     {
-        $game = $player->game;
         $playerTeamId = $player->team_id;
         $playerValue = $player->market_value_cents;
+
+        if ($buyerPool) {
+            $squadValues = $buyerPool['squadValues'];
+            $leagueTeams = $buyerPool['leagueTeams'];
+
+            // Filter to teams whose squad value can support the transfer fee
+            $eligibleTeamIds = $squadValues
+                ->filter(fn ($totalValue) => $totalValue * self::MAX_FEE_TO_SQUAD_VALUE_RATIO >= $playerValue)
+                ->keys()
+                ->toArray();
+
+            $buyers = $leagueTeams->only($eligibleTeamIds)
+                ->reject(fn ($team) => $team->id === $playerTeamId)
+                ->values();
+
+            return ['buyers' => $buyers, 'squadValues' => $squadValues];
+        }
+
+        $game = $player->game;
 
         // Get all teams in domestic leagues (both playable and foreign), excluding player's team
         $leagueTeamIds = Team::whereHas('competitions', function ($query) {

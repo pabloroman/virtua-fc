@@ -132,11 +132,14 @@ class LoanService
         $teamIds = $teams->pluck('id')->toArray();
         $positionCounts = $this->getPositionCountsByTeam($game, $teamIds);
 
+        // Batch-load all team reputations in one query
+        $teamReputations = TeamReputation::resolveLevels($game->id, $teamIds);
+
         // Score each team
-        $scored = $teams->map(function (Team $team) use ($game, $player, $positionCounts) {
+        $scored = $teams->map(function (Team $team) use ($game, $player, $positionCounts, $teamReputations) {
             return [
                 'team' => $team,
-                'score' => $this->scoreLoanDestination($game, $player, $team, $positionCounts),
+                'score' => $this->scoreLoanDestination($game, $player, $team, $positionCounts, $teamReputations),
             ];
         })
         ->filter(fn ($item) => $item['score'] >= 20)
@@ -167,19 +170,20 @@ class LoanService
      * Score a potential loan destination (0-100).
      *
      * @param  array<string, array<string, int>>  $positionCounts  Pre-loaded position counts by team
+     * @param  Collection  $teamReputations  Pre-loaded team_id => reputation_level map
      */
-    private function scoreLoanDestination(Game $game, GamePlayer $player, Team $team, array $positionCounts = []): int
+    private function scoreLoanDestination(Game $game, GamePlayer $player, Team $team, array $positionCounts, Collection $teamReputations): int
     {
         $score = 0;
 
         // Reputation match (0-40 pts)
-        $score += $this->scoreReputation($player, $team);
+        $score += $this->scoreReputation($player, $team, $teamReputations);
 
         // Position need (0-30 pts)
         $score += $this->scorePositionNeed($player, $team, $positionCounts);
 
         // League tier (0-20 pts)
-        $score += $this->scoreLeagueTier($player, $team);
+        $score += $this->scoreLeagueTier($player, $team, $teamReputations);
 
         // Random variety (0-10 pts)
         $score += rand(0, 10);
@@ -190,10 +194,10 @@ class LoanService
     /**
      * Score reputation match (0-40 pts).
      */
-    private function scoreReputation(GamePlayer $player, Team $team): int
+    private function scoreReputation(GamePlayer $player, Team $team, Collection $teamReputations): int
     {
         $expectedReputation = $this->getExpectedReputation($player);
-        $teamReputation = TeamReputation::resolveLevel($player->game_id, $team->id);
+        $teamReputation = $teamReputations->get($team->id, ClubProfile::REPUTATION_LOCAL);
 
         $expectedIndex = ClubProfile::getReputationTierIndex($expectedReputation);
         $teamIndex = ClubProfile::getReputationTierIndex($teamReputation);
@@ -273,9 +277,9 @@ class LoanService
      * Score league tier preference (0-20 pts).
      * Uses team reputation level instead of hardcoded competition IDs.
      */
-    private function scoreLeagueTier(GamePlayer $player, Team $team): int
+    private function scoreLeagueTier(GamePlayer $player, Team $team, Collection $teamReputations): int
     {
-        $reputation = TeamReputation::resolveLevel($player->game_id, $team->id);
+        $reputation = $teamReputations->get($team->id, ClubProfile::REPUTATION_LOCAL);
         $devStatus = $player->developmentStatus($player->game->current_date);
         $avgAbility = (int) round(($player->current_technical_ability + $player->current_physical_ability) / 2);
 
