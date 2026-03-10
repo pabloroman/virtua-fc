@@ -63,6 +63,12 @@ return [
             ],
         ],
 
+        // Reserve teams that cannot be promoted to the same division as their parent.
+        // Maps child transfermarkt_id => parent transfermarkt_id.
+        'reserve_teams' => [
+            9899 => 681,   // Real Sociedad B → Real Sociedad
+        ],
+
         'continental_slots' => [
             'ESP1' => [
                 'UCL' => [1, 2, 3, 4, 5],

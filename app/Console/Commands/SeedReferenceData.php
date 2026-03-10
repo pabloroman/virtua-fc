@@ -141,6 +141,9 @@ class SeedReferenceData extends Command
         }
         $this->line("  Step 1/4: Done.");
 
+        // Step 1b: Link reserve teams to their parent teams
+        $this->linkReserveTeams($config);
+
         // Step 2: Seed domestic cups — supercup first so main cup can look up
         // supercup teams for entry_round calculation
         $cupIds = array_keys($config['domestic_cups'] ?? []);
@@ -218,6 +221,26 @@ class SeedReferenceData extends Command
                 'season' => '2025',
             ]
         );
+    }
+
+    private function linkReserveTeams(array $config): void
+    {
+        $reserveTeams = $config['reserve_teams'] ?? [];
+        if (empty($reserveTeams)) {
+            return;
+        }
+
+        foreach ($reserveTeams as $childTransfermarktId => $parentTransfermarktId) {
+            $child = DB::table('teams')->where('transfermarkt_id', $childTransfermarktId)->first();
+            $parent = DB::table('teams')->where('transfermarkt_id', $parentTransfermarktId)->first();
+
+            if ($child && $parent) {
+                DB::table('teams')->where('id', $child->id)->update([
+                    'parent_team_id' => $parent->id,
+                ]);
+                $this->line("  Linked reserve team: {$child->name} → {$parent->name}");
+            }
+        }
     }
 
     private function createDefaultUser(): void
