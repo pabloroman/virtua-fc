@@ -78,6 +78,9 @@
         <div><a class="hover:text-slate-300 @if(in_array(Route::currentRouteName(), ['game.transfers', 'game.transfers.outgoing', 'game.scouting', 'game.explore'])) text-white @endif" href="{{ route('game.transfers', $game->id) }}">{{ __('app.transfers') }}</a></div>
         @endif
         <div><a class="hover:text-slate-300 @if(Route::currentRouteName() == 'game.calendar') text-white @endif" href="{{ route('game.calendar', $game->id) }}">{{ __('app.calendar') }}</a></div>
+        @if($game->isTournamentMode() && $teamCompetitions->isNotEmpty())
+        <div><a class="hover:text-slate-300 @if(Route::currentRouteName() == 'game.competition') text-white @endif" href="{{ route('game.competition', [$game->id, $teamCompetitions[0]->id]) }}">{{ __('game.standings') }}</a></div>
+        @else
         <div class="relative" x-data="{ open: false }" @click.outside="open = false">
             <button @click="open = !open" class="hover:text-slate-300 flex items-center gap-1 @if(Route::currentRouteName() == 'game.competition') text-white @endif">
                 {{ __('app.competitions') }}
@@ -95,6 +98,7 @@
                 </div>
             </div>
         </div>
+        @endif
     </nav>
 
     {{-- Mobile Header --}}
@@ -218,10 +222,15 @@
                 <x-responsive-nav-link :href="route('game.calendar', $game->id)" :active="Route::currentRouteName() == 'game.calendar'">
                     {{ __('app.calendar') }}
                 </x-responsive-nav-link>
+                @if($game->isTournamentMode() && $teamCompetitions->isNotEmpty())
+                <x-responsive-nav-link :href="route('game.competition', [$game->id, $teamCompetitions[0]->id])" :active="Route::currentRouteName() == 'game.competition'">
+                    {{ __('game.standings') }}
+                </x-responsive-nav-link>
+                @endif
             </nav>
 
-            {{-- Competitions --}}
-            @if($teamCompetitions->isNotEmpty())
+            {{-- Competitions (career mode only) --}}
+            @if($game->isCareerMode() && $teamCompetitions->isNotEmpty())
             <div class="border-t border-slate-200 py-2">
                 <div class="px-4 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider">
                     {{ __('app.competitions') }}
