@@ -360,33 +360,6 @@ class PlayerDevelopmentService
     }
 
     /**
-     * Initialize development attributes for a new game player.
-     *
-     * Uses market value to influence potential calculation:
-     * - High-value youngsters have proven potential
-     * - High-value veterans have proven their ceiling
-     */
-    public function initializePlayer(GamePlayer $player): void
-    {
-        $currentAbility = (int) round(
-            ($player->player->technical_ability + $player->player->physical_ability) / 2
-        );
-
-        // Pass market value to influence potential calculation
-        $marketValueCents = $player->market_value_cents ?? 0;
-        $potentialData = $this->generatePotential($player->age($player->game->current_date), $currentAbility, $marketValueCents);
-
-        $player->update([
-            'game_technical_ability' => $player->player->technical_ability,
-            'game_physical_ability' => $player->player->physical_ability,
-            'potential' => $potentialData['potential'],
-            'potential_low' => $potentialData['low'],
-            'potential_high' => $potentialData['high'],
-            'season_appearances' => 0,
-        ]);
-    }
-
-    /**
      * Recalculate potential for an existing player.
      *
      * Called when market value changes significantly or when

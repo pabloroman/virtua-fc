@@ -6,6 +6,7 @@ use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\Player;
 use App\Models\Team;
+use App\Modules\Player\Services\PlayerTierService;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -15,13 +16,15 @@ class GamePlayerFactory extends Factory
 
     public function definition(): array
     {
+        $marketValueCents = $this->faker->numberBetween(100_000_00, 50_000_000_00);
+
         return [
             'id' => Str::uuid()->toString(),
             'game_id' => Game::factory(),
             'player_id' => Player::factory(),
             'team_id' => Team::factory(),
             'position' => 'Central Midfield',
-            'market_value_cents' => $this->faker->numberBetween(100_000_00, 50_000_000_00),
+            'market_value_cents' => $marketValueCents,
             'contract_until' => now()->addYears(2),
             'annual_wage' => $this->faker->numberBetween(10_000_00, 1_000_000_00),
             'fitness' => $this->faker->numberBetween(70, 100),
@@ -33,6 +36,7 @@ class GamePlayerFactory extends Factory
             'potential_low' => $this->faker->numberBetween(55, 85),
             'potential_high' => $this->faker->numberBetween(70, 99),
             'season_appearances' => 0,
+            'tier' => PlayerTierService::tierFromMarketValue($marketValueCents),
         ];
     }
 

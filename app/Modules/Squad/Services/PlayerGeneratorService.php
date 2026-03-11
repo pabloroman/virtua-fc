@@ -11,6 +11,7 @@ use Illuminate\Support\Str;
 use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Player\Services\InjuryService;
 use App\Modules\Player\Services\PlayerDevelopmentService;
+use App\Modules\Player\Services\PlayerTierService;
 use App\Modules\Player\Services\PlayerValuationService;
 
 /**
@@ -116,6 +117,7 @@ class PlayerGeneratorService
             'potential_low' => $potentialLow,
             'potential_high' => $potentialHigh,
             'season_appearances' => 0,
+            'tier' => PlayerTierService::tierFromMarketValue($marketValue),
         ]);
 
         // Set relation to avoid lazy-load when caller accesses $gamePlayer->player

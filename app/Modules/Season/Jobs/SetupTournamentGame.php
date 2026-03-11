@@ -5,6 +5,7 @@ namespace App\Modules\Season\Jobs;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Player\Services\InjuryService;
 use App\Modules\Player\Services\PlayerDevelopmentService;
+use App\Modules\Player\Services\PlayerTierService;
 use App\Modules\Competition\Services\StandingsCalculator;
 use App\Models\CompetitionEntry;
 use App\Models\CompetitionTeam;
@@ -68,6 +69,9 @@ class SetupTournamentGame implements ShouldQueue
         // Step 4: Create game players for teams with JSON rosters
         $currentDate = $game->current_date ?? Carbon::parse('2025-06-10');
         $this->createGamePlayers($mapping, $developmentService, $currentDate);
+
+        // Compute tiers for all players based on market value
+        app(PlayerTierService::class)->recomputeAllTiersForGame($this->gameId);
 
         // Send welcome notification
         $teamName = Team::find($this->teamId)?->name ?? '';

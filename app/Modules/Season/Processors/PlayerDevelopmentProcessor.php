@@ -5,6 +5,7 @@ namespace App\Modules\Season\Processors;
 use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Player\Services\PlayerDevelopmentService;
+use App\Modules\Player\Services\PlayerTierService;
 use App\Modules\Player\Services\PlayerValuationService;
 use App\Models\Game;
 use App\Models\GamePlayer;
@@ -18,6 +19,7 @@ class PlayerDevelopmentProcessor implements SeasonProcessor
     public function __construct(
         private readonly PlayerDevelopmentService $developmentService,
         private readonly PlayerValuationService $valuationService,
+        private readonly PlayerTierService $tierService,
     ) {}
 
     public function priority(): int
@@ -89,6 +91,9 @@ class PlayerDevelopmentProcessor implements SeasonProcessor
                     'market_value_cents',
                 ]);
             }
+
+            // Recompute tiers after market values changed
+            $this->tierService->recomputeAllTiersForGame($game->id);
         }
 
         return $data->addPlayerChanges($allChanges);

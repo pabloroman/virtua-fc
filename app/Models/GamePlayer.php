@@ -36,6 +36,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property int $red_cards
  * @property int|null $game_technical_ability
  * @property int|null $game_physical_ability
+ * @property int $tier
  * @property int|null $potential
  * @property int|null $potential_low
  * @property int|null $potential_high
@@ -154,6 +155,7 @@ class GamePlayer extends Model
         'clean_sheets',
         'game_technical_ability',
         'game_physical_ability',
+        'tier',
         'potential',
         'potential_low',
         'potential_high',
@@ -185,6 +187,7 @@ class GamePlayer extends Model
         // Development fields
         'game_technical_ability' => 'integer',
         'game_physical_ability' => 'integer',
+        'tier' => 'integer',
         'potential' => 'integer',
         'potential_low' => 'integer',
         'potential_high' => 'integer',
