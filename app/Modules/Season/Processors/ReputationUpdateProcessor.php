@@ -87,7 +87,7 @@ class ReputationUpdateProcessor implements SeasonProcessor
 
         $tier = $competition->tier ?? 1;
         $deltas = config("reputation.position_deltas.{$tier}", config('reputation.position_deltas.1'));
-        $regressionRate = config('reputation.regression_rate', 5);
+        $gravityConfig = config('reputation.gravity', []);
 
         foreach ($positions as $teamId => $position) {
             $reputation = TeamReputation::where('game_id', $game->id)
@@ -101,18 +101,12 @@ class ReputationUpdateProcessor implements SeasonProcessor
             // Calculate points delta based on final position
             $pointsDelta = $this->getPointsDelta($position, $deltas);
 
-            // Apply regression toward base tier
-            $basePoints = TeamReputation::pointsForTier($reputation->base_reputation_level);
-            $currentPoints = $reputation->reputation_points;
-
-            if ($currentPoints > $basePoints) {
-                $pointsDelta -= $regressionRate;
-            } elseif ($currentPoints < $basePoints) {
-                $pointsDelta += $regressionRate;
-            }
+            // Apply gravity based on current tier
+            $gravity = $gravityConfig[$reputation->reputation_level] ?? 0;
+            $net = $pointsDelta - $gravity;
 
             // Update points and recalculate tier
-            $reputation->reputation_points = max(0, $currentPoints + $pointsDelta);
+            $reputation->reputation_points = max(0, $reputation->reputation_points + $net);
             $reputation->recalculateTier();
             $reputation->save();
         }

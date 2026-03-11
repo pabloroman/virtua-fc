@@ -373,7 +373,6 @@ class ShowSeasonEnd
         $competition = Competition::find($game->competition_id);
         $tier = $competition?->tier ?? 1;
         $deltas = config("reputation.position_deltas.{$tier}", config('reputation.position_deltas.1'));
-        $regressionRate = config('reputation.regression_rate', 5);
 
         $pointsDelta = 0;
         foreach ($deltas as $maxPosition => $delta) {
@@ -386,16 +385,12 @@ class ShowSeasonEnd
             $pointsDelta = end($deltas);
         }
 
-        // Apply regression toward base
-        $basePoints = TeamReputation::pointsForTier($reputation->base_reputation_level);
-        $currentPoints = $reputation->reputation_points;
-        if ($currentPoints > $basePoints) {
-            $pointsDelta -= $regressionRate;
-        } elseif ($currentPoints < $basePoints) {
-            $pointsDelta += $regressionRate;
-        }
+        // Apply gravity based on current tier
+        $gravityConfig = config('reputation.gravity', []);
+        $gravity = $gravityConfig[$level] ?? 0;
+        $net = $pointsDelta - $gravity;
 
-        $direction = $pointsDelta > 5 ? 'rising' : ($pointsDelta < -5 ? 'declining' : 'stable');
+        $direction = $net > 5 ? 'rising' : ($net < -5 ? 'declining' : 'stable');
 
         return ['level' => $level, 'direction' => $direction];
     }

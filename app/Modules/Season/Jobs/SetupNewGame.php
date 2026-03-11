@@ -13,6 +13,7 @@ use App\Modules\Season\Processors\LeagueFixtureProcessor;
 use App\Modules\Season\Processors\StandingsResetProcessor;
 use App\Support\Money;
 use App\Models\ClubProfile;
+use App\Models\Competition;
 use App\Models\CompetitionEntry;
 use App\Models\CompetitionTeam;
 use App\Models\Game;
@@ -143,6 +144,7 @@ class SetupNewGame implements ShouldQueue
     /**
      * Initialize per-game reputation records for all teams with competition entries.
      * Copies the static ClubProfile reputation as the starting point.
+     * Applies a division bonus for lower-tier teams in top-division leagues.
      */
     private function initializeTeamReputations(): void
     {
@@ -154,18 +156,40 @@ class SetupNewGame implements ShouldQueue
         $game = Game::find($this->gameId);
         $countryCode = $game->country ?? 'ES';
 
-        $teamIds = CompetitionEntry::where('game_id', $this->gameId)
+        // Load competition entries with their competition tier
+        $entries = CompetitionEntry::where('game_id', $this->gameId)
             ->whereHas('competition', fn ($q) => $q->where('country', $countryCode))
-            ->pluck('team_id')
-            ->unique();
+            ->get();
+
+        $teamIds = $entries->pluck('team_id')->unique();
 
         $clubProfiles = ClubProfile::whereIn('team_id', $teamIds)
             ->pluck('reputation_level', 'team_id');
+
+        // Build a map of team_id => lowest competition tier (1 = top division)
+        $competitionTiers = Competition::whereIn('id', $entries->pluck('competition_id')->unique())
+            ->pluck('tier', 'id');
+
+        $teamCompetitionTier = [];
+        foreach ($entries as $entry) {
+            $tier = $competitionTiers[$entry->competition_id] ?? 99;
+            if (!isset($teamCompetitionTier[$entry->team_id]) || $tier < $teamCompetitionTier[$entry->team_id]) {
+                $teamCompetitionTier[$entry->team_id] = $tier;
+            }
+        }
+
+        $divisionBonus = (int) config('reputation.division_bonus', 25);
 
         $rows = [];
         foreach ($teamIds as $teamId) {
             $level = $clubProfiles[$teamId] ?? ClubProfile::REPUTATION_LOCAL;
             $points = TeamReputation::pointsForTier($level);
+
+            // Apply division bonus for Modest/Local teams in tier 1
+            $competitionTier = $teamCompetitionTier[$teamId] ?? 99;
+            if ($competitionTier === 1 && in_array($level, [ClubProfile::REPUTATION_MODEST, ClubProfile::REPUTATION_LOCAL])) {
+                $points += $divisionBonus;
+            }
 
             $rows[] = [
                 'id' => Str::uuid()->toString(),

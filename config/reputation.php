@@ -11,9 +11,8 @@ return [
             4  => 30,   // 3rd-4th: Champions League places
             6  => 15,   // 5th-6th: Europa League
             10 => 5,    // 7th-10th: upper mid-table
-            14 => 0,    // 11th-14th: mid-table (neutral)
-            17 => -10,  // 15th-17th: relegation fight
-            99 => -25,  // 18th+: relegated
+            17 => 0,    // 11th-17th: mid/lower table (neutral)
+            99 => -15,  // 18th+: relegated
         ],
         2 => [ // Second division (Segunda, Championship, etc.)
             1  => 15,   // 1st: champion
@@ -25,11 +24,20 @@ return [
         ],
     ],
 
-    // Regression pull toward base tier each season (in points).
-    // Applied as a drag toward the base tier's starting points.
-    // e.g., if a team is above its base, this pulls it down slightly;
-    // if below, it pulls it up slightly.
-    'regression_rate' => 5,
+    // Gravity cost per tier, subtracted each season.
+    // Teams must offset gravity with positive position deltas or decline.
+    // Lower tiers have zero gravity: only actual performance moves their points.
+    'gravity' => [
+        'local'        => 0,
+        'modest'       => 0,
+        'established'  => 5,
+        'continental'  => 15,
+        'elite'        => 25,
+    ],
+
+    // Bonus points for lower-tier teams competing in top-division leagues.
+    // Applied at game initialization for Modest/Local teams in tier 1.
+    'division_bonus' => 25,
 
     // Maximum number of tiers a team can drop below its seeded base.
     'max_tier_drop_below_base' => 2,

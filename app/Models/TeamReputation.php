@@ -53,7 +53,7 @@ class TeamReputation extends Model
      */
     public static function pointsForTier(string $level): int
     {
-        return self::TIER_THRESHOLDS[$level] ?? 0;
+        return (self::TIER_THRESHOLDS[$level] ?? 0) + 50;
     }
 
     /**
