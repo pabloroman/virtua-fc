@@ -424,8 +424,11 @@ class SquadReplenishmentProcessor implements SeasonProcessor
             default => 20,
         };
 
-        $seasonYear = (int) $newSeason;
-        $dateOfBirth = Carbon::createFromDate($seasonYear - $age, mt_rand(1, 12), mt_rand(1, 28));
+        $currentDate = $game->current_date;
+        $birthYear = $currentDate->year - $age;
+        $birthMonth = mt_rand(1, $currentDate->month);
+        $maxDay = $birthMonth === $currentDate->month ? $currentDate->day : 28;
+        $dateOfBirth = Carbon::createFromDate($birthYear, $birthMonth, mt_rand(1, $maxDay));
 
         return $this->playerGenerator->create($game, new GeneratedPlayerData(
             teamId: $teamId,
