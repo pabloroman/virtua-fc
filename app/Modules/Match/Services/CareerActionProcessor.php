@@ -128,7 +128,8 @@ class CareerActionProcessor
         // Notify user when a transfer window opens
         $this->processTransferWindowOpen($game);
 
-        // AI transfer market: process when a transfer window just closed
+        // AI transfer market: process batch during open window, finalize at close
+        $this->processAITransferBatch($game);
         $this->processTransferWindowClose($game);
     }
 
@@ -187,6 +188,16 @@ class CareerActionProcessor
         }
 
         $this->notificationService->notifyTransferWindowOpen($game, 'winter');
+    }
+
+    private function processAITransferBatch(Game $game): void
+    {
+        if (! $game->isTransferWindowOpen()) {
+            return;
+        }
+
+        $window = $game->isSummerWindowOpen() ? 'summer' : 'winter';
+        $this->aiTransferMarketService->processTransferBatch($game, $window);
     }
 
     private function processTransferWindowClose(Game $game): void

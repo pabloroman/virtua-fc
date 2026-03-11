@@ -11,13 +11,14 @@ use App\Models\TeamReputation;
 use App\Modules\Notification\Services\NotificationService;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 /**
- * Simulates AI transfer market activity at the end of each transfer window.
+ * Simulates AI transfer market activity across the transfer window and at close.
  *
- * Called from MatchdayOrchestrator when a transfer window closes:
- * - Summer (September): free agent signings + AI-to-AI transfers (1-5 per team)
- * - Winter (February): remaining free agents + AI-to-AI transfers (1-3 per team)
+ * Transfers are distributed across matchdays during the open window (processTransferBatch)
+ * and finalized when the window closes (processWindowClose). All DB operations are batched
+ * to minimize query count.
  *
  * Two types of AI-to-AI transfers:
  * 1. Squad Clearing — surplus/backup players move to equal or lower reputation clubs
@@ -63,43 +64,107 @@ class AITransferMarketService
     ) {}
 
     /**
-     * Process AI transfer activity when a transfer window closes.
+     * Process a batch of AI transfers during the open transfer window.
+     *
+     * Called each matchday from CareerActionProcessor while the window is open.
+     * Processes ~batchSize seller teams per call, distributing transfers across the window.
+     */
+    public function processTransferBatch(Game $game, string $window, int $batchSize = 10): void
+    {
+        $isSummer = $window === 'summer';
+
+        [
+            'teamRosters' => $teamRosters,
+            'teamAverages' => $teamAverages,
+            'teams' => $teams,
+            'takenNumbers' => $takenNumbers,
+            'alreadyTransferredSet' => $alreadyTransferredSet,
+            'completedCounts' => $completedCounts,
+        ] = $this->loadTransferContext($game, $window);
+
+        // Build deterministic budgets with completed activity subtracted
+        $teamBudgets = $this->buildDeterministicBudgets($teamRosters, $game, $window, $isSummer, $completedCounts);
+
+        // Filter to teams with remaining sell capacity
+        $eligibleSellers = $teamBudgets->filter(function ($budget) {
+            $maxSells = max(1, (int) ceil($budget['max'] * 0.6));
+
+            return ($budget['sells'] + $budget['buys']) < $budget['max']
+                && $budget['sells'] < $maxSells;
+        })->keys();
+
+        if ($eligibleSellers->isEmpty()) {
+            return;
+        }
+
+        // Deterministic rotation: pick batch based on current date
+        $rotation = $game->current_date->dayOfYear;
+        $sorted = $eligibleSellers->sortBy(fn ($teamId) => crc32($teamId . $rotation));
+        $batchTeamIds = $sorted->take($batchSize);
+
+        $playerUpdates = [];
+        $transferInserts = [];
+
+        $this->processAITransfers(
+            $game, $window, $teamRosters, $teamAverages, $teams,
+            $takenNumbers, $playerUpdates, $transferInserts,
+            $teamBudgets, $alreadyTransferredSet, $batchTeamIds
+        );
+
+        $this->flushBatchedOperations($playerUpdates, $transferInserts);
+    }
+
+    /**
+     * Process remaining AI transfer activity when a transfer window closes.
+     *
+     * Handles teams not fully processed during the window + free agent signings.
+     * When called without prior batch processing (e.g., SimulateTransfers command),
+     * processes all teams in one go.
      */
     public function processWindowClose(Game $game, string $window): void
     {
         $isSummer = $window === 'summer';
 
-        // Single load: all AI players with team + player relations, grouped by team
-        $teamRosters = GamePlayer::with(['team', 'player'])
-            ->where('game_id', $game->id)
-            ->whereNotNull('team_id')
-            ->where('team_id', '!=', $game->team_id)
-            ->get()
-            ->groupBy('team_id');
+        [
+            'teamRosters' => $teamRosters,
+            'teamAverages' => $teamAverages,
+            'teams' => $teams,
+            'takenNumbers' => $takenNumbers,
+            'alreadyTransferredSet' => $alreadyTransferredSet,
+            'windowTransfers' => $windowTransfers,
+            'completedCounts' => $completedCounts,
+        ] = $this->loadTransferContext($game, $window);
 
-        // Set game relation in-memory to avoid lazy-loading from age accessor
-        $teamRosters->flatten()->each(fn (GamePlayer $p) => $p->setRelation('game', $game));
+        $playerUpdates = [];
+        $transferInserts = [];
+        $priorCount = $windowTransfers->count();
 
-        // Pre-calculate team averages
-        $teamAverages = $teamRosters->map(fn ($players) => $this->calculateTeamAverage($players));
+        // Phase 1: Sign free agents
+        $freeAgentCount = $this->processFreeAgentSignings(
+            $game, $window, $teamRosters, $teamAverages, $teams,
+            $takenNumbers, $playerUpdates, $transferInserts, $alreadyTransferredSet
+        );
 
-        // Pre-load Team models for wage calculation (single query)
-        $teams = Team::whereIn('id', $teamRosters->keys())->get()->keyBy('id');
+        // Phase 2: Remaining AI-to-AI transfers
+        $teamBudgets = $this->buildDeterministicBudgets($teamRosters, $game, $window, $isSummer, $completedCounts);
+        $transferCount = $this->processAITransfers(
+            $game, $window, $teamRosters, $teamAverages, $teams,
+            $takenNumbers, $playerUpdates, $transferInserts,
+            $teamBudgets, $alreadyTransferredSet
+        );
 
-        // Phase 1: Sign free agents (players with null team_id)
-        $freeAgentCount = $this->processFreeAgentSignings($game, $window, $teamRosters, $teamAverages, $teams);
+        // Flush all batched operations
+        $this->flushBatchedOperations($playerUpdates, $transferInserts);
 
-        // Phase 2: AI-to-AI transfers with reputation-based matching
-        $transferCount = $this->processAITransfers($game, $isSummer, $window, $teamRosters, $teamAverages, $teams);
-
-        // Phase 3: Create summary notification (only if there's activity)
-        if ($freeAgentCount + $transferCount > 0) {
-            $this->notificationService->notifyAITransferSummary($game, $freeAgentCount + $transferCount, $window);
+        // Notify with total count (prior window activity + close-time activity)
+        $totalCount = $priorCount + $freeAgentCount + $transferCount;
+        if ($totalCount > 0) {
+            $this->notificationService->notifyAITransferSummary($game, $totalCount, $window);
         }
     }
 
     /**
-     * Phase 1: Match free agents to AI teams that need players at their position.
+     * Match free agents to AI teams that need players at their position.
      */
     private function processFreeAgentSignings(
         Game $game,
@@ -107,8 +172,17 @@ class AITransferMarketService
         Collection $teamRosters,
         Collection $teamAverages,
         Collection $teams,
+        Collection &$takenNumbers,
+        array &$playerUpdates,
+        array &$transferInserts,
+        array &$alreadyTransferredSet,
     ): int {
-        $freeAgents = GamePlayer::with('player')
+        $freeAgents = GamePlayer::with(['player:id,date_of_birth'])
+            ->select([
+                'id', 'game_id', 'player_id', 'team_id', 'position',
+                'market_value_cents', 'game_technical_ability', 'game_physical_ability',
+                'retiring_at_season', 'number', 'contract_until', 'annual_wage',
+            ])
             ->where('game_id', $game->id)
             ->whereNull('team_id')
             ->get();
@@ -117,13 +191,10 @@ class AITransferMarketService
             return 0;
         }
 
-        // Set game relation in-memory for age accessor
-        $freeAgents->each(fn (GamePlayer $p) => $p->setRelation('game', $game));
-
         $count = 0;
 
         foreach ($freeAgents->shuffle() as $freeAgent) {
-            $bestTeam = $this->findBestTeamForFreeAgent($freeAgent, $teamRosters, $teamAverages);
+            $bestTeam = $this->findBestTeamForFreeAgent($freeAgent, $teamRosters, $teamAverages, $teams);
 
             if (! $bestTeam) {
                 continue;
@@ -131,7 +202,6 @@ class AITransferMarketService
 
             $teamId = $bestTeam['teamId'];
 
-            // Sign the free agent
             $seasonYear = (int) $game->season;
             $contractYears = $freeAgent->age($game->current_date) >= 32 ? 1 : mt_rand(1, 2);
             $newContractEnd = Carbon::createFromDate($seasonYear + $contractYears + 1, 6, 30);
@@ -144,25 +214,33 @@ class AITransferMarketService
                 $freeAgent->age($game->current_date),
             );
 
-            $freeAgent->update([
-                'team_id' => $teamId,
-                'number' => GamePlayer::nextAvailableNumber($game->id, $teamId),
-                'contract_until' => $newContractEnd,
-                'annual_wage' => $newWage,
-            ]);
+            $number = $this->allocateSquadNumber($takenNumbers, $teamId);
 
-            GameTransfer::record(
-                gameId: $game->id,
-                gamePlayerId: $freeAgent->id,
-                fromTeamId: null,
-                toTeamId: $teamId,
-                transferFee: 0,
-                type: GameTransfer::TYPE_FREE_AGENT,
-                season: $game->season,
-                window: $window,
-            );
+            $playerUpdates[] = [
+                'id' => $freeAgent->id,
+                'game_id' => $freeAgent->game_id,
+                'player_id' => $freeAgent->player_id,
+                'team_id' => $teamId,
+                'number' => $number,
+                'position' => $freeAgent->position,
+                'contract_until' => $newContractEnd->toDateString(),
+                'annual_wage' => $newWage,
+            ];
+
+            $transferInserts[] = [
+                'id' => Str::uuid()->toString(),
+                'game_id' => $game->id,
+                'game_player_id' => $freeAgent->id,
+                'from_team_id' => null,
+                'to_team_id' => $teamId,
+                'transfer_fee' => 0,
+                'type' => GameTransfer::TYPE_FREE_AGENT,
+                'season' => $game->season,
+                'window' => $window,
+            ];
 
             $count++;
+            $alreadyTransferredSet[$freeAgent->id] = true;
 
             // Update roster cache
             if (! $teamRosters->has($teamId)) {
@@ -175,28 +253,26 @@ class AITransferMarketService
     }
 
     /**
-     * Phase 2: Process AI-to-AI transfers with two transfer types.
+     * Process AI-to-AI transfers with two transfer types.
      *
      * Type 1 (Squad Clearing): surplus players → equal or lower reputation buyers
      * Type 2 (Talent Upgrading): quality players → equal or higher reputation buyers
      */
     private function processAITransfers(
         Game $game,
-        bool $isSummer,
         string $window,
         Collection $teamRosters,
         Collection $teamAverages,
         Collection $teams,
+        Collection &$takenNumbers,
+        array &$playerUpdates,
+        array &$transferInserts,
+        Collection $teamBudgets,
+        array $alreadyTransferredSet,
+        ?Collection $teamFilter = null,
     ): int {
         // Load reputation data for all AI teams
         $teamReputations = $this->loadTeamReputations($game, $teamRosters);
-
-        // Exclude players already transferred this season (prevents summer signings being re-sold in winter)
-        $alreadyTransferredIds = GameTransfer::where('game_id', $game->id)
-            ->where('season', $game->season)
-            ->pluck('game_player_id')
-            ->all();
-        $alreadyTransferredSet = array_flip($alreadyTransferredIds);
 
         // Pre-compute position group counts per team (mutated as transfers happen)
         $groupCounts = $teamRosters->map(
@@ -216,21 +292,13 @@ class AITransferMarketService
             ->all();
         $foreignIndex = 0;
 
-        // Determine each team's transfer activity budget (1-5 total moves)
-        $weights = $isSummer ? self::TRANSFER_COUNT_WEIGHTS_SUMMER : self::TRANSFER_COUNT_WEIGHTS_WINTER;
-        $teamBudgets = $teamRosters->map(fn () => [
-            'max' => $this->weightedRandom($weights),
-            'sells' => 0,
-            'buys' => 0,
-        ]);
-
         $count = 0;
         // Set of player IDs already transferred — used only to prevent double-transfers
         $transferredPlayerIds = [];
 
-        // Build all sell candidates across all teams, tagged by type
+        // Build all sell candidates across all teams (or filtered subset), tagged by type
         $sellOffers = $this->buildSellOffers(
-            $teamRosters, $teamAverages, $teamReputations, $groupCounts, $teamBudgets, $alreadyTransferredSet
+            $teamRosters, $teamAverages, $teamReputations, $groupCounts, $teamBudgets, $alreadyTransferredSet, $game->current_date, $teamFilter
         );
 
         // Shuffle to avoid systematic bias (e.g., always processing the same team first)
@@ -268,14 +336,15 @@ class AITransferMarketService
 
             // Find a buyer based on transfer type
             $buyer = $transferType === 'clearing'
-                ? $this->findClearingBuyer($player, $sellerTeamId, $teamRosters, $teamAverages, $teamReputations, $teamBudgets, $groupCounts, $teamSizeDeltas, $game)
-                : $this->findUpgradeBuyer($player, $sellerTeamId, $teamRosters, $teamAverages, $teamReputations, $teamBudgets, $groupCounts, $teamSizeDeltas, $game);
+                ? $this->findClearingBuyer($player, $sellerTeamId, $teamRosters, $teamAverages, $teamReputations, $teamBudgets, $groupCounts, $teamSizeDeltas, $game, $teams)
+                : $this->findUpgradeBuyer($player, $sellerTeamId, $teamRosters, $teamAverages, $teamReputations, $teamBudgets, $groupCounts, $teamSizeDeltas, $game, $teams);
 
             if ($buyer) {
                 $buyerTeamId = $buyer['teamId'];
+                $assignedNumber = $this->allocateSquadNumber($takenNumbers, $buyerTeamId);
 
-                // Execute domestic transfer
-                $this->executeDomesticTransfer($game, $player, $sellerTeamId, $buyerTeamId, $teams, $window);
+                // Prepare domestic transfer
+                $this->prepareDomesticTransfer($game, $player, $sellerTeamId, $buyerTeamId, $teams, $window, $assignedNumber, $playerUpdates, $transferInserts);
                 $count++;
                 $transferredPlayerIds[$player->id] = true;
 
@@ -293,8 +362,9 @@ class AITransferMarketService
                 if (mt_rand(1, 100) <= self::FOREIGN_FALLBACK_CHANCE && ! empty($foreignTeams)) {
                     $foreignTeam = $foreignTeams[$foreignIndex % count($foreignTeams)];
                     $foreignIndex++;
+                    $assignedNumber = $this->allocateSquadNumber($takenNumbers, $foreignTeam->id);
 
-                    $this->executeForeignTransfer($game, $player, $sellerTeamId, $foreignTeam, $window);
+                    $this->prepareForeignTransfer($game, $player, $sellerTeamId, $foreignTeam, $window, $assignedNumber, $playerUpdates, $transferInserts);
                     $count++;
                     $transferredPlayerIds[$player->id] = true;
                     $this->incrementBudget($teamBudgets, $sellerTeamId, 'sells');
@@ -308,7 +378,7 @@ class AITransferMarketService
     }
 
     /**
-     * Build all sell offers across all teams, scored and tagged by type.
+     * Build all sell offers across all teams (or filtered subset), scored and tagged by type.
      *
      * @return Collection<int, array{player: GamePlayer, sellerTeamId: string, transferType: string, score: int}>
      */
@@ -319,10 +389,16 @@ class AITransferMarketService
         Collection $groupCounts,
         Collection $teamBudgets,
         array $alreadyTransferredSet,
+        Carbon $currentDate,
+        ?Collection $teamFilter = null,
     ): Collection {
         $offers = collect();
 
         foreach ($teamRosters as $teamId => $players) {
+            if ($teamFilter !== null && ! $teamFilter->contains($teamId)) {
+                continue;
+            }
+
             $budget = $teamBudgets->get($teamId);
             if (! $budget || $budget['max'] <= 0) {
                 continue;
@@ -340,23 +416,27 @@ class AITransferMarketService
                 fn (GamePlayer $p) => ! $p->retiring_at_season && ! isset($alreadyTransferredSet[$p->id])
             );
 
-            // Determine max sells for this team (at most 60% of budget, at least 1)
+            // Determine remaining sells for this team (accounts for prior window activity)
             $maxSells = max(1, (int) ceil($budget['max'] * 0.6));
+            $remainingSells = $maxSells - $budget['sells'];
+            if ($remainingSells <= 0) {
+                continue;
+            }
 
             // Score clearing and upgrade candidates separately
             $clearingCandidates = $eligible
-                ->map(fn ($p) => $this->scoreClearingCandidate($p, $teamAvg, $teamGroupCounts))
+                ->map(fn ($p) => $this->scoreClearingCandidate($p, $teamAvg, $teamGroupCounts, $currentDate))
                 ->filter()
                 ->sortByDesc('score');
 
             $upgradeCandidates = $eligible
-                ->map(fn ($p) => $this->scoreUpgradeCandidate($p, $teamAvg, $teamRepIndex, $teamGroupCounts))
+                ->map(fn ($p) => $this->scoreUpgradeCandidate($p, $teamAvg, $teamRepIndex, $teamGroupCounts, $currentDate))
                 ->filter()
                 ->sortByDesc('score');
 
             $usedPlayerIds = [];
 
-            for ($i = 0; $i < $maxSells; $i++) {
+            for ($i = 0; $i < $remainingSells; $i++) {
                 $isClearing = mt_rand(1, 100) <= self::CLEARING_CHANCE;
 
                 if ($isClearing) {
@@ -398,7 +478,7 @@ class AITransferMarketService
     /**
      * Score a player as a squad clearing candidate (surplus/backup player).
      */
-    private function scoreClearingCandidate(GamePlayer $player, int $teamAvg, Collection $teamGroupCounts): ?array
+    private function scoreClearingCandidate(GamePlayer $player, int $teamAvg, Collection $teamGroupCounts, Carbon $currentDate): ?array
     {
         $ability = $this->getPlayerAbility($player);
         $group = $this->getPositionGroup($player->position);
@@ -428,7 +508,7 @@ class AITransferMarketService
         }
 
         // Aging player
-        $age = $player->age($player->game->current_date);
+        $age = $player->age($currentDate);
         if ($age >= 35) {
             $score += 3;
         } elseif ($age >= 32) {
@@ -448,7 +528,7 @@ class AITransferMarketService
     /**
      * Score a player as a talent upgrade candidate (quality player attractive to bigger clubs).
      */
-    private function scoreUpgradeCandidate(GamePlayer $player, int $teamAvg, int $teamRepIndex, Collection $teamGroupCounts): ?array
+    private function scoreUpgradeCandidate(GamePlayer $player, int $teamAvg, int $teamRepIndex, Collection $teamGroupCounts, Carbon $currentDate): ?array
     {
         // Elite clubs have no higher-reputation domestic buyer
         if ($teamRepIndex <= 0) {
@@ -476,7 +556,7 @@ class AITransferMarketService
         $score += min(5, (int) ($abilityGap / 3));
 
         // Prime age premium
-        $age = $player->age($player->game->current_date);
+        $age = $player->age($currentDate);
         if ($age >= 22 && $age <= 28) {
             $score += 3;
         } elseif ($age >= 19 && $age <= 21) {
@@ -512,6 +592,7 @@ class AITransferMarketService
         Collection $groupCounts,
         Collection $teamSizeDeltas,
         Game $game,
+        Collection $teams,
     ): ?array {
         $sellerRepIndex = $this->getReputationIndex($sellerTeamId, $teamReputations);
         $posGroup = $this->getPositionGroup($player->position);
@@ -561,7 +642,7 @@ class AITransferMarketService
             if ($score > 0) {
                 $candidates[] = [
                     'teamId' => $teamId,
-                    'teamName' => $teamRosters[$teamId]->first()?->team?->name ?? 'Unknown',
+                    'teamName' => $teams->get($teamId)?->name ?? 'Unknown',
                     'score' => $score,
                 ];
             }
@@ -583,6 +664,7 @@ class AITransferMarketService
         Collection $groupCounts,
         Collection $teamSizeDeltas,
         Game $game,
+        Collection $teams,
     ): ?array {
         $sellerRepIndex = $this->getReputationIndex($sellerTeamId, $teamReputations);
         $posGroup = $this->getPositionGroup($player->position);
@@ -641,7 +723,7 @@ class AITransferMarketService
             if ($score > 0) {
                 $candidates[] = [
                     'teamId' => $teamId,
-                    'teamName' => $teamRosters[$teamId]->first()?->team?->name ?? 'Unknown',
+                    'teamName' => $teams->get($teamId)?->name ?? 'Unknown',
                     'score' => $score,
                 ];
             }
@@ -680,15 +762,18 @@ class AITransferMarketService
     }
 
     /**
-     * Execute a domestic transfer between two AI teams.
+     * Prepare a domestic transfer between two AI teams (batched, no DB queries).
      */
-    private function executeDomesticTransfer(
+    private function prepareDomesticTransfer(
         Game $game,
         GamePlayer $player,
         string $fromTeamId,
         string $toTeamId,
         Collection $teams,
         string $window,
+        int $assignedNumber,
+        array &$playerUpdates,
+        array &$transferInserts,
     ): void {
         $fee = $player->market_value_cents;
         $seasonYear = (int) $game->season;
@@ -703,34 +788,42 @@ class AITransferMarketService
             $player->age($game->current_date),
         );
 
-        $player->update([
+        $playerUpdates[] = [
+            'id' => $player->id,
+            'game_id' => $player->game_id,
+            'player_id' => $player->player_id,
             'team_id' => $toTeamId,
-            'number' => GamePlayer::nextAvailableNumber($game->id, $toTeamId),
-            'contract_until' => $newContractEnd,
+            'number' => $assignedNumber,
+            'position' => $player->position,
+            'contract_until' => $newContractEnd->toDateString(),
             'annual_wage' => $newWage,
-        ]);
+        ];
 
-        GameTransfer::record(
-            gameId: $game->id,
-            gamePlayerId: $player->id,
-            fromTeamId: $fromTeamId,
-            toTeamId: $toTeamId,
-            transferFee: $fee,
-            type: GameTransfer::TYPE_TRANSFER,
-            season: $game->season,
-            window: $window,
-        );
+        $transferInserts[] = [
+            'id' => Str::uuid()->toString(),
+            'game_id' => $game->id,
+            'game_player_id' => $player->id,
+            'from_team_id' => $fromTeamId,
+            'to_team_id' => $toTeamId,
+            'transfer_fee' => $fee,
+            'type' => GameTransfer::TYPE_TRANSFER,
+            'season' => $game->season,
+            'window' => $window,
+        ];
     }
 
     /**
-     * Execute a foreign transfer (player moves to a team outside the league).
+     * Prepare a foreign transfer (batched, no DB queries).
      */
-    private function executeForeignTransfer(
+    private function prepareForeignTransfer(
         Game $game,
         GamePlayer $player,
         string $fromTeamId,
         Team $foreignTeam,
         string $window,
+        int $assignedNumber,
+        array &$playerUpdates,
+        array &$transferInserts,
     ): void {
         $fee = $player->market_value_cents;
 
@@ -745,29 +838,34 @@ class AITransferMarketService
             $player->age($game->current_date),
         );
 
-        $player->update([
+        $playerUpdates[] = [
+            'id' => $player->id,
+            'game_id' => $player->game_id,
+            'player_id' => $player->player_id,
             'team_id' => $foreignTeam->id,
-            'number' => GamePlayer::nextAvailableNumber($game->id, $foreignTeam->id),
-            'contract_until' => $newContractEnd,
+            'number' => $assignedNumber,
+            'position' => $player->position,
+            'contract_until' => $newContractEnd->toDateString(),
             'annual_wage' => $newWage,
-        ]);
+        ];
 
-        GameTransfer::record(
-            gameId: $game->id,
-            gamePlayerId: $player->id,
-            fromTeamId: $fromTeamId,
-            toTeamId: $foreignTeam->id,
-            transferFee: $fee,
-            type: GameTransfer::TYPE_TRANSFER,
-            season: $game->season,
-            window: $window,
-        );
+        $transferInserts[] = [
+            'id' => Str::uuid()->toString(),
+            'game_id' => $game->id,
+            'game_player_id' => $player->id,
+            'from_team_id' => $fromTeamId,
+            'to_team_id' => $foreignTeam->id,
+            'transfer_fee' => $fee,
+            'type' => GameTransfer::TYPE_TRANSFER,
+            'season' => $game->season,
+            'window' => $window,
+        ];
     }
 
     /**
      * Find the best AI team for a free agent to sign with.
      */
-    private function findBestTeamForFreeAgent(GamePlayer $freeAgent, Collection $teamRosters, Collection $teamAverages): ?array
+    private function findBestTeamForFreeAgent(GamePlayer $freeAgent, Collection $teamRosters, Collection $teamAverages, Collection $teams): ?array
     {
         $positionGroup = $this->getPositionGroup($freeAgent->position);
         $playerAbility = $this->getPlayerAbility($freeAgent);
@@ -805,9 +903,180 @@ class AITransferMarketService
 
         return [
             'teamId' => $bestTeamId,
-            'teamName' => $teamRosters[$bestTeamId]->first()?->team?->name ?? 'Unknown',
+            'teamName' => $teams->get($bestTeamId)?->name ?? 'Unknown',
         ];
     }
+
+    // ── Batch operation helpers ─────────────────────────────────────────
+
+    /**
+     * Load shared context needed by both processTransferBatch and processWindowClose.
+     */
+    private function loadTransferContext(Game $game, string $window): array
+    {
+        $teamRosters = $this->loadAIRosters($game);
+        $teamAverages = $teamRosters->map(fn ($players) => $this->calculateTeamAverage($players));
+        $teams = Team::whereIn('id', $teamRosters->keys())->get()->keyBy('id');
+        $takenNumbers = $this->preloadSquadNumbers($game->id);
+
+        $seasonTransfers = GameTransfer::where('game_id', $game->id)
+            ->where('season', $game->season)
+            ->get(['id', 'game_id', 'game_player_id', 'from_team_id', 'to_team_id', 'window']);
+        $alreadyTransferredSet = array_flip($seasonTransfers->pluck('game_player_id')->all());
+        $windowTransfers = $seasonTransfers->where('window', $window);
+        $completedCounts = $this->buildCompletedCounts($windowTransfers, $game->team_id);
+
+        return [
+            'teamRosters' => $teamRosters,
+            'teamAverages' => $teamAverages,
+            'teams' => $teams,
+            'takenNumbers' => $takenNumbers,
+            'alreadyTransferredSet' => $alreadyTransferredSet,
+            'windowTransfers' => $windowTransfers,
+            'completedCounts' => $completedCounts,
+        ];
+    }
+
+    /**
+     * Load all AI team rosters (excludes human player's team).
+     */
+    private function loadAIRosters(Game $game): Collection
+    {
+        return GamePlayer::with(['player:id,date_of_birth'])
+            ->select([
+                'id', 'game_id', 'player_id', 'team_id', 'position',
+                'market_value_cents', 'game_technical_ability', 'game_physical_ability',
+                'retiring_at_season', 'number', 'contract_until', 'annual_wage',
+            ])
+            ->where('game_id', $game->id)
+            ->whereNotNull('team_id')
+            ->where('team_id', '!=', $game->team_id)
+            ->get()
+            ->groupBy('team_id');
+    }
+
+    /**
+     * Pre-load all squad numbers for the game in a single query.
+     *
+     * @return Collection<string, int[]> teamId => array of taken numbers
+     */
+    private function preloadSquadNumbers(string $gameId): Collection
+    {
+        return GamePlayer::where('game_id', $gameId)
+            ->whereNotNull('team_id')
+            ->whereNotNull('number')
+            ->get(['team_id', 'number'])
+            ->groupBy('team_id')
+            ->map(fn ($rows) => $rows->pluck('number')->all());
+    }
+
+    /**
+     * Allocate the next available squad number from the in-memory map.
+     * Mutates the map to reserve the number — no DB query.
+     */
+    private function allocateSquadNumber(Collection &$takenNumbers, string $teamId): int
+    {
+        $taken = $takenNumbers->get($teamId, []);
+        $takenSet = array_flip($taken);
+
+        for ($n = 2; $n <= 99; $n++) {
+            if (! isset($takenSet[$n])) {
+                $taken[] = $n;
+                $takenNumbers->put($teamId, $taken);
+
+                return $n;
+            }
+        }
+
+        return 99;
+    }
+
+    /**
+     * Flush all batched player updates and transfer inserts to the database.
+     */
+    private function flushBatchedOperations(array $playerUpdates, array $transferInserts): void
+    {
+        foreach (array_chunk($playerUpdates, 100) as $chunk) {
+            GamePlayer::upsert($chunk, ['id'], ['team_id', 'number', 'contract_until', 'annual_wage']);
+        }
+
+        foreach (array_chunk($transferInserts, 100) as $chunk) {
+            GameTransfer::insert($chunk);
+        }
+    }
+
+    // ── Budget & tracking helpers ───────────────────────────────────────
+
+    /**
+     * Compute a deterministic transfer budget for a team using hash-based distribution.
+     * Same inputs always produce the same budget — no state storage needed.
+     */
+    private function computeDeterministicBudget(string $teamId, string $season, string $window, bool $isSummer): int
+    {
+        $hash = crc32($teamId . $season . $window);
+        $weights = $isSummer ? self::TRANSFER_COUNT_WEIGHTS_SUMMER : self::TRANSFER_COUNT_WEIGHTS_WINTER;
+        $total = array_sum($weights);
+        $roll = (($hash & 0x7FFFFFFF) % $total) + 1;
+        $cumulative = 0;
+
+        foreach ($weights as $value => $weight) {
+            $cumulative += $weight;
+            if ($roll <= $cumulative) {
+                return $value;
+            }
+        }
+
+        return array_key_first($weights);
+    }
+
+    /**
+     * Build deterministic budgets for all AI teams, with prior activity subtracted.
+     */
+    private function buildDeterministicBudgets(
+        Collection $teamRosters,
+        Game $game,
+        string $window,
+        bool $isSummer,
+        ?Collection $completedCounts = null,
+    ): Collection {
+        return $teamRosters->mapWithKeys(function ($players, $teamId) use ($game, $window, $isSummer, $completedCounts) {
+            $completed = $completedCounts?->get($teamId, ['sells' => 0, 'buys' => 0]) ?? ['sells' => 0, 'buys' => 0];
+
+            return [$teamId => [
+                'max' => $this->computeDeterministicBudget($teamId, $game->season, $window, $isSummer),
+                'sells' => $completed['sells'],
+                'buys' => $completed['buys'],
+            ]];
+        });
+    }
+
+    /**
+     * Count completed sells and buys per team from existing transfer records.
+     */
+    private function buildCompletedCounts(Collection $transfers, string $gameTeamId): Collection
+    {
+        $counts = collect();
+
+        foreach ($transfers as $transfer) {
+            if ($transfer->from_team_id && $transfer->from_team_id !== $gameTeamId) {
+                $teamId = $transfer->from_team_id;
+                $current = $counts->get($teamId, ['sells' => 0, 'buys' => 0]);
+                $current['sells']++;
+                $counts->put($teamId, $current);
+            }
+
+            if ($transfer->to_team_id && $transfer->to_team_id !== $gameTeamId) {
+                $teamId = $transfer->to_team_id;
+                $current = $counts->get($teamId, ['sells' => 0, 'buys' => 0]);
+                $current['buys']++;
+                $counts->put($teamId, $current);
+            }
+        }
+
+        return $counts;
+    }
+
+    // ── Data loading helpers ────────────────────────────────────────────
 
     /**
      * Load reputation tier indices for all AI teams.
@@ -830,6 +1099,8 @@ class AITransferMarketService
     {
         return $teamReputations->get($teamId, 6);
     }
+
+    // ── Utility helpers ─────────────────────────────────────────────────
 
     /**
      * Increment a team's budget counter.
@@ -883,21 +1154,5 @@ class AITransferMarketService
             'Left Winger', 'Right Winger', 'Centre-Forward', 'Second Striker' => 'Forward',
             default => 'Midfielder',
         };
-    }
-
-    private function weightedRandom(array $weights): int
-    {
-        $total = array_sum($weights);
-        $roll = mt_rand(1, $total);
-        $cumulative = 0;
-
-        foreach ($weights as $value => $weight) {
-            $cumulative += $weight;
-            if ($roll <= $cumulative) {
-                return $value;
-            }
-        }
-
-        return array_key_first($weights);
     }
 }
