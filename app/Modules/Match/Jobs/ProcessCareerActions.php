@@ -10,7 +10,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class ProcessCareerActions implements ShouldQueue, ShouldBeUnique
@@ -39,9 +38,6 @@ class ProcessCareerActions implements ShouldQueue, ShouldBeUnique
             return;
         }
 
-        $start = microtime(true);
-        DB::enableQueryLog();
-
         for ($i = 0; $i < $this->ticks; $i++) {
             if ($i > 0) {
                 $game->refresh();
@@ -49,15 +45,7 @@ class ProcessCareerActions implements ShouldQueue, ShouldBeUnique
             $processor->process($game);
         }
 
-        $queryCount = count(DB::getQueryLog());
-        DB::disableQueryLog();
-
         $game->update(['career_actions_processing_at' => null]);
-
-        $elapsed = round((microtime(true) - $start) * 1000);
-        Log::channel('single')->info("[CareerActions] Processed {$this->ticks} tick(s) in {$elapsed}ms ({$queryCount} queries)", [
-            'game_id' => $this->gameId,
-        ]);
     }
 
     public function failed(?\Throwable $exception): void
