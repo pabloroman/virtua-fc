@@ -10,6 +10,7 @@ High-level documentation of the game systems that power VirtuaFC. These document
 | [Player Potential](player-potential.md) | How potential is generated and influences development |
 | [Player Development](player-development.md) | How players grow and decline over seasons |
 | [Market Value Dynamics](market-value-dynamics.md) | How market value evolves with ability and age |
+| [Matchday Advancement](matchday-advancement.md) | Core gameplay loop: batch finding, simulation, round generation, deferred finalization |
 | [Match Simulation](match-simulation.md) | xG formula, energy system, formations, mentality, events, penalties |
 | [Injury System](injury-system.md) | Injury probability, durability, medical tiers, recovery |
 | [Season Lifecycle](season-lifecycle.md) | Season flow, matchday progression, end-of-season pipeline |

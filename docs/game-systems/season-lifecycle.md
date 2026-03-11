@@ -14,28 +14,7 @@ Pending actions (academy evaluation, budget allocation) block matchday advanceme
 
 ## Matchday Progression
 
-1. Check for pending actions (blocks if any)
-2. Fetch unplayed matches for current matchday across all competitions
-3. Route to appropriate handler (LeagueHandler, KnockoutCupHandler, SwissFormatHandler, etc.)
-4. Set lineups (auto-select for AI, user's saved lineup otherwise)
-5. Simulate match
-6. Post-match: update standings, award prize money, apply suspensions
-7. Between-matchday: transfer market, injuries, notifications
-8. Check for season end
-
-See `MatchdayService` for the full flow.
-
-## Competition Handlers
-
-Different competition formats use different handlers implementing `CompetitionHandler`:
-
-- **LeagueHandler** — Standard league with standings
-- **KnockoutCupHandler** — Bracket/draws with single-leg or two-legged ties, extra time, penalties
-- **LeagueWithPlayoffHandler** — League phase followed by playoff rounds
-- **SwissFormatHandler** — Champions League Swiss-system (all teams play, paired by points)
-- **GroupStageCupHandler** — Groups play round-robin, top teams advance to knockout
-
-Resolved via `CompetitionHandlerResolver` based on competition's `handler_type` field.
+See [Matchday Advancement](matchday-advancement.md) for the full system documentation — it covers batch finding, competition handlers, round generation, deferred finalization, event-driven side effects, and season completion detection.
 
 ## Season Pipelines
 

@@ -3,17 +3,13 @@
 namespace App\Modules\Match\Handlers;
 
 use App\Models\Competition;
-use App\Modules\Competition\Contracts\CompetitionHandler;
-use App\Modules\Competition\DTOs\PlayoffRoundConfig;
 use App\Modules\Competition\Services\WorldCupKnockoutGenerator;
-use App\Modules\Match\Events\CupTieResolved;
 use App\Modules\Match\Services\CupTieResolver;
 use App\Modules\Squad\Services\EligibilityService;
 use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameMatch;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
 
 /**
  * Handler for group stage + knockout competitions (World Cup).
@@ -23,13 +19,15 @@ use Illuminate\Support\Str;
  *
  * FIFA 2026 format: 48 teams, 12 groups → R32 → R16 → QF → SF → 3rd place + Final.
  */
-class GroupStageCupHandler implements CompetitionHandler
+class GroupStageCupHandler extends CupCompetitionHandler
 {
     public function __construct(
-        private readonly CupTieResolver $tieResolver,
+        CupTieResolver $tieResolver,
+        EligibilityService $eligibilityService,
         private readonly WorldCupKnockoutGenerator $knockoutGenerator,
-        private readonly EligibilityService $eligibilityService,
-    ) {}
+    ) {
+        parent::__construct($tieResolver, $eligibilityService);
+    }
 
     public function getType(): string
     {
@@ -38,22 +36,7 @@ class GroupStageCupHandler implements CompetitionHandler
 
     public function getMatchBatch(string $gameId, GameMatch $nextMatch): Collection
     {
-        return GameMatch::with(['homeTeam', 'awayTeam', 'cupTie'])
-            ->where('game_id', $gameId)
-            ->where('competition_id', $nextMatch->competition_id)
-            ->where('played', false)
-            ->where(function ($query) use ($nextMatch) {
-                if ($nextMatch->cup_tie_id) {
-                    // Knockout match — batch by date
-                    $query->whereDate('scheduled_date', $nextMatch->scheduled_date->toDateString())
-                        ->whereNotNull('cup_tie_id');
-                } else {
-                    // Group stage match — batch by round_number (matchday)
-                    $query->where('round_number', $nextMatch->round_number)
-                        ->whereNull('cup_tie_id');
-                }
-            })
-            ->get();
+        return $this->getHybridMatchBatch($gameId, $nextMatch, filterCupTieNull: true);
     }
 
     public function beforeMatches(Game $game, string $targetDate): void
@@ -75,24 +58,11 @@ class GroupStageCupHandler implements CompetitionHandler
 
     public function afterMatches(Game $game, Collection $matches, Collection $allPlayers): void
     {
-        // Resolve any completed knockout ties
         $knockoutMatches = $matches->filter(fn ($m) => $m->cup_tie_id !== null);
 
         if ($knockoutMatches->isNotEmpty()) {
-            $this->resolveKnockoutTies($game, $knockoutMatches, $allPlayers);
+            $this->resolveCompletedTies($game, $knockoutMatches, $allPlayers);
         }
-    }
-
-    public function getRedirectRoute(Game $game, Collection $matches, int $matchday): string
-    {
-        $firstMatch = $matches->first();
-
-        return route('game.results', array_filter([
-            'gameId' => $game->id,
-            'competition' => $firstMatch->competition_id ?? $game->competition_id,
-            'matchday' => $firstMatch->round_number ?? $matchday,
-            'round' => $firstMatch?->round_name,
-        ]));
     }
 
     /**
@@ -110,7 +80,7 @@ class GroupStageCupHandler implements CompetitionHandler
             return;
         }
 
-        $currentRound = $this->getCurrentKnockoutRound($game->id, $competitionId);
+        $currentRound = $this->getCurrentRound($game->id, $competitionId);
         $finalRound = $this->knockoutGenerator->getFinalRound($competitionId);
 
         if ($currentRound === 0) {
@@ -118,7 +88,7 @@ class GroupStageCupHandler implements CompetitionHandler
             $qualifiedTeams = $this->knockoutGenerator->getQualifiedTeams($game->id, $competitionId);
             $firstRound = $this->knockoutGenerator->getFirstKnockoutRound(count($qualifiedTeams));
 
-            if (!$this->knockoutRoundExists($game->id, $competitionId, $firstRound)) {
+            if (!$this->roundExists($game->id, $competitionId, $firstRound)) {
                 $this->generateKnockoutRound($game, $competitionId, $firstRound);
             }
 
@@ -147,10 +117,10 @@ class GroupStageCupHandler implements CompetitionHandler
             $thirdPlaceRound = WorldCupKnockoutGenerator::ROUND_THIRD_PLACE;
             $finalRoundNum = WorldCupKnockoutGenerator::ROUND_FINAL;
 
-            if (!$this->knockoutRoundExists($game->id, $competitionId, $thirdPlaceRound)) {
+            if (!$this->roundExists($game->id, $competitionId, $thirdPlaceRound)) {
                 $this->generateKnockoutRound($game, $competitionId, $thirdPlaceRound);
             }
-            if (!$this->knockoutRoundExists($game->id, $competitionId, $finalRoundNum)) {
+            if (!$this->roundExists($game->id, $competitionId, $finalRoundNum)) {
                 $this->generateKnockoutRound($game, $competitionId, $finalRoundNum);
             }
 
@@ -169,80 +139,18 @@ class GroupStageCupHandler implements CompetitionHandler
             return;
         }
 
-        if (!$this->knockoutRoundExists($game->id, $competitionId, $nextRound)) {
+        if (!$this->roundExists($game->id, $competitionId, $nextRound)) {
             $this->generateKnockoutRound($game, $competitionId, $nextRound);
         }
     }
 
-    /**
-     * Generate a knockout round's fixtures.
-     */
     private function generateKnockoutRound(Game $game, string $competitionId, int $round): void
     {
         $config = $this->knockoutGenerator->getRoundConfig($round, $competitionId, $game->season);
         $matchups = $this->knockoutGenerator->generateMatchups($game, $competitionId, $round);
 
         foreach ($matchups as [$homeTeamId, $awayTeamId, $bracketPosition]) {
-            $this->createKnockoutTie($game, $competitionId, $homeTeamId, $awayTeamId, $config, $bracketPosition);
-        }
-    }
-
-    /**
-     * Create a knockout tie with its single-leg match.
-     */
-    private function createKnockoutTie(
-        Game $game,
-        string $competitionId,
-        string $homeTeamId,
-        string $awayTeamId,
-        PlayoffRoundConfig $config,
-        ?int $bracketPosition = null,
-    ): void {
-        $tie = CupTie::create([
-            'id' => Str::uuid()->toString(),
-            'game_id' => $game->id,
-            'competition_id' => $competitionId,
-            'round_number' => $config->round,
-            'bracket_position' => $bracketPosition,
-            'home_team_id' => $homeTeamId,
-            'away_team_id' => $awayTeamId,
-        ]);
-
-        $match = GameMatch::create([
-            'id' => Str::uuid()->toString(),
-            'game_id' => $game->id,
-            'competition_id' => $competitionId,
-            'round_name' => $config->name,
-            'round_number' => $config->round,
-            'home_team_id' => $homeTeamId,
-            'away_team_id' => $awayTeamId,
-            'scheduled_date' => $config->firstLegDate,
-            'cup_tie_id' => $tie->id,
-        ]);
-
-        $tie->update(['first_leg_match_id' => $match->id]);
-    }
-
-    /**
-     * Resolve completed knockout ties.
-     */
-    private function resolveKnockoutTies(Game $game, Collection $knockoutMatches, Collection $allPlayers): void
-    {
-        $tieIds = $knockoutMatches->pluck('cup_tie_id')->unique()->filter();
-
-        foreach ($tieIds as $tieId) {
-            $tie = CupTie::with(['firstLegMatch', 'secondLegMatch', 'competition'])->find($tieId);
-
-            if (!$tie || $tie->completed) {
-                continue;
-            }
-
-            $winnerId = $this->tieResolver->resolve($tie, $allPlayers);
-
-            if ($winnerId) {
-                $match = $tie->secondLegMatch ?? $tie->firstLegMatch;
-                CupTieResolved::dispatch($tie, $winnerId, $match, $game, $tie->competition);
-            }
+            $this->createTie($game, $competitionId, $homeTeamId, $awayTeamId, $config, $bracketPosition);
         }
     }
 
@@ -252,21 +160,6 @@ class GroupStageCupHandler implements CompetitionHandler
             ->where('competition_id', $competitionId)
             ->whereNull('cup_tie_id')
             ->where('played', false)
-            ->exists();
-    }
-
-    private function getCurrentKnockoutRound(string $gameId, string $competitionId): int
-    {
-        return CupTie::where('game_id', $gameId)
-            ->where('competition_id', $competitionId)
-            ->max('round_number') ?? 0;
-    }
-
-    private function knockoutRoundExists(string $gameId, string $competitionId, int $round): bool
-    {
-        return CupTie::where('game_id', $gameId)
-            ->where('competition_id', $competitionId)
-            ->where('round_number', $round)
             ->exists();
     }
 }
