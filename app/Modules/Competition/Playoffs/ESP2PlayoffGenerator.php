@@ -5,6 +5,7 @@ namespace App\Modules\Competition\Playoffs;
 use App\Modules\Competition\Contracts\PlayoffGenerator;
 use App\Modules\Competition\DTOs\PlayoffRoundConfig;
 use App\Modules\Competition\Services\LeagueFixtureGenerator;
+use App\Modules\Competition\Services\ReserveTeamFilter;
 use App\Models\Competition;
 use App\Models\CupTie;
 use App\Models\Game;
@@ -82,21 +83,42 @@ class ESP2PlayoffGenerator implements PlayoffGenerator
     /**
      * Semifinal matchups: highest seed vs lowest, 2nd vs 3rd.
      * Lower-seeded team hosts the first leg.
+     *
+     * Reserve teams whose parent club is in the top division are excluded
+     * from playoffs. The next-placed eligible team slides into their spot.
      */
     private function generateSemifinalMatchups(Game $game): array
     {
-        $positions = $this->qualifyingPositions;
+        $requiredCount = count($this->qualifyingPositions);
+        $filter = app(ReserveTeamFilter::class);
+
+        // Fetch more standings than needed in case we need to skip reserve teams
+        $maxPosition = max($this->qualifyingPositions) + $requiredCount;
         $standings = GameStanding::where('game_id', $game->id)
             ->where('competition_id', $this->competitionId)
-            ->whereIn('position', $positions)
+            ->whereBetween('position', [min($this->qualifyingPositions), $maxPosition])
             ->orderBy('position')
-            ->pluck('team_id', 'position')
-            ->toArray();
+            ->get();
+
+        // Filter out ineligible reserve teams
+        $topDivisionTeamIds = $filter->getTopDivisionTeamIds($game, $this->competitionId);
+        $eligible = $standings->filter(
+            fn ($s) => !$filter->isBlockedReserveTeam($s->team_id, $topDivisionTeamIds)
+        )->take($requiredCount);
+
+        if ($eligible->count() < $requiredCount) {
+            throw new \RuntimeException(
+                "Not enough eligible teams for playoffs in {$this->competitionId}: " .
+                "need {$requiredCount}, found {$eligible->count()}"
+            );
+        }
+
+        $teamIds = $eligible->pluck('team_id')->values()->toArray();
 
         // Last vs first, second-to-last vs second
         return [
-            [$standings[$positions[3]], $standings[$positions[0]]],
-            [$standings[$positions[2]], $standings[$positions[1]]],
+            [$teamIds[3], $teamIds[0]],
+            [$teamIds[2], $teamIds[1]],
         ];
     }
 

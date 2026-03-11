@@ -4,6 +4,7 @@ namespace App\Modules\Competition\Promotions;
 
 use App\Modules\Competition\Contracts\PlayoffGenerator;
 use App\Modules\Competition\Contracts\PromotionRelegationRule;
+use App\Modules\Competition\Services\ReserveTeamFilter;
 use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameStanding;
@@ -57,11 +58,7 @@ class ConfigDrivenPromotionRule implements PromotionRelegationRule
         $expectedCount = count($this->relegatedPositions);
 
         // Try real standings first
-        $promoted = $this->getTeamsByPosition(
-            $game->id,
-            $this->bottomDivision,
-            $this->directPromotionPositions
-        );
+        $promoted = $this->getEligibleDirectPromotions($game);
 
         if (!empty($promoted)) {
             // Real standings exist — check for playoff winner
@@ -70,10 +67,8 @@ class ConfigDrivenPromotionRule implements PromotionRelegationRule
                 if ($playoffWinner) {
                     $promoted[] = $playoffWinner;
                 } else {
-                    // No playoff played — promote next position directly
-                    $nextPosition = max($this->directPromotionPositions) + 1;
-                    $fallback = $this->getTeamsByPosition($game->id, $this->bottomDivision, [$nextPosition]);
-                    $promoted = array_merge($promoted, $fallback);
+                    // No playoff played — promote next eligible position directly
+                    $promoted = array_merge($promoted, $this->getNextEligibleTeam($game, $promoted));
                 }
             }
 
@@ -84,9 +79,8 @@ class ConfigDrivenPromotionRule implements PromotionRelegationRule
 
         // Fall back to simulated results — take top N (no playoffs in simulated leagues)
         $totalPromoted = count($this->directPromotionPositions) + ($this->playoffGenerator ? 1 : 0);
-        $positions = range(1, $totalPromoted);
 
-        $promoted = $this->getSimulatedTeamsByPosition($game, $this->bottomDivision, $positions);
+        $promoted = $this->getEligibleSimulatedPromotions($game, $totalPromoted);
 
         $this->validateTeamCount($promoted, $expectedCount, 'promoted', $this->bottomDivision);
 
@@ -138,6 +132,117 @@ class ConfigDrivenPromotionRule implements PromotionRelegationRule
                 "Divisions: {$this->topDivision} <-> {$this->bottomDivision}."
             );
         }
+    }
+
+    /**
+     * Get eligible teams for direct promotion, skipping blocked reserve teams.
+     *
+     * If a reserve team (e.g. Real Sociedad B) finishes in a direct promotion
+     * spot but their parent (Real Sociedad) is in the top division, the next
+     * eligible team below slides into their promotion spot.
+     *
+     * @return array<array{teamId: string, position: int, teamName: string}>
+     */
+    private function getEligibleDirectPromotions(Game $game): array
+    {
+        $filter = app(ReserveTeamFilter::class);
+        $topDivisionTeamIds = $filter->getTopDivisionTeamIds($game, $this->bottomDivision);
+
+        if ($topDivisionTeamIds->isEmpty()) {
+            return $this->getTeamsByPosition($game->id, $this->bottomDivision, $this->directPromotionPositions);
+        }
+
+        $requiredCount = count($this->directPromotionPositions);
+        $maxPosition = max($this->directPromotionPositions) + $requiredCount;
+
+        $standings = GameStanding::where('game_id', $game->id)
+            ->where('competition_id', $this->bottomDivision)
+            ->whereBetween('position', [min($this->directPromotionPositions), $maxPosition])
+            ->with('team')
+            ->orderBy('position')
+            ->get();
+
+        if ($standings->isEmpty()) {
+            return [];
+        }
+
+        $eligible = $standings->filter(
+            fn ($s) => !$filter->isBlockedReserveTeam($s->team_id, $topDivisionTeamIds)
+        )->take($requiredCount);
+
+        return $eligible->map(fn ($standing) => [
+            'teamId' => $standing->team_id,
+            'position' => $standing->position,
+            'teamName' => $standing->team->name ?? 'Unknown',
+        ])->values()->toArray();
+    }
+
+    /**
+     * Get the next eligible team after the already-promoted teams (for non-playoff fallback).
+     *
+     * @return array<array{teamId: string, position: int, teamName: string}>
+     */
+    private function getNextEligibleTeam(Game $game, array $alreadyPromoted): array
+    {
+        $filter = app(ReserveTeamFilter::class);
+        $topDivisionTeamIds = $filter->getTopDivisionTeamIds($game, $this->bottomDivision);
+        $promotedIds = array_column($alreadyPromoted, 'teamId');
+
+        $nextPosition = max($this->directPromotionPositions) + 1;
+        $maxPosition = $nextPosition + 4; // Check a few positions ahead
+
+        $standings = GameStanding::where('game_id', $game->id)
+            ->where('competition_id', $this->bottomDivision)
+            ->whereBetween('position', [$nextPosition, $maxPosition])
+            ->with('team')
+            ->orderBy('position')
+            ->get();
+
+        $eligible = $standings
+            ->filter(fn ($s) => !in_array($s->team_id, $promotedIds))
+            ->filter(fn ($s) => !$filter->isBlockedReserveTeam($s->team_id, $topDivisionTeamIds))
+            ->first();
+
+        if (!$eligible) {
+            return [];
+        }
+
+        return [[
+            'teamId' => $eligible->team_id,
+            'position' => $eligible->position,
+            'teamName' => $eligible->team->name ?? 'Unknown',
+        ]];
+    }
+
+    /**
+     * Get eligible simulated promotions, skipping blocked reserve teams.
+     *
+     * @return array<array{teamId: string, position: int, teamName: string}>
+     */
+    private function getEligibleSimulatedPromotions(Game $game, int $totalNeeded): array
+    {
+        $filter = app(ReserveTeamFilter::class);
+        $topDivisionTeamIds = $filter->getTopDivisionTeamIds($game, $this->bottomDivision);
+
+        if ($topDivisionTeamIds->isEmpty()) {
+            return $this->getSimulatedTeamsByPosition($game, $this->bottomDivision, range(1, $totalNeeded));
+        }
+
+        // Fetch extra positions to account for skipped reserve teams
+        $positions = range(1, $totalNeeded + 3);
+        $candidates = $this->getSimulatedTeamsByPosition($game, $this->bottomDivision, $positions);
+
+        $eligible = [];
+        foreach ($candidates as $candidate) {
+            if (!$filter->isBlockedReserveTeam($candidate['teamId'], $topDivisionTeamIds)) {
+                $eligible[] = $candidate;
+            }
+            if (count($eligible) >= $totalNeeded) {
+                break;
+            }
+        }
+
+        return $eligible;
     }
 
     /**

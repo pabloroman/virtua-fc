@@ -47,6 +47,7 @@ class Team extends Model
         'type',
         'name',
         'country',
+        'parent_team_id',
         'image',
         'stadium_name',
         'stadium_seats',
@@ -72,6 +73,21 @@ class Team extends Model
     public function clubProfile(): HasOne
     {
         return $this->hasOne(ClubProfile::class);
+    }
+
+    public function parentTeam(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Team::class, 'parent_team_id');
+    }
+
+    public function reserveTeam(): HasOne
+    {
+        return $this->hasOne(Team::class, 'parent_team_id');
+    }
+
+    public function isReserveTeam(): bool
+    {
+        return $this->parent_team_id !== null;
     }
 
     public function getNameAttribute(): string
