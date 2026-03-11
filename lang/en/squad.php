@@ -322,4 +322,9 @@ return [
     'number_grid' => 'Number Grid',
     'assigned' => 'Assigned',
     'available_number' => 'Available',
+
+    // Lineup tabs & labels
+    'tactics' => 'Tactics',
+    'defensive_line' => 'Defensive Line',
+    'unsaved_changes' => 'Unsaved changes',
 ];

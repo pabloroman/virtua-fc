@@ -1,7 +1,6 @@
 export default function lineupManager(config) {
     return {
         // State
-        instructionsOpen: false,
         activeLineupTab: 'squad',
         selectedPlayers: config.currentLineup || [],
         selectedFormation: config.currentFormation,

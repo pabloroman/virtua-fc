@@ -92,162 +92,203 @@
                         <input type="hidden" :name="'pitch_positions[' + slotId + ']'" :value="pos[0] + ',' + pos[1]">
                     </template>
 
-                    {{-- Top Bar: Formation, Stats, Actions --}}
-                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 p-4 ms:p-6 md:p-8 shadow-md bg-white md:bg-slate-50 md:rounded-t-lg sticky top-0 z-10">
-                        <div class="flex flex-wrap items-center gap-2 md:gap-6">
-                            {{-- Formation Selector --}}
-                            <div class="flex items-center gap-2">
-                                <label class="text-sm font-medium text-slate-700">{{ __('squad.formation') }}:</label>
-                                <x-select-input
-                                    x-model="selectedFormation"
-                                    @change="updateAutoLineup()"
-                                    class="font-semibold"
-                                >
-                                    @foreach($formations as $formation)
-                                        <option value="{{ $formation->value }}">{{ $formation->label() }}</option>
-                                    @endforeach
-                                </x-select-input>
+                    {{-- ═══════════════════════════════════════════════════ --}}
+                    {{-- STICKY ACTION BAR                                   --}}
+                    {{-- Status + action buttons only. No tactical controls. --}}
+                    {{-- ═══════════════════════════════════════════════════ --}}
+                    <div class="sticky top-0 z-10 bg-white border-b border-slate-200 sm:rounded-t-lg">
+                        <div class="flex items-center justify-between px-4 py-3 md:px-6">
+                            {{-- Left: Selection count --}}
+                            <div class="flex items-center gap-3">
+                                <div class="flex items-baseline gap-1">
+                                    <span class="text-xl font-bold tabular-nums"
+                                          :class="selectedCount === 11 ? 'text-emerald-600' : 'text-slate-900'"
+                                          x-text="selectedCount">0</span>
+                                    <span class="text-sm text-slate-400 font-medium">/11</span>
+                                </div>
+                                <span x-show="isDirty" x-cloak class="w-2 h-2 rounded-full bg-amber-400 shrink-0" title="{{ __('squad.unsaved_changes') }}"></span>
                             </div>
 
-                            {{-- Mentality Selector --}}
+                            {{-- Right: Actions --}}
                             <div class="flex items-center gap-2">
-                                <label class="text-sm font-medium text-slate-700">{{ __('squad.mentality') }}:</label>
-                                <x-select-input
-                                    x-model="selectedMentality"
-                                    class="font-semibold"
-                                >
-                                    @foreach($mentalities as $mentality)
-                                        <option value="{{ $mentality->value }}">{{ $mentality->label() }}</option>
-                                    @endforeach
-                                </x-select-input>
+                                <button type="button" @click="clearSelection()"
+                                    class="px-3 py-2 text-sm font-medium text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors min-h-[44px]">
+                                    {{ __('app.clear') }}
+                                </button>
+                                <x-secondary-button type="button" @click="quickSelect()">
+                                    {{ __('squad.auto_select') }}
+                                </x-secondary-button>
+                                <x-primary-button x-bind:disabled="selectedCount !== 11">
+                                    {{ __('app.confirm') }}
+                                </x-primary-button>
                             </div>
-
-                            {{-- Instructions Toggle --}}
-                            <button type="button" @click="instructionsOpen = !instructionsOpen"
-                                class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors min-h-[44px]"
-                                :class="instructionsOpen ? 'bg-sky-100 text-sky-700' : 'text-slate-600 hover:bg-slate-200 hover:text-slate-800'">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.573-1.066z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                </svg>
-                                <span class="hidden sm:inline">{{ __('game.instructions_title') }}</span>
-                                <svg class="w-3 h-3 transition-transform" :class="instructionsOpen && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                </svg>
-                            </button>
-                        </div>
-
-                        <div class="flex items-center gap-2 md:gap-3 md:shrink-0 border-t border-slate-200 pt-3 md:border-0 md:pt-0">
-                            <button type="button" @click="clearSelection()" class="px-4 py-2 text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-200 rounded transition-colors">
-                                {{ __('app.clear') }}
-                            </button>
-                            <x-secondary-button type="button" @click="quickSelect()">
-                                {{ __('squad.auto_select') }}
-                            </x-secondary-button>
-                            <x-primary-button x-bind:disabled="selectedCount !== 11" class="flex-1 md:flex-none justify-center">
-                                {{ __('app.confirm') }}<span class="md:hidden" x-text="'&nbsp;(' + selectedCount + '/11)'"></span>
-                            </x-primary-button>
                         </div>
                     </div>
 
-                    <div class="p-4 sm:p-6 md:p-8">
+                    {{-- ═══════════════════════════════════════════ --}}
+                    {{-- MOBILE TAB SWITCHER                         --}}
+                    {{-- Squad (default) | Tactics | Pitch           --}}
+                    {{-- ═══════════════════════════════════════════ --}}
+                    <div class="flex lg:hidden border-b border-slate-200 bg-white">
+                        <button type="button" @click="activeLineupTab = 'squad'"
+                            class="flex-1 px-4 py-2.5 text-sm font-medium text-center border-b-2 transition-colors min-h-[44px]"
+                            :class="activeLineupTab === 'squad' ? 'border-sky-500 text-sky-600' : 'border-transparent text-slate-500 hover:text-slate-700'">
+                            {{ __('app.squad') }}
+                        </button>
+                        <button type="button" @click="activeLineupTab = 'tactics'"
+                            class="flex-1 px-4 py-2.5 text-sm font-medium text-center border-b-2 transition-colors min-h-[44px]"
+                            :class="activeLineupTab === 'tactics' ? 'border-sky-500 text-sky-600' : 'border-transparent text-slate-500 hover:text-slate-700'">
+                            {{ __('squad.tactics') }}
+                        </button>
+                        <button type="button" @click="activeLineupTab = 'pitch'"
+                            class="flex-1 px-4 py-2.5 text-sm font-medium text-center border-b-2 transition-colors min-h-[44px]"
+                            :class="activeLineupTab === 'pitch' ? 'border-sky-500 text-sky-600' : 'border-transparent text-slate-500 hover:text-slate-700'">
+                            {{ __('squad.pitch') }}
+                        </button>
+                    </div>
 
-                        {{-- Team Instructions Panel (toggled from top bar) --}}
-                        <div x-show="instructionsOpen" x-collapse class="mb-4 border border-slate-200 rounded-lg overflow-hidden">
-                            <div class="px-4 py-4 space-y-4 bg-slate-50/50">
-                                {{-- In Possession --}}
-                                <div>
-                                    <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">{{ __('game.instructions_in_possession') }}</h4>
-                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
-                                        <template x-for="style in playingStyles" :key="style.value">
-                                            <button type="button" @click="selectedPlayingStyle = style.value"
-                                                :class="selectedPlayingStyle === style.value
-                                                    ? 'bg-sky-100 text-sky-800 border-sky-300'
-                                                    : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'"
-                                                class="px-3 py-2 rounded-lg border-2 text-sm font-medium min-h-[44px] transition-colors"
-                                                x-text="style.label"
-                                                x-tooltip="style.tooltip">
-                                            </button>
+                    {{-- ═══════════════════════════════════════════ --}}
+                    {{-- MAIN CONTENT GRID                           --}}
+                    {{-- Desktop: [Tactics+Pitch 1col | Squad 2col] --}}
+                    {{-- Mobile: tab-driven single panel             --}}
+                    {{-- ═══════════════════════════════════════════ --}}
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-0 lg:gap-6 p-4 sm:p-6 md:p-8">
+
+                        {{-- ─────────────────────────────────────── --}}
+                        {{-- LEFT COLUMN: Tactics + Pitch + Coach    --}}
+                        {{-- ─────────────────────────────────────── --}}
+                        <div class="col-span-1 lg:sticky lg:top-[60px] lg:self-start space-y-4">
+
+                            {{-- TACTICAL PANEL (always visible on desktop, "Tactics" tab on mobile) --}}
+                            <div :class="{ 'hidden lg:block': activeLineupTab !== 'tactics' }">
+
+                                {{-- ── Formation ── --}}
+                                <div class="mb-4">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wider">{{ __('squad.formation') }}</h4>
+                                        {{-- Formation modifier badge --}}
+                                        <template x-if="formationModifiers[selectedFormation]">
+                                            <div class="flex items-center gap-2 text-[10px] font-medium">
+                                                <span :class="formationModifiers[selectedFormation]?.attack > 0 ? 'text-emerald-600' : formationModifiers[selectedFormation]?.attack < 0 ? 'text-red-500' : 'text-slate-400'">
+                                                    ATK <span x-text="(formationModifiers[selectedFormation]?.attack > 0 ? '+' : '') + formationModifiers[selectedFormation]?.attack + '%'"></span>
+                                                </span>
+                                                <span :class="formationModifiers[selectedFormation]?.defense > 0 ? 'text-emerald-600' : formationModifiers[selectedFormation]?.defense < 0 ? 'text-red-500' : 'text-slate-400'">
+                                                    DEF <span x-text="(formationModifiers[selectedFormation]?.defense > 0 ? '+' : '') + formationModifiers[selectedFormation]?.defense + '%'"></span>
+                                                </span>
+                                            </div>
                                         </template>
                                     </div>
-                                    <p class="mt-1.5 text-xs text-slate-500"
-                                       x-text="playingStyles.find(s => s.value === selectedPlayingStyle)?.summary"></p>
+                                    <div class="grid grid-cols-4 gap-1.5">
+                                        @foreach($formations as $formation)
+                                            <button type="button"
+                                                @click="selectedFormation = '{{ $formation->value }}'; updateAutoLineup()"
+                                                class="px-2 py-2 text-sm font-semibold rounded-lg border-2 transition-all duration-150 min-h-[44px]"
+                                                :class="selectedFormation === '{{ $formation->value }}'
+                                                    ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
+                                                    : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400 hover:text-slate-900'"
+                                            >{{ $formation->label() }}</button>
+                                        @endforeach
+                                    </div>
                                 </div>
 
-                                {{-- Out of Possession --}}
-                                <div>
-                                    <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">{{ __('game.instructions_out_of_possession') }}</h4>
+                                {{-- ── Mentality ── --}}
+                                <div class="mb-4">
+                                    <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">{{ __('squad.mentality') }}</h4>
+                                    <div class="grid grid-cols-3 gap-1.5">
+                                        @foreach($mentalities as $mentality)
+                                            <button type="button"
+                                                @click="selectedMentality = '{{ $mentality->value }}'"
+                                                class="px-3 py-2 text-sm font-semibold rounded-lg border-2 transition-all duration-150 min-h-[44px]"
+                                                :class="selectedMentality === '{{ $mentality->value }}'
+                                                    ? '{{ match($mentality->value) {
+                                                        'defensive' => 'bg-sky-600 text-white border-sky-600',
+                                                        'balanced' => 'bg-slate-700 text-white border-slate-700',
+                                                        'attacking' => 'bg-red-600 text-white border-red-600',
+                                                    } }} shadow-sm'
+                                                    : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400 hover:text-slate-900'"
+                                            >{{ $mentality->label() }}</button>
+                                        @endforeach
+                                    </div>
+                                </div>
 
-                                    {{-- Pressing --}}
-                                    <div class="mb-3">
-                                        <div class="grid grid-cols-3 gap-2">
+                                {{-- ── Divider ── --}}
+                                <div class="border-t border-slate-200 my-4"></div>
+
+                                {{-- ── Team Instructions ── --}}
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between">
+                                        <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wider">{{ __('game.instructions_title') }}</h4>
+                                        <button type="button" x-on:click="$dispatch('open-modal', 'tactical-guide')" class="text-[10px] text-sky-600 hover:text-sky-800 font-medium transition-colors">
+                                            {{ __('game.tactical_guide_link') }} &rarr;
+                                        </button>
+                                    </div>
+
+                                    {{-- Playing Style (In Possession) --}}
+                                    <div>
+                                        <div class="text-[10px] font-medium text-slate-400 uppercase tracking-wide mb-1.5">{{ __('game.instructions_in_possession') }}</div>
+                                        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-2 gap-1.5">
+                                            <template x-for="style in playingStyles" :key="style.value">
+                                                <button type="button" @click="selectedPlayingStyle = style.value"
+                                                    :class="selectedPlayingStyle === style.value
+                                                        ? 'bg-sky-100 text-sky-800 border-sky-300'
+                                                        : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'"
+                                                    class="px-2 py-1.5 rounded-lg border-2 text-xs font-medium min-h-[36px] transition-colors"
+                                                    x-text="style.label"
+                                                    x-tooltip="style.tooltip">
+                                                </button>
+                                            </template>
+                                        </div>
+                                        <p class="mt-1 text-[10px] text-slate-400 leading-relaxed"
+                                           x-text="playingStyles.find(s => s.value === selectedPlayingStyle)?.summary"></p>
+                                    </div>
+
+                                    {{-- Pressing Intensity (Out of Possession) --}}
+                                    <div>
+                                        <div class="text-[10px] font-medium text-slate-400 uppercase tracking-wide mb-1.5">{{ __('game.instructions_out_of_possession') }}</div>
+                                        <div class="grid grid-cols-3 gap-1.5">
                                             <template x-for="p in pressingOptions" :key="p.value">
                                                 <button type="button" @click="selectedPressing = p.value"
                                                     :class="selectedPressing === p.value
                                                         ? 'bg-sky-100 text-sky-800 border-sky-300'
-                                                        : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'"
-                                                    class="px-3 py-2 rounded-lg border-2 text-sm font-medium min-h-[44px] transition-colors"
+                                                        : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'"
+                                                    class="px-2 py-1.5 rounded-lg border-2 text-xs font-medium min-h-[36px] transition-colors"
                                                     x-text="p.label"
                                                     x-tooltip="p.tooltip">
                                                 </button>
                                             </template>
                                         </div>
-                                        <p class="mt-1.5 text-xs text-slate-500"
+                                        <p class="mt-1 text-[10px] text-slate-400 leading-relaxed"
                                            x-text="pressingOptions.find(p => p.value === selectedPressing)?.summary"></p>
                                     </div>
 
-                                    {{-- Defensive Line --}}
+                                    {{-- Defensive Line Height --}}
                                     <div>
-                                        <div class="grid grid-cols-3 gap-2">
+                                        <div class="text-[10px] font-medium text-slate-400 uppercase tracking-wide mb-1.5">{{ __('squad.defensive_line') }}</div>
+                                        <div class="grid grid-cols-3 gap-1.5">
                                             <template x-for="d in defensiveLineOptions" :key="d.value">
                                                 <button type="button" @click="selectedDefLine = d.value"
                                                     :class="selectedDefLine === d.value
                                                         ? 'bg-sky-100 text-sky-800 border-sky-300'
-                                                        : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'"
-                                                    class="px-3 py-2 rounded-lg border-2 text-sm font-medium min-h-[44px] transition-colors"
+                                                        : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'"
+                                                    class="px-2 py-1.5 rounded-lg border-2 text-xs font-medium min-h-[36px] transition-colors"
                                                     x-text="d.label"
                                                     x-tooltip="d.tooltip">
                                                 </button>
                                             </template>
                                         </div>
-                                        <p class="mt-1.5 text-xs text-slate-500"
+                                        <p class="mt-1 text-[10px] text-slate-400 leading-relaxed"
                                            x-text="defensiveLineOptions.find(d => d.value === selectedDefLine)?.summary"></p>
                                     </div>
                                 </div>
 
-                                {{-- Tactical Guide button --}}
-                                <div class="pt-2 border-t border-slate-100 text-right">
-                                    <button type="button" x-on:click="$dispatch('open-modal', 'tactical-guide')" class="text-xs text-sky-600 hover:text-sky-800 transition-colors">
-                                        {{ __('game.tactical_guide_link') }} &rarr;
-                                    </button>
+                                {{-- Coach Assistant (mobile: inside tactics tab) --}}
+                                <div class="lg:hidden mt-4">
+                                    @include('partials.lineup-coach-panel')
                                 </div>
                             </div>
-                        </div>
 
-                        {{-- Mobile Tab Switcher --}}
-                        <div class="flex lg:hidden border-b border-slate-200 mb-4">
-                            <button type="button" @click="activeLineupTab = 'squad'"
-                                class="flex-1 px-4 py-2.5 text-sm font-medium text-center border-b-2 transition-colors"
-                                :class="activeLineupTab === 'squad' ? 'border-sky-500 text-sky-600' : 'border-transparent text-slate-500'">
-                                {{ __('app.squad') }}
-                            </button>
-                            <button type="button" @click="activeLineupTab = 'pitch'"
-                                class="flex-1 px-4 py-2.5 text-sm font-medium text-center border-b-2 transition-colors"
-                                :class="activeLineupTab === 'pitch' ? 'border-sky-500 text-sky-600' : 'border-transparent text-slate-500'">
-                                {{ __('squad.pitch') }}
-                            </button>
-                            <button type="button" @click="activeLineupTab = 'coach'"
-                                class="flex-1 px-4 py-2.5 text-sm font-medium text-center border-b-2 transition-colors"
-                                :class="activeLineupTab === 'coach' ? 'border-sky-500 text-sky-600' : 'border-transparent text-slate-500'">
-                                {{ __('squad.coach_assistant') }}
-                            </button>
-                        </div>
-
-                        {{-- Main Content: Pitch + Player List --}}
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                            {{-- Pitch Visualization --}}
-
-                            <div class="col-span-1 lg:sticky lg:top-[100px] lg:self-start" :class="{ 'hidden lg:block': activeLineupTab !== 'pitch' }">
+                            {{-- PITCH VISUALIZATION --}}
+                            <div :class="{ 'hidden lg:block': activeLineupTab !== 'pitch' }">
                                 <div id="pitch-container" class="bg-emerald-600 rounded-lg p-4 relative aspect-[3/4]"
                                     :style="(positioningSlotId !== null || draggingSlotId !== null) ? 'touch-action: none' : ''">
                                     {{-- Pitch markings --}}
@@ -422,143 +463,140 @@
 
                                 {{-- Coach Assistant Panel (desktop: below pitch) --}}
                                 @include('partials.lineup-coach-panel', ['class' => 'hidden lg:block mt-4'])
-
                             </div>
 
-                            {{-- Player List --}}
-                            <div class="lg:col-span-2 overflow-x-auto" :class="{ 'hidden lg:block': activeLineupTab !== 'squad' }">
-                                <table class="w-full text-sm">
-                                    <thead class="text-left text-sm border-b sticky top-0 bg-white">
-                                        <tr>
-                                            <th class="font-semibold py-2 w-10"></th>
-                                            <th class="font-semibold py-2 w-10"></th>
-                                            <th class="py-2"></th>
-                                            <th class="font-semibold py-2 text-center w-16 hidden md:table-cell">{{ __('squad.technical_full') }}</th>
-                                            <th class="font-semibold py-2 text-center w-16 hidden md:table-cell">{{ __('squad.physical_full') }}</th>
-                                            <th class="font-semibold py-2 text-center w-16">{{ __('squad.fitness_full') }}</th>
-                                            <th class="font-semibold py-2 text-center w-16">{{ __('squad.morale_full') }}</th>
-                                            <th class="font-semibold py-2 w-8"></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach([
-                                            ['name' => __('squad.goalkeepers'), 'players' => $goalkeepers, 'role' => 'Goalkeeper'],
-                                            ['name' => __('squad.defenders'), 'players' => $defenders, 'role' => 'Defender'],
-                                            ['name' => __('squad.midfielders'), 'players' => $midfielders, 'role' => 'Midfielder'],
-                                            ['name' => __('squad.forwards'), 'players' => $forwards, 'role' => 'Forward'],
-                                        ] as $group)
-                                            @if($group['players']->isNotEmpty())
-                                                <tr class="bg-slate-200">
-                                                    <td colspan="8" class="py-2 px-2 text-xs font-semibold text-slate-600 uppercase tracking-wide">
-                                                        {{ $group['name'] }}
-                                                        <span class="font-normal text-slate-400">
-                                                            ({{ __('squad.need') }} <span x-text="currentSlots.filter(s => s.role === '{{ $group['role'] }}').length"></span>)
-                                                        </span>
+                        </div>
+
+                        {{-- ─────────────────────────────────────── --}}
+                        {{-- RIGHT COLUMN: Player Selection List     --}}
+                        {{-- ─────────────────────────────────────── --}}
+                        <div class="lg:col-span-2 overflow-x-auto" :class="{ 'hidden lg:block': activeLineupTab !== 'squad' }">
+                            <table class="w-full text-sm">
+                                <thead class="text-left text-sm border-b sticky top-0 bg-white">
+                                    <tr>
+                                        <th class="font-semibold py-2 w-10"></th>
+                                        <th class="font-semibold py-2 w-10"></th>
+                                        <th class="py-2"></th>
+                                        <th class="font-semibold py-2 text-center w-16 hidden md:table-cell">{{ __('squad.technical_full') }}</th>
+                                        <th class="font-semibold py-2 text-center w-16 hidden md:table-cell">{{ __('squad.physical_full') }}</th>
+                                        <th class="font-semibold py-2 text-center w-16">{{ __('squad.fitness_full') }}</th>
+                                        <th class="font-semibold py-2 text-center w-16">{{ __('squad.morale_full') }}</th>
+                                        <th class="font-semibold py-2 w-8"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach([
+                                        ['name' => __('squad.goalkeepers'), 'players' => $goalkeepers, 'role' => 'Goalkeeper'],
+                                        ['name' => __('squad.defenders'), 'players' => $defenders, 'role' => 'Defender'],
+                                        ['name' => __('squad.midfielders'), 'players' => $midfielders, 'role' => 'Midfielder'],
+                                        ['name' => __('squad.forwards'), 'players' => $forwards, 'role' => 'Forward'],
+                                    ] as $group)
+                                        @if($group['players']->isNotEmpty())
+                                            <tr class="bg-slate-200">
+                                                <td colspan="8" class="py-2 px-2 text-xs font-semibold text-slate-600 uppercase tracking-wide">
+                                                    {{ $group['name'] }}
+                                                    <span class="font-normal text-slate-400">
+                                                        ({{ __('squad.need') }} <span x-text="currentSlots.filter(s => s.role === '{{ $group['role'] }}').length"></span>)
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            @foreach($group['players'] as $player)
+                                                @php
+                                                    $isUnavailable = !$player->isAvailable($matchDate, $competitionId);
+                                                    $matchData = $matchesMissedMap[$player->id] ?? null;
+                                                    $unavailabilityReason = $player->getUnavailabilityReason(
+                                                        $matchDate,
+                                                        $competitionId,
+                                                        $matchData['count'] ?? null,
+                                                        $matchData['approx'] ?? false,
+                                                    );
+                                                @endphp
+                                                <tr
+                                                    @click="toggle('{{ $player->id }}', {{ $isUnavailable ? 'true' : 'false' }})"
+                                                    @mouseenter="hoveredPlayerId = '{{ $player->id }}'"
+                                                    @mouseleave="hoveredPlayerId = null"
+                                                    class="border-b border-slate-200 transition-colors
+                                                        @if($isUnavailable)
+                                                            text-slate-400 cursor-not-allowed
+                                                        @else
+                                                            cursor-pointer hover:bg-slate-50
+                                                        @endif"
+                                                    :class="{
+                                                        'bg-sky-50': isSelected('{{ $player->id }}'),
+                                                        'opacity-50': !isSelected('{{ $player->id }}') && selectedCount >= 11 && !{{ $isUnavailable ? 'true' : 'false' }}
+                                                    }"
+                                                >
+                                                    {{-- Checkbox --}}
+                                                    <td class="py-2 text-center">
+                                                        @if(!$isUnavailable)
+                                                            <div
+                                                                class="w-5 h-5 rounded border-2 flex items-center justify-center transition-colors mx-auto"
+                                                                :class="isSelected('{{ $player->id }}') ? 'border-sky-500 bg-sky-500' : 'border-slate-300'"
+                                                            >
+                                                                <svg x-show="isSelected('{{ $player->id }}')" x-cloak class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                                                </svg>
+                                                            </div>
+                                                        @endif
+                                                    </td>
+                                                    {{-- Position --}}
+                                                    <td class="py-2 text-center">
+                                                        <x-position-badge :position="$player->position" />
+                                                    </td>
+                                                    {{-- Name --}}
+                                                    <td class="py-2">
+                                                        <div class="flex items-center gap-2">
+                                                            <button type="button" @click.stop="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $player->id]) }}')" class="p-1 text-slate-300 rounded hover:text-slate-500 transition-colors shrink-0">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="w-5 h-5">
+                                                                    <path fill-rule="evenodd" d="M19.5 21a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3h-5.379a.75.75 0 0 1-.53-.22L11.47 3.66A2.25 2.25 0 0 0 9.879 3H4.5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h15Zm-6.75-10.5a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V10.5Z" clip-rule="evenodd" />
+                                                                </svg>
+                                                            </button>
+                                                            <span class="text-xs text-slate-400 w-4 text-right hidden md:inline">{{ $player->number ?? '-' }}</span>
+                                                            @if($player->nationality_flag)
+                                                                <img src="/flags/{{ $player->nationality_flag['code'] }}.svg" class="w-4 h-3 rounded-sm shadow-sm hidden md:inline" title="{{ $player->nationality_flag['name'] }}">
+                                                            @endif
+                                                            <div class="font-medium @if($isUnavailable) text-slate-400 @else text-slate-900 @endif">
+                                                                {{ $player->name }}
+                                                            </div>
+                                                        </div>
+                                                        @if($unavailabilityReason)
+                                                            <div class="text-xs text-red-500">{{ $unavailabilityReason }}</div>
+                                                        @endif
+                                                    </td>
+                                                    {{-- Technical --}}
+                                                    <td class="py-2 px-2 w-16 hidden md:table-cell">
+                                                        <x-ability-bar :value="$player->technical_ability" size="sm" class="text-xs font-medium justify-center @if($player->technical_ability >= 80) text-green-600 @elseif($player->technical_ability >= 70) text-lime-600 @elseif($player->technical_ability < 60) text-slate-400 @endif" />
+                                                    </td>
+                                                    {{-- Physical --}}
+                                                    <td class="py-2 px-2 w-16 hidden md:table-cell">
+                                                        <x-ability-bar :value="$player->physical_ability" size="sm" class="text-xs font-medium justify-center @if($player->physical_ability >= 80) text-green-600 @elseif($player->physical_ability >= 70) text-lime-600 @elseif($player->physical_ability < 60) text-slate-400 @endif" />
+                                                    </td>
+                                                    {{-- Fitness --}}
+                                                    <td class="py-2 px-2 w-16">
+                                                        <x-ability-bar :value="$player->fitness" :max="100" size="sm" class="text-xs font-medium justify-center @if($player->fitness >= 90) text-green-600 @elseif($player->fitness >= 80) text-lime-600 @elseif($player->fitness < 70) text-amber-600 @endif" />
+                                                    </td>
+                                                    {{-- Morale --}}
+                                                    <td class="py-2 px-2 w-16">
+                                                        <x-ability-bar :value="$player->morale" :max="100" size="sm" class="text-xs font-medium justify-center @if($player->morale >= 85) text-green-600 @elseif($player->morale >= 75) text-lime-600 @elseif($player->morale < 65) text-amber-600 @endif" />
+                                                    </td>
+                                                    {{-- Overall --}}
+                                                    <td class="py-2 pr-3 text-center">
+                                                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-semibold
+                                                            @if($player->overall_score >= 80) bg-emerald-500 text-white
+                                                            @elseif($player->overall_score >= 70) bg-lime-500 text-white
+                                                            @elseif($player->overall_score >= 60) bg-amber-500 text-white
+                                                            @else bg-slate-300 text-slate-700
+                                                            @endif">{{ $player->overall_score }}</span>
                                                     </td>
                                                 </tr>
-                                                @foreach($group['players'] as $player)
-                                                    @php
-                                                        $isUnavailable = !$player->isAvailable($matchDate, $competitionId);
-                                                        $matchData = $matchesMissedMap[$player->id] ?? null;
-                                                        $unavailabilityReason = $player->getUnavailabilityReason(
-                                                            $matchDate,
-                                                            $competitionId,
-                                                            $matchData['count'] ?? null,
-                                                            $matchData['approx'] ?? false,
-                                                        );
-                                                    @endphp
-                                                    <tr
-                                                        @click="toggle('{{ $player->id }}', {{ $isUnavailable ? 'true' : 'false' }})"
-                                                        @mouseenter="hoveredPlayerId = '{{ $player->id }}'"
-                                                        @mouseleave="hoveredPlayerId = null"
-                                                        class="border-b border-slate-200 transition-colors
-                                                            @if($isUnavailable)
-                                                                text-slate-400 cursor-not-allowed
-                                                            @else
-                                                                cursor-pointer hover:bg-slate-50
-                                                            @endif"
-                                                        :class="{
-                                                            'bg-sky-50': isSelected('{{ $player->id }}'),
-                                                            'opacity-50': !isSelected('{{ $player->id }}') && selectedCount >= 11 && !{{ $isUnavailable ? 'true' : 'false' }}
-                                                        }"
-                                                    >
-                                                        {{-- Checkbox --}}
-                                                        <td class="py-2 text-center">
-                                                            @if(!$isUnavailable)
-                                                                <div
-                                                                    class="w-5 h-5 rounded border-2 flex items-center justify-center transition-colors mx-auto"
-                                                                    :class="isSelected('{{ $player->id }}') ? 'border-sky-500 bg-sky-500' : 'border-slate-300'"
-                                                                >
-                                                                    <svg x-show="isSelected('{{ $player->id }}')" x-cloak class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                                                                    </svg>
-                                                                </div>
-                                                            @endif
-                                                        </td>
-                                                        {{-- Position --}}
-                                                        <td class="py-2 text-center">
-                                                            <x-position-badge :position="$player->position" />
-                                                        </td>
-                                                        {{-- Name --}}
-                                                        <td class="py-2">
-                                                            <div class="flex items-center gap-2">
-                                                                <button type="button" @click.stop="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $player->id]) }}')" class="p-1 text-slate-300 rounded hover:text-slate-500 transition-colors shrink-0">
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="w-5 h-5">
-                                                                        <path fill-rule="evenodd" d="M19.5 21a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3h-5.379a.75.75 0 0 1-.53-.22L11.47 3.66A2.25 2.25 0 0 0 9.879 3H4.5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h15Zm-6.75-10.5a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V10.5Z" clip-rule="evenodd" />
-                                                                    </svg>
-                                                                </button>
-                                                                <span class="text-xs text-slate-400 w-4 text-right hidden md:inline">{{ $player->number ?? '-' }}</span>
-                                                                @if($player->nationality_flag)
-                                                                    <img src="/flags/{{ $player->nationality_flag['code'] }}.svg" class="w-4 h-3 rounded-sm shadow-sm hidden md:inline" title="{{ $player->nationality_flag['name'] }}">
-                                                                @endif
-                                                                <div class="font-medium @if($isUnavailable) text-slate-400 @else text-slate-900 @endif">
-                                                                    {{ $player->name }}
-                                                                </div>
-                                                            </div>
-                                                            @if($unavailabilityReason)
-                                                                <div class="text-xs text-red-500">{{ $unavailabilityReason }}</div>
-                                                            @endif
-                                                        </td>
-                                                        {{-- Technical --}}
-                                                        <td class="py-2 px-2 w-16 hidden md:table-cell">
-                                                            <x-ability-bar :value="$player->technical_ability" size="sm" class="text-xs font-medium justify-center @if($player->technical_ability >= 80) text-green-600 @elseif($player->technical_ability >= 70) text-lime-600 @elseif($player->technical_ability < 60) text-slate-400 @endif" />
-                                                        </td>
-                                                        {{-- Physical --}}
-                                                        <td class="py-2 px-2 w-16 hidden md:table-cell">
-                                                            <x-ability-bar :value="$player->physical_ability" size="sm" class="text-xs font-medium justify-center @if($player->physical_ability >= 80) text-green-600 @elseif($player->physical_ability >= 70) text-lime-600 @elseif($player->physical_ability < 60) text-slate-400 @endif" />
-                                                        </td>
-                                                        {{-- Fitness --}}
-                                                        <td class="py-2 px-2 w-16">
-                                                            <x-ability-bar :value="$player->fitness" :max="100" size="sm" class="text-xs font-medium justify-center @if($player->fitness >= 90) text-green-600 @elseif($player->fitness >= 80) text-lime-600 @elseif($player->fitness < 70) text-amber-600 @endif" />
-                                                        </td>
-                                                        {{-- Morale --}}
-                                                        <td class="py-2 px-2 w-16">
-                                                            <x-ability-bar :value="$player->morale" :max="100" size="sm" class="text-xs font-medium justify-center @if($player->morale >= 85) text-green-600 @elseif($player->morale >= 75) text-lime-600 @elseif($player->morale < 65) text-amber-600 @endif" />
-                                                        </td>
-                                                        {{-- Overall --}}
-                                                        <td class="py-2 pr-3 text-center">
-                                                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-semibold
-                                                                @if($player->overall_score >= 80) bg-emerald-500 text-white
-                                                                @elseif($player->overall_score >= 70) bg-lime-500 text-white
-                                                                @elseif($player->overall_score >= 60) bg-amber-500 text-white
-                                                                @else bg-slate-300 text-slate-700
-                                                                @endif">{{ $player->overall_score }}</span>
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-                                            @endif
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            {{-- Coach Assistant Panel (mobile: own tab) --}}
-                            <div :class="{ 'hidden': activeLineupTab !== 'coach' }" class="lg:hidden">
-                                @include('partials.lineup-coach-panel')
-                            </div>
+                                            @endforeach
+                                        @endif
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
-                    </form>
-                </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

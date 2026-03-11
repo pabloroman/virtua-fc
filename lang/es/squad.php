@@ -322,4 +322,9 @@ return [
     'number_grid' => 'Dorsales',
     'assigned' => 'Asignado',
     'available_number' => 'Disponible',
+
+    // Lineup tabs & labels
+    'tactics' => 'Táctica',
+    'defensive_line' => 'Línea Defensiva',
+    'unsaved_changes' => 'Cambios sin guardar',
 ];
