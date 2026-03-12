@@ -7,20 +7,20 @@
 
     <div>
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-surface-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-4 sm:p-6 md:p-8">
 
             {{-- Title bar --}}
             <div class="flex items-center justify-between mb-6">
                 <div>
                     @if($matches->first()->round_name)
-                        <h3 class="font-semibold text-xl text-slate-900">
+                        <h3 class="font-semibold text-xl text-white">
                             @if($competition)
                                 <span>{{ __($competition->name) }} &centerdot;</span>
                             @endif
                             {{ __('game.matchday_results', ['name' => __($matches->first()?->round_name ?? '')]) }}</h3>
                     @else
-                        <h3 class="font-semibold text-xl text-slate-900">
+                        <h3 class="font-semibold text-xl text-white">
                             @if($competition)
                                 <span>{{ __($competition->name) }} &centerdot;</span>
                             @endif
@@ -101,7 +101,7 @@
                                                 @if($event->event_type === 'yellow_card')
                                                     <span class="w-2 h-3 bg-yellow-400 rounded-sm"></span>
                                                 @else
-                                                    <span class="w-2 h-3 bg-red-500 rounded-sm"></span>
+                                                    <span class="w-2 h-3 bg-accent-red/100 rounded-sm"></span>
                                                 @endif
                                             </div>
                                         @endforeach
@@ -112,7 +112,7 @@
                                                 @if($event->event_type === 'yellow_card')
                                                     <span class="w-2 h-3 bg-yellow-400 rounded-sm"></span>
                                                 @else
-                                                    <span class="w-2 h-3 bg-red-500 rounded-sm"></span>
+                                                    <span class="w-2 h-3 bg-accent-red/100 rounded-sm"></span>
                                                 @endif
                                                 {{ $event->gamePlayer->player->name }} {{ $event->minute }}'
                                             </div>
@@ -128,19 +128,19 @@
             {{-- All Results --}}
             <div class="space-y-1">
                 @foreach($matches as $match)
-                    <div class="flex items-center py-3 px-4 rounded-lg {{ $match->id === $playerMatch?->id ? 'bg-slate-200' : 'bg-slate-50' }}">
+                    <div class="flex items-center py-3 px-4 rounded-lg {{ $match->id === $playerMatch?->id ? 'bg-slate-200' : 'bg-surface-700/50' }}">
                         <div class="flex items-center gap-2 flex-1 justify-end">
-                            <span class="text-sm truncate {{ ($match->home_score > $match->away_score) ? 'font-semibold text-slate-900' : 'text-slate-600' }}">
+                            <span class="text-sm truncate {{ ($match->home_score > $match->away_score) ? 'font-semibold text-white' : 'text-slate-400' }}">
                                 {{ $match->homeTeam->name }}
                             </span>
                             <x-team-crest :team="$match->homeTeam" class="w-6 h-6" />
                         </div>
-                        <div class="px-4 font-semibold tabular-nums text-slate-900">
+                        <div class="px-4 font-semibold tabular-nums text-white">
                             {{ $match->home_score }} - {{ $match->away_score }}
                         </div>
                         <div class="flex items-center gap-2 flex-1">
                             <x-team-crest :team="$match->awayTeam" class="w-6 h-6" />
-                            <span class="text-sm truncate {{ ($match->away_score > $match->home_score) ? 'font-semibold text-slate-900' : 'text-slate-600'  }}">
+                            <span class="text-sm truncate {{ ($match->away_score > $match->home_score) ? 'font-semibold text-white' : 'text-slate-400'  }}">
                                 {{ $match->awayTeam->name }}
                             </span>
                         </div>

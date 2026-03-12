@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VirtuaFC — Tactics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        heading: ['Barlow Condensed', 'sans-serif'],
+                        body: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        surface: {
+                            900: '#0B1120',
+                            800: '#0F172A',
+                            700: '#1E293B',
+                            600: '#334155',
+                        },
+                        accent: {
+                            blue: '#3B82F6',
+                            gold: '#F59E0B',
+                            green: '#22C55E',
+                            red: '#EF4444',
+                            orange: '#F97316',
+                        },
+                        pitch: {
+                            dark: '#1a5c2a',
+                            base: '#1e6b31',
+                            light: '#22783a',
+                            line: 'rgba(255,255,255,0.25)',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .font-heading { font-family: 'Barlow Condensed', sans-serif; }
+
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: #0F172A; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+
+        /* Pitch styling */
+        .pitch {
+            background: linear-gradient(
+                180deg,
+                #1a5c2a 0%, #1e6b31 8%, #1a5c2a 8%,
+                #1a5c2a 16%, #1e6b31 16%, #1e6b31 24%, #1a5c2a 24%,
+                #1a5c2a 32%, #1e6b31 32%, #1e6b31 40%, #1a5c2a 40%,
+                #1a5c2a 48%, #1e6b31 48%, #1e6b31 56%, #1a5c2a 56%,
+                #1a5c2a 64%, #1e6b31 64%, #1e6b31 72%, #1a5c2a 72%,
+                #1a5c2a 80%, #1e6b31 80%, #1e6b31 88%, #1a5c2a 88%,
+                #1a5c2a 100%
+            );
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        /* Pitch markings */
+        .pitch::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border: 2px solid rgba(255,255,255,0.18);
+            border-radius: 8px;
+            pointer-events: none;
+        }
+
+        /* Center line */
+        .pitch-center-line {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 50%;
+            height: 1px;
+            background: rgba(255,255,255,0.18);
+        }
+
+        /* Center circle */
+        .pitch-center-circle {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 80px;
+            height: 80px;
+            transform: translate(-50%, -50%);
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 50%;
+        }
+
+        /* Penalty areas */
+        .pitch-box-top {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 55%;
+            height: 15%;
+            border-bottom: 1px solid rgba(255,255,255,0.18);
+            border-left: 1px solid rgba(255,255,255,0.18);
+            border-right: 1px solid rgba(255,255,255,0.18);
+        }
+        .pitch-box-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 55%;
+            height: 15%;
+            border-top: 1px solid rgba(255,255,255,0.18);
+            border-left: 1px solid rgba(255,255,255,0.18);
+            border-right: 1px solid rgba(255,255,255,0.18);
+        }
+
+        /* 6-yard box */
+        .pitch-six-top {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30%;
+            height: 6%;
+            border-bottom: 1px solid rgba(255,255,255,0.18);
+            border-left: 1px solid rgba(255,255,255,0.18);
+            border-right: 1px solid rgba(255,255,255,0.18);
+        }
+        .pitch-six-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30%;
+            height: 6%;
+            border-top: 1px solid rgba(255,255,255,0.18);
+            border-left: 1px solid rgba(255,255,255,0.18);
+            border-right: 1px solid rgba(255,255,255,0.18);
+        }
+
+        /* Player marker on pitch */
+        .player-marker {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+            transition: transform 0.2s ease, filter 0.2s ease;
+            z-index: 10;
+        }
+        .player-marker:hover {
+            transform: translate(-50%, -50%) scale(1.12);
+            z-index: 20;
+        }
+        .player-marker.selected {
+            z-index: 30;
+        }
+
+        /* Player dot */
+        .player-dot {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 13px;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        }
+
+        @media (min-width: 1024px) {
+            .player-dot {
+                width: 48px;
+                height: 48px;
+                font-size: 15px;
+            }
+        }
+
+        /* Player name label */
+        .player-label {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 10px;
+            font-weight: 600;
+            color: white;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+            margin-top: 3px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        @media (min-width: 1024px) {
+            .player-label {
+                font-size: 11px;
+                margin-top: 4px;
+            }
+        }
+
+        /* Rating mini badge on player */
+        .player-rating-mini {
+            position: absolute;
+            top: -4px;
+            right: -6px;
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+
+        /* Fitness indicator on player dot */
+        .player-fitness-ring {
+            position: absolute;
+            inset: -3px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+        }
+
+        /* Mentality toggle */
+        .mentality-btn {
+            transition: all 0.15s ease;
+        }
+        .mentality-btn.active {
+            box-shadow: 0 0 0 1px currentColor;
+        }
+
+        /* Formation selector */
+        .formation-option {
+            transition: all 0.15s ease;
+        }
+        .formation-option.active {
+            background: #3B82F6;
+            color: white;
+            border-color: #3B82F6;
+        }
+
+        /* Bench player card */
+        .bench-card {
+            transition: all 0.15s ease;
+        }
+        .bench-card:hover {
+            background: rgba(59, 130, 246, 0.08);
+            border-color: rgba(59, 130, 246, 0.2);
+        }
+
+        /* Available player in sidebar */
+        .available-player {
+            transition: all 0.15s ease;
+            cursor: pointer;
+        }
+        .available-player:hover {
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        /* Dragging feedback */
+        .available-player:active {
+            opacity: 0.6;
+        }
+
+        /* Rating colors */
+        .rating-elite { background: #22C55E; color: #052e16; }
+        .rating-good { background: #84CC16; color: #1a2e05; }
+        .rating-average { background: #F59E0B; color: #451a03; }
+
+        /* Tab active */
+        .tab-btn {
+            transition: all 0.15s ease;
+        }
+        .tab-btn.active {
+            color: white;
+            border-color: #3B82F6;
+        }
+
+        /* Bottom nav */
+        .bottom-nav {
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+        /* Nav item */
+        .nav-item { position: relative; }
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #3B82F6;
+        }
+
+        /* Compatibility indicator */
+        .compat-natural { color: #22C55E; }
+        .compat-secondary { color: #F59E0B; }
+        .compat-poor { color: #EF4444; }
+
+        /* Assistant tip card */
+        .tip-card {
+            background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(59,130,246,0.02));
+            border: 1px solid rgba(59,130,246,0.15);
+        }
+    </style>
+</head>
+<body class="bg-surface-900 text-white min-h-screen font-body pb-20 lg:pb-0">
+
+    <!-- Header (same as squad) -->
+    <header class="sticky top-0 z-50 bg-surface-900/95 backdrop-blur-md border-b border-white/5">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex items-center justify-between px-4 py-3 lg:px-6">
+                <div class="flex items-center gap-3">
+                    <button class="lg:hidden text-slate-400 hover:text-white" aria-label="Menu">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/>
+                        </svg>
+                    </button>
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center flex-shrink-0">
+                            <span class="font-heading font-bold text-sm text-white">VFC</span>
+                        </div>
+                        <div class="hidden sm:block">
+                            <h1 class="font-heading font-semibold text-base leading-none tracking-wide">VIRTUA FC</h1>
+                            <p class="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5">La Liga · Season 2025/26</p>
+                        </div>
+                    </div>
+                </div>
+
+                <nav class="hidden lg:flex items-center gap-1">
+                    <a href="squad.html" class="nav-item px-3 py-2 text-xs font-medium text-slate-500 hover:text-slate-300 uppercase tracking-wider">Squad</a>
+                    <a href="#" class="nav-item active px-3 py-2 text-xs font-medium text-white uppercase tracking-wider">Tactics</a>
+                    <a href="#" class="nav-item px-3 py-2 text-xs font-medium text-slate-500 hover:text-slate-300 uppercase tracking-wider">Transfers</a>
+                    <a href="#" class="nav-item px-3 py-2 text-xs font-medium text-slate-500 hover:text-slate-300 uppercase tracking-wider">Fixtures</a>
+                    <a href="#" class="nav-item px-3 py-2 text-xs font-medium text-slate-500 hover:text-slate-300 uppercase tracking-wider">Finances</a>
+                    <a href="#" class="nav-item px-3 py-2 text-xs font-medium text-slate-500 hover:text-slate-300 uppercase tracking-wider">Academy</a>
+                </nav>
+
+                <div class="flex items-center gap-3">
+                    <div class="hidden sm:flex items-center gap-2 bg-surface-700/50 rounded-lg px-3 py-1.5">
+                        <span class="text-[10px] text-slate-500 uppercase tracking-wider">Next</span>
+                        <span class="text-xs font-semibold text-white font-heading tracking-wide">vs Real Madrid</span>
+                        <span class="text-[10px] text-slate-500">· Sat</span>
+                    </div>
+                    <button class="relative text-slate-400 hover:text-white" aria-label="Notifications">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/>
+                        </svg>
+                        <span class="absolute -top-0.5 -right-0.5 w-2 h-2 bg-accent-red rounded-full"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main content -->
+    <main class="max-w-7xl mx-auto px-4 lg:px-6 pt-4 lg:pt-6">
+
+        <!-- Page title + controls -->
+        <div class="flex flex-col gap-3 mb-4">
+            <div class="flex items-center justify-between">
+                <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide">Tactics</h2>
+                <button class="px-4 py-2 bg-accent-blue hover:bg-blue-600 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors">
+                    Save Lineup
+                </button>
+            </div>
+
+            <!-- Formation + Mentality controls -->
+            <div class="flex flex-col sm:flex-row gap-3">
+                <!-- Formation selector -->
+                <div class="flex items-center gap-2 overflow-x-auto no-scrollbar">
+                    <span class="text-[10px] text-slate-500 uppercase tracking-wider flex-shrink-0">Formation</span>
+                    <div class="flex gap-1">
+                        <button class="formation-option active px-2.5 py-1 rounded-md text-xs font-semibold border border-white/10 text-slate-400 whitespace-nowrap font-heading tracking-wide">4-3-3</button>
+                        <button class="formation-option px-2.5 py-1 rounded-md text-xs font-semibold border border-white/10 text-slate-400 whitespace-nowrap font-heading tracking-wide">4-4-2</button>
+                        <button class="formation-option px-2.5 py-1 rounded-md text-xs font-semibold border border-white/10 text-slate-400 whitespace-nowrap font-heading tracking-wide">4-2-3-1</button>
+                        <button class="formation-option px-2.5 py-1 rounded-md text-xs font-semibold border border-white/10 text-slate-400 whitespace-nowrap font-heading tracking-wide">3-4-3</button>
+                        <button class="formation-option px-2.5 py-1 rounded-md text-xs font-semibold border border-white/10 text-slate-400 whitespace-nowrap font-heading tracking-wide">3-5-2</button>
+                        <button class="formation-option px-2.5 py-1 rounded-md text-xs font-semibold border border-white/10 text-slate-400 whitespace-nowrap font-heading tracking-wide">5-3-2</button>
+                    </div>
+                </div>
+                <!-- Mentality toggle -->
+                <div class="flex items-center gap-2 sm:ml-auto">
+                    <span class="text-[10px] text-slate-500 uppercase tracking-wider flex-shrink-0">Mentality</span>
+                    <div class="flex gap-1 bg-surface-700 rounded-lg p-0.5">
+                        <button class="mentality-btn px-3 py-1.5 rounded-md text-[11px] font-semibold text-blue-400 uppercase tracking-wider">DEF</button>
+                        <button class="mentality-btn active px-3 py-1.5 rounded-md text-[11px] font-semibold text-slate-300 uppercase tracking-wider bg-surface-600">BAL</button>
+                        <button class="mentality-btn px-3 py-1.5 rounded-md text-[11px] font-semibold text-accent-red uppercase tracking-wider">ATK</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main layout: Pitch + Sidebar -->
+        <div class="flex flex-col lg:flex-row gap-4">
+
+            <!-- Left: Pitch area -->
+            <div class="flex-1 lg:flex-[3]">
+                <!-- Pitch -->
+                <div class="pitch aspect-[3/4] sm:aspect-[2/3] lg:aspect-[3/4] w-full max-w-lg mx-auto lg:max-w-none relative">
+                    <!-- Pitch markings -->
+                    <div class="pitch-center-line"></div>
+                    <div class="pitch-center-circle"></div>
+                    <div class="pitch-box-top"></div>
+                    <div class="pitch-box-bottom"></div>
+                    <div class="pitch-six-top"></div>
+                    <div class="pitch-six-bottom"></div>
+
+                    <!-- Center spot -->
+                    <div class="absolute left-1/2 top-1/2 w-2 h-2 rounded-full bg-white/20 -translate-x-1/2 -translate-y-1/2"></div>
+
+                    <!-- === PLAYERS IN 4-3-3 FORMATION === -->
+
+                    <!-- GK: ter Stegen -->
+                    <div class="player-marker" style="left: 50%; top: 90%;">
+                        <div class="player-fitness-ring" style="border-color: #22C55E;"></div>
+                        <div class="player-dot bg-gradient-to-br from-amber-400 to-amber-600 text-amber-950">
+                            1
+                            <div class="player-rating-mini rating-elite">83</div>
+                        </div>
+                        <div class="player-label">Ter Stegen</div>
+                    </div>
+
+                    <!-- LB: Balde -->
+                    <div class="player-marker" style="left: 12%; top: 72%;">
+                        <div class="player-fitness-ring" style="border-color: #22C55E;"></div>
+                        <div class="player-dot bg-gradient-to-br from-blue-400 to-blue-600 text-blue-950">
+                            3
+                            <div class="player-rating-mini rating-elite">81</div>
+                        </div>
+                        <div class="player-label">Balde</div>
+                    </div>
+
+                    <!-- CB: Cubarsí -->
+                    <div class="player-marker" style="left: 35%; top: 76%;">
+                        <div class="player-fitness-ring" style="border-color: #22C55E;"></div>
+                        <div class="player-dot bg-gradient-to-br from-blue-400 to-blue-600 text-blue-950">
+                            4
+                            <div class="player-rating-mini rating-elite">80</div>
+                        </div>
+                        <div class="player-label">Cubarsí</div>
+                    </div>
+
+                    <!-- CB: Iñigo Martínez -->
+                    <div class="player-marker" style="left: 65%; top: 76%;">
+                        <div class="player-fitness-ring" style="border-color: #22C55E;"></div>
+                        <div class="player-dot bg-gradient-to-br from-blue-400 to-blue-600 text-blue-950">
+                            5
+                            <div class="player-rating-mini rating-good">78</div>
+                        </div>
+                        <div class="player-label">I. Martínez</div>
+                    </div>
+
+                    <!-- RB: Koundé -->
+                    <div class="player-marker" style="left: 88%; top: 72%;">
+                        <div class="player-fitness-ring" style="border-color: #F59E0B;"></div>
+                        <div class="player-dot bg-gradient-to-br from-blue-400 to-blue-600 text-blue-950">
+                            2
+                            <div class="player-rating-mini rating-elite">85</div>
+                        </div>
+                        <div class="player-label">Koundé</div>
+                    </div>
+
+                    <!-- CDM: De Jong -->
+                    <div class="player-marker" style="left: 50%; top: 58%;">
+                        <div class="player-fitness-ring" style="border-color: #22C55E;"></div>
+                        <div class="player-dot bg-gradient-to-br from-green-400 to-green-600 text-green-950">
+                            21
+                            <div class="player-rating-mini rating-elite">84</div>
+                        </div>
+                        <div class="player-label">De Jong</div>
+                    </div>
+
+                    <!-- LCM: Pedri -->
+                    <div class="player-marker" style="left: 28%; top: 48%;">
+                        <div class="player-fitness-ring" style="border-color: #22C55E;"></div>
+                        <div class="player-dot bg-gradient-to-br from-green-400 to-green-600 text-green-950">
+                            8
+                            <div class="player-rating-mini rating-elite">88</div>
+                        </div>
+                        <div class="player-label">Pedri</div>
+                    </div>
+
+                    <!-- RCM: Dani Olmo -->
+                    <div class="player-marker" style="left: 72%; top: 48%;">
+                        <div class="player-fitness-ring" style="border-color: #22C55E;"></div>
+                        <div class="player-dot bg-gradient-to-br from-green-400 to-green-600 text-green-950">
+                            20
+                            <div class="player-rating-mini rating-elite">83</div>
+                        </div>
+                        <div class="player-label">Dani Olmo</div>
+                    </div>
+
+                    <!-- LW: Fermín -->
+                    <div class="player-marker" style="left: 18%; top: 25%;">
+                        <div class="player-fitness-ring" style="border-color: #22C55E;"></div>
+                        <div class="player-dot bg-gradient-to-br from-rose-400 to-rose-600 text-rose-950">
+                            16
+                            <div class="player-rating-mini rating-good">77</div>
+                        </div>
+                        <div class="player-label">Fermín</div>
+                    </div>
+
+                    <!-- ST: Lewandowski -->
+                    <div class="player-marker" style="left: 50%; top: 18%;">
+                        <div class="player-fitness-ring" style="border-color: #22C55E;"></div>
+                        <div class="player-dot bg-gradient-to-br from-rose-400 to-rose-600 text-rose-950">
+                            9
+                            <div class="player-rating-mini rating-elite">86</div>
+                        </div>
+                        <div class="player-label">Lewandowski</div>
+                    </div>
+
+                    <!-- RW: Yamal -->
+                    <div class="player-marker" style="left: 82%; top: 25%;">
+                        <div class="player-fitness-ring" style="border-color: #22C55E;"></div>
+                        <div class="player-dot bg-gradient-to-br from-rose-400 to-rose-600 text-rose-950">
+                            19
+                            <div class="player-rating-mini rating-elite">86</div>
+                        </div>
+                        <div class="player-label">Yamal</div>
+                    </div>
+
+                    <!-- Opponent goal indicator -->
+                    <div class="absolute top-1 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-black/30 rounded-b text-[8px] text-white/40 uppercase tracking-widest font-heading">
+                        Opponent Goal
+                    </div>
+                </div>
+
+                <!-- Bench section -->
+                <div class="mt-4">
+                    <div class="flex items-center justify-between mb-2.5">
+                        <h3 class="font-heading text-sm font-semibold uppercase tracking-widest text-slate-400">Substitutes</h3>
+                        <span class="text-[10px] text-slate-600">7 players</span>
+                    </div>
+                    <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-7 gap-2">
+                        <!-- Sub 1 -->
+                        <div class="bench-card bg-surface-700/50 border border-white/5 rounded-lg p-2.5 text-center">
+                            <div class="w-9 h-9 mx-auto rounded-full bg-gradient-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/20 flex items-center justify-center mb-1.5">
+                                <span class="font-heading font-bold text-xs text-amber-400">IP</span>
+                            </div>
+                            <p class="text-[11px] font-medium text-white truncate">Iñaki Peña</p>
+                            <p class="text-[9px] text-slate-500 uppercase font-heading tracking-wide mt-0.5">GK · <span class="text-accent-green">73</span></p>
+                            <div class="flex items-center justify-center gap-1 mt-1.5">
+                                <div class="w-10 h-1 rounded-full bg-surface-600 overflow-hidden">
+                                    <div class="h-full rounded-full bg-accent-green" style="width: 100%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Sub 2 -->
+                        <div class="bench-card bg-surface-700/50 border border-white/5 rounded-lg p-2.5 text-center">
+                            <div class="w-9 h-9 mx-auto rounded-full bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/20 flex items-center justify-center mb-1.5">
+                                <span class="font-heading font-bold text-xs text-blue-400">EG</span>
+                            </div>
+                            <p class="text-[11px] font-medium text-white truncate">Eric García</p>
+                            <p class="text-[9px] text-slate-500 uppercase font-heading tracking-wide mt-0.5">CB · <span class="text-accent-green">76</span></p>
+                            <div class="flex items-center justify-center gap-1 mt-1.5">
+                                <div class="w-10 h-1 rounded-full bg-surface-600 overflow-hidden">
+                                    <div class="h-full rounded-full bg-accent-green" style="width: 95%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Sub 3 -->
+                        <div class="bench-card bg-surface-700/50 border border-white/5 rounded-lg p-2.5 text-center">
+                            <div class="w-9 h-9 mx-auto rounded-full bg-gradient-to-br from-green-500/20 to-green-600/10 border border-green-500/20 flex items-center justify-center mb-1.5">
+                                <span class="font-heading font-bold text-xs text-green-400">MT</span>
+                            </div>
+                            <p class="text-[11px] font-medium text-white truncate">Marc Casadó</p>
+                            <p class="text-[9px] text-slate-500 uppercase font-heading tracking-wide mt-0.5">DM · <span class="text-accent-green">76</span></p>
+                            <div class="flex items-center justify-center gap-1 mt-1.5">
+                                <div class="w-10 h-1 rounded-full bg-surface-600 overflow-hidden">
+                                    <div class="h-full rounded-full bg-accent-green" style="width: 88%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Sub 4 -->
+                        <div class="bench-card bg-surface-700/50 border border-white/5 rounded-lg p-2.5 text-center">
+                            <div class="w-9 h-9 mx-auto rounded-full bg-gradient-to-br from-green-500/20 to-green-600/10 border border-green-500/20 flex items-center justify-center mb-1.5">
+                                <span class="font-heading font-bold text-xs text-green-400">PT</span>
+                            </div>
+                            <p class="text-[11px] font-medium text-white truncate">Pablo Torre</p>
+                            <p class="text-[9px] text-slate-500 uppercase font-heading tracking-wide mt-0.5">AM · <span class="text-accent-gold">74</span></p>
+                            <div class="flex items-center justify-center gap-1 mt-1.5">
+                                <div class="w-10 h-1 rounded-full bg-surface-600 overflow-hidden">
+                                    <div class="h-full rounded-full bg-accent-green" style="width: 100%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Sub 5 -->
+                        <div class="bench-card bg-surface-700/50 border border-white/5 rounded-lg p-2.5 text-center">
+                            <div class="w-9 h-9 mx-auto rounded-full bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/20 flex items-center justify-center mb-1.5">
+                                <span class="font-heading font-bold text-xs text-blue-400">HF</span>
+                            </div>
+                            <p class="text-[11px] font-medium text-white truncate">Héctor Fort</p>
+                            <p class="text-[9px] text-slate-500 uppercase font-heading tracking-wide mt-0.5">RB · <span class="text-accent-gold">71</span></p>
+                            <div class="flex items-center justify-center gap-1 mt-1.5">
+                                <div class="w-10 h-1 rounded-full bg-surface-600 overflow-hidden">
+                                    <div class="h-full rounded-full bg-accent-green" style="width: 100%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Sub 6 -->
+                        <div class="bench-card bg-surface-700/50 border border-white/5 rounded-lg p-2.5 text-center">
+                            <div class="w-9 h-9 mx-auto rounded-full bg-gradient-to-br from-rose-500/20 to-rose-600/10 border border-rose-500/20 flex items-center justify-center mb-1.5">
+                                <span class="font-heading font-bold text-xs text-rose-400">AT</span>
+                            </div>
+                            <p class="text-[11px] font-medium text-white truncate">Ansu Fati</p>
+                            <p class="text-[9px] text-slate-500 uppercase font-heading tracking-wide mt-0.5">LW · <span class="text-accent-gold">74</span></p>
+                            <div class="flex items-center justify-center gap-1 mt-1.5">
+                                <div class="w-10 h-1 rounded-full bg-surface-600 overflow-hidden">
+                                    <div class="h-full rounded-full bg-accent-gold" style="width: 70%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Sub 7 -->
+                        <div class="bench-card bg-surface-700/50 border border-white/5 rounded-lg p-2.5 text-center">
+                            <div class="w-9 h-9 mx-auto rounded-full bg-gradient-to-br from-rose-500/20 to-rose-600/10 border border-rose-500/20 flex items-center justify-center mb-1.5">
+                                <span class="font-heading font-bold text-xs text-rose-400">FT</span>
+                            </div>
+                            <p class="text-[11px] font-medium text-white truncate">Ferran Torres</p>
+                            <p class="text-[9px] text-slate-500 uppercase font-heading tracking-wide mt-0.5">RW · <span class="text-accent-gold">76</span></p>
+                            <div class="flex items-center justify-center gap-1 mt-1.5">
+                                <div class="w-10 h-1 rounded-full bg-surface-600 overflow-hidden">
+                                    <div class="h-full rounded-full bg-accent-green" style="width: 92%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coach Assistant Tip -->
+                <div class="tip-card rounded-xl p-3.5 mt-4">
+                    <div class="flex items-start gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-accent-blue/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <svg class="w-4 h-4 text-accent-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 10-7.517 0c.85.493 1.509 1.333 1.509 2.316V18"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-xs font-semibold text-white mb-1">Coach Assistant</p>
+                            <p class="text-[11px] text-slate-400 leading-relaxed">Koundé's fitness is at 65% — consider starting Héctor Fort at RB to avoid injury risk. Raphinha is suspended for this match. Fermín is covering LW but his natural position is CM — expect reduced performance (-8%).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Available Players sidebar (desktop) / scrollable section (mobile) -->
+            <div class="lg:flex-[1.2] lg:min-w-[280px]">
+                <div class="bg-surface-800 border border-white/5 rounded-xl overflow-hidden">
+                    <!-- Sidebar header -->
+                    <div class="flex items-center justify-between px-4 py-3 border-b border-white/5">
+                        <h3 class="font-heading text-sm font-semibold uppercase tracking-widest text-slate-400">Available Players</h3>
+                        <span class="text-[10px] text-slate-600">14 available</span>
+                    </div>
+
+                    <!-- Position filter tabs -->
+                    <div class="flex items-center gap-0 px-3 py-2 border-b border-white/5 overflow-x-auto no-scrollbar">
+                        <button class="tab-btn active px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-slate-500 border-b-2 border-transparent whitespace-nowrap">All</button>
+                        <button class="tab-btn px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-slate-500 border-b-2 border-transparent whitespace-nowrap">GK</button>
+                        <button class="tab-btn px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-slate-500 border-b-2 border-transparent whitespace-nowrap">DEF</button>
+                        <button class="tab-btn px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-slate-500 border-b-2 border-transparent whitespace-nowrap">MID</button>
+                        <button class="tab-btn px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-slate-500 border-b-2 border-transparent whitespace-nowrap">FWD</button>
+                    </div>
+
+                    <!-- Player list -->
+                    <div class="max-h-[400px] lg:max-h-[520px] overflow-y-auto">
+
+                        <!-- Unavailable separator -->
+                        <div class="px-3 py-1.5 bg-surface-700/30">
+                            <span class="text-[9px] text-slate-600 uppercase tracking-widest font-heading font-semibold">Unavailable</span>
+                        </div>
+
+                        <!-- Injured: Araújo -->
+                        <div class="available-player px-3 py-2.5 border-b border-white/5 opacity-40">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/20 flex items-center justify-center flex-shrink-0">
+                                    <span class="font-heading font-bold text-[10px] text-blue-400">RA</span>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="text-xs font-medium text-white truncate">R. Araújo</span>
+                                        <span class="text-[8px] px-1 py-0.5 rounded bg-red-500/10 text-accent-red font-medium">ACL</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 mt-0.5">
+                                        <span class="text-[9px] text-slate-500 font-heading uppercase">CB</span>
+                                        <span class="text-[9px] text-slate-600">84</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Injured: Gavi -->
+                        <div class="available-player px-3 py-2.5 border-b border-white/5 opacity-40">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-green-500/20 to-green-600/10 border border-green-500/20 flex items-center justify-center flex-shrink-0">
+                                    <span class="font-heading font-bold text-[10px] text-green-400">GV</span>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="text-xs font-medium text-white truncate">Gavi</span>
+                                        <span class="text-[8px] px-1 py-0.5 rounded bg-orange-500/10 text-accent-orange font-medium">Hamstring</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 mt-0.5">
+                                        <span class="text-[9px] text-slate-500 font-heading uppercase">AM</span>
+                                        <span class="text-[9px] text-slate-600">82</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Suspended: Raphinha -->
+                        <div class="available-player px-3 py-2.5 border-b border-white/5 opacity-40">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-rose-500/20 to-rose-600/10 border border-rose-500/20 flex items-center justify-center flex-shrink-0">
+                                    <span class="font-heading font-bold text-[10px] text-rose-400">RA</span>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="text-xs font-medium text-white truncate">Raphinha</span>
+                                        <span class="text-[8px] px-1 py-0.5 rounded bg-red-500/10 text-accent-red font-medium">Susp.</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 mt-0.5">
+                                        <span class="text-[9px] text-slate-500 font-heading uppercase">LW</span>
+                                        <span class="text-[9px] text-slate-600">84</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Available separator -->
+                        <div class="px-3 py-1.5 bg-surface-700/30">
+                            <span class="text-[9px] text-slate-600 uppercase tracking-widest font-heading font-semibold">Not in lineup</span>
+                        </div>
+
+                        <!-- Available: Christensen -->
+                        <div class="available-player px-3 py-2.5 border-b border-white/5">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/20 flex items-center justify-center flex-shrink-0">
+                                    <span class="font-heading font-bold text-[10px] text-blue-400">AC</span>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <span class="text-xs font-medium text-white truncate block">A. Christensen</span>
+                                    <div class="flex items-center gap-2 mt-0.5">
+                                        <span class="text-[9px] text-slate-500 font-heading uppercase">CB</span>
+                                        <span class="text-[9px] text-slate-400">78</span>
+                                        <div class="flex items-center gap-1">
+                                            <div class="w-8 h-1 rounded-full bg-surface-600 overflow-hidden">
+                                                <div class="h-full rounded-full bg-accent-green" style="width: 85%"></div>
+                                            </div>
+                                            <span class="text-[8px] text-slate-600">85%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="w-6 h-6 rounded-md bg-accent-blue/10 hover:bg-accent-blue/20 flex items-center justify-center text-accent-blue transition-colors flex-shrink-0">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Available: Kessié -->
+                        <div class="available-player px-3 py-2.5 border-b border-white/5">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-green-500/20 to-green-600/10 border border-green-500/20 flex items-center justify-center flex-shrink-0">
+                                    <span class="font-heading font-bold text-[10px] text-green-400">FK</span>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <span class="text-xs font-medium text-white truncate block">F. Kessié</span>
+                                    <div class="flex items-center gap-2 mt-0.5">
+                                        <span class="text-[9px] text-slate-500 font-heading uppercase">CM</span>
+                                        <span class="text-[9px] text-slate-400">75</span>
+                                        <div class="flex items-center gap-1">
+                                            <div class="w-8 h-1 rounded-full bg-surface-600 overflow-hidden">
+                                                <div class="h-full rounded-full bg-accent-green" style="width: 100%"></div>
+                                            </div>
+                                            <span class="text-[8px] text-slate-600">100%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="w-6 h-6 rounded-md bg-accent-blue/10 hover:bg-accent-blue/20 flex items-center justify-center text-accent-blue transition-colors flex-shrink-0">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Available: Vitor Roque -->
+                        <div class="available-player px-3 py-2.5 border-b border-white/5">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-rose-500/20 to-rose-600/10 border border-rose-500/20 flex items-center justify-center flex-shrink-0">
+                                    <span class="font-heading font-bold text-[10px] text-rose-400">VR</span>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <span class="text-xs font-medium text-white truncate block">Vitor Roque</span>
+                                    <div class="flex items-center gap-2 mt-0.5">
+                                        <span class="text-[9px] text-slate-500 font-heading uppercase">ST</span>
+                                        <span class="text-[9px] text-slate-400">72</span>
+                                        <div class="flex items-center gap-1">
+                                            <div class="w-8 h-1 rounded-full bg-surface-600 overflow-hidden">
+                                                <div class="h-full rounded-full bg-accent-green" style="width: 94%"></div>
+                                            </div>
+                                            <span class="text-[8px] text-slate-600">94%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="w-6 h-6 rounded-md bg-accent-blue/10 hover:bg-accent-blue/20 flex items-center justify-center text-accent-blue transition-colors flex-shrink-0">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Lineup Stats -->
+                <div class="bg-surface-800 border border-white/5 rounded-xl p-4 mt-4">
+                    <h3 class="font-heading text-sm font-semibold uppercase tracking-widest text-slate-400 mb-3">Lineup Overview</h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <p class="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Avg Rating</p>
+                            <p class="font-heading text-2xl font-bold text-accent-green">82.5</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Avg Fitness</p>
+                            <p class="font-heading text-2xl font-bold text-accent-green">89%</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Avg Age</p>
+                            <p class="font-heading text-2xl font-bold text-slate-300">25.4</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Out of Position</p>
+                            <p class="font-heading text-2xl font-bold text-accent-gold">1</p>
+                        </div>
+                    </div>
+
+                    <!-- Attack/Defense balance bar -->
+                    <div class="mt-4 pt-3 border-t border-white/5">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <span class="text-[10px] text-slate-500 uppercase tracking-wider">Defense</span>
+                            <span class="text-[10px] text-slate-500 uppercase tracking-wider">Attack</span>
+                        </div>
+                        <div class="h-2 rounded-full bg-surface-600 overflow-hidden flex">
+                            <div class="h-full bg-gradient-to-r from-blue-500 to-blue-400" style="width: 42%"></div>
+                            <div class="h-full bg-gradient-to-r from-rose-400 to-rose-500 ml-auto" style="width: 58%"></div>
+                        </div>
+                        <div class="flex items-center justify-between mt-1">
+                            <span class="text-[10px] text-blue-400 font-heading font-semibold">42</span>
+                            <span class="text-[10px] text-rose-400 font-heading font-semibold">58</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="bottom-nav fixed bottom-0 left-0 right-0 bg-surface-900/95 border-t border-white/5 lg:hidden z-50">
+        <div class="flex items-center justify-around py-2">
+            <a href="squad.html" class="flex flex-col items-center gap-0.5 px-3 py-1 text-slate-500">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
+                <span class="text-[9px] font-medium">Squad</span>
+            </a>
+            <a href="#" class="flex flex-col items-center gap-0.5 px-3 py-1 text-accent-blue">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+                <span class="text-[9px] font-medium">Tactics</span>
+            </a>
+            <a href="#" class="flex flex-col items-center gap-0.5 px-3 py-1 text-slate-500">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/></svg>
+                <span class="text-[9px] font-medium">Transfers</span>
+            </a>
+            <a href="#" class="flex flex-col items-center gap-0.5 px-3 py-1 text-slate-500">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>
+                <span class="text-[9px] font-medium">Fixtures</span>
+            </a>
+            <a href="#" class="flex flex-col items-center gap-0.5 px-3 py-1 text-slate-500">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+                <span class="text-[9px] font-medium">More</span>
+            </a>
+        </div>
+    </nav>
+
+    <script>
+        // Formation selector interaction
+        document.querySelectorAll('.formation-option').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.formation-option').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+
+        // Mentality toggle interaction
+        document.querySelectorAll('.mentality-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.mentality-btn').forEach(b => {
+                    b.classList.remove('active', 'bg-surface-600');
+                });
+                btn.classList.add('active', 'bg-surface-600');
+            });
+        });
+
+        // Tab filter interaction
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

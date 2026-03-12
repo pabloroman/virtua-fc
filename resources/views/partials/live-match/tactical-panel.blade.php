@@ -26,7 +26,7 @@
     <div class="flex min-h-full items-end sm:items-center justify-center p-0 sm:p-4">
         <div
             x-show="tacticalPanelOpen"
-            class="relative w-full sm:max-w-2xl bg-white sm:rounded-xl shadow-2xl transform transition-all overflow-hidden"
+            class="relative w-full sm:max-w-2xl bg-surface-800 sm:rounded-xl shadow-2xl transform transition-all overflow-hidden"
             x-transition:enter="ease-out duration-300"
             x-transition:enter-start="opacity-0 translate-y-8 sm:translate-y-4 sm:scale-95"
             x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
@@ -40,7 +40,7 @@
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3 min-w-0">
                         <h2 class="text-sm sm:text-base font-semibold uppercase tracking-wide truncate">{{ __('game.tactical_center') }}</h2>
-                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold rounded-full px-2.5 py-0.5 bg-amber-500/20 text-amber-300 shrink-0">
+                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold rounded-full px-2.5 py-0.5 bg-accent-gold/100/20 text-amber-300 shrink-0">
                             <span class="relative flex h-1.5 w-1.5">
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
                                 <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-amber-400"></span>
@@ -59,7 +59,7 @@
                         {{-- Close button --}}
                         <button
                             @click="safeCloseTacticalPanel()"
-                            class="p-1.5 rounded-lg hover:bg-white/10 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+                            class="p-1.5 rounded-lg hover:bg-surface-800/10 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
                             :disabled="subProcessing || tacticsProcessing"
                         >
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -78,14 +78,14 @@
             </div>
 
             {{-- Tab bar --}}
-            <div class="border-b border-slate-200 bg-slate-50">
+            <div class="border-b border-white/10 bg-surface-700/50">
                 <div class="flex overflow-x-auto scrollbar-hide">
                     <button
                         @click="tacticalTab = 'substitutions'"
                         class="relative px-4 sm:px-6 py-3 text-xs sm:text-sm font-semibold shrink-0 transition-colors min-h-[44px]"
                         :class="tacticalTab === 'substitutions'
-                            ? 'text-slate-900'
-                            : 'text-slate-400 hover:text-slate-600'"
+                            ? 'text-white'
+                            : 'text-slate-400 hover:text-slate-400'"
                     >
                         {{ __('game.tactical_tab_substitutions') }}
                         <span class="text-xs font-normal ml-1" :class="tacticalTab === 'substitutions' ? 'text-slate-500' : 'text-slate-400'"
@@ -100,8 +100,8 @@
                         @click="tacticalTab = 'tactics'"
                         class="relative px-4 sm:px-6 py-3 text-xs sm:text-sm font-semibold shrink-0 transition-colors min-h-[44px]"
                         :class="tacticalTab === 'tactics'
-                            ? 'text-slate-900'
-                            : 'text-slate-400 hover:text-slate-600'"
+                            ? 'text-white'
+                            : 'text-slate-400 hover:text-slate-400'"
                     >
                         {{ __('game.tactical_tab_tactics') }}
                         <div
@@ -122,16 +122,16 @@
                 >
 
                     {{-- Injury alert banner --}}
-                    <div x-show="injuryAlertPlayer" x-transition class="flex items-center gap-2.5 p-3 mb-4 bg-red-50 border border-red-200 rounded-lg">
+                    <div x-show="injuryAlertPlayer" x-transition class="flex items-center gap-2.5 p-3 mb-4 bg-accent-red/10 border border-accent-red/20 rounded-lg">
                         <span class="flex items-center justify-center w-8 h-8 rounded-full bg-red-100 shrink-0">
-                            <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-4 h-4 text-accent-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                             </svg>
                         </span>
                         <p class="text-sm font-medium text-red-800">
                             <span x-text="injuryAlertPlayer"></span> {{ __('game.live_injury_alert') }}
                         </p>
-                        <button @click="injuryAlertPlayer = null" class="ml-auto p-1 text-red-400 hover:text-red-600 transition-colors shrink-0">
+                        <button @click="injuryAlertPlayer = null" class="ml-auto p-1 text-red-400 hover:text-accent-red transition-colors shrink-0">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                             </svg>
@@ -140,9 +140,9 @@
 
                     {{-- Window + sub budget summary + action buttons --}}
                     <div class="flex items-center gap-3 mb-4 text-xs text-slate-500">
-                        <span>{{ __('game.sub_title') }}: <span class="font-semibold text-slate-700" x-text="substitutionsMade.length + '/' + effectiveMaxSubstitutions"></span></span>
+                        <span>{{ __('game.sub_title') }}: <span class="font-semibold text-slate-300" x-text="substitutionsMade.length + '/' + effectiveMaxSubstitutions"></span></span>
                         <span class="text-slate-300">&middot;</span>
-                        <span>{{ __('game.sub_windows') }}: <span class="font-semibold text-slate-700" x-text="windowsUsed + '/' + effectiveMaxWindows"></span></span>
+                        <span>{{ __('game.sub_windows') }}: <span class="font-semibold text-slate-300" x-text="windowsUsed + '/' + effectiveMaxWindows"></span></span>
 
                         <div class="ml-auto flex items-center gap-1.5">
                             <x-secondary-button
@@ -194,13 +194,13 @@
                         <div class="mb-4 space-y-2">
                             <h4 class="text-xs font-semibold text-slate-500 uppercase">{{ __('game.sub_pending') }}</h4>
                             <template x-for="(sub, idx) in pendingSubs" :key="idx">
-                                <div class="flex items-center gap-2 px-3 py-2 bg-sky-50 border border-sky-200 rounded-md text-sm">
+                                <div class="flex items-center gap-2 px-3 py-2 bg-accent-blue/10 border border-accent-blue/20 rounded-md text-sm">
                                     <span class="text-red-500 shrink-0">&#8617;</span>
-                                    <span class="truncate font-medium text-slate-700" x-text="sub.playerOut.name"></span>
+                                    <span class="truncate font-medium text-slate-300" x-text="sub.playerOut.name"></span>
                                     <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                                     </svg>
-                                    <span class="truncate font-medium text-slate-700" x-text="sub.playerIn.name"></span>
+                                    <span class="truncate font-medium text-slate-300" x-text="sub.playerIn.name"></span>
                                     <span class="text-green-500 shrink-0">&#8618;</span>
                                     <button
                                         @click="removePendingSub(idx)"
@@ -230,7 +230,7 @@
                                                 class="w-full flex items-center gap-2 px-3 py-2 rounded-md text-left text-sm transition-colors min-h-[44px]"
                                                 :class="selectedPlayerOut?.id === player.id
                                                     ? 'bg-red-100 border border-red-300 text-red-800'
-                                                    : 'bg-white border border-slate-200 hover:border-slate-300 text-slate-700'"
+                                                    : 'bg-surface-800 border border-white/10 hover:border-white/10 text-slate-300'"
                                             >
                                                 <span class="inline-flex items-center justify-center w-7 h-7 text-xs -skew-x-12 font-semibold text-white shrink-0"
                                                       :class="getPositionBadgeColor(player.positionGroup)">
@@ -270,8 +270,8 @@
                                                 @click="selectedPlayerIn = player"
                                                 class="w-full flex items-center gap-2 px-3 py-2 rounded-md text-left text-sm transition-colors min-h-[44px]"
                                                 :class="selectedPlayerIn?.id === player.id
-                                                    ? 'bg-green-100 border border-green-300 text-green-800'
-                                                    : 'bg-white border border-slate-200 hover:border-slate-300 text-slate-700'"
+                                                    ? 'bg-accent-green/10 border border-green-300 text-green-800'
+                                                    : 'bg-surface-800 border border-white/10 hover:border-white/10 text-slate-300'"
                                             >
                                                 <span class="inline-flex items-center justify-center w-7 h-7 text-xs -skew-x-12 font-semibold text-white shrink-0"
                                                       :class="getPositionBadgeColor(player.positionGroup)">
@@ -294,7 +294,7 @@
 
                     {{-- Made substitutions list --}}
                     <template x-if="substitutionsMade.length > 0">
-                        <div class="mt-4 pt-4 border-t border-slate-100">
+                        <div class="mt-4 pt-4 border-t border-white/5">
                             <h4 class="text-xs font-semibold text-slate-400 uppercase mb-2">{{ __('game.tactical_subs_made') }}</h4>
                             <div class="space-y-1">
                                 <template x-for="(sub, idx) in substitutionsMade" :key="idx">
@@ -337,7 +337,7 @@
                         </div>
 
                         {{-- Team Instructions --}}
-                        <div class="pt-3 border-t border-slate-100">
+                        <div class="pt-3 border-t border-white/5">
                             <h4 class="text-xs font-semibold text-slate-500 uppercase mb-3 flex items-center gap-1.5">
                                 {{ __('game.instructions_title') }}
                                 <span x-tooltip.raw="{{ __('game.tactical_guide_link') }}" class="cursor-help shrink-0"><svg class="w-3.5 h-3.5 text-slate-300 hover:text-slate-500" fill="currentColor" viewBox="0 0 512 512"><path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zm0-336c-17.7 0-32 14.3-32 32 0 13.3-10.7 24-24 24s-24-10.7-24-24c0-44.2 35.8-80 80-80s80 35.8 80 80c0 47.2-36 67.2-56 74.5l0 3.8c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-8.1c0-20.5 14.8-35.2 30.1-40.2 6.4-2.1 13.2-5.5 18.2-10.3 4.3-4.2 7.7-10 7.7-19.6 0-17.7-14.3-32-32-32zM224 368a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg></span>
@@ -362,7 +362,7 @@
                         </div>
 
                         {{-- Confirm / Reset --}}
-                        <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                        <div class="flex items-center justify-end gap-2 pt-2 border-t border-white/5">
                             <x-secondary-button
                                 @click="resetTactics()"
                                 x-show="hasTacticalChanges"
@@ -386,11 +386,11 @@
             </div>
 
             {{-- Footer: resume match --}}
-            <div class="border-t border-slate-200 bg-slate-50 px-4 py-3 sm:px-6 sm:py-4">
+            <div class="border-t border-white/10 bg-surface-700/50 px-4 py-3 sm:px-6 sm:py-4">
                 <button
                     @click="safeCloseTacticalPanel()"
                     :disabled="subProcessing || tacticsProcessing"
-                    class="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold text-slate-600 hover:text-slate-800 rounded-lg hover:bg-slate-100 transition-colors min-h-[44px]"
+                    class="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold text-slate-400 hover:text-white rounded-lg hover:bg-surface-700 transition-colors min-h-[44px]"
                 >
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M8 5v14l11-7z"/>

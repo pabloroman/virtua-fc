@@ -7,7 +7,7 @@
 
     <div>
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-surface-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-4 md:p-8">
                     <x-section-nav :items="[
                         ['href' => route('game.squad', $game->id), 'label' => __('squad.first_team'), 'active' => false],
@@ -21,7 +21,7 @@
                         <div class="flex flex-col md:flex-row md:items-center gap-3 md:gap-6">
                             <div class="flex items-center gap-2">
                                 <span class="text-sm text-slate-500">{{ __('squad.academy_tier') }}:</span>
-                                <span class="text-sm font-semibold @if($tier >= 3) text-green-600 @elseif($tier >= 1) text-sky-600 @else text-slate-400 @endif">
+                                <span class="text-sm font-semibold @if($tier >= 3) text-accent-green @elseif($tier >= 1) text-accent-blue @else text-slate-400 @endif">
                                     {{ $tierDescription }}
                                 </span>
                             </div>
@@ -29,11 +29,11 @@
                             @if($capacity > 0)
                                 <div class="flex items-center gap-2">
                                     <span class="text-sm text-slate-500">{{ __('squad.academy_capacity') }}:</span>
-                                    <span class="text-sm font-semibold {{ $academyCount > $capacity ? 'text-red-600' : 'text-slate-700' }}">
+                                    <span class="text-sm font-semibold {{ $academyCount > $capacity ? 'text-accent-red' : 'text-slate-300' }}">
                                         {{ $academyCount }}/{{ $capacity }}
                                     </span>
                                     <div class="w-16 h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                                        <div class="h-full rounded-full {{ $academyCount > $capacity ? 'bg-red-500' : ($academyCount >= $capacity - 1 ? 'bg-amber-500' : 'bg-emerald-500') }}"
+                                        <div class="h-full rounded-full {{ $academyCount > $capacity ? 'bg-accent-red/100' : ($academyCount >= $capacity - 1 ? 'bg-accent-gold/100' : 'bg-emerald-500') }}"
                                              style="width: {{ min(100, ($academyCount / max($capacity, 1)) * 100) }}%"></div>
                                     </div>
                                 </div>
@@ -42,16 +42,16 @@
                             {{-- Reveal phase indicator --}}
                             <div class="flex items-center gap-2">
                                 @if($revealPhase === 0)
-                                    <span class="text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded-full">{{ __('squad.academy_phase_unknown') }}</span>
+                                    <span class="text-xs bg-surface-700 text-slate-500 px-2 py-1 rounded-full">{{ __('squad.academy_phase_unknown') }}</span>
                                 @elseif($revealPhase === 1)
-                                    <span class="text-xs bg-sky-100 text-sky-600 px-2 py-1 rounded-full">{{ __('squad.academy_phase_glimpse') }}</span>
+                                    <span class="text-xs bg-accent-blue/10 text-accent-blue px-2 py-1 rounded-full">{{ __('squad.academy_phase_glimpse') }}</span>
                                 @else
                                     <span class="text-xs bg-emerald-100 text-emerald-600 px-2 py-1 rounded-full">{{ __('squad.academy_phase_verdict') }}</span>
                                 @endif
                             </div>
 
                             {{-- How it works toggle --}}
-                            <button @click="open = !open" class="ml-auto flex items-center gap-2 text-sm text-slate-500 hover:text-slate-700 transition-colors">
+                            <button @click="open = !open" class="ml-auto flex items-center gap-2 text-sm text-slate-500 hover:text-slate-300 transition-colors">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-slate-400 shrink-0">
                                     <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-7-4a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM9 9a.75.75 0 0 0 0 1.5h.253a.25.25 0 0 1 .244.304l-.459 2.066A1.75 1.75 0 0 0 10.747 15H11a.75.75 0 0 0 0-1.5h-.253a.25.25 0 0 1-.244-.304l.459-2.066A1.75 1.75 0 0 0 9.253 9H9Z" clip-rule="evenodd" />
                                 </svg>
@@ -62,33 +62,33 @@
                             </button>
                         </div>
 
-                        <div x-show="open" x-transition class="mt-3 bg-slate-50 border border-slate-200 rounded-lg p-4 text-sm">
-                            <p class="text-slate-600 mb-4">{{ __('squad.academy_help_development') }}</p>
+                        <div x-show="open" x-transition class="mt-3 bg-surface-700/50 border border-white/10 rounded-lg p-4 text-sm">
+                            <p class="text-slate-400 mb-4">{{ __('squad.academy_help_development') }}</p>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             {{-- Reveal phases --}}
                             <div>
-                                <p class="font-semibold text-slate-700 mb-2">{{ __('squad.academy_help_phases_title') }}</p>
+                                <p class="font-semibold text-slate-300 mb-2">{{ __('squad.academy_help_phases_title') }}</p>
                                 <ul class="space-y-2">
                                     <li class="flex gap-2">
-                                        <span class="mt-0.5 shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-300 text-slate-600 text-xs font-bold">0</span>
-                                        <span class="text-slate-600">{{ __('squad.academy_help_phase_0') }}</span>
+                                        <span class="mt-0.5 shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-300 text-slate-400 text-xs font-bold">0</span>
+                                        <span class="text-slate-400">{{ __('squad.academy_help_phase_0') }}</span>
                                     </li>
                                     <li class="flex gap-2">
-                                        <span class="mt-0.5 shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full bg-sky-200 text-sky-700 text-xs font-bold">1</span>
-                                        <span class="text-slate-600">{{ __('squad.academy_help_phase_1') }}</span>
+                                        <span class="mt-0.5 shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full bg-sky-200 text-accent-blue text-xs font-bold">1</span>
+                                        <span class="text-slate-400">{{ __('squad.academy_help_phase_1') }}</span>
                                     </li>
                                     <li class="flex gap-2">
                                         <span class="mt-0.5 shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-200 text-emerald-700 text-xs font-bold">2</span>
-                                        <span class="text-slate-600">{{ __('squad.academy_help_phase_2') }}</span>
+                                        <span class="text-slate-400">{{ __('squad.academy_help_phase_2') }}</span>
                                     </li>
                                 </ul>
                             </div>
 
                             {{-- Evaluations --}}
                             <div>
-                                <p class="font-semibold text-slate-700 mb-2">{{ __('squad.academy_help_evaluations_title') }}</p>
+                                <p class="font-semibold text-slate-300 mb-2">{{ __('squad.academy_help_evaluations_title') }}</p>
                                 <p class="text-slate-500 mb-2">{{ __('squad.academy_help_evaluation_desc') }}</p>
-                                <ul class="space-y-1 text-slate-600">
+                                <ul class="space-y-1 text-slate-400">
                                     <li class="flex gap-2"><span class="text-emerald-500 shrink-0">↑</span> {{ __('squad.academy_help_promote') }}</li>
                                     <li class="flex gap-2"><span class="text-sky-500 shrink-0">⇄</span> {{ __('squad.academy_help_loan') }}</li>
                                     <li class="flex gap-2"><span class="text-slate-400 shrink-0">✓</span> {{ __('squad.academy_help_keep') }}</li>
@@ -102,7 +102,7 @@
 
                     @if($academyCount === 0 && $loanedPlayers->isEmpty())
                         <div class="text-center py-16">
-                            <div class="inline-flex items-center justify-center w-16 h-16 bg-slate-100 rounded-full mb-4">
+                            <div class="inline-flex items-center justify-center w-16 h-16 bg-surface-700 rounded-full mb-4">
                                 <svg class="w-8 h-8 fill-slate-300" stroke="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M48 195.8l209.2 86.1c9.8 4 20.2 6.1 30.8 6.1s21-2.1 30.8-6.1l242.4-99.8c9-3.7 14.8-12.4 14.8-22.1s-5.8-18.4-14.8-22.1L318.8 38.1C309 34.1 298.6 32 288 32s-21 2.1-30.8 6.1L14.8 137.9C5.8 141.6 0 150.3 0 160L0 456c0 13.3 10.7 24 24 24s24-10.7 24-24l0-260.2zm48 71.7L96 384c0 53 86 96 192 96s192-43 192-96l0-116.6-142.9 58.9c-15.6 6.4-32.2 9.7-49.1 9.7s-33.5-3.3-49.1-9.7L96 267.4z"/></svg>
                             </div>
                             <p class="text-slate-500 text-sm">{{ __('squad.no_academy_prospects') }}</p>
@@ -134,13 +134,13 @@
                                         ] as $group)
                                             @if($group['players']->isNotEmpty())
                                                 <tr class="bg-slate-200">
-                                                    <td colspan="8" class="py-2 px-2 text-xs font-semibold text-slate-600 uppercase tracking-wide">
+                                                    <td colspan="8" class="py-2 px-2 text-xs font-semibold text-slate-400 uppercase tracking-wide">
                                                         {{ $group['name'] }}
                                                     </td>
                                                 </tr>
                                                 @foreach($group['players'] as $prospect)
                                                     @php $playerReveal = $prospect->seasons_in_academy > 1 ? 2 : $revealPhase; @endphp
-                                                    <tr class="border-b border-slate-200 hover:bg-slate-50">
+                                                    <tr class="border-b border-white/10 hover:bg-surface-700/50">
                                                         {{-- Position --}}
                                                         <td class="py-2 text-center">
                                                             <x-position-badge :position="$prospect->position" :tooltip="\App\Support\PositionMapper::toDisplayName($prospect->position)" class="cursor-help" />
@@ -154,7 +154,7 @@
                                                                     </svg>
                                                                 </button>
                                                                 <div>
-                                                                    <div class="font-medium text-slate-900">{{ $prospect->name }}</div>
+                                                                    <div class="font-medium text-white">{{ $prospect->name }}</div>
                                                                     <div class="text-xs text-slate-400">{{ trans_choice('squad.academy_seasons', $prospect->seasons_in_academy, ['count' => $prospect->seasons_in_academy]) }}</div>
                                                                 </div>
                                                             </div>
@@ -168,9 +168,9 @@
                                                         {{-- Age --}}
                                                         <td class="py-2 text-center hidden md:table-cell">{{ $prospect->age }}</td>
                                                         {{-- Technical --}}
-                                                        <td class="border-l border-slate-200 py-2 pl-3 text-center hidden md:table-cell">
+                                                        <td class="border-l border-white/10 py-2 pl-3 text-center hidden md:table-cell">
                                                             @if($playerReveal >= 1)
-                                                                <x-ability-bar :value="$prospect->technical_ability" size="sm" class="text-xs font-medium justify-center @if($prospect->technical_ability >= 80) text-green-600 @elseif($prospect->technical_ability >= 70) text-lime-600 @elseif($prospect->technical_ability < 60) text-slate-400 @endif" />
+                                                                <x-ability-bar :value="$prospect->technical_ability" size="sm" class="text-xs font-medium justify-center @if($prospect->technical_ability >= 80) text-accent-green @elseif($prospect->technical_ability >= 70) text-lime-600 @elseif($prospect->technical_ability < 60) text-slate-400 @endif" />
                                                             @else
                                                                 <span class="text-slate-300">?</span>
                                                             @endif
@@ -178,7 +178,7 @@
                                                         {{-- Physical --}}
                                                         <td class="py-2 text-center hidden md:table-cell">
                                                             @if($playerReveal >= 1)
-                                                                <x-ability-bar :value="$prospect->physical_ability" size="sm" class="text-xs font-medium justify-center @if($prospect->physical_ability >= 80) text-green-600 @elseif($prospect->physical_ability >= 70) text-lime-600 @elseif($prospect->physical_ability < 60) text-slate-400 @endif" />
+                                                                <x-ability-bar :value="$prospect->physical_ability" size="sm" class="text-xs font-medium justify-center @if($prospect->physical_ability >= 80) text-accent-green @elseif($prospect->physical_ability >= 70) text-lime-600 @elseif($prospect->physical_ability < 60) text-slate-400 @endif" />
                                                             @else
                                                                 <span class="text-slate-300">?</span>
                                                             @endif
@@ -193,8 +193,8 @@
                                                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-semibold
                                                                     @if($prospect->overall >= 80) bg-emerald-500 text-white
                                                                     @elseif($prospect->overall >= 70) bg-lime-500 text-white
-                                                                    @elseif($prospect->overall >= 60) bg-amber-500 text-white
-                                                                    @else bg-slate-300 text-slate-700
+                                                                    @elseif($prospect->overall >= 60) bg-accent-gold/100 text-white
+                                                                    @else bg-slate-300 text-slate-300
                                                                     @endif">
                                                                     {{ $prospect->overall }}
                                                                 </span>
@@ -214,14 +214,14 @@
                         {{-- Loaned players section --}}
                         @if($loanedPlayers->isNotEmpty())
                             <div class="mt-8">
-                                <h4 class="text-sm font-semibold text-slate-600 uppercase tracking-wide mb-3">
+                                <h4 class="text-sm font-semibold text-slate-400 uppercase tracking-wide mb-3">
                                     {{ __('squad.academy_on_loan') }} ({{ $loanedPlayers->count() }})
                                 </h4>
                                 <div class="overflow-x-auto">
                                     <table class="w-full text-sm">
                                         <tbody>
                                             @foreach($loanedPlayers as $prospect)
-                                                <tr class="border-b border-slate-200">
+                                                <tr class="border-b border-white/10">
                                                     <td class="py-2 text-center w-10">
                                                         <x-position-badge :position="$prospect->position" :tooltip="\App\Support\PositionMapper::toDisplayName($prospect->position)" class="cursor-help" />
                                                     </td>
@@ -234,7 +234,7 @@
                                                             </button>
                                                             <div>
                                                                 <div class="flex items-center gap-2">
-                                                                    <span class="font-medium text-slate-900">{{ $prospect->name }}</span>
+                                                                    <span class="font-medium text-white">{{ $prospect->name }}</span>
                                                                     <span class="text-xs bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded font-medium">{{ __('squad.academy_on_loan') }}</span>
                                                                 </div>
                                                                 <div class="text-xs text-slate-400">{{ trans_choice('squad.academy_seasons', $prospect->seasons_in_academy, ['count' => $prospect->seasons_in_academy]) }}</div>
@@ -247,7 +247,7 @@
                                                         @endif
                                                     </td>
                                                     <td class="py-2 text-center text-slate-400 hidden md:table-cell">{{ $prospect->age }}</td>
-                                                    <td class="border-l border-slate-200 py-2 text-center text-slate-300 hidden md:table-cell">—</td>
+                                                    <td class="border-l border-white/10 py-2 text-center text-slate-300 hidden md:table-cell">—</td>
                                                     <td class="py-2 text-center text-slate-300 hidden md:table-cell">—</td>
                                                     <td class="py-2 text-center text-slate-300 hidden md:table-cell">—</td>
                                                     <td class="py-2 text-center">

@@ -7,6 +7,6 @@ $sizeClasses = match($size) {
 };
 @endphp
 
-<button {{ $attributes->merge(['type' => 'button', 'class' => "inline-flex items-center justify-center {$sizeClasses} bg-white border border-slate-300 font-semibold text-slate-700 shadow-sm hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition ease-in-out duration-150"]) }}>
+<button {{ $attributes->merge(['type' => 'button', 'class' => "inline-flex items-center justify-center {$sizeClasses} bg-surface-700 border border-white/10 font-semibold text-slate-300 shadow-sm hover:bg-surface-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-accent-blue focus:ring-offset-2 focus:ring-offset-surface-900 disabled:opacity-50 disabled:cursor-not-allowed transition ease-in-out duration-150"]) }}>
     {{ $slot }}
 </button>

@@ -6,28 +6,28 @@
     </x-slot>
 
     <div x-data="academyEvaluation()" class="max-w-7xl mx-auto sm:px-6 lg:px-8 pb-8">
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+        <div class="bg-surface-800 overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-4 md:p-8">
                 {{-- Header --}}
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
                     <div>
-                        <h3 class="font-semibold text-xl text-slate-900">{{ __('squad.academy_evaluation') }}</h3>
+                        <h3 class="font-semibold text-xl text-white">{{ __('squad.academy_evaluation') }}</h3>
                         <p class="text-sm text-slate-500 mt-1">
                             {{ __('squad.academy_explanation') }}
                         </p>
                     </div>
 
                     {{-- Capacity bar --}}
-                    <div class="flex items-center gap-3 bg-slate-50 rounded-lg px-4 py-3">
+                    <div class="flex items-center gap-3 bg-surface-700/50 rounded-lg px-4 py-3">
                         <div class="text-sm">
                             <span class="text-slate-500">{{ __('squad.academy_capacity') }}:</span>
-                            <span class="font-bold" :class="seatsUsed > {{ $capacity }} ? 'text-red-600' : 'text-slate-900'">
+                            <span class="font-bold" :class="seatsUsed > {{ $capacity }} ? 'text-accent-red' : 'text-white'">
                                 <span x-text="seatsUsed"></span>/{{ $capacity }}
                             </span>
                         </div>
                         <div class="w-24 h-2 bg-slate-200 rounded-full overflow-hidden">
                             <div class="h-full rounded-full transition-all duration-300"
-                                 :class="seatsUsed > {{ $capacity }} ? 'bg-red-500' : (seatsUsed >= {{ $capacity }} - 1 ? 'bg-amber-500' : 'bg-emerald-500')"
+                                 :class="seatsUsed > {{ $capacity }} ? 'bg-accent-red/100' : (seatsUsed >= {{ $capacity }} - 1 ? 'bg-accent-gold/100' : 'bg-emerald-500')"
                                  :style="'width: ' + Math.min(100, (seatsUsed / {{ max($capacity, 1) }}) * 100) + '%'">
                             </div>
                         </div>
@@ -37,9 +37,9 @@
                 {{-- Info cards --}}
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
                     @if($loanedCount > 0)
-                        <div class="flex items-center gap-2 bg-sky-50 border border-sky-200 rounded-lg px-3 py-2">
+                        <div class="flex items-center gap-2 bg-accent-blue/10 border border-accent-blue/20 rounded-lg px-3 py-2">
                             <svg class="w-4 h-4 text-sky-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 17l-4 4m0 0l-4-4m4 4V3"/></svg>
-                            <span class="text-sm text-sky-700">{{ trans_choice('squad.academy_returning_loans', $loanedCount, ['count' => $loanedCount]) }}</span>
+                            <span class="text-sm text-accent-blue">{{ trans_choice('squad.academy_returning_loans', $loanedCount, ['count' => $loanedCount]) }}</span>
                         </div>
                     @endif
 
@@ -51,31 +51,31 @@
                     @endif
 
                     @if($occupiedSeats > $capacity && $capacity > 0)
-                        <div class="flex items-center gap-2 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+                        <div class="flex items-center gap-2 bg-accent-red/10 border border-accent-red/20 rounded-lg px-3 py-2">
                             <svg class="w-4 h-4 text-red-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.072 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
-                            <span class="text-sm text-red-700">{{ __('squad.academy_over_capacity') }}</span>
+                            <span class="text-sm text-accent-red">{{ __('squad.academy_over_capacity') }}</span>
                         </div>
                     @endif
                 </div>
 
                 {{-- Action legend --}}
-                <div class="mb-6 border border-slate-200 rounded-lg overflow-hidden">
+                <div class="mb-6 border border-white/10 rounded-lg overflow-hidden">
                     <div class="px-4 py-3 grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div class="flex items-start gap-2.5">
                             <span class="shrink-0 mt-0.5 w-5 h-5 rounded bg-emerald-600 flex items-center justify-center">
                                 <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                             </span>
                             <div>
-                                <span class="text-sm font-medium text-slate-900">{{ __('squad.academy_keep') }}</span>
+                                <span class="text-sm font-medium text-white">{{ __('squad.academy_keep') }}</span>
                                 <p class="text-xs text-slate-500">{{ __('squad.academy_keep_desc') }}</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-2.5">
-                            <span class="shrink-0 mt-0.5 w-5 h-5 rounded bg-sky-600 flex items-center justify-center">
+                            <span class="shrink-0 mt-0.5 w-5 h-5 rounded bg-accent-blue flex items-center justify-center">
                                 <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
                             </span>
                             <div>
-                                <span class="text-sm font-medium text-slate-900">{{ __('squad.academy_promote') }}</span>
+                                <span class="text-sm font-medium text-white">{{ __('squad.academy_promote') }}</span>
                                 <p class="text-xs text-slate-500">{{ __('squad.academy_promote_desc') }}</p>
                             </div>
                         </div>
@@ -84,7 +84,7 @@
                                 <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
                             </span>
                             <div>
-                                <span class="text-sm font-medium text-slate-900">{{ __('squad.academy_loan_out') }}</span>
+                                <span class="text-sm font-medium text-white">{{ __('squad.academy_loan_out') }}</span>
                                 <p class="text-xs text-slate-500">{{ __('squad.academy_loan_desc') }}</p>
                             </div>
                         </div>
@@ -93,7 +93,7 @@
                                 <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                             </span>
                             <div>
-                                <span class="text-sm font-medium text-slate-900">{{ __('squad.academy_dismiss') }}</span>
+                                <span class="text-sm font-medium text-white">{{ __('squad.academy_dismiss') }}</span>
                                 <p class="text-xs text-slate-500">{{ __('squad.academy_dismiss_desc') }}</p>
                             </div>
                         </div>
@@ -122,7 +122,7 @@
                                 $mustDecide = \App\Modules\Academy\Services\YouthAcademyService::mustDecide($prospect);
                                 $playerReveal = $prospect->seasons_in_academy > 1 ? 2 : $revealPhase;
                             @endphp
-                            <div class="rounded-lg border border-slate-200 hover:border-slate-300 transition-colors {{ $mustDecide ? 'bg-amber-50/50 border-amber-200' : '' }}">
+                            <div class="rounded-lg border border-white/10 hover:border-white/10 transition-colors {{ $mustDecide ? 'bg-accent-gold/10/50 border-accent-gold/20' : '' }}">
                                 <input type="hidden" name="decisions[{{ $prospect->id }}]" :value="decisions['{{ $prospect->id }}'] || ''" />
 
                                 {{-- Desktop row --}}
@@ -143,7 +143,7 @@
                                             @if($prospect->nationality_flag)
                                                 <img src="/flags/{{ $prospect->nationality_flag['code'] }}.svg" class="w-5 h-4 rounded shadow-sm shrink-0" title="{{ $prospect->nationality_flag['name'] }}">
                                             @endif
-                                            <span class="font-medium text-slate-900 truncate">{{ $prospect->name }}</span>
+                                            <span class="font-medium text-white truncate">{{ $prospect->name }}</span>
                                         </div>
                                         <div class="flex items-center gap-2 mt-0.5">
                                             <span class="text-xs text-slate-400">{{ trans_choice('squad.academy_seasons', $prospect->seasons_in_academy, ['count' => $prospect->seasons_in_academy]) }}</span>
@@ -157,12 +157,12 @@
                                     <div class="col-span-1 text-center text-sm">{{ $prospect->age }}</div>
 
                                     {{-- Technical --}}
-                                    <div class="col-span-1 text-center text-sm @if($playerReveal >= 1) @if($prospect->technical_ability >= 80) text-green-600 @elseif($prospect->technical_ability >= 70) text-lime-600 @elseif($prospect->technical_ability < 60) text-slate-400 @endif @endif">
+                                    <div class="col-span-1 text-center text-sm @if($playerReveal >= 1) @if($prospect->technical_ability >= 80) text-accent-green @elseif($prospect->technical_ability >= 70) text-lime-600 @elseif($prospect->technical_ability < 60) text-slate-400 @endif @endif">
                                         {{ $playerReveal >= 1 ? $prospect->technical_ability : '?' }}
                                     </div>
 
                                     {{-- Physical --}}
-                                    <div class="col-span-1 text-center text-sm @if($playerReveal >= 1) @if($prospect->physical_ability >= 80) text-green-600 @elseif($prospect->physical_ability >= 70) text-lime-600 @elseif($prospect->physical_ability < 60) text-slate-400 @endif @endif">
+                                    <div class="col-span-1 text-center text-sm @if($playerReveal >= 1) @if($prospect->physical_ability >= 80) text-accent-green @elseif($prospect->physical_ability >= 70) text-lime-600 @elseif($prospect->physical_ability < 60) text-slate-400 @endif @endif">
                                         {{ $playerReveal >= 1 ? $prospect->physical_ability : '?' }}
                                     </div>
 
@@ -177,8 +177,8 @@
                                             <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-semibold
                                                 @if($prospect->overall >= 80) bg-emerald-500 text-white
                                                 @elseif($prospect->overall >= 70) bg-lime-500 text-white
-                                                @elseif($prospect->overall >= 60) bg-amber-500 text-white
-                                                @else bg-slate-300 text-slate-700
+                                                @elseif($prospect->overall >= 60) bg-accent-gold/100 text-white
+                                                @else bg-slate-300 text-slate-300
                                                 @endif">
                                                 {{ $prospect->overall }}
                                             </span>
@@ -192,7 +192,7 @@
                                         @unless($mustDecide)
                                             <button type="button"
                                                 @click="setDecision('{{ $prospect->id }}', 'keep')"
-                                                :class="decisions['{{ $prospect->id }}'] === 'keep' ? 'bg-emerald-600 text-white ring-2 ring-emerald-300' : 'bg-slate-100 text-slate-600 hover:bg-emerald-50 hover:text-emerald-700'"
+                                                :class="decisions['{{ $prospect->id }}'] === 'keep' ? 'bg-emerald-600 text-white ring-2 ring-emerald-300' : 'bg-surface-700 text-slate-400 hover:bg-emerald-50 hover:text-emerald-700'"
                                                 class="px-2.5 py-1.5 text-xs font-medium rounded-md transition-all min-h-[36px]">
                                                 {{ __('squad.academy_keep') }}
                                             </button>
@@ -200,7 +200,7 @@
 
                                         <button type="button"
                                             @click="setDecision('{{ $prospect->id }}', 'promote')"
-                                            :class="decisions['{{ $prospect->id }}'] === 'promote' ? 'bg-sky-600 text-white ring-2 ring-sky-300' : 'bg-slate-100 text-slate-600 hover:bg-sky-50 hover:text-sky-700'"
+                                            :class="decisions['{{ $prospect->id }}'] === 'promote' ? 'bg-accent-blue text-white ring-2 ring-sky-300' : 'bg-surface-700 text-slate-400 hover:bg-accent-blue/10 hover:text-accent-blue'"
                                             class="px-2.5 py-1.5 text-xs font-medium rounded-md transition-all min-h-[36px]">
                                             {{ __('squad.academy_promote') }}
                                         </button>
@@ -208,7 +208,7 @@
                                         @unless($mustDecide)
                                             <button type="button"
                                                 @click="setDecision('{{ $prospect->id }}', 'loan')"
-                                                :class="decisions['{{ $prospect->id }}'] === 'loan' ? 'bg-indigo-600 text-white ring-2 ring-indigo-300' : 'bg-slate-100 text-slate-600 hover:bg-indigo-50 hover:text-indigo-700'"
+                                                :class="decisions['{{ $prospect->id }}'] === 'loan' ? 'bg-indigo-600 text-white ring-2 ring-indigo-300' : 'bg-surface-700 text-slate-400 hover:bg-indigo-50 hover:text-indigo-700'"
                                                 class="px-2.5 py-1.5 text-xs font-medium rounded-md transition-all min-h-[36px]">
                                                 {{ __('squad.academy_loan_out') }}
                                             </button>
@@ -216,7 +216,7 @@
 
                                         <button type="button"
                                             @click="setDecision('{{ $prospect->id }}', 'dismiss')"
-                                            :class="decisions['{{ $prospect->id }}'] === 'dismiss' ? 'bg-red-600 text-white ring-2 ring-red-300' : 'bg-slate-100 text-slate-600 hover:bg-red-50 hover:text-red-700'"
+                                            :class="decisions['{{ $prospect->id }}'] === 'dismiss' ? 'bg-red-600 text-white ring-2 ring-red-300' : 'bg-surface-700 text-slate-400 hover:bg-accent-red/10 hover:text-accent-red'"
                                             class="px-2.5 py-1.5 text-xs font-medium rounded-md transition-all min-h-[36px]">
                                             {{ __('squad.academy_dismiss') }}
                                         </button>
@@ -235,7 +235,7 @@
                                         @if($prospect->nationality_flag)
                                             <img src="/flags/{{ $prospect->nationality_flag['code'] }}.svg" class="w-5 h-4 rounded shadow-sm shrink-0" title="{{ $prospect->nationality_flag['name'] }}">
                                         @endif
-                                        <span class="font-medium text-slate-900 truncate">{{ $prospect->name }}</span>
+                                        <span class="font-medium text-white truncate">{{ $prospect->name }}</span>
                                         <span class="text-xs text-slate-400 shrink-0">{{ $prospect->age }} {{ __('app.age') }}</span>
                                     </div>
 
@@ -246,15 +246,15 @@
                                     @endif
 
                                     <div class="flex items-center gap-4 text-xs text-slate-500 mb-3">
-                                        <span>{{ __('squad.technical') }}: <strong class="text-slate-700">{{ $playerReveal >= 1 ? $prospect->technical_ability : '?' }}</strong></span>
-                                        <span>{{ __('squad.physical') }}: <strong class="text-slate-700">{{ $playerReveal >= 1 ? $prospect->physical_ability : '?' }}</strong></span>
-                                        <span>{{ __('squad.pot') }}: <strong class="text-slate-700">{{ $playerReveal >= 2 ? $prospect->potential_range : '?' }}</strong></span>
+                                        <span>{{ __('squad.technical') }}: <strong class="text-slate-300">{{ $playerReveal >= 1 ? $prospect->technical_ability : '?' }}</strong></span>
+                                        <span>{{ __('squad.physical') }}: <strong class="text-slate-300">{{ $playerReveal >= 1 ? $prospect->physical_ability : '?' }}</strong></span>
+                                        <span>{{ __('squad.pot') }}: <strong class="text-slate-300">{{ $playerReveal >= 2 ? $prospect->potential_range : '?' }}</strong></span>
                                         @if($playerReveal >= 1)
                                             <span class="inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold
                                                 @if($prospect->overall >= 80) bg-emerald-500 text-white
                                                 @elseif($prospect->overall >= 70) bg-lime-500 text-white
-                                                @elseif($prospect->overall >= 60) bg-amber-500 text-white
-                                                @else bg-slate-300 text-slate-700
+                                                @elseif($prospect->overall >= 60) bg-accent-gold/100 text-white
+                                                @else bg-slate-300 text-slate-300
                                                 @endif">
                                                 {{ $prospect->overall }}
                                             </span>
@@ -265,7 +265,7 @@
                                         @unless($mustDecide)
                                             <button type="button"
                                                 @click="setDecision('{{ $prospect->id }}', 'keep')"
-                                                :class="decisions['{{ $prospect->id }}'] === 'keep' ? 'bg-emerald-600 text-white ring-2 ring-emerald-300' : 'bg-slate-100 text-slate-600'"
+                                                :class="decisions['{{ $prospect->id }}'] === 'keep' ? 'bg-emerald-600 text-white ring-2 ring-emerald-300' : 'bg-surface-700 text-slate-400'"
                                                 class="flex-1 px-2 py-2 text-xs font-medium rounded-md transition-all min-h-[44px]">
                                                 {{ __('squad.academy_keep') }}
                                             </button>
@@ -273,7 +273,7 @@
 
                                         <button type="button"
                                             @click="setDecision('{{ $prospect->id }}', 'promote')"
-                                            :class="decisions['{{ $prospect->id }}'] === 'promote' ? 'bg-sky-600 text-white ring-2 ring-sky-300' : 'bg-slate-100 text-slate-600'"
+                                            :class="decisions['{{ $prospect->id }}'] === 'promote' ? 'bg-accent-blue text-white ring-2 ring-sky-300' : 'bg-surface-700 text-slate-400'"
                                             class="flex-1 px-2 py-2 text-xs font-medium rounded-md transition-all min-h-[44px]">
                                             {{ __('squad.academy_promote') }}
                                         </button>
@@ -281,7 +281,7 @@
                                         @unless($mustDecide)
                                             <button type="button"
                                                 @click="setDecision('{{ $prospect->id }}', 'loan')"
-                                                :class="decisions['{{ $prospect->id }}'] === 'loan' ? 'bg-indigo-600 text-white ring-2 ring-indigo-300' : 'bg-slate-100 text-slate-600'"
+                                                :class="decisions['{{ $prospect->id }}'] === 'loan' ? 'bg-indigo-600 text-white ring-2 ring-indigo-300' : 'bg-surface-700 text-slate-400'"
                                                 class="flex-1 px-2 py-2 text-xs font-medium rounded-md transition-all min-h-[44px]">
                                                 {{ __('squad.academy_loan_out') }}
                                             </button>
@@ -289,7 +289,7 @@
 
                                         <button type="button"
                                             @click="setDecision('{{ $prospect->id }}', 'dismiss')"
-                                            :class="decisions['{{ $prospect->id }}'] === 'dismiss' ? 'bg-red-600 text-white ring-2 ring-red-300' : 'bg-slate-100 text-slate-600'"
+                                            :class="decisions['{{ $prospect->id }}'] === 'dismiss' ? 'bg-red-600 text-white ring-2 ring-red-300' : 'bg-surface-700 text-slate-400'"
                                             class="flex-1 px-2 py-2 text-xs font-medium rounded-md transition-all min-h-[44px]">
                                             {{ __('squad.academy_dismiss') }}
                                         </button>

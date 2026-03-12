@@ -9,10 +9,10 @@
     $projectedPct = $projectedAbility ? min(100, max(0, ($projectedAbility / $max) * 100)) : null;
 
     $fillColor = match(true) {
-        $currentAbility >= 80 => 'bg-green-500',
+        $currentAbility >= 80 => 'bg-accent-green',
         $currentAbility >= 70 => 'bg-lime-500',
-        $currentAbility >= 60 => 'bg-amber-500',
-        default => 'bg-slate-400',
+        $currentAbility >= 60 => 'bg-accent-gold',
+        default => 'bg-slate-500',
     };
 
     $barHeight = match($size) {
@@ -43,13 +43,13 @@
 
 <div class="flex items-center {{ $gapClass }} {{ $containerMin }}">
     {{-- Current ability number --}}
-    <span class="{{ $numberClass }} text-right flex-shrink-0 @if($currentAbility >= 80) text-green-600 @elseif($currentAbility >= 70) text-lime-600 @elseif($currentAbility >= 60) text-amber-600 @else text-slate-500 @endif">{{ $currentAbility }}</span>
+    <span class="{{ $numberClass }} text-right flex-shrink-0 @if($currentAbility >= 80) text-accent-green @elseif($currentAbility >= 70) text-lime-400 @elseif($currentAbility >= 60) text-accent-gold @else text-slate-500 @endif">{{ $currentAbility }}</span>
 
     {{-- Bar --}}
-    <div class="relative w-full {{ $barHeight }} bg-slate-200 rounded-full overflow-hidden flex-grow">
+    <div class="relative w-full {{ $barHeight }} bg-surface-600 rounded-full overflow-hidden flex-grow">
         {{-- Potential range highlight --}}
         @if($potentialLow && $potentialHigh)
-        <div class="absolute h-full bg-sky-100 rounded-full" style="left: {{ $potLowPct }}%; width: {{ $potHighPct - $potLowPct }}%"></div>
+        <div class="absolute h-full bg-accent-blue/20 rounded-full" style="left: {{ $potLowPct }}%; width: {{ $potHighPct - $potLowPct }}%"></div>
         @endif
 
         {{-- Current ability fill --}}
@@ -57,14 +57,14 @@
 
         {{-- Projection marker --}}
         @if($projectedPct !== null && $projection != 0)
-        <div class="absolute top-1/2 -translate-y-1/2 {{ $dotSize }} rounded-full border border-white shadow-sm {{ $projection > 0 ? 'bg-green-500' : 'bg-red-500' }}" style="left: {{ $projectedPct }}%"></div>
+        <div class="absolute top-1/2 -translate-y-1/2 {{ $dotSize }} rounded-full border border-surface-800 shadow-sm {{ $projection > 0 ? 'bg-accent-green' : 'bg-accent-red' }}" style="left: {{ $projectedPct }}%"></div>
         @endif
     </div>
 
     {{-- Potential ceiling --}}
     @if($potentialHigh)
-    <span class="{{ $ceilingClass }} text-sky-500 font-medium flex-shrink-0">{{ $potentialHigh }}</span>
+    <span class="{{ $ceilingClass }} text-accent-blue font-medium flex-shrink-0">{{ $potentialHigh }}</span>
     @else
-    <span class="{{ $ceilingClass }} text-slate-300 flex-shrink-0">?</span>
+    <span class="{{ $ceilingClass }} text-slate-600 flex-shrink-0">?</span>
     @endif
 </div>

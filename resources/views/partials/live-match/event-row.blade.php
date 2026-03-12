@@ -5,7 +5,7 @@
      class="w-6 h-6 shrink-0 object-contain"
      :alt="getEventSide(event) === 'home' ? 'Home' : 'Away'">
 <div class="flex-1 min-w-0">
-    <span class="font-semibold text-sm text-slate-800" x-text="event.type === 'substitution' ? event.playerInName : event.playerName"></span>
+    <span class="font-semibold text-sm text-white" x-text="event.type === 'substitution' ? event.playerInName : event.playerName"></span>
     <template x-if="event.type === 'goal'">
         <span class="text-xs text-slate-500 ml-1">{{ __('game.live_goal') }}</span>
     </template>
@@ -16,7 +16,7 @@
         <span class="text-xs text-slate-500 ml-1">{{ __('game.live_yellow_card') }}</span>
     </template>
     <template x-if="event.type === 'red_card'">
-        <span class="text-xs text-red-600 ml-1" x-text="event.metadata?.second_yellow ? '{{ __('game.live_second_yellow') }}' : '{{ __('game.live_red_card') }}'"></span>
+        <span class="text-xs text-accent-red ml-1" x-text="event.metadata?.second_yellow ? '{{ __('game.live_second_yellow') }}' : '{{ __('game.live_red_card') }}'"></span>
     </template>
     <template x-if="event.type === 'injury'">
         <span class="text-xs text-orange-600 ml-1">{{ __('game.live_injury') }}</span>

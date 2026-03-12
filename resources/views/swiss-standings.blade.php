@@ -16,15 +16,15 @@ $defaultTab = $knockoutStarted ? 'knockout' : 'league';
 
     <div>
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg" x-data="{ activeTab: '{{ $defaultTab }}' }">
+            <div class="bg-surface-800 overflow-hidden shadow-sm sm:rounded-lg" x-data="{ activeTab: '{{ $defaultTab }}' }">
                 <div class="p-4 sm:p-6 md:p-8">
-                    <h3 class="font-semibold text-xl text-slate-900 mb-6">{{ __($competition->name) }}</h3>
+                    <h3 class="font-semibold text-xl text-white mb-6">{{ __($competition->name) }}</h3>
 
                     {{-- Tab Navigation --}}
                     @if($hasKnockout)
-                        <div class="flex border-b border-slate-200 mb-0">
+                        <div class="flex border-b border-white/10 mb-0">
                             <button @click="activeTab = 'league'"
-                                    :class="activeTab === 'league' ? 'border-sky-500 text-sky-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'"
+                                    :class="activeTab === 'league' ? 'border-accent-blue text-accent-blue' : 'border-transparent text-slate-500 hover:text-slate-300 hover:border-white/10'"
                                     class="px-4 py-2.5 text-sm font-medium border-b-2 transition-colors">
                                 {{ __('game.league_phase') }}
                                 @if($leaguePhaseComplete)
@@ -32,7 +32,7 @@ $defaultTab = $knockoutStarted ? 'knockout' : 'league';
                                 @endif
                             </button>
                             <button @click="activeTab = 'knockout'"
-                                    :class="activeTab === 'knockout' ? 'border-sky-500 text-sky-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'"
+                                    :class="activeTab === 'knockout' ? 'border-accent-blue text-accent-blue' : 'border-transparent text-slate-500 hover:text-slate-300 hover:border-white/10'"
                                     class="px-4 py-2.5 text-sm font-medium border-b-2 transition-colors">
                                 {{ __('game.knockout_phase') }}
                             </button>
@@ -48,7 +48,7 @@ $defaultTab = $knockoutStarted ? 'knockout' : 'league';
                                         @php $ties = $knockoutTies->get($round->round, collect()); @endphp
                                         <div class="flex-shrink-0 w-64">
                                             <div class="text-center mb-4">
-                                                <h4 class="font-semibold text-slate-700">{{ __($round->name) }}</h4>
+                                                <h4 class="font-semibold text-slate-300">{{ __($round->name) }}</h4>
                                                 <div class="text-xs text-slate-400">
                                                     {{ $round->firstLegDate->format('M d') }}
                                                     @if($round->twoLegged)
@@ -80,7 +80,7 @@ $defaultTab = $knockoutStarted ? 'knockout' : 'league';
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
                             <div class="md:col-span-2 space-y-3">
                                 @if(!$hasKnockout)
-                                    <h4 class="font-semibold text-lg text-slate-700">
+                                    <h4 class="font-semibold text-lg text-slate-300">
                                         {{ __('game.league_phase') }}
                                     </h4>
                                 @endif

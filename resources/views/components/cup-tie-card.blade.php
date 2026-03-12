@@ -15,38 +15,38 @@
     $firstLegAwayScore = $scoreAfterEt ? (int) $scoreAfterEt[1] : $tie->firstLegMatch?->away_score;
 @endphp
 
-<div class="border rounded-lg overflow-hidden {{ $isPlayerTie ? 'border-sky-300 bg-sky-50' : 'border-slate-200' }}">
+<div class="border rounded-lg overflow-hidden {{ $isPlayerTie ? 'border-accent-blue/30 bg-accent-blue/5' : 'border-white/10' }}">
     {{-- Home Team --}}
-    <div class="flex items-center gap-2 p-2 {{ $homeWon ? 'bg-green-50' : '' }} {{ $awayWon ? 'opacity-50' : '' }}">
+    <div class="flex items-center gap-2 p-2 {{ $homeWon ? 'bg-accent-green/10' : '' }} {{ $awayWon ? 'opacity-50' : '' }}">
         <x-team-crest :team="$tie->homeTeam" class="w-5 h-5" />
-        <span class="flex-1 text-sm truncate @if($homeWon) font-semibold @endif {{ $tie->home_team_id === $playerTeamId ? 'font-semibold text-sky-700' : '' }}">
+        <span class="flex-1 text-sm truncate @if($homeWon) font-semibold @endif {{ $tie->home_team_id === $playerTeamId ? 'font-semibold text-accent-blue' : 'text-slate-300' }}">
             {{ $tie->homeTeam->name }}
         </span>
         @if($firstLegPlayed)
-            <span class="text-sm tabular-nums {{ $homeWon ? 'font-semibold' : '' }}">{{ $firstLegHomeScore }}</span>
+            <span class="text-sm tabular-nums text-slate-300 {{ $homeWon ? 'font-semibold' : '' }}">{{ $firstLegHomeScore }}</span>
         @endif
         @if($isTwoLegged && $secondLegPlayed)
-            <span class="text-sm tabular-nums {{ $homeWon ? 'font-semibold' : '' }}">{{ $tie->secondLegMatch->away_score }}</span>
+            <span class="text-sm tabular-nums text-slate-300 {{ $homeWon ? 'font-semibold' : '' }}">{{ $tie->secondLegMatch->away_score }}</span>
         @endif
     </div>
 
     {{-- Away Team --}}
-    <div class="flex items-center gap-2 p-2 border-t {{ $awayWon ? 'bg-green-50' : '' }} {{ $homeWon ? 'opacity-50' : '' }}">
+    <div class="flex items-center gap-2 p-2 border-t border-white/5 {{ $awayWon ? 'bg-accent-green/10' : '' }} {{ $homeWon ? 'opacity-50' : '' }}">
         <x-team-crest :team="$tie->awayTeam" class="w-5 h-5" />
-        <span class="flex-1 text-sm truncate @if($awayWon) font-semibold @endif {{ $tie->away_team_id === $playerTeamId ? 'font-semibold text-sky-700' : '' }}">
+        <span class="flex-1 text-sm truncate @if($awayWon) font-semibold @endif {{ $tie->away_team_id === $playerTeamId ? 'font-semibold text-accent-blue' : 'text-slate-300' }}">
             {{ $tie->awayTeam->name }}
         </span>
         @if($firstLegPlayed)
-            <span class="text-sm tabular-nums {{ $awayWon ? 'font-semibold' : '' }}">{{ $firstLegAwayScore }}</span>
+            <span class="text-sm tabular-nums text-slate-300 {{ $awayWon ? 'font-semibold' : '' }}">{{ $firstLegAwayScore }}</span>
         @endif
         @if($isTwoLegged && $secondLegPlayed)
-            <span class="text-sm tabular-nums {{ $awayWon ? 'font-semibold' : '' }}">{{ $tie->secondLegMatch->home_score }}</span>
+            <span class="text-sm tabular-nums text-slate-300 {{ $homeWon ? 'font-semibold' : '' }}">{{ $tie->secondLegMatch->home_score }}</span>
         @endif
     </div>
 
     {{-- Resolution info --}}
     @if($tie->completed && $tie->resolution && ($tie->resolution['type'] ?? 'normal') !== 'normal')
-        <div class="text-xs text-center text-slate-400 py-1 border-t bg-slate-50">
+        <div class="text-xs text-center text-slate-500 py-1 border-t border-white/5 bg-surface-700/50">
             @if($tie->resolution['type'] === 'penalties')
                 {{ __('cup.pens') }} {{ $tie->resolution['penalties'] }}
             @elseif($tie->resolution['type'] === 'extra_time')

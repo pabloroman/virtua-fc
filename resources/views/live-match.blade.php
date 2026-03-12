@@ -8,14 +8,15 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <title>{{ config('app.name', 'Laravel') }}</title>
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=barlow-semi-condensed:400,600,800&display=swap" rel="stylesheet" />
+        <!-- Fonts (loaded via CSS @import in app.css) -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased">
-    <div class="min-h-screen bg-gradient-to-bl from-slate-900 via-cyan-950 to-teal-950">
-    <main class="text-slate-700 pt-0 pb-8 sm:py-8">
+    <body class="font-sans antialiased bg-surface-900 text-white">
+    <div class="min-h-screen">
+    <main class="text-slate-300 pt-0 pb-8 sm:py-8">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8"
              x-data="liveMatch({
                 events: {{ Js::from($events) }},
@@ -87,14 +88,14 @@
             @php
                 $comp = $match->competition;
                 $accent = match(true) {
-                    ($comp->handler_type ?? '') === 'preseason' => 'bg-sky-600 text-sky-100',
+                    ($comp->handler_type ?? '') === 'preseason' => 'bg-accent-blue text-sky-100',
                     ($comp->scope ?? '') === 'continental' => 'bg-blue-600 text-blue-100',
                     ($comp->type ?? '') === 'cup' => 'bg-emerald-600 text-emerald-100',
                     default => 'bg-amber-600 text-amber-100',
                 };
             @endphp
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-surface-800 overflow-hidden shadow-sm sm:rounded-lg">
                 {{-- Competition & Round Info --}}
                 <div class="px-4 py-2.5 text-center text-sm font-semibold sm:rounded-t-lg {{ $accent }}">
                     <div>{{ __($match->competition->name) }} &middot; {{ $match->round_name ? __($match->round_name) : __('game.matchday_n', ['number' => $match->round_number]) }}</div>
@@ -107,13 +108,13 @@
                     {{-- Scoreboard --}}
                     <div class="flex items-center justify-center gap-2 md:gap-6 mb-2">
                         <div class="flex items-center gap-2 md:gap-3 flex-1 justify-end">
-                            <span class="text-sm md:text-xl font-semibold text-slate-900 truncate">{{ $match->homeTeam->name }}</span>
+                            <span class="text-sm md:text-xl font-semibold text-white truncate">{{ $match->homeTeam->name }}</span>
                             <x-team-crest :team="$match->homeTeam" class="w-10 h-10 md:w-14 md:h-14 shrink-0" />
                         </div>
 
                         <div class="relative px-2 md:px-6">
                             {{-- Score --}}
-                            <div class="text-3xl whitespace-nowrap md:text-5xl font-bold text-slate-900 tabular-nums transition-transform duration-200"
+                            <div class="text-3xl whitespace-nowrap md:text-5xl font-bold text-white tabular-nums transition-transform duration-200"
                                  :class="goalFlash ? 'scale-125' : 'scale-100'">
                                 <span x-text="homeScore">0</span>
                                 <span class="text-slate-300 mx-1">-</span>
@@ -129,7 +130,7 @@
 
                         <div class="flex items-center gap-2 md:gap-3 flex-1">
                             <x-team-crest :team="$match->awayTeam" class="w-10 h-10 md:w-14 md:h-14 shrink-0" />
-                            <span class="text-sm md:text-xl font-semibold text-slate-900 truncate">{{ $match->awayTeam->name }}</span>
+                            <span class="text-sm md:text-xl font-semibold text-white truncate">{{ $match->awayTeam->name }}</span>
                         </div>
                     </div>
 
@@ -137,18 +138,18 @@
                     <div class="text-center mb-6">
                         <span class="inline-flex items-center gap-2 text-sm font-semibold rounded-full px-4 py-1"
                               :class="{
-                                  'bg-slate-100 text-slate-500': phase === 'pre_match',
-                                  'bg-green-100 text-green-700': phase === 'first_half' || phase === 'second_half',
-                                  'bg-amber-100 text-amber-700': phase === 'half_time' || phase === 'extra_time_half_time',
+                                  'bg-surface-700 text-slate-500': phase === 'pre_match',
+                                  'bg-accent-green/10 text-accent-green': phase === 'first_half' || phase === 'second_half',
+                                  'bg-amber-100 text-accent-gold': phase === 'half_time' || phase === 'extra_time_half_time',
                                   'bg-orange-100 text-orange-700': phase === 'going_to_extra_time' || phase === 'extra_time_first_half' || phase === 'extra_time_second_half',
-                                  'bg-purple-100 text-purple-700': phase === 'penalties',
+                                  'bg-purple-100 text-purple-400': phase === 'penalties',
                                   'bg-slate-800 text-white': phase === 'full_time',
                               }">
                             <span class="relative flex h-2 w-2" x-show="isRunning">
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
                                       :class="isInExtraTime ? 'bg-orange-400' : 'bg-green-400'"></span>
                                 <span class="relative inline-flex rounded-full h-2 w-2"
-                                      :class="isInExtraTime ? 'bg-orange-500' : 'bg-green-500'"></span>
+                                      :class="isInExtraTime ? 'bg-orange-500' : 'bg-accent-green/100'"></span>
                             </span>
                             <template x-if="phase === 'pre_match'">
                                 <span>{{ __('game.live_pre_match') }}</span>
@@ -189,7 +190,7 @@
                             <span class="text-slate-400 uppercase tracking-wide text-[10px]">{{ __('game.possession') }}</span>
                             <span class="text-slate-500 tabular-nums" x-text="awayPossession + '%'"></span>
                         </div>
-                        <div class="flex h-1 rounded-full overflow-hidden bg-slate-100">
+                        <div class="flex h-1 rounded-full overflow-hidden bg-surface-700">
                             <div class="bg-sky-400 transition-all duration-700 ease-out rounded-l-full"
                                  :style="'width: ' + homePossession + '%'"></div>
                             <div class="bg-sky-200 transition-all duration-700 ease-out rounded-r-full"
@@ -198,10 +199,10 @@
                     </div>
 
                     {{-- Timeline Bar --}}
-                    <div class="relative h-2 bg-slate-100 rounded-full mb-6 overflow-visible">
+                    <div class="relative h-2 bg-surface-700 rounded-full mb-6 overflow-visible">
                         {{-- Progress --}}
                         <div class="absolute top-0 left-0 h-full rounded-full transition-all duration-300 ease-linear"
-                             :class="isInExtraTime ? 'bg-orange-500' : 'bg-green-500'"
+                             :class="isInExtraTime ? 'bg-orange-500' : 'bg-accent-green/100'"
                              :style="'width: ' + timelineProgress + '%'"></div>
 
                         {{-- Half-time marker --}}
@@ -225,12 +226,12 @@
                             <div class="absolute -top-1 w-4 h-4 rounded-full border-2 border-white shadow-sm transform -translate-x-1/2 transition-all duration-300"
                                  :style="'left: ' + marker.position + '%'"
                                  :class="{
-                                     'bg-green-500': marker.type === 'goal',
+                                     'bg-accent-green/100': marker.type === 'goal',
                                      'bg-red-400': marker.type === 'own_goal',
                                      'bg-yellow-400': marker.type === 'yellow_card',
                                      'bg-red-600': marker.type === 'red_card',
                                      'bg-orange-400': marker.type === 'injury',
-                                     'bg-sky-500': marker.type === 'substitution',
+                                     'bg-accent-blue/100': marker.type === 'substitution',
                                  }"
                                  x-transition:enter="transition ease-out duration-300"
                                  x-transition:enter-start="scale-0 opacity-0"
@@ -248,13 +249,13 @@
                                 class="px-3 py-1 text-xs font-semibold rounded-md transition-colors"
                                 :class="speed === s
                                     ? 'bg-slate-800 text-white'
-                                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                                    : 'bg-surface-700 text-slate-400 hover:bg-slate-200'"
                                 x-text="s + 'x'"
                             ></button>
                         </template>
                         <button
                             @click="skipToEnd()"
-                            class="px-3 py-1 text-xs font-semibold rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors ml-2"
+                            class="px-3 py-1 text-xs font-semibold rounded-md bg-surface-700 text-slate-400 hover:bg-slate-200 transition-colors ml-2"
                             :disabled="extraTimeLoading"
                             :class="extraTimeLoading ? 'opacity-50 cursor-not-allowed' : ''">
                             {{ __('game.live_skip') }} ▸▸
@@ -263,16 +264,16 @@
 
                     {{-- Tactical Bar --}}
                     <div class="mb-4" x-show="phase !== 'full_time' && phase !== 'pre_match' && phase !== 'going_to_extra_time' && phase !== 'penalties'">
-                        <div class="flex items-center justify-between px-3 py-2 bg-slate-50 rounded-lg">
+                        <div class="flex items-center justify-between px-3 py-2 bg-surface-700/50 rounded-lg">
                             {{-- Current tactical state --}}
                             <div class="flex items-center gap-2 md:gap-3 min-w-0">
-                                <span class="text-xs font-bold text-slate-800 tabular-nums shrink-0" x-text="activeFormation"></span>
+                                <span class="text-xs font-bold text-white tabular-nums shrink-0" x-text="activeFormation"></span>
                                 <span class="text-slate-300 shrink-0">&middot;</span>
                                 <span class="text-xs font-semibold shrink-0 truncate"
                                       :class="{
-                                          'text-blue-600': activeMentality === 'defensive',
-                                          'text-slate-600': activeMentality === 'balanced',
-                                          'text-red-600': activeMentality === 'attacking',
+                                          'text-accent-blue': activeMentality === 'defensive',
+                                          'text-slate-400': activeMentality === 'balanced',
+                                          'text-accent-red': activeMentality === 'attacking',
                                       }"
                                       x-text="mentalityLabel"></span>
                                 <span class="text-slate-300 shrink-0">&middot;</span>
@@ -290,7 +291,7 @@
                             {{-- Open tactical panel --}}
                             <button
                                 @click="openTacticalPanel()"
-                                class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 rounded-md hover:bg-slate-100 hover:border-slate-300 transition-colors min-h-[44px] shrink-0"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-300 bg-surface-800 border border-white/10 rounded-md hover:bg-surface-700 hover:border-white/10 transition-colors min-h-[44px] shrink-0"
                             >
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
@@ -317,7 +318,7 @@
                     </div>
 
                     {{-- Events Feed --}}
-                    <div class="border-t border-slate-100 pt-4">
+                    <div class="border-t border-white/5 pt-4">
                         <div class="space-y-1 max-h-80 overflow-y-auto" id="events-feed">
 
                             {{-- Penalty kicks display --}}
@@ -335,7 +336,7 @@
                                     {{-- Kick-by-kick rows --}}
                                     <div class="px-3 py-2 space-y-0.5"
                                          :class="penaltyWinner && phase === 'full_time' ? '' : 'rounded-b-lg'"
-                                         class="bg-purple-50">
+                                         class="bg-purple-500/10">
                                         <template x-for="(kick, idx) in revealedPenaltyKicks" :key="idx">
                                             <div class="flex items-center gap-2 py-1 text-sm"
                                                  x-transition:enter="transition ease-out duration-300"
@@ -345,9 +346,9 @@
                                                       x-text="kick.round"></span>
                                                 <img :src="kick.side === 'home' ? homeTeamImage : awayTeamImage"
                                                      class="w-4 h-4 shrink-0 object-contain">
-                                                <span class="flex-1 truncate text-sm text-slate-700" x-text="kick.playerName"></span>
+                                                <span class="flex-1 truncate text-sm text-slate-300" x-text="kick.playerName"></span>
                                                 <span class="text-xs font-bold shrink-0 px-1.5 py-0.5 rounded"
-                                                      :class="kick.scored ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'"
+                                                      :class="kick.scored ? 'bg-accent-green/10 text-accent-green' : 'bg-red-100 text-accent-red'"
                                                       x-text="kick.scored ? translations.penScored : translations.penMissed"></span>
                                             </div>
                                         </template>
@@ -368,7 +369,7 @@
                             {{-- Simple penalty banner fallback (preloaded without kick data) --}}
                             <template x-if="penaltyResult && penaltyKicks.length === 0 && (phase === 'penalties' || phase === 'full_time')">
                                 <div class="mb-2">
-                                    <div class="flex items-center gap-3 py-3 px-4 bg-purple-50"
+                                    <div class="flex items-center gap-3 py-3 px-4 bg-purple-500/10"
                                          :class="penaltyWinner && phase === 'full_time' ? 'rounded-t-lg' : 'rounded-lg'">
                                         <span class="text-sm w-6 text-center shrink-0">&#127942;</span>
                                         <div class="flex-1 text-center">
@@ -389,7 +390,7 @@
                             {{-- ET Second half events --}}
                             <template x-for="(event, idx) in etSecondHalfEvents" :key="'etsh-' + idx">
                                 <div class="flex items-center gap-3 py-2 px-3 rounded-lg transition-all duration-300"
-                                     :class="isGoalEvent(event) ? 'bg-green-50' : ''"
+                                     :class="isGoalEvent(event) ? 'bg-accent-green/10' : ''"
                                      x-transition:enter="transition ease-out duration-300"
                                      x-transition:enter-start="opacity-0 -translate-y-2"
                                      x-transition:enter-end="opacity-100 translate-y-0"
@@ -410,7 +411,7 @@
                             {{-- ET First half events --}}
                             <template x-for="(event, idx) in etFirstHalfEvents" :key="'etfh-' + idx">
                                 <div class="flex items-center gap-3 py-2 px-3 rounded-lg transition-all duration-300"
-                                     :class="isGoalEvent(event) ? 'bg-green-50' : ''"
+                                     :class="isGoalEvent(event) ? 'bg-accent-green/10' : ''"
                                      x-transition:enter="transition ease-out duration-300"
                                      x-transition:enter-start="opacity-0 -translate-y-2"
                                      x-transition:enter-end="opacity-100 translate-y-0"
@@ -431,7 +432,7 @@
                             {{-- Second half events (newest first) --}}
                             <template x-for="(event, idx) in secondHalfEvents" :key="'sh-' + idx">
                                 <div class="flex items-center gap-3 py-2 px-3 rounded-lg transition-all duration-300"
-                                     :class="isGoalEvent(event) ? 'bg-green-50' : ''"
+                                     :class="isGoalEvent(event) ? 'bg-accent-green/10' : ''"
                                      x-transition:enter="transition ease-out duration-300"
                                      x-transition:enter-start="opacity-0 -translate-y-2"
                                      x-transition:enter-end="opacity-100 translate-y-0"
@@ -443,16 +444,16 @@
                             {{-- Half-time separator --}}
                             <template x-if="showHalfTimeSeparator">
                                 <div class="flex items-center gap-3 py-2">
-                                    <div class="flex-1 border-t border-slate-200"></div>
+                                    <div class="flex-1 border-t border-white/10"></div>
                                     <span class="text-xs font-semibold text-slate-400 uppercase">{{ __('game.live_half_time') }}</span>
-                                    <div class="flex-1 border-t border-slate-200"></div>
+                                    <div class="flex-1 border-t border-white/10"></div>
                                 </div>
                             </template>
 
                             {{-- First half events (newest first) --}}
                             <template x-for="(event, idx) in firstHalfEvents" :key="'fh-' + idx">
                                 <div class="flex items-center gap-3 py-2 px-3 rounded-lg transition-all duration-300"
-                                     :class="isGoalEvent(event) ? 'bg-green-50' : ''"
+                                     :class="isGoalEvent(event) ? 'bg-accent-green/10' : ''"
                                      x-transition:enter="transition ease-out duration-300"
                                      x-transition:enter-start="opacity-0 -translate-y-2"
                                      x-transition:enter-end="opacity-100 translate-y-0"
@@ -482,7 +483,7 @@
 
                     {{-- Full Time Summary --}}
                     <template x-if="phase === 'full_time'">
-                        <div class="mt-6 pt-6 border-t border-slate-200">
+                        <div class="mt-6 pt-6 border-t border-white/10">
 
                             {{-- ============================== --}}
                             {{-- TOURNAMENT DRAMATIC RESULTS    --}}
@@ -512,7 +513,7 @@
                                             @csrf
                                             <input type="hidden" name="tournament_end" value="1">
                                             <button type="submit"
-                                                    class="inline-flex items-center px-8 py-3 bg-white text-amber-700 font-bold rounded-lg shadow-lg hover:bg-amber-50 transition-colors min-h-[44px]"
+                                                    class="inline-flex items-center px-8 py-3 bg-surface-800 text-accent-gold font-bold rounded-lg shadow-lg hover:bg-accent-gold/10 transition-colors min-h-[44px]"
                                                     x-text="translations.tournamentViewSummary"
                                                     :disabled="!processingReady">
                                             </button>
@@ -536,7 +537,7 @@
                                             @csrf
                                             <input type="hidden" name="tournament_end" value="1">
                                             <button type="submit"
-                                                    class="inline-flex items-center px-8 py-3 bg-white/10 text-white font-semibold rounded-lg border border-white/20 hover:bg-white/20 transition-colors min-h-[44px]"
+                                                    class="inline-flex items-center px-8 py-3 bg-surface-800/10 text-white font-semibold rounded-lg border border-white/20 hover:bg-surface-800/20 transition-colors min-h-[44px]"
                                                     x-text="translations.tournamentViewSummary"
                                                     :disabled="!processingReady">
                                             </button>
@@ -560,7 +561,7 @@
                                             @csrf
                                             <input type="hidden" name="tournament_end" value="1">
                                             <button type="submit"
-                                                    class="inline-flex items-center px-8 py-3 bg-white/10 text-white font-semibold rounded-lg border border-white/20 hover:bg-white/20 transition-colors min-h-[44px]"
+                                                    class="inline-flex items-center px-8 py-3 bg-surface-800/10 text-white font-semibold rounded-lg border border-white/20 hover:bg-surface-800/20 transition-colors min-h-[44px]"
                                                     x-text="translations.tournamentViewSummary"
                                                     :disabled="!processingReady">
                                             </button>
@@ -583,7 +584,7 @@
                                             @csrf
                                             <input type="hidden" name="tournament_end" value="1">
                                             <button type="submit"
-                                                    class="inline-flex items-center px-8 py-3 bg-white/10 text-slate-200 font-semibold rounded-lg border border-white/20 hover:bg-white/20 transition-colors min-h-[44px]"
+                                                    class="inline-flex items-center px-8 py-3 bg-surface-800/10 text-slate-200 font-semibold rounded-lg border border-white/20 hover:bg-surface-800/20 transition-colors min-h-[44px]"
                                                     x-text="translations.tournamentViewSummary"
                                                     :disabled="!processingReady">
                                             </button>
@@ -606,7 +607,7 @@
                                             @csrf
                                             <input type="hidden" name="tournament_end" value="1">
                                             <button type="submit"
-                                                    class="inline-flex items-center px-8 py-3 bg-white/10 text-slate-200 font-semibold rounded-lg border border-white/20 hover:bg-white/20 transition-colors min-h-[44px]"
+                                                    class="inline-flex items-center px-8 py-3 bg-surface-800/10 text-slate-200 font-semibold rounded-lg border border-white/20 hover:bg-surface-800/20 transition-colors min-h-[44px]"
                                                     x-text="translations.tournamentViewSummary"
                                                     :disabled="!processingReady">
                                             </button>
@@ -621,23 +622,23 @@
 
                             {{-- Semi-final win: "You're in the Final!" --}}
                             <template x-if="tournamentResultType === 'to_final'">
-                                <div class="mb-4 p-4 bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-lg text-center">
+                                <div class="mb-4 p-4 bg-gradient-to-r from-amber-50 to-yellow-50 border border-accent-gold/20 rounded-lg text-center">
                                     <div class="text-3xl mb-1">&#127942;</div>
-                                    <h3 class="text-lg font-bold text-amber-800" x-text="translations.tournamentToFinal"></h3>
+                                    <h3 class="text-lg font-bold text-accent-gold" x-text="translations.tournamentToFinal"></h3>
                                 </div>
                             </template>
 
                             {{-- Semi-final loss: "Third-Place Match Awaits" --}}
                             <template x-if="tournamentResultType === 'to_third_place'">
-                                <div class="mb-4 p-4 bg-slate-50 border border-slate-200 rounded-lg text-center">
-                                    <h3 class="text-base font-semibold text-slate-600" x-text="translations.tournamentToThirdPlace"></h3>
+                                <div class="mb-4 p-4 bg-surface-700/50 border border-white/10 rounded-lg text-center">
+                                    <h3 class="text-base font-semibold text-slate-400" x-text="translations.tournamentToThirdPlace"></h3>
                                 </div>
                             </template>
 
                             {{-- R32/R16/QF win: "You Advance!" --}}
                             <template x-if="tournamentResultType === 'advance'">
-                                <div class="mb-4 p-4 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg text-center">
-                                    <h3 class="text-lg font-bold text-green-700" x-text="translations.tournamentAdvance"></h3>
+                                <div class="mb-4 p-4 bg-gradient-to-r from-green-50 to-emerald-50 border border-accent-green/20 rounded-lg text-center">
+                                    <h3 class="text-lg font-bold text-accent-green" x-text="translations.tournamentAdvance"></h3>
                                 </div>
                             </template>
 

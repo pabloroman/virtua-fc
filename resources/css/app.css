@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -15,6 +17,7 @@
 }
 
 @layer components {
+    /* Dual-range slider (scouting) */
     .dual-range {
         @apply relative h-6 flex items-center;
     }
@@ -22,43 +25,273 @@
         @apply absolute w-full pointer-events-none appearance-none bg-transparent h-1.5;
     }
     .dual-range input[type="range"]::-webkit-slider-thumb {
-        @apply pointer-events-auto appearance-none w-4 h-4 rounded-full bg-sky-500 border-2 border-white shadow cursor-pointer;
+        @apply pointer-events-auto appearance-none w-4 h-4 rounded-full bg-accent-blue border-2 border-surface-800 shadow cursor-pointer;
     }
     .dual-range input[type="range"]::-moz-range-thumb {
-        @apply pointer-events-auto appearance-none w-4 h-4 rounded-full bg-sky-500 border-2 border-white shadow cursor-pointer;
+        @apply pointer-events-auto appearance-none w-4 h-4 rounded-full bg-accent-blue border-2 border-surface-800 shadow cursor-pointer;
     }
     .dual-range .track {
-        @apply absolute w-full h-1.5 rounded-full bg-slate-200;
+        @apply absolute w-full h-1.5 rounded-full bg-surface-600;
     }
     .dual-range .track-fill {
-        @apply absolute h-1.5 rounded-full bg-sky-400;
+        @apply absolute h-1.5 rounded-full bg-accent-blue;
     }
 
+    /* Tier range slider (budget allocation) */
     .tier-range {
         @apply relative h-6 flex items-center;
     }
     .tier-range .track {
-        @apply absolute w-full h-1.5 rounded-full bg-slate-200;
+        @apply absolute w-full h-1.5 rounded-full bg-surface-600;
     }
     .tier-range .track-fill {
-        @apply absolute h-1.5 rounded-full bg-sky-400;
+        @apply absolute h-1.5 rounded-full bg-accent-blue;
     }
     .tier-range input[type="range"] {
         @apply absolute w-full appearance-none bg-transparent h-1.5 cursor-pointer;
     }
     .tier-range input[type="range"]::-webkit-slider-thumb {
-        @apply pointer-events-auto appearance-none w-4 h-4 rounded-full bg-sky-500 border-2 border-white shadow cursor-pointer;
+        @apply pointer-events-auto appearance-none w-4 h-4 rounded-full bg-accent-blue border-2 border-surface-800 shadow cursor-pointer;
     }
     .tier-range input[type="range"]::-moz-range-thumb {
-        @apply pointer-events-auto appearance-none w-4 h-4 rounded-full bg-sky-500 border-2 border-white shadow cursor-pointer;
+        @apply pointer-events-auto appearance-none w-4 h-4 rounded-full bg-accent-blue border-2 border-surface-800 shadow cursor-pointer;
+    }
+
+    /* Rating badge colors */
+    .rating-elite {
+        background: #22C55E;
+        color: #052e16;
+    }
+    .rating-good {
+        background: #84CC16;
+        color: #1a2e05;
+    }
+    .rating-average {
+        background: #F59E0B;
+        color: #451a03;
+    }
+    .rating-below {
+        background: #F97316;
+        color: #431407;
+    }
+    .rating-poor {
+        background: #EF4444;
+        color: #450a0a;
+    }
+
+    /* Nav item with active underline */
+    .nav-item {
+        position: relative;
+    }
+    .nav-item.active::after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: #3B82F6;
+    }
+
+    /* Player row hover */
+    .player-row {
+        transition: all 0.15s ease;
+    }
+    .player-row:hover {
+        background: rgba(59, 130, 246, 0.05);
+    }
+
+    /* Fitness bar animation */
+    .fitness-bar {
+        transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Stat bar */
+    .stat-bar-track {
+        height: 3px;
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 2px;
+        overflow: hidden;
+    }
+    .stat-bar-fill {
+        height: 100%;
+        border-radius: 2px;
+        transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Morale indicator dot */
+    .morale-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+    }
+
+    /* Pitch styling */
+    .pitch {
+        background: linear-gradient(
+            180deg,
+            #1a5c2a 0%, #1e6b31 8%, #1a5c2a 8%,
+            #1a5c2a 16%, #1e6b31 16%, #1e6b31 24%, #1a5c2a 24%,
+            #1a5c2a 32%, #1e6b31 32%, #1e6b31 40%, #1a5c2a 40%,
+            #1a5c2a 48%, #1e6b31 48%, #1e6b31 56%, #1a5c2a 56%,
+            #1a5c2a 64%, #1e6b31 64%, #1e6b31 72%, #1a5c2a 72%,
+            #1a5c2a 80%, #1e6b31 80%, #1e6b31 88%, #1a5c2a 88%,
+            #1a5c2a 100%
+        );
+        position: relative;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    .pitch::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border: 2px solid rgba(255, 255, 255, 0.18);
+        border-radius: 8px;
+        pointer-events: none;
+    }
+
+    /* Player marker on pitch */
+    .player-marker {
+        position: absolute;
+        transform: translate(-50%, -50%);
+        cursor: pointer;
+        transition: transform 0.2s ease, filter 0.2s ease;
+        z-index: 10;
+    }
+    .player-marker:hover {
+        transform: translate(-50%, -50%) scale(1.12);
+        z-index: 20;
+    }
+    .player-dot {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Barlow Condensed', sans-serif;
+        font-weight: 700;
+        font-size: 13px;
+        position: relative;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    }
+    @media (min-width: 1024px) {
+        .player-dot {
+            width: 48px;
+            height: 48px;
+            font-size: 15px;
+        }
+    }
+    .player-label {
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        white-space: nowrap;
+        font-family: 'Barlow Condensed', sans-serif;
+        font-size: 10px;
+        font-weight: 600;
+        color: white;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+        margin-top: 3px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+    @media (min-width: 1024px) {
+        .player-label {
+            font-size: 11px;
+            margin-top: 4px;
+        }
+    }
+    .player-rating-mini {
+        position: absolute;
+        top: -4px;
+        right: -6px;
+        width: 18px;
+        height: 18px;
+        border-radius: 4px;
+        font-family: 'Barlow Condensed', sans-serif;
+        font-weight: 700;
+        font-size: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    }
+    .player-fitness-ring {
+        position: absolute;
+        inset: -3px;
+        border-radius: 50%;
+        border: 2px solid transparent;
+    }
+
+    /* Formation & mentality selectors */
+    .formation-option {
+        transition: all 0.15s ease;
+    }
+    .formation-option.active {
+        background: #3B82F6;
+        color: white;
+        border-color: #3B82F6;
+    }
+    .mentality-btn {
+        transition: all 0.15s ease;
+    }
+    .mentality-btn.active {
+        box-shadow: 0 0 0 1px currentColor;
+    }
+
+    /* Bench card */
+    .bench-card {
+        transition: all 0.15s ease;
+    }
+    .bench-card:hover {
+        background: rgba(59, 130, 246, 0.08);
+        border-color: rgba(59, 130, 246, 0.2);
+    }
+
+    /* Tip card gradient */
+    .tip-card {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(59, 130, 246, 0.02));
+        border: 1px solid rgba(59, 130, 246, 0.15);
+    }
+
+    /* Rating badge hover animation */
+    .rating-badge {
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .player-row:hover .rating-badge {
+        transform: scale(1.08);
+    }
+
+    /* Bottom nav blur */
+    .bottom-nav {
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
     }
 }
 
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+}
+::-webkit-scrollbar-track {
+    background: #0F172A;
+}
+::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 4px;
+}
+
 /* Hide scrollbar for horizontal-scroll nav tabs */
-.scrollbar-hide::-webkit-scrollbar {
+.scrollbar-hide::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar {
     display: none;
 }
-.scrollbar-hide {
+.scrollbar-hide,
+.no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
 }

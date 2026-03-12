@@ -60,12 +60,12 @@
         },
     })">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white shadow-sm sm:rounded-lg">
+            <div class="bg-surface-800 shadow-sm sm:rounded-lg">
 
                 {{-- Errors --}}
                 @if ($errors->any())
-                    <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                        <ul class="text-sm text-red-600">
+                    <div class="mb-6 p-4 bg-accent-red/10 border border-accent-red/20 rounded-lg">
+                        <ul class="text-sm text-accent-red">
                             @foreach ($errors->all() as $error)
                                 <li>{{ $error }}</li>
                             @endforeach
@@ -98,13 +98,13 @@
                     {{-- STICKY ACTION BAR                                   --}}
                     {{-- Status + action buttons only. No tactical controls. --}}
                     {{-- ═══════════════════════════════════════════════════ --}}
-                    <div class="sticky top-0 z-10 bg-white border-b border-slate-200 sm:rounded-t-lg">
+                    <div class="sticky top-0 z-10 bg-surface-800 border-b border-white/10 sm:rounded-t-lg">
                         <div class="flex items-center justify-between px-4 py-3 md:px-6">
                             {{-- Left: Selection count --}}
                             <div class="flex items-center gap-3">
                                 <div class="flex items-baseline gap-1">
                                     <span class="text-xl font-bold tabular-nums"
-                                          :class="selectedCount === 11 ? 'text-emerald-600' : 'text-slate-900'"
+                                          :class="selectedCount === 11 ? 'text-emerald-600' : 'text-white'"
                                           x-text="selectedCount">0</span>
                                     <span class="text-sm text-slate-400 font-medium">/11</span>
                                 </div>
@@ -114,7 +114,7 @@
                             {{-- Right: Actions --}}
                             <div class="flex items-center gap-2">
                                 <button type="button" @click="clearSelection()"
-                                    class="px-3 py-2 text-sm font-medium text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors min-h-[44px]">
+                                    class="px-3 py-2 text-sm font-medium text-slate-500 hover:text-white hover:bg-surface-700 rounded-lg transition-colors min-h-[44px]">
                                     {{ __('app.clear') }}
                                 </button>
                                 <x-secondary-button type="button" @click="quickSelect()">
@@ -131,20 +131,20 @@
                     {{-- MOBILE TAB SWITCHER                         --}}
                     {{-- Squad (default) | Tactics | Pitch           --}}
                     {{-- ═══════════════════════════════════════════ --}}
-                    <div class="flex lg:hidden border-b border-slate-200 bg-white">
+                    <div class="flex lg:hidden border-b border-white/10 bg-surface-800">
                         <button type="button" @click="activeLineupTab = 'squad'"
                             class="flex-1 px-4 py-2.5 text-sm font-medium text-center border-b-2 transition-colors min-h-[44px]"
-                            :class="activeLineupTab === 'squad' ? 'border-sky-500 text-sky-600' : 'border-transparent text-slate-500 hover:text-slate-700'">
+                            :class="activeLineupTab === 'squad' ? 'border-accent-blue text-accent-blue' : 'border-transparent text-slate-500 hover:text-slate-300'">
                             {{ __('app.squad') }}
                         </button>
                         <button type="button" @click="activeLineupTab = 'tactics'"
                             class="flex-1 px-4 py-2.5 text-sm font-medium text-center border-b-2 transition-colors min-h-[44px]"
-                            :class="activeLineupTab === 'tactics' ? 'border-sky-500 text-sky-600' : 'border-transparent text-slate-500 hover:text-slate-700'">
+                            :class="activeLineupTab === 'tactics' ? 'border-accent-blue text-accent-blue' : 'border-transparent text-slate-500 hover:text-slate-300'">
                             {{ __('squad.tactics') }}
                         </button>
                         <button type="button" @click="activeLineupTab = 'pitch'"
                             class="flex-1 px-4 py-2.5 text-sm font-medium text-center border-b-2 transition-colors min-h-[44px]"
-                            :class="activeLineupTab === 'pitch' ? 'border-sky-500 text-sky-600' : 'border-transparent text-slate-500 hover:text-slate-700'">
+                            :class="activeLineupTab === 'pitch' ? 'border-accent-blue text-accent-blue' : 'border-transparent text-slate-500 hover:text-slate-300'">
                             {{ __('squad.pitch') }}
                         </button>
                     </div>
@@ -213,7 +213,7 @@
                                                                 :style="`left: ${((col-1) / gridConfig.cols) * 100}%; top: ${(1 - (row / gridConfig.rows)) * 100}%; width: ${100 / gridConfig.cols}%; height: ${100 / gridConfig.rows}%; ${(positioningSlotId !== null && state === 'valid') ? 'cursor: pointer; pointer-events: auto' : ''}`"
                                                                 :class="{
                                                                     [getZoneColorClass(currentSlots.find(s => s.id === (positioningSlotId ?? draggingSlotId))?.role)]: state === 'valid',
-                                                                    'bg-white/5 border-white/5': state === 'occupied',
+                                                                    'bg-surface-800/5 border-white/5': state === 'occupied',
                                                                     'bg-black/15 border-transparent': state === 'invalid',
                                                                     'border-transparent': state === 'neutral',
                                                                 }"
@@ -241,8 +241,8 @@
                                                 @click="assigningSlotId = assigningSlotId === slot.id ? null : slot.id; positioningSlotId = null; if (assigningSlotId !== null) activeLineupTab = 'squad'"
                                                 class="w-11 h-11 rounded-full border-2 flex items-center justify-center backdrop-blur-sm cursor-pointer transition-all duration-200"
                                                 :class="assigningSlotId === slot.id
-                                                    ? 'border-white bg-white/30 ring-2 ring-white/60 scale-110 animate-pulse'
-                                                    : 'border-dashed border-white/40 bg-white/5 hover:border-white/70 hover:bg-white/15'"
+                                                    ? 'border-white bg-surface-800/30 ring-2 ring-white/60 scale-110 animate-pulse'
+                                                    : 'border-dashed border-white/40 bg-surface-800/5 hover:border-white/70 hover:bg-surface-800/15'"
                                             >
                                                 <span class="text-[10px] font-semibold tracking-wide" :class="assigningSlotId === slot.id ? 'text-white' : 'text-white/60'" x-text="slot.displayLabel"></span>
                                             </div>
@@ -274,7 +274,7 @@
                                                 <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-slate-900/95 backdrop-blur-sm text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-50 shadow-xl">
                                                     <div class="flex items-center gap-2">
                                                         <span class="font-semibold" x-text="slot.player?.name"></span>
-                                                        <span class="px-1.5 py-0.5 bg-white/15 rounded font-bold text-[10px]" x-text="slot.player?.overallScore"></span>
+                                                        <span class="px-1.5 py-0.5 bg-surface-800/15 rounded font-bold text-[10px]" x-text="slot.player?.overallScore"></span>
                                                     </div>
                                                     <div class="flex items-center gap-2 mt-1 text-slate-300">
                                                         <span x-text="slot.displayLabel"></span>
@@ -313,11 +313,11 @@
                                     <div
                                         x-show="positioningSlotId !== null"
                                         x-cloak
-                                        class="absolute bottom-2 left-1/2 -translate-x-1/2 px-4 py-2 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg text-xs font-medium text-slate-700 flex items-center gap-2 z-20"
+                                        class="absolute bottom-2 left-1/2 -translate-x-1/2 px-4 py-2 bg-surface-800/95 backdrop-blur-sm rounded-lg shadow-lg text-xs font-medium text-slate-300 flex items-center gap-2 z-20"
                                     >
                                         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                                         {{ __('squad.drag_or_tap') }}
-                                        <button type="button" @click="positioningSlotId = null" class="ml-1 text-slate-400 hover:text-slate-600">
+                                        <button type="button" @click="positioningSlotId = null" class="ml-1 text-slate-400 hover:text-slate-400">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                                         </button>
                                     </div>
@@ -326,11 +326,11 @@
                                     <div
                                         x-show="assigningSlotId !== null"
                                         x-cloak
-                                        class="absolute bottom-2 left-1/2 -translate-x-1/2 px-4 py-2 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg text-xs font-medium text-slate-700 flex items-center gap-2 z-20"
+                                        class="absolute bottom-2 left-1/2 -translate-x-1/2 px-4 py-2 bg-surface-800/95 backdrop-blur-sm rounded-lg shadow-lg text-xs font-medium text-slate-300 flex items-center gap-2 z-20"
                                     >
-                                        <span class="w-2 h-2 rounded-full bg-sky-500 animate-pulse"></span>
+                                        <span class="w-2 h-2 rounded-full bg-accent-blue/100 animate-pulse"></span>
                                         {{ __('squad.select_player_for_slot') }}
-                                        <button type="button" @click="assigningSlotId = null" class="ml-1 text-slate-400 hover:text-slate-600">
+                                        <button type="button" @click="assigningSlotId = null" class="ml-1 text-slate-400 hover:text-slate-400">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                                         </button>
                                     </div>
@@ -347,7 +347,7 @@
                         {{-- ─────────────────────────────────────── --}}
                         <div class="lg:col-span-3 overflow-x-auto" :class="{ 'hidden lg:block': activeLineupTab !== 'squad' }">
                             <table class="w-full text-sm">
-                                <thead class="text-left text-sm border-b sticky top-0 bg-white">
+                                <thead class="text-left text-sm border-b sticky top-0 bg-surface-800">
                                     <tr>
                                         <th class="font-semibold py-2 w-10"></th>
                                         <th class="font-semibold py-2 w-10"></th>
@@ -366,7 +366,7 @@
                                     ] as $group)
                                         @if($group['players']->isNotEmpty())
                                             <tr class="bg-slate-200">
-                                                <td colspan="6" class="py-2 px-2 text-xs font-semibold text-slate-600 uppercase tracking-wide">
+                                                <td colspan="6" class="py-2 px-2 text-xs font-semibold text-slate-400 uppercase tracking-wide">
                                                     {{ $group['name'] }}
                                                     <span class="font-normal text-slate-400">
                                                         ({{ __('squad.need') }} <span x-text="currentSlots.filter(s => s.role === '{{ $group['role'] }}').length"></span>)
@@ -388,14 +388,14 @@
                                                     @click="toggle('{{ $player->id }}', {{ $isUnavailable ? 'true' : 'false' }})"
                                                     @mouseenter="hoveredPlayerId = '{{ $player->id }}'"
                                                     @mouseleave="hoveredPlayerId = null"
-                                                    class="border-b border-slate-200 transition-colors
+                                                    class="border-b border-white/10 transition-colors
                                                         @if($isUnavailable)
                                                             text-slate-400 cursor-not-allowed
                                                         @else
-                                                            cursor-pointer hover:bg-slate-50
+                                                            cursor-pointer hover:bg-surface-700/50
                                                         @endif"
                                                     :class="{
-                                                        'bg-sky-50': isSelected('{{ $player->id }}'),
+                                                        'bg-accent-blue/10': isSelected('{{ $player->id }}'),
                                                         'opacity-50': !isSelected('{{ $player->id }}') && selectedCount >= 11 && !{{ $isUnavailable ? 'true' : 'false' }}
                                                     }"
                                                 >
@@ -404,7 +404,7 @@
                                                         @if(!$isUnavailable)
                                                             <div
                                                                 class="w-5 h-5 rounded border-2 flex items-center justify-center transition-colors mx-auto"
-                                                                :class="isSelected('{{ $player->id }}') ? 'border-sky-500 bg-sky-500' : 'border-slate-300'"
+                                                                :class="isSelected('{{ $player->id }}') ? 'border-accent-blue bg-accent-blue/100' : 'border-white/10'"
                                                             >
                                                                 <svg x-show="isSelected('{{ $player->id }}')" x-cloak class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                                                                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
@@ -428,7 +428,7 @@
                                                             @if($player->nationality_flag)
                                                                 <img src="/flags/{{ $player->nationality_flag['code'] }}.svg" class="w-4 h-3 rounded-sm shadow-sm hidden md:inline" title="{{ $player->nationality_flag['name'] }}">
                                                             @endif
-                                                            <div class="font-medium @if($isUnavailable) text-slate-400 @else text-slate-900 @endif">
+                                                            <div class="font-medium @if($isUnavailable) text-slate-400 @else text-white @endif">
                                                                 {{ $player->name }}
                                                             </div>
                                                         </div>
@@ -438,19 +438,19 @@
                                                     </td>
                                                     {{-- Fitness --}}
                                                     <td class="py-2 px-2 w-16">
-                                                        <x-ability-bar :value="$player->fitness" :max="100" size="sm" class="text-xs font-medium justify-center @if($player->fitness >= 90) text-green-600 @elseif($player->fitness >= 80) text-lime-600 @elseif($player->fitness < 70) text-amber-600 @endif" />
+                                                        <x-ability-bar :value="$player->fitness" :max="100" size="sm" class="text-xs font-medium justify-center @if($player->fitness >= 90) text-accent-green @elseif($player->fitness >= 80) text-lime-600 @elseif($player->fitness < 70) text-amber-600 @endif" />
                                                     </td>
                                                     {{-- Morale --}}
                                                     <td class="py-2 px-2 w-16">
-                                                        <x-ability-bar :value="$player->morale" :max="100" size="sm" class="text-xs font-medium justify-center @if($player->morale >= 85) text-green-600 @elseif($player->morale >= 75) text-lime-600 @elseif($player->morale < 65) text-amber-600 @endif" />
+                                                        <x-ability-bar :value="$player->morale" :max="100" size="sm" class="text-xs font-medium justify-center @if($player->morale >= 85) text-accent-green @elseif($player->morale >= 75) text-lime-600 @elseif($player->morale < 65) text-amber-600 @endif" />
                                                     </td>
                                                     {{-- Overall --}}
                                                     <td class="py-2 pr-3 text-center">
                                                         <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-semibold
                                                             @if($player->overall_score >= 80) bg-emerald-500 text-white
                                                             @elseif($player->overall_score >= 70) bg-lime-500 text-white
-                                                            @elseif($player->overall_score >= 60) bg-amber-500 text-white
-                                                            @else bg-slate-300 text-slate-700
+                                                            @elseif($player->overall_score >= 60) bg-accent-gold/100 text-white
+                                                            @else bg-slate-300 text-slate-300
                                                             @endif">{{ $player->overall_score }}</span>
                                                     </td>
                                                 </tr>
@@ -493,7 +493,7 @@
                                 </div>
 
                                 {{-- ── Divider ── --}}
-                                <div class="border-t border-slate-200"></div>
+                                <div class="border-t border-white/10"></div>
 
                                 {{-- ── Team Instructions ── --}}
                                 <div class="space-y-3">
@@ -520,7 +520,7 @@
 
                                 {{-- Tactical guide link --}}
                                 <div class="pt-1">
-                                    <button type="button" x-on:click="$dispatch('open-modal', 'tactical-guide')" class="text-xs text-sky-600 hover:text-sky-800 font-medium transition-colors">
+                                    <button type="button" x-on:click="$dispatch('open-modal', 'tactical-guide')" class="text-xs text-accent-blue hover:text-accent-blue font-medium transition-colors">
                                         {{ __('game.tactical_guide_link') }} &rarr;
                                     </button>
                                 </div>

@@ -7,7 +7,7 @@
 
     <div>
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-surface-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 sm:p-8">
                     <table class="min-w-full divide-y divide-slate-200">
                         <thead>
@@ -22,10 +22,10 @@
                         <tbody class="divide-y divide-slate-100">
                             @foreach($users as $user)
                                 <tr>
-                                    <td class="px-4 py-3 text-sm text-slate-900">
+                                    <td class="px-4 py-3 text-sm text-white">
                                         {{ $user->name }}
                                         @if($user->is_admin)
-                                            <span class="ml-1 inline-flex items-center rounded-full bg-purple-50 px-2 py-0.5 text-xs font-medium text-purple-700 ring-1 ring-inset ring-purple-700/10">Admin</span>
+                                            <span class="ml-1 inline-flex items-center rounded-full bg-purple-500/10 px-2 py-0.5 text-xs font-medium text-purple-400 ring-1 ring-inset ring-purple-700/10">Admin</span>
                                         @endif
                                     </td>
                                     <td class="px-4 py-3 text-sm text-slate-500">{{ $user->email }}</td>
@@ -35,7 +35,7 @@
                                         @if($user->id !== auth()->id())
                                             <form method="POST" action="{{ route('admin.impersonate', $user->id) }}" class="inline">
                                                 @csrf
-                                                <button type="submit" class="text-sm font-medium text-sky-600 hover:text-sky-800">
+                                                <button type="submit" class="text-sm font-medium text-accent-blue hover:text-accent-blue">
                                                     {{ __('admin.impersonate') }}
                                                 </button>
                                             </form>

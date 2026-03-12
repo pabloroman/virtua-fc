@@ -14,17 +14,31 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Barlow Semi Condensed', ...defaultTheme.fontFamily.sans],
+                heading: ['Barlow Condensed', ...defaultTheme.fontFamily.sans],
+                body: ['Inter', ...defaultTheme.fontFamily.sans],
+                sans: ['Inter', ...defaultTheme.fontFamily.sans],
             },
-            fontSize: {
-                xs: '0.8rem',
-                sm: '1rem',
-                base: '1.25rem',
-                'xl': '1.563rem',
-                '2xl': '1.953rem',
-                '3xl': '2.441rem',
-                '4xl': '3.052rem',
-            }
+            colors: {
+                surface: {
+                    900: '#0B1120',
+                    800: '#0F172A',
+                    700: '#1E293B',
+                    600: '#334155',
+                },
+                accent: {
+                    blue: '#3B82F6',
+                    gold: '#F59E0B',
+                    green: '#22C55E',
+                    red: '#EF4444',
+                    orange: '#F97316',
+                },
+                pitch: {
+                    dark: '#1a5c2a',
+                    base: '#1e6b31',
+                    light: '#22783a',
+                    line: 'rgba(255,255,255,0.25)',
+                },
+            },
         },
     },
 

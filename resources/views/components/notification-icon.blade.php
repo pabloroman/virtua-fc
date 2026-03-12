@@ -1,4 +1,4 @@
-@props(['icon', 'iconBg' => 'bg-slate-500', 'iconText' => 'text-white'])
+@props(['icon', 'iconBg' => 'bg-surface-700/500', 'iconText' => 'text-white'])
 
 <div class="w-8 h-8 rounded-full {{ $iconBg }} flex items-center justify-center flex-shrink-0">
     @switch($icon)

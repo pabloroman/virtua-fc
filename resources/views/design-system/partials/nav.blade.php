@@ -32,15 +32,15 @@ $groups = [
 <div class="space-y-6">
     @foreach($groups as $groupName => $items)
         <div>
-            <div class="px-3 mb-1 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">{{ $groupName }}</div>
+            <div class="px-3 mb-1 text-[10px] font-heading font-semibold text-slate-600 uppercase tracking-widest">{{ $groupName }}</div>
             <div class="space-y-0.5">
                 @foreach($items as $item)
                     <a href="#{{ $item['id'] }}"
                        @click="mobileNav = false"
-                       class="block px-3 py-1.5 text-sm rounded-md transition-colors"
+                       class="block px-3 py-1.5 text-xs font-medium rounded-md transition-colors"
                        :class="activeSection === '{{ $item['id'] }}'
-                           ? 'text-sky-600 font-semibold bg-sky-50 border-l-2 border-sky-500 -ml-px'
-                           : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'">
+                           ? 'text-accent-blue bg-accent-blue/10 border-l-2 border-accent-blue -ml-px'
+                           : 'text-slate-400 hover:text-white hover:bg-white/5'">
                         {{ $item['label'] }}
                     </a>
                 @endforeach

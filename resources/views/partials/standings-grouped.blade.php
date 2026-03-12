@@ -9,7 +9,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         @foreach($groupedStandings as $groupLabel => $groupStandings)
             <div class="space-y-2">
-                <h4 class="font-semibold text-lg text-slate-800">{{ __('game.group') }} {{ $groupLabel }}</h4>
+                <h4 class="font-semibold text-lg text-white">{{ __('game.group') }} {{ $groupLabel }}</h4>
                 <div class="overflow-x-auto">
                     <table class="min-w-full table-fixed text-right divide-y divide-slate-300">
                         <thead>
@@ -30,8 +30,8 @@
                         <tbody>
                         @foreach($groupStandings as $standing)
                             @php $isPlayer = $standing->team_id === $game->team_id; @endphp
-                            <tr class="border-b text-sm @if($isPlayer) bg-amber-50 @endif">
-                                <td class="align-middle whitespace-nowrap text-left px-1.5 text-slate-900 font-semibold">
+                            <tr class="border-b text-sm @if($isPlayer) bg-accent-gold/10 @endif">
+                                <td class="align-middle whitespace-nowrap text-left px-1.5 text-white font-semibold">
                                     {{ $standing->position }}
                                 </td>
                                 <td class="align-middle whitespace-nowrap py-1 px-1.5">

@@ -6,19 +6,19 @@
 <div class="space-y-5">
     {{-- Number Grid (visible only in numbers mode) --}}
     <div x-show="viewMode === 'numbers'" x-cloak>
-        <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wide pb-2 border-b border-slate-200 mb-3">{{ __('squad.number_grid') }}</h4>
+        <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wide pb-2 border-b border-white/10 mb-3">{{ __('squad.number_grid') }}</h4>
         <div class="grid grid-cols-10 gap-1">
             @for($n = 1; $n <= 99; $n++)
             <div class="aspect-square flex items-center justify-center rounded text-xs font-medium cursor-default transition-colors"
-                 :class="getNumberOwner({{ $n }}) ? 'bg-sky-100 text-sky-800 border border-sky-200' : 'bg-slate-50 text-slate-300 border border-slate-100'"
+                 :class="getNumberOwner({{ $n }}) ? 'bg-accent-blue/10 text-accent-blue border border-accent-blue/20' : 'bg-surface-700/50 text-slate-300 border border-white/5'"
                  :title="getNumberOwner({{ $n }})?.name ?? '{{ __('squad.available_number') }}'">
                 <span class="tabular-nums">{{ $n }}</span>
             </div>
             @endfor
         </div>
         <div class="mt-3 flex items-center gap-3 text-xs text-slate-500">
-            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-sky-100 border border-sky-200"></span> {{ __('squad.assigned') }}</span>
-            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-slate-50 border border-slate-100"></span> {{ __('squad.available_number') }}</span>
+            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-accent-blue/10 border border-accent-blue/20"></span> {{ __('squad.assigned') }}</span>
+            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-surface-700/50 border border-white/5"></span> {{ __('squad.available_number') }}</span>
         </div>
     </div>
 
@@ -29,13 +29,13 @@
     {{-- Alerts --}}
     @if(count($alerts) > 0)
     <div>
-        <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wide pb-2 border-b border-slate-200 mb-3">{{ __('squad.alerts') }}</h4>
+        <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wide pb-2 border-b border-white/10 mb-3">{{ __('squad.alerts') }}</h4>
         <div class="space-y-2">
             @foreach($alerts as $alert)
                 <div class="flex items-start gap-2 p-2.5 rounded-lg text-xs
-                    @if($alert['type'] === 'danger') bg-red-50 text-red-700 border border-red-100
-                    @elseif($alert['type'] === 'warning') bg-amber-50 text-amber-700 border border-amber-100
-                    @else bg-sky-50 text-sky-700 border border-sky-100
+                    @if($alert['type'] === 'danger') bg-accent-red/10 text-accent-red border border-red-100
+                    @elseif($alert['type'] === 'warning') bg-accent-gold/10 text-accent-gold border border-amber-100
+                    @else bg-accent-blue/10 text-accent-blue border border-sky-100
                     @endif">
                     @if($alert['type'] === 'danger')
                         <svg class="w-3.5 h-3.5 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
@@ -53,7 +53,7 @@
 
     {{-- Position Depth Chart --}}
     <div>
-        <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wide pb-2 border-b border-slate-200 mb-3">{{ __('squad.position_depth') }}</h4>
+        <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wide pb-2 border-b border-white/10 mb-3">{{ __('squad.position_depth') }}</h4>
         <div class="space-y-1.5">
             @foreach($depthChart as $slot => $data)
                 @php
@@ -66,7 +66,7 @@
                     };
                 @endphp
                 <div class="flex items-center gap-2">
-                    <span class="w-8 text-xs font-medium text-slate-600 tabular-nums text-right shrink-0">{{ \App\Support\PositionMapper::slotToDisplayAbbreviation($slot) }}</span>
+                    <span class="w-8 text-xs font-medium text-slate-400 tabular-nums text-right shrink-0">{{ \App\Support\PositionMapper::slotToDisplayAbbreviation($slot) }}</span>
                     <div class="flex-1 flex items-center gap-1">
                         @for($i = 0; $i < min($data['count'], 5); $i++)
                             <div class="w-4 h-4 rounded-sm {{ $barColor }}"></div>
@@ -83,14 +83,14 @@
 
     {{-- Age Profile --}}
     <div>
-        <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wide pb-2 border-b border-slate-200 mb-3">{{ __('squad.age_profile') }}</h4>
+        <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wide pb-2 border-b border-white/10 mb-3">{{ __('squad.age_profile') }}</h4>
         @php
             $total = max($squadSize, 1);
             $youngPct = round($youngCount / $total * 100);
             $primePct = round($primeCount / $total * 100);
             $veteranPct = 100 - $youngPct - $primePct;
         @endphp
-        <div class="flex h-3 rounded-full overflow-hidden bg-slate-100">
+        <div class="flex h-3 rounded-full overflow-hidden bg-surface-700">
             @if($youngPct > 0)
                 <div class="bg-green-400 transition-all" style="width: {{ $youngPct }}%"></div>
             @endif
@@ -104,15 +104,15 @@
         <div class="flex items-center justify-between mt-2 text-xs">
             <span class="flex items-center gap-1">
                 <span class="w-2 h-2 rounded-full bg-green-400"></span>
-                <span class="text-slate-600">≤23: {{ $youngCount }}</span>
+                <span class="text-slate-400">≤23: {{ $youngCount }}</span>
             </span>
             <span class="flex items-center gap-1">
                 <span class="w-2 h-2 rounded-full bg-sky-400"></span>
-                <span class="text-slate-600">24-31: {{ $primeCount }}</span>
+                <span class="text-slate-400">24-31: {{ $primeCount }}</span>
             </span>
             <span class="flex items-center gap-1">
                 <span class="w-2 h-2 rounded-full bg-orange-400"></span>
-                <span class="text-slate-600">32+: {{ $veteranCount }}</span>
+                <span class="text-slate-400">32+: {{ $veteranCount }}</span>
             </span>
         </div>
     </div>
@@ -120,16 +120,16 @@
     {{-- Contract Watchlist (career mode) --}}
     @if($isCareerMode)
     <div>
-        <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wide pb-2 border-b border-slate-200 mb-3">{{ __('squad.contract_watch') }}</h4>
+        <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wide pb-2 border-b border-white/10 mb-3">{{ __('squad.contract_watch') }}</h4>
         <div class="space-y-3">
             @if($expiringThisSeason->isNotEmpty())
                 <div>
-                    <div class="text-xs font-medium text-red-600 mb-1.5">{{ __('squad.expiring_this_season') }}</div>
+                    <div class="text-xs font-medium text-accent-red mb-1.5">{{ __('squad.expiring_this_season') }}</div>
                     <div class="space-y-1">
                         @foreach($expiringThisSeason as $ep)
                             <button @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $ep->id]) }}')"
-                                    class="w-full flex items-center justify-between py-1 px-2 rounded hover:bg-slate-100 transition-colors text-left">
-                                <span class="text-xs text-slate-700 truncate">{{ $ep->name }}</span>
+                                    class="w-full flex items-center justify-between py-1 px-2 rounded hover:bg-surface-700 transition-colors text-left">
+                                <span class="text-xs text-slate-300 truncate">{{ $ep->name }}</span>
                                 <span class="text-xs text-red-500 font-medium shrink-0 ml-2">{{ $ep->contract_expiry_year }}</span>
                             </button>
                         @endforeach
@@ -143,8 +143,8 @@
                     <div class="space-y-1">
                         @foreach($expiringNextSeason as $ep)
                             <button @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $ep->id]) }}')"
-                                    class="w-full flex items-center justify-between py-1 px-2 rounded hover:bg-slate-100 transition-colors text-left">
-                                <span class="text-xs text-slate-700 truncate">{{ $ep->name }}</span>
+                                    class="w-full flex items-center justify-between py-1 px-2 rounded hover:bg-surface-700 transition-colors text-left">
+                                <span class="text-xs text-slate-300 truncate">{{ $ep->name }}</span>
                                 <span class="text-xs text-amber-500 font-medium shrink-0 ml-2">{{ $ep->contract_expiry_year }}</span>
                             </button>
                         @endforeach
@@ -158,11 +158,11 @@
 
             @if($highEarners->isNotEmpty())
                 <div>
-                    <div class="text-xs font-medium text-slate-600 mb-1.5">{{ __('squad.highest_earners') }}</div>
+                    <div class="text-xs font-medium text-slate-400 mb-1.5">{{ __('squad.highest_earners') }}</div>
                     <div class="space-y-1">
                         @foreach($highEarners as $he)
                             <div class="flex items-center justify-between py-1 px-2 text-xs">
-                                <span class="text-slate-700 truncate">{{ $he->name }}</span>
+                                <span class="text-slate-300 truncate">{{ $he->name }}</span>
                                 <span class="text-slate-500 font-medium shrink-0 ml-2">{{ $he->formatted_wage }}{{ __('squad.per_year') }}</span>
                             </div>
                         @endforeach

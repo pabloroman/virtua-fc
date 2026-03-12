@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VirtuaFC — Squad</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        heading: ['Barlow Condensed', 'sans-serif'],
+                        body: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        surface: {
+                            900: '#0B1120',
+                            800: '#0F172A',
+                            700: '#1E293B',
+                            600: '#334155',
+                        },
+                        accent: {
+                            blue: '#3B82F6',
+                            gold: '#F59E0B',
+                            green: '#22C55E',
+                            red: '#EF4444',
+                            orange: '#F97316',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .font-heading { font-family: 'Barlow Condensed', sans-serif; }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: #0F172A; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+
+        /* Fitness bar animation */
+        .fitness-bar { transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        /* Player row hover */
+        .player-row {
+            transition: all 0.15s ease;
+        }
+        .player-row:hover {
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        /* Position filter pills */
+        .pos-filter {
+            transition: all 0.15s ease;
+        }
+        .pos-filter.active {
+            background: #3B82F6;
+            color: white;
+        }
+
+        /* Stat bar */
+        .stat-bar-track {
+            height: 3px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .stat-bar-fill {
+            height: 100%;
+            border-radius: 2px;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Mobile bottom nav */
+        .bottom-nav {
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+        /* Rating badge colors */
+        .rating-elite { background: #22C55E; color: #052e16; }
+        .rating-good { background: #84CC16; color: #1a2e05; }
+        .rating-average { background: #F59E0B; color: #451a03; }
+        .rating-below { background: #F97316; color: #431407; }
+        .rating-poor { background: #EF4444; color: #450a0a; }
+
+        /* Morale indicators */
+        .morale-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        /* Sort dropdown */
+        .sort-dropdown {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+        }
+
+        /* Player detail panel slide */
+        .detail-panel {
+            transition: max-height 0.3s ease, opacity 0.2s ease;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+        }
+        .detail-panel.open {
+            max-height: 500px;
+            opacity: 1;
+        }
+
+        /* Nav item */
+        .nav-item {
+            position: relative;
+        }
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #3B82F6;
+        }
+
+        /* Subtle glow on hover for rating */
+        .rating-badge {
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .player-row:hover .rating-badge {
+            transform: scale(1.08);
+        }
+    </style>
+</head>
+<body class="bg-surface-900 text-white min-h-screen font-body pb-20 lg:pb-0">
+
+    <!-- Mobile Header -->
+    <header class="sticky top-0 z-50 bg-surface-900/95 backdrop-blur-md border-b border-white/5">
+        <div class="max-w-7xl mx-auto">
+            <!-- Top bar -->
+            <div class="flex items-center justify-between px-4 py-3 lg:px-6">
+                <!-- Left: Menu + Team -->
+                <div class="flex items-center gap-3">
+                    <!-- Hamburger (mobile) -->
+                    <button class="lg:hidden text-slate-400 hover:text-white" aria-label="Menu">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/>
+                        </svg>
+                    </button>
+                    <!-- Team badge + name -->
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center flex-shrink-0">
+                            <span class="font-heading font-bold text-sm text-white">VFC</span>
+                        </div>
+                        <div class="hidden sm:block">
+                            <h1 class="font-heading font-semibold text-base leading-none tracking-wide">VIRTUA FC</h1>
+                            <p class="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5">La Liga · Season 2025/26</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Center: Desktop nav -->
+                <nav class="hidden lg:flex items-center gap-1">
+                    <a href="#" class="nav-item active px-3 py-2 text-xs font-medium text-white uppercase tracking-wider">Squad</a>
+                    <a href="lineup.html" class="nav-item px-3 py-2 text-xs font-medium text-slate-500 hover:text-slate-300 uppercase tracking-wider">Tactics</a>
+                    <a href="#" class="nav-item px-3 py-2 text-xs font-medium text-slate-500 hover:text-slate-300 uppercase tracking-wider">Transfers</a>
+                    <a href="#" class="nav-item px-3 py-2 text-xs font-medium text-slate-500 hover:text-slate-300 uppercase tracking-wider">Fixtures</a>
+                    <a href="#" class="nav-item px-3 py-2 text-xs font-medium text-slate-500 hover:text-slate-300 uppercase tracking-wider">Finances</a>
+                    <a href="#" class="nav-item px-3 py-2 text-xs font-medium text-slate-500 hover:text-slate-300 uppercase tracking-wider">Academy</a>
+                </nav>
+
+                <!-- Right: Budget + notifications -->
+                <div class="flex items-center gap-3">
+                    <div class="hidden sm:flex items-center gap-2 bg-surface-700/50 rounded-lg px-3 py-1.5">
+                        <span class="text-[10px] text-slate-500 uppercase tracking-wider">Budget</span>
+                        <span class="text-xs font-semibold text-accent-gold font-heading tracking-wide">€42.5M</span>
+                    </div>
+                    <button class="relative text-slate-400 hover:text-white" aria-label="Notifications">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/>
+                        </svg>
+                        <span class="absolute -top-0.5 -right-0.5 w-2 h-2 bg-accent-red rounded-full"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main content -->
+    <main class="max-w-7xl mx-auto px-4 lg:px-6 pt-4 lg:pt-6">
+
+        <!-- Squad Header -->
+        <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-4">
+            <div>
+                <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide">Squad</h2>
+                <p class="text-xs text-slate-500 mt-0.5">25 players · Avg age 26.3 · Avg rating 74</p>
+            </div>
+            <!-- Squad value -->
+            <div class="flex items-center gap-4 text-xs">
+                <div class="flex items-center gap-1.5">
+                    <span class="text-slate-500">Squad Value</span>
+                    <span class="font-semibold text-white">€285.4M</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <span class="text-slate-500">Wage Bill</span>
+                    <span class="font-semibold text-white">€1.8M/wk</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters bar -->
+        <div class="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
+            <!-- Position filters -->
+            <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+                <button class="pos-filter active px-3 py-1.5 rounded-md text-xs font-medium bg-surface-700 text-slate-400 whitespace-nowrap" onclick="filterPosition(this, 'all')">All</button>
+                <button class="pos-filter px-3 py-1.5 rounded-md text-xs font-medium bg-surface-700 text-slate-400 whitespace-nowrap" onclick="filterPosition(this, 'gk')">GK <span class="text-slate-600 ml-0.5">3</span></button>
+                <button class="pos-filter px-3 py-1.5 rounded-md text-xs font-medium bg-surface-700 text-slate-400 whitespace-nowrap" onclick="filterPosition(this, 'def')">DEF <span class="text-slate-600 ml-0.5">8</span></button>
+                <button class="pos-filter px-3 py-1.5 rounded-md text-xs font-medium bg-surface-700 text-slate-400 whitespace-nowrap" onclick="filterPosition(this, 'mid')">MID <span class="text-slate-600 ml-0.5">8</span></button>
+                <button class="pos-filter px-3 py-1.5 rounded-md text-xs font-medium bg-surface-700 text-slate-400 whitespace-nowrap" onclick="filterPosition(this, 'fwd')">FWD <span class="text-slate-600 ml-0.5">6</span></button>
+            </div>
+            <!-- Sort + Search -->
+            <div class="flex items-center gap-2 sm:ml-auto">
+                <div class="relative flex-1 sm:flex-initial">
+                    <svg class="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
+                    </svg>
+                    <input type="text" placeholder="Search players..." class="w-full sm:w-44 bg-surface-700 border border-white/5 rounded-md text-xs text-white placeholder-slate-500 pl-8 pr-3 py-1.5 focus:outline-none focus:border-accent-blue/50">
+                </div>
+                <select class="sort-dropdown bg-surface-700 border border-white/5 rounded-md text-xs text-slate-400 pl-2.5 pr-6 py-1.5 focus:outline-none">
+                    <option>Rating</option>
+                    <option>Age</option>
+                    <option>Value</option>
+                    <option>Name</option>
+                    <option>Fitness</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Squad Summary Cards (mobile: horizontal scroll, desktop: row) -->
+        <div class="flex gap-2.5 overflow-x-auto no-scrollbar mb-5 pb-1">
+            <div class="flex-shrink-0 bg-surface-700/50 border border-white/5 rounded-lg px-3.5 py-2.5 min-w-[120px]">
+                <p class="text-[10px] text-slate-500 uppercase tracking-wider">Available</p>
+                <p class="font-heading text-xl font-bold text-accent-green mt-0.5">21</p>
+            </div>
+            <div class="flex-shrink-0 bg-surface-700/50 border border-white/5 rounded-lg px-3.5 py-2.5 min-w-[120px]">
+                <p class="text-[10px] text-slate-500 uppercase tracking-wider">Injured</p>
+                <p class="font-heading text-xl font-bold text-accent-red mt-0.5">3</p>
+            </div>
+            <div class="flex-shrink-0 bg-surface-700/50 border border-white/5 rounded-lg px-3.5 py-2.5 min-w-[120px]">
+                <p class="text-[10px] text-slate-500 uppercase tracking-wider">Suspended</p>
+                <p class="font-heading text-xl font-bold text-accent-orange mt-0.5">1</p>
+            </div>
+            <div class="flex-shrink-0 bg-surface-700/50 border border-white/5 rounded-lg px-3.5 py-2.5 min-w-[120px]">
+                <p class="text-[10px] text-slate-500 uppercase tracking-wider">On Loan</p>
+                <p class="font-heading text-xl font-bold text-slate-400 mt-0.5">2</p>
+            </div>
+            <div class="flex-shrink-0 bg-surface-700/50 border border-white/5 rounded-lg px-3.5 py-2.5 min-w-[120px]">
+                <p class="text-[10px] text-slate-500 uppercase tracking-wider">Avg Fitness</p>
+                <p class="font-heading text-xl font-bold text-accent-green mt-0.5">87%</p>
+            </div>
+        </div>
+
+        <!-- Player List -->
+        <div class="bg-surface-800 border border-white/5 rounded-xl overflow-hidden">
+
+            <!-- Table header (desktop only) -->
+            <div class="hidden lg:grid grid-cols-[1fr_60px_40px_72px_100px_100px_100px_80px_80px_72px] gap-2 px-4 py-2.5 border-b border-white/5 text-[10px] text-slate-500 uppercase tracking-wider">
+                <span>Player</span>
+                <span class="text-center">Pos</span>
+                <span class="text-center">Age</span>
+                <span class="text-center">Rating</span>
+                <span class="text-center">Fitness</span>
+                <span class="text-center">Morale</span>
+                <span>Key Stats</span>
+                <span class="text-right">Value</span>
+                <span class="text-right">Wage</span>
+                <span class="text-center">Contract</span>
+            </div>
+
+            <!-- GOALKEEPERS Section -->
+            <div class="px-4 py-2 bg-surface-700/30 border-b border-white/5">
+                <span class="font-heading text-[11px] font-semibold uppercase tracking-widest text-slate-500">Goalkeepers</span>
+            </div>
+
+            <!-- Player 1: GK -->
+            <div class="player-row border-b border-white/5 cursor-pointer" onclick="toggleDetail(this)">
+                <!-- Mobile layout -->
+                <div class="lg:hidden px-4 py-3">
+                    <div class="flex items-center gap-3">
+                        <!-- Player avatar -->
+                        <div class="relative flex-shrink-0">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/20 flex items-center justify-center">
+                                <span class="font-heading font-bold text-sm text-amber-400">MT</span>
+                            </div>
+                            <span class="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-amber-500/20 border border-surface-800 flex items-center justify-center">
+                                <span class="text-[7px] font-bold text-amber-400">GK</span>
+                            </span>
+                        </div>
+                        <!-- Player info -->
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-medium text-white truncate">Marc-André ter Stegen</span>
+                                <span class="text-[10px] text-slate-600">28</span>
+                            </div>
+                            <div class="flex items-center gap-3 mt-1">
+                                <!-- Fitness mini bar -->
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-[10px] text-slate-500">FIT</span>
+                                    <div class="w-14 h-1.5 rounded-full bg-surface-600 overflow-hidden">
+                                        <div class="h-full rounded-full bg-accent-green fitness-bar" style="width: 92%"></div>
+                                    </div>
+                                </div>
+                                <span class="text-[10px] text-slate-600">€28M</span>
+                            </div>
+                        </div>
+                        <!-- Rating -->
+                        <div class="rating-badge w-9 h-9 rounded-lg rating-elite flex items-center justify-center flex-shrink-0">
+                            <span class="font-heading font-bold text-base">83</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Desktop layout -->
+                <div class="hidden lg:grid grid-cols-[1fr_60px_40px_72px_100px_100px_100px_80px_80px_72px] gap-2 items-center px-4 py-2.5">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/20 flex items-center justify-center flex-shrink-0">
+                            <span class="font-heading font-bold text-xs text-amber-400">MT</span>
+                        </div>
+                        <div>
+                            <span class="text-sm font-medium text-white">Marc-André ter Stegen</span>
+                            <div class="flex items-center gap-1 mt-0.5">
+                                <span class="text-[10px] text-slate-600">🇩🇪</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-center">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-500/10 text-amber-400 uppercase">GK</span>
+                    </div>
+                    <span class="text-xs text-slate-400 text-center">28</span>
+                    <div class="flex justify-center">
+                        <div class="rating-badge w-8 h-8 rounded-lg rating-elite flex items-center justify-center">
+                            <span class="font-heading font-bold text-sm">83</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 justify-center">
+                        <div class="w-16 h-1.5 rounded-full bg-surface-600 overflow-hidden">
+                            <div class="h-full rounded-full bg-accent-green fitness-bar" style="width: 92%"></div>
+                        </div>
+                        <span class="text-[10px] text-slate-500 w-7 text-right">92%</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 justify-center">
+                        <div class="morale-dot bg-accent-green"></div>
+                        <span class="text-[10px] text-slate-400">Happy</span>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <div class="text-center">
+                            <span class="text-[9px] text-slate-600 block">REF</span>
+                            <span class="text-[11px] text-slate-300 font-medium">85</span>
+                        </div>
+                        <div class="text-center">
+                            <span class="text-[9px] text-slate-600 block">HAN</span>
+                            <span class="text-[11px] text-slate-300 font-medium">82</span>
+                        </div>
+                        <div class="text-center">
+                            <span class="text-[9px] text-slate-600 block">POS</span>
+                            <span class="text-[11px] text-slate-300 font-medium">84</span>
+                        </div>
+                    </div>
+                    <span class="text-xs text-slate-300 text-right">€28.0M</span>
+                    <span class="text-xs text-slate-500 text-right">€185K</span>
+                    <span class="text-[11px] text-slate-500 text-center">2028</span>
+                </div>
+            </div>
+
+            <!-- Player 2: GK -->
+            <div class="player-row border-b border-white/5 cursor-pointer" onclick="toggleDetail(this)">
+                <div class="lg:hidden px-4 py-3">
+                    <div class="flex items-center gap-3">
+                        <div class="relative flex-shrink-0">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/20 flex items-center justify-center">
+                                <span class="font-heading font-bold text-sm text-amber-400">IP</span>
+                            </div>
+                            <span class="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-amber-500/20 border border-surface-800 flex items-center justify-center">
+                                <span class="text-[7px] font-bold text-amber-400">GK</span>
+                            </span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-medium text-white truncate">Iñaki Peña</span>
+                                <span class="text-[10px] text-slate-600">25</span>
+                            </div>
+                            <div class="flex items-center gap-3 mt-1">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-[10px] text-slate-500">FIT</span>
+                                    <div class="w-14 h-1.5 rounded-full bg-surface-600 overflow-hidden">
+                                        <div class="h-full rounded-full bg-accent-green fitness-bar" style="width: 100%"></div>
+                                    </div>
+                                </div>
+                                <span class="text-[10px] text-slate-600">€8M</span>
+                            </div>
+                        </div>
+                        <div class="rating-badge w-9 h-9 rounded-lg rating-good flex items-center justify-center flex-shrink-0">
+                            <span class="font-heading font-bold text-base">73</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden lg:grid grid-cols-[1fr_60px_40px_72px_100px_100px_100px_80px_80px_72px] gap-2 items-center px-4 py-2.5">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/20 flex items-center justify-center flex-shrink-0">
+                            <span class="font-heading font-bold text-xs text-amber-400">IP</span>
+                        </div>
+                        <div>
+                            <span class="text-sm font-medium text-white">Iñaki Peña</span>
+                            <div class="flex items-center gap-1 mt-0.5"><span class="text-[10px] text-slate-600">🇪🇸</span></div>
+                        </div>
+                    </div>
+                    <div class="flex justify-center"><span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-500/10 text-amber-400 uppercase">GK</span></div>
+                    <span class="text-xs text-slate-400 text-center">25</span>
+                    <div class="flex justify-center"><div class="rating-badge w-8 h-8 rounded-lg rating-good flex items-center justify-center"><span class="font-heading font-bold text-sm">73</span></div></div>
+                    <div class="flex items-center gap-2 justify-center">
+                        <div class="w-16 h-1.5 rounded-full bg-surface-600 overflow-hidden"><div class="h-full rounded-full bg-accent-green fitness-bar" style="width: 100%"></div></div>
+                        <span class="text-[10px] text-slate-500 w-7 text-right">100%</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 justify-center"><div class="morale-dot bg-accent-green"></div><span class="text-[10px] text-slate-400">Content</span></div>
+                    <div class="flex items-center gap-1">
+                        <div class="text-center"><span class="text-[9px] text-slate-600 block">REF</span><span class="text-[11px] text-slate-300 font-medium">71</span></div>
+                        <div class="text-center"><span class="text-[9px] text-slate-600 block">HAN</span><span class="text-[11px] text-slate-300 font-medium">74</span></div>
+                        <div class="text-center"><span class="text-[9px] text-slate-600 block">POS</span><span class="text-[11px] text-slate-300 font-medium">72</span></div>
+                    </div>
+                    <span class="text-xs text-slate-300 text-right">€8.0M</span>
+                    <span class="text-xs text-slate-500 text-right">€45K</span>
+                    <span class="text-[11px] text-slate-500 text-center">2027</span>
+                </div>
+            </div>
+
+            <!-- DEFENDERS Section -->
+            <div class="px-4 py-2 bg-surface-700/30 border-b border-white/5">
+                <span class="font-heading text-[11px] font-semibold uppercase tracking-widest text-slate-500">Defenders</span>
+            </div>
+
+            <!-- Player 3: CB -->
+            <div class="player-row border-b border-white/5 cursor-pointer" onclick="toggleDetail(this)">
+                <div class="lg:hidden px-4 py-3">
+                    <div class="flex items-center gap-3">
+                        <div class="relative flex-shrink-0">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/20 flex items-center justify-center">
+                                <span class="font-heading font-bold text-sm text-blue-400">RA</span>
+                            </div>
+                            <span class="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-blue-500/20 border border-surface-800 flex items-center justify-center">
+                                <span class="text-[7px] font-bold text-blue-400">CB</span>
+                            </span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-medium text-white truncate">Ronald Araújo</span>
+                                <span class="text-[10px] text-slate-600">26</span>
+                            </div>
+                            <div class="flex items-center gap-3 mt-1">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-[10px] text-slate-500">FIT</span>
+                                    <div class="w-14 h-1.5 rounded-full bg-surface-600 overflow-hidden">
+                                        <div class="h-full rounded-full bg-accent-red fitness-bar" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                                <span class="text-[10px] text-accent-red flex items-center gap-0.5">
+                                    <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z"/></svg>
+                                    ACL · 5mo
+                                </span>
+                            </div>
+                        </div>
+                        <div class="rating-badge w-9 h-9 rounded-lg rating-elite flex items-center justify-center flex-shrink-0">
+                            <span class="font-heading font-bold text-base">84</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden lg:grid grid-cols-[1fr_60px_40px_72px_100px_100px_100px_80px_80px_72px] gap-2 items-center px-4 py-2.5">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/20 flex items-center justify-center flex-shrink-0">
+                            <span class="font-heading font-bold text-xs text-blue-400">RA</span>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-medium text-white">Ronald Araújo</span>
+                                <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-red-500/10 text-[9px] text-accent-red font-medium">
+                                    <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z"/></svg>
+                                    ACL · 5 months
+                                </span>
+                            </div>
+                            <div class="flex items-center gap-1 mt-0.5"><span class="text-[10px] text-slate-600">🇺🇾</span></div>
+                        </div>
+                    </div>
+                    <div class="flex justify-center"><span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-500/10 text-blue-400 uppercase">CB</span></div>
+                    <span class="text-xs text-slate-400 text-center">26</span>
+                    <div class="flex justify-center"><div class="rating-badge w-8 h-8 rounded-lg rating-elite flex items-center justify-center"><span class="font-heading font-bold text-sm">84</span></div></div>
+                    <div class="flex items-center gap-2 justify-center">
+                        <div class="w-16 h-1.5 rounded-full bg-surface-600 overflow-hidden"><div class="h-full rounded-full bg-accent-red fitness-bar" style="width: 0%"></div></div>
+                        <span class="text-[10px] text-accent-red w-7 text-right">0%</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 justify-center"><div class="morale-dot bg-accent-orange"></div><span class="text-[10px] text-slate-400">Unhappy</span></div>
+                    <div class="flex items-center gap-1">
+                        <div class="text-center"><span class="text-[9px] text-slate-600 block">DEF</span><span class="text-[11px] text-slate-300 font-medium">86</span></div>
+                        <div class="text-center"><span class="text-[9px] text-slate-600 block">PHY</span><span class="text-[11px] text-slate-300 font-medium">88</span></div>
+                        <div class="text-center"><span class="text-[9px] text-slate-600 block">SPD</span><span class="text-[11px] text-slate-300 font-medium">80</span></div>
+                    </div>
+                    <span class="text-xs text-slate-300 text-right">€52.0M</span>
+                    <span class="text-xs text-slate-500 text-right">€210K</span>
+                    <span class="text-[11px] text-slate-500 text-center">2026</span>
+                </div>
+            </div>
+
+            <!-- Player 4: CB -->
+            <div class="player-row border-b border-white/5 cursor-pointer" onclick="toggleDetail(this)">
+                <div class="lg:hidden px-4 py-3">
+                    <div class="flex items-center gap-3">
+                        <div class="relative flex-shrink-0">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/20 flex items-center justify-center">
+                                <span class="font-heading font-bold text-sm text-blue-400">PC</span>
+                            </div>
+                            <span class="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-blue-500/20 border border-surface-800 flex items-center justify-center">
+                                <span class="text-[7px] font-bold text-blue-400">CB</span>
+                            </span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-medium text-white truncate">Pau Cubarsí</span>
+                                <span class="text-[10px] text-slate-600">18</span>
+                            </div>
+                            <div class="flex items-center gap-3 mt-1">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-[10px] text-slate-500">FIT</span>
+                                    <div class="w-14 h-1.5 rounded-full bg-surface-600 overflow-hidden">
+                                        <div class="h-full rounded-full bg-accent-green fitness-bar" style="width: 88%"></div>
+                                    </div>
+                                </div>
+                                <span class="text-[10px] text-slate-600">€45M</span>
+                            </div>
+                        </div>
+                        <div class="rating-badge w-9 h-9 rounded-lg rating-elite flex items-center justify-center flex-shrink-0">
+                            <span class="font-heading font-bold text-base">80</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden lg:grid grid-cols-[1fr_60px_40px_72px_100px_100px_100px_80px_80px_72px] gap-2 items-center px-4 py-2.5">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/20 flex items-center justify-center flex-shrink-0">
+                            <span class="font-heading font-bold text-xs text-blue-400">PC</span>
+                        </div>
+                        <span class="text-sm font-medium text-white">Pau Cubarsí</span>
+                    </div>
+                    <div class="flex justify-center"><span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-500/10 text-blue-400 uppercase">CB</span></div>
+                    <span class="text-xs text-slate-400 text-center">18</span>
+                    <div class="flex justify-center"><div class="rating-badge w-8 h-8 rounded-lg rating-elite flex items-center justify-center"><span class="font-heading font-bold text-sm">80</span></div></div>
+                    <div class="flex items-center gap-2 justify-center">
+                        <div class="w-16 h-1.5 rounded-full bg-surface-600 overflow-hidden"><div class="h-full rounded-full bg-accent-green fitness-bar" style="width: 88%"></div></div>
+                        <span class="text-[10px] text-slate-500 w-7 text-right">88%</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 justify-center"><div class="morale-dot bg-accent-green"></div><span class="text-[10px] text-slate-400">Happy</span></div>
+                    <div class="flex items-center gap-1">
+                        <div class="text-center"><span class="text-[9px] text-slate-600 block">DEF</span><span class="text-[11px] text-slate-300 font-medium">79</span></div>
+                        <div class="text-center"><span class="text-[9px] text-slate-600 block">PHY</span><span class="text-[11px] text-slate-300 font-medium">76</span></div>
+                        <div class="text-center"><span class="text-[9px] text-slate-600 block">SPD</span><span class="text-[11px] text-slate-300 font-medium">82</span></div>
+                    </div>
+                    <span class="text-xs text-slate-300 text-right">€45.0M</span>
+                    <span class="text-xs text-slate-500 text-right">€75K</span>
+                    <span class="text-[11px] text-accent-gold text-center font-medium">2026</span>
+                </div>
+            </div>
+
+            <!-- Player 5: LB -->
+            <div class="player-row border-b border-white/5 cursor-pointer" onclick="toggleDetail(this)">
+                <div class="lg:hidden px-4 py-3">
+                    <div class="flex items-center gap-3">
+                        <div class="relative flex-shrink-0">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/20 flex items-center justify-center">
+                                <span class="font-heading font-bold text-sm text-blue-400">AB</span>
+                            </div>
+                            <span class="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-blue-500/20 border border-surface-800 flex items-center justify-center">
+                                <span class="text-[7px] font-bold text-blue-400">LB</span>
+                            </span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-medium text-white truncate">Alejandro Balde</span>
+                                <span class="text-[10px] text-slate-600">21</span>
+                            </div>
+                            <div class="flex items-center gap-3 mt-1">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-[10px] text-slate-500">FIT</span>
+                                    <div class="w-14 h-1.5 rounded-full bg-surface-600 overflow-hidden">
+                                        <div class="h-full rounded-full bg-accent-green fitness-bar" style="width: 95%"></div>
+                                    </div>
+                                </div>
+                                <span class="text-[10px] text-slate-600">€35M</span>
+                            </div>
+                        </div>
+                        <div class="rating-badge w-9 h-9 rounded-lg rating-elite flex items-center justify-center flex-shrink-0">
+                            <span class="font-heading font-bold text-base">81</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden lg:grid grid-cols-[1fr_60px_40px_72px_100px_100px_100px_80px_80px_72px] gap-2 items-center px-4 py-2.5">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/20 flex items-center justify-center flex-shrink-0">
+                            <span class="font-heading font-bold text-xs text-blue-400">AB</span>
+                        </div>
+                        <span class="text-sm font-medium text-white">Alejandro Balde</span>
+                    </div>
+                    <div class="flex justify-center"><span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-500/10 text-blue-400 uppercase">LB</span></div>
+                    <span class="text-xs text-slate-400 text-center">21</span>
+                    <div class="flex justify-center"><div class="rating-badge w-8 h-8 rounded-lg rating-elite flex items-center justify-center"><span class="font-heading font-bold text-sm">81</span></div></div>
+                    <div class="flex items-center gap-2 justify-center">
+                        <div class="w-16 h-1.5 rounded-full bg-surface-600 overflow-hidden"><div class="h-full rounded-full bg-accent-green fitness-bar" style="width: 95%"></div></div>
+                        <span class="text-[10px] text-slate-500 w-7 text-right">95%</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 justify-center"><div class="morale-dot bg-accent-green"></div><span class="text-[10px] text-slate-400">Ecstatic</span></div>
+                    <div class="flex items-center gap-1">
+                        <div class="text-center"><span class="text-[9px] text-slate-600 block">DEF</span><span class="text-[11px] text-slate-300 font-medium">77</span></div>
+                        <div class="text-center"><span class="text-[9px] text-slate-600 block">CRS</span><span class="text-[11px] text-slate-300 font-medium">79</span></div>
+                        <div class="text-center"><span class="text-[9px] text-slate-600 block">SPD</span><span class="text-[11px] text-slate-300 font-medium">90</span></div>
+                    </div>
+                    <span class="text-xs text-slate-300 text-right">€35.0M</span>
+                    <span class="text-xs text-slate-500 text-right">€120K</span>
+                    <span class="text-[11px] text-slate-500 text-center">2028</span>
+                </div>
+            </div>
+
+            <!-- Player 6: RB -->
+            <div class="player-row border-b border-white/5 cursor-pointer" onclick="toggleDetail(this)">
+                <div class="lg:hidden px-4 py-3">
+                    <div class="flex items-center gap-3">
+                        <div class="relative flex-shrink-0">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/20 flex items-center justify-center">
+                                <span class="font-heading font-bold text-sm text-blue-400">JK</span>
+                            </div>
+                            <span class="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-blue-500/20 border border-surface-800 flex items-center justify-center">
+                                <span class="text-[7px] font-bold text-blue-400">RB</span>
+                            </span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-medium text-white truncate">Jules Koundé</span>
+                                <span class="text-[10px] text-slate-600">26</span>
+                            </div>
+                            <div class="flex items-center gap-3 mt-1">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-[10px] text-slate-500">FIT</span>
+                                    <div class="w-14 h-1.5 rounded-full bg-surface-600 overflow-hidden">
+                                        <div class="h-full rounded-full bg-accent-gold fitness-bar" style="width: 65%"></div>
+                                    </div>
+                                </div>
+                                <span class="text-[10px] text-slate-600">€48M</span>
+                            </div>
+                        </div>
+                        <div class="rating-badge w-9 h-9 rounded-lg rating-elite flex items-center justify-center flex-shrink-0">
+                            <span class="font-heading font-bold text-base">85</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden lg:grid grid-cols-[1fr_60px_40px_72px_100px_100px_100px_80px_80px_72px] gap-2 items-center px-4 py-2.5">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/20 flex items-center justify-center flex-shrink-0">
+                            <span class="font-heading font-bold text-xs text-blue-400">JK</span>
+                        </div>
+                        <span class="text-sm font-medium text-white">Jules Koundé</span>
+                    </div>
+                    <div class="flex justify-center"><span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-500/10 text-blue-400 uppercase">RB</span></div>
+                    <span class="text-xs text-slate-400 text-center">26</span>
+                    <div class="flex justify-center"><div class="rating-badge w-8 h-8 rounded-lg rating-elite flex items-center justify-center"><span class="font-heading font-bold text-sm">85</span></div></div>
+                    <div class="flex items-center gap-2 justify-center">
+                        <div class="w-16 h-1.5 rounded-full bg-surface-600 overflow-hidden"><div class="h-full rounded-full bg-accent-gold fitness-bar" style="width: 65%"></div></div>
+                        <span class="text-[10px] text-accent-gold w-7 text-right">65%</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 justify-center"><div class="morale-dot bg-accent-green"></div><span class="text-[10px] text-slate-400">Happy</span></div>
+                    <div class="flex items-center gap-1">
+                        <div class="text-center"><span class="text-[9px] text-slate-600 block">DEF</span><span class="text-[11px] text-slate-300 font-medium">83</span></div>
+                        <div class="text-center"><span class="text-[9px] text-slate-600 block">PAS</span><span class="text-[11px] text-slate-300 font-medium">80</span></div>
+                        <div class="text-center"><span class="text-[9px] text-slate-600 block">SPD</span><span class="text-[11px] text-slate-300 font-medium">84</span></div>
+                    </div>
+                    <span class="text-xs text-slate-300 text-right">€48.0M</span>
+                    <span class="text-xs text-slate-500 text-right">€195K</span>
+                    <span class="text-[11px] text-slate-500 text-center">2027</span>
+                </div>
+            </div>
+
+            <!-- MIDFIELDERS Section -->
+            <div class="px-4 py-2 bg-surface-700/30 border-b border-white/5">
+                <span class="font-heading text-[11px] font-semibold uppercase tracking-widest text-slate-500">Midfielders</span>
+            </div>
+
+            <!-- Player 7: CM - Pedri -->
+            <div class="player-row border-b border-white/5 cursor-pointer" onclick="toggleDetail(this)">
+                <div class="lg:hidden px-4 py-3">
+                    <div class="flex items-center gap-3">
+                        <div class="relative flex-shrink-0">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-500/20 to-green-600/10 border border-green-500/20 flex items-center justify-center">
+                                <span class="font-heading font-bold text-sm text-green-400">PG</span>
+                            </div>
+                            <span class="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-green-500/20 border border-surface-800 flex items-center justify-center">
+                                <span class="text-[7px] font-bold text-green-400">CM</span>
+                            </span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-medium text-white truncate">Pedri</span>
+                                <span class="text-[10px] text-slate-600">22</span>
+                            </div>
+                            <div class="flex items-center gap-3 mt-1">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-[10px] text-slate-500">FIT</span>
+                                    <div class="w-14 h-1.5 rounded-full bg-surface-600 overflow-hidden">
+                                        <div class="h-full rounded-full bg-accent-green fitness-bar" style="width: 90%"></div>
+                                    </div>
+                                </div>
+                                <span class="text-[10px] text-slate-600">€80M</span>
+                            </div>
+                        </div>
+                        <div class="rating-badge w-9 h-9 rounded-lg rating-elite flex items-center justify-center flex-shrink-0">
+                            <span class="font-heading font-bold text-base">88</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden lg:grid grid-cols-[1fr_60px_40px_72px_100px_100px_100px_80px_80px_72px] gap-2 items-center px-4 py-2.5">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-green-500/20 to-green-600/10 border border-green-500/20 flex items-center justify-center flex-shrink-0">
+                            <span class="font-heading font-bold text-xs text-green-400">PG</span>
+                        </div>
+                        <span class="text-sm font-medium text-white">Pedri</span>
+                    </div>
+                    <div class="flex justify-center"><span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-green-500/10 text-green-400 uppercase">CM</span></div>
+                    <span class="text-xs text-slate-400 text-center">22</span>
+                    <div class="flex justify-center"><div class="rating-badge w-8 h-8 rounded-lg rating-elite flex items-center justify-center"><span class="font-heading font-bold text-sm">88</span></div></div>
+                    <div class="flex items-center gap-2 justify-center">
+                        <div class="w-16 h-1.5 rounded-full bg-surface-600 overflow-hidden"><div class="h-full rounded-full bg-accent-green fitness-bar" style="width: 90%"></div></div>
+                        <span class="text-[10px] text-slate-500 w-7 text-right">90%</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 justify-center"><div class="morale-dot bg-accent-green"></div><span class="text-[10px] text-slate-400">Ecstatic</span></div>
+                    <div class="flex items-center gap-1">
+                        <div class="text-center"><span class="text-[9px] text-slate-600 block">PAS</span><span class="text-[11px] text-slate-300 font-medium">91</span></div>
+                        <div class="text-center"><span class="text-[9px] text-slate-600 block">DRI</span><span class="text-[11px] text-slate-300 font-medium">89</span></div>
+                        <div class="text-center"><span class="text-[9px] text-slate-600 block">VIS</span><span class="text-[11px] text-slate-300 font-medium">90</span></div>
+                    </div>
+                    <span class="text-xs text-slate-300 text-right">€80.0M</span>
+                    <span class="text-xs text-slate-500 text-right">€280K</span>
+                    <span class="text-[11px] text-slate-500 text-center">2030</span>
+                </div>
+            </div>
+
+            <!-- Player 8: CDM - De Jong -->
+            <div class="player-row border-b border-white/5 cursor-pointer" onclick="toggleDetail(this)">
+                <div class="lg:hidden px-4 py-3">
+                    <div class="flex items-center gap-3">
+                        <div class="relative flex-shrink-0">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-500/20 to-green-600/10 border border-green-500/20 flex items-center justify-center">
+                                <span class="font-heading font-bold text-sm text-green-400">FJ</span>
+                            </div>
+                            <span class="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-green-500/20 border border-surface-800 flex items-center justify-center">
+                                <span class="text-[7px] font-bold text-green-400">DM</span>
+                            </span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-medium text-white truncate">Frenkie de Jong</span>
+                                <span class="text-[10px] text-slate-600">27</span>
+                            </div>
+                            <div class="flex items-center gap-3 mt-1">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-[10px] text-slate-500">FIT</span>
+                                    <div class="w-14 h-1.5 rounded-full bg-surface-600 overflow-hidden">
+                                        <div class="h-full rounded-full bg-accent-green fitness-bar" style="width: 78%"></div>
+                                    </div>
+                                </div>
+                                <span class="text-[10px] text-slate-600">€55M</span>
+                            </div>
+                        </div>
+                        <div class="rating-badge w-9 h-9 rounded-lg rating-elite flex items-center justify-center flex-shrink-0">
+                            <span class="font-heading font-bold text-base">84</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden lg:grid grid-cols-[1fr_60px_40px_72px_100px_100px_100px_80px_80px_72px] gap-2 items-center px-4 py-2.5">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-green-500/20 to-green-600/10 border border-green-500/20 flex items-center justify-center flex-shrink-0">
+                            <span class="font-heading font-bold text-xs text-green-400">FJ</span>
+                        </div>
+                        <span class="text-sm font-medium text-white">Frenkie de Jong</span>
+                    </div>
+                    <div class="flex justify-center"><span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-green-500/10 text-green-400 uppercase">DM</span></div>
+                    <span class="text-xs text-slate-400 text-center">27</span>
+                    <div class="flex justify-center"><div class="rating-badge w-8 h-8 rounded-lg rating-elite flex items-center justify-center"><span class="font-heading font-bold text-sm">84</span></div></div>
+                    <div class="flex items-center gap-2 justify-center">
+                        <div class="w-16 h-1.5 rounded-full bg-surface-600 overflow-hidden"><div class="h-full rounded-full bg-accent-green fitness-bar" style="width: 78%"></div></div>
+                        <span class="text-[10px] text-slate-500 w-7 text-right">78%</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 justify-center"><div class="morale-dot bg-accent-gold"></div><span class="text-[10px] text-slate-400">Content</span></div>
+                    <div class="flex items-center gap-1">
+                        <div class="text-center"><span class="text-[9px] text-slate-600 block">PAS</span><span class="text-[11px] text-slate-300 font-medium">87</span></div>
+                        <div class="text-center"><span class="text-[9px] text-slate-600 block">DRI</span><span class="text-[11px] text-slate-300 font-medium">83</span></div>
+                        <div class="text-center"><span class="text-[9px] text-slate-600 block">DEF</span><span class="text-[11px] text-slate-300 font-medium">72</span></div>
+                    </div>
+                    <span class="text-xs text-slate-300 text-right">€55.0M</span>
+                    <span class="text-xs text-slate-500 text-right">€340K</span>
+                    <span class="text-[11px] text-slate-500 text-center">2027</span>
+                </div>
+            </div>
+
+            <!-- Player 9: AM - Gavi -->
+            <div class="player-row border-b border-white/5 cursor-pointer" onclick="toggleDetail(this)">
+                <div class="lg:hidden px-4 py-3">
+                    <div class="flex items-center gap-3">
+                        <div class="relative flex-shrink-0">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-500/20 to-green-600/10 border border-green-500/20 flex items-center justify-center">
+                                <span class="font-heading font-bold text-sm text-green-400">GV</span>
+                            </div>
+                            <span class="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-green-500/20 border border-surface-800 flex items-center justify-center">
+                                <span class="text-[7px] font-bold text-green-400">AM</span>
+                            </span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-medium text-white truncate">Gavi</span>
+                                <span class="text-[10px] text-slate-600">20</span>
+                            </div>
+                            <div class="flex items-center gap-3 mt-1">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-[10px] text-slate-500">FIT</span>
+                                    <div class="w-14 h-1.5 rounded-full bg-surface-600 overflow-hidden">
+                                        <div class="h-full rounded-full bg-accent-orange fitness-bar" style="width: 45%"></div>
+                                    </div>
+                                </div>
+                                <span class="text-[10px] text-accent-orange flex items-center gap-0.5">
+                                    <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/></svg>
+                                    Hamstring · 3wk
+                                </span>
+                            </div>
+                        </div>
+                        <div class="rating-badge w-9 h-9 rounded-lg rating-elite flex items-center justify-center flex-shrink-0">
+                            <span class="font-heading font-bold text-base">82</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden lg:grid grid-cols-[1fr_60px_40px_72px_100px_100px_100px_80px_80px_72px] gap-2 items-center px-4 py-2.5">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-green-500/20 to-green-600/10 border border-green-500/20 flex items-center justify-center flex-shrink-0">
+                            <span class="font-heading font-bold text-xs text-green-400">GV</span>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-medium text-white">Gavi</span>
+                                <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-orange-500/10 text-[9px] text-accent-orange font-medium">
+                                    <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/></svg>
+                                    Hamstring · 3 weeks
+                                </span>
+                            </div>
+                            <div class="flex items-center gap-1 mt-0.5"><span class="text-[10px] text-slate-600">🇪🇸</span></div>
+                        </div>
+                    </div>
+                    <div class="flex justify-center"><span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-green-500/10 text-green-400 uppercase">AM</span></div>
+                    <span class="text-xs text-slate-400 text-center">20</span>
+                    <div class="flex justify-center"><div class="rating-badge w-8 h-8 rounded-lg rating-elite flex items-center justify-center"><span class="font-heading font-bold text-sm">82</span></div></div>
+                    <div class="flex items-center gap-2 justify-center">
+                        <div class="w-16 h-1.5 rounded-full bg-surface-600 overflow-hidden"><div class="h-full rounded-full bg-accent-orange fitness-bar" style="width: 45%"></div></div>
+                        <span class="text-[10px] text-accent-orange w-7 text-right">45%</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 justify-center"><div class="morale-dot bg-accent-gold"></div><span class="text-[10px] text-slate-400">Content</span></div>
+                    <div class="flex items-center gap-1">
+                        <div class="text-center"><span class="text-[9px] text-slate-600 block">PAS</span><span class="text-[11px] text-slate-300 font-medium">83</span></div>
+                        <div class="text-center"><span class="text-[9px] text-slate-600 block">DRI</span><span class="text-[11px] text-slate-300 font-medium">80</span></div>
+                        <div class="text-center"><span class="text-[9px] text-slate-600 block">WRK</span><span class="text-[11px] text-slate-300 font-medium">88</span></div>
+                    </div>
+                    <span class="text-xs text-slate-300 text-right">€60.0M</span>
+                    <span class="text-xs text-slate-500 text-right">€180K</span>
+                    <span class="text-[11px] text-slate-500 text-center">2030</span>
+                </div>
+            </div>
+
+            <!-- FORWARDS Section -->
+            <div class="px-4 py-2 bg-surface-700/30 border-b border-white/5">
+                <span class="font-heading text-[11px] font-semibold uppercase tracking-widest text-slate-500">Forwards</span>
+            </div>
+
+            <!-- Player 10: RW - Lamine Yamal -->
+            <div class="player-row border-b border-white/5 cursor-pointer" onclick="toggleDetail(this)">
+                <div class="lg:hidden px-4 py-3">
+                    <div class="flex items-center gap-3">
+                        <div class="relative flex-shrink-0">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-rose-500/20 to-rose-600/10 border border-rose-500/20 flex items-center justify-center">
+                                <span class="font-heading font-bold text-sm text-rose-400">LY</span>
+                            </div>
+                            <span class="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-rose-500/20 border border-surface-800 flex items-center justify-center">
+                                <span class="text-[7px] font-bold text-rose-400">RW</span>
+                            </span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-medium text-white truncate">Lamine Yamal</span>
+                                <span class="text-[10px] text-slate-600">17</span>
+                            </div>
+                            <div class="flex items-center gap-3 mt-1">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-[10px] text-slate-500">FIT</span>
+                                    <div class="w-14 h-1.5 rounded-full bg-surface-600 overflow-hidden">
+                                        <div class="h-full rounded-full bg-accent-green fitness-bar" style="width: 96%"></div>
+                                    </div>
+                                </div>
+                                <span class="text-[10px] text-slate-600">€150M</span>
+                            </div>
+                        </div>
+                        <div class="rating-badge w-9 h-9 rounded-lg rating-elite flex items-center justify-center flex-shrink-0">
+                            <span class="font-heading font-bold text-base">86</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden lg:grid grid-cols-[1fr_60px_40px_72px_100px_100px_100px_80px_80px_72px] gap-2 items-center px-4 py-2.5">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-rose-500/20 to-rose-600/10 border border-rose-500/20 flex items-center justify-center flex-shrink-0">
+                            <span class="font-heading font-bold text-xs text-rose-400">LY</span>
+                        </div>
+                        <span class="text-sm font-medium text-white">Lamine Yamal</span>
+                    </div>
+                    <div class="flex justify-center"><span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-rose-500/10 text-rose-400 uppercase">RW</span></div>
+                    <span class="text-xs text-slate-400 text-center">17</span>
+                    <div class="flex justify-center"><div class="rating-badge w-8 h-8 rounded-lg rating-elite flex items-center justify-center"><span class="font-heading font-bold text-sm">86</span></div></div>
+                    <div class="flex items-center gap-2 justify-center">
+                        <div class="w-16 h-1.5 rounded-full bg-surface-600 overflow-hidden"><div class="h-full rounded-full bg-accent-green fitness-bar" style="width: 96%"></div></div>
+                        <span class="text-[10px] text-slate-500 w-7 text-right">96%</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 justify-center"><div class="morale-dot bg-accent-green"></div><span class="text-[10px] text-slate-400">Ecstatic</span></div>
+                    <div class="flex items-center gap-1">
+                        <div class="text-center"><span class="text-[9px] text-slate-600 block">PAC</span><span class="text-[11px] text-slate-300 font-medium">93</span></div>
+                        <div class="text-center"><span class="text-[9px] text-slate-600 block">DRI</span><span class="text-[11px] text-slate-300 font-medium">88</span></div>
+                        <div class="text-center"><span class="text-[9px] text-slate-600 block">SHO</span><span class="text-[11px] text-slate-300 font-medium">79</span></div>
+                    </div>
+                    <span class="text-xs text-slate-300 text-right">€150.0M</span>
+                    <span class="text-xs text-slate-500 text-right">€200K</span>
+                    <span class="text-[11px] text-slate-500 text-center">2030</span>
+                </div>
+            </div>
+
+            <!-- Player 11: ST - Lewandowski -->
+            <div class="player-row border-b border-white/5 cursor-pointer" onclick="toggleDetail(this)">
+                <div class="lg:hidden px-4 py-3">
+                    <div class="flex items-center gap-3">
+                        <div class="relative flex-shrink-0">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-rose-500/20 to-rose-600/10 border border-rose-500/20 flex items-center justify-center">
+                                <span class="font-heading font-bold text-sm text-rose-400">RL</span>
+                            </div>
+                            <span class="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-rose-500/20 border border-surface-800 flex items-center justify-center">
+                                <span class="text-[7px] font-bold text-rose-400">ST</span>
+                            </span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-medium text-white truncate">Robert Lewandowski</span>
+                                <span class="text-[10px] text-slate-600">36</span>
+                            </div>
+                            <div class="flex items-center gap-3 mt-1">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-[10px] text-slate-500">FIT</span>
+                                    <div class="w-14 h-1.5 rounded-full bg-surface-600 overflow-hidden">
+                                        <div class="h-full rounded-full bg-accent-green fitness-bar" style="width: 82%"></div>
+                                    </div>
+                                </div>
+                                <span class="text-[10px] text-slate-600">€15M</span>
+                            </div>
+                        </div>
+                        <div class="rating-badge w-9 h-9 rounded-lg rating-elite flex items-center justify-center flex-shrink-0">
+                            <span class="font-heading font-bold text-base">86</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden lg:grid grid-cols-[1fr_60px_40px_72px_100px_100px_100px_80px_80px_72px] gap-2 items-center px-4 py-2.5">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-rose-500/20 to-rose-600/10 border border-rose-500/20 flex items-center justify-center flex-shrink-0">
+                            <span class="font-heading font-bold text-xs text-rose-400">RL</span>
+                        </div>
+                        <span class="text-sm font-medium text-white">Robert Lewandowski</span>
+                    </div>
+                    <div class="flex justify-center"><span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-rose-500/10 text-rose-400 uppercase">ST</span></div>
+                    <span class="text-xs text-slate-400 text-center">36</span>
+                    <div class="flex justify-center"><div class="rating-badge w-8 h-8 rounded-lg rating-elite flex items-center justify-center"><span class="font-heading font-bold text-sm">86</span></div></div>
+                    <div class="flex items-center gap-2 justify-center">
+                        <div class="w-16 h-1.5 rounded-full bg-surface-600 overflow-hidden"><div class="h-full rounded-full bg-accent-green fitness-bar" style="width: 82%"></div></div>
+                        <span class="text-[10px] text-slate-500 w-7 text-right">82%</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 justify-center"><div class="morale-dot bg-accent-green"></div><span class="text-[10px] text-slate-400">Happy</span></div>
+                    <div class="flex items-center gap-1">
+                        <div class="text-center"><span class="text-[9px] text-slate-600 block">SHO</span><span class="text-[11px] text-slate-300 font-medium">92</span></div>
+                        <div class="text-center"><span class="text-[9px] text-slate-600 block">FIN</span><span class="text-[11px] text-slate-300 font-medium">94</span></div>
+                        <div class="text-center"><span class="text-[9px] text-slate-600 block">POS</span><span class="text-[11px] text-slate-300 font-medium">95</span></div>
+                    </div>
+                    <span class="text-xs text-slate-300 text-right">€15.0M</span>
+                    <span class="text-xs text-slate-500 text-right">€350K</span>
+                    <span class="text-[11px] text-accent-red text-center font-medium">2026</span>
+                </div>
+            </div>
+
+            <!-- Player 12: LW - Raphinha -->
+            <div class="player-row border-b border-white/5 cursor-pointer" onclick="toggleDetail(this)">
+                <div class="lg:hidden px-4 py-3">
+                    <div class="flex items-center gap-3">
+                        <div class="relative flex-shrink-0">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-rose-500/20 to-rose-600/10 border border-rose-500/20 flex items-center justify-center">
+                                <span class="font-heading font-bold text-sm text-rose-400">RA</span>
+                            </div>
+                            <span class="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-rose-500/20 border border-surface-800 flex items-center justify-center">
+                                <span class="text-[7px] font-bold text-rose-400">LW</span>
+                            </span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-medium text-white truncate">Raphinha</span>
+                                <span class="text-[10px] text-slate-600">28</span>
+                                <!-- Suspended badge -->
+                                <span class="text-[10px] text-accent-red flex items-center gap-0.5">
+                                    <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3 4.25A2.25 2.25 0 015.25 2h5.5A2.25 2.25 0 0113 4.25v2a.75.75 0 01-1.5 0v-2a.75.75 0 00-.75-.75h-5.5a.75.75 0 00-.75.75v11.5c0 .414.336.75.75.75h5.5a.75.75 0 00.75-.75v-2a.75.75 0 011.5 0v2A2.25 2.25 0 0110.75 18h-5.5A2.25 2.25 0 013 15.75V4.25z" clip-rule="evenodd"/></svg>
+                                    Suspended
+                                </span>
+                            </div>
+                            <div class="flex items-center gap-3 mt-1">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-[10px] text-slate-500">FIT</span>
+                                    <div class="w-14 h-1.5 rounded-full bg-surface-600 overflow-hidden">
+                                        <div class="h-full rounded-full bg-accent-green fitness-bar" style="width: 100%"></div>
+                                    </div>
+                                </div>
+                                <span class="text-[10px] text-slate-600">€55M</span>
+                            </div>
+                        </div>
+                        <div class="rating-badge w-9 h-9 rounded-lg rating-elite flex items-center justify-center flex-shrink-0">
+                            <span class="font-heading font-bold text-base">84</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden lg:grid grid-cols-[1fr_60px_40px_72px_100px_100px_100px_80px_80px_72px] gap-2 items-center px-4 py-2.5">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-rose-500/20 to-rose-600/10 border border-rose-500/20 flex items-center justify-center flex-shrink-0">
+                            <span class="font-heading font-bold text-xs text-rose-400">RA</span>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-medium text-white">Raphinha</span>
+                                <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-red-500/10 text-[9px] text-accent-red font-medium">Suspended · 1 match</span>
+                            </div>
+                            <div class="flex items-center gap-1 mt-0.5"><span class="text-[10px] text-slate-600">🇧🇷</span></div>
+                        </div>
+                    </div>
+                    <div class="flex justify-center"><span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-rose-500/10 text-rose-400 uppercase">LW</span></div>
+                    <span class="text-xs text-slate-400 text-center">28</span>
+                    <div class="flex justify-center"><div class="rating-badge w-8 h-8 rounded-lg rating-elite flex items-center justify-center"><span class="font-heading font-bold text-sm">84</span></div></div>
+                    <div class="flex items-center gap-2 justify-center">
+                        <div class="w-16 h-1.5 rounded-full bg-surface-600 overflow-hidden"><div class="h-full rounded-full bg-accent-green fitness-bar" style="width: 100%"></div></div>
+                        <span class="text-[10px] text-slate-500 w-7 text-right">100%</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 justify-center"><div class="morale-dot bg-accent-orange"></div><span class="text-[10px] text-slate-400">Frustrated</span></div>
+                    <div class="flex items-center gap-1">
+                        <div class="text-center"><span class="text-[9px] text-slate-600 block">PAC</span><span class="text-[11px] text-slate-300 font-medium">85</span></div>
+                        <div class="text-center"><span class="text-[9px] text-slate-600 block">DRI</span><span class="text-[11px] text-slate-300 font-medium">84</span></div>
+                        <div class="text-center"><span class="text-[9px] text-slate-600 block">SHO</span><span class="text-[11px] text-slate-300 font-medium">81</span></div>
+                    </div>
+                    <span class="text-xs text-slate-300 text-right">€55.0M</span>
+                    <span class="text-xs text-slate-500 text-right">€220K</span>
+                    <span class="text-[11px] text-slate-500 text-center">2027</span>
+                </div>
+            </div>
+
+        </div><!-- end player list -->
+
+    </main>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="bottom-nav fixed bottom-0 left-0 right-0 bg-surface-900/95 border-t border-white/5 lg:hidden z-50">
+        <div class="flex items-center justify-around py-2">
+            <a href="#" class="flex flex-col items-center gap-0.5 px-3 py-1 text-accent-blue">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
+                <span class="text-[9px] font-medium">Squad</span>
+            </a>
+            <a href="lineup.html" class="flex flex-col items-center gap-0.5 px-3 py-1 text-slate-500">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/></svg>
+                <span class="text-[9px] font-medium">Tactics</span>
+            </a>
+            <a href="#" class="flex flex-col items-center gap-0.5 px-3 py-1 text-slate-500">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/></svg>
+                <span class="text-[9px] font-medium">Transfers</span>
+            </a>
+            <a href="#" class="flex flex-col items-center gap-0.5 px-3 py-1 text-slate-500">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>
+                <span class="text-[9px] font-medium">Fixtures</span>
+            </a>
+            <a href="#" class="flex flex-col items-center gap-0.5 px-3 py-1 text-slate-500">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+                <span class="text-[9px] font-medium">More</span>
+            </a>
+        </div>
+    </nav>
+
+    <script>
+        function filterPosition(btn, position) {
+            document.querySelectorAll('.pos-filter').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        function toggleDetail(row) {
+            // placeholder for expand/collapse detail panel
+        }
+    </script>
+</body>
+</html>

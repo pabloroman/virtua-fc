@@ -11,16 +11,16 @@
 
     <div>
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-surface-800 overflow-hidden shadow-sm sm:rounded-lg">
 
             @if($hasPlayoff)
                 <div class="p-4 sm:p-6 md:p-8" x-data="{ activeTab: '{{ $defaultTab }}' }">
-                    <h3 class="font-semibold text-xl text-slate-900 mb-6">{{ __($competition->name) }}</h3>
+                    <h3 class="font-semibold text-xl text-white mb-6">{{ __($competition->name) }}</h3>
 
                     {{-- Tab Navigation --}}
-                    <div class="flex border-b border-slate-200 mb-0">
+                    <div class="flex border-b border-white/10 mb-0">
                         <button @click="activeTab = 'league'"
-                                :class="activeTab === 'league' ? 'border-sky-500 text-sky-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'"
+                                :class="activeTab === 'league' ? 'border-accent-blue text-accent-blue' : 'border-transparent text-slate-500 hover:text-slate-300 hover:border-white/10'"
                                 class="px-4 py-2.5 text-sm font-medium border-b-2 transition-colors">
                             {{ __('game.league_phase') }}
                             @if($leaguePhaseComplete)
@@ -28,7 +28,7 @@
                             @endif
                         </button>
                         <button @click="activeTab = 'playoff'"
-                                :class="activeTab === 'playoff' ? 'border-sky-500 text-sky-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'"
+                                :class="activeTab === 'playoff' ? 'border-accent-blue text-accent-blue' : 'border-transparent text-slate-500 hover:text-slate-300 hover:border-white/10'"
                                 class="px-4 py-2.5 text-sm font-medium border-b-2 transition-colors">
                             {{ __('game.promotion_playoff') }}
                         </button>
@@ -42,7 +42,7 @@
                                     @php $ties = $knockoutTies->get($round->round, collect()); @endphp
                                     <div class="flex-shrink-0 w-64">
                                         <div class="text-center mb-4">
-                                            <h4 class="font-semibold text-slate-700">{{ __($round->name) }}</h4>
+                                            <h4 class="font-semibold text-slate-300">{{ __($round->name) }}</h4>
                                             <div class="text-xs text-slate-400">
                                                 {{ $round->firstLegDate->format('M d') }}
                                                 @if($round->twoLegged)
@@ -100,7 +100,7 @@
             @else
                 <div class="p-4 sm:p-6 md:p-8 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
                     <div class="md:col-span-2 space-y-3">
-                        <h3 class="font-semibold text-xl text-slate-900">{{ __($competition->name) }}</h3>
+                        <h3 class="font-semibold text-xl text-white">{{ __($competition->name) }}</h3>
 
                         @include('partials.standings-flat', [
                             'game' => $game,

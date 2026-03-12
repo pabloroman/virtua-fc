@@ -14,12 +14,12 @@ $borderColorMap = [
 ];
 
 $bgColorMap = [
-    'bg-blue-500' => 'bg-blue-500',
+    'bg-accent-blue/100' => 'bg-accent-blue/100',
     'bg-orange-500' => 'bg-orange-500',
-    'bg-red-500' => 'bg-red-500',
+    'bg-accent-red/100' => 'bg-accent-red/100',
     'bg-green-300' => 'bg-green-300',
-    'bg-green-500' => 'bg-green-500',
-    'bg-yellow-500' => 'bg-yellow-500',
+    'bg-accent-green/100' => 'bg-accent-green/100',
+    'bg-accent-gold/100' => 'bg-accent-gold/100',
 ];
 
 $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
@@ -55,8 +55,8 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
             $isPlayer = $standing->team_id === $game->team_id;
             $zoneClass = $getZoneClass($standing->position);
         @endphp
-        <tr class="border-b px-2 text-lg {{ $zoneClass }} @if($isPlayer) bg-amber-50 @endif">
-            <td class="align-middle whitespace-nowrap text-left px-2 text-slate-900 font-semibold">
+        <tr class="border-b px-2 text-lg {{ $zoneClass }} @if($isPlayer) bg-accent-gold/10 @endif">
+            <td class="align-middle whitespace-nowrap text-left px-2 text-white font-semibold">
                 <div class="flex items-center gap-1">
                     <span>{{ $standing->position }}</span>
                     @if($standing->position_change !== 0)

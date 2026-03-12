@@ -1,16 +1,15 @@
-@props(['color' => 'red'])
+@props(['color' => 'blue'])
 
 @php
 $colors = [
-    'red' => 'bg-red-600 hover:bg-red-700 focus:ring-red-500 active:bg-red-800',
-    'green' => 'bg-green-600 hover:bg-green-700 focus:ring-green-500 active:bg-green-800',
-    'sky' => 'bg-sky-600 hover:bg-sky-700 focus:ring-sky-500 active:bg-sky-800',
-    'emerald' => 'bg-emerald-600 hover:bg-emerald-700 focus:ring-emerald-500 active:bg-emerald-800',
-    'amber' => 'bg-amber-600 hover:bg-amber-700 focus:ring-amber-500 active:bg-amber-800',
+    'blue' => 'bg-accent-blue hover:bg-blue-600 focus:ring-accent-blue active:bg-blue-700',
+    'red' => 'bg-accent-red hover:bg-red-500 focus:ring-accent-red active:bg-red-700',
+    'green' => 'bg-accent-green hover:bg-green-600 focus:ring-accent-green active:bg-green-700',
+    'amber' => 'bg-accent-gold hover:bg-amber-600 focus:ring-accent-gold active:bg-amber-700',
 ];
-$colorClasses = $colors[$color] ?? $colors['red'];
+$colorClasses = $colors[$color] ?? $colors['blue'];
 @endphp
 
-<a {{ $attributes->merge(['class' => "inline-flex items-center justify-center px-4 py-2 min-h-[44px] sm:min-h-0 {$colorClasses} border border-transparent rounded-lg font-semibold text-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transition ease-in-out duration-150"]) }}>
+<a {{ $attributes->merge(['class' => "inline-flex items-center justify-center px-4 py-2 min-h-[44px] sm:min-h-0 {$colorClasses} border border-transparent rounded-lg font-semibold text-sm text-white uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface-900 transition ease-in-out duration-150"]) }}>
     {{ $slot }}
 </a>

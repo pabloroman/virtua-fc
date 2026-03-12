@@ -1,14 +1,14 @@
-@props(['color' => 'sky', 'size' => 'default'])
+@props(['color' => 'blue', 'size' => 'default'])
 
 @php
 $colors = [
-    'sky' => 'text-sky-600 hover:text-sky-800 hover:bg-sky-50',
-    'red' => 'text-red-600 hover:text-red-800 hover:bg-red-50',
-    'amber' => 'text-amber-600 hover:text-amber-800 hover:bg-amber-50',
-    'emerald' => 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100',
-    'slate' => 'bg-slate-100 text-slate-500 hover:bg-slate-200',
+    'blue' => 'text-accent-blue hover:text-blue-400 hover:bg-accent-blue/10',
+    'red' => 'text-accent-red hover:text-red-400 hover:bg-accent-red/10',
+    'amber' => 'text-accent-gold hover:text-amber-400 hover:bg-accent-gold/10',
+    'green' => 'text-accent-green hover:text-green-400 hover:bg-accent-green/10',
+    'slate' => 'text-slate-400 hover:text-slate-300 hover:bg-surface-700',
 ];
-$colorClasses = $colors[$color] ?? $colors['sky'];
+$colorClasses = $colors[$color] ?? $colors['blue'];
 
 $sizeClasses = match($size) {
     'xs' => 'px-2.5 py-1 text-xs rounded-md',
@@ -16,6 +16,6 @@ $sizeClasses = match($size) {
 };
 @endphp
 
-<button {{ $attributes->merge(['type' => 'button', 'class' => "inline-flex items-center {$sizeClasses} {$colorClasses} rounded transition-colors whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed"]) }}>
+<button {{ $attributes->merge(['type' => 'button', 'class' => "inline-flex items-center {$sizeClasses} {$colorClasses} rounded transition-colors whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-accent-blue focus:ring-offset-1 focus:ring-offset-surface-900 disabled:opacity-50 disabled:cursor-not-allowed"]) }}>
     {{ $slot }}
 </button>

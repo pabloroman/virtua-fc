@@ -50,14 +50,14 @@
         this.holdTimer = null;
         this.holdInterval = null;
     }
-}" class="inline-flex items-stretch border border-slate-300 rounded-lg overflow-hidden {{ $componentClasses }}">
+}" class="inline-flex items-stretch border border-white/10 rounded-lg overflow-hidden {{ $componentClasses }}">
     <input type="hidden" name="{{ $name }}" :value="euros">
 
     {{-- Minus button --}}
     <button type="button"
         :disabled="atMin"
-        :class="atMin ? 'opacity-40 cursor-not-allowed' : 'hover:bg-slate-100 active:bg-slate-200'"
-        class="{{ $btnClasses }} flex items-center justify-center bg-slate-50 text-slate-700 font-bold select-none transition-colors"
+        :class="atMin ? 'opacity-40 cursor-not-allowed' : 'hover:bg-surface-600 active:bg-surface-700'"
+        class="{{ $btnClasses }} flex items-center justify-center bg-surface-700 text-slate-300 font-bold select-none transition-colors"
         @mousedown.prevent="startHold(() => decrement())"
         @mouseup="stopHold()"
         @mouseleave="stopHold()"
@@ -69,12 +69,12 @@
     <input type="text"
         readonly
         :value="display"
-        class="{{ $inputClasses }} text-center font-semibold text-slate-800 bg-white border-x border-y-0 border-slate-300 outline-none cursor-default focus:outline-none focus:ring-0 focus:border-slate-300"
+        class="{{ $inputClasses }} text-center font-semibold text-white bg-surface-800 border-x border-y-0 border-white/10 outline-none cursor-default focus:outline-none focus:ring-0 focus:border-white/10"
     >
 
     {{-- Plus button --}}
     <button type="button"
-        class="{{ $btnClasses }} flex items-center justify-center bg-slate-50 hover:bg-slate-100 active:bg-slate-200 text-slate-700 font-bold select-none transition-colors"
+        class="{{ $btnClasses }} flex items-center justify-center bg-surface-700 hover:bg-surface-600 active:bg-surface-700 text-slate-300 font-bold select-none transition-colors"
         @mousedown.prevent="startHold(() => increment())"
         @mouseup="stopHold()"
         @mouseleave="stopHold()"

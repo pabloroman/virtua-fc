@@ -1,10 +1,10 @@
 <section>
     <header>
-        <h2 class="text-lg font-medium text-slate-900">
+        <h2 class="text-lg font-medium text-white">
             {{ __('Profile Information') }}
         </h2>
 
-        <p class="mt-1 text-sm text-slate-600">
+        <p class="mt-1 text-sm text-slate-400">
             {{ __("Update your account's profile information and email address.") }}
         </p>
     </header>
@@ -30,16 +30,16 @@
 
             @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
                 <div>
-                    <p class="text-sm mt-2 text-slate-800">
+                    <p class="text-sm mt-2 text-white">
                         {{ __('Your email address is unverified.') }}
 
-                        <button form="send-verification" class="underline text-sm text-slate-600 hover:text-slate-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500">
+                        <button form="send-verification" class="underline text-sm text-slate-400 hover:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-blue">
                             {{ __('Click here to re-send the verification email.') }}
                         </button>
                     </p>
 
                     @if (session('status') === 'verification-link-sent')
-                        <p class="mt-2 font-medium text-sm text-green-600">
+                        <p class="mt-2 font-medium text-sm text-accent-green">
                             {{ __('A new verification link has been sent to your email address.') }}
                         </p>
                     @endif
@@ -49,7 +49,7 @@
 
         <div>
             <x-input-label for="locale" :value="__('Language')" />
-            <select id="locale" name="locale" class="mt-1 block w-full border-slate-300 focus:border-sky-500 focus:ring-sky-500 rounded-md shadow-sm min-h-[44px]">
+            <select id="locale" name="locale" class="mt-1 block w-full border-white/10 focus:border-accent-blue focus:ring-accent-blue rounded-md shadow-sm min-h-[44px]">
                 @foreach (config('app.supported_locales') as $locale)
                     <option value="{{ $locale }}" {{ old('locale', $user->locale) === $locale ? 'selected' : '' }}>
                         {{ $locale === 'es' ? 'Español' : 'English' }}
@@ -68,7 +68,7 @@
                     x-show="show"
                     x-transition
                     x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-slate-600"
+                    class="text-sm text-slate-400"
                 >{{ __('Saved.') }}</p>
             @endif
         </div>

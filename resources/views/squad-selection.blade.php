@@ -58,19 +58,19 @@ $tabs = [
 
             {{-- Flash Messages --}}
             @if(session('error'))
-            <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+            <div class="mb-4 p-4 bg-accent-red/10 border border-accent-red/20 rounded-lg text-accent-red text-sm">
                 {{ session('error') }}
             </div>
             @endif
 
             {{-- Main Card --}}
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="bg-surface-800 rounded-xl shadow-sm border border-white/10 overflow-hidden">
 
                 {{-- Title Bar --}}
-                <div class="p-4 md:p-6 border-b border-slate-200">
+                <div class="p-4 md:p-6 border-b border-white/10">
                     <div class="flex items-center justify-between">
                         <div>
-                            <h2 class="text-base md:text-lg font-semibold text-slate-900">{{ __('squad.squad_selection_title') }}</h2>
+                            <h2 class="text-base md:text-lg font-semibold text-white">{{ __('squad.squad_selection_title') }}</h2>
                             <p class="text-xs md:text-sm text-slate-500 mt-0.5">{{ __('squad.squad_selection_subtitle') }}</p>
                         </div>
                         <div class="flex items-center gap-1.5">
@@ -84,18 +84,18 @@ $tabs = [
                 </div>
 
                 {{-- Tabs --}}
-                <div class="border-b border-slate-200 overflow-x-auto scrollbar-hide">
+                <div class="border-b border-white/10 overflow-x-auto scrollbar-hide">
                     <nav class="flex">
                         @foreach ($tabs as $key => $label)
                         <button type="button"
                                 @click="activeTab = '{{ $key }}'"
                                 :class="activeTab === '{{ $key }}'
-                                    ? 'border-b-2 border-slate-900 text-slate-900 font-semibold'
-                                    : 'text-slate-500 hover:text-slate-700'"
+                                    ? 'border-b-2 border-slate-900 text-white font-semibold'
+                                    : 'text-slate-500 hover:text-slate-300'"
                                 class="flex-1 shrink-0 px-3 md:px-4 py-3 text-xs md:text-sm text-center whitespace-nowrap transition-colors min-h-[44px] flex items-center justify-center gap-1.5">
                             <span>{{ $label }}</span>
                             <span class="inline-flex items-center justify-center rounded-full text-[10px] md:text-xs font-semibold min-w-[20px] h-5 px-1 transition-colors"
-                                  :class="countByGroup('{{ $key }}') > 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-400'"
+                                  :class="countByGroup('{{ $key }}') > 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-surface-700 text-slate-400'"
                                   x-text="countByGroup('{{ $key }}')"></span>
                         </button>
                         @endforeach
@@ -110,7 +110,7 @@ $tabs = [
                             @click="togglePlayer('{{ $candidate['transfermarkt_id'] }}')"
                             :class="{
                                 'bg-emerald-50 border-l-4 border-l-emerald-500': isSelected('{{ $candidate['transfermarkt_id'] }}'),
-                                'border-l-4 border-l-transparent hover:bg-slate-50': !isSelected('{{ $candidate['transfermarkt_id'] }}'),
+                                'border-l-4 border-l-transparent hover:bg-surface-700/50': !isSelected('{{ $candidate['transfermarkt_id'] }}'),
                                 'opacity-40 cursor-not-allowed': isMaxed && !isSelected('{{ $candidate['transfermarkt_id'] }}'),
                             }"
                             :disabled="isMaxed && !isSelected('{{ $candidate['transfermarkt_id'] }}')"
@@ -120,7 +120,7 @@ $tabs = [
                         <div class="shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors"
                              :class="isSelected('{{ $candidate['transfermarkt_id'] }}')
                                  ? 'bg-emerald-500 border-emerald-500'
-                                 : 'border-slate-300'">
+                                 : 'border-white/10'">
                             <svg x-show="isSelected('{{ $candidate['transfermarkt_id'] }}')" class="w-3 h-3 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
                             </svg>
@@ -131,7 +131,7 @@ $tabs = [
 
                         {{-- Name + Meta --}}
                         <div class="flex-1 min-w-0">
-                            <div class="font-semibold text-sm md:text-base text-slate-900 truncate">{{ $candidate['name'] }}</div>
+                            <div class="font-semibold text-sm md:text-base text-white truncate">{{ $candidate['name'] }}</div>
                             <div class="flex items-center gap-2 text-xs text-slate-400 mt-0.5">
                                 <span>{{ $candidate['age'] }} {{ __('squad.years_abbr') }}</span>
                                 @if($candidate['height'])
@@ -145,16 +145,16 @@ $tabs = [
                         <div class="shrink-0 flex items-center gap-2 md:gap-3">
                             <div class="hidden md:flex items-center gap-1.5">
                                 <span class="text-xs text-slate-400">{{ __('squad.technical_abbr') }}</span>
-                                <span class="text-xs font-semibold text-slate-600">{{ $candidate['technical'] }}</span>
+                                <span class="text-xs font-semibold text-slate-400">{{ $candidate['technical'] }}</span>
                             </div>
                             <div class="hidden md:flex items-center gap-1.5">
                                 <span class="text-xs text-slate-400">{{ __('squad.physical_abbr') }}</span>
-                                <span class="text-xs font-semibold text-slate-600">{{ $candidate['physical'] }}</span>
+                                <span class="text-xs font-semibold text-slate-400">{{ $candidate['physical'] }}</span>
                             </div>
                             <div class="flex items-center justify-center w-10 h-10 md:w-11 md:h-11 rounded-lg transition-colors"
-                                 :class="isSelected('{{ $candidate['transfermarkt_id'] }}') ? 'bg-emerald-100' : 'bg-slate-100'">
+                                 :class="isSelected('{{ $candidate['transfermarkt_id'] }}') ? 'bg-emerald-100' : 'bg-surface-700'">
                                 <span class="text-sm md:text-base font-bold"
-                                      :class="isSelected('{{ $candidate['transfermarkt_id'] }}') ? 'text-emerald-700' : 'text-slate-700'">{{ $candidate['overall'] }}</span>
+                                      :class="isSelected('{{ $candidate['transfermarkt_id'] }}') ? 'text-emerald-700' : 'text-slate-300'">{{ $candidate['overall'] }}</span>
                             </div>
                         </div>
                     </button>
@@ -166,24 +166,24 @@ $tabs = [
         </div>
 
         {{-- Sticky Bottom Bar --}}
-        <div class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-slate-200 shadow-lg z-30">
+        <div class="fixed bottom-0 left-0 right-0 bg-surface-800/95 backdrop-blur-sm border-t border-white/10 shadow-lg z-30">
             <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-3 md:py-4">
                 <div class="flex items-center gap-3 md:gap-4">
                     {{-- Position Breakdown --}}
                     <div class="hidden md:flex items-center gap-3 text-xs text-slate-500 flex-1">
-                        <span><span class="font-semibold text-slate-700" x-text="countByGroup('goalkeepers')"></span> {{ __('squad.goalkeepers_short') }}</span>
+                        <span><span class="font-semibold text-slate-300" x-text="countByGroup('goalkeepers')"></span> {{ __('squad.goalkeepers_short') }}</span>
                         <span class="text-slate-300">&middot;</span>
-                        <span><span class="font-semibold text-slate-700" x-text="countByGroup('defenders')"></span> {{ __('squad.defenders_short') }}</span>
+                        <span><span class="font-semibold text-slate-300" x-text="countByGroup('defenders')"></span> {{ __('squad.defenders_short') }}</span>
                         <span class="text-slate-300">&middot;</span>
-                        <span><span class="font-semibold text-slate-700" x-text="countByGroup('midfielders')"></span> {{ __('squad.midfielders_short') }}</span>
+                        <span><span class="font-semibold text-slate-300" x-text="countByGroup('midfielders')"></span> {{ __('squad.midfielders_short') }}</span>
                         <span class="text-slate-300">&middot;</span>
-                        <span><span class="font-semibold text-slate-700" x-text="countByGroup('forwards')"></span> {{ __('squad.forwards_short') }}</span>
+                        <span><span class="font-semibold text-slate-300" x-text="countByGroup('forwards')"></span> {{ __('squad.forwards_short') }}</span>
                     </div>
 
                     {{-- Mobile: compact counter --}}
                     <div class="flex md:hidden items-center gap-1.5 text-sm">
                         <span class="font-bold transition-colors"
-                              :class="canConfirm ? 'text-emerald-600' : 'text-slate-700'"
+                              :class="canConfirm ? 'text-emerald-600' : 'text-slate-300'"
                               x-text="totalSelected"></span>
                         <span class="text-slate-400">/ 26</span>
                     </div>
@@ -198,7 +198,7 @@ $tabs = [
                                 :disabled="!canConfirm"
                                 :class="canConfirm
                                     ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm'
-                                    : 'bg-slate-100 text-slate-400 cursor-not-allowed'"
+                                    : 'bg-surface-700 text-slate-400 cursor-not-allowed'"
                                 class="w-full md:w-auto px-6 py-2.5 rounded-lg text-sm font-semibold transition-all min-h-[44px]">
                             {{ __('squad.confirm_squad') }}
                             <span x-show="!canConfirm" class="ml-1" x-text="'(' + totalSelected + '/26)'"></span>

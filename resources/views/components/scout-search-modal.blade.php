@@ -35,14 +35,14 @@
         }">
 
         <div class="flex items-start justify-between gap-4 mb-2">
-            <h3 class="font-semibold text-xl text-slate-900">{{ __('transfers.new_scout_search') }}</h3>
-            <button onclick="window.dispatchEvent(new CustomEvent('close-modal', {detail: 'scout-search'}))" class="p-1 text-slate-400 hover:text-slate-600 rounded hover:bg-slate-100 shrink-0">
+            <h3 class="font-semibold text-xl text-white">{{ __('transfers.new_scout_search') }}</h3>
+            <button onclick="window.dispatchEvent(new CustomEvent('close-modal', {detail: 'scout-search'}))" class="p-1 text-slate-400 hover:text-slate-400 rounded hover:bg-surface-700 shrink-0">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
         </div>
-        <p class="text-sm text-slate-600 mb-6">{{ __('transfers.scout_search_desc') }}</p>
+        <p class="text-sm text-slate-400 mb-6">{{ __('transfers.scout_search_desc') }}</p>
 
         <form method="post" action="{{ route('game.scouting.search', $game->id) }}">
             @csrf
@@ -52,7 +52,7 @@
                 <div class="space-y-5">
                     {{-- Position --}}
                     <div>
-                        <label for="position" class="block text-sm font-semibold text-slate-700 mb-1">{{ __('transfers.position_required') }}</label>
+                        <label for="position" class="block text-sm font-semibold text-slate-300 mb-1">{{ __('transfers.position_required') }}</label>
                         <x-select-input name="position" id="position" required class="w-full">
                             <option value="">{{ __('transfers.select_position') }}</option>
                             <optgroup label="{{ __('transfers.specific_positions') }}">
@@ -74,27 +74,27 @@
                             </optgroup>
                         </x-select-input>
                         @error('position')
-                            <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                            <p class="text-sm text-accent-red mt-1">{{ $message }}</p>
                         @enderror
                     </div>
 
                     {{-- Scope --}}
                     <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1">{{ __('transfers.scope') }}</label>
+                        <label class="block text-sm font-semibold text-slate-300 mb-1">{{ __('transfers.scope') }}</label>
                         <div class="flex items-center gap-5 mt-2">
                             <label class="flex items-center gap-2 cursor-pointer">
                                 <x-checkbox-input name="scope[]" value="domestic" x-model="scopeDomestic" />
-                                <span class="text-sm text-slate-700">{{ __('transfers.scope_domestic') }}</span>
+                                <span class="text-sm text-slate-300">{{ __('transfers.scope_domestic') }}</span>
                             </label>
                             @if($canSearchInternationally)
                             <label class="flex items-center gap-2 cursor-pointer">
                                 <x-checkbox-input name="scope[]" value="international" x-model="scopeInternational" />
-                                <span class="text-sm text-slate-700">{{ __('transfers.scope_international') }}</span>
+                                <span class="text-sm text-slate-300">{{ __('transfers.scope_international') }}</span>
                             </label>
                             @else
                             <label class="flex items-center gap-2 opacity-40 cursor-not-allowed">
                                 <x-checkbox-input name="scope[]" value="international" x-model="scopeInternational" disabled />
-                                <span class="text-sm text-slate-700">{{ __('transfers.scope_international') }}</span>
+                                <span class="text-sm text-slate-300">{{ __('transfers.scope_international') }}</span>
                             </label>
                             @endif
                         </div>
@@ -105,11 +105,11 @@
 
                     {{-- Expiring contract --}}
                     <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-1">{{ __('transfers.contract') }}</label>
+                        <label class="block text-sm font-semibold text-slate-300 mb-1">{{ __('transfers.contract') }}</label>
                         <div class="mt-2">
                             <label class="flex items-center gap-2 cursor-pointer">
                                 <x-checkbox-input name="expiring_contract" value="1" />
-                                <span class="text-sm text-slate-700">{{ __('transfers.expiring_contract') }}</span>
+                                <span class="text-sm text-slate-300">{{ __('transfers.expiring_contract') }}</span>
                             </label>
                             <p class="text-xs text-slate-500 mt-1.5 ml-6">{{ __('transfers.expiring_contract_hint') }}</p>
                         </div>
@@ -121,8 +121,8 @@
                     {{-- Age Range Slider --}}
                     <div>
                         <div class="flex items-center justify-between mb-2">
-                            <label class="text-sm font-semibold text-slate-700">{{ __('transfers.age_range') }}</label>
-                            <span class="text-sm font-semibold text-slate-900" x-text="ageMin + ' – ' + ageMax"></span>
+                            <label class="text-sm font-semibold text-slate-300">{{ __('transfers.age_range') }}</label>
+                            <span class="text-sm font-semibold text-white" x-text="ageMin + ' – ' + ageMax"></span>
                         </div>
                         <div class="dual-range">
                             <div class="track"></div>
@@ -137,8 +137,8 @@
                     {{-- Ability Range Slider --}}
                     <div>
                         <div class="flex items-center justify-between mb-2">
-                            <label class="text-sm font-semibold text-slate-700">{{ __('transfers.ability_range') }}</label>
-                            <span class="text-sm font-semibold text-slate-900" x-text="abilityMin + ' – ' + abilityMax"></span>
+                            <label class="text-sm font-semibold text-slate-300">{{ __('transfers.ability_range') }}</label>
+                            <span class="text-sm font-semibold text-white" x-text="abilityMin + ' – ' + abilityMax"></span>
                         </div>
                         <div class="dual-range">
                             <div class="track"></div>
@@ -153,8 +153,8 @@
                     {{-- Market Value Range Slider --}}
                     <div>
                         <div class="flex items-center justify-between mb-2">
-                            <label class="text-sm font-semibold text-slate-700">{{ __('transfers.value_range') }}</label>
-                            <span class="text-sm font-semibold text-slate-900" x-text="formatValue(valueMin()) + ' – ' + formatValue(valueMax())"></span>
+                            <label class="text-sm font-semibold text-slate-300">{{ __('transfers.value_range') }}</label>
+                            <span class="text-sm font-semibold text-white" x-text="formatValue(valueMin()) + ' – ' + formatValue(valueMax())"></span>
                         </div>
                         <div class="dual-range">
                             <div class="track"></div>

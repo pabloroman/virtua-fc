@@ -9,12 +9,12 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             {{-- Flash Messages --}}
             @if(session('success'))
-            <div class="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700">
+            <div class="mb-4 p-4 bg-accent-green/10 border border-accent-green/20 rounded-lg text-accent-green">
                 {{ session('success') }}
             </div>
             @endif
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-surface-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-4 sm:p-6 md:p-8">
                     @include('partials.transfers-header')
 
@@ -35,19 +35,19 @@
                         <p class="text-sm text-slate-500 mb-5">{{ __('transfers.explore_hint') }}</p>
 
                         {{-- Competition Selector --}}
-                        <div class="flex overflow-x-auto scrollbar-hide gap-2 pb-3 mb-5 border-b border-slate-100">
+                        <div class="flex overflow-x-auto scrollbar-hide gap-2 pb-3 mb-5 border-b border-white/5">
                             <template x-for="comp in competitions" :key="comp.id">
                                 <button @click="selectCompetition(comp)"
                                         :class="selectedCompetition?.id === comp.id
                                             ? 'bg-slate-900 text-white border-slate-900'
-                                            : 'bg-white text-slate-700 border-slate-200 hover:border-slate-400'"
+                                            : 'bg-surface-800 text-slate-300 border-white/10 hover:border-slate-400'"
                                         class="shrink-0 flex items-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition-colors min-h-[44px]">
                                     <template x-if="comp.country">
                                         <img :src="'/flags/' + comp.flag + '.svg'" class="w-5 h-3.5 rounded-sm shadow-sm" :alt="comp.country">
                                     </template>
                                     <span x-text="comp.name"></span>
                                     <span class="text-xs px-1.5 py-0.5 rounded-full"
-                                          :class="selectedCompetition?.id === comp.id ? 'bg-white/20' : 'bg-slate-100 text-slate-500'"
+                                          :class="selectedCompetition?.id === comp.id ? 'bg-surface-800/20' : 'bg-surface-700 text-slate-500'"
                                           x-text="comp.teamCount"></span>
                                 </button>
                             </template>
@@ -57,14 +57,14 @@
                         <div class="flex flex-col md:flex-row gap-6">
 
                             {{-- Mobile tab toggle --}}
-                            <div class="flex md:hidden border-b border-slate-200 mb-2">
+                            <div class="flex md:hidden border-b border-white/10 mb-2">
                                 <button @click="mobileView = 'teams'"
-                                        :class="mobileView === 'teams' ? 'border-sky-500 text-sky-600' : 'border-transparent text-slate-500'"
+                                        :class="mobileView === 'teams' ? 'border-accent-blue text-accent-blue' : 'border-transparent text-slate-500'"
                                         class="flex-1 text-center py-2.5 text-sm font-medium border-b-2 transition-colors min-h-[44px]">
                                     {{ __('transfers.explore_mobile_teams') }}
                                 </button>
                                 <button @click="mobileView = 'squad'"
-                                        :class="mobileView === 'squad' ? 'border-sky-500 text-sky-600' : 'border-transparent text-slate-500'"
+                                        :class="mobileView === 'squad' ? 'border-accent-blue text-accent-blue' : 'border-transparent text-slate-500'"
                                         class="flex-1 text-center py-2.5 text-sm font-medium border-b-2 transition-colors min-h-[44px]">
                                     {{ __('transfers.explore_mobile_squad') }}
                                 </button>
@@ -90,12 +90,12 @@
                                         <template x-for="team in teams" :key="team.id">
                                             <button @click="selectTeam(team)"
                                                     :class="selectedTeam?.id === team.id
-                                                        ? 'bg-sky-50 border-sky-200 ring-1 ring-sky-200'
-                                                        : 'bg-white border-slate-100 hover:bg-slate-50'"
+                                                        ? 'bg-accent-blue/10 border-accent-blue/20 ring-1 ring-sky-200'
+                                                        : 'bg-surface-800 border-white/5 hover:bg-surface-700/50'"
                                                     class="w-full flex items-center gap-3 p-3 rounded-lg border transition-all text-left min-h-[44px]">
                                                 <img :src="team.image" :alt="team.name" class="w-8 h-8 shrink-0 object-contain">
                                                 <div class="min-w-0">
-                                                    <div class="text-sm font-medium text-slate-900 truncate" x-text="team.name"></div></div>
+                                                    <div class="text-sm font-medium text-white truncate" x-text="team.name"></div></div>
                                             </button>
                                         </template>
                                     </div>
@@ -108,7 +108,7 @@
                             </div>
 
                             {{-- Right column: Squad view --}}
-                            <div class="md:w-2/3 md:border-l md:border-slate-100 md:pl-6"
+                            <div class="md:w-2/3 md:border-l md:border-white/5 md:pl-6"
                                  :class="{ 'hidden md:block': mobileView === 'teams' }">
 
                                 {{-- Loading state --}}

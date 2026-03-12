@@ -24,34 +24,34 @@
             </div>
             {{-- Dialog --}}
             <div x-show="open"
-                class="relative mb-6 bg-white rounded-xl shadow-2xl sm:w-full sm:max-w-md sm:mx-auto"
+                class="relative mb-6 bg-surface-800 rounded-xl shadow-2xl sm:w-full sm:max-w-md sm:mx-auto"
                 x-transition:enter="ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
                 x-transition:leave="ease-in duration-150" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95">
                 <div class="p-5 md:p-6">
                     {{-- Header --}}
-                    <div class="flex items-start justify-between gap-4 pb-4 border-b border-slate-200 mb-4">
+                    <div class="flex items-start justify-between gap-4 pb-4 border-b border-white/10 mb-4">
                         <div>
-                            <h3 class="font-semibold text-slate-900">{{ $gamePlayer->name }}</h3>
+                            <h3 class="font-semibold text-white">{{ $gamePlayer->name }}</h3>
                             <p class="text-sm text-slate-500 mt-0.5">{{ __('squad.renew') }}</p>
                         </div>
-                        <button @click="open = false" class="p-1 text-slate-400 hover:text-slate-600 rounded hover:bg-slate-100 shrink-0">
+                        <button @click="open = false" class="p-1 text-slate-400 hover:text-slate-400 rounded hover:bg-surface-700 shrink-0">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                         </button>
                     </div>
                     {{-- Mood + wage context --}}
                     <div class="flex items-center justify-between text-sm mb-4">
                         <span class="font-medium
-                            @if($renewalMood['color'] === 'green') text-green-600
+                            @if($renewalMood['color'] === 'green') text-accent-green
                             @elseif($renewalMood['color'] === 'amber') text-amber-600
                             @else text-red-500
                             @endif">
                             <span class="inline-block w-2 h-2 rounded-full mr-1.5
-                                @if($renewalMood['color'] === 'green') bg-green-500
-                                @elseif($renewalMood['color'] === 'amber') bg-amber-500
-                                @else bg-red-500
+                                @if($renewalMood['color'] === 'green') bg-accent-green/100
+                                @elseif($renewalMood['color'] === 'amber') bg-accent-gold/100
+                                @else bg-accent-red/100
                                 @endif"></span>{{ $renewalMood['label'] }}
                         </span>
-                        <span class="text-slate-500">{{ __('transfers.player_demand') }}: <span class="font-semibold text-slate-700">{{ $renewalDemand['formattedWage'] }}{{ __('squad.per_year') }}</span></span>
+                        <span class="text-slate-500">{{ __('transfers.player_demand') }}: <span class="font-semibold text-slate-300">{{ $renewalDemand['formattedWage'] }}{{ __('squad.per_year') }}</span></span>
                     </div>
                     {{-- Form --}}
                     <form method="POST" action="{{ route('game.transfers.renew', [$game->id, $gamePlayer->id]) }}">

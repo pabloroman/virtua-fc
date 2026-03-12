@@ -26,8 +26,8 @@
             @click="{{ $clickExpr }}"
             class="px-2 py-1.5 text-xs font-medium rounded-lg border-2 transition-all duration-150 min-h-[44px]"
             :class="{{ $model }} === option.value
-                ? 'bg-sky-100 text-sky-800 border-sky-300 shadow-sm'
-                : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:text-slate-900'"
+                ? 'bg-accent-blue/10 text-accent-blue border-accent-blue/30 shadow-sm'
+                : 'bg-surface-700 text-slate-400 border-white/10 hover:border-white/20 hover:text-white'"
             x-text="option.label"
             x-tooltip="option.tooltip"
         ></button>
@@ -35,6 +35,6 @@
 </div>
 
 @if($summaryField)
-<p class="mt-1 text-[10px] text-slate-400 leading-relaxed"
+<p class="mt-1 text-[10px] text-slate-500 leading-relaxed"
    x-text="{{ $options }}.find(o => o.value === {{ $model }})?.{{ $summaryField }}"></p>
 @endif

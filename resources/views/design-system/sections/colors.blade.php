@@ -1,185 +1,283 @@
 <section id="colors" class="mb-20">
-    <h2 class="text-3xl font-bold text-slate-900 mb-2">Colors</h2>
-    <p class="text-slate-500 mb-8">The color palette is built on Tailwind's slate scale for structure, with sky as the primary accent and semantic colors for status communication.</p>
+    <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-white mb-2">Colors</h2>
+    <p class="text-sm text-slate-400 mb-10">The color system is built on deep, dark surfaces with vibrant accents. Opacity-based borders and backgrounds create depth without competing for attention.</p>
 
-    {{-- Primary Accent --}}
-    <h3 class="text-lg font-semibold text-slate-900 mb-3">Primary Accent</h3>
-    <p class="text-sm text-slate-500 mb-4">Sky is the primary interactive color — used for focus rings, active states, links, and selected elements.</p>
-    <div class="flex flex-wrap gap-3 mb-10">
-        @foreach([
-            ['class' => 'bg-sky-50', 'name' => 'sky-50', 'hex' => '#f0f9ff'],
-            ['class' => 'bg-sky-100', 'name' => 'sky-100', 'hex' => '#e0f2fe'],
-            ['class' => 'bg-sky-200', 'name' => 'sky-200', 'hex' => '#bae6fd'],
-            ['class' => 'bg-sky-400', 'name' => 'sky-400', 'hex' => '#38bdf8'],
-            ['class' => 'bg-sky-500', 'name' => 'sky-500', 'hex' => '#0ea5e9'],
-            ['class' => 'bg-sky-600', 'name' => 'sky-600', 'hex' => '#0284c7'],
-            ['class' => 'bg-sky-700', 'name' => 'sky-700', 'hex' => '#0369a1'],
-        ] as $color)
-        <div class="text-center">
-            <div class="w-16 h-16 rounded-lg {{ $color['class'] }} border border-slate-200/50 shadow-sm mb-1.5"></div>
-            <div class="text-[10px] font-medium text-slate-700">{{ $color['name'] }}</div>
-            <div class="text-[10px] text-slate-400">{{ $color['hex'] }}</div>
+    {{-- Surface Palette --}}
+    <div class="mb-12">
+        <h3 class="text-lg font-semibold text-white mb-2">Surface Palette</h3>
+        <p class="text-sm text-slate-400 mb-4">The foundational layers of the interface. Surface-900 is the page background; surface-800 is the primary card/panel color; surface-700 and surface-600 provide elevated and interactive surfaces.</p>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            @foreach([
+                ['bg' => 'bg-surface-900', 'name' => 'surface-900', 'hex' => '#0B1120', 'usage' => 'Page background'],
+                ['bg' => 'bg-surface-800', 'name' => 'surface-800', 'hex' => '#0F172A', 'usage' => 'Cards, panels'],
+                ['bg' => 'bg-surface-700', 'name' => 'surface-700', 'hex' => '#1E293B', 'usage' => 'Code blocks, inputs'],
+                ['bg' => 'bg-surface-600', 'name' => 'surface-600', 'hex' => '#334155', 'usage' => 'Elevated elements'],
+            ] as $color)
+            <div class="bg-surface-800 border border-white/5 rounded-xl p-4">
+                <div class="w-full h-16 rounded-lg {{ $color['bg'] }} border border-white/10 mb-3"></div>
+                <div class="font-heading font-semibold text-sm text-white uppercase tracking-wide">{{ $color['name'] }}</div>
+                <div class="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5">{{ $color['hex'] }}</div>
+                <div class="text-xs text-slate-400 mt-1">{{ $color['usage'] }}</div>
+            </div>
+            @endforeach
         </div>
-        @endforeach
     </div>
 
-    {{-- Primary Action --}}
-    <h3 class="text-lg font-semibold text-slate-900 mb-3">Primary Action</h3>
-    <p class="text-sm text-slate-500 mb-4">Red is the default color for primary CTA buttons throughout the application.</p>
-    <div class="flex flex-wrap gap-3 mb-10">
-        @foreach([
-            ['class' => 'bg-red-50', 'name' => 'red-50', 'hex' => '#fef2f2'],
-            ['class' => 'bg-red-100', 'name' => 'red-100', 'hex' => '#fee2e2'],
-            ['class' => 'bg-red-500', 'name' => 'red-500', 'hex' => '#ef4444'],
-            ['class' => 'bg-red-600', 'name' => 'red-600', 'hex' => '#dc2626'],
-            ['class' => 'bg-red-700', 'name' => 'red-700', 'hex' => '#b91c1c'],
-        ] as $color)
-        <div class="text-center">
-            <div class="w-16 h-16 rounded-lg {{ $color['class'] }} border border-slate-200/50 shadow-sm mb-1.5"></div>
-            <div class="text-[10px] font-medium text-slate-700">{{ $color['name'] }}</div>
-            <div class="text-[10px] text-slate-400">{{ $color['hex'] }}</div>
+    {{-- Accent Palette --}}
+    <div class="mb-12">
+        <h3 class="text-lg font-semibold text-white mb-2">Accent Palette</h3>
+        <p class="text-sm text-slate-400 mb-4">Vibrant colors that pop against the dark surfaces. Each accent has a specific role in the UI.</p>
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+            @foreach([
+                ['bg' => 'bg-accent-blue', 'name' => 'accent-blue', 'hex' => '#3B82F6', 'usage' => 'Interactive, links, focus'],
+                ['bg' => 'bg-accent-gold', 'name' => 'accent-gold', 'hex' => '#F59E0B', 'usage' => 'Highlights, awards'],
+                ['bg' => 'bg-accent-green', 'name' => 'accent-green', 'hex' => '#22C55E', 'usage' => 'Success, positive'],
+                ['bg' => 'bg-accent-red', 'name' => 'accent-red', 'hex' => '#EF4444', 'usage' => 'Danger, primary CTA'],
+                ['bg' => 'bg-accent-orange', 'name' => 'accent-orange', 'hex' => '#F97316', 'usage' => 'Warnings, energy'],
+            ] as $color)
+            <div class="bg-surface-800 border border-white/5 rounded-xl p-4">
+                <div class="w-full h-16 rounded-lg {{ $color['bg'] }} mb-3"></div>
+                <div class="font-heading font-semibold text-sm text-white uppercase tracking-wide">{{ $color['name'] }}</div>
+                <div class="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5">{{ $color['hex'] }}</div>
+                <div class="text-xs text-slate-400 mt-1">{{ $color['usage'] }}</div>
+            </div>
+            @endforeach
         </div>
-        @endforeach
     </div>
 
-    {{-- Neutrals --}}
-    <h3 class="text-lg font-semibold text-slate-900 mb-3">Neutrals</h3>
-    <p class="text-sm text-slate-500 mb-4">Slate provides the structural palette for backgrounds, borders, and text hierarchy.</p>
-    <div class="flex flex-wrap gap-3 mb-10">
-        @foreach([
-            ['class' => 'bg-slate-50', 'name' => 'slate-50', 'hex' => '#f8fafc'],
-            ['class' => 'bg-slate-100', 'name' => 'slate-100', 'hex' => '#f1f5f9'],
-            ['class' => 'bg-slate-200', 'name' => 'slate-200', 'hex' => '#e2e8f0'],
-            ['class' => 'bg-slate-300', 'name' => 'slate-300', 'hex' => '#cbd5e1'],
-            ['class' => 'bg-slate-400', 'name' => 'slate-400', 'hex' => '#94a3b8'],
-            ['class' => 'bg-slate-500', 'name' => 'slate-500', 'hex' => '#64748b'],
-            ['class' => 'bg-slate-600', 'name' => 'slate-600', 'hex' => '#475569'],
-            ['class' => 'bg-slate-700', 'name' => 'slate-700', 'hex' => '#334155'],
-            ['class' => 'bg-slate-800', 'name' => 'slate-800', 'hex' => '#1e293b'],
-            ['class' => 'bg-slate-900', 'name' => 'slate-900', 'hex' => '#0f172a'],
-        ] as $color)
-        <div class="text-center">
-            <div class="w-16 h-16 rounded-lg {{ $color['class'] }} border border-slate-200/50 shadow-sm mb-1.5"></div>
-            <div class="text-[10px] font-medium text-slate-700">{{ $color['name'] }}</div>
-            <div class="text-[10px] text-slate-400">{{ $color['hex'] }}</div>
+    {{-- Pitch Palette --}}
+    <div class="mb-12">
+        <h3 class="text-lg font-semibold text-white mb-2">Pitch Palette</h3>
+        <p class="text-sm text-slate-400 mb-4">Football-specific greens used for pitch visualizations, formation displays, and match-related UI elements.</p>
+        <div class="grid grid-cols-3 gap-4">
+            @foreach([
+                ['bg' => 'bg-pitch-dark', 'name' => 'pitch-dark', 'hex' => '#1a5c2a', 'usage' => 'Pitch shadows, edges'],
+                ['bg' => 'bg-pitch-base', 'name' => 'pitch-base', 'hex' => '#1e6b31', 'usage' => 'Primary pitch surface'],
+                ['bg' => 'bg-pitch-light', 'name' => 'pitch-light', 'hex' => '#22783a', 'usage' => 'Pitch highlights, stripes'],
+            ] as $color)
+            <div class="bg-surface-800 border border-white/5 rounded-xl p-4">
+                <div class="w-full h-16 rounded-lg {{ $color['bg'] }} mb-3"></div>
+                <div class="font-heading font-semibold text-sm text-white uppercase tracking-wide">{{ $color['name'] }}</div>
+                <div class="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5">{{ $color['hex'] }}</div>
+                <div class="text-xs text-slate-400 mt-1">{{ $color['usage'] }}</div>
+            </div>
+            @endforeach
         </div>
-        @endforeach
+
+        {{-- Pitch preview --}}
+        <div class="mt-4 bg-surface-800 border border-white/5 rounded-xl p-4">
+            <div class="text-[10px] text-slate-500 uppercase tracking-widest mb-3">Pitch Preview</div>
+            <div class="h-32 rounded-lg overflow-hidden flex">
+                <div class="flex-1 bg-pitch-dark"></div>
+                <div class="flex-1 bg-pitch-base"></div>
+                <div class="flex-1 bg-pitch-light"></div>
+                <div class="flex-1 bg-pitch-base"></div>
+                <div class="flex-1 bg-pitch-dark"></div>
+                <div class="flex-1 bg-pitch-base"></div>
+                <div class="flex-1 bg-pitch-light"></div>
+                <div class="flex-1 bg-pitch-base"></div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Border Opacity Patterns --}}
+    <div class="mb-12">
+        <h3 class="text-lg font-semibold text-white mb-2">Border Opacity Patterns</h3>
+        <p class="text-sm text-slate-400 mb-4">Borders use white at low opacity instead of solid colors. This creates subtle separation that adapts to any dark surface beneath it.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div class="bg-surface-800 border border-white/5 rounded-xl p-5">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="font-heading font-semibold text-sm text-white uppercase tracking-wide">border-white/5</div>
+                    <div class="text-[10px] text-slate-500 uppercase tracking-widest">Very subtle</div>
+                </div>
+                <div class="bg-surface-700/50 border border-white/5 rounded-lg p-4">
+                    <p class="text-sm text-slate-400">Used for cards, panels, and containers. Barely visible separation that maintains visual cohesion.</p>
+                </div>
+                <div x-data="{ copied: false }" class="relative mt-3">
+                    <button @click="navigator.clipboard.writeText($refs.code5.textContent); copied = true; setTimeout(() => copied = false, 2000)"
+                            class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                        <span x-show="!copied">Copy</span>
+                        <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
+                    </button>
+                    <pre class="bg-surface-700 text-slate-300 rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="code5">border border-white/5</code></pre>
+                </div>
+            </div>
+
+            <div class="bg-surface-800 border border-white/5 rounded-xl p-5">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="font-heading font-semibold text-sm text-white uppercase tracking-wide">border-white/10</div>
+                    <div class="text-[10px] text-slate-500 uppercase tracking-widest">Subtle</div>
+                </div>
+                <div class="bg-surface-700/50 border border-white/10 rounded-lg p-4">
+                    <p class="text-sm text-slate-400">Used for dividers, table borders, and elements that need slightly more definition.</p>
+                </div>
+                <div x-data="{ copied: false }" class="relative mt-3">
+                    <button @click="navigator.clipboard.writeText($refs.code10.textContent); copied = true; setTimeout(() => copied = false, 2000)"
+                            class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                        <span x-show="!copied">Copy</span>
+                        <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
+                    </button>
+                    <pre class="bg-surface-700 text-slate-300 rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="code10">border border-white/10</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-surface-800 border border-white/5 rounded-xl p-5">
+            <div class="text-[10px] text-slate-500 uppercase tracking-widest mb-3">Comparison</div>
+            <div class="flex flex-col md:flex-row gap-4">
+                <div class="flex-1 bg-surface-700/50 border border-white/5 rounded-lg p-3 text-center">
+                    <span class="text-xs text-slate-400">white/5</span>
+                </div>
+                <div class="flex-1 bg-surface-700/50 border border-white/10 rounded-lg p-3 text-center">
+                    <span class="text-xs text-slate-400">white/10</span>
+                </div>
+                <div class="flex-1 bg-surface-700/50 border border-white/20 rounded-lg p-3 text-center">
+                    <span class="text-xs text-slate-400">white/20 (avoid)</span>
+                </div>
+                <div class="flex-1 bg-surface-700/50 border border-slate-200 rounded-lg p-3 text-center">
+                    <span class="text-xs text-accent-red">slate-200 (never)</span>
+                </div>
+            </div>
+        </div>
     </div>
 
     {{-- Semantic Colors --}}
-    <h3 class="text-lg font-semibold text-slate-900 mb-3">Semantic Colors</h3>
-    <p class="text-sm text-slate-500 mb-4">Status-communicating colors used consistently across the application.</p>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-        {{-- Success / Positive --}}
-        <div>
-            <div class="text-sm font-semibold text-slate-700 mb-2">Success / Positive</div>
-            <div class="flex flex-wrap gap-3">
-                @foreach([
-                    ['class' => 'bg-teal-50', 'name' => 'teal-50'],
-                    ['class' => 'bg-teal-100', 'name' => 'teal-100'],
-                    ['class' => 'bg-teal-500', 'name' => 'teal-500'],
-                    ['class' => 'bg-teal-600', 'name' => 'teal-600'],
-                    ['class' => 'bg-teal-700', 'name' => 'teal-700'],
-                    ['class' => 'bg-teal-800', 'name' => 'teal-800'],
-                ] as $color)
-                <div class="text-center">
-                    <div class="w-12 h-12 rounded-lg {{ $color['class'] }} border border-slate-200/50 shadow-sm mb-1"></div>
-                    <div class="text-[10px] text-slate-500">{{ $color['name'] }}</div>
-                </div>
-                @endforeach
-            </div>
-        </div>
+    <div class="mb-12">
+        <h3 class="text-lg font-semibold text-white mb-2">Semantic Colors</h3>
+        <p class="text-sm text-slate-400 mb-4">Colors communicate meaning consistently throughout the application. Each semantic role maps to a specific accent color.</p>
 
-        {{-- Warning --}}
-        <div>
-            <div class="text-sm font-semibold text-slate-700 mb-2">Warning</div>
-            <div class="flex flex-wrap gap-3">
-                @foreach([
-                    ['class' => 'bg-amber-50', 'name' => 'amber-50'],
-                    ['class' => 'bg-amber-100', 'name' => 'amber-100'],
-                    ['class' => 'bg-amber-500', 'name' => 'amber-500'],
-                    ['class' => 'bg-amber-600', 'name' => 'amber-600'],
-                    ['class' => 'bg-yellow-400', 'name' => 'yellow-400'],
-                    ['class' => 'bg-yellow-600', 'name' => 'yellow-600'],
-                ] as $color)
-                <div class="text-center">
-                    <div class="w-12 h-12 rounded-lg {{ $color['class'] }} border border-slate-200/50 shadow-sm mb-1"></div>
-                    <div class="text-[10px] text-slate-500">{{ $color['name'] }}</div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {{-- Success --}}
+            <div class="bg-surface-800 border border-white/5 rounded-xl p-5">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-10 h-10 rounded-lg bg-accent-green/20 border border-accent-green/30 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-accent-green" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                    </div>
+                    <div>
+                        <div class="font-heading font-bold text-sm text-white uppercase tracking-wide">Success / Positive</div>
+                        <div class="text-[10px] text-slate-500 uppercase tracking-widest">accent-green #22C55E</div>
+                    </div>
                 </div>
-                @endforeach
+                <p class="text-sm text-slate-400 mb-3">Completed transfers, match wins, positive growth, confirmed actions, budget surplus.</p>
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-2 py-1 text-[10px] rounded bg-accent-green/10 text-accent-green border border-accent-green/20">text-accent-green</span>
+                    <span class="px-2 py-1 text-[10px] rounded bg-accent-green/10 text-accent-green border border-accent-green/20">bg-accent-green/10</span>
+                    <span class="px-2 py-1 text-[10px] rounded bg-accent-green/10 text-accent-green border border-accent-green/20">border-accent-green/20</span>
+                </div>
             </div>
-        </div>
 
-        {{-- Danger --}}
-        <div>
-            <div class="text-sm font-semibold text-slate-700 mb-2">Danger</div>
-            <div class="flex flex-wrap gap-3">
-                @foreach([
-                    ['class' => 'bg-red-50', 'name' => 'red-50'],
-                    ['class' => 'bg-red-100', 'name' => 'red-100'],
-                    ['class' => 'bg-red-500', 'name' => 'red-500'],
-                    ['class' => 'bg-red-600', 'name' => 'red-600'],
-                    ['class' => 'bg-red-700', 'name' => 'red-700'],
-                ] as $color)
-                <div class="text-center">
-                    <div class="w-12 h-12 rounded-lg {{ $color['class'] }} border border-slate-200/50 shadow-sm mb-1"></div>
-                    <div class="text-[10px] text-slate-500">{{ $color['name'] }}</div>
+            {{-- Danger --}}
+            <div class="bg-surface-800 border border-white/5 rounded-xl p-5">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-10 h-10 rounded-lg bg-accent-red/20 border border-accent-red/30 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-accent-red" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </div>
+                    <div>
+                        <div class="font-heading font-bold text-sm text-white uppercase tracking-wide">Danger / Destructive</div>
+                        <div class="text-[10px] text-slate-500 uppercase tracking-widest">accent-red #EF4444</div>
+                    </div>
                 </div>
-                @endforeach
+                <p class="text-sm text-slate-400 mb-3">Match losses, injuries, red cards, budget deficit, relegation warnings, destructive actions.</p>
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-2 py-1 text-[10px] rounded bg-accent-red/10 text-accent-red border border-accent-red/20">text-accent-red</span>
+                    <span class="px-2 py-1 text-[10px] rounded bg-accent-red/10 text-accent-red border border-accent-red/20">bg-accent-red/10</span>
+                    <span class="px-2 py-1 text-[10px] rounded bg-accent-red/10 text-accent-red border border-accent-red/20">border-accent-red/20</span>
+                </div>
             </div>
-        </div>
 
-        {{-- Info --}}
-        <div>
-            <div class="text-sm font-semibold text-slate-700 mb-2">Info</div>
-            <div class="flex flex-wrap gap-3">
-                @foreach([
-                    ['class' => 'bg-sky-50', 'name' => 'sky-50'],
-                    ['class' => 'bg-sky-100', 'name' => 'sky-100'],
-                    ['class' => 'bg-sky-200', 'name' => 'sky-200'],
-                    ['class' => 'bg-sky-500', 'name' => 'sky-500'],
-                ] as $color)
-                <div class="text-center">
-                    <div class="w-12 h-12 rounded-lg {{ $color['class'] }} border border-slate-200/50 shadow-sm mb-1"></div>
-                    <div class="text-[10px] text-slate-500">{{ $color['name'] }}</div>
+            {{-- Warning --}}
+            <div class="bg-surface-800 border border-white/5 rounded-xl p-5">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-10 h-10 rounded-lg bg-accent-gold/20 border border-accent-gold/30 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-accent-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+                    </div>
+                    <div>
+                        <div class="font-heading font-bold text-sm text-white uppercase tracking-wide">Warning / Caution</div>
+                        <div class="text-[10px] text-slate-500 uppercase tracking-widest">accent-gold #F59E0B</div>
+                    </div>
                 </div>
-                @endforeach
+                <p class="text-sm text-slate-400 mb-3">Yellow cards, expiring contracts, low fitness, approaching budget limits, pending decisions.</p>
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-2 py-1 text-[10px] rounded bg-accent-gold/10 text-accent-gold border border-accent-gold/20">text-accent-gold</span>
+                    <span class="px-2 py-1 text-[10px] rounded bg-accent-gold/10 text-accent-gold border border-accent-gold/20">bg-accent-gold/10</span>
+                    <span class="px-2 py-1 text-[10px] rounded bg-accent-gold/10 text-accent-gold border border-accent-gold/20">border-accent-gold/20</span>
+                </div>
+            </div>
+
+            {{-- Interactive --}}
+            <div class="bg-surface-800 border border-white/5 rounded-xl p-5">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-10 h-10 rounded-lg bg-accent-blue/20 border border-accent-blue/30 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-accent-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5"/></svg>
+                    </div>
+                    <div>
+                        <div class="font-heading font-bold text-sm text-white uppercase tracking-wide">Interactive / Info</div>
+                        <div class="text-[10px] text-slate-500 uppercase tracking-widest">accent-blue #3B82F6</div>
+                    </div>
+                </div>
+                <p class="text-sm text-slate-400 mb-3">Links, focus rings, selected states, informational badges, navigation highlights, active tabs.</p>
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-2 py-1 text-[10px] rounded bg-accent-blue/10 text-accent-blue border border-accent-blue/20">text-accent-blue</span>
+                    <span class="px-2 py-1 text-[10px] rounded bg-accent-blue/10 text-accent-blue border border-accent-blue/20">bg-accent-blue/10</span>
+                    <span class="px-2 py-1 text-[10px] rounded bg-accent-blue/10 text-accent-blue border border-accent-blue/20">border-accent-blue/20</span>
+                </div>
             </div>
         </div>
     </div>
 
-    {{-- Button Color Palette --}}
-    <h3 class="text-lg font-semibold text-slate-900 mb-3">Button Color Palette</h3>
-    <p class="text-sm text-slate-500 mb-4">Four button colors tuned to harmonize with the cool-toned app palette. Red is the deliberate warm accent; the rest stay in the cool family.</p>
-    <div class="flex flex-wrap gap-6 mb-10">
-        @foreach([
-            ['class' => 'bg-red-600', 'name' => 'Red', 'role' => 'Primary CTA', 'value' => 'red-600'],
-            ['class' => 'bg-teal-600', 'name' => 'Teal', 'role' => 'Success / Confirm', 'value' => 'teal-600'],
-            ['class' => 'bg-sky-600', 'name' => 'Sky', 'role' => 'Informational', 'value' => 'sky-600'],
-            ['class' => 'bg-slate-700', 'name' => 'Slate', 'role' => 'Neutral / Dismiss', 'value' => 'slate-700'],
-        ] as $btn)
-        <div class="text-center">
-            <div class="w-20 h-10 rounded-lg {{ $btn['class'] }} shadow-sm mb-1.5 flex items-center justify-center">
-                <span class="text-[10px] font-semibold text-white">{{ $btn['name'] }}</span>
+    {{-- Text Color Hierarchy --}}
+    <div class="mb-12">
+        <h3 class="text-lg font-semibold text-white mb-2">Text Color Hierarchy</h3>
+        <p class="text-sm text-slate-400 mb-4">Text colors create a clear visual hierarchy on dark surfaces. Use these consistently.</p>
+
+        <div class="bg-surface-800 border border-white/5 rounded-xl p-5">
+            <div class="space-y-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-32 shrink-0">
+                        <span class="text-[10px] text-slate-500 uppercase tracking-widest">text-white</span>
+                    </div>
+                    <span class="text-white font-semibold">Headings, emphasis, primary values</span>
+                </div>
+                <div class="border-t border-white/5"></div>
+                <div class="flex items-center gap-4">
+                    <div class="w-32 shrink-0">
+                        <span class="text-[10px] text-slate-500 uppercase tracking-widest">text-slate-300</span>
+                    </div>
+                    <span class="text-slate-300">Code blocks, secondary emphasis</span>
+                </div>
+                <div class="border-t border-white/5"></div>
+                <div class="flex items-center gap-4">
+                    <div class="w-32 shrink-0">
+                        <span class="text-[10px] text-slate-500 uppercase tracking-widest">text-slate-400</span>
+                    </div>
+                    <span class="text-slate-400">Body text, descriptions, table data</span>
+                </div>
+                <div class="border-t border-white/5"></div>
+                <div class="flex items-center gap-4">
+                    <div class="w-32 shrink-0">
+                        <span class="text-[10px] text-slate-500 uppercase tracking-widest">text-slate-500</span>
+                    </div>
+                    <span class="text-slate-500">Micro-labels, timestamps, tertiary info</span>
+                </div>
             </div>
-            <div class="text-[10px] font-medium text-slate-700">{{ $btn['role'] }}</div>
-            <div class="text-[10px] text-slate-400">{{ $btn['value'] }}</div>
         </div>
-        @endforeach
     </div>
 
-    {{-- App Background Gradient --}}
-    <h3 class="text-lg font-semibold text-slate-900 mb-3">Application Background</h3>
-    <p class="text-sm text-slate-500 mb-4">The main app uses a dark gradient background that provides contrast for the white content panels.</p>
-    <div class="rounded-lg overflow-hidden border border-slate-200 mb-3">
-        <div class="h-24 bg-gradient-to-bl from-slate-900 via-cyan-950 to-teal-950"></div>
-    </div>
-    <div x-data="{ copied: false }" class="relative">
-        <button @click="navigator.clipboard.writeText($refs.code.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-slate-700 rounded transition-colors">
-            <span x-show="!copied">Copy</span>
-            <span x-show="copied" x-cloak class="text-green-400">Copied!</span>
-        </button>
-        <pre class="bg-slate-800 text-slate-300 rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="code">bg-gradient-to-bl from-slate-900 via-cyan-950 to-teal-950</code></pre>
+    {{-- Card Pattern --}}
+    <div>
+        <h3 class="text-lg font-semibold text-white mb-2">Standard Card Pattern</h3>
+        <p class="text-sm text-slate-400 mb-4">The foundational card pattern used across the application.</p>
+
+        <div x-data="{ copied: false }" class="relative">
+            <button @click="navigator.clipboard.writeText($refs.codeCard.textContent); copied = true; setTimeout(() => copied = false, 2000)"
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                <span x-show="!copied">Copy</span>
+                <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
+            </button>
+            <pre class="bg-surface-700 text-slate-300 rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="codeCard">&lt;div class="bg-surface-800 border border-white/5 rounded-xl p-5"&gt;
+    &lt;!-- Card content --&gt;
+&lt;/div&gt;</code></pre>
+        </div>
     </div>
 </section>

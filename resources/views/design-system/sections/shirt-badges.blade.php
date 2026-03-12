@@ -1,20 +1,20 @@
 <section id="shirt-badges" class="mb-20">
-    <h2 class="text-3xl font-bold text-slate-900 mb-2">Shirt Badges</h2>
-    <p class="text-slate-500 mb-8">Player badges on the pitch lineup view use team-specific shirt patterns and colors. Each badge shows the player's number or initials with a contrast-aware backdrop for patterned shirts.</p>
+    <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-white mb-2">Shirt Badges</h2>
+    <p class="text-sm text-slate-400 mb-8">Player badges on the pitch lineup view use team-specific shirt patterns and colors. Each badge shows the player's number or initials with a contrast-aware backdrop for patterned shirts.</p>
 
     <div x-data="shirtBadgePreview()" class="space-y-6">
         {{-- Pattern legend --}}
         <div class="flex flex-wrap gap-3 text-xs">
             <template x-for="p in ['solid', 'stripes', 'hoops', 'sash', 'bar', 'halves']" :key="p">
-                <span class="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-full font-medium uppercase tracking-wide" x-text="p"></span>
+                <span class="px-2.5 py-1 bg-surface-700 text-slate-400 border border-white/5 rounded-full font-medium uppercase tracking-wide" x-text="p"></span>
             </template>
         </div>
 
         {{-- GK + all teams grid --}}
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {{-- Goalkeeper reference --}}
-            <div class="flex flex-col items-center gap-2 p-3 bg-slate-50 rounded-lg border border-slate-200">
-                <div class="bg-emerald-600 rounded-lg p-3 flex gap-2 items-center">
+            <div class="flex flex-col items-center gap-2 p-3 bg-surface-800 rounded-xl border border-white/5">
+                <div class="bg-pitch-base rounded-lg p-3 flex gap-2 items-center">
                     <div class="relative w-11 h-11 rounded-xl border border-white/20 shadow-lg flex items-center justify-center" style="background: linear-gradient(to bottom right, #FBBF24, #D97706)">
                         <span class="font-bold text-xs leading-none inline-flex items-center justify-center w-7 h-7 rounded-full" style="color: #FFFFFF; text-shadow: 0 1px 2px rgba(0,0,0,0.5)">1</span>
                     </div>
@@ -22,14 +22,14 @@
                         <span class="font-bold text-xs leading-none inline-flex items-center justify-center w-7 h-7 rounded-full" style="color: #FFFFFF; text-shadow: 0 1px 2px rgba(0,0,0,0.5)">GK</span>
                     </div>
                 </div>
-                <div class="text-[11px] text-slate-600 font-medium text-center">Goalkeeper</div>
-                <div class="text-[10px] text-slate-400 uppercase tracking-wide">all teams</div>
+                <div class="text-[11px] text-slate-300 font-medium text-center">Goalkeeper</div>
+                <div class="text-[10px] text-slate-500 uppercase tracking-widest">all teams</div>
             </div>
 
             {{-- Team badges --}}
             <template x-for="[name, tc] in teams" :key="name">
-                <div class="flex flex-col items-center gap-2 p-3 bg-slate-50 rounded-lg border border-slate-200">
-                    <div class="bg-emerald-600 rounded-lg p-3 flex gap-2 items-center">
+                <div class="flex flex-col items-center gap-2 p-3 bg-surface-800 rounded-xl border border-white/5">
+                    <div class="bg-pitch-base rounded-lg p-3 flex gap-2 items-center">
                         <div class="relative w-11 h-11 rounded-xl border border-white/20 shadow-lg flex items-center justify-center" :style="getShirtStyle(tc)">
                             <span class="font-bold text-xs leading-none inline-flex items-center justify-center w-7 h-7 rounded-full" :style="getNumberStyle(tc)">10</span>
                         </div>
@@ -37,8 +37,8 @@
                             <span class="font-bold text-xs leading-none inline-flex items-center justify-center w-7 h-7 rounded-full" :style="getNumberStyle(tc)" x-text="getInitials(name)"></span>
                         </div>
                     </div>
-                    <div class="text-[11px] text-slate-600 font-medium text-center truncate w-full" x-text="name"></div>
-                    <div class="text-[10px] text-slate-400 uppercase tracking-wide" x-text="tc.pattern"></div>
+                    <div class="text-[11px] text-slate-300 font-medium text-center truncate w-full" x-text="name"></div>
+                    <div class="text-[10px] text-slate-500 uppercase tracking-widest" x-text="tc.pattern"></div>
                 </div>
             </template>
         </div>

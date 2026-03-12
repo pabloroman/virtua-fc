@@ -10,7 +10,7 @@
             ...$colors,
         ];
     } else {
-        $positionDisplay = ['abbreviation' => '?', 'bg' => 'bg-slate-500', 'text' => 'text-white'];
+        $positionDisplay = ['abbreviation' => '?', 'bg' => 'bg-surface-700/500', 'text' => 'text-white'];
     }
 
     $sizeClasses = match($size) {

@@ -18,42 +18,42 @@
 
     <div>
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-surface-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-4 sm:p-6 md:p-8" x-data="{ tab: '{{ $groupStageComplete && $knockoutTies->isNotEmpty() ? 'knockout' : 'groups' }}' }">
 
                     {{-- Header --}}
                     <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-6">
-                        <h3 class="font-semibold text-xl text-slate-900">{{ __($competition->name) }}</h3>
+                        <h3 class="font-semibold text-xl text-white">{{ __($competition->name) }}</h3>
                         <div class="flex items-center gap-3">
                             @if($knockoutStatus === 'champion')
-                                <span class="px-3 py-1 text-sm bg-yellow-100 text-yellow-700 rounded-full">{{ __('cup.champion') }}</span>
+                                <span class="px-3 py-1 text-sm bg-yellow-100 text-accent-gold rounded-full">{{ __('cup.champion') }}</span>
                             @elseif($knockoutStatus === 'eliminated')
-                                <span class="px-3 py-1 text-sm bg-red-100 text-red-700 rounded-full">{{ __('cup.eliminated') }}</span>
+                                <span class="px-3 py-1 text-sm bg-red-100 text-accent-red rounded-full">{{ __('cup.eliminated') }}</span>
                             @elseif($knockoutStatus === 'active')
-                                <span class="px-3 py-1 text-sm bg-green-100 text-green-700 rounded-full">{{ __($playerTie?->firstLegMatch?->round_name ?? '') }}</span>
+                                <span class="px-3 py-1 text-sm bg-accent-green/10 text-accent-green rounded-full">{{ __($playerTie?->firstLegMatch?->round_name ?? '') }}</span>
                             @elseif($knockoutStatus === 'qualified')
                                 <span class="px-3 py-1 text-sm bg-emerald-100 text-emerald-700 rounded-full">{{ __('game.knockout_qualified') }}</span>
                             @elseif($knockoutStatus === 'group_stage')
-                                <span class="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-full">{{ __('game.group_stage') }}</span>
+                                <span class="px-3 py-1 text-sm bg-blue-100 text-blue-400 rounded-full">{{ __('game.group_stage') }}</span>
                             @endif
                         </div>
                     </div>
 
                     {{-- Tab Navigation --}}
-                    <div class="flex gap-1 border-b border-slate-200 mb-6 overflow-x-auto scrollbar-hide">
+                    <div class="flex gap-1 border-b border-white/10 mb-6 overflow-x-auto scrollbar-hide">
                         <button @click="tab = 'groups'"
-                                :class="tab === 'groups' ? 'border-b-2 border-red-500 text-red-600 font-semibold' : 'text-slate-500 hover:text-slate-700'"
+                                :class="tab === 'groups' ? 'border-b-2 border-red-500 text-accent-red font-semibold' : 'text-slate-500 hover:text-slate-300'"
                                 class="px-4 py-2.5 text-sm whitespace-nowrap shrink-0 min-h-[44px]">
                             {{ __('game.group_stage') }}
                         </button>
                         <button @click="tab = 'knockout'"
-                                :class="tab === 'knockout' ? 'border-b-2 border-red-500 text-red-600 font-semibold' : 'text-slate-500 hover:text-slate-700'"
+                                :class="tab === 'knockout' ? 'border-b-2 border-red-500 text-accent-red font-semibold' : 'text-slate-500 hover:text-slate-300'"
                                 class="px-4 py-2.5 text-sm whitespace-nowrap shrink-0 min-h-[44px] flex items-center gap-2">
                             {{ __('game.knockout_phase') }}
                             @if(!$groupStageComplete)
                                 <span class="w-2 h-2 rounded-full bg-slate-300"></span>
                             @elseif($knockoutTies->isNotEmpty())
-                                <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                                <span class="w-2 h-2 rounded-full bg-accent-green/100"></span>
                             @endif
                         </button>
                     </div>
@@ -98,11 +98,11 @@
                                     $isHome = $playerTie->home_team_id === $game->team_id;
                                     $opponent = $isHome ? $playerTie->awayTeam : $playerTie->homeTeam;
                                 @endphp
-                                <div class="mb-8 p-6 rounded-xl bg-gradient-to-r from-sky-50 to-sky-100 border border-sky-200">
-                                    <div class="text-center text-sm text-sky-600 mb-3">{{ __('cup.your_current_cup_tie', ['round' => __($playerTie->firstLegMatch?->round_name ?? '')]) }}</div>
+                                <div class="mb-8 p-6 rounded-xl bg-gradient-to-r from-sky-50 to-sky-100 border border-accent-blue/20">
+                                    <div class="text-center text-sm text-accent-blue mb-3">{{ __('cup.your_current_cup_tie', ['round' => __($playerTie->firstLegMatch?->round_name ?? '')]) }}</div>
                                     <div class="flex items-center justify-center gap-6">
                                         <div class="flex items-center gap-3 flex-1 justify-end">
-                                            <span class="text-lg md:text-xl font-semibold @if($playerTie->home_team_id === $game->team_id) text-sky-700 @endif truncate">
+                                            <span class="text-lg md:text-xl font-semibold @if($playerTie->home_team_id === $game->team_id) text-accent-blue @endif truncate">
                                                 {{ $playerTie->homeTeam->name }}
                                             </span>
                                             <x-team-crest :team="$playerTie->homeTeam" class="w-10 h-10 md:w-12 md:h-12 shrink-0" />
@@ -116,7 +116,7 @@
                                         </div>
                                         <div class="flex items-center gap-3 flex-1">
                                             <x-team-crest :team="$playerTie->awayTeam" class="w-10 h-10 md:w-12 md:h-12 shrink-0" />
-                                            <span class="text-lg md:text-xl font-semibold @if($playerTie->away_team_id === $game->team_id) text-sky-700 @endif truncate">
+                                            <span class="text-lg md:text-xl font-semibold @if($playerTie->away_team_id === $game->team_id) text-accent-blue @endif truncate">
                                                 {{ $playerTie->awayTeam->name }}
                                             </span>
                                         </div>
@@ -124,8 +124,8 @@
                                 </div>
                             @elseif($playerTie && $playerTie->completed)
                                 @php $won = $playerTie->winner_id === $game->team_id; @endphp
-                                <div class="mb-8 p-5 rounded-xl {{ $won ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200' }} border">
-                                    <div class="text-center text-sm {{ $won ? 'text-green-600' : 'text-red-600' }} mb-3">
+                                <div class="mb-8 p-5 rounded-xl {{ $won ? 'bg-accent-green/10 border-accent-green/20' : 'bg-accent-red/10 border-accent-red/20' }} border">
+                                    <div class="text-center text-sm {{ $won ? 'text-accent-green' : 'text-accent-red' }} mb-3">
                                         @if($knockoutStatus === 'champion')
                                             {{ __('cup.champion_message', ['competition' => __($competition->name)]) }}
                                         @elseif($won)
@@ -136,7 +136,7 @@
                                     </div>
                                     <div class="flex items-center justify-center gap-6">
                                         <div class="flex items-center gap-3 flex-1 justify-end">
-                                            <span class="text-base md:text-lg font-semibold @if($playerTie->home_team_id === $game->team_id) {{ $won ? 'text-green-700' : 'text-red-700' }} @endif truncate">
+                                            <span class="text-base md:text-lg font-semibold @if($playerTie->home_team_id === $game->team_id) {{ $won ? 'text-accent-green' : 'text-accent-red' }} @endif truncate">
                                                 {{ $playerTie->homeTeam->name }}
                                             </span>
                                             <x-team-crest :team="$playerTie->homeTeam" class="w-8 h-8 md:w-10 md:h-10 shrink-0" />
@@ -144,7 +144,7 @@
                                         <div class="px-4 text-lg font-semibold">{{ $playerTie->getScoreDisplay() }}</div>
                                         <div class="flex items-center gap-3 flex-1">
                                             <x-team-crest :team="$playerTie->awayTeam" class="w-8 h-8 md:w-10 md:h-10 shrink-0" />
-                                            <span class="text-base md:text-lg font-semibold @if($playerTie->away_team_id === $game->team_id) {{ $won ? 'text-green-700' : 'text-red-700' }} @endif truncate">
+                                            <span class="text-base md:text-lg font-semibold @if($playerTie->away_team_id === $game->team_id) {{ $won ? 'text-accent-green' : 'text-accent-red' }} @endif truncate">
                                                 {{ $playerTie->awayTeam->name }}
                                             </span>
                                         </div>
@@ -159,7 +159,7 @@
                                         @php $ties = $knockoutTies->get($round->round, collect()); @endphp
                                         <div class="flex-shrink-0 w-64">
                                             <div class="text-center mb-4">
-                                                <h4 class="font-semibold text-slate-700">{{ __($round->name) }}</h4>
+                                                <h4 class="font-semibold text-slate-300">{{ __($round->name) }}</h4>
                                                 <div class="text-xs text-slate-400">{{ $round->firstLegDate->format('d M') }}</div>
                                             </div>
 
@@ -183,11 +183,11 @@
                             <div class="mt-8 pt-4 border-t text-xs text-slate-500">
                                 <div class="flex gap-6">
                                     <div class="flex items-center gap-2">
-                                        <div class="w-3 h-3 bg-sky-100 border border-sky-300 rounded"></div>
+                                        <div class="w-3 h-3 bg-accent-blue/10 border border-accent-blue/30 rounded"></div>
                                         <span>{{ __('cup.your_matches') }}</span>
                                     </div>
                                     <div class="flex items-center gap-2">
-                                        <div class="w-3 h-3 bg-green-50 rounded"></div>
+                                        <div class="w-3 h-3 bg-accent-green/10 rounded"></div>
                                         <span>{{ __('cup.winner') }}</span>
                                     </div>
                                 </div>

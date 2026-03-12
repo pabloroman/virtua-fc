@@ -7,44 +7,44 @@
 
     <div>
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-surface-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 sm:p-8">
                     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-6">
                         <div class="flex items-center gap-3">
-                            <h3 class="font-semibold text-xl text-slate-900">{{ __('game.your_games') }}</h3>
+                            <h3 class="font-semibold text-xl text-white">{{ __('game.your_games') }}</h3>
                             <span class="text-sm text-slate-400">{{ __('game.game_slots_used', ['count' => $gameCount, 'max' => $maxGames]) }}</span>
                         </div>
                         @if($canCreateGame)
-                            <a href="{{ route('select-team') }}" class="text-sky-600 hover:text-sky-800">+ {{ __('app.new_game') }}</a>
+                            <a href="{{ route('select-team') }}" class="text-accent-blue hover:text-accent-blue">+ {{ __('app.new_game') }}</a>
                         @endif
                     </div>
 
                     @if($errors->has('limit'))
-                        <div class="mb-4 rounded-md bg-red-50 p-4">
-                            <p class="text-sm text-red-700">{{ $errors->first('limit') }}</p>
+                        <div class="mb-4 rounded-md bg-accent-red/10 p-4">
+                            <p class="text-sm text-accent-red">{{ $errors->first('limit') }}</p>
                         </div>
                     @endif
 
                     @if(session('success'))
-                        <div class="mb-4 rounded-md bg-green-50 p-4">
-                            <p class="text-sm text-green-700">{{ session('success') }}</p>
+                        <div class="mb-4 rounded-md bg-accent-green/10 p-4">
+                            <p class="text-sm text-accent-green">{{ session('success') }}</p>
                         </div>
                     @endif
 
                     <ul role="list" class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                         @foreach($games as $game)
-                            <li class="col-span-1 flex flex-col rounded-lg bg-white text-center shadow" x-data="{ confirmDelete: false }">
+                            <li class="col-span-1 flex flex-col rounded-lg bg-surface-800 text-center shadow" x-data="{ confirmDelete: false }">
                                 <div class="flex flex-1 flex-col p-8 space-y-3" x-show="!confirmDelete">
                                     @if($game->isTournamentMode())
                                         <x-team-crest :team="$game->team" class="rounded-md object-cover mx-auto h-18 w-24 flex-shrink-0" />
                                     @else
                                         <x-team-crest :team="$game->team" class="object-cover mx-auto h-20 w-20 flex-shrink-0" />
                                     @endif
-                                    <h3 class="text-xl font-semibold leading-tight text-slate-900">{{ $game->team->name }}</h3>
+                                    <h3 class="text-xl font-semibold leading-tight text-white">{{ $game->team->name }}</h3>
                                     <dl class="flex flex-col justify-between">
                                         @if($game->isTournamentMode())
                                             <dd class="mb-1">
-                                                <span class="inline-flex items-center rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-600/20">
+                                                <span class="inline-flex items-center rounded-full bg-accent-gold/10 px-2.5 py-0.5 text-xs font-medium text-accent-gold ring-1 ring-inset ring-amber-600/20">
                                                     {{ __('game.mode_tournament_badge') }}
                                                 </span>
                                             </dd>
@@ -52,7 +52,7 @@
                                         <dd class="text-sm text-slate-500">{{ __('game.season_n', ['season' => $game->formatted_season]) }}</dd>
                                         @if($game->current_date)
                                             <dd class="mt-2 mb-2">
-                                                <span class="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                                                <span class="inline-flex items-center rounded-full bg-accent-green/10 px-2 py-1 text-xs font-medium text-accent-green ring-1 ring-inset ring-green-600/20">
                                                     {{ __('game.matchday_n', ['number' => $game->current_matchday + 1]) }} - {{ $game->current_date->format('d/m/Y') }}
                                                 </span>
                                             </dd>
@@ -68,7 +68,7 @@
                                         <button
                                             type="button"
                                             @click="confirmDelete = true"
-                                            class="inline-flex items-center justify-center w-9 h-9 min-h-[44px] sm:min-h-0 min-w-[44px] rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                                            class="inline-flex items-center justify-center w-9 h-9 min-h-[44px] sm:min-h-0 min-w-[44px] rounded-lg text-slate-400 hover:text-accent-red hover:bg-accent-red/10 transition-colors"
                                             title="{{ __('game.delete_game') }}"
                                         >
                                             <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -83,12 +83,12 @@
                                     <svg class="w-10 h-10 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
                                     </svg>
-                                    <p class="text-sm text-slate-600 text-center">{{ __('game.confirm_delete_game') }}</p>
+                                    <p class="text-sm text-slate-400 text-center">{{ __('game.confirm_delete_game') }}</p>
                                     <div class="flex gap-3">
                                         <button
                                             type="button"
                                             @click="confirmDelete = false"
-                                            class="inline-flex items-center px-3 py-2 min-h-[44px] sm:min-h-0 bg-white border border-slate-300 rounded-lg font-semibold text-xs text-slate-700 uppercase tracking-widest shadow-sm hover:bg-slate-50"
+                                            class="inline-flex items-center px-3 py-2 min-h-[44px] sm:min-h-0 bg-surface-800 border border-white/10 rounded-lg font-semibold text-xs text-slate-300 uppercase tracking-widest shadow-sm hover:bg-surface-700/50"
                                         >
                                             {{ __('app.cancel') }}
                                         </button>
