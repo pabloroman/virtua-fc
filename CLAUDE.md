@@ -311,7 +311,7 @@ Clear cache after changes: `php artisan config:clear`
 
 **Backend:** PHP 8.4, Laravel 12, Laravel Horizon, Laravel Telescope, Resend (email)
 
-**Frontend:** Vite 5, Tailwind CSS 3, Alpine.js 3, Alpine Tooltip, Axios
+**Frontend:** Vite 7, Tailwind CSS 4, Alpine.js 3, Alpine Tooltip, Axios
 
 **Dev tools:** Laravel Breeze (auth), Laravel Pint (code style), Laravel Pail (log tailing), PHPUnit 11
 
