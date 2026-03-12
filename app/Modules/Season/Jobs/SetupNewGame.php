@@ -110,8 +110,10 @@ class SetupNewGame implements ShouldQueue
                 $standingsProcessor->process($game, $data);
             }
 
-            // Compute tiers for all players based on market value
-            app(PlayerTierService::class)->recomputeAllTiersForGame($this->gameId);
+            // Compute tiers for players when templates weren't used (fallback + Swiss)
+            if (!$this->usedTemplates) {
+                app(PlayerTierService::class)->recomputeAllTiersForGame($this->gameId);
+            }
 
             // Mark setup as complete
             Game::where('id', $this->gameId)->update(['setup_completed_at' => now()]);
@@ -380,6 +382,7 @@ class SetupNewGame implements ShouldQueue
                 'potential' => $t->potential,
                 'potential_low' => $t->potential_low,
                 'potential_high' => $t->potential_high,
+                'tier' => $t->tier,
                 'season_appearances' => 0,
             ];
         }

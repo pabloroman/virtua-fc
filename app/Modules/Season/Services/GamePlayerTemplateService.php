@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Player\Services\InjuryService;
 use App\Modules\Player\Services\PlayerDevelopmentService;
+use App\Modules\Player\Services\PlayerTierService;
 
 class GamePlayerTemplateService
 {
@@ -253,6 +254,7 @@ class GamePlayerTemplateService
             'potential' => $potentialData['potential'],
             'potential_low' => $potentialData['low'],
             'potential_high' => $potentialData['high'],
+            'tier' => PlayerTierService::tierFromMarketValue($marketValueCents),
         ];
     }
 
