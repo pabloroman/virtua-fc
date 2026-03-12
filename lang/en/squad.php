@@ -323,8 +323,29 @@ return [
     'assigned' => 'Assigned',
     'available_number' => 'Available',
 
+    // Column headers (new design)
+    'player' => 'Player',
+    'pos' => 'Pos',
+    'rating' => 'Rating',
+    'key_stats' => 'Key Stats',
+    'players_count' => 'players',
+    'dev_status_label' => 'Status',
+
+    // Morale labels
+    'morale_ecstatic' => 'Ecstatic',
+    'morale_happy' => 'Happy',
+    'morale_content' => 'Content',
+    'morale_frustrated' => 'Frustrated',
+    'morale_unhappy' => 'Unhappy',
+
     // Lineup tabs & labels
     'tactics' => 'Tactics',
     'defensive_line' => 'Defensive Line',
     'unsaved_changes' => 'Unsaved changes',
+
+    // Lineup redesign
+    'opponent_goal' => 'Opponent Goal',
+    'available_players' => 'Available Players',
+    'substitutes' => 'Substitutes',
+    'lineup_overview' => 'Lineup Overview',
 ];

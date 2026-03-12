@@ -164,48 +164,102 @@
     {{-- Fitness Bar --}}
     <div class="mb-12">
         <h3 class="text-lg font-semibold text-white mb-2">Fitness Bar</h3>
-        <p class="text-sm text-slate-400 mb-4">Thin bar for player fitness levels. Uses <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">bg-surface-600</code> track with color-coded fill: green for healthy, amber for caution, red for low fitness.</p>
+        <p class="text-sm text-slate-400 mb-4">Inline bar for player fitness levels. Uses the <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">x-fitness-bar</code> component with automatic color thresholds: green (80+), gold (60+), orange (40+), red (&lt;40).</p>
 
         <div class="bg-surface-700/30 border border-white/5 rounded-xl p-6 space-y-4 mb-3">
             <div class="max-w-xs space-y-3">
                 <div class="flex items-center gap-3">
                     <span class="text-xs text-slate-400 w-16">Healthy</span>
-                    <div class="flex-1 h-1.5 bg-surface-600 rounded-full overflow-hidden">
-                        <div class="h-full rounded-full bg-accent-green fitness-bar" style="width: 92%"></div>
-                    </div>
-                    <span class="text-xs font-semibold text-accent-green w-8 text-right">92%</span>
+                    <x-fitness-bar :value="92" />
                 </div>
                 <div class="flex items-center gap-3">
                     <span class="text-xs text-slate-400 w-16">Caution</span>
-                    <div class="flex-1 h-1.5 bg-surface-600 rounded-full overflow-hidden">
-                        <div class="h-full rounded-full bg-amber-500 fitness-bar" style="width: 65%"></div>
-                    </div>
-                    <span class="text-xs font-semibold text-amber-500 w-8 text-right">65%</span>
+                    <x-fitness-bar :value="65" />
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-xs text-slate-400 w-16">Tired</span>
+                    <x-fitness-bar :value="45" />
                 </div>
                 <div class="flex items-center gap-3">
                     <span class="text-xs text-slate-400 w-16">Low</span>
-                    <div class="flex-1 h-1.5 bg-surface-600 rounded-full overflow-hidden">
-                        <div class="h-full rounded-full bg-accent-red fitness-bar" style="width: 28%"></div>
+                    <x-fitness-bar :value="28" />
+                </div>
+            </div>
+
+            {{-- Variants --}}
+            <div class="mt-6 pt-4 border-t border-white/5">
+                <div class="text-[10px] text-slate-500 uppercase tracking-wider mb-3">Variants</div>
+                <div class="space-y-3">
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs text-slate-400 w-28">With label</span>
+                        <x-fitness-bar :value="85" :show-label="true" />
                     </div>
-                    <span class="text-xs font-semibold text-accent-red w-8 text-right">28%</span>
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs text-slate-400 w-28">No percentage</span>
+                        <x-fitness-bar :value="85" :show-percentage="false" />
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs text-slate-400 w-28">Small size</span>
+                        <x-fitness-bar :value="85" size="sm" :show-label="true" :show-percentage="false" />
+                    </div>
                 </div>
             </div>
         </div>
 
         <div x-data="{ copied: false }" class="relative">
-            <button @click="navigator.clipboard.writeText($refs.code.textContent); copied = true; setTimeout(() => copied = false, 2000)"
+            <button @click="navigator.clipboard.writeText($refs.fitCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
                     class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
-            <pre class="bg-surface-700 text-slate-300 rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="code">&lt;div class="h-1.5 bg-surface-600 rounded-full overflow-hidden"&gt;
-    &lt;div class="h-full rounded-full bg-accent-green fitness-bar" style="width: 92%"&gt;&lt;/div&gt;
-&lt;/div&gt;
+            <pre class="bg-surface-700 text-slate-300 rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="fitCode">&lt;!-- Basic usage --&gt;
+&lt;x-fitness-bar :value="$player->fitness" /&gt;
 
-{{-- Color thresholds --}}
-{{-- 70%+  : bg-accent-green (healthy) --}}
-{{-- 40-69%: bg-amber-500 (caution) --}}
-{{-- &lt;40% : bg-accent-red (low) --}}</code></pre>
+&lt;!-- With FIT label, no percentage --&gt;
+&lt;x-fitness-bar :value="85" :show-label="true" :show-percentage="false" /&gt;
+
+&lt;!-- Small size (for compact tables) --&gt;
+&lt;x-fitness-bar :value="85" size="sm" /&gt;</code></pre>
+        </div>
+
+        {{-- Props table --}}
+        <div class="overflow-x-auto mt-4">
+            <table class="w-full text-sm">
+                <thead class="text-left border-b border-white/10">
+                    <tr>
+                        <th class="text-[10px] text-slate-500 uppercase tracking-wider font-semibold py-2 pr-4">Prop</th>
+                        <th class="text-[10px] text-slate-500 uppercase tracking-wider font-semibold py-2 pr-4">Type</th>
+                        <th class="text-[10px] text-slate-500 uppercase tracking-wider font-semibold py-2 pr-4">Default</th>
+                        <th class="text-[10px] text-slate-500 uppercase tracking-wider font-semibold py-2">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b border-white/5">
+                        <td class="py-2 pr-4 font-mono text-xs text-accent-blue">value</td>
+                        <td class="py-2 pr-4 text-slate-400">int</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-slate-500">—</td>
+                        <td class="py-2 text-slate-400">Fitness percentage (0-100)</td>
+                    </tr>
+                    <tr class="border-b border-white/5">
+                        <td class="py-2 pr-4 font-mono text-xs text-accent-blue">showLabel</td>
+                        <td class="py-2 pr-4 text-slate-400">bool</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-slate-500">false</td>
+                        <td class="py-2 text-slate-400">Show "FIT" prefix label</td>
+                    </tr>
+                    <tr class="border-b border-white/5">
+                        <td class="py-2 pr-4 font-mono text-xs text-accent-blue">showPercentage</td>
+                        <td class="py-2 pr-4 text-slate-400">bool</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-slate-500">true</td>
+                        <td class="py-2 text-slate-400">Show percentage number</td>
+                    </tr>
+                    <tr class="border-b border-white/5">
+                        <td class="py-2 pr-4 font-mono text-xs text-accent-blue">size</td>
+                        <td class="py-2 pr-4 text-slate-400">string</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-slate-500">'md'</td>
+                        <td class="py-2 text-slate-400">sm | md</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -330,46 +384,58 @@
         </div>
     </div>
 
-    {{-- Morale Dot --}}
+    {{-- Morale Indicator --}}
     <div>
-        <h3 class="text-lg font-semibold text-white mb-2">Morale Dot</h3>
-        <p class="text-sm text-slate-400 mb-4">8px colored circle indicator using the <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">.morale-dot</code> CSS class. Used inline to show player morale at a glance.</p>
+        <h3 class="text-lg font-semibold text-white mb-2">Morale Indicator</h3>
+        <p class="text-sm text-slate-400 mb-4">Colored dot with text label using the <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">x-morale-indicator</code> component. Automatically maps morale value to color and label.</p>
 
         <div class="bg-surface-700/30 border border-white/5 rounded-xl p-6 mb-3">
             <div class="flex flex-wrap items-center gap-6">
-                <div class="flex items-center gap-2">
-                    <span class="morale-dot bg-accent-green"></span>
-                    <span class="text-xs text-slate-400">High</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <span class="morale-dot bg-lime-500"></span>
-                    <span class="text-xs text-slate-400">Good</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <span class="morale-dot bg-accent-gold"></span>
-                    <span class="text-xs text-slate-400">Neutral</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <span class="morale-dot bg-accent-orange"></span>
-                    <span class="text-xs text-slate-400">Low</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <span class="morale-dot bg-accent-red"></span>
-                    <span class="text-xs text-slate-400">Very Low</span>
-                </div>
+                <x-morale-indicator :value="95" />
+                <x-morale-indicator :value="80" />
+                <x-morale-indicator :value="65" />
+                <x-morale-indicator :value="45" />
+                <x-morale-indicator :value="25" />
             </div>
         </div>
 
         <div x-data="{ copied: false }" class="relative">
-            <button @click="navigator.clipboard.writeText($refs.code.textContent); copied = true; setTimeout(() => copied = false, 2000)"
+            <button @click="navigator.clipboard.writeText($refs.moraleCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
                     class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
-            <pre class="bg-surface-700 text-slate-300 rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="code">&lt;span class="morale-dot bg-accent-green"&gt;&lt;/span&gt;
+            <pre class="bg-surface-700 text-slate-300 rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="moraleCode">&lt;!-- Basic usage --&gt;
+&lt;x-morale-indicator :value="$player->morale" /&gt;
 
-{{-- .morale-dot: 8px circle (width, height, border-radius: 50%) --}}
-{{-- Colors: bg-accent-green, bg-lime-500, bg-accent-gold, bg-accent-orange, bg-accent-red --}}</code></pre>
+&lt;!-- Thresholds (automatic) --&gt;
+&lt;!-- 90+  Ecstatic   (green)  --&gt;
+&lt;!-- 75+  Happy      (green)  --&gt;
+&lt;!-- 60+  Content    (gold)   --&gt;
+&lt;!-- 40+  Frustrated (orange) --&gt;
+&lt;!-- &lt;40  Unhappy    (red)    --&gt;</code></pre>
+        </div>
+
+        {{-- Props table --}}
+        <div class="overflow-x-auto mt-4">
+            <table class="w-full text-sm">
+                <thead class="text-left border-b border-white/10">
+                    <tr>
+                        <th class="text-[10px] text-slate-500 uppercase tracking-wider font-semibold py-2 pr-4">Prop</th>
+                        <th class="text-[10px] text-slate-500 uppercase tracking-wider font-semibold py-2 pr-4">Type</th>
+                        <th class="text-[10px] text-slate-500 uppercase tracking-wider font-semibold py-2 pr-4">Default</th>
+                        <th class="text-[10px] text-slate-500 uppercase tracking-wider font-semibold py-2">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b border-white/5">
+                        <td class="py-2 pr-4 font-mono text-xs text-accent-blue">value</td>
+                        <td class="py-2 pr-4 text-slate-400">int</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-slate-500">—</td>
+                        <td class="py-2 text-slate-400">Morale value (0-100). Color and label are determined automatically.</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </section>

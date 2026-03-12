@@ -323,8 +323,29 @@ return [
     'assigned' => 'Asignado',
     'available_number' => 'Disponible',
 
+    // Column headers (new design)
+    'player' => 'Jugador',
+    'pos' => 'Pos',
+    'rating' => 'Nota',
+    'key_stats' => 'Estadísticas',
+    'players_count' => 'jugadores',
+    'dev_status_label' => 'Estado',
+
+    // Morale labels
+    'morale_ecstatic' => 'Eufórico',
+    'morale_happy' => 'Contento',
+    'morale_content' => 'Normal',
+    'morale_frustrated' => 'Frustrado',
+    'morale_unhappy' => 'Descontento',
+
     // Lineup tabs & labels
     'tactics' => 'Táctica',
     'defensive_line' => 'Línea Defensiva',
     'unsaved_changes' => 'Cambios sin guardar',
+
+    // Lineup redesign
+    'opponent_goal' => 'Portería Rival',
+    'available_players' => 'Jugadores Disponibles',
+    'substitutes' => 'Suplentes',
+    'lineup_overview' => 'Resumen de Alineación',
 ];

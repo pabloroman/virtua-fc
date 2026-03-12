@@ -6,7 +6,7 @@
 <div class="space-y-5">
     {{-- Number Grid (visible only in numbers mode) --}}
     <div x-show="viewMode === 'numbers'" x-cloak>
-        <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wide pb-2 border-b border-white/10 mb-3">{{ __('squad.number_grid') }}</h4>
+        <h4 class="font-heading text-[11px] font-semibold text-slate-500 uppercase tracking-widest pb-2 border-b border-white/5 mb-3">{{ __('squad.number_grid') }}</h4>
         <div class="grid grid-cols-10 gap-1">
             @for($n = 1; $n <= 99; $n++)
             <div class="aspect-square flex items-center justify-center rounded text-xs font-medium cursor-default transition-colors"
@@ -29,13 +29,13 @@
     {{-- Alerts --}}
     @if(count($alerts) > 0)
     <div>
-        <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wide pb-2 border-b border-white/10 mb-3">{{ __('squad.alerts') }}</h4>
+        <h4 class="font-heading text-[11px] font-semibold text-slate-500 uppercase tracking-widest pb-2 border-b border-white/5 mb-3">{{ __('squad.alerts') }}</h4>
         <div class="space-y-2">
             @foreach($alerts as $alert)
                 <div class="flex items-start gap-2 p-2.5 rounded-lg text-xs
-                    @if($alert['type'] === 'danger') bg-accent-red/10 text-accent-red border border-red-100
-                    @elseif($alert['type'] === 'warning') bg-accent-gold/10 text-accent-gold border border-amber-100
-                    @else bg-accent-blue/10 text-accent-blue border border-sky-100
+                    @if($alert['type'] === 'danger') bg-accent-red/10 text-accent-red border border-accent-red/20
+                    @elseif($alert['type'] === 'warning') bg-accent-gold/10 text-accent-gold border border-accent-gold/20
+                    @else bg-accent-blue/10 text-accent-blue border border-accent-blue/20
                     @endif">
                     @if($alert['type'] === 'danger')
                         <svg class="w-3.5 h-3.5 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
@@ -53,7 +53,7 @@
 
     {{-- Position Depth Chart --}}
     <div>
-        <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wide pb-2 border-b border-white/10 mb-3">{{ __('squad.position_depth') }}</h4>
+        <h4 class="font-heading text-[11px] font-semibold text-slate-500 uppercase tracking-widest pb-2 border-b border-white/5 mb-3">{{ __('squad.position_depth') }}</h4>
         <div class="space-y-1.5">
             @foreach($depthChart as $slot => $data)
                 @php
@@ -72,7 +72,7 @@
                             <div class="w-4 h-4 rounded-sm {{ $barColor }}"></div>
                         @endfor
                         @if($data['count'] === 0)
-                            <div class="w-4 h-4 rounded-sm border-2 border-dashed border-red-300"></div>
+                            <div class="w-4 h-4 rounded-sm border-2 border-dashed border-red-500/40"></div>
                         @endif
                     </div>
                     <span class="text-xs tabular-nums text-slate-400 w-4 text-right">{{ $data['count'] }}</span>
@@ -83,7 +83,7 @@
 
     {{-- Age Profile --}}
     <div>
-        <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wide pb-2 border-b border-white/10 mb-3">{{ __('squad.age_profile') }}</h4>
+        <h4 class="font-heading text-[11px] font-semibold text-slate-500 uppercase tracking-widest pb-2 border-b border-white/5 mb-3">{{ __('squad.age_profile') }}</h4>
         @php
             $total = max($squadSize, 1);
             $youngPct = round($youngCount / $total * 100);
@@ -120,7 +120,7 @@
     {{-- Contract Watchlist (career mode) --}}
     @if($isCareerMode)
     <div>
-        <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wide pb-2 border-b border-white/10 mb-3">{{ __('squad.contract_watch') }}</h4>
+        <h4 class="font-heading text-[11px] font-semibold text-slate-500 uppercase tracking-widest pb-2 border-b border-white/5 mb-3">{{ __('squad.contract_watch') }}</h4>
         <div class="space-y-3">
             @if($expiringThisSeason->isNotEmpty())
                 <div>

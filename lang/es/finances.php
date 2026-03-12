@@ -2,6 +2,9 @@
 
 return [
 
+    // Page title
+    'finances' => 'Finanzas',
+
     // Overview cards
     'squad_value' => 'Valor de la Plantilla',
     'annual_wage_bill' => 'Masa Salarial Anual',

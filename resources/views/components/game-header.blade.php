@@ -13,7 +13,7 @@
     {{-- Sticky Header --}}
     <header class="sticky top-0 z-50 bg-surface-900/95 backdrop-blur-md border-b border-white/5">
         <div class="max-w-7xl mx-auto">
-            <div class="flex items-center justify-between px-4 py-3 lg:px-6">
+            <div class="flex items-center justify-between pt-0 py-2">
                 {{-- Left: Team badge + name --}}
                 <div class="flex items-center gap-3">
                     {{-- Hamburger (mobile) --}}

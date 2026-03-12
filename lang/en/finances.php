@@ -2,6 +2,9 @@
 
 return [
 
+    // Page title
+    'finances' => 'Finances',
+
     // Overview cards
     'squad_value' => 'Squad Value',
     'annual_wage_bill' => 'Annual Wage Bill',

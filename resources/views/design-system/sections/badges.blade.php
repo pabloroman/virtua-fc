@@ -5,21 +5,19 @@
     {{-- Rating Badges --}}
     <div class="mb-12">
         <h3 class="text-lg font-semibold text-white mb-2">Rating Badges</h3>
-        <p class="text-sm text-slate-400 mb-4">Rounded-lg squares with color-coded backgrounds based on ability thresholds. Uses <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">font-heading font-bold</code> for the number.</p>
+        <p class="text-sm text-slate-400 mb-4">Rounded-lg squares with color-coded backgrounds based on ability thresholds. Uses the <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">x-rating-badge</code> component.</p>
 
         <div class="bg-surface-700/30 border border-white/5 rounded-xl p-6 mb-3">
             <div class="flex flex-wrap gap-4 items-end">
                 @foreach([
-                    ['label' => 'Elite', 'value' => 92, 'class' => 'rating-elite', 'bg' => 'bg-[#22C55E]', 'desc' => '85+'],
-                    ['label' => 'Good', 'value' => 78, 'class' => 'rating-good', 'bg' => 'bg-[#84CC16]', 'desc' => '75-84'],
-                    ['label' => 'Average', 'value' => 68, 'class' => 'rating-average', 'bg' => 'bg-[#F59E0B]', 'desc' => '65-74'],
-                    ['label' => 'Below', 'value' => 58, 'class' => 'rating-below', 'bg' => 'bg-[#F97316]', 'desc' => '55-64'],
-                    ['label' => 'Poor', 'value' => 45, 'class' => 'rating-poor', 'bg' => 'bg-[#EF4444]', 'desc' => '<55'],
+                    ['label' => 'Elite', 'value' => 92, 'desc' => '80+'],
+                    ['label' => 'Good', 'value' => 78, 'desc' => '70-79'],
+                    ['label' => 'Average', 'value' => 68, 'desc' => '60-69'],
+                    ['label' => 'Below', 'value' => 55, 'desc' => '50-59'],
+                    ['label' => 'Poor', 'value' => 45, 'desc' => '<50'],
                 ] as $rating)
                 <div class="text-center">
-                    <div class="w-10 h-10 {{ $rating['bg'] }} rounded-lg flex items-center justify-center mb-1.5">
-                        <span class="font-heading text-sm font-bold text-white">{{ $rating['value'] }}</span>
-                    </div>
+                    <x-rating-badge :value="$rating['value']" class="mb-1.5" />
                     <div class="text-[10px] text-slate-400 font-medium">{{ $rating['label'] }}</div>
                     <div class="text-[10px] text-slate-600">{{ $rating['desc'] }}</div>
                 </div>
@@ -31,21 +29,15 @@
                 <div class="text-[10px] text-slate-500 uppercase tracking-wider mb-3">Size Variants</div>
                 <div class="flex items-end gap-4">
                     <div class="text-center">
-                        <div class="w-7 h-7 bg-[#22C55E] rounded-md flex items-center justify-center">
-                            <span class="font-heading text-[10px] font-bold text-white">88</span>
-                        </div>
+                        <x-rating-badge :value="88" size="sm" />
                         <div class="text-[10px] text-slate-500 mt-1">sm</div>
                     </div>
                     <div class="text-center">
-                        <div class="w-9 h-9 bg-[#22C55E] rounded-lg flex items-center justify-center">
-                            <span class="font-heading text-xs font-bold text-white">88</span>
-                        </div>
+                        <x-rating-badge :value="88" size="md" />
                         <div class="text-[10px] text-slate-500 mt-1">md</div>
                     </div>
                     <div class="text-center">
-                        <div class="w-12 h-12 bg-[#22C55E] rounded-lg flex items-center justify-center">
-                            <span class="font-heading text-lg font-bold text-white">88</span>
-                        </div>
+                        <x-rating-badge :value="88" size="lg" />
                         <div class="text-[10px] text-slate-500 mt-1">lg</div>
                     </div>
                 </div>
@@ -58,17 +50,47 @@
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
-            <pre class="bg-surface-700 text-slate-300 rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="ratingCode">&lt;!-- Rating badge classes: rating-elite, rating-good, rating-average, rating-below, rating-poor --&gt;
-&lt;div class="w-9 h-9 bg-[#22C55E] rounded-lg flex items-center justify-center"&gt;
-    &lt;span class="font-heading text-xs font-bold text-white"&gt;88&lt;/span&gt;
-&lt;/div&gt;
+            <pre class="bg-surface-700 text-slate-300 rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="ratingCode">&lt;!-- Basic usage --&gt;
+&lt;x-rating-badge :value="$player->overall_score" /&gt;
 
-&lt;!-- Color thresholds --&gt;
-&lt;!-- 85+  #22C55E (green)  .rating-elite   --&gt;
-&lt;!-- 75+  #84CC16 (lime)   .rating-good    --&gt;
-&lt;!-- 65+  #F59E0B (amber)  .rating-average --&gt;
-&lt;!-- 55+  #F97316 (orange) .rating-below   --&gt;
-&lt;!-- &lt;55  #EF4444 (red)    .rating-poor    --&gt;</code></pre>
+&lt;!-- With size --&gt;
+&lt;x-rating-badge :value="88" size="sm" /&gt;
+&lt;x-rating-badge :value="88" size="lg" /&gt;
+
+&lt;!-- Color thresholds (automatic) --&gt;
+&lt;!-- 80+  .rating-elite   (green)  --&gt;
+&lt;!-- 70+  .rating-good    (lime)   --&gt;
+&lt;!-- 60+  .rating-average (amber)  --&gt;
+&lt;!-- 50+  .rating-below   (orange) --&gt;
+&lt;!-- &lt;50  .rating-poor    (red)    --&gt;</code></pre>
+        </div>
+
+        {{-- Props table --}}
+        <div class="overflow-x-auto mt-4">
+            <table class="w-full text-sm">
+                <thead class="text-left border-b border-white/10">
+                    <tr>
+                        <th class="text-[10px] text-slate-500 uppercase tracking-wider font-semibold py-2 pr-4">Prop</th>
+                        <th class="text-[10px] text-slate-500 uppercase tracking-wider font-semibold py-2 pr-4">Type</th>
+                        <th class="text-[10px] text-slate-500 uppercase tracking-wider font-semibold py-2 pr-4">Default</th>
+                        <th class="text-[10px] text-slate-500 uppercase tracking-wider font-semibold py-2">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b border-white/5">
+                        <td class="py-2 pr-4 font-mono text-xs text-accent-blue">value</td>
+                        <td class="py-2 pr-4 text-slate-400">int</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-slate-500">—</td>
+                        <td class="py-2 text-slate-400">Ability score (determines color automatically)</td>
+                    </tr>
+                    <tr class="border-b border-white/5">
+                        <td class="py-2 pr-4 font-mono text-xs text-accent-blue">size</td>
+                        <td class="py-2 pr-4 text-slate-400">string</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-slate-500">'md'</td>
+                        <td class="py-2 text-slate-400">sm | md | lg</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 
