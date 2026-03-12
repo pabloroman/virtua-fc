@@ -2,7 +2,7 @@
 
 <p align="center">
   <b>If you enjoy the game, consider supporting the project:</b><br><br>
-  <a href="[https://paypal.me/uiuxpromax](https://www.paypal.com/donate/?hosted_button_id=CNC9ARRMU3X6E)"><img src="https://img.shields.io/badge/PayPal-Donate-00457C?style=for-the-badge&logo=paypal&logoColor=white" alt="PayPal Donate"></a>
+  <a href="https://www.paypal.com/donate/?hosted_button_id=CNC9ARRMU3X6E"><img src="https://img.shields.io/badge/PayPal-Donate-00457C?style=for-the-badge&logo=paypal&logoColor=white" alt="PayPal Donate"></a>
 </p>
 
 A football manager simulation game built with Laravel 12, Tailwind CSS, and Alpine.js.
