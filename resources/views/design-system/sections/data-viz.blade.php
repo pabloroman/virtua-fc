@@ -5,7 +5,7 @@
     {{-- Ability Bar --}}
     <div class="mb-12">
         <h3 class="text-lg font-semibold text-white mb-2">Ability Bar</h3>
-        <p class="text-sm text-slate-400 mb-4">Displays a player stat value with a colored progress bar. Color-coded by threshold: green (80+), lime (70+), amber (60+), slate (below 60). Uses the <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">x-ability-bar</code> component.</p>
+        <p class="text-sm text-slate-400 mb-4">Displays a player stat value with a colored progress bar. Color-coded by threshold: green (80+), lime (70+), amber (60+), slate (below 60). Uses the <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">x-ability-bar</code> component.</p>
 
         <div class="bg-surface-700/30 border border-white/5 rounded-xl p-6 space-y-4 mb-3">
             <div>
@@ -43,7 +43,7 @@
 
         <div x-data="{ copied: false }" class="relative mb-4">
             <button @click="navigator.clipboard.writeText($refs.code.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -94,7 +94,7 @@
     {{-- Stat Bar --}}
     <div class="mb-12">
         <h3 class="text-lg font-semibold text-white mb-2">Stat Bar</h3>
-        <p class="text-sm text-slate-400 mb-4">Thin 3px stat bar using <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">.stat-bar-track</code> and <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">.stat-bar-fill</code> CSS classes. Track background is <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">rgba(255,255,255,0.06)</code> for minimal visibility on dark surfaces.</p>
+        <p class="text-sm text-slate-400 mb-4">Thin 3px stat bar using <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">.stat-bar-track</code> and <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">.stat-bar-fill</code> CSS classes. Track background is <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">rgba(255,255,255,0.06)</code> for minimal visibility on dark surfaces.</p>
 
         <div class="bg-surface-700/30 border border-white/5 rounded-xl p-6 space-y-4 mb-3">
             <div class="max-w-sm space-y-3">
@@ -148,7 +148,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.code.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -164,7 +164,7 @@
     {{-- Fitness Bar --}}
     <div class="mb-12">
         <h3 class="text-lg font-semibold text-white mb-2">Fitness Bar</h3>
-        <p class="text-sm text-slate-400 mb-4">Inline bar for player fitness levels. Uses the <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">x-fitness-bar</code> component with automatic color thresholds: green (80+), gold (60+), orange (40+), red (&lt;40).</p>
+        <p class="text-sm text-slate-400 mb-4">Inline bar for player fitness levels. Uses the <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">x-fitness-bar</code> component with automatic color thresholds: green (80+), gold (60+), orange (40+), red (&lt;40).</p>
 
         <div class="bg-surface-700/30 border border-white/5 rounded-xl p-6 space-y-4 mb-3">
             <div class="max-w-xs space-y-3">
@@ -208,7 +208,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.fitCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -296,7 +296,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.code.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -309,7 +309,7 @@
     {{-- Tier Dots --}}
     <div class="mb-12">
         <h3 class="text-lg font-semibold text-white mb-2">Tier Dots</h3>
-        <p class="text-sm text-slate-400 mb-4">Used for infrastructure investment levels (1-4 tiers). Filled dots use <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">bg-accent-green</code>, empty dots use <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">bg-surface-600</code>.</p>
+        <p class="text-sm text-slate-400 mb-4">Used for infrastructure investment levels (1-4 tiers). Filled dots use <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">bg-accent-green</code>, empty dots use <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">bg-surface-600</code>.</p>
 
         <div class="bg-surface-700/30 border border-white/5 rounded-xl p-6 space-y-4 mb-3">
             @foreach([
@@ -335,7 +335,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.code.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -351,7 +351,7 @@
     {{-- Range Slider --}}
     <div class="mb-12">
         <h3 class="text-lg font-semibold text-white mb-2">Range Slider</h3>
-        <p class="text-sm text-slate-400 mb-4">Custom-styled range input using the <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">.tier-range</code> CSS class. Accent-blue thumb with <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">bg-surface-600</code> track.</p>
+        <p class="text-sm text-slate-400 mb-4">Custom-styled range input using the <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">.tier-range</code> CSS class. Accent-blue thumb with <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">bg-surface-600</code> track.</p>
 
         <div class="bg-surface-700/30 border border-white/5 rounded-xl p-6 mb-3" x-data="{ value: 2 }">
             <div class="max-w-sm">
@@ -372,7 +372,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.code.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -387,7 +387,7 @@
     {{-- Morale Indicator --}}
     <div>
         <h3 class="text-lg font-semibold text-white mb-2">Morale Indicator</h3>
-        <p class="text-sm text-slate-400 mb-4">Colored dot with text label using the <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">x-morale-indicator</code> component. Automatically maps morale value to color and label.</p>
+        <p class="text-sm text-slate-400 mb-4">Colored dot with text label using the <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">x-morale-indicator</code> component. Automatically maps morale value to color and label.</p>
 
         <div class="bg-surface-700/30 border border-white/5 rounded-xl p-6 mb-3">
             <div class="flex flex-wrap items-center gap-6">
@@ -401,7 +401,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.moraleCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>

@@ -7,7 +7,7 @@
 
     <div>
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-surface-800 overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-surface-800 overflow-hidden shadow-xs sm:rounded-lg">
                 <div class="p-4 sm:p-6 md:p-8">
 
             {{-- Title bar --}}
@@ -99,9 +99,9 @@
                                             <div class="inline-flex items-center gap-1 justify-end">
                                                 {{ $event->gamePlayer->player->name }} {{ $event->minute }}'
                                                 @if($event->event_type === 'yellow_card')
-                                                    <span class="w-2 h-3 bg-yellow-400 rounded-sm"></span>
+                                                    <span class="w-2 h-3 bg-yellow-400 rounded-xs"></span>
                                                 @else
-                                                    <span class="w-2 h-3 bg-accent-red/100 rounded-sm"></span>
+                                                    <span class="w-2 h-3 bg-accent-red rounded-xs"></span>
                                                 @endif
                                             </div>
                                         @endforeach
@@ -110,9 +110,9 @@
                                         @foreach($awayCards as $event)
                                             <div class="inline-flex items-center gap-1">
                                                 @if($event->event_type === 'yellow_card')
-                                                    <span class="w-2 h-3 bg-yellow-400 rounded-sm"></span>
+                                                    <span class="w-2 h-3 bg-yellow-400 rounded-xs"></span>
                                                 @else
-                                                    <span class="w-2 h-3 bg-accent-red/100 rounded-sm"></span>
+                                                    <span class="w-2 h-3 bg-accent-red rounded-xs"></span>
                                                 @endif
                                                 {{ $event->gamePlayer->player->name }} {{ $event->minute }}'
                                             </div>

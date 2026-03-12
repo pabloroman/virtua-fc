@@ -9,7 +9,7 @@
         <h4 class="font-heading text-[11px] font-semibold text-slate-500 uppercase tracking-widest pb-2 border-b border-white/5 mb-3">{{ __('squad.number_grid') }}</h4>
         <div class="grid grid-cols-10 gap-1">
             @for($n = 1; $n <= 99; $n++)
-            <div class="aspect-square flex items-center justify-center rounded text-xs font-medium cursor-default transition-colors"
+            <div class="aspect-square flex items-center justify-center rounded-sm text-xs font-medium cursor-default transition-colors"
                  :class="getNumberOwner({{ $n }}) ? 'bg-accent-blue/10 text-accent-blue border border-accent-blue/20' : 'bg-surface-700/50 text-slate-300 border border-white/5'"
                  :title="getNumberOwner({{ $n }})?.name ?? '{{ __('squad.available_number') }}'">
                 <span class="tabular-nums">{{ $n }}</span>
@@ -17,8 +17,8 @@
             @endfor
         </div>
         <div class="mt-3 flex items-center gap-3 text-xs text-slate-500">
-            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-accent-blue/10 border border-accent-blue/20"></span> {{ __('squad.assigned') }}</span>
-            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-surface-700/50 border border-white/5"></span> {{ __('squad.available_number') }}</span>
+            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-sm bg-accent-blue/10 border border-accent-blue/20"></span> {{ __('squad.assigned') }}</span>
+            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-sm bg-surface-700/50 border border-white/5"></span> {{ __('squad.available_number') }}</span>
         </div>
     </div>
 
@@ -69,10 +69,10 @@
                     <span class="w-8 text-xs font-medium text-slate-400 tabular-nums text-right shrink-0">{{ \App\Support\PositionMapper::slotToDisplayAbbreviation($slot) }}</span>
                     <div class="flex-1 flex items-center gap-1">
                         @for($i = 0; $i < min($data['count'], 5); $i++)
-                            <div class="w-4 h-4 rounded-sm {{ $barColor }}"></div>
+                            <div class="w-4 h-4 rounded-xs {{ $barColor }}"></div>
                         @endfor
                         @if($data['count'] === 0)
-                            <div class="w-4 h-4 rounded-sm border-2 border-dashed border-red-500/40"></div>
+                            <div class="w-4 h-4 rounded-xs border-2 border-dashed border-red-500/40"></div>
                         @endif
                     </div>
                     <span class="text-xs tabular-nums text-slate-400 w-4 text-right">{{ $data['count'] }}</span>
@@ -128,7 +128,7 @@
                     <div class="space-y-1">
                         @foreach($expiringThisSeason as $ep)
                             <button @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $ep->id]) }}')"
-                                    class="w-full flex items-center justify-between py-1 px-2 rounded hover:bg-surface-700 transition-colors text-left">
+                                    class="w-full flex items-center justify-between py-1 px-2 rounded-sm hover:bg-surface-700 transition-colors text-left">
                                 <span class="text-xs text-slate-300 truncate">{{ $ep->name }}</span>
                                 <span class="text-xs text-red-500 font-medium shrink-0 ml-2">{{ $ep->contract_expiry_year }}</span>
                             </button>
@@ -143,7 +143,7 @@
                     <div class="space-y-1">
                         @foreach($expiringNextSeason as $ep)
                             <button @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $ep->id]) }}')"
-                                    class="w-full flex items-center justify-between py-1 px-2 rounded hover:bg-surface-700 transition-colors text-left">
+                                    class="w-full flex items-center justify-between py-1 px-2 rounded-sm hover:bg-surface-700 transition-colors text-left">
                                 <span class="text-xs text-slate-300 truncate">{{ $ep->name }}</span>
                                 <span class="text-xs text-amber-500 font-medium shrink-0 ml-2">{{ $ep->contract_expiry_year }}</span>
                             </button>

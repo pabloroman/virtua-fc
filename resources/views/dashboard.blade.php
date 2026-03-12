@@ -7,7 +7,7 @@
 
     <div>
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-surface-800 overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-surface-800 overflow-hidden shadow-xs sm:rounded-lg">
                 <div class="p-6 sm:p-8">
                     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-6">
                         <div class="flex items-center gap-3">
@@ -33,12 +33,12 @@
 
                     <ul role="list" class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                         @foreach($games as $game)
-                            <li class="col-span-1 flex flex-col rounded-lg bg-surface-800 text-center shadow" x-data="{ confirmDelete: false }">
+                            <li class="col-span-1 flex flex-col rounded-lg bg-surface-800 text-center shadow-sm" x-data="{ confirmDelete: false }">
                                 <div class="flex flex-1 flex-col p-8 space-y-3" x-show="!confirmDelete">
                                     @if($game->isTournamentMode())
-                                        <x-team-crest :team="$game->team" class="rounded-md object-cover mx-auto h-18 w-24 flex-shrink-0" />
+                                        <x-team-crest :team="$game->team" class="rounded-md object-cover mx-auto h-18 w-24 shrink-0" />
                                     @else
-                                        <x-team-crest :team="$game->team" class="object-cover mx-auto h-20 w-20 flex-shrink-0" />
+                                        <x-team-crest :team="$game->team" class="object-cover mx-auto h-20 w-20 shrink-0" />
                                     @endif
                                     <h3 class="text-xl font-semibold leading-tight text-white">{{ $game->team->name }}</h3>
                                     <dl class="flex flex-col justify-between">
@@ -62,7 +62,7 @@
                                         </dd>
                                     </dl>
                                     <div class="flex items-center justify-center gap-3">
-                                        <x-primary-button class="text-md !p-0">
+                                        <x-primary-button class="text-md p-0!">
                                             <a class="inline-flex px-4 py-2" href="{{ route('show-game', $game->id) }}">{{ __('app.continue') }}</a>
                                         </x-primary-button>
                                         <button
@@ -88,7 +88,7 @@
                                         <button
                                             type="button"
                                             @click="confirmDelete = false"
-                                            class="inline-flex items-center px-3 py-2 min-h-[44px] sm:min-h-0 bg-surface-800 border border-white/10 rounded-lg font-semibold text-xs text-slate-300 uppercase tracking-widest shadow-sm hover:bg-surface-700/50"
+                                            class="inline-flex items-center px-3 py-2 min-h-[44px] sm:min-h-0 bg-surface-800 border border-white/10 rounded-lg font-semibold text-xs text-slate-300 uppercase tracking-widest shadow-xs hover:bg-surface-700/50"
                                         >
                                             {{ __('app.cancel') }}
                                         </button>

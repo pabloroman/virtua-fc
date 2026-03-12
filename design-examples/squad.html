@@ -157,7 +157,7 @@
                     </button>
                     <!-- Team badge + name -->
                     <div class="flex items-center gap-2.5">
-                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center flex-shrink-0">
+                        <div class="w-8 h-8 rounded-lg bg-linear-to-br from-blue-600 to-blue-800 flex items-center justify-center shrink-0">
                             <span class="font-heading font-bold text-sm text-white">VFC</span>
                         </div>
                         <div class="hidden sm:block">
@@ -232,9 +232,9 @@
                     <svg class="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
                     </svg>
-                    <input type="text" placeholder="Search players..." class="w-full sm:w-44 bg-surface-700 border border-white/5 rounded-md text-xs text-white placeholder-slate-500 pl-8 pr-3 py-1.5 focus:outline-none focus:border-accent-blue/50">
+                    <input type="text" placeholder="Search players..." class="w-full sm:w-44 bg-surface-700 border border-white/5 rounded-md text-xs text-white placeholder-slate-500 pl-8 pr-3 py-1.5 focus:outline-hidden focus:border-accent-blue/50">
                 </div>
-                <select class="sort-dropdown bg-surface-700 border border-white/5 rounded-md text-xs text-slate-400 pl-2.5 pr-6 py-1.5 focus:outline-none">
+                <select class="sort-dropdown bg-surface-700 border border-white/5 rounded-md text-xs text-slate-400 pl-2.5 pr-6 py-1.5 focus:outline-hidden">
                     <option>Rating</option>
                     <option>Age</option>
                     <option>Value</option>
@@ -246,23 +246,23 @@
 
         <!-- Squad Summary Cards (mobile: horizontal scroll, desktop: row) -->
         <div class="flex gap-2.5 overflow-x-auto no-scrollbar mb-5 pb-1">
-            <div class="flex-shrink-0 bg-surface-700/50 border border-white/5 rounded-lg px-3.5 py-2.5 min-w-[120px]">
+            <div class="shrink-0 bg-surface-700/50 border border-white/5 rounded-lg px-3.5 py-2.5 min-w-[120px]">
                 <p class="text-[10px] text-slate-500 uppercase tracking-wider">Available</p>
                 <p class="font-heading text-xl font-bold text-accent-green mt-0.5">21</p>
             </div>
-            <div class="flex-shrink-0 bg-surface-700/50 border border-white/5 rounded-lg px-3.5 py-2.5 min-w-[120px]">
+            <div class="shrink-0 bg-surface-700/50 border border-white/5 rounded-lg px-3.5 py-2.5 min-w-[120px]">
                 <p class="text-[10px] text-slate-500 uppercase tracking-wider">Injured</p>
                 <p class="font-heading text-xl font-bold text-accent-red mt-0.5">3</p>
             </div>
-            <div class="flex-shrink-0 bg-surface-700/50 border border-white/5 rounded-lg px-3.5 py-2.5 min-w-[120px]">
+            <div class="shrink-0 bg-surface-700/50 border border-white/5 rounded-lg px-3.5 py-2.5 min-w-[120px]">
                 <p class="text-[10px] text-slate-500 uppercase tracking-wider">Suspended</p>
                 <p class="font-heading text-xl font-bold text-accent-orange mt-0.5">1</p>
             </div>
-            <div class="flex-shrink-0 bg-surface-700/50 border border-white/5 rounded-lg px-3.5 py-2.5 min-w-[120px]">
+            <div class="shrink-0 bg-surface-700/50 border border-white/5 rounded-lg px-3.5 py-2.5 min-w-[120px]">
                 <p class="text-[10px] text-slate-500 uppercase tracking-wider">On Loan</p>
                 <p class="font-heading text-xl font-bold text-slate-400 mt-0.5">2</p>
             </div>
-            <div class="flex-shrink-0 bg-surface-700/50 border border-white/5 rounded-lg px-3.5 py-2.5 min-w-[120px]">
+            <div class="shrink-0 bg-surface-700/50 border border-white/5 rounded-lg px-3.5 py-2.5 min-w-[120px]">
                 <p class="text-[10px] text-slate-500 uppercase tracking-wider">Avg Fitness</p>
                 <p class="font-heading text-xl font-bold text-accent-green mt-0.5">87%</p>
             </div>
@@ -296,8 +296,8 @@
                 <div class="lg:hidden px-4 py-3">
                     <div class="flex items-center gap-3">
                         <!-- Player avatar -->
-                        <div class="relative flex-shrink-0">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/20 flex items-center justify-center">
+                        <div class="relative shrink-0">
+                            <div class="w-10 h-10 rounded-full bg-linear-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/20 flex items-center justify-center">
                                 <span class="font-heading font-bold text-sm text-amber-400">MT</span>
                             </div>
                             <span class="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-amber-500/20 border border-surface-800 flex items-center justify-center">
@@ -322,7 +322,7 @@
                             </div>
                         </div>
                         <!-- Rating -->
-                        <div class="rating-badge w-9 h-9 rounded-lg rating-elite flex items-center justify-center flex-shrink-0">
+                        <div class="rating-badge w-9 h-9 rounded-lg rating-elite flex items-center justify-center shrink-0">
                             <span class="font-heading font-bold text-base">83</span>
                         </div>
                     </div>
@@ -330,7 +330,7 @@
                 <!-- Desktop layout -->
                 <div class="hidden lg:grid grid-cols-[1fr_60px_40px_72px_100px_100px_100px_80px_80px_72px] gap-2 items-center px-4 py-2.5">
                     <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/20 flex items-center justify-center flex-shrink-0">
+                        <div class="w-8 h-8 rounded-full bg-linear-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/20 flex items-center justify-center shrink-0">
                             <span class="font-heading font-bold text-xs text-amber-400">MT</span>
                         </div>
                         <div>
@@ -341,7 +341,7 @@
                         </div>
                     </div>
                     <div class="flex justify-center">
-                        <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-500/10 text-amber-400 uppercase">GK</span>
+                        <span class="px-2 py-0.5 rounded-sm text-[10px] font-semibold bg-amber-500/10 text-amber-400 uppercase">GK</span>
                     </div>
                     <span class="text-xs text-slate-400 text-center">28</span>
                     <div class="flex justify-center">
@@ -383,8 +383,8 @@
             <div class="player-row border-b border-white/5 cursor-pointer" onclick="toggleDetail(this)">
                 <div class="lg:hidden px-4 py-3">
                     <div class="flex items-center gap-3">
-                        <div class="relative flex-shrink-0">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/20 flex items-center justify-center">
+                        <div class="relative shrink-0">
+                            <div class="w-10 h-10 rounded-full bg-linear-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/20 flex items-center justify-center">
                                 <span class="font-heading font-bold text-sm text-amber-400">IP</span>
                             </div>
                             <span class="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-amber-500/20 border border-surface-800 flex items-center justify-center">
@@ -406,14 +406,14 @@
                                 <span class="text-[10px] text-slate-600">€8M</span>
                             </div>
                         </div>
-                        <div class="rating-badge w-9 h-9 rounded-lg rating-good flex items-center justify-center flex-shrink-0">
+                        <div class="rating-badge w-9 h-9 rounded-lg rating-good flex items-center justify-center shrink-0">
                             <span class="font-heading font-bold text-base">73</span>
                         </div>
                     </div>
                 </div>
                 <div class="hidden lg:grid grid-cols-[1fr_60px_40px_72px_100px_100px_100px_80px_80px_72px] gap-2 items-center px-4 py-2.5">
                     <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/20 flex items-center justify-center flex-shrink-0">
+                        <div class="w-8 h-8 rounded-full bg-linear-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/20 flex items-center justify-center shrink-0">
                             <span class="font-heading font-bold text-xs text-amber-400">IP</span>
                         </div>
                         <div>
@@ -421,7 +421,7 @@
                             <div class="flex items-center gap-1 mt-0.5"><span class="text-[10px] text-slate-600">🇪🇸</span></div>
                         </div>
                     </div>
-                    <div class="flex justify-center"><span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-500/10 text-amber-400 uppercase">GK</span></div>
+                    <div class="flex justify-center"><span class="px-2 py-0.5 rounded-sm text-[10px] font-semibold bg-amber-500/10 text-amber-400 uppercase">GK</span></div>
                     <span class="text-xs text-slate-400 text-center">25</span>
                     <div class="flex justify-center"><div class="rating-badge w-8 h-8 rounded-lg rating-good flex items-center justify-center"><span class="font-heading font-bold text-sm">73</span></div></div>
                     <div class="flex items-center gap-2 justify-center">
@@ -449,8 +449,8 @@
             <div class="player-row border-b border-white/5 cursor-pointer" onclick="toggleDetail(this)">
                 <div class="lg:hidden px-4 py-3">
                     <div class="flex items-center gap-3">
-                        <div class="relative flex-shrink-0">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/20 flex items-center justify-center">
+                        <div class="relative shrink-0">
+                            <div class="w-10 h-10 rounded-full bg-linear-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/20 flex items-center justify-center">
                                 <span class="font-heading font-bold text-sm text-blue-400">RA</span>
                             </div>
                             <span class="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-blue-500/20 border border-surface-800 flex items-center justify-center">
@@ -475,20 +475,20 @@
                                 </span>
                             </div>
                         </div>
-                        <div class="rating-badge w-9 h-9 rounded-lg rating-elite flex items-center justify-center flex-shrink-0">
+                        <div class="rating-badge w-9 h-9 rounded-lg rating-elite flex items-center justify-center shrink-0">
                             <span class="font-heading font-bold text-base">84</span>
                         </div>
                     </div>
                 </div>
                 <div class="hidden lg:grid grid-cols-[1fr_60px_40px_72px_100px_100px_100px_80px_80px_72px] gap-2 items-center px-4 py-2.5">
                     <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/20 flex items-center justify-center flex-shrink-0">
+                        <div class="w-8 h-8 rounded-full bg-linear-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/20 flex items-center justify-center shrink-0">
                             <span class="font-heading font-bold text-xs text-blue-400">RA</span>
                         </div>
                         <div>
                             <div class="flex items-center gap-2">
                                 <span class="text-sm font-medium text-white">Ronald Araújo</span>
-                                <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-red-500/10 text-[9px] text-accent-red font-medium">
+                                <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-sm bg-red-500/10 text-[9px] text-accent-red font-medium">
                                     <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z"/></svg>
                                     ACL · 5 months
                                 </span>
@@ -496,7 +496,7 @@
                             <div class="flex items-center gap-1 mt-0.5"><span class="text-[10px] text-slate-600">🇺🇾</span></div>
                         </div>
                     </div>
-                    <div class="flex justify-center"><span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-500/10 text-blue-400 uppercase">CB</span></div>
+                    <div class="flex justify-center"><span class="px-2 py-0.5 rounded-sm text-[10px] font-semibold bg-blue-500/10 text-blue-400 uppercase">CB</span></div>
                     <span class="text-xs text-slate-400 text-center">26</span>
                     <div class="flex justify-center"><div class="rating-badge w-8 h-8 rounded-lg rating-elite flex items-center justify-center"><span class="font-heading font-bold text-sm">84</span></div></div>
                     <div class="flex items-center gap-2 justify-center">
@@ -519,8 +519,8 @@
             <div class="player-row border-b border-white/5 cursor-pointer" onclick="toggleDetail(this)">
                 <div class="lg:hidden px-4 py-3">
                     <div class="flex items-center gap-3">
-                        <div class="relative flex-shrink-0">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/20 flex items-center justify-center">
+                        <div class="relative shrink-0">
+                            <div class="w-10 h-10 rounded-full bg-linear-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/20 flex items-center justify-center">
                                 <span class="font-heading font-bold text-sm text-blue-400">PC</span>
                             </div>
                             <span class="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-blue-500/20 border border-surface-800 flex items-center justify-center">
@@ -542,19 +542,19 @@
                                 <span class="text-[10px] text-slate-600">€45M</span>
                             </div>
                         </div>
-                        <div class="rating-badge w-9 h-9 rounded-lg rating-elite flex items-center justify-center flex-shrink-0">
+                        <div class="rating-badge w-9 h-9 rounded-lg rating-elite flex items-center justify-center shrink-0">
                             <span class="font-heading font-bold text-base">80</span>
                         </div>
                     </div>
                 </div>
                 <div class="hidden lg:grid grid-cols-[1fr_60px_40px_72px_100px_100px_100px_80px_80px_72px] gap-2 items-center px-4 py-2.5">
                     <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/20 flex items-center justify-center flex-shrink-0">
+                        <div class="w-8 h-8 rounded-full bg-linear-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/20 flex items-center justify-center shrink-0">
                             <span class="font-heading font-bold text-xs text-blue-400">PC</span>
                         </div>
                         <span class="text-sm font-medium text-white">Pau Cubarsí</span>
                     </div>
-                    <div class="flex justify-center"><span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-500/10 text-blue-400 uppercase">CB</span></div>
+                    <div class="flex justify-center"><span class="px-2 py-0.5 rounded-sm text-[10px] font-semibold bg-blue-500/10 text-blue-400 uppercase">CB</span></div>
                     <span class="text-xs text-slate-400 text-center">18</span>
                     <div class="flex justify-center"><div class="rating-badge w-8 h-8 rounded-lg rating-elite flex items-center justify-center"><span class="font-heading font-bold text-sm">80</span></div></div>
                     <div class="flex items-center gap-2 justify-center">
@@ -577,8 +577,8 @@
             <div class="player-row border-b border-white/5 cursor-pointer" onclick="toggleDetail(this)">
                 <div class="lg:hidden px-4 py-3">
                     <div class="flex items-center gap-3">
-                        <div class="relative flex-shrink-0">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/20 flex items-center justify-center">
+                        <div class="relative shrink-0">
+                            <div class="w-10 h-10 rounded-full bg-linear-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/20 flex items-center justify-center">
                                 <span class="font-heading font-bold text-sm text-blue-400">AB</span>
                             </div>
                             <span class="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-blue-500/20 border border-surface-800 flex items-center justify-center">
@@ -600,19 +600,19 @@
                                 <span class="text-[10px] text-slate-600">€35M</span>
                             </div>
                         </div>
-                        <div class="rating-badge w-9 h-9 rounded-lg rating-elite flex items-center justify-center flex-shrink-0">
+                        <div class="rating-badge w-9 h-9 rounded-lg rating-elite flex items-center justify-center shrink-0">
                             <span class="font-heading font-bold text-base">81</span>
                         </div>
                     </div>
                 </div>
                 <div class="hidden lg:grid grid-cols-[1fr_60px_40px_72px_100px_100px_100px_80px_80px_72px] gap-2 items-center px-4 py-2.5">
                     <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/20 flex items-center justify-center flex-shrink-0">
+                        <div class="w-8 h-8 rounded-full bg-linear-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/20 flex items-center justify-center shrink-0">
                             <span class="font-heading font-bold text-xs text-blue-400">AB</span>
                         </div>
                         <span class="text-sm font-medium text-white">Alejandro Balde</span>
                     </div>
-                    <div class="flex justify-center"><span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-500/10 text-blue-400 uppercase">LB</span></div>
+                    <div class="flex justify-center"><span class="px-2 py-0.5 rounded-sm text-[10px] font-semibold bg-blue-500/10 text-blue-400 uppercase">LB</span></div>
                     <span class="text-xs text-slate-400 text-center">21</span>
                     <div class="flex justify-center"><div class="rating-badge w-8 h-8 rounded-lg rating-elite flex items-center justify-center"><span class="font-heading font-bold text-sm">81</span></div></div>
                     <div class="flex items-center gap-2 justify-center">
@@ -635,8 +635,8 @@
             <div class="player-row border-b border-white/5 cursor-pointer" onclick="toggleDetail(this)">
                 <div class="lg:hidden px-4 py-3">
                     <div class="flex items-center gap-3">
-                        <div class="relative flex-shrink-0">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/20 flex items-center justify-center">
+                        <div class="relative shrink-0">
+                            <div class="w-10 h-10 rounded-full bg-linear-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/20 flex items-center justify-center">
                                 <span class="font-heading font-bold text-sm text-blue-400">JK</span>
                             </div>
                             <span class="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-blue-500/20 border border-surface-800 flex items-center justify-center">
@@ -658,19 +658,19 @@
                                 <span class="text-[10px] text-slate-600">€48M</span>
                             </div>
                         </div>
-                        <div class="rating-badge w-9 h-9 rounded-lg rating-elite flex items-center justify-center flex-shrink-0">
+                        <div class="rating-badge w-9 h-9 rounded-lg rating-elite flex items-center justify-center shrink-0">
                             <span class="font-heading font-bold text-base">85</span>
                         </div>
                     </div>
                 </div>
                 <div class="hidden lg:grid grid-cols-[1fr_60px_40px_72px_100px_100px_100px_80px_80px_72px] gap-2 items-center px-4 py-2.5">
                     <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/20 flex items-center justify-center flex-shrink-0">
+                        <div class="w-8 h-8 rounded-full bg-linear-to-br from-blue-500/20 to-blue-600/10 border border-blue-500/20 flex items-center justify-center shrink-0">
                             <span class="font-heading font-bold text-xs text-blue-400">JK</span>
                         </div>
                         <span class="text-sm font-medium text-white">Jules Koundé</span>
                     </div>
-                    <div class="flex justify-center"><span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-500/10 text-blue-400 uppercase">RB</span></div>
+                    <div class="flex justify-center"><span class="px-2 py-0.5 rounded-sm text-[10px] font-semibold bg-blue-500/10 text-blue-400 uppercase">RB</span></div>
                     <span class="text-xs text-slate-400 text-center">26</span>
                     <div class="flex justify-center"><div class="rating-badge w-8 h-8 rounded-lg rating-elite flex items-center justify-center"><span class="font-heading font-bold text-sm">85</span></div></div>
                     <div class="flex items-center gap-2 justify-center">
@@ -698,8 +698,8 @@
             <div class="player-row border-b border-white/5 cursor-pointer" onclick="toggleDetail(this)">
                 <div class="lg:hidden px-4 py-3">
                     <div class="flex items-center gap-3">
-                        <div class="relative flex-shrink-0">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-500/20 to-green-600/10 border border-green-500/20 flex items-center justify-center">
+                        <div class="relative shrink-0">
+                            <div class="w-10 h-10 rounded-full bg-linear-to-br from-green-500/20 to-green-600/10 border border-green-500/20 flex items-center justify-center">
                                 <span class="font-heading font-bold text-sm text-green-400">PG</span>
                             </div>
                             <span class="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-green-500/20 border border-surface-800 flex items-center justify-center">
@@ -721,19 +721,19 @@
                                 <span class="text-[10px] text-slate-600">€80M</span>
                             </div>
                         </div>
-                        <div class="rating-badge w-9 h-9 rounded-lg rating-elite flex items-center justify-center flex-shrink-0">
+                        <div class="rating-badge w-9 h-9 rounded-lg rating-elite flex items-center justify-center shrink-0">
                             <span class="font-heading font-bold text-base">88</span>
                         </div>
                     </div>
                 </div>
                 <div class="hidden lg:grid grid-cols-[1fr_60px_40px_72px_100px_100px_100px_80px_80px_72px] gap-2 items-center px-4 py-2.5">
                     <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-green-500/20 to-green-600/10 border border-green-500/20 flex items-center justify-center flex-shrink-0">
+                        <div class="w-8 h-8 rounded-full bg-linear-to-br from-green-500/20 to-green-600/10 border border-green-500/20 flex items-center justify-center shrink-0">
                             <span class="font-heading font-bold text-xs text-green-400">PG</span>
                         </div>
                         <span class="text-sm font-medium text-white">Pedri</span>
                     </div>
-                    <div class="flex justify-center"><span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-green-500/10 text-green-400 uppercase">CM</span></div>
+                    <div class="flex justify-center"><span class="px-2 py-0.5 rounded-sm text-[10px] font-semibold bg-green-500/10 text-green-400 uppercase">CM</span></div>
                     <span class="text-xs text-slate-400 text-center">22</span>
                     <div class="flex justify-center"><div class="rating-badge w-8 h-8 rounded-lg rating-elite flex items-center justify-center"><span class="font-heading font-bold text-sm">88</span></div></div>
                     <div class="flex items-center gap-2 justify-center">
@@ -756,8 +756,8 @@
             <div class="player-row border-b border-white/5 cursor-pointer" onclick="toggleDetail(this)">
                 <div class="lg:hidden px-4 py-3">
                     <div class="flex items-center gap-3">
-                        <div class="relative flex-shrink-0">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-500/20 to-green-600/10 border border-green-500/20 flex items-center justify-center">
+                        <div class="relative shrink-0">
+                            <div class="w-10 h-10 rounded-full bg-linear-to-br from-green-500/20 to-green-600/10 border border-green-500/20 flex items-center justify-center">
                                 <span class="font-heading font-bold text-sm text-green-400">FJ</span>
                             </div>
                             <span class="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-green-500/20 border border-surface-800 flex items-center justify-center">
@@ -779,19 +779,19 @@
                                 <span class="text-[10px] text-slate-600">€55M</span>
                             </div>
                         </div>
-                        <div class="rating-badge w-9 h-9 rounded-lg rating-elite flex items-center justify-center flex-shrink-0">
+                        <div class="rating-badge w-9 h-9 rounded-lg rating-elite flex items-center justify-center shrink-0">
                             <span class="font-heading font-bold text-base">84</span>
                         </div>
                     </div>
                 </div>
                 <div class="hidden lg:grid grid-cols-[1fr_60px_40px_72px_100px_100px_100px_80px_80px_72px] gap-2 items-center px-4 py-2.5">
                     <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-green-500/20 to-green-600/10 border border-green-500/20 flex items-center justify-center flex-shrink-0">
+                        <div class="w-8 h-8 rounded-full bg-linear-to-br from-green-500/20 to-green-600/10 border border-green-500/20 flex items-center justify-center shrink-0">
                             <span class="font-heading font-bold text-xs text-green-400">FJ</span>
                         </div>
                         <span class="text-sm font-medium text-white">Frenkie de Jong</span>
                     </div>
-                    <div class="flex justify-center"><span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-green-500/10 text-green-400 uppercase">DM</span></div>
+                    <div class="flex justify-center"><span class="px-2 py-0.5 rounded-sm text-[10px] font-semibold bg-green-500/10 text-green-400 uppercase">DM</span></div>
                     <span class="text-xs text-slate-400 text-center">27</span>
                     <div class="flex justify-center"><div class="rating-badge w-8 h-8 rounded-lg rating-elite flex items-center justify-center"><span class="font-heading font-bold text-sm">84</span></div></div>
                     <div class="flex items-center gap-2 justify-center">
@@ -814,8 +814,8 @@
             <div class="player-row border-b border-white/5 cursor-pointer" onclick="toggleDetail(this)">
                 <div class="lg:hidden px-4 py-3">
                     <div class="flex items-center gap-3">
-                        <div class="relative flex-shrink-0">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-500/20 to-green-600/10 border border-green-500/20 flex items-center justify-center">
+                        <div class="relative shrink-0">
+                            <div class="w-10 h-10 rounded-full bg-linear-to-br from-green-500/20 to-green-600/10 border border-green-500/20 flex items-center justify-center">
                                 <span class="font-heading font-bold text-sm text-green-400">GV</span>
                             </div>
                             <span class="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-green-500/20 border border-surface-800 flex items-center justify-center">
@@ -840,20 +840,20 @@
                                 </span>
                             </div>
                         </div>
-                        <div class="rating-badge w-9 h-9 rounded-lg rating-elite flex items-center justify-center flex-shrink-0">
+                        <div class="rating-badge w-9 h-9 rounded-lg rating-elite flex items-center justify-center shrink-0">
                             <span class="font-heading font-bold text-base">82</span>
                         </div>
                     </div>
                 </div>
                 <div class="hidden lg:grid grid-cols-[1fr_60px_40px_72px_100px_100px_100px_80px_80px_72px] gap-2 items-center px-4 py-2.5">
                     <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-green-500/20 to-green-600/10 border border-green-500/20 flex items-center justify-center flex-shrink-0">
+                        <div class="w-8 h-8 rounded-full bg-linear-to-br from-green-500/20 to-green-600/10 border border-green-500/20 flex items-center justify-center shrink-0">
                             <span class="font-heading font-bold text-xs text-green-400">GV</span>
                         </div>
                         <div>
                             <div class="flex items-center gap-2">
                                 <span class="text-sm font-medium text-white">Gavi</span>
-                                <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-orange-500/10 text-[9px] text-accent-orange font-medium">
+                                <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-sm bg-orange-500/10 text-[9px] text-accent-orange font-medium">
                                     <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/></svg>
                                     Hamstring · 3 weeks
                                 </span>
@@ -861,7 +861,7 @@
                             <div class="flex items-center gap-1 mt-0.5"><span class="text-[10px] text-slate-600">🇪🇸</span></div>
                         </div>
                     </div>
-                    <div class="flex justify-center"><span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-green-500/10 text-green-400 uppercase">AM</span></div>
+                    <div class="flex justify-center"><span class="px-2 py-0.5 rounded-sm text-[10px] font-semibold bg-green-500/10 text-green-400 uppercase">AM</span></div>
                     <span class="text-xs text-slate-400 text-center">20</span>
                     <div class="flex justify-center"><div class="rating-badge w-8 h-8 rounded-lg rating-elite flex items-center justify-center"><span class="font-heading font-bold text-sm">82</span></div></div>
                     <div class="flex items-center gap-2 justify-center">
@@ -889,8 +889,8 @@
             <div class="player-row border-b border-white/5 cursor-pointer" onclick="toggleDetail(this)">
                 <div class="lg:hidden px-4 py-3">
                     <div class="flex items-center gap-3">
-                        <div class="relative flex-shrink-0">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-rose-500/20 to-rose-600/10 border border-rose-500/20 flex items-center justify-center">
+                        <div class="relative shrink-0">
+                            <div class="w-10 h-10 rounded-full bg-linear-to-br from-rose-500/20 to-rose-600/10 border border-rose-500/20 flex items-center justify-center">
                                 <span class="font-heading font-bold text-sm text-rose-400">LY</span>
                             </div>
                             <span class="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-rose-500/20 border border-surface-800 flex items-center justify-center">
@@ -912,19 +912,19 @@
                                 <span class="text-[10px] text-slate-600">€150M</span>
                             </div>
                         </div>
-                        <div class="rating-badge w-9 h-9 rounded-lg rating-elite flex items-center justify-center flex-shrink-0">
+                        <div class="rating-badge w-9 h-9 rounded-lg rating-elite flex items-center justify-center shrink-0">
                             <span class="font-heading font-bold text-base">86</span>
                         </div>
                     </div>
                 </div>
                 <div class="hidden lg:grid grid-cols-[1fr_60px_40px_72px_100px_100px_100px_80px_80px_72px] gap-2 items-center px-4 py-2.5">
                     <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-rose-500/20 to-rose-600/10 border border-rose-500/20 flex items-center justify-center flex-shrink-0">
+                        <div class="w-8 h-8 rounded-full bg-linear-to-br from-rose-500/20 to-rose-600/10 border border-rose-500/20 flex items-center justify-center shrink-0">
                             <span class="font-heading font-bold text-xs text-rose-400">LY</span>
                         </div>
                         <span class="text-sm font-medium text-white">Lamine Yamal</span>
                     </div>
-                    <div class="flex justify-center"><span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-rose-500/10 text-rose-400 uppercase">RW</span></div>
+                    <div class="flex justify-center"><span class="px-2 py-0.5 rounded-sm text-[10px] font-semibold bg-rose-500/10 text-rose-400 uppercase">RW</span></div>
                     <span class="text-xs text-slate-400 text-center">17</span>
                     <div class="flex justify-center"><div class="rating-badge w-8 h-8 rounded-lg rating-elite flex items-center justify-center"><span class="font-heading font-bold text-sm">86</span></div></div>
                     <div class="flex items-center gap-2 justify-center">
@@ -947,8 +947,8 @@
             <div class="player-row border-b border-white/5 cursor-pointer" onclick="toggleDetail(this)">
                 <div class="lg:hidden px-4 py-3">
                     <div class="flex items-center gap-3">
-                        <div class="relative flex-shrink-0">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-rose-500/20 to-rose-600/10 border border-rose-500/20 flex items-center justify-center">
+                        <div class="relative shrink-0">
+                            <div class="w-10 h-10 rounded-full bg-linear-to-br from-rose-500/20 to-rose-600/10 border border-rose-500/20 flex items-center justify-center">
                                 <span class="font-heading font-bold text-sm text-rose-400">RL</span>
                             </div>
                             <span class="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-rose-500/20 border border-surface-800 flex items-center justify-center">
@@ -970,19 +970,19 @@
                                 <span class="text-[10px] text-slate-600">€15M</span>
                             </div>
                         </div>
-                        <div class="rating-badge w-9 h-9 rounded-lg rating-elite flex items-center justify-center flex-shrink-0">
+                        <div class="rating-badge w-9 h-9 rounded-lg rating-elite flex items-center justify-center shrink-0">
                             <span class="font-heading font-bold text-base">86</span>
                         </div>
                     </div>
                 </div>
                 <div class="hidden lg:grid grid-cols-[1fr_60px_40px_72px_100px_100px_100px_80px_80px_72px] gap-2 items-center px-4 py-2.5">
                     <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-rose-500/20 to-rose-600/10 border border-rose-500/20 flex items-center justify-center flex-shrink-0">
+                        <div class="w-8 h-8 rounded-full bg-linear-to-br from-rose-500/20 to-rose-600/10 border border-rose-500/20 flex items-center justify-center shrink-0">
                             <span class="font-heading font-bold text-xs text-rose-400">RL</span>
                         </div>
                         <span class="text-sm font-medium text-white">Robert Lewandowski</span>
                     </div>
-                    <div class="flex justify-center"><span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-rose-500/10 text-rose-400 uppercase">ST</span></div>
+                    <div class="flex justify-center"><span class="px-2 py-0.5 rounded-sm text-[10px] font-semibold bg-rose-500/10 text-rose-400 uppercase">ST</span></div>
                     <span class="text-xs text-slate-400 text-center">36</span>
                     <div class="flex justify-center"><div class="rating-badge w-8 h-8 rounded-lg rating-elite flex items-center justify-center"><span class="font-heading font-bold text-sm">86</span></div></div>
                     <div class="flex items-center gap-2 justify-center">
@@ -1005,8 +1005,8 @@
             <div class="player-row border-b border-white/5 cursor-pointer" onclick="toggleDetail(this)">
                 <div class="lg:hidden px-4 py-3">
                     <div class="flex items-center gap-3">
-                        <div class="relative flex-shrink-0">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-rose-500/20 to-rose-600/10 border border-rose-500/20 flex items-center justify-center">
+                        <div class="relative shrink-0">
+                            <div class="w-10 h-10 rounded-full bg-linear-to-br from-rose-500/20 to-rose-600/10 border border-rose-500/20 flex items-center justify-center">
                                 <span class="font-heading font-bold text-sm text-rose-400">RA</span>
                             </div>
                             <span class="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-rose-500/20 border border-surface-800 flex items-center justify-center">
@@ -1033,25 +1033,25 @@
                                 <span class="text-[10px] text-slate-600">€55M</span>
                             </div>
                         </div>
-                        <div class="rating-badge w-9 h-9 rounded-lg rating-elite flex items-center justify-center flex-shrink-0">
+                        <div class="rating-badge w-9 h-9 rounded-lg rating-elite flex items-center justify-center shrink-0">
                             <span class="font-heading font-bold text-base">84</span>
                         </div>
                     </div>
                 </div>
                 <div class="hidden lg:grid grid-cols-[1fr_60px_40px_72px_100px_100px_100px_80px_80px_72px] gap-2 items-center px-4 py-2.5">
                     <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-rose-500/20 to-rose-600/10 border border-rose-500/20 flex items-center justify-center flex-shrink-0">
+                        <div class="w-8 h-8 rounded-full bg-linear-to-br from-rose-500/20 to-rose-600/10 border border-rose-500/20 flex items-center justify-center shrink-0">
                             <span class="font-heading font-bold text-xs text-rose-400">RA</span>
                         </div>
                         <div>
                             <div class="flex items-center gap-2">
                                 <span class="text-sm font-medium text-white">Raphinha</span>
-                                <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-red-500/10 text-[9px] text-accent-red font-medium">Suspended · 1 match</span>
+                                <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-sm bg-red-500/10 text-[9px] text-accent-red font-medium">Suspended · 1 match</span>
                             </div>
                             <div class="flex items-center gap-1 mt-0.5"><span class="text-[10px] text-slate-600">🇧🇷</span></div>
                         </div>
                     </div>
-                    <div class="flex justify-center"><span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-rose-500/10 text-rose-400 uppercase">LW</span></div>
+                    <div class="flex justify-center"><span class="px-2 py-0.5 rounded-sm text-[10px] font-semibold bg-rose-500/10 text-rose-400 uppercase">LW</span></div>
                     <span class="text-xs text-slate-400 text-center">28</span>
                     <div class="flex justify-center"><div class="rating-badge w-8 h-8 rounded-lg rating-elite flex items-center justify-center"><span class="font-heading font-bold text-sm">84</span></div></div>
                     <div class="flex items-center gap-2 justify-center">

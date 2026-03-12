@@ -7,7 +7,7 @@
 
     <div>
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-surface-800 overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-surface-800 overflow-hidden shadow-xs sm:rounded-lg">
                 <div class="p-4 sm:p-6 md:p-8 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
                     {{-- Left Column (2/3) - Calendar --}}
                     <div class="md:col-span-2">
@@ -39,7 +39,7 @@
                                     $drawWidth = ($seasonStats['draws'] / $seasonStats['played']) * 100;
                                 @endphp
                                 <div class="h-2 flex">
-                                    <div class="bg-accent-green/100" style="width: {{ $winWidth }}%"></div>
+                                    <div class="bg-accent-green" style="width: {{ $winWidth }}%"></div>
                                     <div class="bg-slate-400" style="width: {{ $drawWidth }}%"></div>
                                 </div>
                             </div>
@@ -54,9 +54,9 @@
                             <div class="flex gap-1">
                                 @foreach($seasonStats['form'] as $result)
                                     <span class="w-8 h-8 rounded text-sm font-bold flex items-center justify-center
-                                        @if($result === 'W') bg-accent-green/100 text-white
+                                        @if($result === 'W') bg-accent-green text-white
                                         @elseif($result === 'D') bg-slate-400 text-white
-                                        @else bg-accent-red/100 text-white @endif">
+                                        @else bg-accent-red text-white @endif">
                                         {{ $result }}
                                     </span>
                                 @endforeach

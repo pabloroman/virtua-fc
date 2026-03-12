@@ -96,7 +96,7 @@
                 </div>
                 <div x-data="{ copied: false }" class="relative mt-3">
                     <button @click="navigator.clipboard.writeText($refs.code5.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                            class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                            class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                         <span x-show="!copied">Copy</span>
                         <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
                     </button>
@@ -114,7 +114,7 @@
                 </div>
                 <div x-data="{ copied: false }" class="relative mt-3">
                     <button @click="navigator.clipboard.writeText($refs.code10.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                            class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                            class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                         <span x-show="!copied">Copy</span>
                         <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
                     </button>
@@ -161,9 +161,9 @@
                 </div>
                 <p class="text-sm text-slate-400 mb-3">Completed transfers, match wins, positive growth, confirmed actions, budget surplus.</p>
                 <div class="flex flex-wrap gap-2">
-                    <span class="px-2 py-1 text-[10px] rounded bg-accent-green/10 text-accent-green border border-accent-green/20">text-accent-green</span>
-                    <span class="px-2 py-1 text-[10px] rounded bg-accent-green/10 text-accent-green border border-accent-green/20">bg-accent-green/10</span>
-                    <span class="px-2 py-1 text-[10px] rounded bg-accent-green/10 text-accent-green border border-accent-green/20">border-accent-green/20</span>
+                    <span class="px-2 py-1 text-[10px] rounded-sm bg-accent-green/10 text-accent-green border border-accent-green/20">text-accent-green</span>
+                    <span class="px-2 py-1 text-[10px] rounded-sm bg-accent-green/10 text-accent-green border border-accent-green/20">bg-accent-green/10</span>
+                    <span class="px-2 py-1 text-[10px] rounded-sm bg-accent-green/10 text-accent-green border border-accent-green/20">border-accent-green/20</span>
                 </div>
             </div>
 
@@ -180,9 +180,9 @@
                 </div>
                 <p class="text-sm text-slate-400 mb-3">Match losses, injuries, red cards, budget deficit, relegation warnings, destructive actions.</p>
                 <div class="flex flex-wrap gap-2">
-                    <span class="px-2 py-1 text-[10px] rounded bg-accent-red/10 text-accent-red border border-accent-red/20">text-accent-red</span>
-                    <span class="px-2 py-1 text-[10px] rounded bg-accent-red/10 text-accent-red border border-accent-red/20">bg-accent-red/10</span>
-                    <span class="px-2 py-1 text-[10px] rounded bg-accent-red/10 text-accent-red border border-accent-red/20">border-accent-red/20</span>
+                    <span class="px-2 py-1 text-[10px] rounded-sm bg-accent-red/10 text-accent-red border border-accent-red/20">text-accent-red</span>
+                    <span class="px-2 py-1 text-[10px] rounded-sm bg-accent-red/10 text-accent-red border border-accent-red/20">bg-accent-red/10</span>
+                    <span class="px-2 py-1 text-[10px] rounded-sm bg-accent-red/10 text-accent-red border border-accent-red/20">border-accent-red/20</span>
                 </div>
             </div>
 
@@ -199,9 +199,9 @@
                 </div>
                 <p class="text-sm text-slate-400 mb-3">Yellow cards, expiring contracts, low fitness, approaching budget limits, pending decisions.</p>
                 <div class="flex flex-wrap gap-2">
-                    <span class="px-2 py-1 text-[10px] rounded bg-accent-gold/10 text-accent-gold border border-accent-gold/20">text-accent-gold</span>
-                    <span class="px-2 py-1 text-[10px] rounded bg-accent-gold/10 text-accent-gold border border-accent-gold/20">bg-accent-gold/10</span>
-                    <span class="px-2 py-1 text-[10px] rounded bg-accent-gold/10 text-accent-gold border border-accent-gold/20">border-accent-gold/20</span>
+                    <span class="px-2 py-1 text-[10px] rounded-sm bg-accent-gold/10 text-accent-gold border border-accent-gold/20">text-accent-gold</span>
+                    <span class="px-2 py-1 text-[10px] rounded-sm bg-accent-gold/10 text-accent-gold border border-accent-gold/20">bg-accent-gold/10</span>
+                    <span class="px-2 py-1 text-[10px] rounded-sm bg-accent-gold/10 text-accent-gold border border-accent-gold/20">border-accent-gold/20</span>
                 </div>
             </div>
 
@@ -218,9 +218,9 @@
                 </div>
                 <p class="text-sm text-slate-400 mb-3">Links, focus rings, selected states, informational badges, navigation highlights, active tabs.</p>
                 <div class="flex flex-wrap gap-2">
-                    <span class="px-2 py-1 text-[10px] rounded bg-accent-blue/10 text-accent-blue border border-accent-blue/20">text-accent-blue</span>
-                    <span class="px-2 py-1 text-[10px] rounded bg-accent-blue/10 text-accent-blue border border-accent-blue/20">bg-accent-blue/10</span>
-                    <span class="px-2 py-1 text-[10px] rounded bg-accent-blue/10 text-accent-blue border border-accent-blue/20">border-accent-blue/20</span>
+                    <span class="px-2 py-1 text-[10px] rounded-sm bg-accent-blue/10 text-accent-blue border border-accent-blue/20">text-accent-blue</span>
+                    <span class="px-2 py-1 text-[10px] rounded-sm bg-accent-blue/10 text-accent-blue border border-accent-blue/20">bg-accent-blue/10</span>
+                    <span class="px-2 py-1 text-[10px] rounded-sm bg-accent-blue/10 text-accent-blue border border-accent-blue/20">border-accent-blue/20</span>
                 </div>
             </div>
         </div>
@@ -271,7 +271,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.codeCard.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>

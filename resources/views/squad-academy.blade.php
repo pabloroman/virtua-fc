@@ -7,7 +7,7 @@
 
     <div>
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-surface-800 overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-surface-800 overflow-hidden shadow-xs sm:rounded-lg">
                 <div class="p-4 md:p-8">
                     <x-section-nav :items="[
                         ['href' => route('game.squad', $game->id), 'label' => __('squad.first_team'), 'active' => false],
@@ -33,7 +33,7 @@
                                         {{ $academyCount }}/{{ $capacity }}
                                     </span>
                                     <div class="w-16 h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                                        <div class="h-full rounded-full {{ $academyCount > $capacity ? 'bg-accent-red/100' : ($academyCount >= $capacity - 1 ? 'bg-accent-gold/100' : 'bg-emerald-500') }}"
+                                        <div class="h-full rounded-full {{ $academyCount > $capacity ? 'bg-accent-red' : ($academyCount >= $capacity - 1 ? 'bg-accent-gold' : 'bg-emerald-500') }}"
                                              style="width: {{ min(100, ($academyCount / max($capacity, 1)) * 100) }}%"></div>
                                     </div>
                                 </div>
@@ -148,7 +148,7 @@
                                                         {{-- Name --}}
                                                         <td class="py-2">
                                                             <div class="flex items-center space-x-2">
-                                                                <button x-data @click="$dispatch('show-player-detail', '{{ route('game.academy.detail', [$game->id, $prospect->id]) }}')" class="p-1.5 text-slate-300 rounded hover:text-slate-400">
+                                                                <button x-data @click="$dispatch('show-player-detail', '{{ route('game.academy.detail', [$game->id, $prospect->id]) }}')" class="p-1.5 text-slate-300 rounded-sm hover:text-slate-400">
                                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="w-5 h-5">
                                                                         <path fill-rule="evenodd" d="M19.5 21a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3h-5.379a.75.75 0 0 1-.53-.22L11.47 3.66A2.25 2.25 0 0 0 9.879 3H4.5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h15Zm-6.75-10.5a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V10.5Z" clip-rule="evenodd" />
                                                                     </svg>
@@ -162,7 +162,7 @@
                                                         {{-- Nationality --}}
                                                         <td class="py-2 text-center hidden md:table-cell">
                                                             @if($prospect->nationality_flag)
-                                                                <img src="/flags/{{ $prospect->nationality_flag['code'] }}.svg" class="w-5 h-4 mx-auto rounded shadow-sm" title="{{ $prospect->nationality_flag['name'] }}">
+                                                                <img src="/flags/{{ $prospect->nationality_flag['code'] }}.svg" class="w-5 h-4 mx-auto rounded-sm shadow-xs" title="{{ $prospect->nationality_flag['name'] }}">
                                                             @endif
                                                         </td>
                                                         {{-- Age --}}
@@ -193,7 +193,7 @@
                                                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-semibold
                                                                     @if($prospect->overall >= 80) bg-emerald-500 text-white
                                                                     @elseif($prospect->overall >= 70) bg-lime-500 text-white
-                                                                    @elseif($prospect->overall >= 60) bg-accent-gold/100 text-white
+                                                                    @elseif($prospect->overall >= 60) bg-accent-gold text-white
                                                                     @else bg-slate-300 text-slate-300
                                                                     @endif">
                                                                     {{ $prospect->overall }}
@@ -227,7 +227,7 @@
                                                     </td>
                                                     <td class="py-2">
                                                         <div class="flex items-center space-x-2">
-                                                            <button x-data @click="$dispatch('show-player-detail', '{{ route('game.academy.detail', [$game->id, $prospect->id]) }}')" class="p-1.5 text-slate-300 rounded hover:text-slate-400">
+                                                            <button x-data @click="$dispatch('show-player-detail', '{{ route('game.academy.detail', [$game->id, $prospect->id]) }}')" class="p-1.5 text-slate-300 rounded-sm hover:text-slate-400">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="w-5 h-5">
                                                                     <path fill-rule="evenodd" d="M19.5 21a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3h-5.379a.75.75 0 0 1-.53-.22L11.47 3.66A2.25 2.25 0 0 0 9.879 3H4.5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h15Zm-6.75-10.5a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V10.5Z" clip-rule="evenodd" />
                                                                 </svg>
@@ -235,7 +235,7 @@
                                                             <div>
                                                                 <div class="flex items-center gap-2">
                                                                     <span class="font-medium text-white">{{ $prospect->name }}</span>
-                                                                    <span class="text-xs bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded font-medium">{{ __('squad.academy_on_loan') }}</span>
+                                                                    <span class="text-xs bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded-sm font-medium">{{ __('squad.academy_on_loan') }}</span>
                                                                 </div>
                                                                 <div class="text-xs text-slate-400">{{ trans_choice('squad.academy_seasons', $prospect->seasons_in_academy, ['count' => $prospect->seasons_in_academy]) }}</div>
                                                             </div>
@@ -243,7 +243,7 @@
                                                     </td>
                                                     <td class="py-2 text-center hidden md:table-cell">
                                                         @if($prospect->nationality_flag)
-                                                            <img src="/flags/{{ $prospect->nationality_flag['code'] }}.svg" class="w-5 h-4 mx-auto rounded shadow-sm" title="{{ $prospect->nationality_flag['name'] }}">
+                                                            <img src="/flags/{{ $prospect->nationality_flag['code'] }}.svg" class="w-5 h-4 mx-auto rounded-sm shadow-xs" title="{{ $prospect->nationality_flag['name'] }}">
                                                         @endif
                                                     </td>
                                                     <td class="py-2 text-center text-slate-400 hidden md:table-cell">{{ $prospect->age }}</td>

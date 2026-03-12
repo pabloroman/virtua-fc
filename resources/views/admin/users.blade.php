@@ -7,7 +7,7 @@
 
     <div>
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-surface-800 overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-surface-800 overflow-hidden shadow-xs sm:rounded-lg">
                 <div class="p-6 sm:p-8">
                     <table class="min-w-full divide-y divide-slate-200">
                         <thead>

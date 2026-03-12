@@ -21,14 +21,14 @@
                 <h3 class="font-bold text-xl md:text-2xl text-white truncate">{{ $academyPlayer->name }}</h3>
                 <div class="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1.5 text-sm text-slate-500">
                     @if($nationalityFlag)
-                        <img src="/flags/{{ $nationalityFlag['code'] }}.svg" class="w-5 h-4 rounded shadow-sm">
+                        <img src="/flags/{{ $nationalityFlag['code'] }}.svg" class="w-5 h-4 rounded-sm shadow-xs">
                         <span>{{ __('countries.' . $nationalityFlag['name']) }}</span>
                         <span class="text-slate-300">&middot;</span>
                     @endif
                     <span>{{ $academyPlayer->age }} {{ __('app.years') }}</span>
                 </div>
                 @if($academyPlayer->is_on_loan)
-                    <span class="inline-block mt-1.5 text-xs bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded font-medium">{{ __('squad.academy_on_loan') }}</span>
+                    <span class="inline-block mt-1.5 text-xs bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-sm font-medium">{{ __('squad.academy_on_loan') }}</span>
                 @endif
             </div>
         </div>
@@ -38,13 +38,13 @@
                 <div class="w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center text-xl md:text-2xl font-bold
                     @if($academyPlayer->overall >= 80) bg-emerald-500 text-white
                     @elseif($academyPlayer->overall >= 70) bg-lime-500 text-white
-                    @elseif($academyPlayer->overall >= 60) bg-accent-gold/100 text-white
+                    @elseif($academyPlayer->overall >= 60) bg-accent-gold text-white
                     @else bg-slate-300 text-slate-300
                     @endif">{{ $academyPlayer->overall }}</div>
             @else
                 <div class="w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center text-xl md:text-2xl font-bold bg-slate-200 text-slate-400">?</div>
             @endif
-            <button onclick="window.dispatchEvent(new CustomEvent('close-modal', {detail: 'player-detail'}))" class="p-1 text-slate-400 hover:text-slate-400 rounded hover:bg-surface-700">
+            <button onclick="window.dispatchEvent(new CustomEvent('close-modal', {detail: 'player-detail'}))" class="p-1 text-slate-400 hover:text-slate-400 rounded-sm hover:bg-surface-700">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -67,7 +67,7 @@
                         <span class="text-xs text-slate-400 uppercase tracking-wide w-20 shrink-0">{{ __('squad.technical_full') }}</span>
                         <div class="flex items-center gap-2.5 flex-1 justify-end">
                             <div class="w-28 h-2 bg-surface-700 rounded-full overflow-hidden">
-                                <div class="h-2 rounded-full @if($val >= 80) bg-accent-green/100 @elseif($val >= 70) bg-lime-500 @elseif($val >= 60) bg-accent-gold/100 @else bg-slate-400 @endif" style="width: {{ $val / 99 * 100 }}%"></div>
+                                <div class="h-2 rounded-full @if($val >= 80) bg-accent-green @elseif($val >= 70) bg-lime-500 @elseif($val >= 60) bg-accent-gold @else bg-slate-400 @endif" style="width: {{ $val / 99 * 100 }}%"></div>
                             </div>
                             <span class="text-sm font-semibold tabular-nums w-7 text-right @if($val >= 80) text-accent-green @elseif($val >= 70) text-lime-600 @elseif($val >= 60) text-amber-600 @else text-slate-400 @endif">{{ $val }}</span>
                         </div>
@@ -78,7 +78,7 @@
                         <span class="text-xs text-slate-400 uppercase tracking-wide w-20 shrink-0">{{ __('squad.physical_full') }}</span>
                         <div class="flex items-center gap-2.5 flex-1 justify-end">
                             <div class="w-28 h-2 bg-surface-700 rounded-full overflow-hidden">
-                                <div class="h-2 rounded-full @if($val >= 80) bg-accent-green/100 @elseif($val >= 70) bg-lime-500 @elseif($val >= 60) bg-accent-gold/100 @else bg-slate-400 @endif" style="width: {{ $val / 99 * 100 }}%"></div>
+                                <div class="h-2 rounded-full @if($val >= 80) bg-accent-green @elseif($val >= 70) bg-lime-500 @elseif($val >= 60) bg-accent-gold @else bg-slate-400 @endif" style="width: {{ $val / 99 * 100 }}%"></div>
                             </div>
                             <span class="text-sm font-semibold tabular-nums w-7 text-right @if($val >= 80) text-accent-green @elseif($val >= 70) text-lime-600 @elseif($val >= 60) text-amber-600 @else text-slate-400 @endif">{{ $val }}</span>
                         </div>

@@ -22,7 +22,7 @@
     @if($showValue)
         <span {{ $attributes }}>{{ $value }}</span>
     @endif
-    <div class="{{ $barWidth }} {{ $barHeight }} bg-surface-600 rounded-full overflow-hidden flex-shrink-0">
+    <div class="{{ $barWidth }} {{ $barHeight }} bg-surface-600 rounded-full overflow-hidden shrink-0">
         <div class="{{ $barHeight }} {{ $colorClass }} rounded-full fitness-bar" style="width: {{ $percentage }}%"></div>
     </div>
 </div>

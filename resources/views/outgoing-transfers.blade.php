@@ -19,7 +19,7 @@
             </div>
             @endif
 
-            <div class="bg-surface-800 overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-surface-800 overflow-hidden shadow-xs sm:rounded-lg">
                 <div class="p-4 sm:p-6 md:p-8">
                     @include('partials.transfers-header')
 
@@ -258,9 +258,9 @@
                                                                 @else text-red-500
                                                                 @endif">
                                                                 <span class="w-1.5 h-1.5 rounded-full
-                                                                    @if($mood['color'] === 'green') bg-accent-green/100
-                                                                    @elseif($mood['color'] === 'amber') bg-accent-gold/100
-                                                                    @else bg-accent-red/100
+                                                                    @if($mood['color'] === 'green') bg-accent-green
+                                                                    @elseif($mood['color'] === 'amber') bg-accent-gold
+                                                                    @else bg-accent-red
                                                                     @endif"></span>
                                                                 {{ $mood['label'] }}
                                                             </span>
@@ -335,7 +335,7 @@
                                             </div>
                                             <div class="flex items-center gap-3">
                                                 <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-accent-blue/10 text-accent-blue">
-                                                    <span class="w-1.5 h-1.5 bg-accent-blue/100 rounded-full animate-pulse"></span>
+                                                    <span class="w-1.5 h-1.5 bg-accent-blue rounded-full animate-pulse"></span>
                                                     {{ __('transfers.response_next_matchday') }}
                                                 </span>
                                                 <form method="post" action="{{ route('game.transfers.decline-renewal', [$game->id, $player->id]) }}">
@@ -480,7 +480,7 @@
                                             </div>
                                             <div class="text-right">
                                                 <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-accent-blue/10 text-accent-blue">
-                                                    <span class="w-1.5 h-1.5 bg-accent-blue/100 rounded-full animate-pulse"></span>
+                                                    <span class="w-1.5 h-1.5 bg-accent-blue rounded-full animate-pulse"></span>
                                                     {{ __('transfers.searching_destination') }}
                                                 </span>
                                             </div>
@@ -593,7 +593,7 @@
                                                 </td>
                                                 <td class="py-2.5 pr-3">
                                                     <div class="flex items-center gap-1.5">
-                                                        <button x-data @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $player->id]) }}')" class="p-1 text-slate-300 rounded hover:text-slate-400 shrink-0">
+                                                        <button x-data @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $player->id]) }}')" class="p-1 text-slate-300 rounded-sm hover:text-slate-400 shrink-0">
                                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="w-4 h-4">
                                                                 <path fill-rule="evenodd" d="M19.5 21a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3h-5.379a.75.75 0 0 1-.53-.22L11.47 3.66A2.25 2.25 0 0 0 9.879 3H4.5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h15Zm-6.75-10.5a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V10.5Z" clip-rule="evenodd" />
                                                             </svg>
@@ -622,7 +622,7 @@
                                             </td>
                                             <td class="py-2.5 pr-3">
                                                 <div class="flex items-center gap-1.5">
-                                                    <button x-data @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $player->id]) }}')" class="p-1 text-slate-300 rounded hover:text-slate-400 shrink-0">
+                                                    <button x-data @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $player->id]) }}')" class="p-1 text-slate-300 rounded-sm hover:text-slate-400 shrink-0">
                                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="w-4 h-4">
                                                             <path fill-rule="evenodd" d="M19.5 21a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3h-5.379a.75.75 0 0 1-.53-.22L11.47 3.66A2.25 2.25 0 0 0 9.879 3H4.5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h15Zm-6.75-10.5a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V10.5Z" clip-rule="evenodd" />
                                                         </svg>
@@ -664,7 +664,7 @@
                                             </div>
                                             <form method="post" action="{{ route('game.transfers.reconsider-renewal', [$game->id, $player->id]) }}">
                                                 @csrf
-                                                <button type="submit" class="text-xs text-accent-blue hover:text-accent-blue hover:underline whitespace-nowrap min-h-[44px] sm:min-h-0 rounded focus:outline-none focus:ring-2 focus:ring-accent-blue focus:ring-offset-1">
+                                                <button type="submit" class="text-xs text-accent-blue hover:text-accent-blue hover:underline whitespace-nowrap min-h-[44px] sm:min-h-0 rounded-sm focus:outline-hidden focus:ring-2 focus:ring-accent-blue focus:ring-offset-1">
                                                     {{ __('transfers.reconsider_renewal') }}
                                                 </button>
                                             </form>

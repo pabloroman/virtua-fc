@@ -19,12 +19,12 @@ $borderColorMap = [
 ];
 
 $bgColorMap = [
-    'bg-accent-blue/100' => 'bg-accent-blue/100',
+    'bg-accent-blue' => 'bg-accent-blue',
     'bg-orange-500' => 'bg-orange-500',
-    'bg-accent-red/100' => 'bg-accent-red/100',
+    'bg-accent-red' => 'bg-accent-red',
     'bg-green-300' => 'bg-green-300',
-    'bg-accent-green/100' => 'bg-accent-green/100',
-    'bg-accent-gold/100' => 'bg-accent-gold/100',
+    'bg-accent-green' => 'bg-accent-green',
+    'bg-accent-gold' => 'bg-accent-gold',
 ];
 
 $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
@@ -94,7 +94,7 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
             $textClass = $gradeTextColors[$managerEvaluation['grade']] ?? $gradeTextColors['met'];
         @endphp
 
-        <div class="bg-surface-800 rounded-xl shadow-sm border border-white/10 mb-6 overflow-hidden">
+        <div class="bg-surface-800 rounded-xl shadow-xs border border-white/10 mb-6 overflow-hidden">
             <div class="border-l-4 {{ $accentClass }} p-5 md:p-6">
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-1 mb-2">
                     <div class="font-bold text-base {{ $textClass }}">{{ $managerEvaluation['title'] }}</div>
@@ -112,7 +112,7 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
         {{-- STANDINGS + AWARDS CARD                                       --}}
         {{-- ============================================================ --}}
 
-        <div class="bg-surface-800 rounded-xl shadow-sm border border-white/10 p-5 md:p-6 mb-6">
+        <div class="bg-surface-800 rounded-xl shadow-xs border border-white/10 p-5 md:p-6 mb-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
                 {{-- Standings table (2 columns on desktop) --}}
@@ -172,7 +172,7 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
                         <div class="flex flex-wrap gap-x-5 gap-y-1 px-3 py-2.5 bg-surface-700/50 border-t border-white/10 text-[11px] text-slate-500">
                             @foreach($standingsZones as $zone)
                                 <div class="flex items-center gap-1.5">
-                                    <div class="w-2.5 h-2.5 {{ $bgColorMap[$zone['bgColor']] ?? '' }} rounded-sm"></div>
+                                    <div class="w-2.5 h-2.5 {{ $bgColorMap[$zone['bgColor']] ?? '' }} rounded-xs"></div>
                                     <span>{{ __($zone['label']) }}</span>
                                 </div>
                             @endforeach
@@ -220,7 +220,7 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
                             <div class="space-y-2">
                                 @foreach($topScorers as $index => $scorer)
                                     @php $isPlayerTeam = $scorer->team_id === $game->team_id; @endphp
-                                    <div class="flex items-center gap-2 text-sm @if($isPlayerTeam) bg-accent-blue/10 -mx-1 px-1 py-0.5 rounded @endif">
+                                    <div class="flex items-center gap-2 text-sm @if($isPlayerTeam) bg-accent-blue/10 -mx-1 px-1 py-0.5 rounded-sm @endif">
                                         <span class="w-5 text-center text-xs font-bold {{ $index === 0 ? 'text-amber-600' : 'text-slate-400' }}">{{ $index + 1 }}</span>
                                         <x-team-crest :team="$scorer->team" class="w-4 h-4 shrink-0" />
                                         <span class="flex-1 truncate @if($isPlayerTeam) font-medium @endif">{{ $scorer->player->name }}</span>
@@ -244,7 +244,7 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
                         <div class="p-3">
                             @if($bestGoalkeeper)
                                 @php $isPlayerTeam = $bestGoalkeeper->team_id === $game->team_id; @endphp
-                                <div class="@if($isPlayerTeam) bg-accent-blue/10 rounded p-2 -m-1 @endif">
+                                <div class="@if($isPlayerTeam) bg-accent-blue/10 rounded-sm p-2 -m-1 @endif">
                                     <div class="flex items-center gap-2 mb-1.5">
                                         <x-team-crest :team="$bestGoalkeeper->team" class="w-5 h-5 shrink-0" />
                                         <span class="font-semibold text-sm text-white truncate">{{ $bestGoalkeeper->player->name }}</span>
@@ -276,7 +276,7 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
                                         $isPlayerTeam = $entry['teamId'] === $game->team_id;
                                     @endphp
                                     @if($team)
-                                    <div class="flex items-center gap-2 text-sm @if($isPlayerTeam) bg-accent-blue/10 -mx-1 px-1 py-0.5 rounded @endif">
+                                    <div class="flex items-center gap-2 text-sm @if($isPlayerTeam) bg-accent-blue/10 -mx-1 px-1 py-0.5 rounded-sm @endif">
                                         <x-team-crest :team="$team" class="w-4 h-4 shrink-0" />
                                         <span class="flex-1 truncate @if($isPlayerTeam) font-medium @endif">{{ $team->name }}</span>
                                         <span class="text-xs text-slate-400 tabular-nums">{{ is_int($entry['position']) ? $entry['position'] . 'º' : $entry['position'] }}</span>
@@ -301,7 +301,7 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
                                         $isPlayerTeam = $entry['teamId'] === $game->team_id;
                                     @endphp
                                     @if($team)
-                                    <div class="flex items-center gap-2 text-sm @if($isPlayerTeam) bg-accent-blue/10 -mx-1 px-1 py-0.5 rounded @endif">
+                                    <div class="flex items-center gap-2 text-sm @if($isPlayerTeam) bg-accent-blue/10 -mx-1 px-1 py-0.5 rounded-sm @endif">
                                         <x-team-crest :team="$team" class="w-4 h-4 shrink-0" />
                                         <span class="flex-1 truncate @if($isPlayerTeam) font-medium @endif">{{ $team->name }}</span>
                                         <span class="text-xs text-slate-400 tabular-nums">{{ $entry['position'] }}º</span>
@@ -321,7 +321,7 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
         {{-- ============================================================ --}}
 
         @if(count($otherCompetitionResults) > 0)
-        <div class="bg-surface-800 rounded-xl shadow-sm border border-white/10 p-5 md:p-6 mb-6">
+        <div class="bg-surface-800 rounded-xl shadow-xs border border-white/10 p-5 md:p-6 mb-6">
             <h3 class="text-xs text-slate-400 uppercase tracking-widest font-semibold mb-3">
                 {{ __('season.your_other_competitions') }}
             </h3>
@@ -361,7 +361,7 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
                         {{-- Right: score + swiss info --}}
                         <div class="flex items-center gap-3 text-sm">
                             @if($result['swissStanding'])
-                                <span class="text-xs text-slate-500 bg-slate-200/60 rounded px-2 py-0.5">
+                                <span class="text-xs text-slate-500 bg-slate-200/60 rounded-sm px-2 py-0.5">
                                     {{ __('season.swiss_position', ['position' => $result['swissStanding']->position]) }}
                                 </span>
                             @endif
@@ -382,7 +382,7 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
         {{-- TEAM IN NUMBERS CARD                                          --}}
         {{-- ============================================================ --}}
 
-        <div class="bg-surface-800 rounded-xl shadow-sm border border-white/10 p-5 md:p-6 mb-6">
+        <div class="bg-surface-800 rounded-xl shadow-xs border border-white/10 p-5 md:p-6 mb-6">
             <h3 class="text-xs text-slate-400 uppercase tracking-widest font-semibold mb-4">
                 {{ __('season.team_in_numbers') }}
             </h3>
@@ -493,11 +493,11 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
                     <div class="text-[10px] text-slate-400 uppercase tracking-wide font-semibold mb-1.5">{{ __('season.cards') }}</div>
                     <div class="flex items-baseline gap-2 mt-2">
                         <div class="flex items-center gap-1">
-                            <div class="w-3 h-4 rounded-sm bg-yellow-400"></div>
+                            <div class="w-3 h-4 rounded-xs bg-yellow-400"></div>
                             <span class="text-xl font-bold text-white tabular-nums">{{ $teamYellowCards }}</span>
                         </div>
                         <div class="flex items-center gap-1">
-                            <div class="w-3 h-4 rounded-sm bg-accent-red/100"></div>
+                            <div class="w-3 h-4 rounded-xs bg-accent-red"></div>
                             <span class="text-xl font-bold text-white tabular-nums">{{ $teamRedCards }}</span>
                         </div>
                     </div>
@@ -533,7 +533,7 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
         {{-- ============================================================ --}}
 
         @if(count($simulatedResults) > 0)
-        <div class="bg-surface-800 rounded-xl shadow-sm border border-white/10 p-5 md:p-6 mb-6">
+        <div class="bg-surface-800 rounded-xl shadow-xs border border-white/10 p-5 md:p-6 mb-6">
             <h3 class="text-xs text-slate-400 uppercase tracking-widest font-semibold mb-3">
                 {{ __('season.simulated_results') }}
             </h3>
@@ -563,7 +563,7 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
             <form method="post" action="{{ route('game.start-new-season', $game->id) }}" x-data="{ loading: false }" @submit="loading = true">
                 @csrf
                 <button type="submit"
-                        class="inline-flex items-center gap-2 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white px-8 py-4 rounded-lg text-xl font-bold shadow-lg transition-all transform hover:scale-105 min-h-[44px]"
+                        class="inline-flex items-center gap-2 bg-linear-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white px-8 py-4 rounded-lg text-xl font-bold shadow-lg transition-all transform hover:scale-105 min-h-[44px]"
                         :disabled="loading">
                     <span x-show="!loading">{{ __('season.start_new_season', ['season' => \App\Models\Game::formatSeason((string)((int)$game->season + 1))]) }}</span>
                     <span x-show="loading" x-cloak>

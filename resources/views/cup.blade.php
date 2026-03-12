@@ -7,7 +7,7 @@
 
     <div>
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-surface-800 overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-surface-800 overflow-hidden shadow-xs sm:rounded-lg">
                 <div class="p-6 sm:p-8">
                     <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2 mb-6">
                         <h3 class="font-semibold text-xl text-white">{{ __($competition->name) }}</h3>
@@ -38,7 +38,7 @@
                                 $opponent = $isHome ? $playerTie->awayTeam : $playerTie->homeTeam;
                                 $round = $rounds->firstWhere('round', $playerTie->round_number);
                             @endphp
-                            <div class="mb-8 p-6 rounded-xl bg-gradient-to-r from-sky-50 to-sky-100 border border-accent-blue/20">
+                            <div class="mb-8 p-6 rounded-xl bg-linear-to-r from-sky-50 to-sky-100 border border-accent-blue/20">
                                 <div class="text-center text-sm text-accent-blue mb-3">{{ __('cup.your_current_cup_tie', ['round' => __($round?->name)]) }}</div>
                                 <div class="flex items-center justify-center gap-6">
                                     <div class="flex items-center gap-3 flex-1 justify-end">
@@ -106,7 +106,7 @@
                             <div class="flex gap-4" style="min-width: fit-content;">
                                 @foreach($rounds as $round)
                                     @php $ties = $tiesByRound->get($round->round, collect()); @endphp
-                                    <div class="flex-shrink-0 w-64">
+                                    <div class="shrink-0 w-64">
                                         <div class="text-center mb-4">
                                             <h4 class="font-semibold text-slate-300">{{ __($round->name) }}</h4>
                                             <div class="text-xs text-slate-400">
@@ -137,11 +137,11 @@
                         <div class="mt-8 pt-4 border-t text-xs text-slate-500">
                             <div class="flex gap-6">
                                 <div class="flex items-center gap-2">
-                                    <div class="w-3 h-3 bg-accent-blue/10 border border-accent-blue/30 rounded"></div>
+                                    <div class="w-3 h-3 bg-accent-blue/10 border border-accent-blue/30 rounded-sm"></div>
                                     <span>{{ __('cup.your_matches') }}</span>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <div class="w-3 h-3 bg-accent-green/10 rounded"></div>
+                                    <div class="w-3 h-3 bg-accent-green/10 rounded-sm"></div>
                                     <span>{{ __('cup.winner') }}</span>
                                 </div>
                             </div>

@@ -1,4 +1,4 @@
-<x-guest-layout class="sm:!max-w-4xl !p-12 !w-auto">
+<x-guest-layout class="sm:max-w-4xl! p-12! w-auto!">
             <h1 class="text-2xl font-bold text-white mb-6">Aviso Legal</h1>
 
             <div class="prose max-w-none text-slate-400">

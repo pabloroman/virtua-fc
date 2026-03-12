@@ -14,7 +14,7 @@
             </div>
             @endif
 
-            <div class="bg-surface-800 overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-surface-800 overflow-hidden shadow-xs sm:rounded-lg">
                 <div class="p-4 sm:p-6 md:p-8">
                     @include('partials.transfers-header')
 
@@ -43,7 +43,7 @@
                                             : 'bg-surface-800 text-slate-300 border-white/10 hover:border-slate-400'"
                                         class="shrink-0 flex items-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition-colors min-h-[44px]">
                                     <template x-if="comp.country">
-                                        <img :src="'/flags/' + comp.flag + '.svg'" class="w-5 h-3.5 rounded-sm shadow-sm" :alt="comp.country">
+                                        <img :src="'/flags/' + comp.flag + '.svg'" class="w-5 h-3.5 rounded-xs shadow-xs" :alt="comp.country">
                                     </template>
                                     <span x-text="comp.name"></span>
                                     <span class="text-xs px-1.5 py-0.5 rounded-full"

@@ -26,7 +26,7 @@
             @click="{{ $clickExpr }}"
             class="px-2 py-1.5 text-xs font-medium rounded-lg border-2 transition-all duration-150 min-h-[44px]"
             :class="{{ $model }} === option.value
-                ? 'bg-accent-blue/10 text-accent-blue border-accent-blue/30 shadow-sm'
+                ? 'bg-accent-blue/10 text-accent-blue border-accent-blue/30 shadow-xs'
                 : 'bg-surface-700 text-slate-400 border-white/10 hover:border-white/20 hover:text-white'"
             x-text="option.label"
             x-tooltip="option.tooltip"

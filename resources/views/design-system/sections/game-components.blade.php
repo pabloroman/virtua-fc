@@ -5,7 +5,7 @@
     {{-- Player Avatar --}}
     <div class="mb-12">
         <h3 class="text-lg font-semibold text-white mb-2">Player Avatar</h3>
-        <p class="text-sm text-slate-400 mb-4">Position-colored gradient circle with player initials. Optional position sub-badge. Uses the <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">x-player-avatar</code> component. Colors: GK = amber, DEF = blue, MID = green, FWD = rose.</p>
+        <p class="text-sm text-slate-400 mb-4">Position-colored gradient circle with player initials. Optional position sub-badge. Uses the <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">x-player-avatar</code> component. Colors: GK = amber, DEF = blue, MID = green, FWD = rose.</p>
 
         <div class="bg-surface-700/30 border border-white/5 rounded-xl p-6 mb-3">
             {{-- Size variants --}}
@@ -57,7 +57,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.avatarCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -115,7 +115,7 @@
     {{-- Summary Card --}}
     <div class="mb-12">
         <h3 class="text-lg font-semibold text-white mb-2">Summary Card</h3>
-        <p class="text-sm text-slate-400 mb-4">Compact stat card with micro-label and bold value. Uses the <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">x-summary-card</code> component. Designed for horizontal scroll rows.</p>
+        <p class="text-sm text-slate-400 mb-4">Compact stat card with micro-label and bold value. Uses the <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">x-summary-card</code> component. Designed for horizontal scroll rows.</p>
 
         <div class="bg-surface-700/30 border border-white/5 rounded-xl p-6 mb-3">
             <div class="flex gap-2.5 overflow-x-auto scrollbar-hide pb-1">
@@ -129,7 +129,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.summaryCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -219,7 +219,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.gameHeaderCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -278,7 +278,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.fixtureRowCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -322,7 +322,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.cupTieCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -381,7 +381,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.budgetCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -451,7 +451,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.contractCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>

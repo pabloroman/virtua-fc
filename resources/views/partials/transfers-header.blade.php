@@ -18,7 +18,7 @@
         <div class="flex items-center gap-2">
             @if($isTransferWindow)
                 <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-accent-green/10 text-green-800">
-                    <span class="w-1.5 h-1.5 bg-accent-green/100 rounded-full animate-pulse"></span>
+                    <span class="w-1.5 h-1.5 bg-accent-green rounded-full animate-pulse"></span>
                     {{ __('transfers.window_open', ['window' => $currentWindow]) }}
                 </span>
             @else

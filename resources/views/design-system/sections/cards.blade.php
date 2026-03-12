@@ -21,7 +21,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.cardCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -61,7 +61,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.summaryCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -100,7 +100,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.statRowCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -135,7 +135,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.accentCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -158,7 +158,7 @@
 
         <div class="bg-surface-700/30 border border-white/5 rounded-xl p-6 mb-3">
             <div class="rounded-xl overflow-hidden border border-white/5 max-w-sm">
-                <div class="bg-gradient-to-br from-surface-700 to-surface-800 px-4 py-5">
+                <div class="bg-linear-to-br from-surface-700 to-surface-800 px-4 py-5">
                     <div class="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Squad Value</div>
                     <div class="font-heading text-2xl font-bold text-white">&euro;245.8M</div>
                 </div>
@@ -177,12 +177,12 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.gradientCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
             <pre class="bg-surface-700 text-slate-300 rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="gradientCode">&lt;div class="rounded-xl overflow-hidden border border-white/5"&gt;
-    &lt;div class="bg-gradient-to-br from-surface-700 to-surface-800 px-4 py-5"&gt;
+    &lt;div class="bg-linear-to-br from-surface-700 to-surface-800 px-4 py-5"&gt;
         &lt;div class="text-[10px] text-slate-500 uppercase tracking-wider mb-1"&gt;Label&lt;/div&gt;
         &lt;div class="font-heading text-2xl font-bold text-white"&gt;Value&lt;/div&gt;
     &lt;/div&gt;
@@ -202,7 +202,7 @@
         <p class="text-sm text-slate-400 mb-4">Informational callout card using a translucent accent-blue background. Used for contextual tips, help text, and onboarding hints.</p>
 
         <div class="bg-surface-700/30 border border-white/5 rounded-xl p-6 mb-3">
-            <div class="tip-card bg-accent-blue/[0.08] border border-accent-blue/15 rounded-xl px-4 py-3.5">
+            <div class="tip-card bg-accent-blue/8 border border-accent-blue/15 rounded-xl px-4 py-3.5">
                 <div class="flex items-start gap-3">
                     <svg class="w-5 h-5 text-accent-blue shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
@@ -217,11 +217,11 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.tipCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
-            <pre class="bg-surface-700 text-slate-300 rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="tipCode">&lt;div class="tip-card bg-accent-blue/[0.08] border border-accent-blue/15 rounded-xl px-4 py-3.5"&gt;
+            <pre class="bg-surface-700 text-slate-300 rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="tipCode">&lt;div class="tip-card bg-accent-blue/8 border border-accent-blue/15 rounded-xl px-4 py-3.5"&gt;
     &lt;div class="flex items-start gap-3"&gt;
         &lt;svg class="w-5 h-5 text-accent-blue shrink-0 mt-0.5" ...&gt;...&lt;/svg&gt;
         &lt;div&gt;

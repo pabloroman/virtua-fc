@@ -1,8 +1,385 @@
-@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap')
+layer(base);
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@plugin '@tailwindcss/forms';
+@plugin '@tailwindcss/typography';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+@theme {
+  --font-heading:
+    Barlow Condensed, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-body:
+    Inter, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-sans:
+    Inter, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+  --color-surface-600: #334155;
+  --color-surface-700: #1e293b;
+  --color-surface-800: #0f172a;
+  --color-surface-900: #0b1120;
+
+  --color-accent-blue: #3b82f6;
+  --color-accent-gold: #f59e0b;
+  --color-accent-green: #22c55e;
+  --color-accent-red: #ef4444;
+  --color-accent-orange: #f97316;
+
+  --color-pitch-dark: #1a5c2a;
+  --color-pitch-base: #1e6b31;
+  --color-pitch-light: #22783a;
+  --color-pitch-line: rgba(255, 255, 255, 0.25);
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+@utility dual-range {
+  /* Dual-range slider (scouting) */
+  @apply relative h-6 flex items-center;
+  & input[type='range'] {
+    @apply absolute w-full pointer-events-none appearance-none bg-transparent h-1.5;
+  }
+  & input[type='range']::-webkit-slider-thumb {
+    @apply pointer-events-auto appearance-none w-4 h-4 rounded-full bg-accent-blue border-2 border-surface-800 shadow-sm cursor-pointer;
+  }
+  & input[type='range']::-moz-range-thumb {
+    @apply pointer-events-auto appearance-none w-4 h-4 rounded-full bg-accent-blue border-2 border-surface-800 shadow-sm cursor-pointer;
+  }
+  & .track {
+    @apply absolute w-full h-1.5 rounded-full bg-surface-600;
+  }
+  & .track-fill {
+    @apply absolute h-1.5 rounded-full bg-accent-blue;
+  }
+}
+
+@utility track {
+  .dual-range & {
+    @apply absolute w-full h-1.5 rounded-full bg-surface-600;
+  }
+  .tier-range & {
+    @apply absolute w-full h-1.5 rounded-full bg-surface-600;
+  }
+}
+
+@utility track-fill {
+  .dual-range & {
+    @apply absolute h-1.5 rounded-full bg-accent-blue;
+  }
+  .tier-range & {
+    @apply absolute h-1.5 rounded-full bg-accent-blue;
+  }
+}
+
+@utility tier-range {
+  /* Tier range slider (budget allocation) */
+  @apply relative h-6 flex items-center;
+  & .track {
+    @apply absolute w-full h-1.5 rounded-full bg-surface-600;
+  }
+  & .track-fill {
+    @apply absolute h-1.5 rounded-full bg-accent-blue;
+  }
+  & input[type='range'] {
+    @apply absolute w-full appearance-none bg-transparent h-1.5 cursor-pointer;
+  }
+  & input[type='range']::-webkit-slider-thumb {
+    @apply pointer-events-auto appearance-none w-4 h-4 rounded-full bg-accent-blue border-2 border-surface-800 shadow-sm cursor-pointer;
+  }
+  & input[type='range']::-moz-range-thumb {
+    @apply pointer-events-auto appearance-none w-4 h-4 rounded-full bg-accent-blue border-2 border-surface-800 shadow-sm cursor-pointer;
+  }
+}
+
+@utility rating-elite {
+  /* Rating badge colors */
+  background: #22c55e;
+  color: #052e16;
+}
+
+@utility rating-good {
+  background: #84cc16;
+  color: #1a2e05;
+}
+
+@utility rating-average {
+  background: #f59e0b;
+  color: #451a03;
+}
+
+@utility rating-below {
+  background: #f97316;
+  color: #431407;
+}
+
+@utility rating-poor {
+  background: #ef4444;
+  color: #450a0a;
+}
+
+@utility nav-item {
+  /* Nav item with active underline */
+  position: relative;
+  &.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #3b82f6;
+  }
+}
+
+@utility active {
+  &.nav-item::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #3b82f6;
+  }
+  &.formation-option {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+  }
+  &.mentality-btn {
+    box-shadow: 0 0 0 1px currentColor;
+  }
+}
+
+@utility player-row {
+  /* Player row hover */
+  transition: all 0.15s ease;
+  &:hover {
+    background: rgba(59, 130, 246, 0.05);
+  }
+  &:hover .rating-badge {
+    transform: scale(1.08);
+  }
+}
+
+@utility fitness-bar {
+  /* Fitness bar animation */
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@utility stat-bar-track {
+  /* Stat bar */
+  height: 3px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+@utility stat-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@utility morale-dot {
+  /* Morale indicator dot */
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+@utility pitch {
+  /* Pitch styling */
+  background: linear-gradient(
+    180deg,
+    #1a5c2a 0%,
+    #1e6b31 8%,
+    #1a5c2a 8%,
+    #1a5c2a 16%,
+    #1e6b31 16%,
+    #1e6b31 24%,
+    #1a5c2a 24%,
+    #1a5c2a 32%,
+    #1e6b31 32%,
+    #1e6b31 40%,
+    #1a5c2a 40%,
+    #1a5c2a 48%,
+    #1e6b31 48%,
+    #1e6b31 56%,
+    #1a5c2a 56%,
+    #1a5c2a 64%,
+    #1e6b31 64%,
+    #1e6b31 72%,
+    #1a5c2a 72%,
+    #1a5c2a 80%,
+    #1e6b31 80%,
+    #1e6b31 88%,
+    #1a5c2a 88%,
+    #1a5c2a 100%
+  );
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 2px solid rgba(255, 255, 255, 0.18);
+    border-radius: 8px;
+    pointer-events: none;
+  }
+}
+
+@utility player-marker {
+  /* Player marker on pitch */
+  position: absolute;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    filter 0.2s ease;
+  z-index: 10;
+  &:hover {
+    transform: translate(-50%, -50%) scale(1.12);
+    z-index: 20;
+  }
+}
+
+@utility player-dot {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  @media (min-width: 1024px) {
+    width: 48px;
+    height: 48px;
+    font-size: 15px;
+  }
+}
+
+@utility player-label {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  color: white;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+  margin-top: 3px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  @media (min-width: 1024px) {
+    font-size: 11px;
+    margin-top: 4px;
+  }
+}
+
+@utility player-rating-mini {
+  position: absolute;
+  top: -4px;
+  right: -6px;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+@utility player-fitness-ring {
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+}
+
+@utility formation-option {
+  /* Formation & mentality selectors */
+  transition: all 0.15s ease;
+  &.active {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+  }
+}
+
+@utility mentality-btn {
+  transition: all 0.15s ease;
+  &.active {
+    box-shadow: 0 0 0 1px currentColor;
+  }
+}
+
+@utility bench-card {
+  /* Bench card */
+  transition: all 0.15s ease;
+  &:hover {
+    background: rgba(59, 130, 246, 0.08);
+    border-color: rgba(59, 130, 246, 0.2);
+  }
+}
+
+@utility tip-card {
+  /* Tip card gradient */
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.08),
+    rgba(59, 130, 246, 0.02)
+  );
+  border: 1px solid rgba(59, 130, 246, 0.15);
+}
+
+@utility rating-badge {
+  /* Rating badge hover animation */
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+  .player-row:hover & {
+    transform: scale(1.08);
+  }
+}
+
+@utility bottom-nav {
+  /* Bottom nav blur */
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
 
 @layer base {
     @media (max-width: 767px) {
@@ -13,262 +390,6 @@
 
     [x-cloak] {
         display: none !important;
-    }
-}
-
-@layer components {
-    /* Dual-range slider (scouting) */
-    .dual-range {
-        @apply relative h-6 flex items-center;
-    }
-    .dual-range input[type="range"] {
-        @apply absolute w-full pointer-events-none appearance-none bg-transparent h-1.5;
-    }
-    .dual-range input[type="range"]::-webkit-slider-thumb {
-        @apply pointer-events-auto appearance-none w-4 h-4 rounded-full bg-accent-blue border-2 border-surface-800 shadow cursor-pointer;
-    }
-    .dual-range input[type="range"]::-moz-range-thumb {
-        @apply pointer-events-auto appearance-none w-4 h-4 rounded-full bg-accent-blue border-2 border-surface-800 shadow cursor-pointer;
-    }
-    .dual-range .track {
-        @apply absolute w-full h-1.5 rounded-full bg-surface-600;
-    }
-    .dual-range .track-fill {
-        @apply absolute h-1.5 rounded-full bg-accent-blue;
-    }
-
-    /* Tier range slider (budget allocation) */
-    .tier-range {
-        @apply relative h-6 flex items-center;
-    }
-    .tier-range .track {
-        @apply absolute w-full h-1.5 rounded-full bg-surface-600;
-    }
-    .tier-range .track-fill {
-        @apply absolute h-1.5 rounded-full bg-accent-blue;
-    }
-    .tier-range input[type="range"] {
-        @apply absolute w-full appearance-none bg-transparent h-1.5 cursor-pointer;
-    }
-    .tier-range input[type="range"]::-webkit-slider-thumb {
-        @apply pointer-events-auto appearance-none w-4 h-4 rounded-full bg-accent-blue border-2 border-surface-800 shadow cursor-pointer;
-    }
-    .tier-range input[type="range"]::-moz-range-thumb {
-        @apply pointer-events-auto appearance-none w-4 h-4 rounded-full bg-accent-blue border-2 border-surface-800 shadow cursor-pointer;
-    }
-
-    /* Rating badge colors */
-    .rating-elite {
-        background: #22C55E;
-        color: #052e16;
-    }
-    .rating-good {
-        background: #84CC16;
-        color: #1a2e05;
-    }
-    .rating-average {
-        background: #F59E0B;
-        color: #451a03;
-    }
-    .rating-below {
-        background: #F97316;
-        color: #431407;
-    }
-    .rating-poor {
-        background: #EF4444;
-        color: #450a0a;
-    }
-
-    /* Nav item with active underline */
-    .nav-item {
-        position: relative;
-    }
-    .nav-item.active::after {
-        content: '';
-        position: absolute;
-        bottom: -1px;
-        left: 0;
-        right: 0;
-        height: 2px;
-        background: #3B82F6;
-    }
-
-    /* Player row hover */
-    .player-row {
-        transition: all 0.15s ease;
-    }
-    .player-row:hover {
-        background: rgba(59, 130, 246, 0.05);
-    }
-
-    /* Fitness bar animation */
-    .fitness-bar {
-        transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    /* Stat bar */
-    .stat-bar-track {
-        height: 3px;
-        background: rgba(255, 255, 255, 0.06);
-        border-radius: 2px;
-        overflow: hidden;
-    }
-    .stat-bar-fill {
-        height: 100%;
-        border-radius: 2px;
-        transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    /* Morale indicator dot */
-    .morale-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-    }
-
-    /* Pitch styling */
-    .pitch {
-        background: linear-gradient(
-            180deg,
-            #1a5c2a 0%, #1e6b31 8%, #1a5c2a 8%,
-            #1a5c2a 16%, #1e6b31 16%, #1e6b31 24%, #1a5c2a 24%,
-            #1a5c2a 32%, #1e6b31 32%, #1e6b31 40%, #1a5c2a 40%,
-            #1a5c2a 48%, #1e6b31 48%, #1e6b31 56%, #1a5c2a 56%,
-            #1a5c2a 64%, #1e6b31 64%, #1e6b31 72%, #1a5c2a 72%,
-            #1a5c2a 80%, #1e6b31 80%, #1e6b31 88%, #1a5c2a 88%,
-            #1a5c2a 100%
-        );
-        position: relative;
-        border-radius: 8px;
-        overflow: hidden;
-    }
-    .pitch::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        border: 2px solid rgba(255, 255, 255, 0.18);
-        border-radius: 8px;
-        pointer-events: none;
-    }
-
-    /* Player marker on pitch */
-    .player-marker {
-        position: absolute;
-        transform: translate(-50%, -50%);
-        cursor: pointer;
-        transition: transform 0.2s ease, filter 0.2s ease;
-        z-index: 10;
-    }
-    .player-marker:hover {
-        transform: translate(-50%, -50%) scale(1.12);
-        z-index: 20;
-    }
-    .player-dot {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-family: 'Barlow Condensed', sans-serif;
-        font-weight: 700;
-        font-size: 13px;
-        position: relative;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-    }
-    @media (min-width: 1024px) {
-        .player-dot {
-            width: 48px;
-            height: 48px;
-            font-size: 15px;
-        }
-    }
-    .player-label {
-        position: absolute;
-        top: 100%;
-        left: 50%;
-        transform: translateX(-50%);
-        white-space: nowrap;
-        font-family: 'Barlow Condensed', sans-serif;
-        font-size: 10px;
-        font-weight: 600;
-        color: white;
-        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
-        margin-top: 3px;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-    }
-    @media (min-width: 1024px) {
-        .player-label {
-            font-size: 11px;
-            margin-top: 4px;
-        }
-    }
-    .player-rating-mini {
-        position: absolute;
-        top: -4px;
-        right: -6px;
-        width: 18px;
-        height: 18px;
-        border-radius: 4px;
-        font-family: 'Barlow Condensed', sans-serif;
-        font-weight: 700;
-        font-size: 9px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-    }
-    .player-fitness-ring {
-        position: absolute;
-        inset: -3px;
-        border-radius: 50%;
-        border: 2px solid transparent;
-    }
-
-    /* Formation & mentality selectors */
-    .formation-option {
-        transition: all 0.15s ease;
-    }
-    .formation-option.active {
-        background: #3B82F6;
-        color: white;
-        border-color: #3B82F6;
-    }
-    .mentality-btn {
-        transition: all 0.15s ease;
-    }
-    .mentality-btn.active {
-        box-shadow: 0 0 0 1px currentColor;
-    }
-
-    /* Bench card */
-    .bench-card {
-        transition: all 0.15s ease;
-    }
-    .bench-card:hover {
-        background: rgba(59, 130, 246, 0.08);
-        border-color: rgba(59, 130, 246, 0.2);
-    }
-
-    /* Tip card gradient */
-    .tip-card {
-        background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(59, 130, 246, 0.02));
-        border: 1px solid rgba(59, 130, 246, 0.15);
-    }
-
-    /* Rating badge hover animation */
-    .rating-badge {
-        transition: transform 0.15s ease, box-shadow 0.15s ease;
-    }
-    .player-row:hover .rating-badge {
-        transform: scale(1.08);
-    }
-
-    /* Bottom nav blur */
-    .bottom-nav {
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
     }
 }
 

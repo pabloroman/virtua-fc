@@ -29,12 +29,12 @@
 
         <div class="flex items-center justify-end mt-4">
             @if (Route::has('password.request'))
-                <a class="underline text-sm text-slate-400 hover:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-blue" href="{{ route('password.request') }}">
+                <a class="underline text-sm text-slate-400 hover:text-white rounded-md focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-accent-blue" href="{{ route('password.request') }}">
                     {{ __('auth.Forgot your password?') }}
                 </a>
             @endif
 
-            <x-primary-button class="w-full text-center !block">
+            <x-primary-button class="w-full text-center block!">
                 {{ __('auth.Log in') }}
             </x-primary-button>
         </div>

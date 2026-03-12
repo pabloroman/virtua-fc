@@ -19,7 +19,7 @@
             </div>
             @endif
 
-            <div class="bg-surface-800 overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-surface-800 overflow-hidden shadow-xs sm:rounded-lg">
                 <div class="p-4 sm:p-6 md:p-8">
                     @include('partials.transfers-header')
 
@@ -244,14 +244,14 @@
                                                             <span class="font-semibold text-white truncate" x-text="player.name"></span>
                                                             <span class="text-xs text-slate-400" x-text="player.age + ' {{ __('app.years') }}'"></span>
                                                             <template x-if="player.isFreeAgent">
-                                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-accent-green/10 text-accent-green">{{ __('transfers.free_agent') }}</span>
+                                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-medium bg-accent-green/10 text-accent-green">{{ __('transfers.free_agent') }}</span>
                                                             </template>
                                                             <template x-if="!player.isFreeAgent && player.isExpiring">
-                                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-100 text-accent-gold">{{ __('transfers.expiring_contract') }}</span>
+                                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-medium bg-amber-100 text-accent-gold">{{ __('transfers.expiring_contract') }}</span>
                                                             </template>
                                                             {{-- Active tracking indicator --}}
                                                             <template x-if="player.isTracking && player.intelLevel < 2">
-                                                                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium bg-teal-100 text-teal-700">
+                                                                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-sm text-[10px] font-medium bg-teal-100 text-teal-700">
                                                                     <span class="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse"></span>
                                                                     {{ __('transfers.tracking_in_progress') }}
                                                                 </span>
@@ -295,7 +295,7 @@
                                                             <button @click.stop="startTracking(player)"
                                                                 :disabled="trackingAvailable <= 0"
                                                                 :class="trackingAvailable > 0 ? 'text-teal-500 hover:text-teal-700 hover:bg-teal-50' : 'text-slate-300 cursor-not-allowed'"
-                                                                class="p-1.5 rounded transition-colors min-h-[44px] sm:min-h-0"
+                                                                class="p-1.5 rounded-sm transition-colors min-h-[44px] sm:min-h-0"
                                                                 :title="trackingAvailable > 0 ? '{{ __('transfers.start_tracking') }}' : '{{ __('transfers.no_tracking_slots') }}'">
                                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                                             </button>
@@ -303,7 +303,7 @@
                                                         {{-- Stop tracking button (for currently tracking players) --}}
                                                         <template x-if="player.isTracking">
                                                             <button @click.stop="stopTracking(player)"
-                                                                class="p-1.5 text-teal-600 hover:text-red-500 rounded hover:bg-accent-red/10 transition-colors min-h-[44px] sm:min-h-0"
+                                                                class="p-1.5 text-teal-600 hover:text-red-500 rounded-sm hover:bg-accent-red/10 transition-colors min-h-[44px] sm:min-h-0"
                                                                 title="{{ __('transfers.stop_tracking') }}">
                                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
                                                             </button>
@@ -312,14 +312,14 @@
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                                         </svg>
                                                         <template x-if="confirmRemoveId !== player.id">
-                                                            <button @click.stop="confirmRemoveId = player.id" class="p-1.5 text-slate-300 hover:text-red-500 rounded hover:bg-accent-red/10 transition-colors min-h-[44px] sm:min-h-0" title="{{ __('transfers.remove_from_shortlist') }}">
+                                                            <button @click.stop="confirmRemoveId = player.id" class="p-1.5 text-slate-300 hover:text-red-500 rounded-sm hover:bg-accent-red/10 transition-colors min-h-[44px] sm:min-h-0" title="{{ __('transfers.remove_from_shortlist') }}">
                                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                                                                 </svg>
                                                             </button>
                                                         </template>
                                                         <template x-if="confirmRemoveId === player.id">
-                                                            <button @click.stop="removePlayer(player)" class="px-2 py-1 text-xs font-semibold text-accent-red border border-accent-red/20 rounded hover:bg-accent-red/10 transition-colors min-h-[44px] sm:min-h-0">
+                                                            <button @click.stop="removePlayer(player)" class="px-2 py-1 text-xs font-semibold text-accent-red border border-accent-red/20 rounded-sm hover:bg-accent-red/10 transition-colors min-h-[44px] sm:min-h-0">
                                                                 {{ __('transfers.remove_from_shortlist') }}
                                                             </button>
                                                         </template>
@@ -478,7 +478,7 @@
                                                                         <div class="inline-flex items-stretch border border-white/10 rounded-lg overflow-hidden h-[36px]">
                                                                             <input type="hidden" name="offered_wage" :value="player.wageEuros">
                                                                             <button type="button" :disabled="atMin" :class="atMin ? 'opacity-40 cursor-not-allowed' : 'hover:bg-surface-700 active:bg-slate-200'" class="min-h-[32px] sm:min-h-0 min-w-[32px] text-sm flex items-center justify-center bg-surface-700/50 text-slate-300 font-bold select-none transition-colors" @mousedown.prevent="startHold(() => decrement())" @mouseup="stopHold()" @mouseleave="stopHold()" @touchstart.prevent="startHold(() => decrement())" @touchend="stopHold()">&minus;</button>
-                                                                            <input type="text" readonly :value="display" class="min-h-[32px] sm:min-h-0 w-28 text-xs text-center font-semibold text-white bg-surface-800 border-x border-y-0 border-white/10 outline-none cursor-default focus:outline-none focus:ring-0 focus:border-white/10">
+                                                                            <input type="text" readonly :value="display" class="min-h-[32px] sm:min-h-0 w-28 text-xs text-center font-semibold text-white bg-surface-800 border-x border-y-0 border-white/10 outline-hidden cursor-default focus:outline-hidden focus:ring-0 focus:border-white/10">
                                                                             <button type="button" class="min-h-[32px] sm:min-h-0 min-w-[32px] text-sm flex items-center justify-center bg-surface-700/50 hover:bg-surface-700 active:bg-slate-200 text-slate-300 font-bold select-none transition-colors" @mousedown.prevent="startHold(() => increment())" @mouseup="stopHold()" @mouseleave="stopHold()" @touchstart.prevent="startHold(() => increment())" @touchend="stopHold()">+</button>
                                                                         </div>
                                                                         <button type="submit" class="inline-flex items-center justify-center px-3 py-1.5 min-h-[36px] bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg transition-colors whitespace-nowrap">
@@ -512,7 +512,7 @@
                                                                         <div class="inline-flex items-stretch border border-white/10 rounded-lg overflow-hidden h-[36px]">
                                                                             <input type="hidden" name="bid_amount" :value="player.bidEuros">
                                                                             <button type="button" :disabled="atMin" :class="atMin ? 'opacity-40 cursor-not-allowed' : 'hover:bg-surface-700 active:bg-slate-200'" class="min-h-[32px] sm:min-h-0 min-w-[32px] text-sm flex items-center justify-center bg-surface-700/50 text-slate-300 font-bold select-none transition-colors" @mousedown.prevent="startHold(() => decrement())" @mouseup="stopHold()" @mouseleave="stopHold()" @touchstart.prevent="startHold(() => decrement())" @touchend="stopHold()">&minus;</button>
-                                                                            <input type="text" readonly :value="display" class="min-h-[32px] sm:min-h-0 w-28 text-xs text-center font-semibold text-white bg-surface-800 border-x border-y-0 border-white/10 outline-none cursor-default focus:outline-none focus:ring-0 focus:border-white/10">
+                                                                            <input type="text" readonly :value="display" class="min-h-[32px] sm:min-h-0 w-28 text-xs text-center font-semibold text-white bg-surface-800 border-x border-y-0 border-white/10 outline-hidden cursor-default focus:outline-hidden focus:ring-0 focus:border-white/10">
                                                                             <button type="button" class="min-h-[32px] sm:min-h-0 min-w-[32px] text-sm flex items-center justify-center bg-surface-700/50 hover:bg-surface-700 active:bg-slate-200 text-slate-300 font-bold select-none transition-colors" @mousedown.prevent="startHold(() => increment())" @mouseup="stopHold()" @mouseleave="stopHold()" @touchstart.prevent="startHold(() => increment())" @touchend="stopHold()">+</button>
                                                                         </div>
                                                                         <button type="submit" class="inline-flex items-center justify-center px-3 py-1.5 min-h-[36px] bg-accent-blue hover:bg-sky-700 text-white text-xs font-semibold rounded-lg transition-colors whitespace-nowrap">
@@ -595,7 +595,7 @@
                                                                 {{ __('transfers.view_results') }}
                                                             </button>
                                                             <template x-if="!confirmDelete">
-                                                                <button @click="confirmDelete = true" class="p-1.5 text-slate-300 hover:text-red-500 rounded hover:bg-accent-red/10 transition-colors min-h-[44px] sm:min-h-0" title="{{ __('transfers.delete_search') }}">
+                                                                <button @click="confirmDelete = true" class="p-1.5 text-slate-300 hover:text-red-500 rounded-sm hover:bg-accent-red/10 transition-colors min-h-[44px] sm:min-h-0" title="{{ __('transfers.delete_search') }}">
                                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                                                     </svg>
@@ -654,7 +654,7 @@
                                         </p>
                                         <div class="w-full bg-slate-200 rounded-full h-2 mb-4">
                                             @php $progress = (($searchingReport->weeks_total - $searchingReport->weeks_remaining) / $searchingReport->weeks_total) * 100; @endphp
-                                            <div class="bg-accent-blue/100 h-2 rounded-full transition-all" style="width: {{ $progress }}%"></div>
+                                            <div class="bg-accent-blue h-2 rounded-full transition-all" style="width: {{ $progress }}%"></div>
                                         </div>
                                         <form method="post" action="{{ route('game.scouting.cancel', $game->id) }}">
                                             @csrf

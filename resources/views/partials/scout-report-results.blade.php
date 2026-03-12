@@ -18,7 +18,7 @@
                 <span>{{ __('transfers.results_count', ['count' => $players->count()]) }}</span>
             </div>
         </div>
-        <button onclick="window.dispatchEvent(new CustomEvent('close-modal', {detail: 'scout-results'}))" class="p-1 text-slate-400 hover:text-slate-400 rounded hover:bg-surface-700 shrink-0">
+        <button onclick="window.dispatchEvent(new CustomEvent('close-modal', {detail: 'scout-results'}))" class="p-1 text-slate-400 hover:text-slate-400 rounded-sm hover:bg-surface-700 shrink-0">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -65,9 +65,9 @@
                                     <span class="font-semibold text-white truncate">{{ $player->name }}</span>
                                     <span class="text-xs text-slate-400">{{ $player->age($game->current_date) }} {{ __('app.years') }}</span>
                                     @if($isFreeAgent)
-                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-accent-green/10 text-accent-green">{{ __('transfers.free_agent') }}</span>
+                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-medium bg-accent-green/10 text-accent-green">{{ __('transfers.free_agent') }}</span>
                                     @elseif($isExpiring)
-                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-100 text-accent-gold">{{ __('transfers.expiring_contract') }}</span>
+                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-medium bg-amber-100 text-accent-gold">{{ __('transfers.expiring_contract') }}</span>
                                     @endif
                                 </div>
                                 <div class="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
@@ -92,7 +92,7 @@
                             {{-- Shortlist toggle --}}
                             <button
                                 @click.stop="if(toggling) return; toggling = true; fetch('{{ route('game.scouting.shortlist.toggle', [$game->id, $player->id]) }}', { method: 'POST', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' } }).then(r => r.json()).then(data => { if(data.success === false) { alert(data.message); toggling = false; return; } shortlisted = !shortlisted; toggling = false; window.dispatchEvent(new CustomEvent('shortlist-toggled', { detail: { action: data.action, playerId: data.playerId, player: data.player || null } })); }).catch(() => { toggling = false; })"
-                                class="p-1.5 rounded transition-colors min-h-[44px] sm:min-h-0"
+                                class="p-1.5 rounded-sm transition-colors min-h-[44px] sm:min-h-0"
                                 :class="shortlisted ? 'text-amber-500 hover:text-amber-600' : 'text-slate-300 hover:text-amber-400'"
                                 :title="shortlisted ? '{{ __('transfers.remove_from_shortlist') }}' : '{{ __('transfers.add_to_shortlist') }}'"
                             >
@@ -126,7 +126,7 @@
                                             <div class="flex items-center gap-2 flex-1 justify-end">
                                                 <div class="w-20 h-1.5 bg-slate-200 rounded-full overflow-hidden">
                                                     @php $midTech = ($techRange[0] + $techRange[1]) / 2; @endphp
-                                                    <div class="h-1.5 rounded-full {{ $midTech >= 80 ? 'bg-emerald-500' : ($midTech >= 70 ? 'bg-lime-500' : ($midTech >= 60 ? 'bg-accent-gold/100' : 'bg-slate-400')) }}" style="width: {{ $midTech / 99 * 100 }}%"></div>
+                                                    <div class="h-1.5 rounded-full {{ $midTech >= 80 ? 'bg-emerald-500' : ($midTech >= 70 ? 'bg-lime-500' : ($midTech >= 60 ? 'bg-accent-gold' : 'bg-slate-400')) }}" style="width: {{ $midTech / 99 * 100 }}%"></div>
                                                 </div>
                                                 <span class="text-xs font-semibold tabular-nums text-slate-300">{{ $techRange[0] }}-{{ $techRange[1] }}</span>
                                             </div>
@@ -137,7 +137,7 @@
                                             <div class="flex items-center gap-2 flex-1 justify-end">
                                                 <div class="w-20 h-1.5 bg-slate-200 rounded-full overflow-hidden">
                                                     @php $midPhys = ($physRange[0] + $physRange[1]) / 2; @endphp
-                                                    <div class="h-1.5 rounded-full {{ $midPhys >= 80 ? 'bg-emerald-500' : ($midPhys >= 70 ? 'bg-lime-500' : ($midPhys >= 60 ? 'bg-accent-gold/100' : 'bg-slate-400')) }}" style="width: {{ $midPhys / 99 * 100 }}%"></div>
+                                                    <div class="h-1.5 rounded-full {{ $midPhys >= 80 ? 'bg-emerald-500' : ($midPhys >= 70 ? 'bg-lime-500' : ($midPhys >= 60 ? 'bg-accent-gold' : 'bg-slate-400')) }}" style="width: {{ $midPhys / 99 * 100 }}%"></div>
                                                 </div>
                                                 <span class="text-xs font-semibold tabular-nums text-slate-300">{{ $physRange[0] }}-{{ $physRange[1] }}</span>
                                             </div>

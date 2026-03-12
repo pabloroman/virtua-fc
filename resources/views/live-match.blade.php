@@ -95,7 +95,7 @@
                 };
             @endphp
 
-            <div class="bg-surface-800 overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-surface-800 overflow-hidden shadow-xs sm:rounded-lg">
                 {{-- Competition & Round Info --}}
                 <div class="px-4 py-2.5 text-center text-sm font-semibold sm:rounded-t-lg {{ $accent }}">
                     <div>{{ __($match->competition->name) }} &middot; {{ $match->round_name ? __($match->round_name) : __('game.matchday_n', ['number' => $match->round_number]) }}</div>
@@ -149,7 +149,7 @@
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
                                       :class="isInExtraTime ? 'bg-orange-400' : 'bg-green-400'"></span>
                                 <span class="relative inline-flex rounded-full h-2 w-2"
-                                      :class="isInExtraTime ? 'bg-orange-500' : 'bg-accent-green/100'"></span>
+                                      :class="isInExtraTime ? 'bg-orange-500' : 'bg-accent-green'"></span>
                             </span>
                             <template x-if="phase === 'pre_match'">
                                 <span>{{ __('game.live_pre_match') }}</span>
@@ -202,7 +202,7 @@
                     <div class="relative h-2 bg-surface-700 rounded-full mb-6 overflow-visible">
                         {{-- Progress --}}
                         <div class="absolute top-0 left-0 h-full rounded-full transition-all duration-300 ease-linear"
-                             :class="isInExtraTime ? 'bg-orange-500' : 'bg-accent-green/100'"
+                             :class="isInExtraTime ? 'bg-orange-500' : 'bg-accent-green'"
                              :style="'width: ' + timelineProgress + '%'"></div>
 
                         {{-- Half-time marker --}}
@@ -223,15 +223,15 @@
 
                         {{-- Event markers --}}
                         <template x-for="marker in getTimelineMarkers()" :key="marker.minute + '-' + marker.type">
-                            <div class="absolute -top-1 w-4 h-4 rounded-full border-2 border-white shadow-sm transform -translate-x-1/2 transition-all duration-300"
+                            <div class="absolute -top-1 w-4 h-4 rounded-full border-2 border-white shadow-xs transform -translate-x-1/2 transition-all duration-300"
                                  :style="'left: ' + marker.position + '%'"
                                  :class="{
-                                     'bg-accent-green/100': marker.type === 'goal',
+                                     'bg-accent-green': marker.type === 'goal',
                                      'bg-red-400': marker.type === 'own_goal',
                                      'bg-yellow-400': marker.type === 'yellow_card',
                                      'bg-red-600': marker.type === 'red_card',
                                      'bg-orange-400': marker.type === 'injury',
-                                     'bg-accent-blue/100': marker.type === 'substitution',
+                                     'bg-accent-blue': marker.type === 'substitution',
                                  }"
                                  x-transition:enter="transition ease-out duration-300"
                                  x-transition:enter-start="scale-0 opacity-0"
@@ -347,7 +347,7 @@
                                                 <img :src="kick.side === 'home' ? homeTeamImage : awayTeamImage"
                                                      class="w-4 h-4 shrink-0 object-contain">
                                                 <span class="flex-1 truncate text-sm text-slate-300" x-text="kick.playerName"></span>
-                                                <span class="text-xs font-bold shrink-0 px-1.5 py-0.5 rounded"
+                                                <span class="text-xs font-bold shrink-0 px-1.5 py-0.5 rounded-sm"
                                                       :class="kick.scored ? 'bg-accent-green/10 text-accent-green' : 'bg-red-100 text-accent-red'"
                                                       x-text="kick.scored ? translations.penScored : translations.penMissed"></span>
                                             </div>
@@ -491,7 +491,7 @@
 
                             {{-- Champion: Gold celebration --}}
                             <template x-if="tournamentResultType === 'champion'">
-                                <div class="relative -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 px-6 sm:px-8 py-10 bg-gradient-to-b from-amber-400 via-yellow-500 to-amber-600 text-center overflow-hidden">
+                                <div class="relative -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 px-6 sm:px-8 py-10 bg-linear-to-b from-amber-400 via-yellow-500 to-amber-600 text-center overflow-hidden">
                                     {{-- Decorative stars --}}
                                     <div class="absolute inset-0 opacity-20">
                                         <div class="absolute top-4 left-8 text-4xl">&#11088;</div>
@@ -524,7 +524,7 @@
 
                             {{-- Runner-up: Silver/respectful --}}
                             <template x-if="tournamentResultType === 'runner_up'">
-                                <div class="relative -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 px-6 sm:px-8 py-10 bg-gradient-to-b from-slate-500 via-slate-600 to-slate-700 text-center">
+                                <div class="relative -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 px-6 sm:px-8 py-10 bg-linear-to-b from-slate-500 via-slate-600 to-slate-700 text-center">
                                     <div class="text-5xl mb-3">&#129352;</div>
                                     <img :src="userTeamId === homeTeamId ? homeTeamImage : awayTeamImage"
                                          class="w-16 h-16 mx-auto mb-4 opacity-90" alt="">
@@ -548,7 +548,7 @@
 
                             {{-- Third place: Bronze tinted --}}
                             <template x-if="tournamentResultType === 'third'">
-                                <div class="relative -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 px-6 sm:px-8 py-10 bg-gradient-to-b from-orange-600 via-amber-700 to-orange-800 text-center">
+                                <div class="relative -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 px-6 sm:px-8 py-10 bg-linear-to-b from-orange-600 via-amber-700 to-orange-800 text-center">
                                     <div class="text-5xl mb-3">&#129353;</div>
                                     <img :src="userTeamId === homeTeamId ? homeTeamImage : awayTeamImage"
                                          class="w-16 h-16 mx-auto mb-4" alt="">
@@ -572,7 +572,7 @@
 
                             {{-- Fourth place: Somber --}}
                             <template x-if="tournamentResultType === 'fourth'">
-                                <div class="relative -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 px-6 sm:px-8 py-10 bg-gradient-to-b from-slate-600 via-slate-700 to-slate-800 text-center">
+                                <div class="relative -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 px-6 sm:px-8 py-10 bg-linear-to-b from-slate-600 via-slate-700 to-slate-800 text-center">
                                     <img :src="userTeamId === homeTeamId ? homeTeamImage : awayTeamImage"
                                          class="w-14 h-14 mx-auto mb-4 opacity-70" alt="">
                                     <h2 class="text-2xl md:text-3xl font-bold text-slate-300 mb-2"
@@ -595,7 +595,7 @@
 
                             {{-- Eliminated in R32/R16/QF: Somber/dramatic --}}
                             <template x-if="tournamentResultType === 'eliminated'">
-                                <div class="relative -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 px-6 sm:px-8 py-10 bg-gradient-to-b from-slate-700 via-slate-800 to-slate-900 text-center">
+                                <div class="relative -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 px-6 sm:px-8 py-10 bg-linear-to-b from-slate-700 via-slate-800 to-slate-900 text-center">
                                     <img :src="userTeamId === homeTeamId ? homeTeamImage : awayTeamImage"
                                          class="w-14 h-14 mx-auto mb-4 opacity-60 grayscale" alt="">
                                     <h2 class="text-2xl md:text-3xl font-bold text-white mb-1"
@@ -622,7 +622,7 @@
 
                             {{-- Semi-final win: "You're in the Final!" --}}
                             <template x-if="tournamentResultType === 'to_final'">
-                                <div class="mb-4 p-4 bg-gradient-to-r from-amber-50 to-yellow-50 border border-accent-gold/20 rounded-lg text-center">
+                                <div class="mb-4 p-4 bg-linear-to-r from-amber-50 to-yellow-50 border border-accent-gold/20 rounded-lg text-center">
                                     <div class="text-3xl mb-1">&#127942;</div>
                                     <h3 class="text-lg font-bold text-accent-gold" x-text="translations.tournamentToFinal"></h3>
                                 </div>
@@ -637,7 +637,7 @@
 
                             {{-- R32/R16/QF win: "You Advance!" --}}
                             <template x-if="tournamentResultType === 'advance'">
-                                <div class="mb-4 p-4 bg-gradient-to-r from-green-50 to-emerald-50 border border-accent-green/20 rounded-lg text-center">
+                                <div class="mb-4 p-4 bg-linear-to-r from-green-50 to-emerald-50 border border-accent-green/20 rounded-lg text-center">
                                     <h3 class="text-lg font-bold text-accent-green" x-text="translations.tournamentAdvance"></h3>
                                 </div>
                             </template>

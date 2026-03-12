@@ -43,7 +43,7 @@
 
     {{-- Home/Away indicator --}}
     <div>
-        <span class="text-xs font-semibold px-2 py-1 rounded @if($isHome) bg-accent-green/10 text-accent-green @else bg-surface-600 text-slate-400 @endif">
+        <span class="text-xs font-semibold px-2 py-1 rounded-sm @if($isHome) bg-accent-green/10 text-accent-green @else bg-surface-600 text-slate-400 @endif">
             {{ $isHome ? mb_strtoupper(__('game.home')) : mb_strtoupper(__('game.away')) }}
         </span>
     </div>

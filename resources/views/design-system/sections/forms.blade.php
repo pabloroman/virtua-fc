@@ -1,11 +1,11 @@
 <section id="forms" class="mb-20">
     <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-white mb-2">Forms</h2>
-    <p class="text-sm text-slate-400 mb-8">Form components use dark surfaces with <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">accent-blue</code> focus rings, <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">border-white/10</code> borders, and <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">rounded-lg</code> corners for a consistent dark-themed input experience.</p>
+    <p class="text-sm text-slate-400 mb-8">Form components use dark surfaces with <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">accent-blue</code> focus rings, <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">border-white/10</code> borders, and <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">rounded-lg</code> corners for a consistent dark-themed input experience.</p>
 
     {{-- Text Input --}}
     <div class="mb-12">
         <h3 class="text-lg font-semibold text-white mb-2">Text Input</h3>
-        <p class="text-sm text-slate-400 mb-4">Standard text input on dark surface with blue focus ring. Supports all HTML input attributes plus <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">disabled</code> and <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">readonly</code> states.</p>
+        <p class="text-sm text-slate-400 mb-4">Standard text input on dark surface with blue focus ring. Supports all HTML input attributes plus <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">disabled</code> and <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">readonly</code> states.</p>
 
         <div class="bg-surface-700/30 border border-white/5 rounded-xl p-6 mb-3 space-y-4">
             <div class="max-w-sm">
@@ -24,7 +24,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.code.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -62,7 +62,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.code.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -78,7 +78,7 @@
     {{-- Checkbox --}}
     <div class="mb-12">
         <h3 class="text-lg font-semibold text-white mb-2">Checkbox</h3>
-        <p class="text-sm text-slate-400 mb-4">Dark-surfaced checkbox with <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">accent-blue</code> checkmark color and matching focus ring. Ring offset uses <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">surface-900</code> to blend with the dark background.</p>
+        <p class="text-sm text-slate-400 mb-4">Dark-surfaced checkbox with <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">accent-blue</code> checkmark color and matching focus ring. Ring offset uses <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">surface-900</code> to blend with the dark background.</p>
 
         <div class="bg-surface-700/30 border border-white/5 rounded-xl p-6 mb-3">
             <div class="space-y-3">
@@ -99,7 +99,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.code.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -113,7 +113,7 @@
     {{-- Money Input --}}
     <div class="mb-12">
         <h3 class="text-lg font-semibold text-white mb-2">Money Input</h3>
-        <p class="text-sm text-slate-400 mb-4">Stepper-style money input with increment/decrement buttons. Supports hold-to-repeat and auto-adjusting step size (10K below 1M, 100K above). Available in <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">md</code> (default) and <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">sm</code> sizes.</p>
+        <p class="text-sm text-slate-400 mb-4">Stepper-style money input with increment/decrement buttons. Supports hold-to-repeat and auto-adjusting step size (10K below 1M, 100K above). Available in <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">md</code> (default) and <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">sm</code> sizes.</p>
 
         <div class="bg-surface-700/30 border border-white/5 rounded-xl p-6 mb-3 space-y-4">
             <div>
@@ -128,7 +128,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.code.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -180,7 +180,7 @@
     {{-- Input Error --}}
     <div class="mb-12">
         <h3 class="text-lg font-semibold text-white mb-2">Input Error</h3>
-        <p class="text-sm text-slate-400 mb-4">Displays validation error messages below form fields in <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">accent-red</code>.</p>
+        <p class="text-sm text-slate-400 mb-4">Displays validation error messages below form fields in <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">accent-red</code>.</p>
 
         <div class="bg-surface-700/30 border border-white/5 rounded-xl p-6 mb-3">
             <div class="max-w-sm">
@@ -192,7 +192,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.code.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -212,14 +212,14 @@
                     <svg class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
-                    <input type="text" placeholder="Search players..." class="w-full bg-surface-700 border border-white/5 rounded-md text-xs text-white placeholder-slate-500 pl-8 pr-3 py-1.5 focus:outline-none focus:border-accent-blue/50" />
+                    <input type="text" placeholder="Search players..." class="w-full bg-surface-700 border border-white/5 rounded-md text-xs text-white placeholder-slate-500 pl-8 pr-3 py-1.5 focus:outline-hidden focus:border-accent-blue/50" />
                 </div>
             </div>
         </div>
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.code.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -228,7 +228,7 @@
         &lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /&gt;
     &lt;/svg&gt;
     &lt;input type="text" placeholder="Search players..."
-           class="w-full bg-surface-700 border border-white/5 rounded-md text-xs text-white placeholder-slate-500 pl-8 pr-3 py-1.5 focus:outline-none focus:border-accent-blue/50" /&gt;
+           class="w-full bg-surface-700 border border-white/5 rounded-md text-xs text-white placeholder-slate-500 pl-8 pr-3 py-1.5 focus:outline-hidden focus:border-accent-blue/50" /&gt;
 &lt;/div&gt;</code></pre>
         </div>
     </div>
@@ -269,7 +269,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.code.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>

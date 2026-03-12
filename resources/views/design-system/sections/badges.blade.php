@@ -5,7 +5,7 @@
     {{-- Rating Badges --}}
     <div class="mb-12">
         <h3 class="text-lg font-semibold text-white mb-2">Rating Badges</h3>
-        <p class="text-sm text-slate-400 mb-4">Rounded-lg squares with color-coded backgrounds based on ability thresholds. Uses the <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">x-rating-badge</code> component.</p>
+        <p class="text-sm text-slate-400 mb-4">Rounded-lg squares with color-coded backgrounds based on ability thresholds. Uses the <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">x-rating-badge</code> component.</p>
 
         <div class="bg-surface-700/30 border border-white/5 rounded-xl p-6 mb-3">
             <div class="flex flex-wrap gap-4 items-end">
@@ -46,7 +46,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.ratingCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -97,7 +97,7 @@
     {{-- Position Badges --}}
     <div class="mb-12">
         <h3 class="text-lg font-semibold text-white mb-2">Position Badges</h3>
-        <p class="text-sm text-slate-400 mb-4">Skewed badge design with position-specific colors. Uses the <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">x-position-badge</code> component. GK = amber, DEF = blue, MID = green, FWD = red.</p>
+        <p class="text-sm text-slate-400 mb-4">Skewed badge design with position-specific colors. Uses the <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">x-position-badge</code> component. GK = amber, DEF = blue, MID = green, FWD = red.</p>
 
         <div class="bg-surface-700/30 border border-white/5 rounded-xl p-6 space-y-5 mb-3">
             {{-- Size variants --}}
@@ -167,7 +167,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.posCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -220,7 +220,7 @@
     {{-- Status Pills --}}
     <div class="mb-12">
         <h3 class="text-lg font-semibold text-white mb-2">Status Pills</h3>
-        <p class="text-sm text-slate-400 mb-4">Dark-themed translucent pills for categorization and status labels. Use <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">bg-accent-*/20 text-accent-*</code> pattern.</p>
+        <p class="text-sm text-slate-400 mb-4">Dark-themed translucent pills for categorization and status labels. Use <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">bg-accent-*/20 text-accent-*</code> pattern.</p>
 
         <div class="bg-surface-700/30 border border-white/5 rounded-xl p-6 mb-3">
             <div class="flex flex-wrap gap-3">
@@ -237,7 +237,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.pillCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -267,7 +267,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.compCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -284,23 +284,23 @@
 
         <div class="bg-surface-700/30 border border-white/5 rounded-xl p-6 mb-3">
             <div class="flex gap-1">
-                <span class="w-5 h-5 rounded text-[10px] font-bold flex items-center justify-center bg-accent-green text-white">W</span>
-                <span class="w-5 h-5 rounded text-[10px] font-bold flex items-center justify-center bg-accent-green text-white">W</span>
-                <span class="w-5 h-5 rounded text-[10px] font-bold flex items-center justify-center bg-slate-500 text-white">D</span>
-                <span class="w-5 h-5 rounded text-[10px] font-bold flex items-center justify-center bg-accent-red text-white">L</span>
-                <span class="w-5 h-5 rounded text-[10px] font-bold flex items-center justify-center bg-accent-green text-white">W</span>
+                <span class="w-5 h-5 rounded-sm text-[10px] font-bold flex items-center justify-center bg-accent-green text-white">W</span>
+                <span class="w-5 h-5 rounded-sm text-[10px] font-bold flex items-center justify-center bg-accent-green text-white">W</span>
+                <span class="w-5 h-5 rounded-sm text-[10px] font-bold flex items-center justify-center bg-slate-500 text-white">D</span>
+                <span class="w-5 h-5 rounded-sm text-[10px] font-bold flex items-center justify-center bg-accent-red text-white">L</span>
+                <span class="w-5 h-5 rounded-sm text-[10px] font-bold flex items-center justify-center bg-accent-green text-white">W</span>
             </div>
         </div>
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.formCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
-            <pre class="bg-surface-700 text-slate-300 rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="formCode">&lt;span class="w-5 h-5 rounded text-[10px] font-bold flex items-center justify-center bg-accent-green text-white"&gt;W&lt;/span&gt;
-&lt;span class="w-5 h-5 rounded text-[10px] font-bold flex items-center justify-center bg-slate-500 text-white"&gt;D&lt;/span&gt;
-&lt;span class="w-5 h-5 rounded text-[10px] font-bold flex items-center justify-center bg-accent-red text-white"&gt;L&lt;/span&gt;</code></pre>
+            <pre class="bg-surface-700 text-slate-300 rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="formCode">&lt;span class="w-5 h-5 rounded-sm text-[10px] font-bold flex items-center justify-center bg-accent-green text-white"&gt;W&lt;/span&gt;
+&lt;span class="w-5 h-5 rounded-sm text-[10px] font-bold flex items-center justify-center bg-slate-500 text-white"&gt;D&lt;/span&gt;
+&lt;span class="w-5 h-5 rounded-sm text-[10px] font-bold flex items-center justify-center bg-accent-red text-white"&gt;L&lt;/span&gt;</code></pre>
         </div>
     </div>
 
@@ -330,7 +330,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.notifCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>

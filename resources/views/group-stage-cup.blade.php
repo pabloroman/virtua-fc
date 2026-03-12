@@ -18,7 +18,7 @@
 
     <div>
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-surface-800 overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-surface-800 overflow-hidden shadow-xs sm:rounded-lg">
                 <div class="p-4 sm:p-6 md:p-8" x-data="{ tab: '{{ $groupStageComplete && $knockoutTies->isNotEmpty() ? 'knockout' : 'groups' }}' }">
 
                     {{-- Header --}}
@@ -53,7 +53,7 @@
                             @if(!$groupStageComplete)
                                 <span class="w-2 h-2 rounded-full bg-slate-300"></span>
                             @elseif($knockoutTies->isNotEmpty())
-                                <span class="w-2 h-2 rounded-full bg-accent-green/100"></span>
+                                <span class="w-2 h-2 rounded-full bg-accent-green"></span>
                             @endif
                         </button>
                     </div>
@@ -98,7 +98,7 @@
                                     $isHome = $playerTie->home_team_id === $game->team_id;
                                     $opponent = $isHome ? $playerTie->awayTeam : $playerTie->homeTeam;
                                 @endphp
-                                <div class="mb-8 p-6 rounded-xl bg-gradient-to-r from-sky-50 to-sky-100 border border-accent-blue/20">
+                                <div class="mb-8 p-6 rounded-xl bg-linear-to-r from-sky-50 to-sky-100 border border-accent-blue/20">
                                     <div class="text-center text-sm text-accent-blue mb-3">{{ __('cup.your_current_cup_tie', ['round' => __($playerTie->firstLegMatch?->round_name ?? '')]) }}</div>
                                     <div class="flex items-center justify-center gap-6">
                                         <div class="flex items-center gap-3 flex-1 justify-end">
@@ -157,7 +157,7 @@
                                 <div class="flex gap-4" style="min-width: fit-content;">
                                     @foreach($knockoutRounds as $round)
                                         @php $ties = $knockoutTies->get($round->round, collect()); @endphp
-                                        <div class="flex-shrink-0 w-64">
+                                        <div class="shrink-0 w-64">
                                             <div class="text-center mb-4">
                                                 <h4 class="font-semibold text-slate-300">{{ __($round->name) }}</h4>
                                                 <div class="text-xs text-slate-400">{{ $round->firstLegDate->format('d M') }}</div>
@@ -183,11 +183,11 @@
                             <div class="mt-8 pt-4 border-t text-xs text-slate-500">
                                 <div class="flex gap-6">
                                     <div class="flex items-center gap-2">
-                                        <div class="w-3 h-3 bg-accent-blue/10 border border-accent-blue/30 rounded"></div>
+                                        <div class="w-3 h-3 bg-accent-blue/10 border border-accent-blue/30 rounded-sm"></div>
                                         <span>{{ __('cup.your_matches') }}</span>
                                     </div>
                                     <div class="flex items-center gap-2">
-                                        <div class="w-3 h-3 bg-accent-green/10 rounded"></div>
+                                        <div class="w-3 h-3 bg-accent-green/10 rounded-sm"></div>
                                         <span>{{ __('cup.winner') }}</span>
                                     </div>
                                 </div>

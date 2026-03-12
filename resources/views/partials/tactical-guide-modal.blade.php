@@ -24,7 +24,7 @@
                 <span class="w-1.5 h-5 bg-violet-500 rounded-full"></span>
                 {{ __('game.tg_formations') }}
             </h3>
-            <div class="bg-surface-800 rounded-lg shadow overflow-hidden">
+            <div class="bg-surface-800 rounded-lg shadow-sm overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-slate-200 text-sm">
                         <thead class="bg-surface-700/50">
@@ -66,7 +66,7 @@
                 <span class="w-1.5 h-5 bg-rose-500 rounded-full"></span>
                 {{ __('game.tg_mentality') }}
             </h3>
-            <div class="bg-surface-800 rounded-lg shadow overflow-hidden">
+            <div class="bg-surface-800 rounded-lg shadow-sm overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-slate-200 text-sm">
                         <thead class="bg-surface-700/50">
@@ -101,10 +101,10 @@
         {{-- Playing Style --}}
         <section>
             <h3 class="text-base font-semibold text-white mb-3 flex items-center gap-2">
-                <span class="w-1.5 h-5 bg-accent-blue/100 rounded-full"></span>
+                <span class="w-1.5 h-5 bg-accent-blue rounded-full"></span>
                 {{ __('game.tg_playing_style') }}
             </h3>
-            <div class="bg-surface-800 rounded-lg shadow overflow-hidden">
+            <div class="bg-surface-800 rounded-lg shadow-sm overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-slate-200 text-sm">
                         <thead class="bg-surface-700/50">
@@ -145,10 +145,10 @@
         {{-- Pressing --}}
         <section>
             <h3 class="text-base font-semibold text-white mb-3 flex items-center gap-2">
-                <span class="w-1.5 h-5 bg-accent-gold/100 rounded-full"></span>
+                <span class="w-1.5 h-5 bg-accent-gold rounded-full"></span>
                 {{ __('game.tg_pressing') }}
             </h3>
-            <div class="bg-surface-800 rounded-lg shadow overflow-hidden">
+            <div class="bg-surface-800 rounded-lg shadow-sm overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-slate-200 text-sm">
                         <thead class="bg-surface-700/50">
@@ -200,7 +200,7 @@
                 <span class="w-1.5 h-5 bg-emerald-500 rounded-full"></span>
                 {{ __('game.tg_defensive_line') }}
             </h3>
-            <div class="bg-surface-800 rounded-lg shadow overflow-hidden">
+            <div class="bg-surface-800 rounded-lg shadow-sm overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-slate-200 text-sm">
                         <thead class="bg-surface-700/50">
@@ -255,11 +255,11 @@
                 <div class="bg-surface-700/50 rounded-lg border border-white/10 p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                     <div>
                         <div class="flex items-center gap-2 flex-wrap">
-                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-accent-blue/10 text-accent-blue">{{ __('game.style_counter_attack') }}</span>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-accent-blue/10 text-accent-blue">{{ __('game.style_counter_attack') }}</span>
                             <span class="text-slate-400 text-xs">vs</span>
-                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-rose-100 text-rose-800">{{ __('game.mentality_attacking') }}</span>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-rose-100 text-rose-800">{{ __('game.mentality_attacking') }}</span>
                             <span class="text-slate-400 text-xs">+</span>
-                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-100 text-emerald-800">{{ __('game.defline_high_line') }}</span>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-emerald-100 text-emerald-800">{{ __('game.defline_high_line') }}</span>
                         </div>
                         <p class="text-xs text-slate-500 mt-1">{{ __('game.tg_counter_bonus_desc') }}</p>
                     </div>
@@ -270,9 +270,9 @@
                 <div class="bg-surface-700/50 rounded-lg border border-white/10 p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                     <div>
                         <div class="flex items-center gap-2 flex-wrap">
-                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-accent-blue/10 text-accent-blue">{{ __('game.style_possession') }}</span>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-accent-blue/10 text-accent-blue">{{ __('game.style_possession') }}</span>
                             <span class="text-slate-400 text-xs">vs</span>
-                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-accent-gold">{{ __('game.pressing_high_press') }}</span>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-amber-100 text-accent-gold">{{ __('game.pressing_high_press') }}</span>
                         </div>
                         <p class="text-xs text-slate-500 mt-1">{{ __('game.tg_possession_penalty_desc') }}</p>
                     </div>
@@ -283,9 +283,9 @@
                 <div class="bg-surface-700/50 rounded-lg border border-white/10 p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                     <div>
                         <div class="flex items-center gap-2 flex-wrap">
-                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-accent-blue/10 text-accent-blue">{{ __('game.style_direct') }}</span>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-accent-blue/10 text-accent-blue">{{ __('game.style_direct') }}</span>
                             <span class="text-slate-400 text-xs">vs</span>
-                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-accent-gold">{{ __('game.pressing_high_press') }}</span>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-amber-100 text-accent-gold">{{ __('game.pressing_high_press') }}</span>
                         </div>
                         <p class="text-xs text-slate-500 mt-1">{{ __('game.tg_direct_bonus_desc') }}</p>
                     </div>

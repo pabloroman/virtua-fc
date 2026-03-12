@@ -14,7 +14,7 @@
 
     {{-- Sub-modal teleported to body so it sits above the player modal --}}
     <template x-teleport="body">
-        <div x-show="open" class="fixed inset-0 z-[60] overflow-y-auto px-4 py-6 sm:px-0" style="display:none">
+        <div x-show="open" class="fixed inset-0 z-60 overflow-y-auto px-4 py-6 sm:px-0" style="display:none">
             {{-- Backdrop --}}
             <div x-show="open" @click="open = false"
                 class="fixed inset-0 transition-opacity"
@@ -34,7 +34,7 @@
                             <h3 class="font-semibold text-white">{{ $gamePlayer->name }}</h3>
                             <p class="text-sm text-slate-500 mt-0.5">{{ __('squad.renew') }}</p>
                         </div>
-                        <button @click="open = false" class="p-1 text-slate-400 hover:text-slate-400 rounded hover:bg-surface-700 shrink-0">
+                        <button @click="open = false" class="p-1 text-slate-400 hover:text-slate-400 rounded-sm hover:bg-surface-700 shrink-0">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                         </button>
                     </div>
@@ -46,9 +46,9 @@
                             @else text-red-500
                             @endif">
                             <span class="inline-block w-2 h-2 rounded-full mr-1.5
-                                @if($renewalMood['color'] === 'green') bg-accent-green/100
-                                @elseif($renewalMood['color'] === 'amber') bg-accent-gold/100
-                                @else bg-accent-red/100
+                                @if($renewalMood['color'] === 'green') bg-accent-green
+                                @elseif($renewalMood['color'] === 'amber') bg-accent-gold
+                                @else bg-accent-red
                                 @endif"></span>{{ $renewalMood['label'] }}
                         </span>
                         <span class="text-slate-500">{{ __('transfers.player_demand') }}: <span class="font-semibold text-slate-300">{{ $renewalDemand['formattedWage'] }}{{ __('squad.per_year') }}</span></span>

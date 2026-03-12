@@ -19,7 +19,7 @@
             </div>
             @endif
 
-            <div class="bg-surface-800 overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-surface-800 overflow-hidden shadow-xs sm:rounded-lg">
                 <div class="p-4 sm:p-6 md:p-8">
                     @include('partials.transfers-header')
 

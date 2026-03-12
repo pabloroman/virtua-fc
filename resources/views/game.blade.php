@@ -19,7 +19,7 @@
                     </div>
                     @if($pendingAction && $pendingAction['route'])
                     <a href="{{ route($pendingAction['route'], $game->id) }}"
-                       class="inline-flex items-center px-4 py-2 bg-accent-gold/100 text-white text-xs font-semibold uppercase tracking-wide rounded-md hover:bg-amber-600 transition-colors shrink-0 min-h-[44px]">
+                       class="inline-flex items-center px-4 py-2 bg-accent-gold text-white text-xs font-semibold uppercase tracking-wide rounded-md hover:bg-amber-600 transition-colors shrink-0 min-h-[44px]">
                         {{ __('messages.action_required_short') }}
                     </a>
                     @endif
@@ -28,7 +28,7 @@
 
             {{-- Pre-Season Banner --}}
             @if(!empty($isPreSeason))
-            <div class="mb-4 p-4 bg-gradient-to-r from-sky-50 to-indigo-50 border border-accent-blue/20 rounded-lg flex flex-col md:flex-row md:items-center md:justify-between gap-3" x-data="{ confirmSkip: false }">
+            <div class="mb-4 p-4 bg-linear-to-r from-sky-50 to-indigo-50 border border-accent-blue/20 rounded-lg flex flex-col md:flex-row md:items-center md:justify-between gap-3" x-data="{ confirmSkip: false }">
                 <div class="flex items-start gap-3">
                     <div class="w-10 h-10 rounded-full bg-accent-blue/10 flex items-center justify-center shrink-0">
                         <svg class="w-5 h-5 text-accent-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -62,7 +62,7 @@
             @endif
 
             @if($nextMatch)
-            <div class="bg-surface-800 overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-surface-800 overflow-hidden shadow-xs sm:rounded-lg">
                 <div class="p-4 sm:p-6 md:p-8 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
                     {{-- Left Column (2/3) - Main Content --}}
                     <div class="md:col-span-2 space-y-8">
@@ -136,9 +136,9 @@
                                                 @php $homeForm = $nextMatch->home_team_id === $game->team_id ? $playerForm : $opponentForm; @endphp
                                                 @forelse($homeForm as $result)
                                                     <span class="w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center
-                                                        @if($result === 'W') bg-accent-green/100 text-white
+                                                        @if($result === 'W') bg-accent-green text-white
                                                         @elseif($result === 'D') bg-slate-300 text-slate-400
-                                                        @else bg-accent-red/100 text-white @endif">
+                                                        @else bg-accent-red text-white @endif">
                                                         {{ $result }}
                                                     </span>
                                                 @empty
@@ -167,9 +167,9 @@
                                                 @php $awayForm = $nextMatch->away_team_id === $game->team_id ? $playerForm : $opponentForm; @endphp
                                                 @forelse($awayForm as $result)
                                                     <span class="w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center
-                                                        @if($result === 'W') bg-accent-green/100 text-white
+                                                        @if($result === 'W') bg-accent-green text-white
                                                         @elseif($result === 'D') bg-slate-300 text-slate-400
-                                                        @else bg-accent-red/100 text-white @endif">
+                                                        @else bg-accent-red text-white @endif">
                                                         {{ $result }}
                                                     </span>
                                                 @empty
@@ -219,7 +219,7 @@
                                 <div class="flex items-center gap-2">
                                     <h4 class="font-semibold text-xl text-white">{{ __('notifications.inbox') }}</h4>
                                     @if($unreadNotificationCount > 0)
-                                    <span class="inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-accent-red/100 rounded-full">
+                                    <span class="inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-accent-red rounded-full">
                                         {{ $unreadNotificationCount > 9 ? '9+' : $unreadNotificationCount }}
                                     </span>
                                     @endif
@@ -261,14 +261,14 @@
                                             <button type="submit" class="w-full text-left block p-3 {{ $classes['bg'] }} border {{ $classes['border'] }} rounded-lg hover:opacity-90 transition-opacity {{ $notification->isRead() ? 'opacity-60' : '' }}">
                                                 <div class="flex items-start gap-3">
                                                     {{-- Type icon with unread indicator --}}
-                                                    <div class="relative flex-shrink-0">
+                                                    <div class="relative shrink-0">
                                                         <x-notification-icon :icon="$notification->icon" :icon-bg="$classes['icon_bg']" :icon-text="$classes['icon_text']" />
                                                     </div>
 
                                                     <div class="flex-1 min-w-0">
                                                         <div class="flex items-center justify-between gap-2">
                                                             <span class="font-semibold text-sm {{ $classes['text'] }} truncate">{{ $notification->title }}</span>
-                                                            <svg class="w-4 h-4 {{ $classes['text'] }} opacity-40 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <svg class="w-4 h-4 {{ $classes['text'] }} opacity-40 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                                                             </svg>
                                                         </div>
@@ -277,7 +277,7 @@
                                                         @endif
                                                         @php $badge = $notification->getPriorityBadge(); @endphp
                                                         @if($badge)
-                                                        <span class="inline-flex items-center mt-1 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide rounded {{ $badge['bg'] }} {{ $badge['text'] }}">
+                                                        <span class="inline-flex items-center mt-1 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide rounded-sm {{ $badge['bg'] }} {{ $badge['text'] }}">
                                                             {{ $badge['label'] }}
                                                         </span>
                                                         @endif
@@ -353,7 +353,7 @@
             </div>
             @elseif($hasRemainingMatches)
             {{-- AI Matches Remaining State --}}
-            <div class="bg-surface-800 overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-surface-800 overflow-hidden shadow-xs sm:rounded-lg">
                 <div class="p-4 sm:p-6 md:p-8 text-center">
                     <div class="text-6xl mb-4">&#9917;</div>
                     <h2 class="text-3xl font-bold text-white mb-2">{{ __('game.other_competitions_in_progress') }}</h2>

@@ -126,7 +126,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.playerTableCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -160,7 +160,7 @@
     {{-- Group Headers --}}
     <div class="mb-12">
         <h3 class="text-lg font-semibold text-white mb-2">Group Headers</h3>
-        <p class="text-sm text-slate-400 mb-4">Surface-700/30 background rows used to group table rows by category (e.g., position groups in squad). Uses <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">font-heading</code> with extra tracking.</p>
+        <p class="text-sm text-slate-400 mb-4">Surface-700/30 background rows used to group table rows by category (e.g., position groups in squad). Uses <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">font-heading</code> with extra tracking.</p>
 
         <div class="bg-surface-700/30 border border-white/5 rounded-xl p-6 mb-3">
             <div class="bg-surface-800 border border-white/5 rounded-xl overflow-hidden">
@@ -196,7 +196,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.groupCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -211,7 +211,7 @@
     {{-- Financial Table --}}
     <div>
         <h3 class="text-lg font-semibold text-white mb-2">Financial Table</h3>
-        <p class="text-sm text-slate-400 mb-4">Line-item table with <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">text-accent-green</code> for income and <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">text-accent-red</code> for expenses. Used in the finances page budget flow.</p>
+        <p class="text-sm text-slate-400 mb-4">Line-item table with <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">text-accent-green</code> for income and <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">text-accent-red</code> for expenses. Used in the finances page budget flow.</p>
 
         <div class="bg-surface-700/30 border border-white/5 rounded-xl p-6 mb-3">
             <div class="bg-surface-800 border border-white/5 rounded-xl overflow-hidden">
@@ -262,7 +262,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.financeCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>

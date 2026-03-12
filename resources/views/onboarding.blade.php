@@ -34,7 +34,7 @@
 
             {{-- 2. Off-Season Recap (Season 2+ only) --}}
             @if($offseasonRecap && ($offseasonRecap['departures'] || $offseasonRecap['arrivals'] || $offseasonRecap['reputation_changed']))
-            <div class="bg-surface-800 rounded-xl shadow-sm border border-white/10 p-5 md:p-6 mb-6" x-data="{ showAllDep: false, showAllArr: false }">
+            <div class="bg-surface-800 rounded-xl shadow-xs border border-white/10 p-5 md:p-6 mb-6" x-data="{ showAllDep: false, showAllArr: false }">
                 <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-4">{{ __('game.offseason_recap') }}</h2>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -123,11 +123,11 @@
             @endif
 
             {{-- 3. Season Mission Briefing --}}
-            <div class="bg-surface-800 rounded-xl shadow-sm border border-white/10 p-5 md:p-6 mb-6">
+            <div class="bg-surface-800 rounded-xl shadow-xs border border-white/10 p-5 md:p-6 mb-6">
                 <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-5">{{ __('game.season_preview') }}</h2>
 
                 {{-- Board Objective --}}
-                <div class="bg-gradient-to-br from-amber-50 to-orange-50 border border-accent-gold/20 rounded-xl p-4 md:p-5 mb-5">
+                <div class="bg-linear-to-br from-amber-50 to-orange-50 border border-accent-gold/20 rounded-xl p-4 md:p-5 mb-5">
                     <div class="flex items-start md:items-center justify-between gap-3">
                         <div class="flex-1">
                             <div class="flex items-center gap-2 mb-1.5">
@@ -182,7 +182,7 @@
             </div>
 
             {{-- 4. Squad Snapshot --}}
-            <div class="bg-surface-800 rounded-xl shadow-sm border border-white/10 p-5 md:p-6 mb-6">
+            <div class="bg-surface-800 rounded-xl shadow-xs border border-white/10 p-5 md:p-6 mb-6">
                 <div class="flex items-center justify-between mb-5">
                     <div class="flex items-center gap-2">
                         <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wide">{{ __('game.your_squad') }}</h2>
@@ -266,7 +266,7 @@
             </div>
 
             {{-- 5. Budget Allocation --}}
-            <div class="bg-surface-800 rounded-xl shadow-sm border border-white/10 p-5 md:p-6 mb-20">
+            <div class="bg-surface-800 rounded-xl shadow-xs border border-white/10 p-5 md:p-6 mb-20">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-2">
                     <div>
                         <h2 class="text-lg font-semibold text-white">{{ __('finances.season_budget', ['season' => $game->formatted_season]) }}</h2>

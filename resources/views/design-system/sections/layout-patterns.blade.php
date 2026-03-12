@@ -9,7 +9,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.pageShellCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -19,7 +19,7 @@
     &lt;/x-slot&gt;
 
     &lt;div class="max-w-7xl mx-auto sm:px-6 lg:px-8"&gt;
-        &lt;div class="bg-surface-800 overflow-hidden shadow-sm sm:rounded-lg border border-white/5"&gt;
+        &lt;div class="bg-surface-800 overflow-hidden shadow-xs sm:rounded-lg border border-white/5"&gt;
             &lt;div class="p-4 sm:p-6 md:p-8"&gt;
                 &lt;!-- Page content --&gt;
             &lt;/div&gt;
@@ -47,7 +47,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.twoColCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -61,31 +61,31 @@
     {{-- Responsive Grids --}}
     <div class="mb-12">
         <h3 class="text-lg font-semibold text-white mb-2">Responsive Grids</h3>
-        <p class="text-sm text-slate-400 mb-4">Always start with <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">grid-cols-1</code> as the mobile base. Never use bare <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">grid-cols-N</code>.</p>
+        <p class="text-sm text-slate-400 mb-4">Always start with <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">grid-cols-1</code> as the mobile base. Never use bare <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">grid-cols-N</code>.</p>
 
         <div class="bg-surface-700/30 border border-white/5 rounded-xl p-6 space-y-6 mb-3">
             <div>
                 <div class="text-xs text-slate-500 mb-2">grid-cols-1 md:grid-cols-2</div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div class="bg-surface-700 border border-white/5 rounded p-3 text-center text-xs text-slate-400">1</div>
-                    <div class="bg-surface-700 border border-white/5 rounded p-3 text-center text-xs text-slate-400">2</div>
+                    <div class="bg-surface-700 border border-white/5 rounded-sm p-3 text-center text-xs text-slate-400">1</div>
+                    <div class="bg-surface-700 border border-white/5 rounded-sm p-3 text-center text-xs text-slate-400">2</div>
                 </div>
             </div>
             <div>
                 <div class="text-xs text-slate-500 mb-2">grid-cols-1 md:grid-cols-3</div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <div class="bg-surface-700 border border-white/5 rounded p-3 text-center text-xs text-slate-400">1</div>
-                    <div class="bg-surface-700 border border-white/5 rounded p-3 text-center text-xs text-slate-400">2</div>
-                    <div class="bg-surface-700 border border-white/5 rounded p-3 text-center text-xs text-slate-400">3</div>
+                    <div class="bg-surface-700 border border-white/5 rounded-sm p-3 text-center text-xs text-slate-400">1</div>
+                    <div class="bg-surface-700 border border-white/5 rounded-sm p-3 text-center text-xs text-slate-400">2</div>
+                    <div class="bg-surface-700 border border-white/5 rounded-sm p-3 text-center text-xs text-slate-400">3</div>
                 </div>
             </div>
             <div>
                 <div class="text-xs text-slate-500 mb-2">grid-cols-2 md:grid-cols-4</div>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <div class="bg-surface-700 border border-white/5 rounded p-3 text-center text-xs text-slate-400">1</div>
-                    <div class="bg-surface-700 border border-white/5 rounded p-3 text-center text-xs text-slate-400">2</div>
-                    <div class="bg-surface-700 border border-white/5 rounded p-3 text-center text-xs text-slate-400">3</div>
-                    <div class="bg-surface-700 border border-white/5 rounded p-3 text-center text-xs text-slate-400">4</div>
+                    <div class="bg-surface-700 border border-white/5 rounded-sm p-3 text-center text-xs text-slate-400">1</div>
+                    <div class="bg-surface-700 border border-white/5 rounded-sm p-3 text-center text-xs text-slate-400">2</div>
+                    <div class="bg-surface-700 border border-white/5 rounded-sm p-3 text-center text-xs text-slate-400">3</div>
+                    <div class="bg-surface-700 border border-white/5 rounded-sm p-3 text-center text-xs text-slate-400">4</div>
                 </div>
             </div>
         </div>
@@ -108,7 +108,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.flexCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -122,7 +122,7 @@
     {{-- Section Dividers --}}
     <div class="mb-12">
         <h3 class="text-lg font-semibold text-white mb-2">Section Dividers</h3>
-        <p class="text-sm text-slate-400 mb-4">Top border with padding to separate content sections. Use <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">border-white/5</code> instead of border-slate-100 for dark backgrounds.</p>
+        <p class="text-sm text-slate-400 mb-4">Top border with padding to separate content sections. Use <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">border-white/5</code> instead of border-slate-100 for dark backgrounds.</p>
 
         <div class="bg-surface-700/30 border border-white/5 rounded-xl p-6 mb-3">
             <div class="space-y-0">
@@ -140,7 +140,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.dividerCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -176,7 +176,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.emptyCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -195,7 +195,7 @@
         <div class="bg-surface-700/30 border border-white/5 rounded-xl p-6 mb-3">
             <div class="flex items-center gap-1.5">
                 <span class="text-sm text-slate-400">TV Rights</span>
-                <svg x-data="" x-tooltip.raw="Revenue from television broadcasting rights based on league position" class="w-3.5 h-3.5 text-slate-600 hover:text-slate-400 cursor-help flex-shrink-0 transition-colors" fill="currentColor" viewBox="0 0 512 512">
+                <svg x-data="" x-tooltip.raw="Revenue from television broadcasting rights based on league position" class="w-3.5 h-3.5 text-slate-600 hover:text-slate-400 cursor-help shrink-0 transition-colors" fill="currentColor" viewBox="0 0 512 512">
                     <path d="M256 512a256 256 0 1 0 0-512 256 256 0 1 0 0 512zm0-336c-17.7 0-32 14.3-32 32 0 13.3-10.7 24-24 24s-24-10.7-24-24c0-44.2 35.8-80 80-80s80 35.8 80 80c0 47.2-36 67.2-56 74.5l0 3.8c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-8.1c0-20.5 14.8-35.2 30.1-40.2 6.4-2.1 13.2-5.5 18.2-10.3 4.3-4.2 7.7-10 7.7-19.6 0-17.7-14.3-32-32-32zM224 368a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/>
                 </svg>
             </div>
@@ -203,14 +203,14 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.tooltipCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
             <pre class="bg-surface-700 text-slate-300 rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="tooltipCode">&lt;span class="text-sm text-slate-400 flex items-center gap-1.5"&gt;
     Label
     &lt;svg x-data="" x-tooltip.raw="Explanation text"
-         class="w-3.5 h-3.5 text-slate-600 hover:text-slate-400 cursor-help flex-shrink-0"
+         class="w-3.5 h-3.5 text-slate-600 hover:text-slate-400 cursor-help shrink-0"
          fill="currentColor" viewBox="0 0 512 512"&gt;
         &lt;!-- question mark circle icon --&gt;
     &lt;/svg&gt;

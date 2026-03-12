@@ -44,11 +44,11 @@
                 <td class="py-0 pr-3">
                     <div class="flex items-center gap-2">
                         @if($gp->nationality_flag['code'] ?? null)
-                        <img src="/flags/{{ $gp->nationality_flag['code'] }}.svg" class="w-4 h-3 rounded-sm shadow-sm shrink-0" title="{{ $gp->nationality_flag['name'] }}">
+                        <img src="/flags/{{ $gp->nationality_flag['code'] }}.svg" class="w-4 h-3 rounded-xs shadow-xs shrink-0" title="{{ $gp->nationality_flag['name'] }}">
                         @endif
                         <span class="font-medium text-white truncate">{{ $gp->name }}</span>
                         @if($gp->is_loaned_in)
-                        <span class="text-[10px] bg-violet-100 text-violet-700 px-1.5 py-0.5 rounded font-medium shrink-0">{{ __('transfers.loans') }}</span>
+                        <span class="text-[10px] bg-violet-100 text-violet-700 px-1.5 py-0.5 rounded-sm font-medium shrink-0">{{ __('transfers.loans') }}</span>
                         @endif
                     </div>
                     {{-- Mobile-only details --}}

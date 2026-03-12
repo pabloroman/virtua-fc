@@ -10,6 +10,6 @@ $colors = [
 $colorClasses = $colors[$color] ?? $colors['blue'];
 @endphp
 
-<a {{ $attributes->merge(['class' => "inline-flex items-center justify-center px-4 py-2 min-h-[44px] sm:min-h-0 {$colorClasses} border border-transparent rounded-lg font-semibold text-sm text-white uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface-900 transition ease-in-out duration-150"]) }}>
+<a {{ $attributes->merge(['class' => "inline-flex items-center justify-center px-4 py-2 min-h-[44px] sm:min-h-0 {$colorClasses} border border-transparent rounded-lg font-semibold text-sm text-white uppercase tracking-wider focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface-900 transition ease-in-out duration-150"]) }}>
     {{ $slot }}
 </a>

@@ -47,9 +47,9 @@
                 </div>
                 <div class="space-y-1">
                     <template x-for="(kicker, idx) in selectedPenaltyKickers" :key="kicker.id">
-                        <div class="flex items-center gap-2 py-1.5 px-2 rounded bg-purple-500/10">
+                        <div class="flex items-center gap-2 py-1.5 px-2 rounded-sm bg-purple-500/10">
                             <span class="text-xs font-bold text-purple-400 w-5 text-center shrink-0" x-text="idx + 1"></span>
-                            <span class="text-xs font-semibold rounded px-1.5 py-0.5 text-white shrink-0"
+                            <span class="text-xs font-semibold rounded-sm px-1.5 py-0.5 text-white shrink-0"
                                   :class="getPositionBadgeColor(kicker.positionGroup)"
                                   x-text="kicker.positionAbbr"></span>
                             <span class="text-sm font-semibold text-white flex-1 truncate" x-text="kicker.name"></span>
@@ -64,7 +64,7 @@
                     </template>
                     {{-- Empty slots --}}
                     <template x-for="i in Math.max(0, 5 - selectedPenaltyKickers.length)" :key="'empty-' + i">
-                        <div class="flex items-center gap-2 py-1.5 px-2 rounded border border-dashed border-white/10">
+                        <div class="flex items-center gap-2 py-1.5 px-2 rounded-sm border border-dashed border-white/10">
                             <span class="text-xs font-bold text-slate-300 w-5 text-center shrink-0" x-text="selectedPenaltyKickers.length + i"></span>
                             <span class="text-xs text-slate-300">—</span>
                         </div>
@@ -77,10 +77,10 @@
                 <div class="space-y-0.5">
                     <template x-for="player in availablePenaltyPlayers" :key="player.id">
                         <button @click="addPenaltyKicker(player)"
-                                class="w-full flex items-center gap-2 py-2 px-2 rounded hover:bg-surface-700/50 transition-colors text-left min-h-[44px]"
+                                class="w-full flex items-center gap-2 py-2 px-2 rounded-sm hover:bg-surface-700/50 transition-colors text-left min-h-[44px]"
                                 :disabled="selectedPenaltyKickers.length >= 5"
                                 :class="selectedPenaltyKickers.length >= 5 ? 'opacity-30 cursor-not-allowed' : ''">
-                            <span class="text-xs font-semibold rounded px-1.5 py-0.5 text-white shrink-0"
+                            <span class="text-xs font-semibold rounded-sm px-1.5 py-0.5 text-white shrink-0"
                                   :class="getPositionBadgeColor(player.positionGroup)"
                                   x-text="player.positionAbbr"></span>
                             <span class="text-sm text-white flex-1 truncate" x-text="player.name"></span>

@@ -191,24 +191,24 @@
                 <div class="flex items-center gap-2 sm:ml-auto overflow-x-auto scrollbar-hide">
                     {{-- Availability filter --}}
                     <div class="flex items-center gap-1 shrink-0">
-                        <button @click="availFilter = availFilter === 'available' ? 'all' : 'available'" :class="availFilter === 'available' ? 'bg-accent-green/20 text-accent-green border-accent-green/30' : 'bg-surface-700 text-slate-400 hover:text-slate-300 border-white/5'" class="px-2 py-1 text-xs font-medium rounded border transition-colors">{{ __('squad.available') }}</button>
-                        <button @click="availFilter = availFilter === 'unavailable' ? 'all' : 'unavailable'" :class="availFilter === 'unavailable' ? 'bg-accent-red/20 text-accent-red border-accent-red/30' : 'bg-surface-700 text-slate-400 hover:text-slate-300 border-white/5'" class="px-2 py-1 text-xs font-medium rounded border transition-colors">{{ __('squad.unavailable') }}</button>
+                        <button @click="availFilter = availFilter === 'available' ? 'all' : 'available'" :class="availFilter === 'available' ? 'bg-accent-green/20 text-accent-green border-accent-green/30' : 'bg-surface-700 text-slate-400 hover:text-slate-300 border-white/5'" class="px-2 py-1 text-xs font-medium rounded-sm border transition-colors">{{ __('squad.available') }}</button>
+                        <button @click="availFilter = availFilter === 'unavailable' ? 'all' : 'unavailable'" :class="availFilter === 'unavailable' ? 'bg-accent-red/20 text-accent-red border-accent-red/30' : 'bg-surface-700 text-slate-400 hover:text-slate-300 border-white/5'" class="px-2 py-1 text-xs font-medium rounded-sm border transition-colors">{{ __('squad.unavailable') }}</button>
                     </div>
 
                     {{-- View Mode Toggle --}}
                     <div class="flex items-center gap-0.5 bg-surface-700 rounded-lg p-0.5 shrink-0">
-                        <button @click="viewMode = 'tactical'" :class="viewMode === 'tactical' ? 'bg-surface-800 shadow-sm text-white' : 'text-slate-500 hover:text-slate-300'" class="px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors">
+                        <button @click="viewMode = 'tactical'" :class="viewMode === 'tactical' ? 'bg-surface-800 shadow-xs text-white' : 'text-slate-500 hover:text-slate-300'" class="px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors">
                             {{ __('squad.tactical') }}
                         </button>
                         @if($isCareerMode)
-                        <button @click="viewMode = 'planning'" :class="viewMode === 'planning' ? 'bg-surface-800 shadow-sm text-white' : 'text-slate-500 hover:text-slate-300'" class="px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors">
+                        <button @click="viewMode = 'planning'" :class="viewMode === 'planning' ? 'bg-surface-800 shadow-xs text-white' : 'text-slate-500 hover:text-slate-300'" class="px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors">
                             {{ __('squad.planning') }}
                         </button>
                         @endif
-                        <button @click="viewMode = 'stats'" :class="viewMode === 'stats' ? 'bg-surface-800 shadow-sm text-white' : 'text-slate-500 hover:text-slate-300'" class="px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors">
+                        <button @click="viewMode = 'stats'" :class="viewMode === 'stats' ? 'bg-surface-800 shadow-xs text-white' : 'text-slate-500 hover:text-slate-300'" class="px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors">
                             {{ __('squad.stats') }}
                         </button>
-                        <button @click="viewMode = 'numbers'" :class="viewMode === 'numbers' ? 'bg-surface-800 shadow-sm text-white' : 'text-slate-500 hover:text-slate-300'" class="px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors">
+                        <button @click="viewMode = 'numbers'" :class="viewMode === 'numbers' ? 'bg-surface-800 shadow-xs text-white' : 'text-slate-500 hover:text-slate-300'" class="px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors">
                             #
                         </button>
                     </div>
@@ -219,7 +219,7 @@
                     </button>
 
                     {{-- Desktop: Squad Analysis toggle --}}
-                    <button @click="sidebarOpen = !sidebarOpen" class="hidden xl:inline-flex shrink-0 items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded border border-white/10 text-slate-400 hover:bg-surface-700/50 transition-colors">
+                    <button @click="sidebarOpen = !sidebarOpen" class="hidden xl:inline-flex shrink-0 items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-sm border border-white/10 text-slate-400 hover:bg-surface-700/50 transition-colors">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                         {{ __('squad.squad_analysis') }}
                     </button>
@@ -375,7 +375,7 @@
                                             </div>
 
                                             {{-- Rating badge --}}
-                                            <x-rating-badge :value="$gp->overall_score" class="flex-shrink-0" />
+                                            <x-rating-badge :value="$gp->overall_score" class="shrink-0" />
                                         </div>
 
                                         {{-- Numbers mode input (mobile) --}}
@@ -387,7 +387,7 @@
                                                     @blur="saveNumber('{{ $gp->id }}', '{{ route('game.squad.number', [$game->id, $gp->id]) }}', localVal)"
                                                     @keydown.enter.prevent="$el.blur()"
                                                     :disabled="numberSaving['{{ $gp->id }}']"
-                                                    class="w-14 h-8 text-sm font-medium text-center bg-surface-700 border rounded tabular-nums focus:ring-2 focus:ring-accent-blue focus:border-accent-blue [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                                    class="w-14 h-8 text-sm font-medium text-center bg-surface-700 border rounded-sm tabular-nums focus:ring-2 focus:ring-accent-blue focus:border-accent-blue [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                                     :class="numberErrors['{{ $gp->id }}'] ? 'border-red-500 bg-accent-red/10' : 'border-white/10'">
                                                 <div class="w-4 shrink-0 flex items-center justify-center">
                                                     <svg x-show="numberSaved['{{ $gp->id }}']" x-transition.opacity class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
@@ -414,7 +414,7 @@
                                                 <div class="flex items-center gap-2">
                                                     <span class="text-sm font-medium text-white truncate">{{ $gp->player->name }}</span>
                                                     @if($unavailReason)
-                                                        <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-orange-500/10 text-[9px] text-accent-orange font-medium shrink-0">
+                                                        <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-sm bg-orange-500/10 text-[9px] text-accent-orange font-medium shrink-0">
                                                             <svg class="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/></svg>
                                                             {{ $unavailReason }}
                                                         </span>
@@ -423,7 +423,7 @@
                                                 </div>
                                                 @if($gp->nationality_flag)
                                                 <div class="flex items-center gap-1 mt-0.5">
-                                                    <img src="/flags/{{ $gp->nationality_flag['code'] }}.svg" class="w-4 h-3 rounded shadow-sm" title="{{ $gp->nationality_flag['name'] }}">
+                                                    <img src="/flags/{{ $gp->nationality_flag['code'] }}.svg" class="w-4 h-3 rounded-sm shadow-xs" title="{{ $gp->nationality_flag['name'] }}">
                                                 </div>
                                                 @endif
                                             </div>
@@ -532,11 +532,11 @@
                                         <template x-if="viewMode === 'stats'">
                                             <div class="flex items-center gap-1.5 justify-center">
                                                 <span class="inline-flex items-center gap-0.5">
-                                                    <span class="w-2 h-3 bg-yellow-400 rounded-sm"></span>
+                                                    <span class="w-2 h-3 bg-yellow-400 rounded-xs"></span>
                                                     <span class="text-[11px] tabular-nums text-slate-400">{{ $gp->yellow_cards }}</span>
                                                 </span>
                                                 <span class="inline-flex items-center gap-0.5">
-                                                    <span class="w-2 h-3 bg-accent-red rounded-sm"></span>
+                                                    <span class="w-2 h-3 bg-accent-red rounded-xs"></span>
                                                     <span class="text-[11px] tabular-nums text-slate-400">{{ $gp->red_cards }}</span>
                                                 </span>
                                             </div>
@@ -554,7 +554,7 @@
                                                     @blur="saveNumber('{{ $gp->id }}', '{{ route('game.squad.number', [$game->id, $gp->id]) }}', localVal)"
                                                     @keydown.enter.prevent="$el.blur()"
                                                     :disabled="numberSaving['{{ $gp->id }}']"
-                                                    class="w-14 h-8 text-sm font-medium text-center bg-surface-700 border rounded tabular-nums focus:ring-2 focus:ring-accent-blue focus:border-accent-blue [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                                    class="w-14 h-8 text-sm font-medium text-center bg-surface-700 border rounded-sm tabular-nums focus:ring-2 focus:ring-accent-blue focus:border-accent-blue [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                                     :class="numberErrors['{{ $gp->id }}'] ? 'border-red-500 bg-accent-red/10' : 'border-white/10'">
                                             </div>
                                         </template>

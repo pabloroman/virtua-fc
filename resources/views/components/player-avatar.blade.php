@@ -28,8 +28,8 @@
     };
 @endphp
 
-<div class="relative flex-shrink-0">
-    <div class="{{ $circleSize }} rounded-full bg-gradient-to-br {{ $colors['from'] }} {{ $colors['to'] }} border {{ $colors['border'] }} flex items-center justify-center">
+<div class="relative shrink-0">
+    <div class="{{ $circleSize }} rounded-full bg-linear-to-br {{ $colors['from'] }} {{ $colors['to'] }} border {{ $colors['border'] }} flex items-center justify-center">
         <span class="font-heading font-bold {{ $textSize }} {{ $colors['text'] }}">{{ $initials }}</span>
     </div>
     @if($positionAbbrev)

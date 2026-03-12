@@ -121,7 +121,7 @@
                     {{-- Formation + Mentality inline controls --}}
                     <div class="flex flex-col sm:flex-row gap-3">
                         <div class="flex items-center gap-2 overflow-x-auto scrollbar-hide">
-                            <span class="text-[10px] text-slate-500 uppercase tracking-wider flex-shrink-0">{{ __('squad.formation') }}</span>
+                            <span class="text-[10px] text-slate-500 uppercase tracking-wider shrink-0">{{ __('squad.formation') }}</span>
                             <div class="flex gap-1">
                                 <template x-for="option in formationOptions" :key="'fo-' + option.value">
                                     <button type="button"
@@ -133,7 +133,7 @@
                             </div>
                         </div>
                         <div class="flex items-center gap-2 sm:ml-auto">
-                            <span class="text-[10px] text-slate-500 uppercase tracking-wider flex-shrink-0">{{ __('squad.mentality') }}</span>
+                            <span class="text-[10px] text-slate-500 uppercase tracking-wider shrink-0">{{ __('squad.mentality') }}</span>
                             <div class="flex gap-1 bg-surface-700 rounded-lg p-0.5">
                                 <template x-for="option in mentalityOptions" :key="'mo-' + option.value">
                                     <button type="button"
@@ -156,17 +156,17 @@
                 <div class="flex lg:hidden mt-4 bg-surface-700 rounded-lg p-0.5">
                     <button type="button" @click="activeLineupTab = 'pitch'"
                         class="flex-1 px-4 py-2 text-[11px] font-medium text-center rounded-md transition-colors min-h-[44px]"
-                        :class="activeLineupTab === 'pitch' ? 'bg-surface-800 shadow-sm text-white' : 'text-slate-500 hover:text-slate-300'">
+                        :class="activeLineupTab === 'pitch' ? 'bg-surface-800 shadow-xs text-white' : 'text-slate-500 hover:text-slate-300'">
                         {{ __('squad.pitch') }}
                     </button>
                     <button type="button" @click="activeLineupTab = 'squad'"
                         class="flex-1 px-4 py-2 text-[11px] font-medium text-center rounded-md transition-colors min-h-[44px]"
-                        :class="activeLineupTab === 'squad' ? 'bg-surface-800 shadow-sm text-white' : 'text-slate-500 hover:text-slate-300'">
+                        :class="activeLineupTab === 'squad' ? 'bg-surface-800 shadow-xs text-white' : 'text-slate-500 hover:text-slate-300'">
                         {{ __('app.squad') }}
                     </button>
                     <button type="button" @click="activeLineupTab = 'tactics'"
                         class="flex-1 px-4 py-2 text-[11px] font-medium text-center rounded-md transition-colors min-h-[44px]"
-                        :class="activeLineupTab === 'tactics' ? 'bg-surface-800 shadow-sm text-white' : 'text-slate-500 hover:text-slate-300'">
+                        :class="activeLineupTab === 'tactics' ? 'bg-surface-800 shadow-xs text-white' : 'text-slate-500 hover:text-slate-300'">
                         {{ __('squad.tactics') }}
                     </button>
                 </div>
@@ -175,12 +175,12 @@
                 <div class="mt-4 flex flex-col lg:flex-row gap-4">
 
                     {{-- LEFT: Pitch + Coach (sticky on desktop) --}}
-                    <div class="lg:flex-[2] lg:sticky lg:top-[60px] lg:self-start lg:max-h-[calc(100vh-80px)] lg:overflow-y-auto space-y-4"
+                    <div class="lg:flex-2 lg:sticky lg:top-[60px] lg:self-start lg:max-h-[calc(100vh-80px)] lg:overflow-y-auto space-y-4"
                          :class="{ 'hidden lg:block': activeLineupTab !== 'pitch' }">
 
                         {{-- PITCH VISUALIZATION --}}
                         <div>
-                            <div id="pitch-container" class="pitch aspect-[3/4] sm:aspect-[2/3] lg:aspect-[3/4] w-full max-w-lg mx-auto lg:max-w-none relative"
+                            <div id="pitch-container" class="pitch aspect-3/4 sm:aspect-2/3 lg:aspect-3/4 w-full max-w-lg mx-auto lg:max-w-none relative"
                                 :style="(positioningSlotId !== null || draggingSlotId !== null) ? 'touch-action: none' : ''">
 
                                 {{-- Pitch markings --}}
@@ -250,7 +250,7 @@
                                         <div
                                             x-show="!slot.player"
                                             @click="assigningSlotId = assigningSlotId === slot.id ? null : slot.id; positioningSlotId = null; if (assigningSlotId !== null) activeLineupTab = 'squad'"
-                                            class="w-11 h-11 rounded-full border-2 flex items-center justify-center backdrop-blur-sm cursor-pointer transition-all duration-200"
+                                            class="w-11 h-11 rounded-full border-2 flex items-center justify-center backdrop-blur-xs cursor-pointer transition-all duration-200"
                                             :class="assigningSlotId === slot.id
                                                 ? 'border-white bg-surface-800/30 ring-2 ring-white/60 scale-110 animate-pulse'
                                                 : 'border-dashed border-white/40 bg-surface-800/5 hover:border-white/70 hover:bg-surface-800/15'"
@@ -280,10 +280,10 @@
                                             </div>
 
                                             {{-- Hover tooltip --}}
-                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-slate-900/95 backdrop-blur-sm text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-50 shadow-xl">
+                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-slate-900/95 backdrop-blur-xs text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-50 shadow-xl">
                                                 <div class="flex items-center gap-2">
                                                     <span class="font-semibold" x-text="slot.player?.name"></span>
-                                                    <span class="px-1.5 py-0.5 bg-surface-800/15 rounded font-bold text-[10px]" x-text="slot.player?.overallScore"></span>
+                                                    <span class="px-1.5 py-0.5 bg-surface-800/15 rounded-sm font-bold text-[10px]" x-text="slot.player?.overallScore"></span>
                                                 </div>
                                                 <div class="flex items-center gap-2 mt-1 text-slate-300">
                                                     <span x-text="slot.displayLabel"></span>
@@ -321,7 +321,7 @@
                                 <div
                                     x-show="positioningSlotId !== null"
                                     x-cloak
-                                    class="absolute bottom-2 left-1/2 -translate-x-1/2 px-4 py-2 bg-surface-800/95 backdrop-blur-sm rounded-lg shadow-lg text-xs font-medium text-slate-300 flex items-center gap-2 z-20"
+                                    class="absolute bottom-2 left-1/2 -translate-x-1/2 px-4 py-2 bg-surface-800/95 backdrop-blur-xs rounded-lg shadow-lg text-xs font-medium text-slate-300 flex items-center gap-2 z-20"
                                 >
                                     <span class="w-2 h-2 rounded-full bg-accent-green animate-pulse"></span>
                                     {{ __('squad.drag_or_tap') }}
@@ -334,7 +334,7 @@
                                 <div
                                     x-show="assigningSlotId !== null"
                                     x-cloak
-                                    class="absolute bottom-2 left-1/2 -translate-x-1/2 px-4 py-2 bg-surface-800/95 backdrop-blur-sm rounded-lg shadow-lg text-xs font-medium text-slate-300 flex items-center gap-2 z-20"
+                                    class="absolute bottom-2 left-1/2 -translate-x-1/2 px-4 py-2 bg-surface-800/95 backdrop-blur-xs rounded-lg shadow-lg text-xs font-medium text-slate-300 flex items-center gap-2 z-20"
                                 >
                                     <span class="w-2 h-2 rounded-full bg-accent-blue animate-pulse"></span>
                                     {{ __('squad.select_player_for_slot') }}
@@ -358,13 +358,13 @@
                                          @click="toggle(benchPlayerId, false)">
                                         <template x-if="playersData[benchPlayerId]">
                                             <div>
-                                                <div class="relative flex-shrink-0 mx-auto mb-1.5 w-8 h-8">
+                                                <div class="relative shrink-0 mx-auto mb-1.5 w-8 h-8">
                                                     <div class="w-8 h-8 rounded-full border flex items-center justify-center"
                                                         :class="{
-                                                            'bg-gradient-to-br from-amber-500/20 to-amber-600/10 border-amber-500/20': playersData[benchPlayerId].positionGroup === 'Goalkeeper',
-                                                            'bg-gradient-to-br from-blue-500/20 to-blue-600/10 border-blue-500/20': playersData[benchPlayerId].positionGroup === 'Defender',
-                                                            'bg-gradient-to-br from-green-500/20 to-green-600/10 border-green-500/20': playersData[benchPlayerId].positionGroup === 'Midfielder',
-                                                            'bg-gradient-to-br from-rose-500/20 to-rose-600/10 border-rose-500/20': playersData[benchPlayerId].positionGroup === 'Forward',
+                                                            'bg-linear-to-br from-amber-500/20 to-amber-600/10 border-amber-500/20': playersData[benchPlayerId].positionGroup === 'Goalkeeper',
+                                                            'bg-linear-to-br from-blue-500/20 to-blue-600/10 border-blue-500/20': playersData[benchPlayerId].positionGroup === 'Defender',
+                                                            'bg-linear-to-br from-green-500/20 to-green-600/10 border-green-500/20': playersData[benchPlayerId].positionGroup === 'Midfielder',
+                                                            'bg-linear-to-br from-rose-500/20 to-rose-600/10 border-rose-500/20': playersData[benchPlayerId].positionGroup === 'Forward',
                                                         }">
                                                         <span class="font-heading font-bold text-xs"
                                                             :class="{
@@ -411,7 +411,7 @@
                     </div>
 
                     {{-- CENTER: Available Players sidebar --}}
-                    <div class="lg:flex-[2] lg:min-w-[280px]" :class="{ 'hidden lg:block': activeLineupTab !== 'squad' }">
+                    <div class="lg:flex-2 lg:min-w-[280px]" :class="{ 'hidden lg:block': activeLineupTab !== 'squad' }">
                         <div class="bg-surface-800 border border-white/5 rounded-xl overflow-hidden" x-data="{ posTab: 'all' }">
                             {{-- Sidebar header --}}
                             <div class="flex items-center justify-between px-4 py-3 border-b border-white/5">
@@ -469,7 +469,7 @@
                                                         <div class="flex items-center gap-1.5">
                                                             <span class="text-xs font-medium text-white truncate">{{ $player->name }}</span>
                                                             @if($unavailabilityReason)
-                                                                <span class="text-[8px] px-1 py-0.5 rounded bg-red-500/10 text-accent-red font-medium shrink-0">{{ $unavailabilityReason }}</span>
+                                                                <span class="text-[8px] px-1 py-0.5 rounded-sm bg-red-500/10 text-accent-red font-medium shrink-0">{{ $unavailabilityReason }}</span>
                                                             @endif
                                                         </div>
                                                         <div class="flex items-center gap-2 mt-0.5">
@@ -486,7 +486,7 @@
                                                         </div>
                                                     </div>
                                                     @if(!$isUnavailable)
-                                                    <div class="w-5 h-5 rounded border flex items-center justify-center transition-colors flex-shrink-0"
+                                                    <div class="w-5 h-5 rounded-sm border flex items-center justify-center transition-colors shrink-0"
                                                         :class="isSelected('{{ $player->id }}') ? 'border-accent-blue bg-accent-blue' : 'border-white/10'">
                                                         <svg x-show="isSelected('{{ $player->id }}')" x-cloak class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                                                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>

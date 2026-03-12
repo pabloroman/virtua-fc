@@ -33,7 +33,7 @@
                     <p class="text-sm mt-2 text-white">
                         {{ __('Your email address is unverified.') }}
 
-                        <button form="send-verification" class="underline text-sm text-slate-400 hover:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-blue">
+                        <button form="send-verification" class="underline text-sm text-slate-400 hover:text-white rounded-md focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-accent-blue">
                             {{ __('Click here to re-send the verification email.') }}
                         </button>
                     </p>
@@ -49,7 +49,7 @@
 
         <div>
             <x-input-label for="locale" :value="__('Language')" />
-            <select id="locale" name="locale" class="mt-1 block w-full border-white/10 focus:border-accent-blue focus:ring-accent-blue rounded-md shadow-sm min-h-[44px]">
+            <select id="locale" name="locale" class="mt-1 block w-full border-white/10 focus:border-accent-blue focus:ring-accent-blue rounded-md shadow-xs min-h-[44px]">
                 @foreach (config('app.supported_locales') as $locale)
                     <option value="{{ $locale }}" {{ old('locale', $user->locale) === $locale ? 'selected' : '' }}>
                         {{ $locale === 'es' ? 'Español' : 'English' }}

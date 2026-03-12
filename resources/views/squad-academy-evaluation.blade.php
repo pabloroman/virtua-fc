@@ -6,7 +6,7 @@
     </x-slot>
 
     <div x-data="academyEvaluation()" class="max-w-7xl mx-auto sm:px-6 lg:px-8 pb-8">
-        <div class="bg-surface-800 overflow-hidden shadow-sm sm:rounded-lg">
+        <div class="bg-surface-800 overflow-hidden shadow-xs sm:rounded-lg">
             <div class="p-4 md:p-8">
                 {{-- Header --}}
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
@@ -27,7 +27,7 @@
                         </div>
                         <div class="w-24 h-2 bg-slate-200 rounded-full overflow-hidden">
                             <div class="h-full rounded-full transition-all duration-300"
-                                 :class="seatsUsed > {{ $capacity }} ? 'bg-accent-red/100' : (seatsUsed >= {{ $capacity }} - 1 ? 'bg-accent-gold/100' : 'bg-emerald-500')"
+                                 :class="seatsUsed > {{ $capacity }} ? 'bg-accent-red' : (seatsUsed >= {{ $capacity }} - 1 ? 'bg-accent-gold' : 'bg-emerald-500')"
                                  :style="'width: ' + Math.min(100, (seatsUsed / {{ max($capacity, 1) }}) * 100) + '%'">
                             </div>
                         </div>
@@ -62,7 +62,7 @@
                 <div class="mb-6 border border-white/10 rounded-lg overflow-hidden">
                     <div class="px-4 py-3 grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div class="flex items-start gap-2.5">
-                            <span class="shrink-0 mt-0.5 w-5 h-5 rounded bg-emerald-600 flex items-center justify-center">
+                            <span class="shrink-0 mt-0.5 w-5 h-5 rounded-sm bg-emerald-600 flex items-center justify-center">
                                 <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                             </span>
                             <div>
@@ -71,7 +71,7 @@
                             </div>
                         </div>
                         <div class="flex items-start gap-2.5">
-                            <span class="shrink-0 mt-0.5 w-5 h-5 rounded bg-accent-blue flex items-center justify-center">
+                            <span class="shrink-0 mt-0.5 w-5 h-5 rounded-sm bg-accent-blue flex items-center justify-center">
                                 <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
                             </span>
                             <div>
@@ -80,7 +80,7 @@
                             </div>
                         </div>
                         <div class="flex items-start gap-2.5">
-                            <span class="shrink-0 mt-0.5 w-5 h-5 rounded bg-indigo-600 flex items-center justify-center">
+                            <span class="shrink-0 mt-0.5 w-5 h-5 rounded-sm bg-indigo-600 flex items-center justify-center">
                                 <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
                             </span>
                             <div>
@@ -89,7 +89,7 @@
                             </div>
                         </div>
                         <div class="flex items-start gap-2.5">
-                            <span class="shrink-0 mt-0.5 w-5 h-5 rounded bg-red-600 flex items-center justify-center">
+                            <span class="shrink-0 mt-0.5 w-5 h-5 rounded-sm bg-red-600 flex items-center justify-center">
                                 <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                             </span>
                             <div>
@@ -135,20 +135,20 @@
                                     {{-- Name + info --}}
                                     <div class="col-span-3">
                                         <div class="flex items-center gap-2">
-                                            <button type="button" x-data @click="$dispatch('show-player-detail', '{{ route('game.academy.detail', [$game->id, $prospect->id]) }}')" class="p-1 text-slate-300 rounded hover:text-slate-400 shrink-0">
+                                            <button type="button" x-data @click="$dispatch('show-player-detail', '{{ route('game.academy.detail', [$game->id, $prospect->id]) }}')" class="p-1 text-slate-300 rounded-sm hover:text-slate-400 shrink-0">
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="w-5 h-5">
                                                     <path fill-rule="evenodd" d="M19.5 21a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3h-5.379a.75.75 0 0 1-.53-.22L11.47 3.66A2.25 2.25 0 0 0 9.879 3H4.5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h15Zm-6.75-10.5a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V10.5Z" clip-rule="evenodd" />
                                                 </svg>
                                             </button>
                                             @if($prospect->nationality_flag)
-                                                <img src="/flags/{{ $prospect->nationality_flag['code'] }}.svg" class="w-5 h-4 rounded shadow-sm shrink-0" title="{{ $prospect->nationality_flag['name'] }}">
+                                                <img src="/flags/{{ $prospect->nationality_flag['code'] }}.svg" class="w-5 h-4 rounded-sm shadow-xs shrink-0" title="{{ $prospect->nationality_flag['name'] }}">
                                             @endif
                                             <span class="font-medium text-white truncate">{{ $prospect->name }}</span>
                                         </div>
                                         <div class="flex items-center gap-2 mt-0.5">
                                             <span class="text-xs text-slate-400">{{ trans_choice('squad.academy_seasons', $prospect->seasons_in_academy, ['count' => $prospect->seasons_in_academy]) }}</span>
                                             @if($mustDecide)
-                                                <span class="text-xs font-semibold text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded">{{ __('squad.academy_must_decide') }}</span>
+                                                <span class="text-xs font-semibold text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded-sm">{{ __('squad.academy_must_decide') }}</span>
                                             @endif
                                         </div>
                                     </div>
@@ -177,7 +177,7 @@
                                             <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-semibold
                                                 @if($prospect->overall >= 80) bg-emerald-500 text-white
                                                 @elseif($prospect->overall >= 70) bg-lime-500 text-white
-                                                @elseif($prospect->overall >= 60) bg-accent-gold/100 text-white
+                                                @elseif($prospect->overall >= 60) bg-accent-gold text-white
                                                 @else bg-slate-300 text-slate-300
                                                 @endif">
                                                 {{ $prospect->overall }}
@@ -226,14 +226,14 @@
                                 {{-- Mobile card --}}
                                 <div class="md:hidden p-3">
                                     <div class="flex items-center gap-2 mb-2">
-                                        <button type="button" x-data @click="$dispatch('show-player-detail', '{{ route('game.academy.detail', [$game->id, $prospect->id]) }}')" class="p-1 text-slate-300 rounded hover:text-slate-400 shrink-0">
+                                        <button type="button" x-data @click="$dispatch('show-player-detail', '{{ route('game.academy.detail', [$game->id, $prospect->id]) }}')" class="p-1 text-slate-300 rounded-sm hover:text-slate-400 shrink-0">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="w-5 h-5">
                                                 <path fill-rule="evenodd" d="M19.5 21a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3h-5.379a.75.75 0 0 1-.53-.22L11.47 3.66A2.25 2.25 0 0 0 9.879 3H4.5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h15Zm-6.75-10.5a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V10.5Z" clip-rule="evenodd" />
                                             </svg>
                                         </button>
                                         <x-position-badge :position="$prospect->position" :tooltip="\App\Support\PositionMapper::toDisplayName($prospect->position)" />
                                         @if($prospect->nationality_flag)
-                                            <img src="/flags/{{ $prospect->nationality_flag['code'] }}.svg" class="w-5 h-4 rounded shadow-sm shrink-0" title="{{ $prospect->nationality_flag['name'] }}">
+                                            <img src="/flags/{{ $prospect->nationality_flag['code'] }}.svg" class="w-5 h-4 rounded-sm shadow-xs shrink-0" title="{{ $prospect->nationality_flag['name'] }}">
                                         @endif
                                         <span class="font-medium text-white truncate">{{ $prospect->name }}</span>
                                         <span class="text-xs text-slate-400 shrink-0">{{ $prospect->age }} {{ __('app.age') }}</span>
@@ -241,7 +241,7 @@
 
                                     @if($mustDecide)
                                         <div class="mb-2">
-                                            <span class="text-xs font-semibold text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded">{{ __('squad.academy_must_decide') }}</span>
+                                            <span class="text-xs font-semibold text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded-sm">{{ __('squad.academy_must_decide') }}</span>
                                         </div>
                                     @endif
 
@@ -253,7 +253,7 @@
                                             <span class="inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold
                                                 @if($prospect->overall >= 80) bg-emerald-500 text-white
                                                 @elseif($prospect->overall >= 70) bg-lime-500 text-white
-                                                @elseif($prospect->overall >= 60) bg-accent-gold/100 text-white
+                                                @elseif($prospect->overall >= 60) bg-accent-gold text-white
                                                 @else bg-slate-300 text-slate-300
                                                 @endif">
                                                 {{ $prospect->overall }}

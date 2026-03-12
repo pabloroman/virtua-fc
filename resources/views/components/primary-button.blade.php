@@ -15,6 +15,6 @@ $sizeClasses = match($size) {
 };
 @endphp
 
-<button {{ $attributes->merge(['type' => 'submit', 'class' => "inline-flex items-center justify-center {$sizeClasses} {$colorClasses} border border-transparent font-semibold text-white uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface-900 disabled:opacity-50 disabled:cursor-not-allowed transition ease-in-out duration-150"]) }}>
+<button {{ $attributes->merge(['type' => 'submit', 'class' => "inline-flex items-center justify-center {$sizeClasses} {$colorClasses} border border-transparent font-semibold text-white uppercase tracking-wider focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface-900 disabled:opacity-50 disabled:cursor-not-allowed transition ease-in-out duration-150"]) }}>
     {{ $slot }}
 </button>

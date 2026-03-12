@@ -14,12 +14,12 @@ $borderColorMap = [
 ];
 
 $bgColorMap = [
-    'bg-accent-blue/100' => 'bg-accent-blue/100',
+    'bg-accent-blue' => 'bg-accent-blue',
     'bg-orange-500' => 'bg-orange-500',
-    'bg-accent-red/100' => 'bg-accent-red/100',
+    'bg-accent-red' => 'bg-accent-red',
     'bg-green-300' => 'bg-green-300',
-    'bg-accent-green/100' => 'bg-accent-green/100',
-    'bg-accent-gold/100' => 'bg-accent-gold/100',
+    'bg-accent-green' => 'bg-accent-green',
+    'bg-accent-gold' => 'bg-accent-gold',
 ];
 
 $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
@@ -97,7 +97,7 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
     <div class="flex gap-6 text-xs text-slate-500">
         @foreach($standingsZones as $zone)
             <div class="flex items-center gap-2">
-                <div class="w-3 h-3 {{ $bgColorMap[$zone['bgColor']] ?? '' }} rounded"></div>
+                <div class="w-3 h-3 {{ $bgColorMap[$zone['bgColor']] ?? '' }} rounded-sm"></div>
                 <span>{{ __($zone['label']) }}</span>
             </div>
         @endforeach

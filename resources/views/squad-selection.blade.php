@@ -64,7 +64,7 @@ $tabs = [
             @endif
 
             {{-- Main Card --}}
-            <div class="bg-surface-800 rounded-xl shadow-sm border border-white/10 overflow-hidden">
+            <div class="bg-surface-800 rounded-xl shadow-xs border border-white/10 overflow-hidden">
 
                 {{-- Title Bar --}}
                 <div class="p-4 md:p-6 border-b border-white/10">
@@ -117,7 +117,7 @@ $tabs = [
                             class="w-full flex items-center gap-3 px-3 md:px-5 py-3 md:py-3.5 text-left transition-all min-h-[56px]">
 
                         {{-- Checkbox --}}
-                        <div class="shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors"
+                        <div class="shrink-0 w-5 h-5 rounded-sm border-2 flex items-center justify-center transition-colors"
                              :class="isSelected('{{ $candidate['transfermarkt_id'] }}')
                                  ? 'bg-emerald-500 border-emerald-500'
                                  : 'border-white/10'">
@@ -166,7 +166,7 @@ $tabs = [
         </div>
 
         {{-- Sticky Bottom Bar --}}
-        <div class="fixed bottom-0 left-0 right-0 bg-surface-800/95 backdrop-blur-sm border-t border-white/10 shadow-lg z-30">
+        <div class="fixed bottom-0 left-0 right-0 bg-surface-800/95 backdrop-blur-xs border-t border-white/10 shadow-lg z-30">
             <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-3 md:py-4">
                 <div class="flex items-center gap-3 md:gap-4">
                     {{-- Position Breakdown --}}
@@ -197,7 +197,7 @@ $tabs = [
                         <button type="submit"
                                 :disabled="!canConfirm"
                                 :class="canConfirm
-                                    ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm'
+                                    ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs'
                                     : 'bg-surface-700 text-slate-400 cursor-not-allowed'"
                                 class="w-full md:w-auto px-6 py-2.5 rounded-lg text-sm font-semibold transition-all min-h-[44px]">
                             {{ __('squad.confirm_squad') }}

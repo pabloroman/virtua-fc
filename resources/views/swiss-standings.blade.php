@@ -16,7 +16,7 @@ $defaultTab = $knockoutStarted ? 'knockout' : 'league';
 
     <div>
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-surface-800 overflow-hidden shadow-sm sm:rounded-lg" x-data="{ activeTab: '{{ $defaultTab }}' }">
+            <div class="bg-surface-800 overflow-hidden shadow-xs sm:rounded-lg" x-data="{ activeTab: '{{ $defaultTab }}' }">
                 <div class="p-4 sm:p-6 md:p-8">
                     <h3 class="font-semibold text-xl text-white mb-6">{{ __($competition->name) }}</h3>
 
@@ -46,7 +46,7 @@ $defaultTab = $knockoutStarted ? 'knockout' : 'league';
                                 <div class="flex gap-4" style="min-width: fit-content;">
                                     @foreach($knockoutRounds as $round)
                                         @php $ties = $knockoutTies->get($round->round, collect()); @endphp
-                                        <div class="flex-shrink-0 w-64">
+                                        <div class="shrink-0 w-64">
                                             <div class="text-center mb-4">
                                                 <h4 class="font-semibold text-slate-300">{{ __($round->name) }}</h4>
                                                 <div class="text-xs text-slate-400">

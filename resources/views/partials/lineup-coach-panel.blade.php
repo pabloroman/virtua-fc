@@ -36,7 +36,7 @@
     @if(!empty($opponentData['formation']))
         <div class="flex items-center justify-end gap-1.5 mb-2">
             <span class="text-[10px] text-slate-400 uppercase tracking-wide">{{ __('squad.coach_opponent_expected_label') }}</span>
-            <span class="text-xs font-semibold text-slate-300 bg-surface-700 px-1.5 py-0.5 rounded">{{ $opponentData['formation'] }}</span>
+            <span class="text-xs font-semibold text-slate-300 bg-surface-700 px-1.5 py-0.5 rounded-sm">{{ $opponentData['formation'] }}</span>
             <span class="text-slate-300">&middot;</span>
             <span class="text-xs font-medium
                 @if($opponentData['mentality'] === 'defensive') text-accent-blue
@@ -52,9 +52,9 @@
         <div class="flex gap-1">
             @forelse($playerForm as $result)
                 <span class="w-5 h-5 rounded text-xs font-bold flex items-center justify-center
-                    @if($result === 'W') bg-accent-green/100 text-white
+                    @if($result === 'W') bg-accent-green text-white
                     @elseif($result === 'D') bg-slate-400 text-white
-                    @else bg-accent-red/100 text-white @endif">
+                    @else bg-accent-red text-white @endif">
                     {{ $result }}
                 </span>
             @empty
@@ -68,9 +68,9 @@
         <div class="flex gap-1">
             @forelse($opponentData['form'] as $result)
                 <span class="w-5 h-5 rounded text-xs font-bold flex items-center justify-center
-                    @if($result === 'W') bg-accent-green/100 text-white
+                    @if($result === 'W') bg-accent-green text-white
                     @elseif($result === 'D') bg-slate-400 text-white
-                    @else bg-accent-red/100 text-white @endif">
+                    @else bg-accent-red text-white @endif">
                     {{ $result }}
                 </span>
             @empty
@@ -83,11 +83,11 @@
     <div class="border-t border-white/10 pt-3 mb-3">
         <div class="flex items-center justify-center gap-4 mb-1">
             <span class="flex items-center gap-1 text-[10px] text-slate-500">
-                <span class="w-2 h-1 rounded-sm bg-sky-400 inline-block"></span>
+                <span class="w-2 h-1 rounded-xs bg-sky-400 inline-block"></span>
                 {{ $game->team->short_name ?? $game->team->name }}
             </span>
             <span class="flex items-center gap-1 text-[10px] text-slate-500">
-                <span class="w-2 h-1 rounded-sm bg-red-400 inline-block"></span>
+                <span class="w-2 h-1 rounded-xs bg-red-400 inline-block"></span>
                 {{ $opponent->short_name ?? $opponent->name }}
             </span>
         </div>

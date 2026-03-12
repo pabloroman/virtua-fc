@@ -1,6 +1,6 @@
 <section id="modals" class="mb-20">
     <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-white mb-2">Modals</h2>
-    <p class="text-sm text-slate-400 mb-8">Full-featured modal component with Alpine.js. Includes focus management, escape-to-close, body scroll lock, and smooth scale transitions. The modal panel uses <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">bg-surface-800</code> with a subtle <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">border-white/10</code> edge.</p>
+    <p class="text-sm text-slate-400 mb-8">Full-featured modal component with Alpine.js. Includes focus management, escape-to-close, body scroll lock, and smooth scale transitions. The modal panel uses <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">bg-surface-800</code> with a subtle <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">border-white/10</code> edge.</p>
 
     {{-- Interactive Demo --}}
     <div class="mb-12">
@@ -18,7 +18,7 @@
         <x-modal name="ds-demo-modal" maxWidth="2xl">
             <div class="p-6">
                 <h3 class="text-xl font-semibold text-white mb-2">Modal Title</h3>
-                <p class="text-sm text-slate-400 mb-6">This is a demo modal with the default 2xl max-width. It supports focus trapping, escape-to-close, and backdrop click to close. The panel is styled with <code class="text-xs bg-surface-700 px-1 py-0.5 rounded text-slate-300">bg-surface-800</code>.</p>
+                <p class="text-sm text-slate-400 mb-6">This is a demo modal with the default 2xl max-width. It supports focus trapping, escape-to-close, and backdrop click to close. The panel is styled with <code class="text-xs bg-surface-700 px-1 py-0.5 rounded-sm text-slate-300">bg-surface-800</code>.</p>
                 <div class="flex justify-end gap-3">
                     <x-secondary-button type="button" @click="$dispatch('close-modal', 'ds-demo-modal')">Cancel</x-secondary-button>
                     <x-primary-button type="button" color="blue" @click="$dispatch('close-modal', 'ds-demo-modal')">Confirm</x-primary-button>
@@ -36,7 +36,7 @@
 
         <div x-data="{ copied: false }" class="relative mb-4">
             <button @click="navigator.clipboard.writeText($refs.code.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -102,7 +102,7 @@
     {{-- Events --}}
     <div class="mb-12">
         <h3 class="text-lg font-semibold text-white mb-2">Events</h3>
-        <p class="text-sm text-slate-400 mb-4">Use Alpine.js <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">$dispatch</code> to open and close modals by name.</p>
+        <p class="text-sm text-slate-400 mb-4">Use Alpine.js <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">$dispatch</code> to open and close modals by name.</p>
 
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
@@ -132,11 +132,11 @@
     {{-- Usage Patterns --}}
     <div>
         <h3 class="text-lg font-semibold text-white mb-2">Usage Patterns</h3>
-        <p class="text-sm text-slate-400 mb-4">Common modal content patterns in the dark theme. Always use <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">text-white</code> for titles and <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">text-slate-400</code> for descriptions inside modal panels.</p>
+        <p class="text-sm text-slate-400 mb-4">Common modal content patterns in the dark theme. Always use <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">text-white</code> for titles and <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">text-slate-400</code> for descriptions inside modal panels.</p>
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.code.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>

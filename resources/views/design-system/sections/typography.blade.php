@@ -1,6 +1,6 @@
 <section id="typography" class="mb-20">
     <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-white mb-2">Typography</h2>
-    <p class="text-sm text-slate-400 mb-10">Two typefaces drive the visual identity: <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">Barlow Condensed</code> (font-heading) for headings, labels, and numbers, and <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">Inter</code> (font-sans) for body text. Font sizes are scaled up from Tailwind defaults via <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">tailwind.config.js</code>. On mobile (&lt;768px), the root font-size drops to 14px, proportionally scaling all rem-based values.</p>
+    <p class="text-sm text-slate-400 mb-10">Two typefaces drive the visual identity: <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">Barlow Condensed</code> (font-heading) for headings, labels, and numbers, and <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">Inter</code> (font-sans) for body text. Font sizes are scaled up from Tailwind defaults via <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">tailwind.config.js</code>. On mobile (&lt;768px), the root font-size drops to 14px, proportionally scaling all rem-based values.</p>
 
     {{-- ================================================================== --}}
     {{-- HEADINGS --}}
@@ -12,7 +12,7 @@
         <div>
             <span class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-white">Page Title</span>
             <div class="mt-2">
-                <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-white</code>
+                <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-white</code>
             </div>
             <p class="text-xs text-slate-500 mt-1">Top-level page headings. Scales from text-2xl on mobile to text-3xl on desktop.</p>
         </div>
@@ -23,7 +23,7 @@
         <div>
             <span class="font-heading font-semibold text-base leading-none tracking-wide text-white">Real Madrid CF</span>
             <div class="mt-2">
-                <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">font-heading font-semibold text-base leading-none tracking-wide text-white</code>
+                <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">font-heading font-semibold text-base leading-none tracking-wide text-white</code>
             </div>
             <p class="text-xs text-slate-500 mt-1">Team names and header identifiers. Tight leading for compact layouts.</p>
         </div>
@@ -34,7 +34,7 @@
         <div>
             <span class="text-lg font-semibold text-white">Section Heading</span>
             <div class="mt-2">
-                <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">text-lg font-semibold text-white</code>
+                <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">text-lg font-semibold text-white</code>
             </div>
             <p class="text-xs text-slate-500 mt-1">Subsection headings within a page or card.</p>
         </div>
@@ -42,7 +42,7 @@
 
     <div x-data="{ copied: false }" class="relative mb-12">
         <button @click="navigator.clipboard.writeText($refs.code.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
             <span x-show="!copied">Copy</span>
             <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
         </button>
@@ -61,7 +61,7 @@
         <div>
             <span class="text-[10px] text-slate-500 uppercase tracking-widest">La Liga &middot; Season 2025/26</span>
             <div class="mt-2">
-                <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">text-[10px] text-slate-500 uppercase tracking-widest</code>
+                <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">text-[10px] text-slate-500 uppercase tracking-widest</code>
             </div>
             <p class="text-xs text-slate-500 mt-1">Micro metadata labels. Used for competition context, dates, and secondary identifiers.</p>
         </div>
@@ -72,7 +72,7 @@
         <div>
             <span class="font-heading text-[11px] font-semibold uppercase tracking-widest text-slate-500">Goalkeepers</span>
             <div class="mt-2">
-                <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">font-heading text-[11px] font-semibold uppercase tracking-widest text-slate-500</code>
+                <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">font-heading text-[11px] font-semibold uppercase tracking-widest text-slate-500</code>
             </div>
             <p class="text-xs text-slate-500 mt-1">Group headers for categorized lists (position groups, form sections).</p>
         </div>
@@ -84,7 +84,7 @@
             <span class="text-xs font-medium uppercase tracking-wider text-slate-400">Plantilla</span>
             <span class="ml-4 text-xs font-medium uppercase tracking-wider text-white">Alineaci&oacute;n</span>
             <div class="mt-2">
-                <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">text-xs font-medium uppercase tracking-wider</code>
+                <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">text-xs font-medium uppercase tracking-wider</code>
             </div>
             <p class="text-xs text-slate-500 mt-1">Navigation items and tab labels. Active state uses text-white, inactive uses text-slate-400.</p>
         </div>
@@ -96,9 +96,9 @@
             <span class="text-[10px] text-slate-500">Goals</span>
             <span class="ml-4 text-[9px] text-slate-500">xG per 90</span>
             <div class="mt-2">
-                <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">text-[10px] text-slate-500</code>
+                <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">text-[10px] text-slate-500</code>
                 <span class="text-slate-600 mx-1">or</span>
-                <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">text-[9px] text-slate-500</code>
+                <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">text-[9px] text-slate-500</code>
             </div>
             <p class="text-xs text-slate-500 mt-1">Stat labels and very compact metadata. Use text-[9px] only in space-constrained contexts.</p>
         </div>
@@ -106,7 +106,7 @@
 
     <div x-data="{ copied: false }" class="relative mb-12">
         <button @click="navigator.clipboard.writeText($refs.code.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
             <span x-show="!copied">Copy</span>
             <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
         </button>
@@ -125,7 +125,7 @@
         {{-- Player name --}}
         <div>
             <span class="text-sm font-medium text-white">Lamine Yamal</span>
-            <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300 ml-3">text-sm font-medium text-white</code>
+            <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300 ml-3">text-sm font-medium text-white</code>
             <p class="text-xs text-slate-500 mt-1">Player names in rows, lists, and cards.</p>
         </div>
 
@@ -135,7 +135,7 @@
         <div>
             <span class="text-sm text-slate-400">Primary body text for descriptions, paragraphs, and general content.</span>
             <div class="mt-2">
-                <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">text-sm text-slate-400</code>
+                <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">text-sm text-slate-400</code>
             </div>
         </div>
 
@@ -145,7 +145,7 @@
         <div>
             <span class="text-xs text-slate-500">Secondary information, metadata, and supporting details.</span>
             <div class="mt-2">
-                <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">text-xs text-slate-500</code>
+                <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">text-xs text-slate-500</code>
             </div>
         </div>
 
@@ -154,13 +154,13 @@
         {{-- Link text --}}
         <div>
             <a href="#" class="text-sm text-accent-blue hover:text-blue-400">View all players &rarr;</a>
-            <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300 ml-3">text-sm text-accent-blue hover:text-blue-400</code>
+            <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300 ml-3">text-sm text-accent-blue hover:text-blue-400</code>
         </div>
     </div>
 
     <div x-data="{ copied: false }" class="relative mb-12">
         <button @click="navigator.clipboard.writeText($refs.code.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
             <span x-show="!copied">Copy</span>
             <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
         </button>
@@ -182,7 +182,7 @@
                 <span class="font-heading font-bold text-base text-accent-blue">78</span>
             </div>
             <div>
-                <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">font-heading font-bold text-base</code>
+                <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">font-heading font-bold text-base</code>
                 <p class="text-xs text-slate-500 mt-1">Rating numbers inside badges. Color varies by context (blue, green, gold).</p>
             </div>
         </div>
@@ -197,7 +197,7 @@
                 <span class="font-heading text-xl font-bold text-white">24</span>
             </div>
             <div>
-                <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">font-heading text-xl font-bold</code>
+                <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">font-heading text-xl font-bold</code>
             </div>
         </div>
         <p class="text-xs text-slate-500 -mt-3">Summary card hero values. Color by context: green for income, red for expenses, white for neutral counts.</p>
@@ -208,7 +208,7 @@
         <div>
             <span class="text-xs font-semibold text-accent-gold font-heading tracking-wide">&euro;12.5M</span>
             <div class="mt-2">
-                <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">text-xs font-semibold text-accent-gold font-heading tracking-wide</code>
+                <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">text-xs font-semibold text-accent-gold font-heading tracking-wide</code>
             </div>
             <p class="text-xs text-slate-500 mt-1">Inline financial values (market value, transfer fees, salaries).</p>
         </div>
@@ -219,7 +219,7 @@
         <div class="flex items-center gap-4">
             <span class="font-heading text-3xl md:text-5xl font-bold text-white">2 - 1</span>
             <div>
-                <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">font-heading text-3xl md:text-5xl font-bold text-white</code>
+                <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">font-heading text-3xl md:text-5xl font-bold text-white</code>
                 <p class="text-xs text-slate-500 mt-1">Match scores. Scales responsively from 3xl to 5xl.</p>
             </div>
         </div>
@@ -227,7 +227,7 @@
 
     <div x-data="{ copied: false }" class="relative mb-12">
         <button @click="navigator.clipboard.writeText($refs.code.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
             <span x-show="!copied">Copy</span>
             <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
         </button>
@@ -275,6 +275,6 @@
     {{-- MOBILE SCALING NOTE --}}
     {{-- ================================================================== --}}
     <div class="bg-accent-blue/10 border border-accent-blue/20 rounded-xl p-4 text-sm text-slate-300">
-        <span class="font-semibold text-white">Mobile scaling:</span> The root font-size drops to 14px on screens narrower than 768px (from the default ~20px). All rem-based sizes scale proportionally. Never use fixed <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">px</code> values for font sizes &mdash; use Tailwind's <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">text-*</code> utilities. Arbitrary pixel sizes like <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">text-[10px]</code> and <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">text-[9px]</code> are exceptions used only for micro-labels that should remain fixed across breakpoints.
+        <span class="font-semibold text-white">Mobile scaling:</span> The root font-size drops to 14px on screens narrower than 768px (from the default ~20px). All rem-based sizes scale proportionally. Never use fixed <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">px</code> values for font sizes &mdash; use Tailwind's <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">text-*</code> utilities. Arbitrary pixel sizes like <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">text-[10px]</code> and <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">text-[9px]</code> are exceptions used only for micro-labels that should remain fixed across breakpoints.
     </div>
 </section>

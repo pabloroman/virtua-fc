@@ -35,8 +35,8 @@
         </div>
     </div>
     <div class="flex gap-3 mb-10">
-        <span class="text-[10px] text-slate-500 bg-surface-700 px-2 py-1 rounded">surface-900 (#0B1120)</span>
-        <span class="text-[10px] text-slate-500 bg-surface-700 px-2 py-1 rounded">surface-800 (#0F172A)</span>
+        <span class="text-[10px] text-slate-500 bg-surface-700 px-2 py-1 rounded-sm">surface-900 (#0B1120)</span>
+        <span class="text-[10px] text-slate-500 bg-surface-700 px-2 py-1 rounded-sm">surface-800 (#0F172A)</span>
     </div>
 
     {{-- Logo Sizes --}}
@@ -77,7 +77,7 @@
 
     <div x-data="{ copied: false }" class="relative mb-10">
         <button @click="navigator.clipboard.writeText($refs.logoCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
             <span x-show="!copied">Copy</span>
             <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
         </button>
@@ -112,7 +112,7 @@
 
     <div x-data="{ copied: false }" class="relative mb-10">
         <button @click="navigator.clipboard.writeText($refs.faviconCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
             <span x-show="!copied">Copy</span>
             <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
         </button>
@@ -131,14 +131,14 @@
         <div class="bg-surface-800 border border-white/5 rounded-xl p-5">
             <div class="w-10 h-10 rounded-lg bg-red-600 mb-3 -skew-x-12"></div>
             <h4 class="font-semibold text-sm text-white mb-1">Skewed Parallelogram</h4>
-            <p class="text-xs text-slate-400 leading-relaxed">The -12deg skew is the signature shape. Applied via <code class="text-[10px] bg-surface-700 px-1 py-0.5 rounded text-slate-300">-skew-x-12</code> in Tailwind or <code class="text-[10px] bg-surface-700 px-1 py-0.5 rounded text-slate-300">skewX(-12deg)</code> in SVG.</p>
+            <p class="text-xs text-slate-400 leading-relaxed">The -12deg skew is the signature shape. Applied via <code class="text-[10px] bg-surface-700 px-1 py-0.5 rounded-sm text-slate-300">-skew-x-12</code> in Tailwind or <code class="text-[10px] bg-surface-700 px-1 py-0.5 rounded-sm text-slate-300">skewX(-12deg)</code> in SVG.</p>
         </div>
         <div class="bg-surface-800 border border-white/5 rounded-xl p-5">
             <div class="w-10 h-10 rounded-lg bg-red-600 mb-3 flex items-center justify-center">
                 <span class="text-white text-xs font-bold">#dc2626</span>
             </div>
             <h4 class="font-semibold text-sm text-white mb-1">Brand Red</h4>
-            <p class="text-xs text-slate-400 leading-relaxed">Tailwind's <code class="text-[10px] bg-surface-700 px-1 py-0.5 rounded text-slate-300">red-600</code> (#dc2626) is the primary brand color. Used for the logo background and primary CTA buttons.</p>
+            <p class="text-xs text-slate-400 leading-relaxed">Tailwind's <code class="text-[10px] bg-surface-700 px-1 py-0.5 rounded-sm text-slate-300">red-600</code> (#dc2626) is the primary brand color. Used for the logo background and primary CTA buttons.</p>
         </div>
         <div class="bg-surface-800 border border-white/5 rounded-xl p-5">
             <div class="h-10 mb-3 flex items-center">
@@ -197,7 +197,7 @@
     </div>
     <div x-data="{ copied: false }" class="relative">
         <button @click="navigator.clipboard.writeText($refs.svgLogoCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
             <span x-show="!copied">Copy</span>
             <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
         </button>
@@ -212,7 +212,7 @@
 
     {{-- Downloadable Assets (PNG) --}}
     <h3 class="text-lg font-semibold text-white mt-10 mb-3">Downloadable Assets (PNG)</h3>
-    <p class="text-sm text-slate-400 mb-4">Pre-rendered PNG versions for use in presentations, documents, and contexts where SVG is not supported. All assets are in <code class="text-[10px] bg-surface-700 px-1 py-0.5 rounded text-slate-300">/img/brand/</code>.</p>
+    <p class="text-sm text-slate-400 mb-4">Pre-rendered PNG versions for use in presentations, documents, and contexts where SVG is not supported. All assets are in <code class="text-[10px] bg-surface-700 px-1 py-0.5 rounded-sm text-slate-300">/img/brand/</code>.</p>
 
     {{-- Wordmark PNGs --}}
     <h4 class="text-sm font-semibold text-slate-300 mb-3">Wordmark</h4>
@@ -228,9 +228,9 @@
                     <div class="text-[10px] text-slate-500">640 &times; 208 &middot; PNG</div>
                 </div>
                 <div class="flex gap-2">
-                    <a href="/img/brand/logo-dark.png" download class="text-[10px] font-medium text-accent-blue hover:text-blue-400 px-2 py-1 bg-accent-blue/10 rounded transition-colors">1x</a>
-                    <a href="/img/brand/logo-dark@2x.png" download class="text-[10px] font-medium text-accent-blue hover:text-blue-400 px-2 py-1 bg-accent-blue/10 rounded transition-colors">2x</a>
-                    <a href="/img/brand/logo-dark.svg" download class="text-[10px] font-medium text-accent-blue hover:text-blue-400 px-2 py-1 bg-accent-blue/10 rounded transition-colors">SVG</a>
+                    <a href="/img/brand/logo-dark.png" download class="text-[10px] font-medium text-accent-blue hover:text-blue-400 px-2 py-1 bg-accent-blue/10 rounded-sm transition-colors">1x</a>
+                    <a href="/img/brand/logo-dark@2x.png" download class="text-[10px] font-medium text-accent-blue hover:text-blue-400 px-2 py-1 bg-accent-blue/10 rounded-sm transition-colors">2x</a>
+                    <a href="/img/brand/logo-dark.svg" download class="text-[10px] font-medium text-accent-blue hover:text-blue-400 px-2 py-1 bg-accent-blue/10 rounded-sm transition-colors">SVG</a>
                 </div>
             </div>
         </div>
@@ -245,9 +245,9 @@
                     <div class="text-[10px] text-slate-500">560 &times; 128 &middot; PNG</div>
                 </div>
                 <div class="flex gap-2">
-                    <a href="/img/brand/logo.png" download class="text-[10px] font-medium text-accent-blue hover:text-blue-400 px-2 py-1 bg-accent-blue/10 rounded transition-colors">1x</a>
-                    <a href="/img/brand/logo@2x.png" download class="text-[10px] font-medium text-accent-blue hover:text-blue-400 px-2 py-1 bg-accent-blue/10 rounded transition-colors">2x</a>
-                    <a href="/img/brand/logo.svg" download class="text-[10px] font-medium text-accent-blue hover:text-blue-400 px-2 py-1 bg-accent-blue/10 rounded transition-colors">SVG</a>
+                    <a href="/img/brand/logo.png" download class="text-[10px] font-medium text-accent-blue hover:text-blue-400 px-2 py-1 bg-accent-blue/10 rounded-sm transition-colors">1x</a>
+                    <a href="/img/brand/logo@2x.png" download class="text-[10px] font-medium text-accent-blue hover:text-blue-400 px-2 py-1 bg-accent-blue/10 rounded-sm transition-colors">2x</a>
+                    <a href="/img/brand/logo.svg" download class="text-[10px] font-medium text-accent-blue hover:text-blue-400 px-2 py-1 bg-accent-blue/10 rounded-sm transition-colors">SVG</a>
                 </div>
             </div>
         </div>
@@ -267,7 +267,7 @@
                 ] as $icon)
                 <div class="text-center">
                     <div class="mb-1.5 inline-flex items-center justify-center">
-                        <img src="/img/brand/{{ $icon['file'] }}" alt="VirtuaFC icon {{ $icon['label'] }}" style="width: {{ $icon['display'] }}px; height: {{ $icon['display'] }}px;" class="rounded">
+                        <img src="/img/brand/{{ $icon['file'] }}" alt="VirtuaFC icon {{ $icon['label'] }}" style="width: {{ $icon['display'] }}px; height: {{ $icon['display'] }}px;" class="rounded-sm">
                     </div>
                     <div class="text-[10px] text-slate-500">{{ $icon['label'] }}</div>
                 </div>
@@ -284,7 +284,7 @@
                 ['file' => 'icon-32.png', 'label' => '32px'],
                 ['file' => 'icon.svg', 'label' => 'SVG'],
             ] as $dl)
-            <a href="/img/brand/{{ $dl['file'] }}" download class="text-[10px] font-medium text-accent-blue hover:text-blue-400 px-2 py-1 bg-accent-blue/10 rounded transition-colors">{{ $dl['label'] }}</a>
+            <a href="/img/brand/{{ $dl['file'] }}" download class="text-[10px] font-medium text-accent-blue hover:text-blue-400 px-2 py-1 bg-accent-blue/10 rounded-sm transition-colors">{{ $dl['label'] }}</a>
             @endforeach
         </div>
     </div>

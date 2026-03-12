@@ -1,11 +1,11 @@
 <section id="navigation" class="mb-20">
     <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-white mb-2">Navigation</h2>
-    <p class="text-sm text-slate-400 mb-8">Navigation components for top bars, tabs, and menus. <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">accent-blue</code> is the active indicator color throughout. All navigation lives on dark surfaces.</p>
+    <p class="text-sm text-slate-400 mb-8">Navigation components for top bars, tabs, and menus. <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">accent-blue</code> is the active indicator color throughout. All navigation lives on dark surfaces.</p>
 
     {{-- Desktop Nav Bar --}}
     <div class="mb-12">
         <h3 class="text-lg font-semibold text-white mb-2">Desktop Nav Bar</h3>
-        <p class="text-sm text-slate-400 mb-4">Top-level navigation using the <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">.nav-item</code> class pattern. Active items show a blue underline via <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">.active::after</code> pseudo-element and white text. Inactive items are <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">text-slate-500</code> with hover to <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">text-slate-300</code>.</p>
+        <p class="text-sm text-slate-400 mb-4">Top-level navigation using the <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">.nav-item</code> class pattern. Active items show a blue underline via <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">.active::after</code> pseudo-element and white text. Inactive items are <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">text-slate-500</code> with hover to <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">text-slate-300</code>.</p>
 
         <div class="bg-surface-700/30 border border-white/5 rounded-xl p-6 mb-3">
             <div class="bg-surface-900/95 backdrop-blur-md border-b border-white/5 rounded-lg px-4 py-3">
@@ -22,7 +22,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.code.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -42,7 +42,7 @@
     {{-- Section Nav (Tabs) --}}
     <div class="mb-12">
         <h3 class="text-lg font-semibold text-white mb-2">Section Nav (Tabs)</h3>
-        <p class="text-sm text-slate-400 mb-4">Horizontal scrollable tab navigation for sub-sections within a page. Active tab has an <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">accent-blue</code> bottom border and white text. Supports optional badge counts in <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">accent-red</code>.</p>
+        <p class="text-sm text-slate-400 mb-4">Horizontal scrollable tab navigation for sub-sections within a page. Active tab has an <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">accent-blue</code> bottom border and white text. Supports optional badge counts in <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">accent-red</code>.</p>
 
         <div class="bg-surface-700/30 border border-white/5 rounded-xl p-6 mb-3">
             <x-section-nav :items="[
@@ -55,7 +55,7 @@
 
         <div x-data="{ copied: false }" class="relative mb-4">
             <button @click="navigator.clipboard.writeText($refs.code.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -94,7 +94,7 @@
     {{-- Mobile Hamburger + Drawer --}}
     <div class="mb-12">
         <h3 class="text-lg font-semibold text-white mb-2">Mobile Hamburger + Drawer</h3>
-        <p class="text-sm text-slate-400 mb-4">On mobile (<code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">lg:hidden</code>), the desktop nav collapses into a hamburger button that opens a slide-out drawer from the left. The drawer is implemented in <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">game-header.blade.php</code> using Alpine.js.</p>
+        <p class="text-sm text-slate-400 mb-4">On mobile (<code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">lg:hidden</code>), the desktop nav collapses into a hamburger button that opens a slide-out drawer from the left. The drawer is implemented in <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">game-header.blade.php</code> using Alpine.js.</p>
 
         <div class="bg-surface-700/30 border border-white/5 rounded-xl p-6 mb-3">
             {{-- Simulated mobile header --}}
@@ -146,7 +146,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.code.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -165,7 +165,7 @@
     {{-- Dropdown --}}
     <div class="mb-12">
         <h3 class="text-lg font-semibold text-white mb-2">Dropdown</h3>
-        <p class="text-sm text-slate-400 mb-4">Alpine.js powered dropdown menu with click-outside close and smooth scale transitions. Panel uses <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">bg-surface-800 border border-white/10</code>. Links highlight with <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">hover:bg-surface-700</code>.</p>
+        <p class="text-sm text-slate-400 mb-4">Alpine.js powered dropdown menu with click-outside close and smooth scale transitions. Panel uses <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">bg-surface-800 border border-white/10</code>. Links highlight with <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">hover:bg-surface-700</code>.</p>
 
         <div class="bg-surface-700/30 border border-white/5 rounded-xl p-6 mb-3">
             <x-dropdown align="left" width="48">
@@ -188,7 +188,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.code.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -210,7 +210,7 @@
     {{-- Context Menu (Three-Dot) --}}
     <div class="mb-12">
         <h3 class="text-lg font-semibold text-white mb-2">Context Menu (Three-Dot)</h3>
-        <p class="text-sm text-slate-400 mb-4">Inline action menu used in table rows and card actions. Dark dropdown panel with <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">bg-surface-700 border border-white/5</code>.</p>
+        <p class="text-sm text-slate-400 mb-4">Inline action menu used in table rows and card actions. Dark dropdown panel with <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">bg-surface-700 border border-white/5</code>.</p>
 
         <div class="bg-surface-700/30 border border-white/5 rounded-xl p-6 mb-3">
             {{-- Simulated table row context --}}
@@ -238,7 +238,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.code.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -259,7 +259,7 @@
     {{-- Position Filter Pills --}}
     <div class="mb-12">
         <h3 class="text-lg font-semibold text-white mb-2">Position Filter Pills</h3>
-        <p class="text-sm text-slate-400 mb-4">Pill-style toggle buttons for filtering by position. Inactive pills use <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">bg-surface-700 text-slate-400</code>, active pills switch to <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">bg-accent-blue text-white</code>. Uses Alpine.js for state management.</p>
+        <p class="text-sm text-slate-400 mb-4">Pill-style toggle buttons for filtering by position. Inactive pills use <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">bg-surface-700 text-slate-400</code>, active pills switch to <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">bg-accent-blue text-white</code>. Uses Alpine.js for state management.</p>
 
         <div class="bg-surface-700/30 border border-white/5 rounded-xl p-6 mb-3">
             <div x-data="{ active: 'all' }" class="flex flex-wrap gap-2">
@@ -273,7 +273,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.code.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
@@ -296,7 +296,7 @@
     {{-- Competition Dropdown (Nav Bar) --}}
     <div>
         <h3 class="text-lg font-semibold text-white mb-2">Competition Dropdown (Nav Bar)</h3>
-        <p class="text-sm text-slate-400 mb-4">Inline dropdown used in the desktop nav bar for competition selection. Combines the <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">.nav-item</code> styling with an Alpine.js dropdown. Panel uses <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded text-slate-300">bg-surface-800 border border-white/10</code>.</p>
+        <p class="text-sm text-slate-400 mb-4">Inline dropdown used in the desktop nav bar for competition selection. Combines the <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">.nav-item</code> styling with an Alpine.js dropdown. Panel uses <code class="text-[10px] bg-surface-700 px-1.5 py-0.5 rounded-sm text-slate-300">bg-surface-800 border border-white/10</code>.</p>
 
         <div class="bg-surface-700/30 border border-white/5 rounded-xl p-6 mb-3">
             <div class="bg-surface-900/95 backdrop-blur-md border-b border-white/5 rounded-lg px-4 py-3">
@@ -325,7 +325,7 @@
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.code.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded transition-colors">
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
