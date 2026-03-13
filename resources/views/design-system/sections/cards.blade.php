@@ -119,15 +119,15 @@
         <p class="text-sm text-text-secondary mb-4">Left border accent pattern used for next match preview and competition grouping. Color indicates competition type.</p>
 
         <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 space-y-4 mb-3">
-            <div class="border-l-4 border-l-amber-500 bg-surface-800 border border-border-default rounded-r-xl pl-5 pr-4 py-3">
+            <div class="border-l-4 border-l-accent-gold bg-surface-800 border border-border-default rounded-r-xl pl-5 pr-4 py-3">
                 <span class="text-[10px] text-text-muted uppercase tracking-wider font-semibold">Domestic League</span>
                 <div class="text-sm text-text-body mt-1">La Liga &middot; Matchday 12</div>
             </div>
-            <div class="border-l-4 border-l-emerald-500 bg-surface-800 border border-border-default rounded-r-xl pl-5 pr-4 py-3">
+            <div class="border-l-4 border-l-accent-green bg-surface-800 border border-border-default rounded-r-xl pl-5 pr-4 py-3">
                 <span class="text-[10px] text-text-muted uppercase tracking-wider font-semibold">Domestic Cup</span>
                 <div class="text-sm text-text-body mt-1">Copa del Rey &middot; Round of 16</div>
             </div>
-            <div class="border-l-4 border-l-blue-500 bg-surface-800 border border-border-default rounded-r-xl pl-5 pr-4 py-3">
+            <div class="border-l-4 border-l-accent-blue bg-surface-800 border border-border-default rounded-r-xl pl-5 pr-4 py-3">
                 <span class="text-[10px] text-text-muted uppercase tracking-wider font-semibold">European</span>
                 <div class="text-sm text-text-body mt-1">Champions League &middot; League Phase</div>
             </div>
@@ -139,13 +139,13 @@
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
-            <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="accentCode">&lt;div class="border-l-4 border-l-amber-500 bg-surface-800 border border-border-default rounded-r-xl pl-5 pr-4 py-3"&gt;
+            <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="accentCode">&lt;div class="border-l-4 border-l-accent-gold bg-surface-800 border border-border-default rounded-r-xl pl-5 pr-4 py-3"&gt;
     &lt;!-- Domestic league content --&gt;
 &lt;/div&gt;
-&lt;div class="border-l-4 border-l-emerald-500 bg-surface-800 border border-border-default rounded-r-xl pl-5 pr-4 py-3"&gt;
+&lt;div class="border-l-4 border-l-accent-green bg-surface-800 border border-border-default rounded-r-xl pl-5 pr-4 py-3"&gt;
     &lt;!-- Domestic cup content --&gt;
 &lt;/div&gt;
-&lt;div class="border-l-4 border-l-blue-500 bg-surface-800 border border-border-default rounded-r-xl pl-5 pr-4 py-3"&gt;
+&lt;div class="border-l-4 border-l-accent-blue bg-surface-800 border border-border-default rounded-r-xl pl-5 pr-4 py-3"&gt;
     &lt;!-- European content --&gt;
 &lt;/div&gt;</code></pre>
         </div>

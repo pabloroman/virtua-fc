@@ -23,13 +23,7 @@
     }
 
     // Competition color-coded left border
-    $comp = $match->competition;
-    $borderColor = match(true) {
-        ($comp->handler_type ?? '') === 'preseason' => 'border-l-accent-blue',
-        ($comp->scope ?? '') === 'continental' => 'border-l-blue-400',
-        ($comp->role ?? '') === 'domestic_cup' => 'border-l-accent-green',
-        default => 'border-l-accent-gold',
-    };
+    $borderColor = \App\Support\CompetitionColors::border($match->competition);
 @endphp
 
 <div class="flex items-center px-3 py-1 gap-2 md:gap-6 rounded-lg border-l-4 {{ $borderColor }} @if($isNextMatch) bg-accent-gold/10 ring-1 ring-accent-gold/30 @elseif($match->played) bg-surface-800 @else bg-surface-700/50 border border-border-default @endif">

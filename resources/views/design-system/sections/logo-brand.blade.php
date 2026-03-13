@@ -6,71 +6,29 @@
     <h3 class="text-lg font-semibold text-text-primary mb-3">Primary Logo</h3>
     <p class="text-sm text-text-secondary mb-4">The main wordmark rendered as an SVG. Uses a skewed red-600 parallelogram with Barlow Semi Condensed white text.</p>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
         {{-- Dark background (surface-900) --}}
         <div class="border border-border-default rounded-lg p-8 flex items-center justify-center bg-surface-900">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 64" class="h-14">
-                <defs>
-                    <style>
-                        .logo-bg-s9 { fill: #dc2626; }
-                        .logo-text-s9 { fill: #ffffff; font-family: 'Barlow Semi Condensed', 'Arial Black', sans-serif; font-weight: 700; font-size: 38px; letter-spacing: -0.5px; }
-                    </style>
-                </defs>
-                <rect class="logo-bg-s9" x="8" y="6" width="264" height="52" rx="2" transform="skewX(-12)"/>
-                <text class="logo-text-s9" x="140" y="46" text-anchor="middle">Virtua FC</text>
-            </svg>
+            <x-application-logo />
         </div>
         {{-- Lighter background (surface-800) --}}
         <div class="border border-border-default rounded-lg p-8 flex items-center justify-center bg-surface-800">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 64" class="h-14">
-                <defs>
-                    <style>
-                        .logo-bg-s8 { fill: #dc2626; }
-                        .logo-text-s8 { fill: #ffffff; font-family: 'Barlow Semi Condensed', 'Arial Black', sans-serif; font-weight: 700; font-size: 38px; letter-spacing: -0.5px; }
-                    </style>
-                </defs>
-                <rect class="logo-bg-s8" x="8" y="6" width="264" height="52" rx="2" transform="skewX(-12)"/>
-                <text class="logo-text-s8" x="140" y="46" text-anchor="middle">Virtua FC</text>
-            </svg>
+            <x-application-logo />
         </div>
-    </div>
-    <div class="flex gap-3 mb-10">
-        <span class="text-[10px] text-text-muted bg-surface-700 px-2 py-1 rounded-sm">surface-900 (#0B1120)</span>
-        <span class="text-[10px] text-text-muted bg-surface-700 px-2 py-1 rounded-sm">surface-800 (#0F172A)</span>
     </div>
 
     {{-- Logo Sizes --}}
     <h3 class="text-lg font-semibold text-text-primary mb-3">Logo Sizes</h3>
     <p class="text-sm text-text-secondary mb-4">The logo scales across contexts -- from navigation headers to compact footers. Use the Tailwind/HTML implementation for in-app rendering.</p>
     <div class="bg-surface-800 border border-border-default rounded-xl p-6 space-y-6 mb-4">
-        {{-- Large --}}
+        {{-- Default (responsive sm:text-3xl) --}}
         <div class="flex flex-col md:flex-row md:items-center gap-3">
             <div class="w-32 shrink-0">
-                <div class="text-xs text-text-muted">Large (hero)</div>
-                <code class="text-[10px] font-mono text-accent-blue">text-4xl</code>
+                <div class="text-xs text-text-muted">Default (nav)</div>
+                <code class="text-[10px] font-mono text-accent-blue">&lt;x-application-logo /&gt;</code>
             </div>
-            <div class="-skew-x-12 bg-red-600 px-6 py-1.5 inline-block self-start">
-                <span class="skew-x-12 inline-block text-4xl font-bold text-white tracking-tight">Virtua FC</span>
-            </div>
-        </div>
-        {{-- Medium --}}
-        <div class="flex flex-col md:flex-row md:items-center gap-3 pt-4 border-t border-border-default">
-            <div class="w-32 shrink-0">
-                <div class="text-xs text-text-muted">Medium (nav)</div>
-                <code class="text-[10px] font-mono text-accent-blue">text-3xl</code>
-            </div>
-            <div class="-skew-x-12 bg-red-600 px-4 py-1 inline-block self-start">
-                <span class="skew-x-12 inline-block text-3xl font-bold text-white tracking-tight">Virtua FC</span>
-            </div>
-        </div>
-        {{-- Small --}}
-        <div class="flex flex-col md:flex-row md:items-center gap-3 pt-4 border-t border-border-default">
-            <div class="w-32 shrink-0">
-                <div class="text-xs text-text-muted">Small (footer)</div>
-                <code class="text-[10px] font-mono text-accent-blue">text-xl</code>
-            </div>
-            <div class="-skew-x-12 bg-red-600 px-3 py-1 inline-block self-start">
-                <span class="skew-x-12 inline-block text-xl font-bold text-white tracking-tight">Virtua FC</span>
+            <div class="self-start">
+                <x-application-logo />
             </div>
         </div>
     </div>
@@ -81,9 +39,13 @@
             <span x-show="!copied">Copy</span>
             <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
         </button>
-        <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="logoCode">&lt;!-- Logo (Tailwind) --&gt;
-&lt;div class="-skew-x-12 bg-red-600 px-4 py-1"&gt;
-    &lt;span class="skew-x-12 inline-block text-3xl font-bold text-white tracking-tight"&gt;Virtua FC&lt;/span&gt;
+        <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="logoCode">&lt;!-- Logo (Blade component) --&gt;
+&lt;x-application-logo /&gt;
+
+&lt;!-- Rendered HTML --&gt;
+&lt;div class="-skew-x-12 bg-red-600 px-3 sm:px-4 py-1"&gt;
+    &lt;span class="skew-x-12 inline-block text-xl sm:text-3xl font-extrabold text-white tracking-tight"
+          style="font-family: 'Barlow Semi Condensed', sans-serif;"&gt;Virtua FC&lt;/span&gt;
 &lt;/div&gt;</code></pre>
     </div>
 
@@ -142,10 +104,10 @@
         </div>
         <div class="bg-surface-800 border border-border-default rounded-xl p-5">
             <div class="h-10 mb-3 flex items-center">
-                <span class="text-2xl font-bold text-text-primary tracking-tight font-heading">Barlow SC</span>
+                <span class="text-2xl font-extrabold text-text-primary tracking-tight" style="font-family: 'Barlow Semi Condensed', sans-serif;">Barlow SC</span>
             </div>
             <h4 class="font-semibold text-sm text-text-primary mb-1">Barlow Semi Condensed</h4>
-            <p class="text-xs text-text-secondary leading-relaxed">Bold weight (700/800) for the wordmark. The semi-condensed width gives a sporty, athletic feel that matches the football theme.</p>
+            <p class="text-xs text-text-secondary leading-relaxed">ExtraBold weight (800) for the wordmark. The semi-condensed width gives a sporty, athletic feel that matches the football theme.</p>
         </div>
     </div>
 
@@ -184,15 +146,15 @@
     <h3 class="text-lg font-semibold text-text-primary mt-10 mb-3">SVG Logo (for external use)</h3>
     <p class="text-sm text-text-secondary mb-4">A self-contained SVG for use outside the app (social media, documentation, external sites). No Tailwind dependency.</p>
     <div class="bg-surface-700/30 border border-border-default rounded-xl p-8 flex items-center justify-center mb-4">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 64" class="h-16">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 143 46" class="h-14">
             <defs>
                 <style>
                     .vfc-bg { fill: #dc2626; }
-                    .vfc-text { fill: #ffffff; font-family: 'Barlow Semi Condensed', 'Arial Black', sans-serif; font-weight: 700; font-size: 38px; letter-spacing: -0.5px; }
+                    .vfc-text { fill: #ffffff; font-family: 'Barlow Semi Condensed', 'Arial Black', sans-serif; font-weight: 800; font-size: 28px; }
                 </style>
             </defs>
-            <rect class="vfc-bg" x="8" y="6" width="264" height="52" rx="2" transform="skewX(-12)"/>
-            <text class="vfc-text" x="140" y="46" text-anchor="middle">Virtua FC</text>
+            <rect class="vfc-bg" x="12" y="3" width="129" height="40" transform="skewX(-12)"/>
+            <text class="vfc-text" x="72" y="33" text-anchor="middle">Virtua FC</text>
         </svg>
     </div>
     <div x-data="{ copied: false }" class="relative">
@@ -201,11 +163,11 @@
             <span x-show="!copied">Copy</span>
             <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
         </button>
-        <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="svgLogoCode">&lt;svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 64"&gt;
-  &lt;rect fill="#dc2626" x="8" y="6" width="264" height="52" rx="2"
+        <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="svgLogoCode">&lt;svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 143 46"&gt;
+  &lt;rect fill="#dc2626" x="12" y="3" width="129" height="40"
         transform="skewX(-12)"/&gt;
   &lt;text fill="#fff" font-family="'Barlow Semi Condensed', 'Arial Black', sans-serif"
-        font-weight="700" font-size="38" x="140" y="46"
+        font-weight="800" font-size="28" x="72" y="33"
         text-anchor="middle"&gt;Virtua FC&lt;/text&gt;
 &lt;/svg&gt;</code></pre>
     </div>
@@ -225,7 +187,7 @@
             <div class="border-t border-border-default px-4 py-3 bg-surface-800 flex items-center justify-between">
                 <div>
                     <div class="text-xs font-medium text-text-primary">Dark background</div>
-                    <div class="text-[10px] text-text-muted">640 &times; 208 &middot; PNG</div>
+                    <div class="text-[10px] text-text-muted">600 &times; 194 &middot; PNG</div>
                 </div>
                 <div class="flex gap-2">
                     <a href="/img/brand/logo-dark.png" download class="text-[10px] font-medium text-accent-blue hover:text-blue-400 px-2 py-1 bg-accent-blue/10 rounded-sm transition-colors">1x</a>
@@ -242,7 +204,7 @@
             <div class="border-t border-border-default px-4 py-3 bg-surface-800 flex items-center justify-between">
                 <div>
                     <div class="text-xs font-medium text-text-primary">Light background</div>
-                    <div class="text-[10px] text-text-muted">560 &times; 128 &middot; PNG</div>
+                    <div class="text-[10px] text-text-muted">600 &times; 150 &middot; PNG</div>
                 </div>
                 <div class="flex gap-2">
                     <a href="/img/brand/logo.png" download class="text-[10px] font-medium text-accent-blue hover:text-blue-400 px-2 py-1 bg-accent-blue/10 rounded-sm transition-colors">1x</a>

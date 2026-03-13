@@ -86,13 +86,8 @@
              x-on:keydown.escape.window="if (!tacticalPanelOpen) skipToEnd()"
         >
             @php
-                $comp = $match->competition;
-                $accent = match(true) {
-                    ($comp->handler_type ?? '') === 'preseason' => 'bg-accent-blue text-sky-100',
-                    ($comp->scope ?? '') === 'continental' => 'bg-blue-600 text-blue-100',
-                    ($comp->type ?? '') === 'cup' => 'bg-emerald-600 text-emerald-100',
-                    default => 'bg-amber-600 text-amber-100',
-                };
+                $accentBanner = \App\Support\CompetitionColors::banner($match->competition);
+                $accent = $accentBanner['bg'] . ' ' . $accentBanner['text'];
             @endphp
 
             <div class="bg-surface-800 rounded-xl overflow-hidden">

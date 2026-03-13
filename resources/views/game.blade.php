@@ -67,21 +67,8 @@
                 {{-- Highlighted Next Match Card --}}
                 @php
                     $comp = $nextMatch->competition;
-                    $isPreseason = ($comp->handler_type ?? '') === 'preseason';
-                    $accent = match(true) {
-                        $isPreseason => [
-                            'bg' => 'bg-accent-blue', 'badge' => 'bg-surface-800/20 text-white',
-                        ],
-                        ($comp->scope ?? '') === 'continental' => [
-                            'bg' => 'bg-blue-600', 'badge' => 'bg-surface-800/20 text-white',
-                        ],
-                        ($comp->type ?? '') === 'cup' => [
-                            'bg' => 'bg-emerald-600', 'badge' => 'bg-surface-800/20 text-white',
-                        ],
-                        default => [
-                            'bg' => 'bg-amber-600', 'badge' => 'bg-surface-800/20 text-white',
-                        ],
-                    };
+                    $isPreseason = \App\Support\CompetitionColors::category($comp) === 'preseason';
+                    $accent = \App\Support\CompetitionColors::banner($comp);
 
                     $cupTie = $nextMatch->cup_tie_id ? $nextMatch->cupTie : null;
                     $firstLegScore = null;

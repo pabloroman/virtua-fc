@@ -255,13 +255,13 @@
 
         <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3">
             <div class="flex flex-wrap gap-3">
-                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-amber-500/20 text-amber-400">La Liga</span>
-                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-amber-500/20 text-amber-400">Segunda Division</span>
-                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-emerald-500/20 text-emerald-400">Copa del Rey</span>
-                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-emerald-500/20 text-emerald-400">Supercopa</span>
-                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-blue-500/20 text-blue-400">Champions League</span>
-                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-blue-500/20 text-blue-400">Europa League</span>
-                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-blue-500/20 text-blue-400">Conference League</span>
+                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-accent-gold/20 text-accent-gold">La Liga</span>
+                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-accent-gold/20 text-accent-gold">Segunda Division</span>
+                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-accent-green/20 text-accent-green">Copa del Rey</span>
+                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-accent-green/20 text-accent-green">Supercopa</span>
+                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-accent-blue/20 text-accent-blue">Champions League</span>
+                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-accent-blue/20 text-accent-blue">Europa League</span>
+                <span class="px-3 py-1 text-xs font-semibold rounded-full bg-accent-blue/20 text-accent-blue">Conference League</span>
             </div>
         </div>
 
@@ -271,9 +271,9 @@
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
-            <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="compCode">&lt;span class="px-3 py-1 text-xs font-semibold rounded-full bg-amber-500/20 text-amber-400"&gt;League&lt;/span&gt;
-&lt;span class="px-3 py-1 text-xs font-semibold rounded-full bg-emerald-500/20 text-emerald-400"&gt;Cup&lt;/span&gt;
-&lt;span class="px-3 py-1 text-xs font-semibold rounded-full bg-blue-500/20 text-blue-400"&gt;European&lt;/span&gt;</code></pre>
+            <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="compCode">&lt;span class="px-3 py-1 text-xs font-semibold rounded-full bg-accent-gold/20 text-accent-gold"&gt;League&lt;/span&gt;
+&lt;span class="px-3 py-1 text-xs font-semibold rounded-full bg-accent-green/20 text-accent-green"&gt;Cup&lt;/span&gt;
+&lt;span class="px-3 py-1 text-xs font-semibold rounded-full bg-accent-blue/20 text-accent-blue"&gt;European&lt;/span&gt;</code></pre>
         </div>
     </div>
 
