@@ -105,10 +105,9 @@
                             <span x-show="isDirty" x-cloak class="w-2 h-2 rounded-full bg-accent-gold shrink-0" title="{{ __('squad.unsaved_changes') }}"></span>
                         </div>
                         <div class="flex items-center gap-2">
-                            <button type="button" @click="clearSelection()"
-                                class="px-3 py-2 text-xs font-medium text-text-muted hover:text-text-primary hover:bg-surface-700 rounded-lg transition-colors min-h-[44px]">
+                            <x-ghost-button color="slate" @click="clearSelection()">
                                 {{ __('app.clear') }}
-                            </button>
+                            </x-ghost-button>
                             <x-secondary-button type="button" @click="quickSelect()">
                                 {{ __('squad.auto_select') }}
                             </x-secondary-button>
@@ -124,11 +123,12 @@
                             <span class="text-[10px] text-text-muted uppercase tracking-wider shrink-0">{{ __('squad.formation') }}</span>
                             <div class="flex gap-1">
                                 <template x-for="option in formationOptions" :key="'fo-' + option.value">
-                                    <button type="button"
+                                    <x-pill-button size="xs"
+                                        type="button"
                                         @click="selectedFormation = option.value; updateAutoLineup()"
-                                        class="formation-option px-2.5 py-1 rounded-md text-xs font-semibold border border-border-strong text-text-secondary whitespace-nowrap font-heading tracking-wide"
-                                        :class="selectedFormation === option.value && 'active'"
-                                        x-text="option.label"></button>
+                                        class="formation-option rounded-md border border-border-strong font-heading tracking-wide font-semibold"
+                                        x-bind:class="selectedFormation === option.value && 'active'"
+                                        x-text="option.label"></x-pill-button>
                                 </template>
                             </div>
                         </div>
@@ -136,16 +136,17 @@
                             <span class="text-[10px] text-text-muted uppercase tracking-wider shrink-0">{{ __('squad.mentality') }}</span>
                             <div class="flex gap-1 bg-surface-700 rounded-lg p-0.5">
                                 <template x-for="option in mentalityOptions" :key="'mo-' + option.value">
-                                    <button type="button"
+                                    <x-pill-button size="xs"
+                                        type="button"
                                         @click="selectedMentality = option.value"
-                                        class="mentality-btn px-3 py-1.5 rounded-md text-[11px] font-semibold uppercase tracking-wider"
-                                        :class="{
+                                        class="mentality-btn rounded-md uppercase tracking-wider font-semibold"
+                                        x-bind:class="{
                                             'active bg-surface-600': selectedMentality === option.value,
                                             'text-blue-400': option.value === 'defensive',
                                             'text-text-body': option.value === 'balanced',
                                             'text-accent-red': option.value === 'attacking',
                                         }"
-                                        x-text="option.label"></button>
+                                        x-text="option.label"></x-pill-button>
                                 </template>
                             </div>
                         </div>
@@ -154,21 +155,21 @@
 
                 {{-- ===== MOBILE TAB SWITCHER ===== --}}
                 <div class="flex lg:hidden mt-4 bg-surface-700 rounded-lg p-0.5">
-                    <button type="button" @click="activeLineupTab = 'pitch'"
-                        class="flex-1 px-4 py-2 text-[11px] font-medium text-center rounded-md transition-colors min-h-[44px]"
-                        :class="activeLineupTab === 'pitch' ? 'bg-surface-800 shadow-xs text-text-primary' : 'text-text-muted hover:text-text-body'">
+                    <x-pill-button size="xs" type="button" @click="activeLineupTab = 'pitch'"
+                        class="flex-1 text-center rounded-md min-h-[44px]"
+                        x-bind:class="activeLineupTab === 'pitch' ? 'bg-surface-800 shadow-xs text-text-primary' : 'text-text-muted hover:text-text-body'">
                         {{ __('squad.pitch') }}
-                    </button>
-                    <button type="button" @click="activeLineupTab = 'squad'"
-                        class="flex-1 px-4 py-2 text-[11px] font-medium text-center rounded-md transition-colors min-h-[44px]"
-                        :class="activeLineupTab === 'squad' ? 'bg-surface-800 shadow-xs text-text-primary' : 'text-text-muted hover:text-text-body'">
+                    </x-pill-button>
+                    <x-pill-button size="xs" type="button" @click="activeLineupTab = 'squad'"
+                        class="flex-1 text-center rounded-md min-h-[44px]"
+                        x-bind:class="activeLineupTab === 'squad' ? 'bg-surface-800 shadow-xs text-text-primary' : 'text-text-muted hover:text-text-body'">
                         {{ __('app.squad') }}
-                    </button>
-                    <button type="button" @click="activeLineupTab = 'tactics'"
-                        class="flex-1 px-4 py-2 text-[11px] font-medium text-center rounded-md transition-colors min-h-[44px]"
-                        :class="activeLineupTab === 'tactics' ? 'bg-surface-800 shadow-xs text-text-primary' : 'text-text-muted hover:text-text-body'">
+                    </x-pill-button>
+                    <x-pill-button size="xs" type="button" @click="activeLineupTab = 'tactics'"
+                        class="flex-1 text-center rounded-md min-h-[44px]"
+                        x-bind:class="activeLineupTab === 'tactics' ? 'bg-surface-800 shadow-xs text-text-primary' : 'text-text-muted hover:text-text-body'">
                         {{ __('squad.tactics') }}
-                    </button>
+                    </x-pill-button>
                 </div>
 
                 {{-- ===== MAIN CONTENT: Pitch + Players + Tactics ===== --}}
@@ -325,9 +326,9 @@
                                 >
                                     <span class="w-2 h-2 rounded-full bg-accent-green animate-pulse"></span>
                                     {{ __('squad.drag_or_tap') }}
-                                    <button type="button" @click="positioningSlotId = null" class="ml-1 text-text-secondary hover:text-text-secondary">
+                                    <x-icon-button size="sm" type="button" @click="positioningSlotId = null" class="ml-1">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                                    </button>
+                                    </x-icon-button>
                                 </div>
 
                                 {{-- Slot assignment indicator banner --}}
@@ -338,9 +339,9 @@
                                 >
                                     <span class="w-2 h-2 rounded-full bg-accent-blue animate-pulse"></span>
                                     {{ __('squad.select_player_for_slot') }}
-                                    <button type="button" @click="assigningSlotId = null" class="ml-1 text-text-secondary hover:text-text-secondary">
+                                    <x-icon-button size="sm" type="button" @click="assigningSlotId = null" class="ml-1">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                                    </button>
+                                    </x-icon-button>
                                 </div>
                             </div>
                         </div>
@@ -422,11 +423,10 @@
                             {{-- Position filter tabs --}}
                             <div class="flex items-center gap-0 px-3 py-2 border-b border-border-default overflow-x-auto scrollbar-hide">
                                 @foreach(['all' => __('squad.all'), 'Goalkeeper' => __('squad.goalkeepers_short'), 'Defender' => __('squad.defenders_short'), 'Midfielder' => __('squad.midfielders_short'), 'Forward' => __('squad.forwards_short')] as $key => $label)
-                                <button type="button" @click="posTab = '{{ $key }}'"
-                                    class="px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider border-b-2 whitespace-nowrap transition-colors"
-                                    :class="posTab === '{{ $key }}' ? 'text-text-primary border-accent-blue' : 'text-text-muted border-transparent hover:text-text-body'">
+                                <x-tab-button size="xs" type="button" @click="posTab = '{{ $key }}'"
+                                    x-bind:class="posTab === '{{ $key }}' ? 'text-text-primary border-accent-blue' : 'text-text-muted border-transparent hover:text-text-body'">
                                     {{ $label }}
-                                </button>
+                                </x-tab-button>
                                 @endforeach
                             </div>
 
@@ -564,9 +564,9 @@
 
                             {{-- Tactical guide link --}}
                             <div class="pt-1">
-                                <button type="button" x-on:click="$dispatch('open-modal', 'tactical-guide')" class="text-xs text-accent-blue hover:text-blue-400 font-medium transition-colors">
+                                <x-ghost-button type="button" x-on:click="$dispatch('open-modal', 'tactical-guide')" size="xs">
                                     {{ __('game.tactical_guide_link') }} &rarr;
-                                </button>
+                                </x-ghost-button>
                             </div>
 
                             {{-- Coach Assistant (mobile: inside tactics tab) --}}

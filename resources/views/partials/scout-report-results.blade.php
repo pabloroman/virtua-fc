@@ -18,11 +18,11 @@
                 <span>{{ __('transfers.results_count', ['count' => $players->count()]) }}</span>
             </div>
         </div>
-        <button onclick="window.dispatchEvent(new CustomEvent('close-modal', {detail: 'scout-results'}))" class="p-1 text-text-secondary hover:text-text-secondary rounded-sm hover:bg-surface-700 shrink-0">
+        <x-icon-button size="sm" onclick="window.dispatchEvent(new CustomEvent('close-modal', {detail: 'scout-results'}))">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
-        </button>
+        </x-icon-button>
     </div>
 
     {{-- Players List --}}
@@ -90,16 +90,16 @@
                                 <div class="text-sm font-semibold {{ $canAffordFee ? 'text-text-primary' : 'text-accent-red' }}">{{ $formattedAskingPrice }}</div>
                             </div>
                             {{-- Shortlist toggle --}}
-                            <button
+                            <x-icon-button
                                 @click.stop="if(toggling) return; toggling = true; fetch('{{ route('game.scouting.shortlist.toggle', [$game->id, $player->id]) }}', { method: 'POST', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' } }).then(r => r.json()).then(data => { if(data.success === false) { alert(data.message); toggling = false; return; } shortlisted = !shortlisted; toggling = false; window.dispatchEvent(new CustomEvent('shortlist-toggled', { detail: { action: data.action, playerId: data.playerId, player: data.player || null } })); }).catch(() => { toggling = false; })"
-                                class="p-1.5 rounded-sm transition-colors min-h-[44px] sm:min-h-0"
-                                :class="shortlisted ? 'text-amber-500 hover:text-amber-600' : 'text-text-body hover:text-amber-400'"
-                                :title="shortlisted ? '{{ __('transfers.remove_from_shortlist') }}' : '{{ __('transfers.add_to_shortlist') }}'"
+                                class="sm:min-h-0"
+                                x-bind:class="shortlisted ? 'text-amber-500 hover:text-amber-600' : 'text-text-body hover:text-amber-400'"
+                                x-bind:title="shortlisted ? @js(__('transfers.remove_from_shortlist')) : @js(__('transfers.add_to_shortlist'))"
                             >
-                                <svg class="w-5 h-5" :fill="shortlisted ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5" x-bind:fill="shortlisted ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
                                 </svg>
-                            </button>
+                            </x-icon-button>
                             <svg class="w-4 h-4 text-text-secondary transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                             </svg>
@@ -181,9 +181,9 @@
                                             @if($isTransferWindow && $canAffordWage)
                                                 <form method="POST" action="{{ route('game.scouting.sign-free-agent', [$game->id, $player->id]) }}">
                                                     @csrf
-                                                    <button type="submit" class="inline-flex items-center justify-center px-4 py-1.5 min-h-[36px] bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-lg transition-colors whitespace-nowrap">
+                                                    <x-primary-button color="green" size="xs">
                                                         {{ __('transfers.sign_free_agent') }}
-                                                    </button>
+                                                    </x-primary-button>
                                                 </form>
                                             @elseif(!$isTransferWindow)
                                                 <div class="text-xs text-text-muted italic">
@@ -217,9 +217,9 @@
                                                 <label class="block text-xs font-medium text-text-secondary">{{ __('transfers.offered_wage_euros') }}</label>
                                                 <div class="flex items-center gap-2">
                                                     <x-money-input name="offered_wage" :value="(int)($preContractWage / 100)" :min="0" size="sm" />
-                                                    <button type="submit" class="inline-flex items-center justify-center px-3 py-1.5 min-h-[36px] bg-accent-green hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg transition-colors whitespace-nowrap">
+                                                    <x-primary-button color="green" size="xs">
                                                         {{ __('transfers.submit_pre_contract') }}
-                                                    </button>
+                                                    </x-primary-button>
                                                 </div>
                                             </form>
                                         @elseif(!$canAffordFee)
@@ -232,16 +232,16 @@
                                                 <form method="POST" action="{{ route('game.scouting.bid', [$game->id, $player->id]) }}" class="flex items-center gap-2 flex-1">
                                                     @csrf
                                                     <x-money-input name="bid_amount" :value="(int)($askingPrice / 100)" :min="0" size="sm" />
-                                                    <button type="submit" class="inline-flex items-center justify-center px-3 py-1.5 min-h-[36px] bg-accent-blue hover:bg-sky-700 text-white text-xs font-semibold rounded-lg transition-colors whitespace-nowrap">
+                                                    <x-primary-button size="xs">
                                                         {{ __('transfers.submit_bid') }}
-                                                    </button>
+                                                    </x-primary-button>
                                                 </form>
                                                 {{-- Loan Request --}}
                                                 <form method="POST" action="{{ route('game.scouting.loan', [$game->id, $player->id]) }}">
                                                     @csrf
-                                                    <button type="submit" class="inline-flex items-center justify-center px-3 py-1.5 min-h-[36px] border border-border-strong text-text-body text-xs font-semibold rounded-lg hover:bg-surface-700/50 transition-colors whitespace-nowrap">
+                                                    <x-secondary-button type="submit" size="xs">
                                                         {{ __('transfers.request_loan') }}
-                                                    </button>
+                                                    </x-secondary-button>
                                                 </form>
                                             </div>
                                         @endif

@@ -352,13 +352,11 @@
                                                                     </template>
                                                                 </div>
                                                                 <template x-if="!player.isTracking && trackingMax > 0">
-                                                                    <button @click="startTracking(player)"
-                                                                        :disabled="trackingAvailable <= 0"
-                                                                        :class="trackingAvailable > 0 ? 'bg-teal-600 hover:bg-teal-700 text-white' : 'bg-surface-600 text-text-secondary cursor-not-allowed'"
-                                                                        class="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-lg transition-colors min-h-[36px]">
+                                                                    <x-primary-button color="teal" size="xs" @click="startTracking(player)"
+                                                                        x-bind:disabled="trackingAvailable <= 0">
                                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                                                         {{ __('transfers.start_tracking') }}
-                                                                    </button>
+                                                                    </x-primary-button>
                                                                 </template>
                                                                 <template x-if="player.isTracking">
                                                                     <div class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-teal-500/10 text-teal-400 border border-teal-500/20">
@@ -667,13 +665,12 @@
                             @else
                                 {{-- New Search Button --}}
                                 <div x-data>
-                                    <button @click="$dispatch('open-modal', 'scout-search')"
-                                        class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-accent-blue hover:bg-sky-700 text-white font-semibold rounded-lg transition-colors min-h-[44px]">
+                                    <x-primary-button type="button" @click="$dispatch('open-modal', 'scout-search')" class="w-full gap-2">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                                         </svg>
                                         {{ __('transfers.new_scout_search') }}
-                                    </button>
+                                    </x-primary-button>
                                 </div>
                             @endif
 

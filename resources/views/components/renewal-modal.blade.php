@@ -7,10 +7,10 @@
 ])
 
 <div x-data="{ open: false }" {{ $attributes->merge(['class' => '']) }}>
-    <button @click="open = true" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border border-accent-green/20 text-accent-green bg-accent-green/10 hover:bg-accent-green/20 transition-colors min-h-[44px]">
+    <x-action-button color="green" type="button" @click="open = true">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
         {{ __('squad.renew') }}
-    </button>
+    </x-action-button>
 
     {{-- Sub-modal teleported to body so it sits above the player modal --}}
     <template x-teleport="body">
@@ -34,9 +34,9 @@
                             <h3 class="font-semibold text-text-primary">{{ $gamePlayer->name }}</h3>
                             <p class="text-sm text-text-muted mt-0.5">{{ __('squad.renew') }}</p>
                         </div>
-                        <button @click="open = false" class="p-1 text-text-secondary hover:text-text-secondary rounded-sm hover:bg-surface-700 shrink-0">
+                        <x-icon-button size="sm" @click="open = false">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                        </button>
+                        </x-icon-button>
                     </div>
                     {{-- Mood + wage context --}}
                     <div class="flex items-center justify-between text-sm mb-4">
@@ -75,9 +75,9 @@
                                 </x-select-input>
                             </div>
                         </div>
-                        <button type="submit" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-lg bg-accent-green hover:bg-emerald-700 text-white transition-colors min-h-[44px]">
+                        <x-primary-button color="green">
                             {{ __('transfers.negotiate') }}
-                        </button>
+                        </x-primary-button>
                     </form>
                 </div>
             </div>

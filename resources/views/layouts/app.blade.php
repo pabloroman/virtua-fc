@@ -27,7 +27,7 @@
                     <span>{{ __('admin.impersonating_banner', ['name' => auth()->user()->name, 'email' => auth()->user()->email]) }}</span>
                     <form method="POST" action="{{ route('admin.stop-impersonation') }}" class="inline">
                         @csrf
-                        <button type="submit" class="underline font-semibold hover:text-rose-100">{{ __('admin.stop_impersonating') }}</button>
+                        <x-ghost-button type="submit" color="slate" class="underline font-semibold text-white hover:text-rose-100">{{ __('admin.stop_impersonating') }}</x-ghost-button>
                     </form>
                 </div>
             @endif

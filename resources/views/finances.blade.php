@@ -214,9 +214,9 @@
                     <div class="text-sm text-accent-gold font-medium mb-2">{{ __('finances.budget_not_set') }}</div>
                     <div class="font-heading text-3xl font-bold text-text-primary mb-1">{{ $finances->formatted_available_surplus }}</div>
                     <div class="text-sm text-text-muted mb-4">{{ __('finances.surplus_to_allocate') }}</div>
-                    <a href="{{ route('game.budget', $game->id) }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-accent-blue text-white text-sm font-semibold rounded-lg hover:bg-blue-600 transition-colors min-h-[44px]">
+                    <x-primary-button-link :href="route('game.budget', $game->id)" class="gap-2">
                         {{ __('finances.setup_season_budget') }} &rarr;
-                    </a>
+                    </x-primary-button-link>
                 </div>
                 @endif
 
@@ -235,18 +235,18 @@
                     @if($transactions->isNotEmpty())
                     {{-- Filter tabs --}}
                     <div class="px-5 pt-3 flex gap-2 border-b border-border-default">
-                        <button @click="filter = 'all'" class="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider rounded-t border-b-2 transition-colors"
-                                :class="filter === 'all' ? 'border-accent-blue text-accent-blue' : 'border-transparent text-text-muted hover:text-text-body'">
+                        <x-tab-button size="xs" @click="filter = 'all'" class="rounded-t"
+                                x-bind:class="filter === 'all' ? 'border-accent-blue text-accent-blue' : 'border-transparent text-text-muted hover:text-text-body'">
                             {{ __('finances.filter_all') }}
-                        </button>
-                        <button @click="filter = 'income'" class="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider rounded-t border-b-2 transition-colors"
-                                :class="filter === 'income' ? 'border-accent-blue text-accent-blue' : 'border-transparent text-text-muted hover:text-text-body'">
+                        </x-tab-button>
+                        <x-tab-button size="xs" @click="filter = 'income'" class="rounded-t"
+                                x-bind:class="filter === 'income' ? 'border-accent-blue text-accent-blue' : 'border-transparent text-text-muted hover:text-text-body'">
                             {{ __('finances.filter_income') }}
-                        </button>
-                        <button @click="filter = 'expense'" class="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider rounded-t border-b-2 transition-colors"
-                                :class="filter === 'expense' ? 'border-accent-blue text-accent-blue' : 'border-transparent text-text-muted hover:text-text-body'">
+                        </x-tab-button>
+                        <x-tab-button size="xs" @click="filter = 'expense'" class="rounded-t"
+                                x-bind:class="filter === 'expense' ? 'border-accent-blue text-accent-blue' : 'border-transparent text-text-muted hover:text-text-body'">
                             {{ __('finances.filter_expenses') }}
-                        </button>
+                        </x-tab-button>
                     </div>
 
                     <div class="overflow-x-auto">

@@ -37,7 +37,7 @@
                             ['href' => route('game.scouting', $game->id), 'label' => __('transfers.scouting_tab'), 'active' => false],
                             ['href' => route('game.explore', $game->id), 'label' => __('transfers.explore_tab'), 'active' => false],
                         ]">
-                            <button @click="helpOpen = !helpOpen" class="flex items-center gap-2 text-sm text-text-muted hover:text-text-body transition-colors whitespace-nowrap">
+                            <x-ghost-button color="slate" @click="helpOpen = !helpOpen" class="gap-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-text-secondary shrink-0">
                                     <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-7-4a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM9 9a.75.75 0 0 0 0 1.5h.253a.25.25 0 0 1 .244.304l-.459 2.066A1.75 1.75 0 0 0 10.747 15H11a.75.75 0 0 0 0-1.5h-.253a.25.25 0 0 1-.244-.304l.459-2.066A1.75 1.75 0 0 0 9.253 9H9Z" clip-rule="evenodd" />
                                 </svg>
@@ -45,7 +45,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 transition-transform hidden md:block" :class="helpOpen ? 'rotate-180' : ''">
                                     <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
                                 </svg>
-                            </button>
+                            </x-ghost-button>
                         </x-section-nav>
 
                         <div x-show="helpOpen" x-transition class="mt-3 bg-surface-700/50 border border-border-strong rounded-lg p-4 text-sm">
@@ -594,11 +594,11 @@
                                                 </td>
                                                 <td class="py-2.5 pr-3">
                                                     <div class="flex items-center gap-1.5">
-                                                        <button x-data @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $player->id]) }}')" class="p-1 text-text-body rounded-sm hover:text-text-secondary shrink-0">
+                                                        <x-icon-button size="sm" x-data @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $player->id]) }}')">
                                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="w-4 h-4">
                                                                 <path fill-rule="evenodd" d="M19.5 21a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3h-5.379a.75.75 0 0 1-.53-.22L11.47 3.66A2.25 2.25 0 0 0 9.879 3H4.5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h15Zm-6.75-10.5a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V10.5Z" clip-rule="evenodd" />
                                                             </svg>
-                                                        </button>
+                                                        </x-icon-button>
                                                         <span class="font-medium text-text-primary truncate">{{ $player->player->name }}</span>
                                                     </div>
                                                 </td>
@@ -623,11 +623,11 @@
                                             </td>
                                             <td class="py-2.5 pr-3">
                                                 <div class="flex items-center gap-1.5">
-                                                    <button x-data @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $player->id]) }}')" class="p-1 text-text-body rounded-sm hover:text-text-secondary shrink-0">
+                                                    <x-icon-button size="sm" x-data @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $player->id]) }}')">
                                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="w-4 h-4">
                                                             <path fill-rule="evenodd" d="M19.5 21a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3h-5.379a.75.75 0 0 1-.53-.22L11.47 3.66A2.25 2.25 0 0 0 9.879 3H4.5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h15Zm-6.75-10.5a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V10.5Z" clip-rule="evenodd" />
                                                         </svg>
-                                                    </button>
+                                                    </x-icon-button>
                                                     <div>
                                                         <span class="font-medium text-text-primary truncate">{{ $player->player->name }}</span>
                                                         @if($hasPendingOffer)
@@ -665,9 +665,9 @@
                                             </div>
                                             <form method="post" action="{{ route('game.transfers.reconsider-renewal', [$game->id, $player->id]) }}">
                                                 @csrf
-                                                <button type="submit" class="text-xs text-accent-blue hover:text-accent-blue hover:underline whitespace-nowrap min-h-[44px] sm:min-h-0 rounded-sm focus:outline-hidden focus:ring-2 focus:ring-accent-blue focus:ring-offset-1">
+                                                <x-ghost-button type="submit" color="blue" size="xs">
                                                     {{ __('transfers.reconsider_renewal') }}
-                                                </button>
+                                                </x-ghost-button>
                                             </form>
                                         </div>
                                     </div>

@@ -1,4 +1,4 @@
-<button
+<x-icon-button
     x-data="{
         light: document.documentElement.classList.contains('light'),
         toggle() {
@@ -9,9 +9,8 @@
         }
     }"
     @click="toggle()"
-    type="button"
-    class="inline-flex items-center justify-center min-h-[44px] min-w-[44px] p-2 text-text-muted hover:text-text-primary rounded-lg transition-colors"
-    :aria-label="light ? '{{ __('app.switch_dark_mode') }}' : '{{ __('app.switch_light_mode') }}'"
+    class="rounded-lg"
+    x-bind:aria-label="light ? @js(__('app.switch_dark_mode')) : @js(__('app.switch_light_mode'))"
 >
     {{-- Sun icon (shown in dark mode) --}}
     <svg x-show="!light" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
@@ -21,4 +20,4 @@
     <svg x-show="light" x-cloak class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
     </svg>
-</button>
+</x-icon-button>

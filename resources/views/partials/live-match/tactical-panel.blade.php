@@ -57,15 +57,14 @@
                             <span class="text-text-secondary ml-1" x-text="displayMinute + '\''"></span>
                         </div>
                         {{-- Close button --}}
-                        <button
+                        <x-icon-button
                             @click="safeCloseTacticalPanel()"
-                            class="p-1.5 rounded-lg hover:bg-surface-800/10 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
-                            :disabled="subProcessing || tacticsProcessing"
+                            x-bind:disabled="subProcessing || tacticsProcessing"
                         >
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                             </svg>
-                        </button>
+                        </x-icon-button>
                     </div>
                 </div>
 
@@ -80,12 +79,12 @@
             {{-- Tab bar --}}
             <div class="border-b border-border-strong bg-surface-700/50">
                 <div class="flex overflow-x-auto scrollbar-hide">
-                    <button
+                    <x-tab-button
                         @click="tacticalTab = 'substitutions'"
-                        class="relative px-4 sm:px-6 py-3 text-xs sm:text-sm font-semibold shrink-0 transition-colors min-h-[44px]"
-                        :class="tacticalTab === 'substitutions'
-                            ? 'text-text-primary'
-                            : 'text-text-secondary hover:text-text-secondary'"
+                        class="relative px-4 sm:px-6 py-3 text-xs sm:text-sm font-semibold shrink-0 min-h-[44px]"
+                        x-bind:class="tacticalTab === 'substitutions'
+                            ? 'text-text-primary border-transparent'
+                            : 'text-text-secondary hover:text-text-secondary border-transparent'"
                     >
                         {{ __('game.tactical_tab_substitutions') }}
                         <span class="text-xs font-normal ml-1" :class="tacticalTab === 'substitutions' ? 'text-text-muted' : 'text-text-secondary'"
@@ -95,20 +94,20 @@
                             x-show="tacticalTab === 'substitutions'"
                             class="absolute bottom-0 left-0 right-0 h-0.5 bg-surface-800"
                         ></div>
-                    </button>
-                    <button
+                    </x-tab-button>
+                    <x-tab-button
                         @click="tacticalTab = 'tactics'"
-                        class="relative px-4 sm:px-6 py-3 text-xs sm:text-sm font-semibold shrink-0 transition-colors min-h-[44px]"
-                        :class="tacticalTab === 'tactics'
-                            ? 'text-text-primary'
-                            : 'text-text-secondary hover:text-text-secondary'"
+                        class="relative px-4 sm:px-6 py-3 text-xs sm:text-sm font-semibold shrink-0 min-h-[44px]"
+                        x-bind:class="tacticalTab === 'tactics'
+                            ? 'text-text-primary border-transparent'
+                            : 'text-text-secondary hover:text-text-secondary border-transparent'"
                     >
                         {{ __('game.tactical_tab_tactics') }}
                         <div
                             x-show="tacticalTab === 'tactics'"
                             class="absolute bottom-0 left-0 right-0 h-0.5 bg-surface-800"
                         ></div>
-                    </button>
+                    </x-tab-button>
                 </div>
             </div>
 
@@ -131,11 +130,11 @@
                         <p class="text-sm font-medium text-accent-red">
                             <span x-text="injuryAlertPlayer"></span> {{ __('game.live_injury_alert') }}
                         </p>
-                        <button @click="injuryAlertPlayer = null" class="ml-auto p-1 text-red-400 hover:text-accent-red transition-colors shrink-0">
+                        <x-icon-button size="sm" @click="injuryAlertPlayer = null" class="ml-auto text-red-400 hover:text-accent-red shrink-0">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                             </svg>
-                        </button>
+                        </x-icon-button>
                     </div>
 
                     {{-- Window + sub budget summary + action buttons --}}
@@ -202,15 +201,15 @@
                                     </svg>
                                     <span class="truncate font-medium text-text-body" x-text="sub.playerIn.name"></span>
                                     <span class="text-green-500 shrink-0">&#8618;</span>
-                                    <button
+                                    <x-icon-button
                                         @click="removePendingSub(idx)"
-                                        class="ml-auto p-1 text-text-secondary hover:text-red-500 transition-colors shrink-0 min-h-[44px] min-w-[44px] flex items-center justify-center"
-                                        :disabled="subProcessing"
+                                        class="ml-auto shrink-0 hover:text-red-500"
+                                        x-bind:disabled="subProcessing"
                                     >
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                                         </svg>
-                                    </button>
+                                    </x-icon-button>
                                 </div>
                             </template>
                         </div>
@@ -387,16 +386,17 @@
 
             {{-- Footer: resume match --}}
             <div class="border-t border-border-strong bg-surface-700/50 px-4 py-3 sm:px-6 sm:py-4">
-                <button
+                <x-ghost-button
+                    color="slate"
                     @click="safeCloseTacticalPanel()"
-                    :disabled="subProcessing || tacticsProcessing"
-                    class="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold text-text-secondary hover:text-text-primary rounded-lg hover:bg-surface-700 transition-colors min-h-[44px]"
+                    x-bind:disabled="subProcessing || tacticsProcessing"
+                    class="w-full justify-center gap-2 py-2.5"
                 >
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M8 5v14l11-7z"/>
                     </svg>
                     {{ __('game.tactical_resume') }}
-                </button>
+                </x-ghost-button>
             </div>
         </div>
     </div>

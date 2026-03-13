@@ -91,12 +91,12 @@
             <form method="POST" action="{{ route('game.welcome.complete', $game->id) }}">
                 @csrf
                 <div class="flex justify-center">
-                    <button type="submit" class="inline-flex items-center gap-2 px-8 py-3 min-h-[44px] bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl transition-colors duration-200 text-lg">
+                    <x-primary-button type="submit" color="teal" class="px-8 py-3 rounded-xl text-lg">
                         {{ __('game.welcome_start_journey') }}
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                         </svg>
-                    </button>
+                    </x-primary-button>
                 </div>
             </form>
 

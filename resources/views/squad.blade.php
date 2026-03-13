@@ -180,49 +180,49 @@
             <div class="mt-4 flex flex-col sm:flex-row sm:items-center gap-3">
                 {{-- Position filter pills --}}
                 <div class="flex items-center gap-1.5 overflow-x-auto scrollbar-hide">
-                    <button @click="posFilter = 'all'" :class="posFilter === 'all' ? 'bg-accent-blue text-white' : 'bg-surface-700 text-text-secondary hover:text-text-body'" class="pos-filter px-3 py-1.5 rounded-md text-xs font-medium whitespace-nowrap transition-colors">{{ __('squad.all') }}</button>
-                    <button @click="posFilter = 'Goalkeeper'" :class="posFilter === 'Goalkeeper' ? 'bg-accent-blue text-white' : 'bg-surface-700 text-text-secondary hover:text-text-body'" class="pos-filter px-3 py-1.5 rounded-md text-xs font-medium whitespace-nowrap transition-colors">{{ __('squad.goalkeepers_short') }} <span class="text-text-faint ml-0.5">{{ $goalkeepers->count() }}</span></button>
-                    <button @click="posFilter = 'Defender'" :class="posFilter === 'Defender' ? 'bg-accent-blue text-white' : 'bg-surface-700 text-text-secondary hover:text-text-body'" class="pos-filter px-3 py-1.5 rounded-md text-xs font-medium whitespace-nowrap transition-colors">{{ __('squad.defenders_short') }} <span class="text-text-faint ml-0.5">{{ $defenders->count() }}</span></button>
-                    <button @click="posFilter = 'Midfielder'" :class="posFilter === 'Midfielder' ? 'bg-accent-blue text-white' : 'bg-surface-700 text-text-secondary hover:text-text-body'" class="pos-filter px-3 py-1.5 rounded-md text-xs font-medium whitespace-nowrap transition-colors">{{ __('squad.midfielders_short') }} <span class="text-text-faint ml-0.5">{{ $midfielders->count() }}</span></button>
-                    <button @click="posFilter = 'Forward'" :class="posFilter === 'Forward' ? 'bg-accent-blue text-white' : 'bg-surface-700 text-text-secondary hover:text-text-body'" class="pos-filter px-3 py-1.5 rounded-md text-xs font-medium whitespace-nowrap transition-colors">{{ __('squad.forwards_short') }} <span class="text-text-faint ml-0.5">{{ $forwards->count() }}</span></button>
+                    <x-pill-button size="sm" @click="posFilter = 'all'" x-bind:class="posFilter === 'all' ? 'bg-accent-blue text-white' : 'bg-surface-700 text-text-secondary hover:text-text-body'" class="pos-filter">{{ __('squad.all') }}</x-pill-button>
+                    <x-pill-button size="sm" @click="posFilter = 'Goalkeeper'" x-bind:class="posFilter === 'Goalkeeper' ? 'bg-accent-blue text-white' : 'bg-surface-700 text-text-secondary hover:text-text-body'" class="pos-filter">{{ __('squad.goalkeepers_short') }} <span class="text-text-faint ml-0.5">{{ $goalkeepers->count() }}</span></x-pill-button>
+                    <x-pill-button size="sm" @click="posFilter = 'Defender'" x-bind:class="posFilter === 'Defender' ? 'bg-accent-blue text-white' : 'bg-surface-700 text-text-secondary hover:text-text-body'" class="pos-filter">{{ __('squad.defenders_short') }} <span class="text-text-faint ml-0.5">{{ $defenders->count() }}</span></x-pill-button>
+                    <x-pill-button size="sm" @click="posFilter = 'Midfielder'" x-bind:class="posFilter === 'Midfielder' ? 'bg-accent-blue text-white' : 'bg-surface-700 text-text-secondary hover:text-text-body'" class="pos-filter">{{ __('squad.midfielders_short') }} <span class="text-text-faint ml-0.5">{{ $midfielders->count() }}</span></x-pill-button>
+                    <x-pill-button size="sm" @click="posFilter = 'Forward'" x-bind:class="posFilter === 'Forward' ? 'bg-accent-blue text-white' : 'bg-surface-700 text-text-secondary hover:text-text-body'" class="pos-filter">{{ __('squad.forwards_short') }} <span class="text-text-faint ml-0.5">{{ $forwards->count() }}</span></x-pill-button>
                 </div>
 
                 {{-- Right side: availability filter + view mode + clear --}}
                 <div class="flex items-center gap-2 sm:ml-auto overflow-x-auto scrollbar-hide">
                     {{-- Availability filter --}}
                     <div class="flex items-center gap-1 shrink-0">
-                        <button @click="availFilter = availFilter === 'available' ? 'all' : 'available'" :class="availFilter === 'available' ? 'bg-accent-green/20 text-accent-green border-accent-green/30' : 'bg-surface-700 text-text-secondary hover:text-text-body border-border-default'" class="px-2 py-1 text-xs font-medium rounded-sm border transition-colors">{{ __('squad.available') }}</button>
-                        <button @click="availFilter = availFilter === 'unavailable' ? 'all' : 'unavailable'" :class="availFilter === 'unavailable' ? 'bg-accent-red/20 text-accent-red border-accent-red/30' : 'bg-surface-700 text-text-secondary hover:text-text-body border-border-default'" class="px-2 py-1 text-xs font-medium rounded-sm border transition-colors">{{ __('squad.unavailable') }}</button>
+                        <x-pill-button size="xs" @click="availFilter = availFilter === 'available' ? 'all' : 'available'" x-bind:class="availFilter === 'available' ? 'bg-accent-green/20 text-accent-green border-accent-green/30' : 'bg-surface-700 text-text-secondary hover:text-text-body border-border-default'" class="rounded-sm border">{{ __('squad.available') }}</x-pill-button>
+                        <x-pill-button size="xs" @click="availFilter = availFilter === 'unavailable' ? 'all' : 'unavailable'" x-bind:class="availFilter === 'unavailable' ? 'bg-accent-red/20 text-accent-red border-accent-red/30' : 'bg-surface-700 text-text-secondary hover:text-text-body border-border-default'" class="rounded-sm border">{{ __('squad.unavailable') }}</x-pill-button>
                     </div>
 
                     {{-- View Mode Toggle --}}
                     <div class="flex items-center gap-0.5 bg-surface-700 rounded-lg p-0.5 shrink-0">
-                        <button @click="viewMode = 'tactical'" :class="viewMode === 'tactical' ? 'bg-surface-800 shadow-xs text-text-primary' : 'text-text-muted hover:text-text-body'" class="px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors">
+                        <x-pill-button size="xs" @click="viewMode = 'tactical'" x-bind:class="viewMode === 'tactical' ? 'bg-surface-800 shadow-xs text-text-primary' : 'text-text-muted hover:text-text-body'" class="rounded-md">
                             {{ __('squad.tactical') }}
-                        </button>
+                        </x-pill-button>
                         @if($isCareerMode)
-                        <button @click="viewMode = 'planning'" :class="viewMode === 'planning' ? 'bg-surface-800 shadow-xs text-text-primary' : 'text-text-muted hover:text-text-body'" class="px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors">
+                        <x-pill-button size="xs" @click="viewMode = 'planning'" x-bind:class="viewMode === 'planning' ? 'bg-surface-800 shadow-xs text-text-primary' : 'text-text-muted hover:text-text-body'" class="rounded-md">
                             {{ __('squad.planning') }}
-                        </button>
+                        </x-pill-button>
                         @endif
-                        <button @click="viewMode = 'stats'" :class="viewMode === 'stats' ? 'bg-surface-800 shadow-xs text-text-primary' : 'text-text-muted hover:text-text-body'" class="px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors">
+                        <x-pill-button size="xs" @click="viewMode = 'stats'" x-bind:class="viewMode === 'stats' ? 'bg-surface-800 shadow-xs text-text-primary' : 'text-text-muted hover:text-text-body'" class="rounded-md">
                             {{ __('squad.stats') }}
-                        </button>
-                        <button @click="viewMode = 'numbers'" :class="viewMode === 'numbers' ? 'bg-surface-800 shadow-xs text-text-primary' : 'text-text-muted hover:text-text-body'" class="px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors">
+                        </x-pill-button>
+                        <x-pill-button size="xs" @click="viewMode = 'numbers'" x-bind:class="viewMode === 'numbers' ? 'bg-surface-800 shadow-xs text-text-primary' : 'text-text-muted hover:text-text-body'" class="rounded-md">
                             #
-                        </button>
+                        </x-pill-button>
                     </div>
 
                     {{-- Clear filters --}}
-                    <button x-show="activeFilterCount() > 0" @click="clearFilters()" class="shrink-0 text-xs text-text-secondary hover:text-text-primary underline underline-offset-2">
+                    <x-ghost-button color="slate" size="xs" x-show="activeFilterCount() > 0" @click="clearFilters()" class="shrink-0 underline underline-offset-2">
                         {{ __('squad.clear_filters') }}
-                    </button>
+                    </x-ghost-button>
 
                     {{-- Desktop: Squad Analysis toggle --}}
-                    <button @click="sidebarOpen = !sidebarOpen" class="hidden xl:inline-flex shrink-0 items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-sm border border-border-strong text-text-secondary hover:bg-surface-700/50 transition-colors">
+                    <x-ghost-button color="slate" size="xs" @click="sidebarOpen = !sidebarOpen" class="hidden xl:inline-flex shrink-0 gap-1.5 border border-border-strong">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                         {{ __('squad.squad_analysis') }}
-                    </button>
+                    </x-ghost-button>
                 </div>
             </div>
 
@@ -588,13 +588,13 @@
 
             {{-- Mobile Squad Analysis (collapsible) --}}
             <div class="xl:hidden mt-6" x-data="{ mobileAnalysisOpen: false }">
-                <button @click="mobileAnalysisOpen = !mobileAnalysisOpen" class="w-full flex items-center justify-between py-3 px-4 bg-surface-700/50 rounded-lg border border-border-default text-sm font-medium text-text-body">
+                <x-ghost-button color="slate" @click="mobileAnalysisOpen = !mobileAnalysisOpen" class="w-full justify-between py-3 px-4 bg-surface-700/50 rounded-lg border border-border-default">
                     <span class="flex items-center gap-2">
                         <svg class="w-4 h-4 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                         {{ __('squad.squad_analysis') }}
                     </span>
                     <svg :class="mobileAnalysisOpen && 'rotate-180'" class="w-4 h-4 text-text-secondary transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                </button>
+                </x-ghost-button>
                 <div x-show="mobileAnalysisOpen" x-transition.opacity.duration.150ms class="mt-2">
                     @include('partials.squad.sidebar', [
                         'game' => $game,

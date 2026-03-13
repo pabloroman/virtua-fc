@@ -37,9 +37,9 @@
                                 @if($user->id !== auth()->id())
                                     <form method="POST" action="{{ route('admin.impersonate', $user->id) }}" class="inline">
                                         @csrf
-                                        <button type="submit" class="text-sm font-medium text-accent-blue hover:text-accent-blue min-h-[44px]">
+                                        <x-ghost-button type="submit" color="blue" size="xs">
                                             {{ __('admin.impersonate') }}
-                                        </button>
+                                        </x-ghost-button>
                                     </form>
                                 @else
                                     <span class="text-sm text-text-secondary">{{ __('admin.current_user') }}</span>

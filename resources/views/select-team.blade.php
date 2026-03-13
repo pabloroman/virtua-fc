@@ -88,10 +88,10 @@
                             <div class="flex space-x-2 overflow-x-auto scrollbar-hide">
                                 @foreach($countries as $countryCode => $country)
                                     @foreach($country['tiers'] as $tier => $competition)
-                                        <a x-on:click="openTab = '{{ $competition->id }}'" :class="{ 'bg-red-600 text-white': openTab === '{{ $competition->id }}' }" class="flex items-center space-x-2 py-2 px-4 rounded-md focus:outline-hidden text-lg transition-all duration-300 cursor-pointer shrink-0">
+                                        <x-pill-button @click="openTab = '{{ $competition->id }}'" x-bind:class="openTab === '{{ $competition->id }}' ? 'bg-red-600 text-white' : ''" class="gap-2 text-lg">
                                             <img class="w-5 h-4 rounded-sm shadow-sm" src="/flags/{{ $competition->flag }}.svg">
                                             <span>{{ __($competition->name) }}</span>
-                                        </a>
+                                        </x-pill-button>
                                     @endforeach
                                 @endforeach
                             </div>

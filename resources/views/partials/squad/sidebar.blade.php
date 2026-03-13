@@ -127,11 +127,11 @@
                     <div class="text-xs font-medium text-accent-red mb-1.5">{{ __('squad.expiring_this_season') }}</div>
                     <div class="space-y-1">
                         @foreach($expiringThisSeason as $ep)
-                            <button @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $ep->id]) }}')"
-                                    class="w-full flex items-center justify-between py-1 px-2 rounded-sm hover:bg-surface-700 transition-colors text-left">
+                            <x-ghost-button color="slate" size="xs" @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $ep->id]) }}')"
+                                    class="w-full justify-between py-1 px-2 text-left">
                                 <span class="text-xs text-text-body truncate">{{ $ep->name }}</span>
                                 <span class="text-xs text-red-500 font-medium shrink-0 ml-2">{{ $ep->contract_expiry_year }}</span>
-                            </button>
+                            </x-ghost-button>
                         @endforeach
                     </div>
                 </div>
@@ -142,11 +142,11 @@
                     <div class="text-xs font-medium text-amber-600 mb-1.5">{{ __('squad.expiring_next_season') }}</div>
                     <div class="space-y-1">
                         @foreach($expiringNextSeason as $ep)
-                            <button @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $ep->id]) }}')"
-                                    class="w-full flex items-center justify-between py-1 px-2 rounded-sm hover:bg-surface-700 transition-colors text-left">
+                            <x-ghost-button color="slate" size="xs" @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $ep->id]) }}')"
+                                    class="w-full justify-between py-1 px-2 text-left">
                                 <span class="text-xs text-text-body truncate">{{ $ep->name }}</span>
                                 <span class="text-xs text-amber-500 font-medium shrink-0 ml-2">{{ $ep->contract_expiry_year }}</span>
-                            </button>
+                            </x-ghost-button>
                         @endforeach
                     </div>
                 </div>

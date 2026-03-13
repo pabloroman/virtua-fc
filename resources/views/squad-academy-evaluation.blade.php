@@ -132,11 +132,11 @@
                                     {{-- Name + info --}}
                                     <div class="col-span-3">
                                         <div class="flex items-center gap-2">
-                                            <button type="button" x-data @click="$dispatch('show-player-detail', '{{ route('game.academy.detail', [$game->id, $prospect->id]) }}')" class="p-1 text-text-body rounded-sm hover:text-text-secondary shrink-0">
+                                            <x-icon-button size="sm" x-data @click="$dispatch('show-player-detail', '{{ route('game.academy.detail', [$game->id, $prospect->id]) }}')" class="shrink-0">
                                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="w-5 h-5">
                                                     <path fill-rule="evenodd" d="M19.5 21a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3h-5.379a.75.75 0 0 1-.53-.22L11.47 3.66A2.25 2.25 0 0 0 9.879 3H4.5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h15Zm-6.75-10.5a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V10.5Z" clip-rule="evenodd" />
                                                 </svg>
-                                            </button>
+                                            </x-icon-button>
                                             @if($prospect->nationality_flag)
                                                 <img src="/flags/{{ $prospect->nationality_flag['code'] }}.svg" class="w-5 h-4 rounded-sm shadow-xs shrink-0" title="{{ $prospect->nationality_flag['name'] }}">
                                             @endif
@@ -187,47 +187,47 @@
                                     {{-- Decision buttons --}}
                                     <div class="col-span-3 flex justify-center gap-1">
                                         @unless($mustDecide)
-                                            <button type="button"
+                                            <x-pill-button size="xs" type="button"
                                                 @click="setDecision('{{ $prospect->id }}', 'keep')"
                                                 :class="decisions['{{ $prospect->id }}'] === 'keep' ? 'bg-emerald-600 text-white ring-2 ring-emerald-300' : 'bg-surface-700 text-text-secondary hover:bg-accent-green/10 hover:text-accent-green'"
-                                                class="px-2.5 py-1.5 text-xs font-medium rounded-md transition-all min-h-[36px]">
+                                                class="rounded-md min-h-[36px]">
                                                 {{ __('squad.academy_keep') }}
-                                            </button>
+                                            </x-pill-button>
                                         @endunless
 
-                                        <button type="button"
+                                        <x-pill-button size="xs" type="button"
                                             @click="setDecision('{{ $prospect->id }}', 'promote')"
                                             :class="decisions['{{ $prospect->id }}'] === 'promote' ? 'bg-accent-blue text-white ring-2 ring-sky-300' : 'bg-surface-700 text-text-secondary hover:bg-accent-blue/10 hover:text-accent-blue'"
-                                            class="px-2.5 py-1.5 text-xs font-medium rounded-md transition-all min-h-[36px]">
+                                            class="rounded-md min-h-[36px]">
                                             {{ __('squad.academy_promote') }}
-                                        </button>
+                                        </x-pill-button>
 
                                         @unless($mustDecide)
-                                            <button type="button"
+                                            <x-pill-button size="xs" type="button"
                                                 @click="setDecision('{{ $prospect->id }}', 'loan')"
                                                 :class="decisions['{{ $prospect->id }}'] === 'loan' ? 'bg-violet-600 text-white ring-2 ring-violet-400/30' : 'bg-surface-700 text-text-secondary hover:bg-violet-500/10 hover:text-violet-400'"
-                                                class="px-2.5 py-1.5 text-xs font-medium rounded-md transition-all min-h-[36px]">
+                                                class="rounded-md min-h-[36px]">
                                                 {{ __('squad.academy_loan_out') }}
-                                            </button>
+                                            </x-pill-button>
                                         @endunless
 
-                                        <button type="button"
+                                        <x-pill-button size="xs" type="button"
                                             @click="setDecision('{{ $prospect->id }}', 'dismiss')"
                                             :class="decisions['{{ $prospect->id }}'] === 'dismiss' ? 'bg-red-600 text-white ring-2 ring-red-300' : 'bg-surface-700 text-text-secondary hover:bg-accent-red/10 hover:text-accent-red'"
-                                            class="px-2.5 py-1.5 text-xs font-medium rounded-md transition-all min-h-[36px]">
+                                            class="rounded-md min-h-[36px]">
                                             {{ __('squad.academy_dismiss') }}
-                                        </button>
+                                        </x-pill-button>
                                     </div>
                                 </div>
 
                                 {{-- Mobile card --}}
                                 <div class="md:hidden p-3">
                                     <div class="flex items-center gap-2 mb-2">
-                                        <button type="button" x-data @click="$dispatch('show-player-detail', '{{ route('game.academy.detail', [$game->id, $prospect->id]) }}')" class="p-1 text-text-body rounded-sm hover:text-text-secondary shrink-0">
+                                        <x-icon-button size="sm" x-data @click="$dispatch('show-player-detail', '{{ route('game.academy.detail', [$game->id, $prospect->id]) }}')">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="w-5 h-5">
                                                 <path fill-rule="evenodd" d="M19.5 21a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3h-5.379a.75.75 0 0 1-.53-.22L11.47 3.66A2.25 2.25 0 0 0 9.879 3H4.5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h15Zm-6.75-10.5a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V10.5Z" clip-rule="evenodd" />
                                             </svg>
-                                        </button>
+                                        </x-icon-button>
                                         <x-position-badge :position="$prospect->position" :tooltip="\App\Support\PositionMapper::toDisplayName($prospect->position)" />
                                         @if($prospect->nationality_flag)
                                             <img src="/flags/{{ $prospect->nationality_flag['code'] }}.svg" class="w-5 h-4 rounded-sm shadow-xs shrink-0" title="{{ $prospect->nationality_flag['name'] }}">
@@ -260,36 +260,32 @@
 
                                     <div class="flex gap-1.5">
                                         @unless($mustDecide)
-                                            <button type="button"
-                                                @click="setDecision('{{ $prospect->id }}', 'keep')"
+                                            <x-pill-button size="sm" @click="setDecision('{{ $prospect->id }}', 'keep')"
                                                 :class="decisions['{{ $prospect->id }}'] === 'keep' ? 'bg-emerald-600 text-white ring-2 ring-emerald-300' : 'bg-surface-700 text-text-secondary'"
-                                                class="flex-1 px-2 py-2 text-xs font-medium rounded-md transition-all min-h-[44px]">
+                                                class="flex-1 min-h-[44px]">
                                                 {{ __('squad.academy_keep') }}
-                                            </button>
+                                            </x-pill-button>
                                         @endunless
 
-                                        <button type="button"
-                                            @click="setDecision('{{ $prospect->id }}', 'promote')"
+                                        <x-pill-button size="sm" @click="setDecision('{{ $prospect->id }}', 'promote')"
                                             :class="decisions['{{ $prospect->id }}'] === 'promote' ? 'bg-accent-blue text-white ring-2 ring-sky-300' : 'bg-surface-700 text-text-secondary'"
-                                            class="flex-1 px-2 py-2 text-xs font-medium rounded-md transition-all min-h-[44px]">
+                                            class="flex-1 min-h-[44px]">
                                             {{ __('squad.academy_promote') }}
-                                        </button>
+                                        </x-pill-button>
 
                                         @unless($mustDecide)
-                                            <button type="button"
-                                                @click="setDecision('{{ $prospect->id }}', 'loan')"
+                                            <x-pill-button size="sm" @click="setDecision('{{ $prospect->id }}', 'loan')"
                                                 :class="decisions['{{ $prospect->id }}'] === 'loan' ? 'bg-indigo-600 text-white ring-2 ring-indigo-300' : 'bg-surface-700 text-text-secondary'"
-                                                class="flex-1 px-2 py-2 text-xs font-medium rounded-md transition-all min-h-[44px]">
+                                                class="flex-1 min-h-[44px]">
                                                 {{ __('squad.academy_loan_out') }}
-                                            </button>
+                                            </x-pill-button>
                                         @endunless
 
-                                        <button type="button"
-                                            @click="setDecision('{{ $prospect->id }}', 'dismiss')"
+                                        <x-pill-button size="sm" @click="setDecision('{{ $prospect->id }}', 'dismiss')"
                                             :class="decisions['{{ $prospect->id }}'] === 'dismiss' ? 'bg-red-600 text-white ring-2 ring-red-300' : 'bg-surface-700 text-text-secondary'"
-                                            class="flex-1 px-2 py-2 text-xs font-medium rounded-md transition-all min-h-[44px]">
+                                            class="flex-1 min-h-[44px]">
                                             {{ __('squad.academy_dismiss') }}
-                                        </button>
+                                        </x-pill-button>
                                     </div>
                                 </div>
                             </div>
@@ -304,12 +300,9 @@
                         <div class="text-xs text-accent-green font-medium" x-show="allDecided" x-cloak>
                             &#10003; {{ __('messages.academy_evaluation_complete') }}
                         </div>
-                        <button type="submit"
-                                :disabled="!allDecided"
-                                :class="allDecided ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-surface-600 text-text-secondary cursor-not-allowed'"
-                                class="w-full md:w-auto px-6 py-3 font-semibold rounded-lg transition-colors min-h-[44px]">
+                        <x-primary-button color="red" x-bind:disabled="!allDecided" class="w-full md:w-auto">
                             {{ __('app.confirm') }}
-                        </button>
+                        </x-primary-button>
                     </div>
                 </form>
     </div>

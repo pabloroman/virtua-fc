@@ -38,21 +38,21 @@
 
         {{-- Tab Navigation --}}
         <div class="flex gap-1 border-b border-border-strong mb-6 overflow-x-auto scrollbar-hide">
-            <button @click="tab = 'groups'"
-                    :class="tab === 'groups' ? 'border-b-2 border-red-500 text-accent-red font-semibold' : 'text-text-muted hover:text-text-body'"
-                    class="px-4 py-2.5 text-sm whitespace-nowrap shrink-0 min-h-[44px]">
+            <x-tab-button @click="tab = 'groups'"
+                    x-bind:class="tab === 'groups' ? 'border-b-2 border-red-500 text-accent-red font-semibold' : 'text-text-muted hover:text-text-body border-transparent'"
+                    class="shrink-0 min-h-[44px]">
                 {{ __('game.group_stage') }}
-            </button>
-            <button @click="tab = 'knockout'"
-                    :class="tab === 'knockout' ? 'border-b-2 border-red-500 text-accent-red font-semibold' : 'text-text-muted hover:text-text-body'"
-                    class="px-4 py-2.5 text-sm whitespace-nowrap shrink-0 min-h-[44px] flex items-center gap-2">
+            </x-tab-button>
+            <x-tab-button @click="tab = 'knockout'"
+                    x-bind:class="tab === 'knockout' ? 'border-b-2 border-red-500 text-accent-red font-semibold' : 'text-text-muted hover:text-text-body border-transparent'"
+                    class="shrink-0 min-h-[44px] gap-2">
                 {{ __('game.knockout_phase') }}
                 @if(!$groupStageComplete)
                     <span class="w-2 h-2 rounded-full bg-surface-600"></span>
                 @elseif($knockoutTies->isNotEmpty())
                     <span class="w-2 h-2 rounded-full bg-accent-green"></span>
                 @endif
-            </button>
+            </x-tab-button>
         </div>
 
         {{-- Groups Tab --}}

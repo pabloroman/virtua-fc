@@ -33,9 +33,9 @@
                     <p class="text-sm mt-2 text-text-primary">
                         {{ __('Your email address is unverified.') }}
 
-                        <button form="send-verification" class="underline text-sm text-text-secondary hover:text-text-primary rounded-md focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-accent-blue">
+                        <x-ghost-button form="send-verification" type="submit" color="slate" size="xs">
                             {{ __('Click here to re-send the verification email.') }}
-                        </button>
+                        </x-ghost-button>
                     </p>
 
                     @if (session('status') === 'verification-link-sent')

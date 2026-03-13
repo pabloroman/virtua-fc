@@ -6,6 +6,9 @@ $colors = [
     'red' => 'bg-accent-red hover:bg-red-500 focus:ring-accent-red active:bg-red-700',
     'green' => 'bg-accent-green hover:bg-green-600 focus:ring-accent-green active:bg-green-700',
     'amber' => 'bg-accent-gold hover:bg-amber-600 focus:ring-accent-gold active:bg-amber-700',
+    'sky' => 'bg-sky-600 hover:bg-sky-500 focus:ring-sky-500 active:bg-sky-700',
+    'teal' => 'bg-teal-600 hover:bg-teal-700 focus:ring-teal-500 active:bg-teal-800',
+    'emerald' => 'bg-emerald-600 hover:bg-emerald-700 focus:ring-emerald-500 active:bg-emerald-800',
 ];
 $colorClasses = $colors[$color] ?? $colors['blue'];
 

@@ -38,11 +38,11 @@
                         {{-- Competition Selector --}}
                         <div class="flex overflow-x-auto scrollbar-hide gap-2 pb-3 mb-5 border-b border-border-default">
                             <template x-for="comp in competitions" :key="comp.id">
-                                <button @click="selectCompetition(comp)"
-                                        :class="selectedCompetition?.id === comp.id
+                                <x-pill-button @click="selectCompetition(comp)"
+                                        x-bind:class="selectedCompetition?.id === comp.id
                                             ? 'bg-surface-900 text-white border-surface-900'
                                             : 'bg-surface-800 text-text-body border-border-strong hover:border-border-strong'"
-                                        class="shrink-0 flex items-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition-colors min-h-[44px]">
+                                        class="shrink-0 gap-2 rounded-lg border min-h-[44px]">
                                     <template x-if="comp.country">
                                         <img :src="'/flags/' + comp.flag + '.svg'" class="w-5 h-3.5 rounded-xs shadow-xs" :alt="comp.country">
                                     </template>
@@ -50,7 +50,7 @@
                                     <span class="text-xs px-1.5 py-0.5 rounded-full"
                                           :class="selectedCompetition?.id === comp.id ? 'bg-surface-800/20' : 'bg-surface-700 text-text-muted'"
                                           x-text="comp.teamCount"></span>
-                                </button>
+                                </x-pill-button>
                             </template>
                         </div>
 
@@ -59,16 +59,16 @@
 
                             {{-- Mobile tab toggle --}}
                             <div class="flex md:hidden border-b border-border-strong mb-2">
-                                <button @click="mobileView = 'teams'"
-                                        :class="mobileView === 'teams' ? 'border-accent-blue text-accent-blue' : 'border-transparent text-text-muted'"
-                                        class="flex-1 text-center py-2.5 text-sm font-medium border-b-2 transition-colors min-h-[44px]">
+                                <x-tab-button @click="mobileView = 'teams'"
+                                        x-bind:class="mobileView === 'teams' ? 'border-accent-blue text-accent-blue' : 'border-transparent text-text-muted'"
+                                        class="flex-1 text-center min-h-[44px]">
                                     {{ __('transfers.explore_mobile_teams') }}
-                                </button>
-                                <button @click="mobileView = 'squad'"
-                                        :class="mobileView === 'squad' ? 'border-accent-blue text-accent-blue' : 'border-transparent text-text-muted'"
-                                        class="flex-1 text-center py-2.5 text-sm font-medium border-b-2 transition-colors min-h-[44px]">
+                                </x-tab-button>
+                                <x-tab-button @click="mobileView = 'squad'"
+                                        x-bind:class="mobileView === 'squad' ? 'border-accent-blue text-accent-blue' : 'border-transparent text-text-muted'"
+                                        class="flex-1 text-center min-h-[44px]">
                                     {{ __('transfers.explore_mobile_squad') }}
-                                </button>
+                                </x-tab-button>
                             </div>
 
                             {{-- Left column: Teams list --}}

@@ -54,12 +54,11 @@
                                   x-text="kicker.positionAbbr"></span>
                             <span class="text-sm font-semibold text-text-primary flex-1 truncate" x-text="kicker.name"></span>
                             <span class="text-xs text-text-secondary shrink-0" x-text="'⭐ ' + kicker.technicalAbility"></span>
-                            <button @click="removePenaltyKicker(idx)"
-                                    class="text-text-secondary hover:text-red-500 transition-colors p-1 shrink-0 min-h-[44px] flex items-center">
+                            <x-icon-button size="sm" @click="removePenaltyKicker(idx)" class="shrink-0 hover:text-red-500">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                                 </svg>
-                            </button>
+                            </x-icon-button>
                         </div>
                     </template>
                     {{-- Empty slots --}}
@@ -92,21 +91,11 @@
 
             {{-- Footer --}}
             <div class="px-4 py-3 sm:px-6 bg-surface-700/50 border-t border-border-default">
-                <button @click="confirmPenaltyKickers()"
-                        :disabled="selectedPenaltyKickers.length < 5 || penaltyProcessing"
-                        class="w-full px-4 py-2.5 text-sm font-bold text-white rounded-lg transition-colors min-h-[44px]"
-                        :class="selectedPenaltyKickers.length >= 5 && !penaltyProcessing
-                            ? 'bg-purple-700 hover:bg-purple-800'
-                            : 'bg-surface-600 text-text-muted cursor-not-allowed'">
-                    <span x-show="!penaltyProcessing">{{ __('game.live_pen_pick_confirm') }}</span>
-                    <span x-show="penaltyProcessing" class="inline-flex items-center gap-2">
-                        <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                        </svg>
-                        ...
-                    </span>
-                </button>
+                <x-primary-button-spin type="button" @click="confirmPenaltyKickers()"
+                        x-bind:disabled="selectedPenaltyKickers.length < 5 || penaltyProcessing"
+                        class="w-full bg-purple-700 hover:bg-purple-800">
+                    {{ __('game.live_pen_pick_confirm') }}
+                </x-primary-button-spin>
             </div>
         </div>
     </div>

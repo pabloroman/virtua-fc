@@ -36,11 +36,11 @@
 
         <div class="flex items-start justify-between gap-4 mb-2">
             <h3 class="font-semibold text-xl text-text-primary">{{ __('transfers.new_scout_search') }}</h3>
-            <button onclick="window.dispatchEvent(new CustomEvent('close-modal', {detail: 'scout-search'}))" class="p-1 text-text-secondary hover:text-text-secondary rounded-sm hover:bg-surface-700 shrink-0">
+            <x-icon-button size="sm" onclick="window.dispatchEvent(new CustomEvent('close-modal', {detail: 'scout-search'}))" class="shrink-0">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
-            </button>
+            </x-icon-button>
         </div>
         <p class="text-sm text-text-secondary mb-6">{{ __('transfers.scout_search_desc') }}</p>
 

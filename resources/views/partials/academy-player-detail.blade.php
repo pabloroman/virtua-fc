@@ -44,11 +44,11 @@
             @else
                 <div class="w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center text-xl md:text-2xl font-bold bg-surface-600 text-text-secondary">?</div>
             @endif
-            <button onclick="window.dispatchEvent(new CustomEvent('close-modal', {detail: 'player-detail'}))" class="p-1 text-text-secondary hover:text-text-secondary rounded-sm hover:bg-surface-700">
+            <x-icon-button size="sm" onclick="window.dispatchEvent(new CustomEvent('close-modal', {detail: 'player-detail'}))">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
-            </button>
+            </x-icon-button>
         </div>
     </div>
 
@@ -134,24 +134,24 @@
         <div class="mt-6 pt-4 border-t border-border-strong flex flex-wrap gap-2">
             <form method="POST" action="{{ route('game.academy.promote', [$game->id, $academyPlayer->id]) }}">
                 @csrf
-                <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border border-accent-blue/20 text-accent-blue bg-accent-blue/10 hover:bg-accent-blue/10 transition-colors min-h-[44px]">
+                <x-action-button color="blue">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" /></svg>
                     {{ __('squad.promote_to_first_team') }}
-                </button>
+                </x-action-button>
             </form>
             <form method="POST" action="{{ route('game.academy.loan', [$game->id, $academyPlayer->id]) }}">
                 @csrf
-                <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border border-violet-500/20 text-violet-400 bg-violet-500/10 hover:bg-violet-500/20 transition-colors min-h-[44px]">
+                <x-action-button color="violet">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
                     {{ __('squad.academy_loan_out') }}
-                </button>
+                </x-action-button>
             </form>
             <form method="POST" action="{{ route('game.academy.dismiss', [$game->id, $academyPlayer->id]) }}" x-data x-on:submit="if (!confirm('{{ __('squad.academy_dismiss_confirm') }}')) $event.preventDefault()">
                 @csrf
-                <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border border-accent-red/20 text-accent-red bg-accent-red/10 hover:bg-accent-red/20 transition-colors min-h-[44px]">
+                <x-action-button color="red">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                     {{ __('squad.academy_dismiss') }}
-                </button>
+                </x-action-button>
             </form>
         </div>
     @endunless

@@ -17,10 +17,9 @@
                     <span class="text-sm text-accent-gold font-medium">{{ __('messages.action_required') }}</span>
                 </div>
                 @if($pendingAction && $pendingAction['route'])
-                <a href="{{ route($pendingAction['route'], $game->id) }}"
-                   class="inline-flex items-center px-4 py-2 bg-accent-gold text-white text-xs font-semibold uppercase tracking-wide rounded-md hover:bg-amber-600 transition-colors shrink-0 min-h-[44px]">
+                <x-primary-button-link color="amber" :href="route($pendingAction['route'], $game->id)" class="shrink-0">
                     {{ __('messages.action_required_short') }}
-                </a>
+                </x-primary-button-link>
                 @endif
             </div>
         @endif
@@ -69,13 +68,12 @@
 
                 {{-- Mobile-only: Set Lineup Button --}}
                 <div class="md:hidden">
-                    <a href="{{ route('game.lineup', $game->id) }}"
-                       class="flex items-center justify-center gap-2 w-full px-4 py-3 bg-accent-blue hover:bg-sky-700 text-white font-semibold rounded-lg transition-colors min-h-[44px]">
+                    <x-primary-button-link :href="route('game.lineup', $game->id)" class="w-full gap-2">
                         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                         </svg>
                         {{ __('game.set_lineup') }}
-                    </a>
+                    </x-primary-button-link>
                 </div>
 
                 {{-- Remaining Upcoming Fixtures --}}
@@ -113,9 +111,9 @@
                         @if($unreadNotificationCount > 0)
                         <form action="{{ route('game.notifications.read-all', $game->id) }}" method="POST">
                             @csrf
-                            <button type="submit" class="text-xs text-accent-blue hover:text-accent-blue">
+                            <x-ghost-button type="submit" color="blue" size="xs">
                                 {{ __('notifications.mark_all_read') }}
-                            </button>
+                            </x-ghost-button>
                         </form>
                         @endif
                     </div>
@@ -244,10 +242,9 @@
             <p class="text-text-muted mb-8">{{ __('game.other_competitions_desc') }}</p>
             <form action="{{ route('game.advance', $game->id) }}" method="POST">
                 @csrf
-                <button type="submit"
-                        class="inline-flex items-center px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors min-h-[44px]">
+                <x-primary-button color="red">
                     {{ __('game.advance_other_matches') }}
-                </button>
+                </x-primary-button>
             </form>
         </div>
         @endif

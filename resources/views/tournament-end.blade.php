@@ -195,37 +195,38 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
             {{-- ============================================ --}}
             @if($groupStandings->isNotEmpty() || $knockoutTies->isNotEmpty())
             <div class="mb-6" x-data="{ showResults: false, tab: 'groups' }">
-                <button
+                <x-ghost-button
+                    color="slate"
                     @click="showResults = !showResults"
-                    class="w-full bg-surface-800 rounded-xl shadow-xs border border-border-strong p-4 flex items-center justify-between gap-3 hover:bg-surface-700/50 transition-colors min-h-[44px]"
+                    class="w-full bg-surface-800 rounded-xl shadow-xs border border-border-strong p-4 justify-between gap-3"
                 >
                     <span class="text-sm font-semibold text-text-secondary">{{ __('season.full_tournament_results') }}</span>
                     <svg class="w-5 h-5 text-text-secondary transition-transform duration-200" :class="showResults && 'rotate-180'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
-                </button>
+                </x-ghost-button>
 
                 <div x-show="showResults" x-collapse class="mt-2">
                     <div class="bg-surface-800 rounded-xl shadow-xs border border-border-strong overflow-hidden">
                         {{-- Tabs --}}
                         <div class="flex border-b border-border-strong">
                             @if($groupStandings->isNotEmpty())
-                            <button
+                            <x-tab-button
                                 @click="tab = 'groups'"
-                                class="flex-1 py-3 text-sm font-medium text-center transition-colors min-h-[44px]"
-                                :class="tab === 'groups' ? 'text-text-primary border-b-2 border-border-strong' : 'text-text-secondary hover:text-text-secondary'"
+                                class="flex-1 text-center min-h-[44px]"
+                                x-bind:class="tab === 'groups' ? 'text-text-primary border-border-strong' : 'text-text-secondary hover:text-text-secondary border-transparent'"
                             >
                                 {{ __('season.group_stage_standings') }}
-                            </button>
+                            </x-tab-button>
                             @endif
                             @if($knockoutTies->isNotEmpty())
-                            <button
+                            <x-tab-button
                                 @click="tab = 'knockout'"
-                                class="flex-1 py-3 text-sm font-medium text-center transition-colors min-h-[44px]"
-                                :class="tab === 'knockout' ? 'text-text-primary border-b-2 border-border-strong' : 'text-text-secondary hover:text-text-secondary'"
+                                class="flex-1 text-center min-h-[44px]"
+                                x-bind:class="tab === 'knockout' ? 'text-text-primary border-border-strong' : 'text-text-secondary hover:text-text-secondary border-transparent'"
                             >
                                 {{ __('game.knockout_phase') }}
-                            </button>
+                            </x-tab-button>
                             @endif
                         </div>
 
@@ -596,7 +597,7 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
             <div class="mt-10 mb-10 text-center space-y-4" x-data="{ copied: false }">
                 {{-- Share Button --}}
                 <div>
-                    <button
+                    <x-secondary-button
                         @click="
                             const text = @js(__('season.share_text', [
                                 'result' => __('season.result_' . $resultLabel),
@@ -623,14 +624,14 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                                 setTimeout(() => copied = false, 2000);
                             }
                         "
-                        class="inline-flex items-center gap-2 px-6 py-3 bg-surface-800 border border-border-strong hover:bg-surface-700/50 text-text-body rounded-lg text-sm font-semibold shadow-xs transition-all min-h-[44px]"
+                        class="gap-2 px-6 py-3"
                     >
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                         </svg>
                         <span x-show="!copied">{{ __('season.share_result') }}</span>
                         <span x-show="copied" x-cloak class="text-accent-green">{{ __('season.copied_to_clipboard') }}</span>
-                    </button>
+                    </x-secondary-button>
                 </div>
 
                 {{-- Play Again --}}

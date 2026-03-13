@@ -71,11 +71,11 @@
                 @elseif($gamePlayer->overall_score >= 60) bg-accent-gold text-white
                 @else bg-surface-600 text-text-body
                 @endif">{{ $gamePlayer->overall_score }}</div>
-            <button onclick="window.dispatchEvent(new CustomEvent('close-modal', {detail: 'player-detail'}))" class="p-1 text-text-secondary hover:text-text-secondary rounded-sm hover:bg-surface-700">
+            <x-icon-button size="sm" onclick="window.dispatchEvent(new CustomEvent('close-modal', {detail: 'player-detail'}))">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
-            </button>
+            </x-icon-button>
         </div>
     </div>
 
@@ -246,36 +246,36 @@
             @if(!$isListed && $canManage)
                 <form method="POST" action="{{ route('game.transfers.list', [$game->id, $gamePlayer->id]) }}">
                     @csrf
-                    <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border border-accent-blue/20 text-accent-blue bg-accent-blue/10 hover:bg-accent-blue/10 transition-colors min-h-[44px]">
+                    <x-action-button color="blue">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a4 4 0 014-4z" /></svg>
                         {{ __('squad.list_for_sale') }}
-                    </button>
+                    </x-action-button>
                 </form>
             @endif
             @if($isListed)
                 <form method="POST" action="{{ route('game.transfers.unlist', [$game->id, $gamePlayer->id]) }}">
                     @csrf
-                    <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border border-accent-red/20 text-accent-red bg-accent-red/10 hover:bg-accent-red/20 transition-colors min-h-[44px]">
+                    <x-action-button color="red">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
                         {{ __('squad.unlist_from_sale') }}
-                    </button>
+                    </x-action-button>
                 </form>
             @endif
             @if($canManage)
                 <form method="POST" action="{{ route('game.loans.out', [$game->id, $gamePlayer->id]) }}">
                     @csrf
-                    <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border border-accent-gold/20 text-accent-gold bg-accent-gold/10 hover:bg-accent-gold/20 transition-colors min-h-[44px]">
+                    <x-action-button color="amber">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
                         {{ __('squad.loan_out') }}
-                    </button>
+                    </x-action-button>
                 </form>
             @endif
             @if($canRelease ?? false)
                 <div x-data="{ showReleaseConfirm: false }">
-                    <button @click="showReleaseConfirm = true" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border border-accent-red/20 text-accent-red bg-accent-red/10 hover:bg-accent-red/20 transition-colors min-h-[44px]">
+                    <x-action-button color="red" type="button" @click="showReleaseConfirm = true">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6v1h12v-1a6 6 0 00-6-6zM21 12h-6" /></svg>
                         {{ __('squad.release_player') }}
-                    </button>
+                    </x-action-button>
 
                     {{-- Release confirmation overlay --}}
                     <template x-teleport="body">
@@ -302,14 +302,14 @@
                                 </div>
 
                                 <div class="flex gap-3">
-                                    <button @click="showReleaseConfirm = false" type="button" class="flex-1 px-4 py-2 text-sm font-medium rounded-lg border border-border-strong text-text-body bg-surface-800 hover:bg-surface-700/50 transition-colors min-h-[44px]">
+                                    <x-secondary-button @click="showReleaseConfirm = false" class="flex-1">
                                         {{ __('app.cancel') }}
-                                    </button>
+                                    </x-secondary-button>
                                     <form method="POST" action="{{ route('game.squad.release', [$game->id, $gamePlayer->id]) }}" class="flex-1">
                                         @csrf
-                                        <button type="submit" class="w-full px-4 py-2 text-sm font-semibold rounded-lg bg-red-600 text-white hover:bg-accent-red transition-colors min-h-[44px]">
+                                        <x-danger-button class="w-full">
                                             {{ __('squad.release_confirm_button') }}
-                                        </button>
+                                        </x-danger-button>
                                     </form>
                                 </div>
                             </div>

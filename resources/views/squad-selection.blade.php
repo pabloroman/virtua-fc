@@ -87,17 +87,16 @@ $tabs = [
                 <div class="border-b border-border-strong overflow-x-auto scrollbar-hide">
                     <nav class="flex">
                         @foreach ($tabs as $key => $label)
-                        <button type="button"
-                                @click="activeTab = '{{ $key }}'"
-                                :class="activeTab === '{{ $key }}'
-                                    ? 'border-b-2 border-accent-blue text-accent-blue font-semibold'
-                                    : 'text-text-muted hover:text-text-body'"
-                                class="flex-1 shrink-0 px-3 md:px-4 py-3 text-xs md:text-sm text-center whitespace-nowrap transition-colors min-h-[44px] flex items-center justify-center gap-1.5">
+                        <x-tab-button @click="activeTab = '{{ $key }}'"
+                                x-bind:class="activeTab === '{{ $key }}'
+                                    ? 'border-accent-blue text-accent-blue font-semibold'
+                                    : 'border-transparent text-text-muted hover:text-text-body'"
+                                class="flex-1 shrink-0 px-3 md:px-4 py-3 text-xs md:text-sm text-center min-h-[44px] flex items-center justify-center gap-1.5">
                             <span>{{ $label }}</span>
                             <span class="inline-flex items-center justify-center rounded-full text-[10px] md:text-xs font-semibold min-w-[20px] h-5 px-1 transition-colors"
                                   :class="countByGroup('{{ $key }}') > 0 ? 'bg-accent-green/10 text-accent-green' : 'bg-surface-700 text-text-secondary'"
                                   x-text="countByGroup('{{ $key }}')"></span>
-                        </button>
+                        </x-tab-button>
                         @endforeach
                     </nav>
                 </div>
@@ -194,15 +193,10 @@ $tabs = [
                         <template x-for="id in selectedIds" :key="id">
                             <input type="hidden" name="player_ids[]" :value="id">
                         </template>
-                        <button type="submit"
-                                :disabled="!canConfirm"
-                                :class="canConfirm
-                                    ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs'
-                                    : 'bg-surface-700 text-text-secondary cursor-not-allowed'"
-                                class="w-full md:w-auto px-6 py-2.5 rounded-lg text-sm font-semibold transition-all min-h-[44px]">
+                        <x-primary-button color="emerald" x-bind:disabled="!canConfirm" class="w-full md:w-auto">
                             {{ __('squad.confirm_squad') }}
                             <span x-show="!canConfirm" class="ml-1" x-text="'(' + totalSelected + '/26)'"></span>
-                        </button>
+                        </x-primary-button>
                     </form>
                 </div>
             </div>

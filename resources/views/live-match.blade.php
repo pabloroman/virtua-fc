@@ -239,22 +239,21 @@
                     <div class="flex items-center justify-center gap-2 mb-6" x-show="phase !== 'full_time' && !penaltyPickerOpen">
                         <span class="text-xs text-text-secondary mr-2">{{ __('game.live_speed') }}</span>
                         <template x-for="s in [1, 2, 4]" :key="s">
-                            <button
+                            <x-pill-button size="xs"
                                 @click="setSpeed(s)"
-                                class="px-3 py-1 text-xs font-semibold rounded-md transition-colors"
-                                :class="speed === s
+                                x-bind:class="speed === s
                                     ? 'bg-surface-800 text-white'
                                     : 'bg-surface-700 text-text-secondary hover:bg-surface-600'"
                                 x-text="s + 'x'"
-                            ></button>
+                            ></x-pill-button>
                         </template>
-                        <button
+                        <x-pill-button size="xs"
                             @click="skipToEnd()"
-                            class="px-3 py-1 text-xs font-semibold rounded-md bg-surface-700 text-text-secondary hover:bg-surface-600 transition-colors ml-2"
-                            :disabled="extraTimeLoading"
-                            :class="extraTimeLoading ? 'opacity-50 cursor-not-allowed' : ''">
+                            class="bg-surface-700 text-text-secondary hover:bg-surface-600 ml-2"
+                            x-bind:disabled="extraTimeLoading"
+                            x-bind:class="extraTimeLoading ? 'opacity-50 cursor-not-allowed' : ''">
                             {{ __('game.live_skip') }} ▸▸
-                        </button>
+                        </x-pill-button>
                     </div>
 
                     {{-- Tactical Bar --}}
@@ -284,16 +283,16 @@
                             </div>
 
                             {{-- Open tactical panel --}}
-                            <button
+                            <x-secondary-button size="xs"
                                 @click="openTacticalPanel()"
-                                class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-text-body bg-surface-800 border border-border-strong rounded-md hover:bg-surface-700 hover:border-border-strong transition-colors min-h-[44px] shrink-0"
+                                class="gap-1.5 min-h-[44px] shrink-0"
                             >
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                 </svg>
                                 <span class="hidden sm:inline">{{ __('game.tactical_center') }}</span>
-                            </button>
+                            </x-secondary-button>
                         </div>
 
                         {{-- Made substitutions (compact, always visible outside modal) --}}
@@ -507,11 +506,11 @@
                                         <form method="POST" action="{{ route('game.finalize-match', $game->id) }}">
                                             @csrf
                                             <input type="hidden" name="tournament_end" value="1">
-                                            <button type="submit"
-                                                    class="inline-flex items-center px-8 py-3 bg-surface-800 text-accent-gold font-bold rounded-lg shadow-lg hover:bg-accent-gold/10 transition-colors min-h-[44px]"
+                                            <x-secondary-button type="submit"
+                                                    class="px-8 py-3 text-accent-gold font-bold shadow-lg hover:bg-accent-gold/10"
                                                     x-text="translations.tournamentViewSummary"
-                                                    :disabled="!processingReady">
-                                            </button>
+                                                    x-bind:disabled="!processingReady">
+                                            </x-secondary-button>
                                         </form>
                                     </div>
                                 </div>
@@ -531,11 +530,11 @@
                                         <form method="POST" action="{{ route('game.finalize-match', $game->id) }}">
                                             @csrf
                                             <input type="hidden" name="tournament_end" value="1">
-                                            <button type="submit"
-                                                    class="inline-flex items-center px-8 py-3 bg-surface-800/10 text-white font-semibold rounded-lg border border-white/20 hover:bg-surface-800/20 transition-colors min-h-[44px]"
+                                            <x-secondary-button type="submit"
+                                                    class="px-8 py-3 bg-surface-800/10 text-white border-white/20 hover:bg-surface-800/20"
                                                     x-text="translations.tournamentViewSummary"
-                                                    :disabled="!processingReady">
-                                            </button>
+                                                    x-bind:disabled="!processingReady">
+                                            </x-secondary-button>
                                         </form>
                                     </div>
                                 </div>
@@ -555,11 +554,11 @@
                                         <form method="POST" action="{{ route('game.finalize-match', $game->id) }}">
                                             @csrf
                                             <input type="hidden" name="tournament_end" value="1">
-                                            <button type="submit"
-                                                    class="inline-flex items-center px-8 py-3 bg-surface-800/10 text-white font-semibold rounded-lg border border-white/20 hover:bg-surface-800/20 transition-colors min-h-[44px]"
+                                            <x-secondary-button type="submit"
+                                                    class="px-8 py-3 bg-surface-800/10 text-white border-white/20 hover:bg-surface-800/20"
                                                     x-text="translations.tournamentViewSummary"
-                                                    :disabled="!processingReady">
-                                            </button>
+                                                    x-bind:disabled="!processingReady">
+                                            </x-secondary-button>
                                         </form>
                                     </div>
                                 </div>
@@ -578,11 +577,11 @@
                                         <form method="POST" action="{{ route('game.finalize-match', $game->id) }}">
                                             @csrf
                                             <input type="hidden" name="tournament_end" value="1">
-                                            <button type="submit"
-                                                    class="inline-flex items-center px-8 py-3 bg-surface-800/10 text-text-body font-semibold rounded-lg border border-white/20 hover:bg-surface-800/20 transition-colors min-h-[44px]"
+                                            <x-secondary-button type="submit"
+                                                    class="px-8 py-3 bg-surface-800/10 text-text-body border-white/20 hover:bg-surface-800/20"
                                                     x-text="translations.tournamentViewSummary"
-                                                    :disabled="!processingReady">
-                                            </button>
+                                                    x-bind:disabled="!processingReady">
+                                            </x-secondary-button>
                                         </form>
                                     </div>
                                 </div>
@@ -601,11 +600,11 @@
                                         <form method="POST" action="{{ route('game.finalize-match', $game->id) }}">
                                             @csrf
                                             <input type="hidden" name="tournament_end" value="1">
-                                            <button type="submit"
-                                                    class="inline-flex items-center px-8 py-3 bg-surface-800/10 text-text-body font-semibold rounded-lg border border-white/20 hover:bg-surface-800/20 transition-colors min-h-[44px]"
+                                            <x-secondary-button type="submit"
+                                                    class="px-8 py-3 bg-surface-800/10 text-text-body border-white/20 hover:bg-surface-800/20"
                                                     x-text="translations.tournamentViewSummary"
-                                                    :disabled="!processingReady">
-                                            </button>
+                                                    x-bind:disabled="!processingReady">
+                                            </x-secondary-button>
                                         </form>
                                     </div>
                                 </div>
@@ -658,14 +657,14 @@
 
                                     <div class="text-center mb-4">
                                         <template x-if="!processingReady">
-                                            <button type="button" disabled
-                                                    class="inline-flex items-center gap-2 px-6 py-2 bg-surface-600 text-text-muted font-semibold rounded-lg cursor-wait min-h-[44px]">
+                                            <x-secondary-button type="button" disabled
+                                                    class="gap-2 px-6 bg-surface-600 text-text-muted cursor-wait">
                                                 <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
                                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                                                 </svg>
                                                 <span x-text="translations.processingActions"></span>
-                                            </button>
+                                            </x-secondary-button>
                                         </template>
                                         <template x-if="processingReady">
                                             <form method="POST" action="{{ route('game.finalize-match', $game->id) }}">

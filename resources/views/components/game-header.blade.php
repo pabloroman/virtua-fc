@@ -17,11 +17,11 @@
                 {{-- Left: Team badge + name --}}
                 <div class="flex items-center gap-3">
                     {{-- Hamburger (mobile) --}}
-                    <button @click="mobileMenuOpen = true" class="lg:hidden text-text-secondary hover:text-text-primary min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Menu">
+                    <x-icon-button @click="mobileMenuOpen = true" class="lg:hidden" aria-label="Menu">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/>
                         </svg>
-                    </button>
+                    </x-icon-button>
                     {{-- Team badge + name --}}
                     <div class="flex items-center gap-2.5">
                         <x-team-crest :team="$game->team" class="w-8 h-8 rounded-lg shrink-0" />
@@ -54,12 +54,12 @@
                     <a href="{{ route('game.competition', [$game->id, $teamCompetitions[0]->id]) }}" class="nav-item @if(Route::currentRouteName() == 'game.competition') active @endif px-3 py-2 text-xs font-medium uppercase tracking-wider {{ Route::currentRouteName() == 'game.competition' ? 'text-text-primary' : 'text-text-muted hover:text-text-body' }}">{{ __('game.standings') }}</a>
                     @else
                     <div class="relative" x-data="{ open: false }" @click.outside="open = false">
-                        <button @click="open = !open" class="nav-item @if(Route::currentRouteName() == 'game.competition') active @endif px-3 py-2 text-xs font-medium uppercase tracking-wider flex items-center gap-1 {{ Route::currentRouteName() == 'game.competition' ? 'text-text-primary' : 'text-text-muted hover:text-text-body' }}">
+                        <x-ghost-button color="slate" size="xs" @click="open = !open" class="nav-item @if(Route::currentRouteName() == 'game.competition') active @endif px-3 py-2 uppercase tracking-wider gap-1 {{ Route::currentRouteName() == 'game.competition' ? 'text-text-primary' : 'text-text-muted hover:text-text-body' }}">
                             {{ __('app.competitions') }}
                             <svg class="w-3 h-3 transition-transform" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
-                        </button>
+                        </x-ghost-button>
                         <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="absolute left-0 z-50 mt-2 w-48 rounded-lg shadow-xl bg-surface-800 border border-border-strong" style="display: none;">
                             <div class="py-1">
                                 @foreach($teamCompetitions as $competition)
@@ -86,13 +86,12 @@
                         </div>
                         @if($game->hasPendingActions())
                             @php $pendingAction = $game->getFirstPendingAction(); @endphp
-                            <a href="{{ $pendingAction && $pendingAction['route'] ? route($pendingAction['route'], $game->id) : route('show-game', $game->id) }}"
-                               class="inline-flex items-center gap-2 px-4 py-2 bg-accent-gold hover:bg-amber-600 rounded-lg font-semibold text-xs text-white uppercase tracking-wider transition-all animate-pulse">
+                            <x-primary-button-link color="amber" :href="$pendingAction && $pendingAction['route'] ? route($pendingAction['route'], $game->id) : route('show-game', $game->id)" class="gap-2 animate-pulse">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
                                 </svg>
                                 {{ __('messages.action_required_short') }}
-                            </a>
+                            </x-primary-button-link>
                         @elseif($continueToHome)
                             <x-primary-button-link :href="route('show-game', $game->id)">{{ __('app.continue') }}</x-primary-button-link>
                         @else
@@ -104,10 +103,9 @@
                     @else
                         <div class="flex items-center gap-3">
                             <span class="text-sm text-text-secondary">{{ __('game.season_complete') }}</span>
-                            <a href="{{ route('game.season-end', $game->id) }}"
-                               class="inline-flex items-center px-4 py-2 bg-accent-gold hover:bg-amber-600 rounded-lg font-semibold text-xs text-white uppercase tracking-wider transition-all">
+                            <x-primary-button-link color="amber" :href="route('game.season-end', $game->id)">
                                 {{ __('game.view_season_summary') }}
-                            </a>
+                            </x-primary-button-link>
                         </div>
                     @endif
                 </div>
@@ -147,11 +145,11 @@
                         <p class="text-[10px] text-text-muted uppercase tracking-widest">{{ __('game.season') }} {{ $game->formatted_season }}</p>
                     </div>
                 </div>
-                <button @click="mobileMenuOpen = false" class="p-2 text-text-muted hover:text-text-primary min-h-[44px] min-w-[44px] flex items-center justify-center">
+                <x-icon-button @click="mobileMenuOpen = false">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
-                </button>
+                </x-icon-button>
             </div>
 
             {{-- Next Match Info --}}

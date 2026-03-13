@@ -214,11 +214,9 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
 
         {{-- Submit --}}
         @unless($isLocked)
-        <button type="submit"
-                class="w-full uppercase py-3 bg-accent-blue text-white font-semibold rounded-lg tracking-wider hover:bg-blue-600 focus:bg-blue-600 active:bg-blue-700 ease-in-out duration-150 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                :disabled="!meetsMinimumRequirements || exceedsBudget">
+        <x-primary-button x-bind:disabled="!meetsMinimumRequirements || exceedsBudget" class="w-full uppercase">
             {{ $submitLabel }}
-        </button>
+        </x-primary-button>
         @endunless
     </form>
 </div>

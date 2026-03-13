@@ -4,13 +4,9 @@
         {{-- Header --}}
         <div class="flex items-center justify-between">
             <h2 class="text-lg font-bold text-text-primary">{{ __('game.tactical_guide_title') }}</h2>
-            <button
-                type="button"
-                x-on:click="$dispatch('close-modal', 'tactical-guide')"
-                class="p-1.5 rounded-lg text-text-secondary hover:text-text-body hover:bg-surface-700 transition-colors"
-            >
+            <x-icon-button size="sm" x-on:click="$dispatch('close-modal', 'tactical-guide')">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
+            </x-icon-button>
         </div>
 
         {{-- Intro --}}

@@ -23,9 +23,9 @@
         <form method="POST" action="{{ route('logout') }}">
             @csrf
 
-            <button type="submit" class="underline text-sm text-text-secondary hover:text-text-primary rounded-md focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-accent-blue">
+            <x-ghost-button type="submit" color="slate" size="xs">
                 {{ __('Log Out') }}
-            </button>
+            </x-ghost-button>
         </form>
     </div>
 </x-guest-layout>

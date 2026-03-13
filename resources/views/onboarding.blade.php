@@ -63,10 +63,10 @@
                                 @endforeach
                             </div>
                             @if(count($offseasonRecap['departures']) > 3)
-                                <button type="button" @click="showAllDep = !showAllDep" class="mt-2 text-xs text-accent-red hover:text-red-800 font-medium min-h-[44px] flex items-center">
+                                <x-ghost-button color="red" size="xs" @click="showAllDep = !showAllDep" class="mt-2">
                                     <span x-show="!showAllDep">{{ __('game.show_all') }} ({{ count($offseasonRecap['departures']) }})</span>
                                     <span x-show="showAllDep" x-cloak>{{ __('game.show_less') }}</span>
-                                </button>
+                                </x-ghost-button>
                             @endif
                         @endif
                     </div>
@@ -96,10 +96,10 @@
                                 @endforeach
                             </div>
                             @if(count($offseasonRecap['arrivals']) > 3)
-                                <button type="button" @click="showAllArr = !showAllArr" class="mt-2 text-xs text-accent-green hover:text-green-800 font-medium min-h-[44px] flex items-center">
+                                <x-ghost-button color="green" size="xs" @click="showAllArr = !showAllArr" class="mt-2">
                                     <span x-show="!showAllArr">{{ __('game.show_all') }} ({{ count($offseasonRecap['arrivals']) }})</span>
                                     <span x-show="showAllArr" x-cloak>{{ __('game.show_less') }}</span>
-                                </button>
+                                </x-ghost-button>
                             @endif
                         @endif
                     </div>
