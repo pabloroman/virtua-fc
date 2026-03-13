@@ -54,12 +54,12 @@
                     <a href="{{ route('game.competition', [$game->id, $teamCompetitions[0]->id]) }}" class="nav-item @if(Route::currentRouteName() == 'game.competition') active @endif px-3 py-2 text-xs font-medium uppercase tracking-wider {{ Route::currentRouteName() == 'game.competition' ? 'text-text-primary' : 'text-text-muted hover:text-text-body' }}">{{ __('game.standings') }}</a>
                     @else
                     <div class="relative" x-data="{ open: false }" @click.outside="open = false">
-                        <x-ghost-button color="slate" size="xs" @click="open = !open" class="nav-item @if(Route::currentRouteName() == 'game.competition') active @endif px-3 py-2 uppercase tracking-wider gap-1 {{ Route::currentRouteName() == 'game.competition' ? 'text-text-primary' : 'text-text-muted hover:text-text-body' }}">
+                        <button type="button" @click="open = !open" class="nav-item @if(Route::currentRouteName() == 'game.competition') active @endif inline-flex items-center gap-1 px-3 py-2 text-xs font-medium uppercase tracking-wider transition-colors {{ Route::currentRouteName() == 'game.competition' ? 'text-text-primary' : 'text-text-muted hover:text-text-body' }}">
                             {{ __('app.competitions') }}
                             <svg class="w-3 h-3 transition-transform" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
-                        </x-ghost-button>
+                        </button>
                         <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="absolute left-0 z-50 mt-2 w-48 rounded-lg shadow-xl bg-surface-800 border border-border-strong" style="display: none;">
                             <div class="py-1">
                                 @foreach($teamCompetitions as $competition)
