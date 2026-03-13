@@ -20,10 +20,10 @@
             </div>
 
             {{-- Title --}}
-            <h1 class="text-2xl font-bold text-white mb-2">{{ $title }}</h1>
+            <h1 class="text-2xl font-bold text-text-primary mb-2">{{ $title }}</h1>
 
             {{-- Description --}}
-            <p class="text-slate-400 max-w-md mx-auto">{{ $message }}</p>
+            <p class="text-text-secondary max-w-md mx-auto">{{ $message }}</p>
         </div>
     </div>
 

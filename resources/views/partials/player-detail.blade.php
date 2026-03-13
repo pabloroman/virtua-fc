@@ -28,31 +28,31 @@
 
 <div class="p-5 md:p-8">
     {{-- Header --}}
-    <div class="flex items-start justify-between gap-4 pb-5 border-b border-white/10">
+    <div class="flex items-start justify-between gap-4 pb-5 border-b border-border-strong">
         {{-- Left: avatar + player info --}}
         <div class="flex items-start gap-4 min-w-0">
-            <img src="/img/default-player.jpg" class="h-24 w-auto md:h-32 md:w-auto rounded-lg border border-white/10 shrink-0 bg-surface-700" alt="">
+            <img src="/img/default-player.jpg" class="h-24 w-auto md:h-32 md:w-auto rounded-lg border border-border-strong shrink-0 bg-surface-700" alt="">
             <div class="min-w-0">
                 <div class="flex items-center gap-2 mt-1.5">
                     <x-position-badge :position="$gamePlayer->position" />
-                    <span class="text-sm font-medium text-slate-400">{{ $gamePlayer->position_name }}</span>
+                    <span class="text-sm font-medium text-text-secondary">{{ $gamePlayer->position_name }}</span>
                 </div>
                 <div class="flex items-center gap-2.5 flex-wrap">
-                    <h3 class="font-bold text-xl md:text-2xl text-white truncate">{{ $gamePlayer->name }}</h3>
+                    <h3 class="font-bold text-xl md:text-2xl text-text-primary truncate">{{ $gamePlayer->name }}</h3>
                     @if($gamePlayer->number)
-                        <span class="text-slate-400 text-lg font-medium">#{{ $gamePlayer->number }}</span>
+                        <span class="text-text-secondary text-lg font-medium">#{{ $gamePlayer->number }}</span>
                     @endif
                 </div>
-                <div class="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1.5 text-sm text-slate-500">
+                <div class="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1.5 text-sm text-text-muted">
                     @if($nationalityFlag)
                         <img src="/flags/{{ $nationalityFlag['code'] }}.svg" class="w-5 h-4 rounded-sm shadow-xs">
                         <span>{{ __('countries.' . $nationalityFlag['name']) }}</span>
-                        <span class="text-slate-300">&middot;</span>
+                        <span class="text-text-body">&middot;</span>
                     @endif
                     @if($gamePlayer->team && $isCareerMode)
                         <x-team-crest :team="$gamePlayer->team" class="w-4 h-4 rounded-sm shadow-xs" />
                         <span>{{ $gamePlayer->team->name }}</span>
-                        <span class="text-slate-300">&middot;</span>
+                        <span class="text-text-body">&middot;</span>
                     @endif
                     <span>
                         {{ $gamePlayer->age($game->current_date) }} {{ __('app.years') }}
@@ -69,9 +69,9 @@
                 @if($gamePlayer->overall_score >= 80) bg-emerald-500 text-white
                 @elseif($gamePlayer->overall_score >= 70) bg-lime-500 text-white
                 @elseif($gamePlayer->overall_score >= 60) bg-accent-gold text-white
-                @else bg-slate-300 text-slate-300
+                @else bg-slate-300 text-text-body
                 @endif">{{ $gamePlayer->overall_score }}</div>
-            <button onclick="window.dispatchEvent(new CustomEvent('close-modal', {detail: 'player-detail'}))" class="p-1 text-slate-400 hover:text-slate-400 rounded-sm hover:bg-surface-700">
+            <button onclick="window.dispatchEvent(new CustomEvent('close-modal', {detail: 'player-detail'}))" class="p-1 text-text-secondary hover:text-text-secondary rounded-sm hover:bg-surface-700">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -84,34 +84,34 @@
 
         {{-- Parameters --}}
         <div>
-            <h4 class="text-sm font-semibold text-white pb-2 border-b border-white/10 mb-4">{{ __('squad.abilities') }}</h4>
+            <h4 class="text-sm font-semibold text-text-primary pb-2 border-b border-border-strong mb-4">{{ __('squad.abilities') }}</h4>
             <div class="space-y-3">
                 {{-- Technical --}}
                 @php $val = $gamePlayer->technical_ability; @endphp
                 <div class="flex items-center justify-between gap-3">
-                    <span class="text-xs text-slate-400 uppercase tracking-wide w-20 shrink-0">{{ __('squad.technical_full') }}</span>
+                    <span class="text-xs text-text-secondary uppercase tracking-wide w-20 shrink-0">{{ __('squad.technical_full') }}</span>
                     <div class="flex items-center gap-2.5 flex-1 justify-end">
                         <div class="w-28 h-2 bg-surface-700 rounded-full overflow-hidden">
                             <div class="h-2 rounded-full @if($val >= 80) bg-accent-green @elseif($val >= 70) bg-lime-500 @elseif($val >= 60) bg-accent-gold @else bg-slate-400 @endif" style="width: {{ $val / 99 * 100 }}%"></div>
                         </div>
-                        <span class="text-sm font-semibold tabular-nums w-7 text-right @if($val >= 80) text-accent-green @elseif($val >= 70) text-lime-600 @elseif($val >= 60) text-amber-600 @else text-slate-400 @endif">{{ $val }}</span>
+                        <span class="text-sm font-semibold tabular-nums w-7 text-right @if($val >= 80) text-accent-green @elseif($val >= 70) text-lime-600 @elseif($val >= 60) text-amber-600 @else text-text-secondary @endif">{{ $val }}</span>
                     </div>
                 </div>
                 {{-- Physical --}}
                 @php $val = $gamePlayer->physical_ability; @endphp
                 <div class="flex items-center justify-between gap-3">
-                    <span class="text-xs text-slate-400 uppercase tracking-wide w-20 shrink-0">{{ __('squad.physical_full') }}</span>
+                    <span class="text-xs text-text-secondary uppercase tracking-wide w-20 shrink-0">{{ __('squad.physical_full') }}</span>
                     <div class="flex items-center gap-2.5 flex-1 justify-end">
                         <div class="w-28 h-2 bg-surface-700 rounded-full overflow-hidden">
                             <div class="h-2 rounded-full @if($val >= 80) bg-accent-green @elseif($val >= 70) bg-lime-500 @elseif($val >= 60) bg-accent-gold @else bg-slate-400 @endif" style="width: {{ $val / 99 * 100 }}%"></div>
                         </div>
-                        <span class="text-sm font-semibold tabular-nums w-7 text-right @if($val >= 80) text-accent-green @elseif($val >= 70) text-lime-600 @elseif($val >= 60) text-amber-600 @else text-slate-400 @endif">{{ $val }}</span>
+                        <span class="text-sm font-semibold tabular-nums w-7 text-right @if($val >= 80) text-accent-green @elseif($val >= 70) text-lime-600 @elseif($val >= 60) text-amber-600 @else text-text-secondary @endif">{{ $val }}</span>
                     </div>
                 </div>
                 {{-- Fitness --}}
                 @php $val = $gamePlayer->fitness; @endphp
                 <div class="flex items-center justify-between gap-3">
-                    <span class="text-xs text-slate-400 uppercase tracking-wide w-20 shrink-0">{{ __('squad.fitness_full') }}</span>
+                    <span class="text-xs text-text-secondary uppercase tracking-wide w-20 shrink-0">{{ __('squad.fitness_full') }}</span>
                     <div class="flex items-center gap-2.5 flex-1 justify-end">
                         <div class="w-28 h-2 bg-surface-700 rounded-full overflow-hidden">
                             <div class="h-2 rounded-full @if($val >= 80) bg-accent-green @elseif($val >= 70) bg-lime-500 @elseif($val >= 60) bg-accent-gold @else bg-slate-400 @endif" style="width: {{ $val }}%"></div>
@@ -122,7 +122,7 @@
                 {{-- Morale --}}
                 @php $val = $gamePlayer->morale; @endphp
                 <div class="flex items-center justify-between gap-3">
-                    <span class="text-xs text-slate-400 uppercase tracking-wide w-20 shrink-0">{{ __('squad.morale_full') }}</span>
+                    <span class="text-xs text-text-secondary uppercase tracking-wide w-20 shrink-0">{{ __('squad.morale_full') }}</span>
                     <div class="flex items-center gap-2.5 flex-1 justify-end">
                         <div class="w-28 h-2 bg-surface-700 rounded-full overflow-hidden">
                             <div class="h-2 rounded-full @if($val >= 80) bg-accent-green @elseif($val >= 70) bg-lime-500 @elseif($val >= 60) bg-accent-gold @else bg-slate-400 @endif" style="width: {{ $val }}%"></div>
@@ -132,8 +132,8 @@
                 </div>
                 @if($devStatus)
                 {{-- Development --}}
-                <div class="flex items-center justify-between pt-3 border-t border-white/5">
-                    <span class="text-xs text-slate-400 uppercase tracking-wide">{{ __('squad.projection') }}</span>
+                <div class="flex items-center justify-between pt-3 border-t border-border-default">
+                    <span class="text-xs text-text-secondary uppercase tracking-wide">{{ __('squad.projection') }}</span>
                     <span class="inline-flex items-center gap-1 text-xs font-semibold
                             @if($devStatus === 'growing') text-accent-green
                             @elseif($devStatus === 'peak') text-accent-blue
@@ -151,37 +151,37 @@
                 </div>
                 @endif
                 <div class="flex items-center justify-between">
-                    <span class="text-xs text-slate-400 uppercase tracking-wide">{{ __('game.potential') }}</span>
-                    <span class="text-sm font-semibold text-white">{{ $gamePlayer->potential_range }}</span>
+                    <span class="text-xs text-text-secondary uppercase tracking-wide">{{ __('game.potential') }}</span>
+                    <span class="text-sm font-semibold text-text-primary">{{ $gamePlayer->potential_range }}</span>
                 </div>
             </div>
         </div>
 
         {{-- Details / Contract --}}
         <div>
-            <h4 class="text-sm font-semibold text-white pb-2 border-b border-white/10 mb-4">{{ __('app.details') }}</h4>
+            <h4 class="text-sm font-semibold text-text-primary pb-2 border-b border-border-strong mb-4">{{ __('app.details') }}</h4>
             <div class="space-y-3">
                 @if($isCareerMode)
                     <div class="flex items-center justify-between">
-                        <span class="text-xs text-slate-400 uppercase tracking-wide">{{ __('app.value') }}</span>
-                        <span class="text-sm font-semibold text-white">{{ $gamePlayer->formatted_market_value }}</span>
+                        <span class="text-xs text-text-secondary uppercase tracking-wide">{{ __('app.value') }}</span>
+                        <span class="text-sm font-semibold text-text-primary">{{ $gamePlayer->formatted_market_value }}</span>
                     </div>
                     <div class="flex items-center justify-between">
-                        <span class="text-xs text-slate-400 uppercase tracking-wide">{{ __('app.wage') }}</span>
-                        <span class="text-sm font-semibold text-white">{{ $gamePlayer->formatted_wage }}{{ __('squad.per_year') }}</span>
+                        <span class="text-xs text-text-secondary uppercase tracking-wide">{{ __('app.wage') }}</span>
+                        <span class="text-sm font-semibold text-text-primary">{{ $gamePlayer->formatted_wage }}{{ __('squad.per_year') }}</span>
                     </div>
                     @if($gamePlayer->contract_expiry_year)
                         <div class="flex items-center justify-between">
-                            <span class="text-xs text-slate-400 uppercase tracking-wide">{{ __('app.contract') }}</span>
-                            <span class="text-sm font-semibold text-white">{{ $gamePlayer->contract_expiry_year }}</span>
+                            <span class="text-xs text-text-secondary uppercase tracking-wide">{{ __('app.contract') }}</span>
+                            <span class="text-sm font-semibold text-text-primary">{{ $gamePlayer->contract_expiry_year }}</span>
                         </div>
                     @endif
-                    <div class="border-t border-white/5 pt-3"></div>
+                    <div class="border-t border-border-default pt-3"></div>
                 @endif
                 {{-- Status indicators --}}
                 @if($gamePlayer->isInjured())
                     <div class="flex items-center justify-between">
-                        <span class="text-xs text-slate-400 uppercase tracking-wide">{{ __('app.status') }}</span>
+                        <span class="text-xs text-text-secondary uppercase tracking-wide">{{ __('app.status') }}</span>
                         <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-accent-red">
                             {{ __('game.injured') }}
                         </span>
@@ -189,7 +189,7 @@
                 @endif
                 @if($gamePlayer->isRetiring())
                     <div class="flex items-center justify-between">
-                        <span class="text-xs text-slate-400 uppercase tracking-wide">{{ __('app.status') }}</span>
+                        <span class="text-xs text-text-secondary uppercase tracking-wide">{{ __('app.status') }}</span>
                         <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700">
                             {{ __('squad.retiring') }}
                         </span>
@@ -200,39 +200,39 @@
 
         {{-- Season Stats --}}
         <div>
-            <h4 class="text-sm font-semibold text-white pb-2 border-b border-white/10 mb-4">{{ __('squad.season_stats') }}</h4>
+            <h4 class="text-sm font-semibold text-text-primary pb-2 border-b border-border-strong mb-4">{{ __('squad.season_stats') }}</h4>
             <div class="space-y-3">
                 <div class="flex items-center justify-between">
-                    <span class="text-xs text-slate-400 uppercase tracking-wide">{{ __('squad.appearances') }}</span>
-                    <span class="text-sm font-semibold text-white">{{ $gamePlayer->appearances }}</span>
+                    <span class="text-xs text-text-secondary uppercase tracking-wide">{{ __('squad.appearances') }}</span>
+                    <span class="text-sm font-semibold text-text-primary">{{ $gamePlayer->appearances }}</span>
                 </div>
                 @if($gamePlayer->position_group === 'Goalkeeper')
                     <div class="flex items-center justify-between">
-                        <span class="text-xs text-slate-400 uppercase tracking-wide">{{ __('squad.clean_sheets_full') }}</span>
-                        <span class="text-sm font-semibold text-white">{{ $gamePlayer->clean_sheets }}</span>
+                        <span class="text-xs text-text-secondary uppercase tracking-wide">{{ __('squad.clean_sheets_full') }}</span>
+                        <span class="text-sm font-semibold text-text-primary">{{ $gamePlayer->clean_sheets }}</span>
                     </div>
                     <div class="flex items-center justify-between">
-                        <span class="text-xs text-slate-400 uppercase tracking-wide">{{ __('squad.goals_conceded_full') }}</span>
-                        <span class="text-sm font-semibold text-white">{{ $gamePlayer->goals_conceded }}</span>
+                        <span class="text-xs text-text-secondary uppercase tracking-wide">{{ __('squad.goals_conceded_full') }}</span>
+                        <span class="text-sm font-semibold text-text-primary">{{ $gamePlayer->goals_conceded }}</span>
                     </div>
                 @else
                     <div class="flex items-center justify-between">
-                        <span class="text-xs text-slate-400 uppercase tracking-wide">{{ __('squad.legend_goals') }}</span>
-                        <span class="text-sm font-semibold text-white">{{ $gamePlayer->goals }}</span>
+                        <span class="text-xs text-text-secondary uppercase tracking-wide">{{ __('squad.legend_goals') }}</span>
+                        <span class="text-sm font-semibold text-text-primary">{{ $gamePlayer->goals }}</span>
                     </div>
                     <div class="flex items-center justify-between">
-                        <span class="text-xs text-slate-400 uppercase tracking-wide">{{ __('squad.legend_assists') }}</span>
-                        <span class="text-sm font-semibold text-white">{{ $gamePlayer->assists }}</span>
+                        <span class="text-xs text-text-secondary uppercase tracking-wide">{{ __('squad.legend_assists') }}</span>
+                        <span class="text-sm font-semibold text-text-primary">{{ $gamePlayer->assists }}</span>
                     </div>
                 @endif
                 <div class="flex items-center justify-between">
-                    <span class="text-xs text-slate-400 uppercase tracking-wide">{{ __('squad.bookings') }}</span>
-                    <span class="text-sm font-semibold text-white">
+                    <span class="text-xs text-text-secondary uppercase tracking-wide">{{ __('squad.bookings') }}</span>
+                    <span class="text-sm font-semibold text-text-primary">
                         <span class="inline-flex items-center gap-1.5">
                             <span class="w-2 h-3 bg-yellow-400 rounded-xs"></span>
-                            <span class="font-semibold text-slate-300">{{ $gamePlayer->yellow_cards }}</span>
+                            <span class="font-semibold text-text-body">{{ $gamePlayer->yellow_cards }}</span>
                             <span class="w-2 h-3 bg-accent-red rounded-xs ml-1"></span>
-                            <span class="font-semibold text-slate-300">{{ $gamePlayer->red_cards }}</span>
+                            <span class="font-semibold text-text-body">{{ $gamePlayer->red_cards }}</span>
                         </span>
                     </span>
                 </div>
@@ -242,7 +242,7 @@
 
     {{-- Actions --}}
     @if($showActions || $canRenew || $renewalNegotiation)
-        <div class="mt-6 pt-4 border-t border-white/10 flex flex-wrap items-center gap-2">
+        <div class="mt-6 pt-4 border-t border-border-strong flex flex-wrap items-center gap-2">
             @if(!$isListed && $canManage)
                 <form method="POST" action="{{ route('game.transfers.list', [$game->id, $gamePlayer->id]) }}">
                     @csrf
@@ -282,8 +282,8 @@
                         <div x-show="showReleaseConfirm" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4">
                             <div x-show="showReleaseConfirm" x-transition:enter="ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" @click="showReleaseConfirm = false" class="fixed inset-0 bg-slate-800/90"></div>
                             <div x-show="showReleaseConfirm" x-transition:enter="ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="ease-in duration-150" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="relative bg-surface-800 rounded-xl shadow-xl max-w-sm w-full p-6 z-10" @keydown.escape.window="showReleaseConfirm = false">
-                                <h3 class="text-lg font-semibold text-white mb-3">{{ __('squad.release_confirm_title') }}</h3>
-                                <p class="text-sm text-slate-400 mb-4">{{ __('squad.release_confirm_message', ['player' => $gamePlayer->name]) }}</p>
+                                <h3 class="text-lg font-semibold text-text-primary mb-3">{{ __('squad.release_confirm_title') }}</h3>
+                                <p class="text-sm text-text-secondary mb-4">{{ __('squad.release_confirm_message', ['player' => $gamePlayer->name]) }}</p>
 
                                 <div class="space-y-2 mb-5 p-3 bg-surface-700/50 rounded-lg">
                                     @if($gamePlayer->contract_until)
@@ -291,18 +291,18 @@
                                             $remainingYears = max(0, round($game->current_date->floatDiffInYears($gamePlayer->contract_until), 1));
                                         @endphp
                                         <div class="flex justify-between text-sm">
-                                            <span class="text-slate-500">{{ __('squad.release_remaining_contract') }}</span>
-                                            <span class="font-semibold text-white">{{ __('squad.release_years_remaining', ['years' => $remainingYears]) }}</span>
+                                            <span class="text-text-muted">{{ __('squad.release_remaining_contract') }}</span>
+                                            <span class="font-semibold text-text-primary">{{ __('squad.release_years_remaining', ['years' => $remainingYears]) }}</span>
                                         </div>
                                     @endif
                                     <div class="flex justify-between text-sm">
-                                        <span class="text-slate-500">{{ __('squad.release_severance_label') }}</span>
+                                        <span class="text-text-muted">{{ __('squad.release_severance_label') }}</span>
                                         <span class="font-semibold text-accent-red">{{ \App\Support\Money::format($severance) }}</span>
                                     </div>
                                 </div>
 
                                 <div class="flex gap-3">
-                                    <button @click="showReleaseConfirm = false" type="button" class="flex-1 px-4 py-2 text-sm font-medium rounded-lg border border-white/10 text-slate-300 bg-surface-800 hover:bg-surface-700/50 transition-colors min-h-[44px]">
+                                    <button @click="showReleaseConfirm = false" type="button" class="flex-1 px-4 py-2 text-sm font-medium rounded-lg border border-border-strong text-text-body bg-surface-800 hover:bg-surface-700/50 transition-colors min-h-[44px]">
                                         {{ __('app.cancel') }}
                                     </button>
                                     <form method="POST" action="{{ route('game.squad.release', [$game->id, $gamePlayer->id]) }}" class="flex-1">
@@ -331,7 +331,7 @@
                     <span class="w-1.5 h-1.5 rounded-full {{ $renewalNegotiation->isPending() ? 'bg-accent-gold animate-pulse' : 'bg-orange-500' }}"></span>
                     {{ $renewalNegotiation->isPending() ? __('transfers.negotiating') : __('transfers.player_countered') }}
                 </span>
-                <a href="{{ route('game.transfers.outgoing', $game->id) }}" class="text-xs text-slate-500 hover:text-slate-300 underline underline-offset-2">
+                <a href="{{ route('game.transfers.outgoing', $game->id) }}" class="text-xs text-text-muted hover:text-text-body underline underline-offset-2">
                     {{ __('app.view_details') }} →
                 </a>
             @endif

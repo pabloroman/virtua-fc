@@ -9,9 +9,9 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         @foreach($groupedStandings as $groupLabel => $groupStandings)
             <div class="space-y-2">
-                <h4 class="font-semibold text-lg text-white">{{ __('game.group') }} {{ $groupLabel }}</h4>
+                <h4 class="font-semibold text-lg text-text-primary">{{ __('game.group') }} {{ $groupLabel }}</h4>
                 <div class="overflow-x-auto">
-                    <table class="min-w-full table-fixed text-right divide-y divide-slate-300">
+                    <table class="min-w-full table-fixed text-right divide-y divide-text-body">
                         <thead>
                         <tr>
                             <th class="font-semibold text-left w-6 p-1.5 text-xs"></th>
@@ -31,7 +31,7 @@
                         @foreach($groupStandings as $standing)
                             @php $isPlayer = $standing->team_id === $game->team_id; @endphp
                             <tr class="border-b text-sm @if($isPlayer) bg-accent-gold/10 @endif">
-                                <td class="align-middle whitespace-nowrap text-left px-1.5 text-white font-semibold">
+                                <td class="align-middle whitespace-nowrap text-left px-1.5 text-text-primary font-semibold">
                                     {{ $standing->position }}
                                 </td>
                                 <td class="align-middle whitespace-nowrap py-1 px-1.5">
@@ -40,11 +40,11 @@
                                         <span class="truncate">{{ $standing->team->name }}</span>
                                     </div>
                                 </td>
-                                <td class="align-middle whitespace-nowrap p-1.5 text-slate-400">{{ $standing->played }}</td>
-                                <td class="align-middle whitespace-nowrap p-1.5 text-slate-400 hidden md:table-cell">{{ $standing->won }}</td>
-                                <td class="align-middle whitespace-nowrap p-1.5 text-slate-400 hidden md:table-cell">{{ $standing->drawn }}</td>
-                                <td class="align-middle whitespace-nowrap p-1.5 text-slate-400 hidden md:table-cell">{{ $standing->lost }}</td>
-                                <td class="align-middle whitespace-nowrap p-1.5 text-slate-400">{{ $standing->goal_difference }}</td>
+                                <td class="align-middle whitespace-nowrap p-1.5 text-text-secondary">{{ $standing->played }}</td>
+                                <td class="align-middle whitespace-nowrap p-1.5 text-text-secondary hidden md:table-cell">{{ $standing->won }}</td>
+                                <td class="align-middle whitespace-nowrap p-1.5 text-text-secondary hidden md:table-cell">{{ $standing->drawn }}</td>
+                                <td class="align-middle whitespace-nowrap p-1.5 text-text-secondary hidden md:table-cell">{{ $standing->lost }}</td>
+                                <td class="align-middle whitespace-nowrap p-1.5 text-text-secondary">{{ $standing->goal_difference }}</td>
                                 <td class="align-middle whitespace-nowrap p-1.5 font-semibold">{{ $standing->points }}</td>
                                 @unless($game->isTournamentMode())
                                 <td class="align-middle whitespace-nowrap p-1.5">

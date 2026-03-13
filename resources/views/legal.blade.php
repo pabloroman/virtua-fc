@@ -1,7 +1,7 @@
 <x-guest-layout class="sm:max-w-4xl! p-12! w-auto!">
-            <h1 class="text-2xl font-bold text-white mb-6">Aviso Legal</h1>
+            <h1 class="text-2xl font-bold text-text-primary mb-6">Aviso Legal</h1>
 
-            <div class="prose max-w-none text-slate-400">
+            <div class="prose max-w-none text-text-secondary">
                 <p>VirtuaFC es un proyecto de software de código abierto desarrollado por Pablo Román con fines educativos y de entretenimiento. Este proyecto no tiene ánimo de lucro y se distribuye de forma gratuita.</p>
 
                 <p><strong class="font-semibold">No está afiliado, patrocinado ni respaldado por:</strong></p>

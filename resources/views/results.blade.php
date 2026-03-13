@@ -14,13 +14,13 @@
             <div class="flex items-center justify-between mb-6">
                 <div>
                     @if($matches->first()->round_name)
-                        <h3 class="font-semibold text-xl text-white">
+                        <h3 class="font-semibold text-xl text-text-primary">
                             @if($competition)
                                 <span>{{ __($competition->name) }} &centerdot;</span>
                             @endif
                             {{ __('game.matchday_results', ['name' => __($matches->first()?->round_name ?? '')]) }}</h3>
                     @else
-                        <h3 class="font-semibold text-xl text-white">
+                        <h3 class="font-semibold text-xl text-text-primary">
                             @if($competition)
                                 <span>{{ __($competition->name) }} &centerdot;</span>
                             @endif
@@ -52,7 +52,7 @@
                                 <x-team-crest :team="$playerMatch->homeTeam" class="w-10 h-10 md:w-14 md:h-14 shrink-0" />
                             </div>
                             <div class="text-3xl md:text-5xl font-bold text-white tabular-nums px-2 md:px-6 shrink-0">
-                                {{ $playerMatch->home_score }} <span class="text-slate-500 mx-1">-</span> {{ $playerMatch->away_score }}
+                                {{ $playerMatch->home_score }} <span class="text-text-muted mx-1">-</span> {{ $playerMatch->away_score }}
                             </div>
                             <div class="flex items-center gap-2 md:gap-3 flex-1">
                                 <x-team-crest :team="$playerMatch->awayTeam" class="w-10 h-10 md:w-14 md:h-14 shrink-0" />
@@ -66,19 +66,19 @@
                                 <div class="flex gap-8 text-sm">
                                     <div class="flex-1 text-right">
                                         @foreach($homeGoals->sortBy('minute') as $event)
-                                            <div class="text-slate-300">
+                                            <div class="text-text-body">
                                                 {{ $event->gamePlayer->player->name }}
                                                 @if($event->event_type === 'own_goal')<span class="text-red-400">({{ __('game.og') }})</span>@endif
-                                                <span class="text-slate-500">{{ $event->minute }}'</span>
+                                                <span class="text-text-muted">{{ $event->minute }}'</span>
                                             </div>
                                         @endforeach
                                     </div>
                                     <div class="flex-1">
                                         @foreach($awayGoals->sortBy('minute') as $event)
-                                            <div class="text-slate-300">
+                                            <div class="text-text-body">
                                                 {{ $event->gamePlayer->player->name }}
                                                 @if($event->event_type === 'own_goal')<span class="text-red-400">({{ __('game.og') }})</span>@endif
-                                                <span class="text-slate-500">{{ $event->minute }}'</span>
+                                                <span class="text-text-muted">{{ $event->minute }}'</span>
                                             </div>
                                         @endforeach
                                     </div>
@@ -93,7 +93,7 @@
                         @endphp
                         @if($cards->isNotEmpty())
                             <div class="mt-3 pt-3 border-t border-slate-700">
-                                <div class="flex gap-8 text-xs text-slate-400">
+                                <div class="flex gap-8 text-xs text-text-secondary">
                                     <div class="flex-1 text-right">
                                         @foreach($homeCards as $event)
                                             <div class="inline-flex items-center gap-1 justify-end">
@@ -130,17 +130,17 @@
                 @foreach($matches as $match)
                     <div class="flex items-center py-3 px-4 rounded-lg {{ $match->id === $playerMatch?->id ? 'bg-slate-200' : 'bg-surface-700/50' }}">
                         <div class="flex items-center gap-2 flex-1 justify-end">
-                            <span class="text-sm truncate {{ ($match->home_score > $match->away_score) ? 'font-semibold text-white' : 'text-slate-400' }}">
+                            <span class="text-sm truncate {{ ($match->home_score > $match->away_score) ? 'font-semibold text-text-primary' : 'text-text-secondary' }}">
                                 {{ $match->homeTeam->name }}
                             </span>
                             <x-team-crest :team="$match->homeTeam" class="w-6 h-6" />
                         </div>
-                        <div class="px-4 font-semibold tabular-nums text-white">
+                        <div class="px-4 font-semibold tabular-nums text-text-primary">
                             {{ $match->home_score }} - {{ $match->away_score }}
                         </div>
                         <div class="flex items-center gap-2 flex-1">
                             <x-team-crest :team="$match->awayTeam" class="w-6 h-6" />
-                            <span class="text-sm truncate {{ ($match->away_score > $match->home_score) ? 'font-semibold text-white' : 'text-slate-400'  }}">
+                            <span class="text-sm truncate {{ ($match->away_score > $match->home_score) ? 'font-semibold text-text-primary' : 'text-text-secondary'  }}">
                                 {{ $match->awayTeam->name }}
                             </span>
                         </div>

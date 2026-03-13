@@ -95,18 +95,18 @@
                 <div class="mt-6 flex flex-col gap-3">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-3">
-                            <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-white">{{ __('squad.tactics') }}</h2>
+                            <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary">{{ __('squad.tactics') }}</h2>
                             <div class="flex items-baseline gap-1">
                                 <span class="font-heading text-lg font-bold tabular-nums"
-                                      :class="selectedCount === 11 ? 'text-accent-green' : 'text-white'"
+                                      :class="selectedCount === 11 ? 'text-accent-green' : 'text-text-primary'"
                                       x-text="selectedCount">0</span>
-                                <span class="text-xs text-slate-500 font-medium">/11</span>
+                                <span class="text-xs text-text-muted font-medium">/11</span>
                             </div>
                             <span x-show="isDirty" x-cloak class="w-2 h-2 rounded-full bg-accent-gold shrink-0" title="{{ __('squad.unsaved_changes') }}"></span>
                         </div>
                         <div class="flex items-center gap-2">
                             <button type="button" @click="clearSelection()"
-                                class="px-3 py-2 text-xs font-medium text-slate-500 hover:text-white hover:bg-surface-700 rounded-lg transition-colors min-h-[44px]">
+                                class="px-3 py-2 text-xs font-medium text-text-muted hover:text-text-primary hover:bg-surface-700 rounded-lg transition-colors min-h-[44px]">
                                 {{ __('app.clear') }}
                             </button>
                             <x-secondary-button type="button" @click="quickSelect()">
@@ -121,19 +121,19 @@
                     {{-- Formation + Mentality inline controls --}}
                     <div class="flex flex-col sm:flex-row gap-3">
                         <div class="flex items-center gap-2 overflow-x-auto scrollbar-hide">
-                            <span class="text-[10px] text-slate-500 uppercase tracking-wider shrink-0">{{ __('squad.formation') }}</span>
+                            <span class="text-[10px] text-text-muted uppercase tracking-wider shrink-0">{{ __('squad.formation') }}</span>
                             <div class="flex gap-1">
                                 <template x-for="option in formationOptions" :key="'fo-' + option.value">
                                     <button type="button"
                                         @click="selectedFormation = option.value; updateAutoLineup()"
-                                        class="formation-option px-2.5 py-1 rounded-md text-xs font-semibold border border-white/10 text-slate-400 whitespace-nowrap font-heading tracking-wide"
+                                        class="formation-option px-2.5 py-1 rounded-md text-xs font-semibold border border-border-strong text-text-secondary whitespace-nowrap font-heading tracking-wide"
                                         :class="selectedFormation === option.value && 'active'"
                                         x-text="option.label"></button>
                                 </template>
                             </div>
                         </div>
                         <div class="flex items-center gap-2 sm:ml-auto">
-                            <span class="text-[10px] text-slate-500 uppercase tracking-wider shrink-0">{{ __('squad.mentality') }}</span>
+                            <span class="text-[10px] text-text-muted uppercase tracking-wider shrink-0">{{ __('squad.mentality') }}</span>
                             <div class="flex gap-1 bg-surface-700 rounded-lg p-0.5">
                                 <template x-for="option in mentalityOptions" :key="'mo-' + option.value">
                                     <button type="button"
@@ -142,7 +142,7 @@
                                         :class="{
                                             'active bg-surface-600': selectedMentality === option.value,
                                             'text-blue-400': option.value === 'defensive',
-                                            'text-slate-300': option.value === 'balanced',
+                                            'text-text-body': option.value === 'balanced',
                                             'text-accent-red': option.value === 'attacking',
                                         }"
                                         x-text="option.label"></button>
@@ -156,17 +156,17 @@
                 <div class="flex lg:hidden mt-4 bg-surface-700 rounded-lg p-0.5">
                     <button type="button" @click="activeLineupTab = 'pitch'"
                         class="flex-1 px-4 py-2 text-[11px] font-medium text-center rounded-md transition-colors min-h-[44px]"
-                        :class="activeLineupTab === 'pitch' ? 'bg-surface-800 shadow-xs text-white' : 'text-slate-500 hover:text-slate-300'">
+                        :class="activeLineupTab === 'pitch' ? 'bg-surface-800 shadow-xs text-text-primary' : 'text-text-muted hover:text-text-body'">
                         {{ __('squad.pitch') }}
                     </button>
                     <button type="button" @click="activeLineupTab = 'squad'"
                         class="flex-1 px-4 py-2 text-[11px] font-medium text-center rounded-md transition-colors min-h-[44px]"
-                        :class="activeLineupTab === 'squad' ? 'bg-surface-800 shadow-xs text-white' : 'text-slate-500 hover:text-slate-300'">
+                        :class="activeLineupTab === 'squad' ? 'bg-surface-800 shadow-xs text-text-primary' : 'text-text-muted hover:text-text-body'">
                         {{ __('app.squad') }}
                     </button>
                     <button type="button" @click="activeLineupTab = 'tactics'"
                         class="flex-1 px-4 py-2 text-[11px] font-medium text-center rounded-md transition-colors min-h-[44px]"
-                        :class="activeLineupTab === 'tactics' ? 'bg-surface-800 shadow-xs text-white' : 'text-slate-500 hover:text-slate-300'">
+                        :class="activeLineupTab === 'tactics' ? 'bg-surface-800 shadow-xs text-text-primary' : 'text-text-muted hover:text-text-body'">
                         {{ __('squad.tactics') }}
                     </button>
                 </div>
@@ -204,15 +204,15 @@
                                 <template x-if="gridConfig">
                                     <div class="absolute inset-0 pointer-events-none" :class="{ 'pointer-events-auto': positioningSlotId !== null }">
                                         <template x-for="col in gridConfig.cols - 1" :key="'gv-' + col">
-                                            <div class="absolute top-0 bottom-0 border-l border-white/10"
+                                            <div class="absolute top-0 bottom-0 border-l border-border-strong"
                                                 :style="`left: ${(col / gridConfig.cols) * 100}%`"></div>
                                         </template>
                                         <template x-for="row in gridConfig.rows - 1" :key="'gh-' + row">
-                                            <div class="absolute left-0 right-0 border-t border-white/10"
+                                            <div class="absolute left-0 right-0 border-t border-border-strong"
                                                 :style="`top: ${(row / gridConfig.rows) * 100}%`"></div>
                                         </template>
-                                        <div class="absolute top-0 bottom-0 right-0 border-r border-white/10"></div>
-                                        <div class="absolute left-0 right-0 bottom-0 border-b border-white/10"></div>
+                                        <div class="absolute top-0 bottom-0 right-0 border-r border-border-strong"></div>
+                                        <div class="absolute left-0 right-0 bottom-0 border-b border-border-strong"></div>
 
                                         <template x-if="positioningSlotId !== null || draggingSlotId !== null">
                                             <div class="absolute inset-0">
@@ -224,7 +224,7 @@
                                                             :style="`left: ${((col-1) / gridConfig.cols) * 100}%; top: ${(1 - (row / gridConfig.rows)) * 100}%; width: ${100 / gridConfig.cols}%; height: ${100 / gridConfig.rows}%; ${(positioningSlotId !== null && state === 'valid') ? 'cursor: pointer; pointer-events: auto' : ''}`"
                                                             :class="{
                                                                 [getZoneColorClass(currentSlots.find(s => s.id === (positioningSlotId ?? draggingSlotId))?.role)]: state === 'valid',
-                                                                'bg-surface-800/5 border-white/5': state === 'occupied',
+                                                                'bg-surface-800/5 border-border-default': state === 'occupied',
                                                                 'bg-black/15 border-transparent': state === 'invalid',
                                                                 'border-transparent': state === 'neutral',
                                                             }"
@@ -285,9 +285,9 @@
                                                     <span class="font-semibold" x-text="slot.player?.name"></span>
                                                     <span class="px-1.5 py-0.5 bg-surface-800/15 rounded-sm font-bold text-[10px]" x-text="slot.player?.overallScore"></span>
                                                 </div>
-                                                <div class="flex items-center gap-2 mt-1 text-slate-300">
+                                                <div class="flex items-center gap-2 mt-1 text-text-body">
                                                     <span x-text="slot.displayLabel"></span>
-                                                    <span class="text-slate-500">·</span>
+                                                    <span class="text-text-muted">·</span>
                                                     <span :class="getCompatibilityDisplay(slot.player?.position, slot.label).class" x-text="getCompatibilityDisplay(slot.player?.position, slot.label).label"></span>
                                                 </div>
                                                 <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900/95"></div>
@@ -304,7 +304,7 @@
                                     :style="dragPosition ? `left: ${dragPosition.x}%; top: ${dragPosition.y}%` : ''"
                                 >
                                     <template x-if="draggingSlotId !== null">
-                                        <div class="w-11 h-11 rounded-xl shadow-xl border-2 border-white/50 opacity-80"
+                                        <div class="w-11 h-11 rounded-xl shadow-xl border-2 border-border-default0 opacity-80"
                                             :style="getShirtStyle(currentSlots.find(s => s.id === draggingSlotId)?.role || 'Midfielder')">
                                             <div class="absolute inset-0 flex items-center justify-center">
                                                 <span class="font-bold text-xs leading-none inline-flex items-center justify-center w-7 h-7 rounded-full"
@@ -321,11 +321,11 @@
                                 <div
                                     x-show="positioningSlotId !== null"
                                     x-cloak
-                                    class="absolute bottom-2 left-1/2 -translate-x-1/2 px-4 py-2 bg-surface-800/95 backdrop-blur-xs rounded-lg shadow-lg text-xs font-medium text-slate-300 flex items-center gap-2 z-20"
+                                    class="absolute bottom-2 left-1/2 -translate-x-1/2 px-4 py-2 bg-surface-800/95 backdrop-blur-xs rounded-lg shadow-lg text-xs font-medium text-text-body flex items-center gap-2 z-20"
                                 >
                                     <span class="w-2 h-2 rounded-full bg-accent-green animate-pulse"></span>
                                     {{ __('squad.drag_or_tap') }}
-                                    <button type="button" @click="positioningSlotId = null" class="ml-1 text-slate-400 hover:text-slate-400">
+                                    <button type="button" @click="positioningSlotId = null" class="ml-1 text-text-secondary hover:text-text-secondary">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                                     </button>
                                 </div>
@@ -334,11 +334,11 @@
                                 <div
                                     x-show="assigningSlotId !== null"
                                     x-cloak
-                                    class="absolute bottom-2 left-1/2 -translate-x-1/2 px-4 py-2 bg-surface-800/95 backdrop-blur-xs rounded-lg shadow-lg text-xs font-medium text-slate-300 flex items-center gap-2 z-20"
+                                    class="absolute bottom-2 left-1/2 -translate-x-1/2 px-4 py-2 bg-surface-800/95 backdrop-blur-xs rounded-lg shadow-lg text-xs font-medium text-text-body flex items-center gap-2 z-20"
                                 >
                                     <span class="w-2 h-2 rounded-full bg-accent-blue animate-pulse"></span>
                                     {{ __('squad.select_player_for_slot') }}
-                                    <button type="button" @click="assigningSlotId = null" class="ml-1 text-slate-400 hover:text-slate-400">
+                                    <button type="button" @click="assigningSlotId = null" class="ml-1 text-text-secondary hover:text-text-secondary">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                                     </button>
                                 </div>
@@ -348,13 +348,13 @@
                         {{-- Bench section --}}
                         <div>
                             <div class="flex items-center justify-between mb-2.5">
-                                <h3 class="font-heading text-sm font-semibold uppercase tracking-widest text-slate-400">{{ __('squad.substitutes') }}</h3>
-                                <span class="text-[10px] text-slate-600"
+                                <h3 class="font-heading text-sm font-semibold uppercase tracking-widest text-text-secondary">{{ __('squad.substitutes') }}</h3>
+                                <span class="text-[10px] text-text-faint"
                                     x-text="(() => { const bench = selectedPlayers.filter(id => !slotAssignments.some(s => s.player?.id === id)); return bench.length + ' {{ __('squad.players_count') }}'; })()"></span>
                             </div>
                             <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-7 gap-2">
                                 <template x-for="benchPlayerId in selectedPlayers.filter(id => !slotAssignments.some(s => s.player?.id === id))" :key="'bench-' + benchPlayerId">
-                                    <div class="bench-card bg-surface-700/50 border border-white/5 rounded-lg p-2.5 text-center cursor-pointer"
+                                    <div class="bench-card bg-surface-700/50 border border-border-default rounded-lg p-2.5 text-center cursor-pointer"
                                          @click="toggle(benchPlayerId, false)">
                                         <template x-if="playersData[benchPlayerId]">
                                             <div>
@@ -376,14 +376,14 @@
                                                             x-text="(() => { const parts = playersData[benchPlayerId].name.split(' '); const initials = parts.map(w => w.charAt(0)).join(''); return initials.length > 2 ? initials.charAt(0) + initials.charAt(initials.length - 1) : initials; })()"></span>
                                                     </div>
                                                 </div>
-                                                <p class="text-[11px] font-medium text-white truncate" x-text="playersData[benchPlayerId].name"></p>
-                                                <p class="text-[9px] text-slate-500 uppercase font-heading tracking-wide mt-0.5">
+                                                <p class="text-[11px] font-medium text-text-primary truncate" x-text="playersData[benchPlayerId].name"></p>
+                                                <p class="text-[9px] text-text-muted uppercase font-heading tracking-wide mt-0.5">
                                                     <span x-text="playersData[benchPlayerId].positionAbbrev"></span> ·
                                                     <span :class="{
                                                         'text-accent-green': playersData[benchPlayerId].overallScore >= 80,
                                                         'text-lime-400': playersData[benchPlayerId].overallScore >= 70 && playersData[benchPlayerId].overallScore < 80,
                                                         'text-accent-gold': playersData[benchPlayerId].overallScore >= 60 && playersData[benchPlayerId].overallScore < 70,
-                                                        'text-slate-400': playersData[benchPlayerId].overallScore < 60,
+                                                        'text-text-secondary': playersData[benchPlayerId].overallScore < 60,
                                                     }" x-text="playersData[benchPlayerId].overallScore"></span>
                                                 </p>
                                                 <div class="flex items-center justify-center gap-1 mt-1.5">
@@ -412,19 +412,19 @@
 
                     {{-- CENTER: Available Players sidebar --}}
                     <div class="lg:flex-2 lg:min-w-[280px]" :class="{ 'hidden lg:block': activeLineupTab !== 'squad' }">
-                        <div class="bg-surface-800 border border-white/5 rounded-xl overflow-hidden" x-data="{ posTab: 'all' }">
+                        <div class="bg-surface-800 border border-border-default rounded-xl overflow-hidden" x-data="{ posTab: 'all' }">
                             {{-- Sidebar header --}}
-                            <div class="flex items-center justify-between px-4 py-3 border-b border-white/5">
-                                <h3 class="font-heading text-sm font-semibold uppercase tracking-widest text-slate-400">{{ __('squad.available_players') }}</h3>
-                                <span class="text-[10px] text-slate-600" x-text="Object.keys(playersData).length + ' {{ __('squad.players_count') }}'"></span>
+                            <div class="flex items-center justify-between px-4 py-3 border-b border-border-default">
+                                <h3 class="font-heading text-sm font-semibold uppercase tracking-widest text-text-secondary">{{ __('squad.available_players') }}</h3>
+                                <span class="text-[10px] text-text-faint" x-text="Object.keys(playersData).length + ' {{ __('squad.players_count') }}'"></span>
                             </div>
 
                             {{-- Position filter tabs --}}
-                            <div class="flex items-center gap-0 px-3 py-2 border-b border-white/5 overflow-x-auto scrollbar-hide">
+                            <div class="flex items-center gap-0 px-3 py-2 border-b border-border-default overflow-x-auto scrollbar-hide">
                                 @foreach(['all' => __('squad.all'), 'Goalkeeper' => __('squad.goalkeepers_short'), 'Defender' => __('squad.defenders_short'), 'Midfielder' => __('squad.midfielders_short'), 'Forward' => __('squad.forwards_short')] as $key => $label)
                                 <button type="button" @click="posTab = '{{ $key }}'"
                                     class="px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider border-b-2 whitespace-nowrap transition-colors"
-                                    :class="posTab === '{{ $key }}' ? 'text-white border-accent-blue' : 'text-slate-500 border-transparent hover:text-slate-300'">
+                                    :class="posTab === '{{ $key }}' ? 'text-text-primary border-accent-blue' : 'text-text-muted border-transparent hover:text-text-body'">
                                     {{ $label }}
                                 </button>
                                 @endforeach
@@ -457,7 +457,7 @@
                                                 @click="toggle('{{ $player->id }}', {{ $isUnavailable ? 'true' : 'false' }})"
                                                 @mouseenter="hoveredPlayerId = '{{ $player->id }}'"
                                                 @mouseleave="hoveredPlayerId = null"
-                                                class="available-player px-3 py-2.5 border-b border-white/5 {{ $isUnavailable ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer' }}"
+                                                class="available-player px-3 py-2.5 border-b border-border-default {{ $isUnavailable ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer' }}"
                                                 :class="{
                                                     'bg-accent-blue/10 border-accent-blue/20': isSelected('{{ $player->id }}'),
                                                     'opacity-50': !isSelected('{{ $player->id }}') && selectedCount >= 11 && !{{ $isUnavailable ? 'true' : 'false' }}
@@ -467,27 +467,27 @@
                                                     <x-player-avatar :name="$player->player->name ?? $player->name" :position-group="$posGroup" size="sm" />
                                                     <div class="flex-1 min-w-0">
                                                         <div class="flex items-center gap-1.5">
-                                                            <span class="text-xs font-medium text-white truncate">{{ $player->name }}</span>
+                                                            <span class="text-xs font-medium text-text-primary truncate">{{ $player->name }}</span>
                                                             @if($unavailabilityReason)
                                                                 <span class="text-[8px] px-1 py-0.5 rounded-sm bg-red-500/10 text-accent-red font-medium shrink-0">{{ $unavailabilityReason }}</span>
                                                             @endif
                                                         </div>
                                                         <div class="flex items-center gap-2 mt-0.5">
-                                                            <span class="text-[9px] text-slate-500 font-heading uppercase">{{ $posAbbrev }}</span>
-                                                            <span class="text-[9px] text-slate-400">{{ $player->overall_score }}</span>
+                                                            <span class="text-[9px] text-text-muted font-heading uppercase">{{ $posAbbrev }}</span>
+                                                            <span class="text-[9px] text-text-secondary">{{ $player->overall_score }}</span>
                                                             @if(!$isUnavailable)
                                                             <div class="flex items-center gap-1">
                                                                 <div class="w-8 h-1 rounded-full bg-surface-600 overflow-hidden">
                                                                     <div class="h-full rounded-full fitness-bar @if($player->fitness >= 80) bg-accent-green @elseif($player->fitness >= 60) bg-accent-gold @elseif($player->fitness >= 40) bg-accent-orange @else bg-accent-red @endif" style="width: {{ $player->fitness }}%"></div>
                                                                 </div>
-                                                                <span class="text-[8px] text-slate-600">{{ $player->fitness }}%</span>
+                                                                <span class="text-[8px] text-text-faint">{{ $player->fitness }}%</span>
                                                             </div>
                                                             @endif
                                                         </div>
                                                     </div>
                                                     @if(!$isUnavailable)
                                                     <div class="w-5 h-5 rounded-sm border flex items-center justify-center transition-colors shrink-0"
-                                                        :class="isSelected('{{ $player->id }}') ? 'border-accent-blue bg-accent-blue' : 'border-white/10'">
+                                                        :class="isSelected('{{ $player->id }}') ? 'border-accent-blue bg-accent-blue' : 'border-border-strong'">
                                                         <svg x-show="isSelected('{{ $player->id }}')" x-cloak class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                                                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                                                         </svg>
@@ -502,31 +502,31 @@
                         </div>
 
                         {{-- Lineup Overview --}}
-                        <div class="bg-surface-800 border border-white/5 rounded-xl p-4 mt-4">
-                            <h3 class="font-heading text-sm font-semibold uppercase tracking-widest text-slate-400 mb-3">{{ __('squad.lineup_overview') }}</h3>
+                        <div class="bg-surface-800 border border-border-default rounded-xl p-4 mt-4">
+                            <h3 class="font-heading text-sm font-semibold uppercase tracking-widest text-text-secondary mb-3">{{ __('squad.lineup_overview') }}</h3>
                             <div class="grid grid-cols-2 gap-3">
                                 <div>
-                                    <p class="text-[10px] text-slate-500 uppercase tracking-wider mb-1">{{ __('squad.avg_ovr') }}</p>
+                                    <p class="text-[10px] text-text-muted uppercase tracking-wider mb-1">{{ __('squad.avg_ovr') }}</p>
                                     <p class="font-heading text-2xl font-bold"
-                                       :class="teamAverage >= 75 ? 'text-accent-green' : (teamAverage >= 65 ? 'text-white' : 'text-accent-gold')"
+                                       :class="teamAverage >= 75 ? 'text-accent-green' : (teamAverage >= 65 ? 'text-text-primary' : 'text-accent-gold')"
                                        x-text="teamAverage || '-'"></p>
                                 </div>
                                 <div>
-                                    <p class="text-[10px] text-slate-500 uppercase tracking-wider mb-1">{{ __('squad.fitness_full') }}</p>
+                                    <p class="text-[10px] text-text-muted uppercase tracking-wider mb-1">{{ __('squad.fitness_full') }}</p>
                                     <p class="font-heading text-2xl font-bold"
-                                       :class="averageFitness >= 85 ? 'text-accent-green' : (averageFitness >= 70 ? 'text-white' : 'text-accent-gold')"
+                                       :class="averageFitness >= 85 ? 'text-accent-green' : (averageFitness >= 70 ? 'text-text-primary' : 'text-accent-gold')"
                                        x-text="averageFitness ? averageFitness + '%' : '-'"></p>
                                 </div>
                             </div>
 
                             {{-- Formation modifier badges --}}
                             <template x-if="formationModifiers[selectedFormation]">
-                                <div class="mt-3 pt-3 border-t border-white/5">
+                                <div class="mt-3 pt-3 border-t border-border-default">
                                     <div class="flex items-center gap-3 text-[10px] font-medium">
-                                        <span :class="formationModifiers[selectedFormation]?.attack > 0 ? 'text-accent-green' : formationModifiers[selectedFormation]?.attack < 0 ? 'text-accent-red' : 'text-slate-400'">
+                                        <span :class="formationModifiers[selectedFormation]?.attack > 0 ? 'text-accent-green' : formationModifiers[selectedFormation]?.attack < 0 ? 'text-accent-red' : 'text-text-secondary'">
                                             ATK <span x-text="(formationModifiers[selectedFormation]?.attack > 0 ? '+' : '') + formationModifiers[selectedFormation]?.attack + '%'"></span>
                                         </span>
-                                        <span :class="formationModifiers[selectedFormation]?.defense > 0 ? 'text-accent-green' : formationModifiers[selectedFormation]?.defense < 0 ? 'text-accent-red' : 'text-slate-400'">
+                                        <span :class="formationModifiers[selectedFormation]?.defense > 0 ? 'text-accent-green' : formationModifiers[selectedFormation]?.defense < 0 ? 'text-accent-red' : 'text-text-secondary'">
                                             DEF <span x-text="(formationModifiers[selectedFormation]?.defense > 0 ? '+' : '') + formationModifiers[selectedFormation]?.defense + '%'"></span>
                                         </span>
                                     </div>
@@ -537,27 +537,27 @@
 
                     {{-- RIGHT: Tactical Controls --}}
                     <div :class="{ 'hidden lg:block': activeLineupTab !== 'tactics' }">
-                        <div class="bg-surface-800 border border-white/5 rounded-xl p-4 space-y-4">
+                        <div class="bg-surface-800 border border-border-default rounded-xl p-4 space-y-4">
 
                             {{-- Team Instructions --}}
                             <div class="space-y-3">
-                                <h4 class="font-heading text-sm font-semibold uppercase tracking-widest text-slate-400">{{ __('game.instructions_title') }}</h4>
+                                <h4 class="font-heading text-sm font-semibold uppercase tracking-widest text-text-secondary">{{ __('game.instructions_title') }}</h4>
 
                                 {{-- Playing Style --}}
                                 <div>
-                                    <div class="text-[10px] font-medium text-slate-400 uppercase tracking-wide mb-1">{{ __('game.instructions_in_possession') }}</div>
+                                    <div class="text-[10px] font-medium text-text-secondary uppercase tracking-wide mb-1">{{ __('game.instructions_in_possession') }}</div>
                                     <x-tactical-select model="selectedPlayingStyle" options="playingStyles" label="{{ __('game.instructions_in_possession') }}" summary-field="summary" />
                                 </div>
 
                                 {{-- Pressing --}}
                                 <div>
-                                    <div class="text-[10px] font-medium text-slate-400 uppercase tracking-wide mb-1">{{ __('game.instructions_out_of_possession') }}</div>
+                                    <div class="text-[10px] font-medium text-text-secondary uppercase tracking-wide mb-1">{{ __('game.instructions_out_of_possession') }}</div>
                                     <x-tactical-select model="selectedPressing" options="pressingOptions" label="{{ __('game.instructions_out_of_possession') }}" summary-field="summary" />
                                 </div>
 
                                 {{-- Defensive Line --}}
                                 <div>
-                                    <div class="text-[10px] font-medium text-slate-400 uppercase tracking-wide mb-1">{{ __('squad.defensive_line') }}</div>
+                                    <div class="text-[10px] font-medium text-text-secondary uppercase tracking-wide mb-1">{{ __('squad.defensive_line') }}</div>
                                     <x-tactical-select model="selectedDefLine" options="defensiveLineOptions" label="{{ __('squad.defensive_line') }}" summary-field="summary" />
                                 </div>
                             </div>

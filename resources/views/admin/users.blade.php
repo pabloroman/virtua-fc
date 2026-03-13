@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-white leading-tight text-center">
+        <h2 class="font-semibold text-xl text-text-primary leading-tight text-center">
             {{ __('admin.users_title') }}
         </h2>
     </x-slot>
@@ -12,25 +12,25 @@
                     <table class="min-w-full divide-y divide-slate-200">
                         <thead>
                             <tr>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">{{ __('admin.user') }}</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">{{ __('admin.email') }}</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">{{ __('admin.games') }}</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">{{ __('admin.registered') }}</th>
-                                <th class="px-4 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">{{ __('admin.actions') }}</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">{{ __('admin.user') }}</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">{{ __('admin.email') }}</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">{{ __('admin.games') }}</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-text-muted uppercase tracking-wider">{{ __('admin.registered') }}</th>
+                                <th class="px-4 py-3 text-right text-xs font-medium text-text-muted uppercase tracking-wider">{{ __('admin.actions') }}</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
                             @foreach($users as $user)
                                 <tr>
-                                    <td class="px-4 py-3 text-sm text-white">
+                                    <td class="px-4 py-3 text-sm text-text-primary">
                                         {{ $user->name }}
                                         @if($user->is_admin)
                                             <span class="ml-1 inline-flex items-center rounded-full bg-purple-500/10 px-2 py-0.5 text-xs font-medium text-purple-400 ring-1 ring-inset ring-purple-700/10">Admin</span>
                                         @endif
                                     </td>
-                                    <td class="px-4 py-3 text-sm text-slate-500">{{ $user->email }}</td>
-                                    <td class="px-4 py-3 text-sm text-slate-500">{{ $user->games_count }}</td>
-                                    <td class="px-4 py-3 text-sm text-slate-500">{{ $user->created_at->format('d/m/Y') }}</td>
+                                    <td class="px-4 py-3 text-sm text-text-muted">{{ $user->email }}</td>
+                                    <td class="px-4 py-3 text-sm text-text-muted">{{ $user->games_count }}</td>
+                                    <td class="px-4 py-3 text-sm text-text-muted">{{ $user->created_at->format('d/m/Y') }}</td>
                                     <td class="px-4 py-3 text-right">
                                         @if($user->id !== auth()->id())
                                             <form method="POST" action="{{ route('admin.impersonate', $user->id) }}" class="inline">
@@ -40,7 +40,7 @@
                                                 </button>
                                             </form>
                                         @else
-                                            <span class="text-sm text-slate-400">{{ __('admin.current_user') }}</span>
+                                            <span class="text-sm text-text-secondary">{{ __('admin.current_user') }}</span>
                                         @endif
                                     </td>
                                 </tr>

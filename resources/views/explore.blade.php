@@ -32,22 +32,22 @@
                          x-init="init()">
 
                         {{-- Hint --}}
-                        <p class="text-sm text-slate-500 mb-5">{{ __('transfers.explore_hint') }}</p>
+                        <p class="text-sm text-text-muted mb-5">{{ __('transfers.explore_hint') }}</p>
 
                         {{-- Competition Selector --}}
-                        <div class="flex overflow-x-auto scrollbar-hide gap-2 pb-3 mb-5 border-b border-white/5">
+                        <div class="flex overflow-x-auto scrollbar-hide gap-2 pb-3 mb-5 border-b border-border-default">
                             <template x-for="comp in competitions" :key="comp.id">
                                 <button @click="selectCompetition(comp)"
                                         :class="selectedCompetition?.id === comp.id
                                             ? 'bg-slate-900 text-white border-slate-900'
-                                            : 'bg-surface-800 text-slate-300 border-white/10 hover:border-slate-400'"
+                                            : 'bg-surface-800 text-text-body border-border-strong hover:border-slate-400'"
                                         class="shrink-0 flex items-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition-colors min-h-[44px]">
                                     <template x-if="comp.country">
                                         <img :src="'/flags/' + comp.flag + '.svg'" class="w-5 h-3.5 rounded-xs shadow-xs" :alt="comp.country">
                                     </template>
                                     <span x-text="comp.name"></span>
                                     <span class="text-xs px-1.5 py-0.5 rounded-full"
-                                          :class="selectedCompetition?.id === comp.id ? 'bg-surface-800/20' : 'bg-surface-700 text-slate-500'"
+                                          :class="selectedCompetition?.id === comp.id ? 'bg-surface-800/20' : 'bg-surface-700 text-text-muted'"
                                           x-text="comp.teamCount"></span>
                                 </button>
                             </template>
@@ -57,14 +57,14 @@
                         <div class="flex flex-col md:flex-row gap-6">
 
                             {{-- Mobile tab toggle --}}
-                            <div class="flex md:hidden border-b border-white/10 mb-2">
+                            <div class="flex md:hidden border-b border-border-strong mb-2">
                                 <button @click="mobileView = 'teams'"
-                                        :class="mobileView === 'teams' ? 'border-accent-blue text-accent-blue' : 'border-transparent text-slate-500'"
+                                        :class="mobileView === 'teams' ? 'border-accent-blue text-accent-blue' : 'border-transparent text-text-muted'"
                                         class="flex-1 text-center py-2.5 text-sm font-medium border-b-2 transition-colors min-h-[44px]">
                                     {{ __('transfers.explore_mobile_teams') }}
                                 </button>
                                 <button @click="mobileView = 'squad'"
-                                        :class="mobileView === 'squad' ? 'border-accent-blue text-accent-blue' : 'border-transparent text-slate-500'"
+                                        :class="mobileView === 'squad' ? 'border-accent-blue text-accent-blue' : 'border-transparent text-text-muted'"
                                         class="flex-1 text-center py-2.5 text-sm font-medium border-b-2 transition-colors min-h-[44px]">
                                     {{ __('transfers.explore_mobile_squad') }}
                                 </button>
@@ -77,7 +77,7 @@
                                 {{-- Loading state --}}
                                 <template x-if="loadingTeams">
                                     <div class="flex items-center justify-center py-12">
-                                        <svg class="animate-spin h-6 w-6 text-slate-400" fill="none" viewBox="0 0 24 24">
+                                        <svg class="animate-spin h-6 w-6 text-text-secondary" fill="none" viewBox="0 0 24 24">
                                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
@@ -91,11 +91,11 @@
                                             <button @click="selectTeam(team)"
                                                     :class="selectedTeam?.id === team.id
                                                         ? 'bg-accent-blue/10 border-accent-blue/20 ring-1 ring-sky-200'
-                                                        : 'bg-surface-800 border-white/5 hover:bg-surface-700/50'"
+                                                        : 'bg-surface-800 border-border-default hover:bg-surface-700/50'"
                                                     class="w-full flex items-center gap-3 p-3 rounded-lg border transition-all text-left min-h-[44px]">
                                                 <img :src="team.image" :alt="team.name" class="w-8 h-8 shrink-0 object-contain">
                                                 <div class="min-w-0">
-                                                    <div class="text-sm font-medium text-white truncate" x-text="team.name"></div></div>
+                                                    <div class="text-sm font-medium text-text-primary truncate" x-text="team.name"></div></div>
                                             </button>
                                         </template>
                                     </div>
@@ -103,18 +103,18 @@
 
                                 {{-- Empty state --}}
                                 <template x-if="!loadingTeams && teams.length === 0 && selectedCompetition">
-                                    <p class="text-sm text-slate-400 text-center py-8">{{ __('transfers.explore_no_teams') }}</p>
+                                    <p class="text-sm text-text-secondary text-center py-8">{{ __('transfers.explore_no_teams') }}</p>
                                 </template>
                             </div>
 
                             {{-- Right column: Squad view --}}
-                            <div class="md:w-2/3 md:border-l md:border-white/5 md:pl-6"
+                            <div class="md:w-2/3 md:border-l md:border-border-default md:pl-6"
                                  :class="{ 'hidden md:block': mobileView === 'teams' }">
 
                                 {{-- Loading state --}}
                                 <template x-if="loadingSquad">
                                     <div class="flex items-center justify-center py-12">
-                                        <svg class="animate-spin h-6 w-6 text-slate-400" fill="none" viewBox="0 0 24 24">
+                                        <svg class="animate-spin h-6 w-6 text-text-secondary" fill="none" viewBox="0 0 24 24">
                                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
@@ -127,7 +127,7 @@
                                         <svg class="w-16 h-16 text-slate-200 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                                         </svg>
-                                        <p class="text-sm text-slate-400">{{ __('transfers.explore_select_team') }}</p>
+                                        <p class="text-sm text-text-secondary">{{ __('transfers.explore_select_team') }}</p>
                                     </div>
                                 </template>
 

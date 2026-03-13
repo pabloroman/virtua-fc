@@ -56,7 +56,7 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
             $zoneClass = $getZoneClass($standing->position);
         @endphp
         <tr class="border-b px-2 text-lg {{ $zoneClass }} @if($isPlayer) bg-accent-gold/10 @endif">
-            <td class="align-middle whitespace-nowrap text-left px-2 text-white font-semibold">
+            <td class="align-middle whitespace-nowrap text-left px-2 text-text-primary font-semibold">
                 <div class="flex items-center gap-1">
                     <span>{{ $standing->position }}</span>
                     @if($standing->position_change !== 0)
@@ -72,13 +72,13 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
                     <span>{{ $standing->team->name }}</span>
                 </div>
             </td>
-            <td class="align-middle whitespace-nowrap p-2 text-slate-400">{{ $standing->played }}</td>
-            <td class="align-middle whitespace-nowrap p-2 text-slate-400 hidden md:table-cell">{{ $standing->won }}</td>
-            <td class="align-middle whitespace-nowrap p-2 text-slate-400 hidden md:table-cell">{{ $standing->drawn }}</td>
-            <td class="align-middle whitespace-nowrap p-2 text-slate-400 hidden md:table-cell">{{ $standing->lost }}</td>
-            <td class="align-middle whitespace-nowrap p-2 text-slate-400 hidden md:table-cell">{{ $standing->goals_for }}</td>
-            <td class="align-middle whitespace-nowrap p-2 text-slate-400 hidden md:table-cell">{{ $standing->goals_against }}</td>
-            <td class="align-middle whitespace-nowrap p-2 text-slate-400">{{ $standing->goal_difference }}</td>
+            <td class="align-middle whitespace-nowrap p-2 text-text-secondary">{{ $standing->played }}</td>
+            <td class="align-middle whitespace-nowrap p-2 text-text-secondary hidden md:table-cell">{{ $standing->won }}</td>
+            <td class="align-middle whitespace-nowrap p-2 text-text-secondary hidden md:table-cell">{{ $standing->drawn }}</td>
+            <td class="align-middle whitespace-nowrap p-2 text-text-secondary hidden md:table-cell">{{ $standing->lost }}</td>
+            <td class="align-middle whitespace-nowrap p-2 text-text-secondary hidden md:table-cell">{{ $standing->goals_for }}</td>
+            <td class="align-middle whitespace-nowrap p-2 text-text-secondary hidden md:table-cell">{{ $standing->goals_against }}</td>
+            <td class="align-middle whitespace-nowrap p-2 text-text-secondary">{{ $standing->goal_difference }}</td>
             <td class="align-middle whitespace-nowrap p-2 font-semibold">{{ $standing->points }}</td>
             <td class="align-middle whitespace-nowrap p-2">
                 <div class="flex justify-center">
@@ -94,7 +94,7 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
 </div>
 
 @if(count($standingsZones) > 0)
-    <div class="flex gap-6 text-xs text-slate-500">
+    <div class="flex gap-6 text-xs text-text-muted">
         @foreach($standingsZones as $zone)
             <div class="flex items-center gap-2">
                 <div class="w-3 h-3 {{ $bgColorMap[$zone['bgColor']] ?? '' }} rounded-sm"></div>

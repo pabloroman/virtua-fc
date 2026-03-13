@@ -8,6 +8,9 @@
 
         <title>{{ config('app.name', 'Laravel') }}</title>
 
+        <!-- FOUC prevention: apply saved theme before paint -->
+        <script>(function(){var t=localStorage.getItem('virtua-theme');if(t==='light'){document.documentElement.classList.add('light');document.querySelector('meta[name=theme-color]')?.setAttribute('content','#ffffff');}})()</script>
+
         <!-- Fonts (loaded via CSS @import in app.css) -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,7 +19,7 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased bg-surface-900 text-white">
+    <body class="font-sans antialiased bg-surface-900 text-text-primary">
         <div class="min-h-screen">
 
             @if(session('impersonating_from'))
@@ -50,29 +53,30 @@
             @endisset
 
             <!-- Page Content -->
-            <main class="text-slate-300">
+            <main class="text-text-body">
                 {{ $slot }}
             </main>
             @unless($hideFooter ?? false)
             <footer>
                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                    <div class="flex justify-center md:justify-start gap-4 md:gap-0 md:space-x-4">
+                    <div class="flex items-center justify-center md:justify-start gap-4 md:gap-0 md:space-x-4">
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-                            <a class="text-sm text-slate-500 cursor-pointer hover:text-slate-400" :href="route('logout')"
+                            <a class="text-sm text-text-muted cursor-pointer hover:text-text-secondary" :href="route('logout')"
                                onclick="event.preventDefault();
                                                 this.closest('form').submit();">
                                 {{ __('app.log_out') }}
                             </a>
                         </form>
-                        <a class="text-sm text-slate-500 hover:text-slate-400" href="{{ route('select-team') }}">{{ __('app.new_game') }}</a>
-                        <a class="text-sm text-slate-500 hover:text-slate-400" href="{{ route('dashboard') }}">{{ __('app.load_game') }}</a>
+                        <a class="text-sm text-text-muted hover:text-text-secondary" href="{{ route('select-team') }}">{{ __('app.new_game') }}</a>
+                        <a class="text-sm text-text-muted hover:text-text-secondary" href="{{ route('dashboard') }}">{{ __('app.load_game') }}</a>
                         @if(auth()->user()?->is_admin)
-                            <a class="text-sm text-slate-500 hover:text-slate-400" href="{{ route('admin.users') }}">Admin</a>
+                            <a class="text-sm text-text-muted hover:text-text-secondary" href="{{ route('admin.users') }}">Admin</a>
                         @endif
+                        <x-theme-toggle />
                     </div>
-                    <div class="mt-4 text-xs text-slate-600 text-center md:text-left">
-                        © 2026 Pablo Román · Proyecto Open Source · <a href="{{ route('legal') }}" class="hover:text-slate-500">Aviso Legal</a> · <a href="https://github.com/pabloroman/virtua-fc" target="_blank" class="hover:text-slate-500">GitHub</a>
+                    <div class="mt-4 text-xs text-text-faint text-center md:text-left">
+                        © 2026 Pablo Román · Proyecto Open Source · <a href="{{ route('legal') }}" class="hover:text-text-muted">Aviso Legal</a> · <a href="https://github.com/pabloroman/virtua-fc" target="_blank" class="hover:text-text-muted">GitHub</a>
                     </div>
                 </div>
             </footer>

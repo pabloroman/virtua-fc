@@ -27,7 +27,7 @@
             class="px-2 py-1.5 text-xs font-medium rounded-lg border-2 transition-all duration-150 min-h-[44px]"
             :class="{{ $model }} === option.value
                 ? 'bg-accent-blue/10 text-accent-blue border-accent-blue/30 shadow-xs'
-                : 'bg-surface-700 text-slate-400 border-white/10 hover:border-white/20 hover:text-white'"
+                : 'bg-surface-700 text-text-secondary border-border-strong hover:border-white/20 hover:text-text-primary'"
             x-text="option.label"
             x-tooltip="option.tooltip"
         ></button>
@@ -35,6 +35,6 @@
 </div>
 
 @if($summaryField)
-<p class="mt-1 text-[10px] text-slate-500 leading-relaxed"
+<p class="mt-1 text-[10px] text-text-muted leading-relaxed"
    x-text="{{ $options }}.find(o => o.value === {{ $model }})?.{{ $summaryField }}"></p>
 @endif

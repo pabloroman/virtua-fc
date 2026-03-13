@@ -22,15 +22,15 @@
                     {{-- Header --}}
                     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-6">
                         <div>
-                            <h2 class="text-lg md:text-xl font-bold text-white">
+                            <h2 class="text-lg md:text-xl font-bold text-text-primary">
                                 {{ __('transfers.transfer_activity_title', ['window' => __('transfers.transfer_activity_' . $window)]) }}
                             </h2>
-                            <p class="text-sm text-slate-500 mt-1">
+                            <p class="text-sm text-text-muted mt-1">
                                 {{ __('notifications.ai_transfer_message', ['count' => $leagueTransferCount + $restOfWorldCount]) }}
                             </p>
                         </div>
                         <a href="{{ route('show-game', $game->id) }}"
-                           class="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-white min-h-[44px]">
+                           class="inline-flex items-center gap-1.5 text-sm text-text-secondary hover:text-text-primary min-h-[44px]">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                             </svg>
@@ -40,18 +40,18 @@
 
                     {{-- League Section — Team-Grouped --}}
                     <div class="mb-8">
-                        <h3 class="text-base font-semibold text-white mb-4">{{ $competitionName }}</h3>
+                        <h3 class="text-base font-semibold text-text-primary mb-4">{{ $competitionName }}</h3>
 
                         @if(count($leagueTeamActivity) > 0)
                             <div class="columns-1 md:columns-2 gap-6">
                                 @foreach($leagueTeamActivity as $teamId => $activity)
-                                    <div class="break-inside-avoid pb-3 mb-3 border-b border-white/5 last:border-b-0 last:mb-0 last:pb-0">
+                                    <div class="break-inside-avoid pb-3 mb-3 border-b border-border-default last:border-b-0 last:mb-0 last:pb-0">
                                         {{-- Team header --}}
                                         <div class="flex items-center gap-2 mb-2">
                                             @if($teams->has($teamId))
                                                 <x-team-crest :team="$teams->get($teamId)" class="w-6 h-6 shrink-0" />
                                             @endif
-                                            <span class="font-semibold text-sm text-white">{{ $activity['teamName'] }}</span>
+                                            <span class="font-semibold text-sm text-text-primary">{{ $activity['teamName'] }}</span>
                                         </div>
 
                                         {{-- Transfer rows --}}
@@ -61,15 +61,15 @@
                                                 <div class="flex items-center gap-1.5 md:gap-2 text-sm min-h-[28px]">
                                                     <span class="text-red-500 font-bold w-4 shrink-0 text-center" title="{{ __('transfers.transfer_activity_out') }}">&#x2197;</span>
                                                     <x-position-badge :position="$transfer['position']" size="sm" />
-                                                    <span class="text-white truncate min-w-0">{{ $transfer['playerName'] }}</span>
-                                                    <span class="text-slate-400 shrink-0">&rarr;</span>
-                                                    <span class="flex items-center gap-1 truncate min-w-0 text-slate-500">
+                                                    <span class="text-text-primary truncate min-w-0">{{ $transfer['playerName'] }}</span>
+                                                    <span class="text-text-secondary shrink-0">&rarr;</span>
+                                                    <span class="flex items-center gap-1 truncate min-w-0 text-text-muted">
                                                         @if(isset($transfer['toTeamId']) && $teams->has($transfer['toTeamId']))
                                                             <x-team-crest :team="$teams->get($transfer['toTeamId'])" class="w-4 h-4 shrink-0" />
                                                         @endif
                                                         <span class="truncate">{{ $transfer['toTeamName'] }}</span>
                                                     </span>
-                                                    <span class="ml-auto text-slate-400 whitespace-nowrap text-xs font-medium">{{ $transfer['formattedFee'] }}</span>
+                                                    <span class="ml-auto text-text-secondary whitespace-nowrap text-xs font-medium">{{ $transfer['formattedFee'] }}</span>
                                                 </div>
                                             @endforeach
 
@@ -78,17 +78,17 @@
                                                 <div class="flex items-center gap-1.5 md:gap-2 text-sm min-h-[28px]">
                                                     <span class="text-emerald-500 font-bold w-4 shrink-0 text-center" title="{{ __('transfers.transfer_activity_in') }}">&#x2199;</span>
                                                     <x-position-badge :position="$transfer['position']" size="sm" />
-                                                    <span class="text-white truncate min-w-0">{{ $transfer['playerName'] }}</span>
+                                                    <span class="text-text-primary truncate min-w-0">{{ $transfer['playerName'] }}</span>
                                                     @if($transfer['fromTeamId'])
-                                                        <span class="text-slate-400 shrink-0">&larr;</span>
-                                                        <span class="flex items-center gap-1 truncate min-w-0 text-slate-500">
+                                                        <span class="text-text-secondary shrink-0">&larr;</span>
+                                                        <span class="flex items-center gap-1 truncate min-w-0 text-text-muted">
                                                             @if($teams->has($transfer['fromTeamId']))
                                                                 <x-team-crest :team="$teams->get($transfer['fromTeamId'])" class="w-4 h-4 shrink-0" />
                                                             @endif
                                                             <span class="truncate">{{ $transfer['fromTeamName'] }}</span>
                                                         </span>
                                                     @endif
-                                                    <span class="ml-auto whitespace-nowrap text-xs font-medium {{ $transfer['type'] === 'free_agent' ? 'text-emerald-600' : 'text-slate-400' }}">
+                                                    <span class="ml-auto whitespace-nowrap text-xs font-medium {{ $transfer['type'] === 'free_agent' ? 'text-emerald-600' : 'text-text-secondary' }}">
                                                         {{ $transfer['formattedFee'] }}
                                                     </span>
                                                 </div>
@@ -98,24 +98,24 @@
                                 @endforeach
                             </div>
                         @else
-                            <p class="text-sm text-slate-400 italic py-3">{{ __('transfers.transfer_activity_no_transfers') }}</p>
+                            <p class="text-sm text-text-secondary italic py-3">{{ __('transfers.transfer_activity_no_transfers') }}</p>
                         @endif
                     </div>
 
                     {{-- Rest of World Section — Team-Grouped --}}
                     @if(count($restOfWorldTeamActivity) > 0)
                         <div>
-                            <h3 class="text-base font-semibold text-white mb-4">{{ __('transfers.transfer_activity_other_leagues') }}</h3>
+                            <h3 class="text-base font-semibold text-text-primary mb-4">{{ __('transfers.transfer_activity_other_leagues') }}</h3>
 
                             <div class="columns-1 md:columns-2 gap-6">
                                 @foreach($restOfWorldTeamActivity as $teamId => $activity)
-                                    <div class="break-inside-avoid pb-3 mb-3 border-b border-white/5 last:border-b-0 last:mb-0 last:pb-0">
+                                    <div class="break-inside-avoid pb-3 mb-3 border-b border-border-default last:border-b-0 last:mb-0 last:pb-0">
                                         {{-- Team header --}}
                                         <div class="flex items-center gap-2 mb-2">
                                             @if($teams->has($teamId))
                                                 <x-team-crest :team="$teams->get($teamId)" class="w-6 h-6 shrink-0" />
                                             @endif
-                                            <span class="font-semibold text-sm text-white">{{ $activity['teamName'] }}</span>
+                                            <span class="font-semibold text-sm text-text-primary">{{ $activity['teamName'] }}</span>
                                         </div>
 
                                         {{-- Transfer rows --}}
@@ -125,15 +125,15 @@
                                                 <div class="flex items-center gap-1.5 md:gap-2 text-sm min-h-[28px]">
                                                     <span class="text-red-500 font-bold w-4 shrink-0 text-center" title="{{ __('transfers.transfer_activity_out') }}">&#x2197;</span>
                                                     <x-position-badge :position="$transfer['position']" size="sm" />
-                                                    <span class="text-white truncate min-w-0">{{ $transfer['playerName'] }}</span>
-                                                    <span class="text-slate-400 shrink-0">&rarr;</span>
-                                                    <span class="flex items-center gap-1 truncate min-w-0 text-slate-500">
+                                                    <span class="text-text-primary truncate min-w-0">{{ $transfer['playerName'] }}</span>
+                                                    <span class="text-text-secondary shrink-0">&rarr;</span>
+                                                    <span class="flex items-center gap-1 truncate min-w-0 text-text-muted">
                                                         @if(isset($transfer['toTeamId']) && $teams->has($transfer['toTeamId']))
                                                             <x-team-crest :team="$teams->get($transfer['toTeamId'])" class="w-4 h-4 shrink-0" />
                                                         @endif
                                                         <span class="truncate">{{ $transfer['toTeamName'] }}</span>
                                                     </span>
-                                                    <span class="ml-auto text-slate-400 whitespace-nowrap text-xs font-medium">{{ $transfer['formattedFee'] }}</span>
+                                                    <span class="ml-auto text-text-secondary whitespace-nowrap text-xs font-medium">{{ $transfer['formattedFee'] }}</span>
                                                 </div>
                                             @endforeach
 
@@ -142,17 +142,17 @@
                                                 <div class="flex items-center gap-1.5 md:gap-2 text-sm min-h-[28px]">
                                                     <span class="text-emerald-500 font-bold w-4 shrink-0 text-center" title="{{ __('transfers.transfer_activity_in') }}">&#x2199;</span>
                                                     <x-position-badge :position="$transfer['position']" size="sm" />
-                                                    <span class="text-white truncate min-w-0">{{ $transfer['playerName'] }}</span>
+                                                    <span class="text-text-primary truncate min-w-0">{{ $transfer['playerName'] }}</span>
                                                     @if($transfer['fromTeamId'])
-                                                        <span class="text-slate-400 shrink-0">&larr;</span>
-                                                        <span class="flex items-center gap-1 truncate min-w-0 text-slate-500">
+                                                        <span class="text-text-secondary shrink-0">&larr;</span>
+                                                        <span class="flex items-center gap-1 truncate min-w-0 text-text-muted">
                                                             @if($teams->has($transfer['fromTeamId']))
                                                                 <x-team-crest :team="$teams->get($transfer['fromTeamId'])" class="w-4 h-4 shrink-0" />
                                                             @endif
                                                             <span class="truncate">{{ $transfer['fromTeamName'] }}</span>
                                                         </span>
                                                     @endif
-                                                    <span class="ml-auto whitespace-nowrap text-xs font-medium {{ $transfer['type'] === 'free_agent' ? 'text-emerald-600' : 'text-slate-400' }}">
+                                                    <span class="ml-auto whitespace-nowrap text-xs font-medium {{ $transfer['type'] === 'free_agent' ? 'text-emerald-600' : 'text-text-secondary' }}">
                                                         {{ $transfer['formattedFee'] }}
                                                     </span>
                                                 </div>

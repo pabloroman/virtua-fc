@@ -1,14 +1,14 @@
 <section id="logo-brand" class="mb-20">
-    <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-white mb-2">Logo & Brand</h2>
-    <p class="text-sm text-slate-400 mb-8">The VirtuaFC brand identity is built around a bold skewed red parallelogram with white text. The skew angle (-12deg) is the defining visual motif carried across logo, favicon, and UI accents.</p>
+    <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary mb-2">Logo & Brand</h2>
+    <p class="text-sm text-text-secondary mb-8">The VirtuaFC brand identity is built around a bold skewed red parallelogram with white text. The skew angle (-12deg) is the defining visual motif carried across logo, favicon, and UI accents.</p>
 
     {{-- Primary Logo --}}
-    <h3 class="text-lg font-semibold text-white mb-3">Primary Logo</h3>
-    <p class="text-sm text-slate-400 mb-4">The main wordmark rendered as an SVG. Uses a skewed red-600 parallelogram with Barlow Semi Condensed white text.</p>
+    <h3 class="text-lg font-semibold text-text-primary mb-3">Primary Logo</h3>
+    <p class="text-sm text-text-secondary mb-4">The main wordmark rendered as an SVG. Uses a skewed red-600 parallelogram with Barlow Semi Condensed white text.</p>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
         {{-- Dark background (surface-900) --}}
-        <div class="border border-white/5 rounded-lg p-8 flex items-center justify-center bg-surface-900">
+        <div class="border border-border-default rounded-lg p-8 flex items-center justify-center bg-surface-900">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 64" class="h-14">
                 <defs>
                     <style>
@@ -21,7 +21,7 @@
             </svg>
         </div>
         {{-- Lighter background (surface-800) --}}
-        <div class="border border-white/5 rounded-lg p-8 flex items-center justify-center bg-surface-800">
+        <div class="border border-border-default rounded-lg p-8 flex items-center justify-center bg-surface-800">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 64" class="h-14">
                 <defs>
                     <style>
@@ -35,18 +35,18 @@
         </div>
     </div>
     <div class="flex gap-3 mb-10">
-        <span class="text-[10px] text-slate-500 bg-surface-700 px-2 py-1 rounded-sm">surface-900 (#0B1120)</span>
-        <span class="text-[10px] text-slate-500 bg-surface-700 px-2 py-1 rounded-sm">surface-800 (#0F172A)</span>
+        <span class="text-[10px] text-text-muted bg-surface-700 px-2 py-1 rounded-sm">surface-900 (#0B1120)</span>
+        <span class="text-[10px] text-text-muted bg-surface-700 px-2 py-1 rounded-sm">surface-800 (#0F172A)</span>
     </div>
 
     {{-- Logo Sizes --}}
-    <h3 class="text-lg font-semibold text-white mb-3">Logo Sizes</h3>
-    <p class="text-sm text-slate-400 mb-4">The logo scales across contexts -- from navigation headers to compact footers. Use the Tailwind/HTML implementation for in-app rendering.</p>
-    <div class="bg-surface-800 border border-white/5 rounded-xl p-6 space-y-6 mb-4">
+    <h3 class="text-lg font-semibold text-text-primary mb-3">Logo Sizes</h3>
+    <p class="text-sm text-text-secondary mb-4">The logo scales across contexts -- from navigation headers to compact footers. Use the Tailwind/HTML implementation for in-app rendering.</p>
+    <div class="bg-surface-800 border border-border-default rounded-xl p-6 space-y-6 mb-4">
         {{-- Large --}}
         <div class="flex flex-col md:flex-row md:items-center gap-3">
             <div class="w-32 shrink-0">
-                <div class="text-xs text-slate-500">Large (hero)</div>
+                <div class="text-xs text-text-muted">Large (hero)</div>
                 <code class="text-[10px] font-mono text-accent-blue">text-4xl</code>
             </div>
             <div class="-skew-x-12 bg-red-600 px-6 py-1.5 inline-block self-start">
@@ -54,9 +54,9 @@
             </div>
         </div>
         {{-- Medium --}}
-        <div class="flex flex-col md:flex-row md:items-center gap-3 pt-4 border-t border-white/5">
+        <div class="flex flex-col md:flex-row md:items-center gap-3 pt-4 border-t border-border-default">
             <div class="w-32 shrink-0">
-                <div class="text-xs text-slate-500">Medium (nav)</div>
+                <div class="text-xs text-text-muted">Medium (nav)</div>
                 <code class="text-[10px] font-mono text-accent-blue">text-3xl</code>
             </div>
             <div class="-skew-x-12 bg-red-600 px-4 py-1 inline-block self-start">
@@ -64,9 +64,9 @@
             </div>
         </div>
         {{-- Small --}}
-        <div class="flex flex-col md:flex-row md:items-center gap-3 pt-4 border-t border-white/5">
+        <div class="flex flex-col md:flex-row md:items-center gap-3 pt-4 border-t border-border-default">
             <div class="w-32 shrink-0">
-                <div class="text-xs text-slate-500">Small (footer)</div>
+                <div class="text-xs text-text-muted">Small (footer)</div>
                 <code class="text-[10px] font-mono text-accent-blue">text-xl</code>
             </div>
             <div class="-skew-x-12 bg-red-600 px-3 py-1 inline-block self-start">
@@ -77,19 +77,19 @@
 
     <div x-data="{ copied: false }" class="relative mb-10">
         <button @click="navigator.clipboard.writeText($refs.logoCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
+                class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-text-secondary hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
             <span x-show="!copied">Copy</span>
             <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
         </button>
-        <pre class="bg-surface-700 text-slate-300 rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="logoCode">&lt;!-- Logo (Tailwind) --&gt;
+        <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="logoCode">&lt;!-- Logo (Tailwind) --&gt;
 &lt;div class="-skew-x-12 bg-red-600 px-4 py-1"&gt;
     &lt;span class="skew-x-12 inline-block text-3xl font-bold text-white tracking-tight"&gt;Virtua FC&lt;/span&gt;
 &lt;/div&gt;</code></pre>
     </div>
 
     {{-- Favicon / App Icon --}}
-    <h3 class="text-lg font-semibold text-white mb-3">Favicon / App Icon</h3>
-    <p class="text-sm text-slate-400 mb-4">A minimal monogram using the letter "V" on the skewed red background. Used for browser tabs, bookmarks, and app icons.</p>
+    <h3 class="text-lg font-semibold text-text-primary mb-3">Favicon / App Icon</h3>
+    <p class="text-sm text-text-secondary mb-4">A minimal monogram using the letter "V" on the skewed red background. Used for browser tabs, bookmarks, and app icons.</p>
     <div class="flex flex-wrap items-end gap-6 mb-4">
         @foreach([
             ['size' => 64, 'label' => '64px'],
@@ -99,24 +99,24 @@
             ['size' => 16, 'label' => '16px'],
         ] as $icon)
         <div class="text-center">
-            <div class="border border-white/5 rounded-lg p-3 bg-surface-800 mb-1.5 inline-flex items-center justify-center" style="width: {{ $icon['size'] + 24 }}px; height: {{ $icon['size'] + 24 }}px;">
+            <div class="border border-border-default rounded-lg p-3 bg-surface-800 mb-1.5 inline-flex items-center justify-center" style="width: {{ $icon['size'] + 24 }}px; height: {{ $icon['size'] + 24 }}px;">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="{{ $icon['size'] }}" height="{{ $icon['size'] }}">
                     <rect fill="#dc2626" x="4" y="4" width="24" height="24" rx="2" transform="skewX(-12)" transform-origin="center"/>
                     <text fill="white" font-family="'Barlow Semi Condensed', 'Arial Black', sans-serif" font-weight="800" font-size="20" x="16" y="23" text-anchor="middle">V</text>
                 </svg>
             </div>
-            <div class="text-[10px] text-slate-500">{{ $icon['label'] }}</div>
+            <div class="text-[10px] text-text-muted">{{ $icon['label'] }}</div>
         </div>
         @endforeach
     </div>
 
     <div x-data="{ copied: false }" class="relative mb-10">
         <button @click="navigator.clipboard.writeText($refs.faviconCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
+                class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-text-secondary hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
             <span x-show="!copied">Copy</span>
             <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
         </button>
-        <pre class="bg-surface-700 text-slate-300 rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="faviconCode">&lt;svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"&gt;
+        <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="faviconCode">&lt;svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"&gt;
   &lt;rect fill="#dc2626" x="4" y="4" width="24" height="24" rx="2"
         transform="skewX(-12)" transform-origin="center"/&gt;
   &lt;text fill="white" font-family="'Barlow Semi Condensed', 'Arial Black', sans-serif"
@@ -125,32 +125,32 @@
     </div>
 
     {{-- Brand Anatomy --}}
-    <h3 class="text-lg font-semibold text-white mb-3">Brand Anatomy</h3>
-    <p class="text-sm text-slate-400 mb-4">The core elements that make up the VirtuaFC visual identity.</p>
+    <h3 class="text-lg font-semibold text-text-primary mb-3">Brand Anatomy</h3>
+    <p class="text-sm text-text-secondary mb-4">The core elements that make up the VirtuaFC visual identity.</p>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
-        <div class="bg-surface-800 border border-white/5 rounded-xl p-5">
+        <div class="bg-surface-800 border border-border-default rounded-xl p-5">
             <div class="w-10 h-10 rounded-lg bg-red-600 mb-3 -skew-x-12"></div>
-            <h4 class="font-semibold text-sm text-white mb-1">Skewed Parallelogram</h4>
-            <p class="text-xs text-slate-400 leading-relaxed">The -12deg skew is the signature shape. Applied via <code class="text-[10px] bg-surface-700 px-1 py-0.5 rounded-sm text-slate-300">-skew-x-12</code> in Tailwind or <code class="text-[10px] bg-surface-700 px-1 py-0.5 rounded-sm text-slate-300">skewX(-12deg)</code> in SVG.</p>
+            <h4 class="font-semibold text-sm text-text-primary mb-1">Skewed Parallelogram</h4>
+            <p class="text-xs text-text-secondary leading-relaxed">The -12deg skew is the signature shape. Applied via <code class="text-[10px] bg-surface-700 px-1 py-0.5 rounded-sm text-text-body">-skew-x-12</code> in Tailwind or <code class="text-[10px] bg-surface-700 px-1 py-0.5 rounded-sm text-text-body">skewX(-12deg)</code> in SVG.</p>
         </div>
-        <div class="bg-surface-800 border border-white/5 rounded-xl p-5">
+        <div class="bg-surface-800 border border-border-default rounded-xl p-5">
             <div class="w-10 h-10 rounded-lg bg-red-600 mb-3 flex items-center justify-center">
                 <span class="text-white text-xs font-bold">#dc2626</span>
             </div>
-            <h4 class="font-semibold text-sm text-white mb-1">Brand Red</h4>
-            <p class="text-xs text-slate-400 leading-relaxed">Tailwind's <code class="text-[10px] bg-surface-700 px-1 py-0.5 rounded-sm text-slate-300">red-600</code> (#dc2626) is the primary brand color. Used for the logo background and primary CTA buttons.</p>
+            <h4 class="font-semibold text-sm text-text-primary mb-1">Brand Red</h4>
+            <p class="text-xs text-text-secondary leading-relaxed">Tailwind's <code class="text-[10px] bg-surface-700 px-1 py-0.5 rounded-sm text-text-body">red-600</code> (#dc2626) is the primary brand color. Used for the logo background and primary CTA buttons.</p>
         </div>
-        <div class="bg-surface-800 border border-white/5 rounded-xl p-5">
+        <div class="bg-surface-800 border border-border-default rounded-xl p-5">
             <div class="h-10 mb-3 flex items-center">
-                <span class="text-2xl font-bold text-white tracking-tight font-heading">Barlow SC</span>
+                <span class="text-2xl font-bold text-text-primary tracking-tight font-heading">Barlow SC</span>
             </div>
-            <h4 class="font-semibold text-sm text-white mb-1">Barlow Semi Condensed</h4>
-            <p class="text-xs text-slate-400 leading-relaxed">Bold weight (700/800) for the wordmark. The semi-condensed width gives a sporty, athletic feel that matches the football theme.</p>
+            <h4 class="font-semibold text-sm text-text-primary mb-1">Barlow Semi Condensed</h4>
+            <p class="text-xs text-text-secondary leading-relaxed">Bold weight (700/800) for the wordmark. The semi-condensed width gives a sporty, athletic feel that matches the football theme.</p>
         </div>
     </div>
 
     {{-- Usage Guidelines --}}
-    <h3 class="text-lg font-semibold text-white mb-3">Usage Guidelines</h3>
+    <h3 class="text-lg font-semibold text-text-primary mb-3">Usage Guidelines</h3>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         {{-- Do --}}
         <div class="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-5">
@@ -181,9 +181,9 @@
     </div>
 
     {{-- Inline SVG Logo (for external use) --}}
-    <h3 class="text-lg font-semibold text-white mt-10 mb-3">SVG Logo (for external use)</h3>
-    <p class="text-sm text-slate-400 mb-4">A self-contained SVG for use outside the app (social media, documentation, external sites). No Tailwind dependency.</p>
-    <div class="bg-surface-700/30 border border-white/5 rounded-xl p-8 flex items-center justify-center mb-4">
+    <h3 class="text-lg font-semibold text-text-primary mt-10 mb-3">SVG Logo (for external use)</h3>
+    <p class="text-sm text-text-secondary mb-4">A self-contained SVG for use outside the app (social media, documentation, external sites). No Tailwind dependency.</p>
+    <div class="bg-surface-700/30 border border-border-default rounded-xl p-8 flex items-center justify-center mb-4">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 64" class="h-16">
             <defs>
                 <style>
@@ -197,11 +197,11 @@
     </div>
     <div x-data="{ copied: false }" class="relative">
         <button @click="navigator.clipboard.writeText($refs.svgLogoCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
-                class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-slate-400 hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
+                class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-text-secondary hover:text-slate-200 bg-surface-600 rounded-sm transition-colors">
             <span x-show="!copied">Copy</span>
             <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
         </button>
-        <pre class="bg-surface-700 text-slate-300 rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="svgLogoCode">&lt;svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 64"&gt;
+        <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="svgLogoCode">&lt;svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 64"&gt;
   &lt;rect fill="#dc2626" x="8" y="6" width="264" height="52" rx="2"
         transform="skewX(-12)"/&gt;
   &lt;text fill="#fff" font-family="'Barlow Semi Condensed', 'Arial Black', sans-serif"
@@ -211,21 +211,21 @@
     </div>
 
     {{-- Downloadable Assets (PNG) --}}
-    <h3 class="text-lg font-semibold text-white mt-10 mb-3">Downloadable Assets (PNG)</h3>
-    <p class="text-sm text-slate-400 mb-4">Pre-rendered PNG versions for use in presentations, documents, and contexts where SVG is not supported. All assets are in <code class="text-[10px] bg-surface-700 px-1 py-0.5 rounded-sm text-slate-300">/img/brand/</code>.</p>
+    <h3 class="text-lg font-semibold text-text-primary mt-10 mb-3">Downloadable Assets (PNG)</h3>
+    <p class="text-sm text-text-secondary mb-4">Pre-rendered PNG versions for use in presentations, documents, and contexts where SVG is not supported. All assets are in <code class="text-[10px] bg-surface-700 px-1 py-0.5 rounded-sm text-text-body">/img/brand/</code>.</p>
 
     {{-- Wordmark PNGs --}}
-    <h4 class="text-sm font-semibold text-slate-300 mb-3">Wordmark</h4>
+    <h4 class="text-sm font-semibold text-text-body mb-3">Wordmark</h4>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         {{-- Dark variant (surface-900) --}}
-        <div class="border border-white/5 rounded-xl overflow-hidden">
+        <div class="border border-border-default rounded-xl overflow-hidden">
             <div class="p-6 flex items-center justify-center bg-surface-900 min-h-[120px]">
                 <img src="/img/brand/logo-dark.png" alt="VirtuaFC logo on dark background" class="h-12">
             </div>
-            <div class="border-t border-white/5 px-4 py-3 bg-surface-800 flex items-center justify-between">
+            <div class="border-t border-border-default px-4 py-3 bg-surface-800 flex items-center justify-between">
                 <div>
-                    <div class="text-xs font-medium text-white">Dark background</div>
-                    <div class="text-[10px] text-slate-500">640 &times; 208 &middot; PNG</div>
+                    <div class="text-xs font-medium text-text-primary">Dark background</div>
+                    <div class="text-[10px] text-text-muted">640 &times; 208 &middot; PNG</div>
                 </div>
                 <div class="flex gap-2">
                     <a href="/img/brand/logo-dark.png" download class="text-[10px] font-medium text-accent-blue hover:text-blue-400 px-2 py-1 bg-accent-blue/10 rounded-sm transition-colors">1x</a>
@@ -235,14 +235,14 @@
             </div>
         </div>
         {{-- Light variant --}}
-        <div class="border border-white/5 rounded-xl overflow-hidden">
+        <div class="border border-border-default rounded-xl overflow-hidden">
             <div class="p-6 flex items-center justify-center bg-white min-h-[120px]">
                 <img src="/img/brand/logo.png" alt="VirtuaFC logo" class="h-12">
             </div>
-            <div class="border-t border-white/5 px-4 py-3 bg-surface-800 flex items-center justify-between">
+            <div class="border-t border-border-default px-4 py-3 bg-surface-800 flex items-center justify-between">
                 <div>
-                    <div class="text-xs font-medium text-white">Light background</div>
-                    <div class="text-[10px] text-slate-500">560 &times; 128 &middot; PNG</div>
+                    <div class="text-xs font-medium text-text-primary">Light background</div>
+                    <div class="text-[10px] text-text-muted">560 &times; 128 &middot; PNG</div>
                 </div>
                 <div class="flex gap-2">
                     <a href="/img/brand/logo.png" download class="text-[10px] font-medium text-accent-blue hover:text-blue-400 px-2 py-1 bg-accent-blue/10 rounded-sm transition-colors">1x</a>
@@ -254,8 +254,8 @@
     </div>
 
     {{-- Icon PNGs --}}
-    <h4 class="text-sm font-semibold text-slate-300 mb-3">App Icon</h4>
-    <div class="border border-white/5 rounded-xl overflow-hidden mb-4">
+    <h4 class="text-sm font-semibold text-text-body mb-3">App Icon</h4>
+    <div class="border border-border-default rounded-xl overflow-hidden mb-4">
         <div class="p-6 bg-surface-800">
             <div class="flex flex-wrap items-end gap-6">
                 @foreach([
@@ -269,13 +269,13 @@
                     <div class="mb-1.5 inline-flex items-center justify-center">
                         <img src="/img/brand/{{ $icon['file'] }}" alt="VirtuaFC icon {{ $icon['label'] }}" style="width: {{ $icon['display'] }}px; height: {{ $icon['display'] }}px;" class="rounded-sm">
                     </div>
-                    <div class="text-[10px] text-slate-500">{{ $icon['label'] }}</div>
+                    <div class="text-[10px] text-text-muted">{{ $icon['label'] }}</div>
                 </div>
                 @endforeach
             </div>
         </div>
-        <div class="border-t border-white/5 px-4 py-3 bg-surface-700 flex flex-wrap items-center gap-2">
-            <span class="text-xs text-slate-500 mr-2">Download:</span>
+        <div class="border-t border-border-default px-4 py-3 bg-surface-700 flex flex-wrap items-center gap-2">
+            <span class="text-xs text-text-muted mr-2">Download:</span>
             @foreach([
                 ['file' => 'icon-512.png', 'label' => '512px'],
                 ['file' => 'icon-256.png', 'label' => '256px'],

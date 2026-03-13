@@ -55,7 +55,7 @@
         @endif
 
         <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-slate-400 hover:text-white rounded-md focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-accent-blue" href="{{ route('login') }}">
+            <a class="underline text-sm text-text-secondary hover:text-text-primary rounded-md focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-accent-blue" href="{{ route('login') }}">
                 {{ __('auth.Already registered?') }}
             </a>
 

@@ -47,4 +47,8 @@ return [
     'summer_window' => 'Verano',
     'winter_window' => 'Invierno',
 
+    // Theme
+    'switch_light_mode' => 'Cambiar a modo claro',
+    'switch_dark_mode' => 'Cambiar a modo oscuro',
+
 ];

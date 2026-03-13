@@ -23,7 +23,7 @@
 
                     {{-- Header --}}
                     <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-6">
-                        <h3 class="font-semibold text-xl text-white">{{ __($competition->name) }}</h3>
+                        <h3 class="font-semibold text-xl text-text-primary">{{ __($competition->name) }}</h3>
                         <div class="flex items-center gap-3">
                             @if($knockoutStatus === 'champion')
                                 <span class="px-3 py-1 text-sm bg-yellow-100 text-accent-gold rounded-full">{{ __('cup.champion') }}</span>
@@ -40,14 +40,14 @@
                     </div>
 
                     {{-- Tab Navigation --}}
-                    <div class="flex gap-1 border-b border-white/10 mb-6 overflow-x-auto scrollbar-hide">
+                    <div class="flex gap-1 border-b border-border-strong mb-6 overflow-x-auto scrollbar-hide">
                         <button @click="tab = 'groups'"
-                                :class="tab === 'groups' ? 'border-b-2 border-red-500 text-accent-red font-semibold' : 'text-slate-500 hover:text-slate-300'"
+                                :class="tab === 'groups' ? 'border-b-2 border-red-500 text-accent-red font-semibold' : 'text-text-muted hover:text-text-body'"
                                 class="px-4 py-2.5 text-sm whitespace-nowrap shrink-0 min-h-[44px]">
                             {{ __('game.group_stage') }}
                         </button>
                         <button @click="tab = 'knockout'"
-                                :class="tab === 'knockout' ? 'border-b-2 border-red-500 text-accent-red font-semibold' : 'text-slate-500 hover:text-slate-300'"
+                                :class="tab === 'knockout' ? 'border-b-2 border-red-500 text-accent-red font-semibold' : 'text-text-muted hover:text-text-body'"
                                 class="px-4 py-2.5 text-sm whitespace-nowrap shrink-0 min-h-[44px] flex items-center gap-2">
                             {{ __('game.knockout_phase') }}
                             @if(!$groupStageComplete)
@@ -72,7 +72,7 @@
                                 <x-top-scorers :top-scorers="$topScorers" :player-team-id="$game->team_id" />
                             </div>
                         @else
-                            <div class="text-center py-12 text-slate-500">
+                            <div class="text-center py-12 text-text-muted">
                                 <p>{{ __('game.no_standings_yet') }}</p>
                             </div>
                         @endif
@@ -83,13 +83,13 @@
                         @if(!$groupStageComplete)
                             <div class="text-center py-12">
                                 <div class="text-4xl mb-3">&#9917;</div>
-                                <p class="text-slate-500 text-sm">{{ __('game.knockout_not_started') }}</p>
-                                <p class="text-slate-400 text-xs mt-1">{{ __('game.knockout_not_started_desc') }}</p>
+                                <p class="text-text-muted text-sm">{{ __('game.knockout_not_started') }}</p>
+                                <p class="text-text-secondary text-xs mt-1">{{ __('game.knockout_not_started_desc') }}</p>
                             </div>
                         @elseif($knockoutTies->isEmpty())
                             <div class="text-center py-12">
                                 <div class="text-4xl mb-3">&#127942;</div>
-                                <p class="text-slate-500 text-sm">{{ __('game.knockout_generating') }}</p>
+                                <p class="text-text-muted text-sm">{{ __('game.knockout_generating') }}</p>
                             </div>
                         @else
                             {{-- Player's Current Tie Highlight --}}
@@ -111,7 +111,7 @@
                                             @if($playerTie->firstLegMatch?->played)
                                                 <div class="text-2xl font-semibold">{{ $playerTie->getScoreDisplay() }}</div>
                                             @else
-                                                <div class="text-slate-400">{{ __('game.vs') }}</div>
+                                                <div class="text-text-secondary">{{ __('game.vs') }}</div>
                                             @endif
                                         </div>
                                         <div class="flex items-center gap-3 flex-1">
@@ -159,13 +159,13 @@
                                         @php $ties = $knockoutTies->get($round->round, collect()); @endphp
                                         <div class="shrink-0 w-64">
                                             <div class="text-center mb-4">
-                                                <h4 class="font-semibold text-slate-300">{{ __($round->name) }}</h4>
-                                                <div class="text-xs text-slate-400">{{ $round->firstLegDate->format('d M') }}</div>
+                                                <h4 class="font-semibold text-text-body">{{ __($round->name) }}</h4>
+                                                <div class="text-xs text-text-secondary">{{ $round->firstLegDate->format('d M') }}</div>
                                             </div>
 
                                             @if($ties->isEmpty())
                                                 <div class="p-4 text-center border border-dashed rounded-lg">
-                                                    <div class="text-slate-400 text-sm">{{ __('cup.draw_pending') }}</div>
+                                                    <div class="text-text-secondary text-sm">{{ __('cup.draw_pending') }}</div>
                                                 </div>
                                             @else
                                                 <div class="space-y-2">
@@ -180,7 +180,7 @@
                             </div>
 
                             {{-- Legend --}}
-                            <div class="mt-8 pt-4 border-t text-xs text-slate-500">
+                            <div class="mt-8 pt-4 border-t text-xs text-text-muted">
                                 <div class="flex gap-6">
                                     <div class="flex items-center gap-2">
                                         <div class="w-3 h-3 bg-accent-blue/10 border border-accent-blue/30 rounded-sm"></div>

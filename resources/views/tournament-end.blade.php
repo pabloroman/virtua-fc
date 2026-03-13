@@ -24,11 +24,11 @@ $yourAppearances = $yourSquadStats->where('appearances', '>', 0)->sortByDesc('ap
 // Result badge colors
 $resultBadgeClass = match($resultLabel) {
     'champion'          => 'bg-amber-100 text-accent-gold border-amber-300',
-    'runner_up'         => 'bg-slate-200 text-slate-300 border-slate-400',
+    'runner_up'         => 'bg-slate-200 text-text-body border-slate-400',
     'third_place'       => 'bg-orange-100 text-orange-800 border-orange-300',
     'semi_finalist'     => 'bg-blue-100 text-blue-400 border-blue-300',
     'quarter_finalist'  => 'bg-accent-blue/10 text-accent-blue border-blue-200',
-    default             => 'bg-surface-700 text-slate-400 border-white/10',
+    default             => 'bg-surface-700 text-text-secondary border-border-strong',
 };
 
 // Group final goal events by team, then by player
@@ -110,7 +110,7 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                 <h1 class="text-2xl md:text-4xl font-extrabold text-white mb-1 tracking-tight">
                     {{ __('season.tournament_complete') }}
                 </h1>
-                <p class="text-sm md:text-base text-slate-300 font-medium mb-8">
+                <p class="text-sm md:text-base text-text-body font-medium mb-8">
                     {{ __($competition->name ?? 'game.wc2026_name') }}
                 </p>
                 @endif
@@ -169,7 +169,7 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
 
                     {{-- Goal scorers --}}
                     @if($homeGoalLines->isNotEmpty() || $awayGoalLines->isNotEmpty())
-                    <div class="flex justify-between gap-4 mt-3 pt-3 border-t border-white/10">
+                    <div class="flex justify-between gap-4 mt-3 pt-3 border-t border-border-strong">
                         <div class="flex-1 text-right space-y-0.5">
                             @foreach($homeGoalLines as $line)
                             <div class="text-[10px] md:text-xs text-white/60">{{ $line }}</div>
@@ -197,23 +197,23 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
             <div class="mb-6" x-data="{ showResults: false, tab: 'groups' }">
                 <button
                     @click="showResults = !showResults"
-                    class="w-full bg-surface-800 rounded-xl shadow-xs border border-white/10 p-4 flex items-center justify-between gap-3 hover:bg-surface-700/50 transition-colors min-h-[44px]"
+                    class="w-full bg-surface-800 rounded-xl shadow-xs border border-border-strong p-4 flex items-center justify-between gap-3 hover:bg-surface-700/50 transition-colors min-h-[44px]"
                 >
-                    <span class="text-sm font-semibold text-slate-400">{{ __('season.full_tournament_results') }}</span>
-                    <svg class="w-5 h-5 text-slate-400 transition-transform duration-200" :class="showResults && 'rotate-180'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <span class="text-sm font-semibold text-text-secondary">{{ __('season.full_tournament_results') }}</span>
+                    <svg class="w-5 h-5 text-text-secondary transition-transform duration-200" :class="showResults && 'rotate-180'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
                 </button>
 
                 <div x-show="showResults" x-collapse class="mt-2">
-                    <div class="bg-surface-800 rounded-xl shadow-xs border border-white/10 overflow-hidden">
+                    <div class="bg-surface-800 rounded-xl shadow-xs border border-border-strong overflow-hidden">
                         {{-- Tabs --}}
-                        <div class="flex border-b border-white/10">
+                        <div class="flex border-b border-border-strong">
                             @if($groupStandings->isNotEmpty())
                             <button
                                 @click="tab = 'groups'"
                                 class="flex-1 py-3 text-sm font-medium text-center transition-colors min-h-[44px]"
-                                :class="tab === 'groups' ? 'text-white border-b-2 border-slate-600' : 'text-slate-400 hover:text-slate-400'"
+                                :class="tab === 'groups' ? 'text-text-primary border-b-2 border-slate-600' : 'text-text-secondary hover:text-text-secondary'"
                             >
                                 {{ __('season.group_stage_standings') }}
                             </button>
@@ -222,7 +222,7 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                             <button
                                 @click="tab = 'knockout'"
                                 class="flex-1 py-3 text-sm font-medium text-center transition-colors min-h-[44px]"
-                                :class="tab === 'knockout' ? 'text-white border-b-2 border-slate-600' : 'text-slate-400 hover:text-slate-400'"
+                                :class="tab === 'knockout' ? 'text-text-primary border-b-2 border-slate-600' : 'text-text-secondary hover:text-text-secondary'"
                             >
                                 {{ __('game.knockout_phase') }}
                             </button>
@@ -235,13 +235,13 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                                 @foreach($groupStandings as $groupLabel => $standings)
                                 <div>
-                                    <h3 class="text-xs font-semibold text-slate-500 uppercase mb-2">
+                                    <h3 class="text-xs font-semibold text-text-muted uppercase mb-2">
                                         {{ __('season.group_label', ['group' => $groupLabel]) }}
                                     </h3>
                                     <div class="overflow-x-auto">
                                         <table class="w-full text-sm">
                                             <thead>
-                                                <tr class="text-[10px] text-slate-400 uppercase">
+                                                <tr class="text-[10px] text-text-secondary uppercase">
                                                     <th class="text-left py-1 pr-2 w-6"></th>
                                                     <th class="text-left py-1"></th>
                                                     <th class="text-center py-1 w-6">{{ __('season.played_abbr') }}</th>
@@ -256,20 +256,20 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                                             <tbody>
                                                 @foreach($standings as $standing)
                                                 <tr class="{{ $standing->team_id === $game->team_id ? 'bg-accent-gold/10 font-semibold' : '' }} {{ $standing->position <= 2 ? 'border-l-2 border-l-emerald-400' : '' }}">
-                                                    <td class="py-1.5 pr-1 text-center text-xs text-slate-400">{{ $standing->position }}</td>
+                                                    <td class="py-1.5 pr-1 text-center text-xs text-text-secondary">{{ $standing->position }}</td>
                                                     <td class="py-1.5">
                                                         <div class="flex items-center gap-1.5">
                                                             <x-team-crest :team="$standing->team" class="w-4 h-4 shrink-0" />
                                                             <span class="text-xs truncate">{{ $standing->team->name }}</span>
                                                         </div>
                                                     </td>
-                                                    <td class="text-center py-1.5 text-xs text-slate-500">{{ $standing->played }}</td>
-                                                    <td class="text-center py-1.5 text-xs text-slate-500">{{ $standing->won }}</td>
-                                                    <td class="text-center py-1.5 text-xs text-slate-500">{{ $standing->drawn }}</td>
-                                                    <td class="text-center py-1.5 text-xs text-slate-500">{{ $standing->lost }}</td>
-                                                    <td class="text-center py-1.5 text-xs text-slate-500 hidden md:table-cell">{{ $standing->goals_for }}</td>
-                                                    <td class="text-center py-1.5 text-xs text-slate-500 hidden md:table-cell">{{ $standing->goals_against }}</td>
-                                                    <td class="text-center py-1.5 text-xs font-semibold text-white">{{ $standing->points }}</td>
+                                                    <td class="text-center py-1.5 text-xs text-text-muted">{{ $standing->played }}</td>
+                                                    <td class="text-center py-1.5 text-xs text-text-muted">{{ $standing->won }}</td>
+                                                    <td class="text-center py-1.5 text-xs text-text-muted">{{ $standing->drawn }}</td>
+                                                    <td class="text-center py-1.5 text-xs text-text-muted">{{ $standing->lost }}</td>
+                                                    <td class="text-center py-1.5 text-xs text-text-muted hidden md:table-cell">{{ $standing->goals_for }}</td>
+                                                    <td class="text-center py-1.5 text-xs text-text-muted hidden md:table-cell">{{ $standing->goals_against }}</td>
+                                                    <td class="text-center py-1.5 text-xs font-semibold text-text-primary">{{ $standing->points }}</td>
                                                 </tr>
                                                 @endforeach
                                             </tbody>
@@ -290,7 +290,7 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                                     $roundName = $ties->first()->firstLegMatch->round_name ? __($ties->first()->firstLegMatch->round_name) : __('cup.round_n', ['round' => $roundNumber]);
                                 @endphp
                                 <div>
-                                    <h3 class="text-xs font-semibold text-slate-500 uppercase mb-3">{{ $roundName }}</h3>
+                                    <h3 class="text-xs font-semibold text-text-muted uppercase mb-3">{{ $roundName }}</h3>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                                         @foreach($ties as $tie)
                                         @php
@@ -301,16 +301,16 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                                             $isHomeWinner = $tie->winner_id === $tie->home_team_id;
                                             $isAwayWinner = $tie->winner_id === $tie->away_team_id;
                                         @endphp
-                                        <div class="border rounded-lg p-3 {{ $involvesPlayer ? 'border-amber-300 bg-accent-gold/10/50' : 'border-white/10' }}">
+                                        <div class="border rounded-lg p-3 {{ $involvesPlayer ? 'border-amber-300 bg-accent-gold/10/50' : 'border-border-strong' }}">
                                             <div class="flex items-center justify-between gap-2">
                                                 <div class="flex items-center gap-2 flex-1 min-w-0 {{ $isHomeWinner ? 'font-semibold' : '' }}">
                                                     <x-team-crest :team="$tie->homeTeam" class="w-5 h-5 shrink-0" />
-                                                    <span class="text-sm truncate {{ $isHomeWinner ? 'text-white' : 'text-slate-500' }}">{{ $tie->homeTeam->name }}</span>
+                                                    <span class="text-sm truncate {{ $isHomeWinner ? 'text-text-primary' : 'text-text-muted' }}">{{ $tie->homeTeam->name }}</span>
                                                 </div>
                                                 <div class="shrink-0 text-center">
-                                                    <span class="text-sm font-semibold text-white">{{ $homeScore }} - {{ $awayScore }}</span>
+                                                    <span class="text-sm font-semibold text-text-primary">{{ $homeScore }} - {{ $awayScore }}</span>
                                                     @if($match?->is_extra_time)
-                                                    <div class="text-[10px] text-slate-400">
+                                                    <div class="text-[10px] text-text-secondary">
                                                         @if($match->home_score_penalties !== null)
                                                             {{ __('season.pens_abbr') }} {{ $match->home_score_penalties }}-{{ $match->away_score_penalties }}
                                                         @else
@@ -320,7 +320,7 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                                                     @endif
                                                 </div>
                                                 <div class="flex items-center gap-2 flex-1 min-w-0 justify-end {{ $isAwayWinner ? 'font-semibold' : '' }}">
-                                                    <span class="text-sm truncate text-right {{ $isAwayWinner ? 'text-white' : 'text-slate-500' }}">{{ $tie->awayTeam->name }}</span>
+                                                    <span class="text-sm truncate text-right {{ $isAwayWinner ? 'text-text-primary' : 'text-text-muted' }}">{{ $tie->awayTeam->name }}</span>
                                                     <x-team-crest :team="$tie->awayTeam" class="w-5 h-5 shrink-0" />
                                                 </div>
                                             </div>
@@ -346,13 +346,13 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                 <div class="col-span-2">
 
                     {{-- Result Badge Card --}}
-                    <div class="space-y-6 bg-surface-800 rounded-xl shadow-lg border border-white/10 p-5 md:p-6">
+                    <div class="space-y-6 bg-surface-800 rounded-xl shadow-lg border border-border-strong p-5 md:p-6">
 
                         {{-- Badge + Team --}}
                         <div class="flex items-center gap-3">
                             <x-team-crest :team="$game->team" class="w-12 h-12 md:w-14 md:h-14 shrink-0" />
                             <div class="min-w-0 md:w-full md:min-w-max md:flex md:justify-between">
-                                <div class="text-lg md:text-xl font-bold text-white truncate">{{ $game->team->name }}</div>
+                                <div class="text-lg md:text-xl font-bold text-text-primary truncate">{{ $game->team->name }}</div>
                                 <span class="inline-block mt-1 px-3 py-0.5 text-xs font-bold uppercase tracking-wide rounded-full border {{ $resultBadgeClass }}">
                                     {{ __('season.result_' . $resultLabel) }}
                                 </span>
@@ -362,40 +362,40 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                         {{-- Quick Stats Row --}}
                         <div class="grid grid-cols-7 gap-1 text-center bg-surface-700/50 rounded-lg p-3">
                             <div>
-                                <div class="text-lg md:text-xl font-bold text-white">{{ $yourRecord['played'] }}</div>
-                                <div class="text-[10px] text-slate-400 uppercase">{{ __('season.played_abbr') }}</div>
+                                <div class="text-lg md:text-xl font-bold text-text-primary">{{ $yourRecord['played'] }}</div>
+                                <div class="text-[10px] text-text-secondary uppercase">{{ __('season.played_abbr') }}</div>
                             </div>
                             <div>
                                 <div class="text-lg md:text-xl font-bold text-accent-green">{{ $yourRecord['won'] }}</div>
-                                <div class="text-[10px] text-slate-400 uppercase">{{ __('season.won') }}</div>
+                                <div class="text-[10px] text-text-secondary uppercase">{{ __('season.won') }}</div>
                             </div>
                             <div>
-                                <div class="text-lg md:text-xl font-bold text-slate-400">{{ $yourRecord['drawn'] }}</div>
-                                <div class="text-[10px] text-slate-400 uppercase">{{ __('season.drawn') }}</div>
+                                <div class="text-lg md:text-xl font-bold text-text-secondary">{{ $yourRecord['drawn'] }}</div>
+                                <div class="text-[10px] text-text-secondary uppercase">{{ __('season.drawn') }}</div>
                             </div>
                             <div>
                                 <div class="text-lg md:text-xl font-bold text-red-500">{{ $yourRecord['lost'] }}</div>
-                                <div class="text-[10px] text-slate-400 uppercase">{{ __('season.lost') }}</div>
+                                <div class="text-[10px] text-text-secondary uppercase">{{ __('season.lost') }}</div>
                             </div>
                             <div>
-                                <div class="text-lg md:text-xl font-bold text-white">{{ $yourRecord['goalsFor'] }}</div>
-                                <div class="text-[10px] text-slate-400 uppercase">{{ __('season.goals_for') }}</div>
+                                <div class="text-lg md:text-xl font-bold text-text-primary">{{ $yourRecord['goalsFor'] }}</div>
+                                <div class="text-[10px] text-text-secondary uppercase">{{ __('season.goals_for') }}</div>
                             </div>
                             <div>
-                                <div class="text-lg md:text-xl font-bold text-white">{{ $yourRecord['goalsAgainst'] }}</div>
-                                <div class="text-[10px] text-slate-400 uppercase">{{ __('season.goals_against') }}</div>
+                                <div class="text-lg md:text-xl font-bold text-text-primary">{{ $yourRecord['goalsAgainst'] }}</div>
+                                <div class="text-[10px] text-text-secondary uppercase">{{ __('season.goals_against') }}</div>
                             </div>
                             <div>
                                 <div class="text-lg md:text-xl font-bold {{ $yourRecord['goalsFor'] - $yourRecord['goalsAgainst'] >= 0 ? 'text-accent-green' : 'text-red-500' }}">
                                     {{ $yourRecord['goalsFor'] - $yourRecord['goalsAgainst'] >= 0 ? '+' : '' }}{{ $yourRecord['goalsFor'] - $yourRecord['goalsAgainst'] }}
                                 </div>
-                                <div class="text-[10px] text-slate-400 uppercase">{{ __('season.goal_diff_abbr') }}</div>
+                                <div class="text-[10px] text-text-secondary uppercase">{{ __('season.goal_diff_abbr') }}</div>
                             </div>
                         </div>
 
                         {{-- Match Journey Card --}}
                         <div class="space-y-1.5">
-                            <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-4">{{ __('season.your_journey') }}</h2>
+                            <h2 class="text-xs font-semibold text-text-secondary uppercase tracking-wide mb-4">{{ __('season.your_journey') }}</h2>
 
                         @foreach($yourMatches as $match)
                             @php
@@ -411,23 +411,23 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                                     {{ $resultLetter }}
                                 </span>
 
-                                <span class="hidden md:inline text-[10px] text-slate-400 w-14 shrink-0 truncate">
+                                <span class="hidden md:inline text-[10px] text-text-secondary w-14 shrink-0 truncate">
                                     {{ $match->round_name ? __($match->round_name) : __('game.matchday_n', ['number' => $match->round_number]) }}
                                 </span>
 
                                 <div class="flex items-center gap-1.5 flex-1 min-w-0">
                                     <x-team-crest :team="$opponent" class="w-4 h-4 shrink-0" />
-                                    <span class="text-sm font-medium text-white truncate">
+                                    <span class="text-sm font-medium text-text-primary truncate">
                                         {{ $opponent->name }}
                                     </span>
                                 </div>
 
-                                <div class="shrink-0 text-sm font-semibold text-white">
+                                <div class="shrink-0 text-sm font-semibold text-text-primary">
                                     {{ $scored }}-{{ $conceded }}
                                 </div>
 
                                 @if($match->is_extra_time)
-                                <span class="shrink-0 text-[10px] text-slate-400 font-medium">
+                                <span class="shrink-0 text-[10px] text-text-secondary font-medium">
                                     {{ $match->home_score_penalties !== null ? __('season.pens_abbr') : __('season.aet_abbr') }}
                                 </span>
                                 @endif
@@ -440,10 +440,10 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                         <div class="">
 
                             {{-- Appearances Table --}}
-                            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wide">{{ __('season.your_squad_stats') }}</span>                                <div class="overflow-x-auto">
+                            <span class="text-xs font-semibold text-text-secondary uppercase tracking-wide">{{ __('season.your_squad_stats') }}</span>                                <div class="overflow-x-auto">
                                 <table class="w-full text-sm">
                                     <thead>
-                                        <tr class="text-[10px] text-slate-400 uppercase border-b border-white/5">
+                                        <tr class="text-[10px] text-text-secondary uppercase border-b border-border-default">
                                             <th class="text-left py-2"></th>
                                             <th class="text-left py-2"></th>
                                             <th class="text-center py-2 w-10">{{ __('squad.appearances') }}</th>
@@ -457,12 +457,12 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                                         @foreach($yourAppearances as $gp)
                                         <tr class="{{ $loop->even ? 'bg-surface-700/50' : '' }}">
                                             <td class="py-1.5 pr-2"><x-position-badge :position="$gp->position" size="sm" /></td>
-                                            <td class="py-1.5 font-medium text-white truncate max-w-[140px]">{{ $gp->player->name }}</td>
-                                            <td class="text-center py-1.5 font-semibold text-slate-300">{{ $gp->appearances }}</td>
-                                            <td class="text-center py-1.5 {{ $gp->goals > 0 ? 'font-semibold text-slate-300' : 'text-slate-300' }}">{{ $gp->goals }}</td>
-                                            <td class="text-center py-1.5 {{ $gp->assists > 0 ? 'font-semibold text-slate-300' : 'text-slate-300' }}">{{ $gp->assists }}</td>
-                                            <td class="text-center py-1.5 hidden md:table-cell {{ $gp->yellow_cards > 0 ? 'text-amber-600 font-medium' : 'text-slate-300' }}">{{ $gp->yellow_cards }}</td>
-                                            <td class="text-center py-1.5 hidden md:table-cell {{ $gp->red_cards > 0 ? 'text-accent-red font-medium' : 'text-slate-300' }}">{{ $gp->red_cards }}</td>
+                                            <td class="py-1.5 font-medium text-text-primary truncate max-w-[140px]">{{ $gp->player->name }}</td>
+                                            <td class="text-center py-1.5 font-semibold text-text-body">{{ $gp->appearances }}</td>
+                                            <td class="text-center py-1.5 {{ $gp->goals > 0 ? 'font-semibold text-text-body' : 'text-text-body' }}">{{ $gp->goals }}</td>
+                                            <td class="text-center py-1.5 {{ $gp->assists > 0 ? 'font-semibold text-text-body' : 'text-text-body' }}">{{ $gp->assists }}</td>
+                                            <td class="text-center py-1.5 hidden md:table-cell {{ $gp->yellow_cards > 0 ? 'text-amber-600 font-medium' : 'text-text-body' }}">{{ $gp->yellow_cards }}</td>
+                                            <td class="text-center py-1.5 hidden md:table-cell {{ $gp->red_cards > 0 ? 'text-accent-red font-medium' : 'text-text-body' }}">{{ $gp->red_cards }}</td>
                                         </tr>
                                         @endforeach
                                     </tbody>
@@ -477,7 +477,7 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                 <div class="space-y-6 col-span-1">
 
                     {{-- Golden Boot Card --}}
-                    <div class="bg-surface-800 rounded-xl shadow-xs border border-white/10 overflow-hidden">
+                    <div class="bg-surface-800 rounded-xl shadow-xs border border-border-strong overflow-hidden">
                         <div class="bg-linear-to-r from-amber-50 to-amber-100/50 px-5 py-4">
                             <div class="flex items-center gap-2 mb-1">
                                 <span class="text-lg">&#129351;</span>
@@ -496,17 +496,17 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                                 </div>
                             </div>
                             @else
-                            <div class="text-slate-400 text-sm">{{ __('season.no_goals_scored') }}</div>
+                            <div class="text-text-secondary text-sm">{{ __('season.no_goals_scored') }}</div>
                             @endif
                         </div>
                         @if($topScorers->count() > 1)
                         <div class="px-5 py-3 space-y-1.5">
                             @foreach($topScorers->skip(1) as $scorer)
                             <div class="flex items-center gap-2.5 {{ $scorer->team_id === $game->team_id ? 'bg-accent-gold/10 -mx-2 px-2 rounded-sm' : '' }}">
-                                <span class="w-5 text-center text-xs font-bold text-slate-400">{{ $loop->iteration + 1 }}</span>
+                                <span class="w-5 text-center text-xs font-bold text-text-secondary">{{ $loop->iteration + 1 }}</span>
                                 <x-team-crest :team="$scorer->team" class="w-4 h-4 shrink-0" />
-                                <span class="flex-1 text-sm text-slate-300 truncate">{{ $scorer->player->name }}</span>
-                                <span class="text-xs text-slate-400 w-10 text-right">{{ $scorer->goals }}</span>
+                                <span class="flex-1 text-sm text-text-body truncate">{{ $scorer->player->name }}</span>
+                                <span class="text-xs text-text-secondary w-10 text-right">{{ $scorer->goals }}</span>
                             </div>
                             @endforeach
                         </div>
@@ -514,7 +514,7 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                     </div>
 
                     {{-- Golden Glove Card --}}
-                    <div class="bg-surface-800 rounded-xl shadow-xs border border-white/10 overflow-hidden">
+                    <div class="bg-surface-800 rounded-xl shadow-xs border border-border-strong overflow-hidden">
                         <div class="bg-linear-to-r from-sky-50 to-sky-100/50 px-5 py-4">
                             <div class="flex items-center gap-2 mb-1">
                                 <span class="text-lg">&#129351;</span>
@@ -533,17 +533,17 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                                 </div>
                             </div>
                             @else
-                            <div class="text-slate-400 text-sm">{{ __('season.not_enough_data') }}</div>
+                            <div class="text-text-secondary text-sm">{{ __('season.not_enough_data') }}</div>
                             @endif
                         </div>
                         @if($topGoalkeepers->count() > 1)
                         <div class="px-5 py-3 space-y-1.5">
                             @foreach($topGoalkeepers->skip(1) as $gk)
                             <div class="flex items-center gap-2.5 {{ $gk->team_id === $game->team_id ? 'bg-accent-blue/10 -mx-2 px-2 rounded-sm' : '' }}">
-                                <span class="w-5 text-center text-xs font-bold text-slate-400">{{ $loop->iteration + 1 }}</span>
+                                <span class="w-5 text-center text-xs font-bold text-text-secondary">{{ $loop->iteration + 1 }}</span>
                                 <x-team-crest :team="$gk->team" class="w-4 h-4 shrink-0" />
-                                <span class="flex-1 text-sm text-slate-300 truncate">{{ $gk->player->name }}</span>
-                                <span class="text-xs text-slate-400 w-16 text-right">{{ $gk->clean_sheets }}</span>
+                                <span class="flex-1 text-sm text-text-body truncate">{{ $gk->player->name }}</span>
+                                <span class="text-xs text-text-secondary w-16 text-right">{{ $gk->clean_sheets }}</span>
                             </div>
                             @endforeach
                         </div>
@@ -551,7 +551,7 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                     </div>
 
                     {{-- Most Assists Card --}}
-                    <div class="bg-surface-800 rounded-xl shadow-xs border border-white/10 overflow-hidden">
+                    <div class="bg-surface-800 rounded-xl shadow-xs border border-border-strong overflow-hidden">
                         <div class="bg-linear-to-r from-emerald-50 to-emerald-100/50 px-5 py-4">
                             <div class="flex items-center gap-2 mb-1">
                                 <span class="text-lg">&#129351;</span>
@@ -570,17 +570,17 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                                 </div>
                             </div>
                             @else
-                            <div class="text-slate-400 text-sm">{{ __('season.no_assists_recorded') }}</div>
+                            <div class="text-text-secondary text-sm">{{ __('season.no_assists_recorded') }}</div>
                             @endif
                         </div>
                         @if($topAssisters->count() > 1)
                         <div class="px-5 py-3 space-y-1.5">
                             @foreach($topAssisters->skip(1) as $assister)
                             <div class="flex items-center gap-2.5 {{ $assister->team_id === $game->team_id ? 'bg-emerald-50 -mx-2 px-2 rounded-sm' : '' }}">
-                                <span class="w-5 text-center text-xs font-bold text-slate-400">{{ $loop->iteration + 1 }}</span>
+                                <span class="w-5 text-center text-xs font-bold text-text-secondary">{{ $loop->iteration + 1 }}</span>
                                 <x-team-crest :team="$assister->team" class="w-4 h-4 shrink-0" />
-                                <span class="flex-1 text-sm text-slate-300 truncate">{{ $assister->player->name }}</span>
-                                <span class="text-xs text-slate-400 w-10 text-right">{{ $assister->assists }}</span>
+                                <span class="flex-1 text-sm text-text-body truncate">{{ $assister->player->name }}</span>
+                                <span class="text-xs text-text-secondary w-10 text-right">{{ $assister->assists }}</span>
                             </div>
                             @endforeach
                         </div>
@@ -623,7 +623,7 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                                 setTimeout(() => copied = false, 2000);
                             }
                         "
-                        class="inline-flex items-center gap-2 px-6 py-3 bg-surface-800 border border-white/10 hover:bg-surface-700/50 text-slate-300 rounded-lg text-sm font-semibold shadow-xs transition-all min-h-[44px]"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-surface-800 border border-border-strong hover:bg-surface-700/50 text-text-body rounded-lg text-sm font-semibold shadow-xs transition-all min-h-[44px]"
                     >
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />

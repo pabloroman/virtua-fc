@@ -7,18 +7,18 @@
 
 <div class="p-4 md:p-6">
     {{-- Header --}}
-    <div class="flex items-start justify-between gap-4 pb-4 border-b border-white/10">
+    <div class="flex items-start justify-between gap-4 pb-4 border-b border-border-strong">
         <div>
-            <h3 class="font-semibold text-lg text-white">{{ __('transfers.scout_results') }}</h3>
-            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-sm text-slate-500">
-                <span><span class="font-medium text-slate-300">{{ $positionLabel }}</span></span>
-                <span class="text-slate-300">&middot;</span>
+            <h3 class="font-semibold text-lg text-text-primary">{{ __('transfers.scout_results') }}</h3>
+            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-sm text-text-muted">
+                <span><span class="font-medium text-text-body">{{ $positionLabel }}</span></span>
+                <span class="text-text-body">&middot;</span>
                 <span>{{ $scopeLabel }}</span>
-                <span class="text-slate-300">&middot;</span>
+                <span class="text-text-body">&middot;</span>
                 <span>{{ __('transfers.results_count', ['count' => $players->count()]) }}</span>
             </div>
         </div>
-        <button onclick="window.dispatchEvent(new CustomEvent('close-modal', {detail: 'scout-results'}))" class="p-1 text-slate-400 hover:text-slate-400 rounded-sm hover:bg-surface-700 shrink-0">
+        <button onclick="window.dispatchEvent(new CustomEvent('close-modal', {detail: 'scout-results'}))" class="p-1 text-text-secondary hover:text-text-secondary rounded-sm hover:bg-surface-700 shrink-0">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -27,8 +27,8 @@
 
     {{-- Players List --}}
     @if($players->isEmpty())
-        <div class="text-center py-10 text-slate-400">
-            <svg class="w-10 h-10 mx-auto mb-2 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="text-center py-10 text-text-secondary">
+            <svg class="w-10 h-10 mx-auto mb-2 text-text-body" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
             </svg>
             <p class="font-medium">{{ __('transfers.no_players_found') }}</p>
@@ -62,15 +62,15 @@
                             <x-position-badge :position="$player->position" />
                             <div class="min-w-0">
                                 <div class="flex items-center gap-2 flex-wrap">
-                                    <span class="font-semibold text-white truncate">{{ $player->name }}</span>
-                                    <span class="text-xs text-slate-400">{{ $player->age($game->current_date) }} {{ __('app.years') }}</span>
+                                    <span class="font-semibold text-text-primary truncate">{{ $player->name }}</span>
+                                    <span class="text-xs text-text-secondary">{{ $player->age($game->current_date) }} {{ __('app.years') }}</span>
                                     @if($isFreeAgent)
                                         <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-medium bg-accent-green/10 text-accent-green">{{ __('transfers.free_agent') }}</span>
                                     @elseif($isExpiring)
                                         <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-medium bg-amber-100 text-accent-gold">{{ __('transfers.expiring_contract') }}</span>
                                     @endif
                                 </div>
-                                <div class="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
+                                <div class="flex items-center gap-2 text-xs text-text-muted mt-0.5">
                                     @if($player->team)
                                         <x-team-crest :team="$player->team" class="w-4 h-4 shrink-0" />
                                         <span class="truncate">{{ $player->team->name }}</span>
@@ -82,25 +82,25 @@
                         {{-- Ability estimate + Price + Shortlist --}}
                         <div class="flex items-center gap-3 sm:gap-4 shrink-0">
                             <div class="text-right">
-                                <div class="text-xs text-slate-400">{{ __('transfers.ability') }}</div>
-                                <div class="text-sm font-semibold text-slate-300 tabular-nums">{{ $techRange[0] }}-{{ $techRange[1] }}</div>
+                                <div class="text-xs text-text-secondary">{{ __('transfers.ability') }}</div>
+                                <div class="text-sm font-semibold text-text-body tabular-nums">{{ $techRange[0] }}-{{ $techRange[1] }}</div>
                             </div>
                             <div class="text-right">
-                                <div class="text-xs text-slate-400">{{ __('transfers.asking_price') }}</div>
-                                <div class="text-sm font-semibold {{ $canAffordFee ? 'text-white' : 'text-accent-red' }}">{{ $formattedAskingPrice }}</div>
+                                <div class="text-xs text-text-secondary">{{ __('transfers.asking_price') }}</div>
+                                <div class="text-sm font-semibold {{ $canAffordFee ? 'text-text-primary' : 'text-accent-red' }}">{{ $formattedAskingPrice }}</div>
                             </div>
                             {{-- Shortlist toggle --}}
                             <button
                                 @click.stop="if(toggling) return; toggling = true; fetch('{{ route('game.scouting.shortlist.toggle', [$game->id, $player->id]) }}', { method: 'POST', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' } }).then(r => r.json()).then(data => { if(data.success === false) { alert(data.message); toggling = false; return; } shortlisted = !shortlisted; toggling = false; window.dispatchEvent(new CustomEvent('shortlist-toggled', { detail: { action: data.action, playerId: data.playerId, player: data.player || null } })); }).catch(() => { toggling = false; })"
                                 class="p-1.5 rounded-sm transition-colors min-h-[44px] sm:min-h-0"
-                                :class="shortlisted ? 'text-amber-500 hover:text-amber-600' : 'text-slate-300 hover:text-amber-400'"
+                                :class="shortlisted ? 'text-amber-500 hover:text-amber-600' : 'text-text-body hover:text-amber-400'"
                                 :title="shortlisted ? '{{ __('transfers.remove_from_shortlist') }}' : '{{ __('transfers.add_to_shortlist') }}'"
                             >
                                 <svg class="w-5 h-5" :fill="shortlisted ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
                                 </svg>
                             </button>
-                            <svg class="w-4 h-4 text-slate-400 transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-4 h-4 text-text-secondary transition-transform" :class="expanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                             </svg>
                         </div>
@@ -118,40 +118,40 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 {{-- Left: Scouting Assessment --}}
                                 <div>
-                                    <h5 class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">{{ __('transfers.scouting_assessment') }}</h5>
+                                    <h5 class="text-xs font-semibold text-text-muted uppercase tracking-wide mb-3">{{ __('transfers.scouting_assessment') }}</h5>
                                     <div class="space-y-2.5">
                                         {{-- Technical --}}
                                         <div class="flex items-center justify-between gap-3">
-                                            <span class="text-xs text-slate-500 w-16 shrink-0">{{ __('transfers.technical') }}</span>
+                                            <span class="text-xs text-text-muted w-16 shrink-0">{{ __('transfers.technical') }}</span>
                                             <div class="flex items-center gap-2 flex-1 justify-end">
                                                 <div class="w-20 h-1.5 bg-slate-200 rounded-full overflow-hidden">
                                                     @php $midTech = ($techRange[0] + $techRange[1]) / 2; @endphp
                                                     <div class="h-1.5 rounded-full {{ $midTech >= 80 ? 'bg-emerald-500' : ($midTech >= 70 ? 'bg-lime-500' : ($midTech >= 60 ? 'bg-accent-gold' : 'bg-slate-400')) }}" style="width: {{ $midTech / 99 * 100 }}%"></div>
                                                 </div>
-                                                <span class="text-xs font-semibold tabular-nums text-slate-300">{{ $techRange[0] }}-{{ $techRange[1] }}</span>
+                                                <span class="text-xs font-semibold tabular-nums text-text-body">{{ $techRange[0] }}-{{ $techRange[1] }}</span>
                                             </div>
                                         </div>
                                         {{-- Physical --}}
                                         <div class="flex items-center justify-between gap-3">
-                                            <span class="text-xs text-slate-500 w-16 shrink-0">{{ __('transfers.physical') }}</span>
+                                            <span class="text-xs text-text-muted w-16 shrink-0">{{ __('transfers.physical') }}</span>
                                             <div class="flex items-center gap-2 flex-1 justify-end">
                                                 <div class="w-20 h-1.5 bg-slate-200 rounded-full overflow-hidden">
                                                     @php $midPhys = ($physRange[0] + $physRange[1]) / 2; @endphp
                                                     <div class="h-1.5 rounded-full {{ $midPhys >= 80 ? 'bg-emerald-500' : ($midPhys >= 70 ? 'bg-lime-500' : ($midPhys >= 60 ? 'bg-accent-gold' : 'bg-slate-400')) }}" style="width: {{ $midPhys / 99 * 100 }}%"></div>
                                                 </div>
-                                                <span class="text-xs font-semibold tabular-nums text-slate-300">{{ $physRange[0] }}-{{ $physRange[1] }}</span>
+                                                <span class="text-xs font-semibold tabular-nums text-text-body">{{ $physRange[0] }}-{{ $physRange[1] }}</span>
                                             </div>
                                         </div>
                                         {{-- Market Value --}}
                                         <div class="flex items-center justify-between pt-1">
-                                            <span class="text-xs text-slate-500">{{ __('transfers.market_value') }}</span>
-                                            <span class="text-xs font-semibold text-slate-300">{{ $player->formatted_market_value }}</span>
+                                            <span class="text-xs text-text-muted">{{ __('transfers.market_value') }}</span>
+                                            <span class="text-xs font-semibold text-text-body">{{ $player->formatted_market_value }}</span>
                                         </div>
                                         {{-- Contract --}}
                                         @if(!$isFreeAgent && $player->contract_until)
                                             <div class="flex items-center justify-between">
-                                                <span class="text-xs text-slate-500">{{ __('transfers.contract_until') }}</span>
-                                                <span class="text-xs font-semibold {{ $isExpiring ? 'text-amber-600' : 'text-slate-300' }}">{{ $player->contract_until->format('M Y') }}</span>
+                                                <span class="text-xs text-text-muted">{{ __('transfers.contract_until') }}</span>
+                                                <span class="text-xs font-semibold {{ $isExpiring ? 'text-amber-600' : 'text-text-body' }}">{{ $player->contract_until->format('M Y') }}</span>
                                             </div>
                                         @endif
                                     </div>
@@ -159,19 +159,19 @@
 
                                 {{-- Right: Financial Details --}}
                                 <div>
-                                    <h5 class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">{{ __('transfers.financial_details') }}</h5>
+                                    <h5 class="text-xs font-semibold text-text-muted uppercase tracking-wide mb-3">{{ __('transfers.financial_details') }}</h5>
                                     <div class="space-y-2.5">
                                         <div class="flex items-center justify-between">
-                                            <span class="text-xs text-slate-500">{{ __('transfers.estimated_asking_price') }}</span>
-                                            <span class="text-xs font-semibold {{ $canAffordFee ? 'text-white' : 'text-accent-red' }}">{{ $formattedAskingPrice }}</span>
+                                            <span class="text-xs text-text-muted">{{ __('transfers.estimated_asking_price') }}</span>
+                                            <span class="text-xs font-semibold {{ $canAffordFee ? 'text-text-primary' : 'text-accent-red' }}">{{ $formattedAskingPrice }}</span>
                                         </div>
                                         <div class="flex items-center justify-between">
-                                            <span class="text-xs text-slate-500">{{ __('transfers.wage_demand') }}</span>
-                                            <span class="text-xs font-semibold {{ $canAffordWage ? 'text-white' : 'text-amber-600' }}">{{ $formattedWageDemand }}{{ __('squad.per_year') }}</span>
+                                            <span class="text-xs text-text-muted">{{ __('transfers.wage_demand') }}</span>
+                                            <span class="text-xs font-semibold {{ $canAffordWage ? 'text-text-primary' : 'text-amber-600' }}">{{ $formattedWageDemand }}{{ __('squad.per_year') }}</span>
                                         </div>
-                                        <div class="flex items-center justify-between pt-1 border-t border-white/10">
-                                            <span class="text-xs text-slate-500">{{ __('transfers.your_transfer_budget') }}</span>
-                                            <span class="text-xs font-semibold text-slate-300">{{ $detail['formatted_transfer_budget'] ?? '-' }}</span>
+                                        <div class="flex items-center justify-between pt-1 border-t border-border-strong">
+                                            <span class="text-xs text-text-muted">{{ __('transfers.your_transfer_budget') }}</span>
+                                            <span class="text-xs font-semibold text-text-body">{{ $detail['formatted_transfer_budget'] ?? '-' }}</span>
                                         </div>
                                     </div>
 
@@ -186,7 +186,7 @@
                                                     </button>
                                                 </form>
                                             @elseif(!$isTransferWindow)
-                                                <div class="text-xs text-slate-500 italic">
+                                                <div class="text-xs text-text-muted italic">
                                                     {{ __('transfers.window_closed_for_signing') }}
                                                 </div>
                                             @else
@@ -214,7 +214,7 @@
                                             @php $preContractWage = $detail['pre_contract_wage_demand'] ?? $wageDemand; @endphp
                                             <form method="POST" action="{{ route('game.scouting.pre-contract', [$game->id, $player->id]) }}" class="space-y-2">
                                                 @csrf
-                                                <label class="block text-xs font-medium text-slate-400">{{ __('transfers.offered_wage_euros') }}</label>
+                                                <label class="block text-xs font-medium text-text-secondary">{{ __('transfers.offered_wage_euros') }}</label>
                                                 <div class="flex items-center gap-2">
                                                     <x-money-input name="offered_wage" :value="(int)($preContractWage / 100)" :min="0" size="sm" />
                                                     <button type="submit" class="inline-flex items-center justify-center px-3 py-1.5 min-h-[36px] bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg transition-colors whitespace-nowrap">
@@ -239,7 +239,7 @@
                                                 {{-- Loan Request --}}
                                                 <form method="POST" action="{{ route('game.scouting.loan', [$game->id, $player->id]) }}">
                                                     @csrf
-                                                    <button type="submit" class="inline-flex items-center justify-center px-3 py-1.5 min-h-[36px] border border-white/10 text-slate-300 text-xs font-semibold rounded-lg hover:bg-surface-700/50 transition-colors whitespace-nowrap">
+                                                    <button type="submit" class="inline-flex items-center justify-center px-3 py-1.5 min-h-[36px] border border-border-strong text-text-body text-xs font-semibold rounded-lg hover:bg-surface-700/50 transition-colors whitespace-nowrap">
                                                         {{ __('transfers.request_loan') }}
                                                     </button>
                                                 </form>

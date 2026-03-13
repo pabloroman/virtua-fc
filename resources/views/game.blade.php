@@ -92,7 +92,7 @@
                                 $firstLegScore = $fl->home_score . ' - ' . $fl->away_score;
                             }
                         @endphp
-                        <div class="rounded-md overflow-hidden border border-white/10">
+                        <div class="rounded-md overflow-hidden border border-border-strong">
                             {{-- Section 1: Competition Banner --}}
                             <div class="{{ $accent['bg'] }} px-4 py-3 md:px-5 md:py-3">
                                 <div class="flex items-center justify-between gap-2">
@@ -114,8 +114,8 @@
 
                             {{-- First Leg Score (cup ties) --}}
                             @if($firstLegScore)
-                                <div class="bg-surface-700 border-b border-white/10 px-4 py-2 text-center">
-                                    <span class="text-xs text-slate-500 font-medium">1st leg: {{ $firstLegScore }}</span>
+                                <div class="bg-surface-700 border-b border-border-strong px-4 py-2 text-center">
+                                    <span class="text-xs text-text-muted font-medium">1st leg: {{ $firstLegScore }}</span>
                                 </div>
                             @endif
 
@@ -125,10 +125,10 @@
                                     {{-- Home Team --}}
                                     <div class="flex-1 flex flex-col items-center text-center min-w-0">
                                         <x-team-crest :team="$nextMatch->homeTeam" class="w-14 h-14 md:w-20 md:h-20 mb-2" />
-                                        <h4 class="text-sm md:text-xl font-bold text-white truncate max-w-full">{{ $nextMatch->homeTeam->name }}</h4>
+                                        <h4 class="text-sm md:text-xl font-bold text-text-primary truncate max-w-full">{{ $nextMatch->homeTeam->name }}</h4>
                                         @if(!$isPreseason)
                                             @if($homeStanding)
-                                            <div class="text-xs text-slate-500 mt-1.5">
+                                            <div class="text-xs text-text-muted mt-1.5">
                                                 {{ $homeStanding->position }}{{ $homeStanding->position == 1 ? 'st' : ($homeStanding->position == 2 ? 'nd' : ($homeStanding->position == 3 ? 'rd' : 'th')) }} &middot; {{ $homeStanding->points }} {{ __('game.pts') }}
                                             </div>
                                             @endif
@@ -137,12 +137,12 @@
                                                 @forelse($homeForm as $result)
                                                     <span class="w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center
                                                         @if($result === 'W') bg-accent-green text-white
-                                                        @elseif($result === 'D') bg-slate-300 text-slate-400
+                                                        @elseif($result === 'D') bg-slate-300 text-text-secondary
                                                         @else bg-accent-red text-white @endif">
                                                         {{ $result }}
                                                     </span>
                                                 @empty
-                                                    <span class="text-slate-400 text-xs">{{ __('game.no_form') }}</span>
+                                                    <span class="text-text-secondary text-xs">{{ __('game.no_form') }}</span>
                                                 @endforelse
                                             </div>
                                         @endif
@@ -150,16 +150,16 @@
 
                                     {{-- VS Divider --}}
                                     <div class="flex flex-col items-center justify-center pt-4 md:pt-6 shrink-0">
-                                        <span class="text-lg md:text-2xl font-black text-slate-300 tracking-tight">{{ __('game.vs') }}</span>
+                                        <span class="text-lg md:text-2xl font-black text-text-body tracking-tight">{{ __('game.vs') }}</span>
                                     </div>
 
                                     {{-- Away Team --}}
                                     <div class="flex-1 flex flex-col items-center text-center min-w-0">
                                         <x-team-crest :team="$nextMatch->awayTeam" class="w-14 h-14 md:w-20 md:h-20 mb-2" />
-                                        <h4 class="text-sm md:text-xl font-bold text-white truncate max-w-full">{{ $nextMatch->awayTeam->name }}</h4>
+                                        <h4 class="text-sm md:text-xl font-bold text-text-primary truncate max-w-full">{{ $nextMatch->awayTeam->name }}</h4>
                                         @if(!$isPreseason)
                                             @if($awayStanding)
-                                            <div class="text-xs text-slate-500 mt-1.5">
+                                            <div class="text-xs text-text-muted mt-1.5">
                                                 {{ $awayStanding->position }}{{ $awayStanding->position == 1 ? 'st' : ($awayStanding->position == 2 ? 'nd' : ($awayStanding->position == 3 ? 'rd' : 'th')) }} &middot; {{ $awayStanding->points }} {{ __('game.pts') }}
                                             </div>
                                             @endif
@@ -168,12 +168,12 @@
                                                 @forelse($awayForm as $result)
                                                     <span class="w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center
                                                         @if($result === 'W') bg-accent-green text-white
-                                                        @elseif($result === 'D') bg-slate-300 text-slate-400
+                                                        @elseif($result === 'D') bg-slate-300 text-text-secondary
                                                         @else bg-accent-red text-white @endif">
                                                         {{ $result }}
                                                     </span>
                                                 @empty
-                                                    <span class="text-slate-400 text-xs">{{ __('game.no_form') }}</span>
+                                                    <span class="text-text-secondary text-xs">{{ __('game.no_form') }}</span>
                                                 @endforelse
                                             </div>
                                         @endif
@@ -209,7 +209,7 @@
                         @endif
                     </div>
 
-                    <hr class="border-white/10 md:hidden" />
+                    <hr class="border-border-strong md:hidden" />
 
                     {{-- Right Column (1/3) - Notifications & Standings --}}
                     <div class="space-y-8">
@@ -217,7 +217,7 @@
                         <div>
                             <div class="flex items-center justify-between mb-4">
                                 <div class="flex items-center gap-2">
-                                    <h4 class="font-semibold text-xl text-white">{{ __('notifications.inbox') }}</h4>
+                                    <h4 class="font-semibold text-xl text-text-primary">{{ __('notifications.inbox') }}</h4>
                                     @if($unreadNotificationCount > 0)
                                     <span class="inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-accent-red rounded-full">
                                         {{ $unreadNotificationCount > 9 ? '9+' : $unreadNotificationCount }}
@@ -236,19 +236,19 @@
 
                             @if($groupedNotifications->isEmpty())
                             <div class="text-center py-8">
-                                <div class="text-slate-300 mb-2">
+                                <div class="text-text-body mb-2">
                                     <svg class="w-10 h-10 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
                                 </div>
-                                <p class="text-sm text-slate-400">{{ __('notifications.all_caught_up') }}</p>
+                                <p class="text-sm text-text-secondary">{{ __('notifications.all_caught_up') }}</p>
                             </div>
                             @else
                             <div class="space-y-4">
                                 @foreach($groupedNotifications as $date => $notifications)
                                 <div>
                                     {{-- Date Header --}}
-                                    <div class="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">
+                                    <div class="text-xs font-medium text-text-muted uppercase tracking-wide mb-2">
                                         {{ \Carbon\Carbon::parse($date)->format('j M Y') }}
                                     </div>
 
@@ -273,7 +273,7 @@
                                                             </svg>
                                                         </div>
                                                         @if($notification->message)
-                                                        <p class="text-xs text-slate-400 mt-0.5">{{ $notification->message }}</p>
+                                                        <p class="text-xs text-text-secondary mt-0.5">{{ $notification->message }}</p>
                                                         @endif
                                                         @php $badge = $notification->getPriorityBadge(); @endphp
                                                         @if($badge)
@@ -293,13 +293,13 @@
                             @endif
                         </div>
 
-                        <hr class="border-white/10 md:hidden" />
+                        <hr class="border-border-strong md:hidden" />
 
                         {{-- Abridged League Standings (hidden during pre-season) --}}
                         @if($leagueStandings->isNotEmpty() && empty($isPreSeason))
                         <div>
                             <div class="flex items-center justify-between mb-4">
-                                <h4 class="font-semibold text-xl text-white">
+                                <h4 class="font-semibold text-xl text-text-primary">
                                     @if($game->isTournamentMode() && $leagueStandings->first()?->group_label)
                                         {{ __('game.group') }} {{ $leagueStandings->first()->group_label }}
                                     @else
@@ -314,7 +314,7 @@
                             <div class="overflow-x-auto">
                             <table class="w-full text-sm">
                                 <thead>
-                                    <tr class="border-b border-white/10 text-xs text-slate-500 font-semibold">
+                                    <tr class="border-b border-border-strong text-xs text-text-muted font-semibold">
                                         <th class="text-left py-1.5 w-6 font-semibold">#</th>
                                         <th class="text-left py-1.5 font-semibold"></th>
                                         <th class="text-center py-1.5 w-8 font-semibold">{{ __('game.played_abbr') }}</th>
@@ -327,19 +327,19 @@
                                     @foreach($leagueStandings as $standing)
                                         @php $isPlayer = $standing->team_id === $game->team_id; @endphp
                                         @if($standing->position > $prevPosition + 1)
-                                            <tr><td colspan="5" class="text-center text-slate-300 py-0.5 text-xs">&middot;&middot;&middot;</td></tr>
+                                            <tr><td colspan="5" class="text-center text-text-body py-0.5 text-xs">&middot;&middot;&middot;</td></tr>
                                         @endif
-                                        <tr class="border-b border-white/5 {{ $isPlayer ? 'bg-accent-gold/10 font-semibold' : '' }}">
-                                            <td class="py-1.5 text-slate-500">{{ $standing->position }}</td>
+                                        <tr class="border-b border-border-default {{ $isPlayer ? 'bg-accent-gold/10 font-semibold' : '' }}">
+                                            <td class="py-1.5 text-text-muted">{{ $standing->position }}</td>
                                             <td class="py-1.5">
                                                 <div class="flex items-center gap-2">
                                                     <x-team-crest :team="$standing->team" class="w-5 h-5 shrink-0" />
-                                                    <span class="truncate {{ $isPlayer ? 'text-white' : 'text-slate-300' }}">{{ $standing->team->name }}</span>
+                                                    <span class="truncate {{ $isPlayer ? 'text-text-primary' : 'text-text-body' }}">{{ $standing->team->name }}</span>
                                                 </div>
                                             </td>
-                                            <td class="py-1.5 text-center text-slate-400">{{ $standing->played }}</td>
-                                            <td class="py-1.5 text-center text-slate-400">{{ $standing->goal_difference >= 0 ? '+' : '' }}{{ $standing->goal_difference }}</td>
-                                            <td class="py-1.5 text-center font-semibold text-white">{{ $standing->points }}</td>
+                                            <td class="py-1.5 text-center text-text-secondary">{{ $standing->played }}</td>
+                                            <td class="py-1.5 text-center text-text-secondary">{{ $standing->goal_difference >= 0 ? '+' : '' }}{{ $standing->goal_difference }}</td>
+                                            <td class="py-1.5 text-center font-semibold text-text-primary">{{ $standing->points }}</td>
                                         </tr>
                                         @php $prevPosition = $standing->position; @endphp
                                     @endforeach
@@ -356,8 +356,8 @@
             <div class="bg-surface-800 overflow-hidden shadow-xs sm:rounded-lg">
                 <div class="p-4 sm:p-6 md:p-8 text-center">
                     <div class="text-6xl mb-4">&#9917;</div>
-                    <h2 class="text-3xl font-bold text-white mb-2">{{ __('game.other_competitions_in_progress') }}</h2>
-                    <p class="text-slate-500 mb-8">{{ __('game.other_competitions_desc') }}</p>
+                    <h2 class="text-3xl font-bold text-text-primary mb-2">{{ __('game.other_competitions_in_progress') }}</h2>
+                    <p class="text-text-muted mb-8">{{ __('game.other_competitions_desc') }}</p>
                     <form action="{{ route('game.advance', $game->id) }}" method="POST">
                         @csrf
                         <button type="submit"

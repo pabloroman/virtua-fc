@@ -14,9 +14,9 @@
         <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased bg-surface-900 text-white">
+    <body class="font-sans antialiased bg-surface-900 text-text-primary">
     <div class="min-h-screen">
-    <main class="text-slate-300 pt-0 pb-8 sm:py-8">
+    <main class="text-text-body pt-0 pb-8 sm:py-8">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8"
              x-data="liveMatch({
                 events: {{ Js::from($events) }},
@@ -108,21 +108,21 @@
                     {{-- Scoreboard --}}
                     <div class="flex items-center justify-center gap-2 md:gap-6 mb-2">
                         <div class="flex items-center gap-2 md:gap-3 flex-1 justify-end">
-                            <span class="text-sm md:text-xl font-semibold text-white truncate">{{ $match->homeTeam->name }}</span>
+                            <span class="text-sm md:text-xl font-semibold text-text-primary truncate">{{ $match->homeTeam->name }}</span>
                             <x-team-crest :team="$match->homeTeam" class="w-10 h-10 md:w-14 md:h-14 shrink-0" />
                         </div>
 
                         <div class="relative px-2 md:px-6">
                             {{-- Score --}}
-                            <div class="text-3xl whitespace-nowrap md:text-5xl font-bold text-white tabular-nums transition-transform duration-200"
+                            <div class="text-3xl whitespace-nowrap md:text-5xl font-bold text-text-primary tabular-nums transition-transform duration-200"
                                  :class="goalFlash ? 'scale-125' : 'scale-100'">
                                 <span x-text="homeScore">0</span>
-                                <span class="text-slate-300 mx-1">-</span>
+                                <span class="text-text-body mx-1">-</span>
                                 <span x-text="awayScore">0</span>
                             </div>
                             {{-- Penalty score (shown below main score) --}}
                             <template x-if="(revealedPenaltyKicks.length > 0 || (penaltyResult && penaltyKicks.length === 0)) && (phase === 'penalties' || phase === 'full_time')">
-                                <div class="text-center text-xs font-semibold text-slate-500 mt-1 tabular-nums">
+                                <div class="text-center text-xs font-semibold text-text-muted mt-1 tabular-nums">
                                     (<span x-text="penaltyHomeScore"></span> - <span x-text="penaltyAwayScore"></span> {{ __('game.live_pen_abbr') }})
                                 </div>
                             </template>
@@ -130,7 +130,7 @@
 
                         <div class="flex items-center gap-2 md:gap-3 flex-1">
                             <x-team-crest :team="$match->awayTeam" class="w-10 h-10 md:w-14 md:h-14 shrink-0" />
-                            <span class="text-sm md:text-xl font-semibold text-white truncate">{{ $match->awayTeam->name }}</span>
+                            <span class="text-sm md:text-xl font-semibold text-text-primary truncate">{{ $match->awayTeam->name }}</span>
                         </div>
                     </div>
 
@@ -138,7 +138,7 @@
                     <div class="text-center mb-6">
                         <span class="inline-flex items-center gap-2 text-sm font-semibold rounded-full px-4 py-1"
                               :class="{
-                                  'bg-surface-700 text-slate-500': phase === 'pre_match',
+                                  'bg-surface-700 text-text-muted': phase === 'pre_match',
                                   'bg-accent-green/10 text-accent-green': phase === 'first_half' || phase === 'second_half',
                                   'bg-amber-100 text-accent-gold': phase === 'half_time' || phase === 'extra_time_half_time',
                                   'bg-orange-100 text-orange-700': phase === 'going_to_extra_time' || phase === 'extra_time_first_half' || phase === 'extra_time_second_half',
@@ -179,16 +179,16 @@
 
                         {{-- AET indicator at full time --}}
                         <template x-if="phase === 'full_time' && hasExtraTime && !penaltyResult">
-                            <div class="text-xs text-slate-400 mt-1">({{ __('game.live_aet') }})</div>
+                            <div class="text-xs text-text-secondary mt-1">({{ __('game.live_aet') }})</div>
                         </template>
                     </div>
 
                     {{-- Possession Bar --}}
                     <div class="mb-8 mx-auto w-3/5 md:w-2/5" x-show="phase !== 'pre_match'" x-cloak>
                         <div class="flex items-center justify-between text-xs font-semibold mb-1">
-                            <span class="text-slate-500 tabular-nums" x-text="homePossession + '%'"></span>
-                            <span class="text-slate-400 uppercase tracking-wide text-[10px]">{{ __('game.possession') }}</span>
-                            <span class="text-slate-500 tabular-nums" x-text="awayPossession + '%'"></span>
+                            <span class="text-text-muted tabular-nums" x-text="homePossession + '%'"></span>
+                            <span class="text-text-secondary uppercase tracking-wide text-[10px]">{{ __('game.possession') }}</span>
+                            <span class="text-text-muted tabular-nums" x-text="awayPossession + '%'"></span>
                         </div>
                         <div class="flex h-1 rounded-full overflow-hidden bg-surface-700">
                             <div class="bg-sky-400 transition-all duration-700 ease-out rounded-l-full"
@@ -242,20 +242,20 @@
 
                     {{-- Speed Controls --}}
                     <div class="flex items-center justify-center gap-2 mb-6" x-show="phase !== 'full_time' && !penaltyPickerOpen">
-                        <span class="text-xs text-slate-400 mr-2">{{ __('game.live_speed') }}</span>
+                        <span class="text-xs text-text-secondary mr-2">{{ __('game.live_speed') }}</span>
                         <template x-for="s in [1, 2, 4]" :key="s">
                             <button
                                 @click="setSpeed(s)"
                                 class="px-3 py-1 text-xs font-semibold rounded-md transition-colors"
                                 :class="speed === s
                                     ? 'bg-slate-800 text-white'
-                                    : 'bg-surface-700 text-slate-400 hover:bg-slate-200'"
+                                    : 'bg-surface-700 text-text-secondary hover:bg-slate-200'"
                                 x-text="s + 'x'"
                             ></button>
                         </template>
                         <button
                             @click="skipToEnd()"
-                            class="px-3 py-1 text-xs font-semibold rounded-md bg-surface-700 text-slate-400 hover:bg-slate-200 transition-colors ml-2"
+                            class="px-3 py-1 text-xs font-semibold rounded-md bg-surface-700 text-text-secondary hover:bg-slate-200 transition-colors ml-2"
                             :disabled="extraTimeLoading"
                             :class="extraTimeLoading ? 'opacity-50 cursor-not-allowed' : ''">
                             {{ __('game.live_skip') }} ▸▸
@@ -267,22 +267,22 @@
                         <div class="flex items-center justify-between px-3 py-2 bg-surface-700/50 rounded-lg">
                             {{-- Current tactical state --}}
                             <div class="flex items-center gap-2 md:gap-3 min-w-0">
-                                <span class="text-xs font-bold text-white tabular-nums shrink-0" x-text="activeFormation"></span>
-                                <span class="text-slate-300 shrink-0">&middot;</span>
+                                <span class="text-xs font-bold text-text-primary tabular-nums shrink-0" x-text="activeFormation"></span>
+                                <span class="text-text-body shrink-0">&middot;</span>
                                 <span class="text-xs font-semibold shrink-0 truncate"
                                       :class="{
                                           'text-accent-blue': activeMentality === 'defensive',
-                                          'text-slate-400': activeMentality === 'balanced',
+                                          'text-text-secondary': activeMentality === 'balanced',
                                           'text-accent-red': activeMentality === 'attacking',
                                       }"
                                       x-text="mentalityLabel"></span>
-                                <span class="text-slate-300 shrink-0">&middot;</span>
-                                <span class="text-xs text-slate-400 shrink-0">
+                                <span class="text-text-body shrink-0">&middot;</span>
+                                <span class="text-xs text-text-secondary shrink-0">
                                     {{ __('game.sub_title') }}
                                     <span x-text="substitutionsMade.length + '/' + effectiveMaxSubstitutions"></span>
                                 </span>
-                                <span class="text-slate-300 shrink-0 hidden sm:inline">&middot;</span>
-                                <span class="text-xs text-slate-400 shrink-0 hidden sm:inline">
+                                <span class="text-text-body shrink-0 hidden sm:inline">&middot;</span>
+                                <span class="text-xs text-text-secondary shrink-0 hidden sm:inline">
                                     {{ __('game.sub_windows') }}
                                     <span x-text="windowsUsed + '/' + effectiveMaxWindows"></span>
                                 </span>
@@ -291,7 +291,7 @@
                             {{-- Open tactical panel --}}
                             <button
                                 @click="openTacticalPanel()"
-                                class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-300 bg-surface-800 border border-white/10 rounded-md hover:bg-surface-700 hover:border-white/10 transition-colors min-h-[44px] shrink-0"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-text-body bg-surface-800 border border-border-strong rounded-md hover:bg-surface-700 hover:border-border-strong transition-colors min-h-[44px] shrink-0"
                             >
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
@@ -305,7 +305,7 @@
                         <template x-if="substitutionsMade.length > 0">
                             <div class="px-3 space-y-1 mt-1">
                                 <template x-for="(sub, idx) in substitutionsMade" :key="idx">
-                                    <div class="flex items-center gap-2 text-xs text-slate-500 py-0.5">
+                                    <div class="flex items-center gap-2 text-xs text-text-muted py-0.5">
                                         <span class="font-mono w-6 text-right" x-text="sub.minute + '\''"></span>
                                         <span class="text-red-500">&#8617;</span>
                                         <span class="truncate" x-text="sub.playerOutName"></span>
@@ -318,7 +318,7 @@
                     </div>
 
                     {{-- Events Feed --}}
-                    <div class="border-t border-white/5 pt-4">
+                    <div class="border-t border-border-default pt-4">
                         <div class="space-y-1 max-h-80 overflow-y-auto" id="events-feed">
 
                             {{-- Penalty kicks display --}}
@@ -346,7 +346,7 @@
                                                       x-text="kick.round"></span>
                                                 <img :src="kick.side === 'home' ? homeTeamImage : awayTeamImage"
                                                      class="w-4 h-4 shrink-0 object-contain">
-                                                <span class="flex-1 truncate text-sm text-slate-300" x-text="kick.playerName"></span>
+                                                <span class="flex-1 truncate text-sm text-text-body" x-text="kick.playerName"></span>
                                                 <span class="text-xs font-bold shrink-0 px-1.5 py-0.5 rounded-sm"
                                                       :class="kick.scored ? 'bg-accent-green/10 text-accent-green' : 'bg-red-100 text-accent-red'"
                                                       x-text="kick.scored ? translations.penScored : translations.penMissed"></span>
@@ -444,9 +444,9 @@
                             {{-- Half-time separator --}}
                             <template x-if="showHalfTimeSeparator">
                                 <div class="flex items-center gap-3 py-2">
-                                    <div class="flex-1 border-t border-white/10"></div>
-                                    <span class="text-xs font-semibold text-slate-400 uppercase">{{ __('game.live_half_time') }}</span>
-                                    <div class="flex-1 border-t border-white/10"></div>
+                                    <div class="flex-1 border-t border-border-strong"></div>
+                                    <span class="text-xs font-semibold text-text-secondary uppercase">{{ __('game.live_half_time') }}</span>
+                                    <div class="flex-1 border-t border-border-strong"></div>
                                 </div>
                             </template>
 
@@ -465,16 +465,16 @@
                             {{-- Kick off message --}}
                             <template x-if="phase !== 'pre_match'">
                                 <div class="flex items-center gap-3 py-2 px-3">
-                                    <span class="text-xs font-mono text-slate-400 w-8 text-right shrink-0">1'</span>
+                                    <span class="text-xs font-mono text-text-secondary w-8 text-right shrink-0">1'</span>
                                     <span class="text-sm w-6 text-center shrink-0">&#128227;</span>
                                     <span class="w-1.5 h-6 shrink-0"></span>
-                                    <span class="text-xs text-slate-400">{{ __('game.live_kick_off') }}</span>
+                                    <span class="text-xs text-text-secondary">{{ __('game.live_kick_off') }}</span>
                                 </div>
                             </template>
 
                             {{-- Empty state before kick off --}}
                             <template x-if="phase === 'pre_match'">
-                                <div class="text-center py-8 text-slate-400 text-sm">
+                                <div class="text-center py-8 text-text-secondary text-sm">
                                     {{ __('game.live_about_to_start') }}
                                 </div>
                             </template>
@@ -483,7 +483,7 @@
 
                     {{-- Full Time Summary --}}
                     <template x-if="phase === 'full_time'">
-                        <div class="mt-6 pt-6 border-t border-white/10">
+                        <div class="mt-6 pt-6 border-t border-border-strong">
 
                             {{-- ============================== --}}
                             {{-- TOURNAMENT DRAMATIC RESULTS    --}}
@@ -530,7 +530,7 @@
                                          class="w-16 h-16 mx-auto mb-4 opacity-90" alt="">
                                     <h2 class="text-2xl md:text-3xl font-bold text-white mb-2"
                                         x-text="translations.tournamentRunnerUp"></h2>
-                                    <p class="text-slate-300 text-sm"
+                                    <p class="text-text-body text-sm"
                                        x-text="userTeamId === homeTeamId ? homeTeamName : awayTeamName"></p>
                                     <div class="mt-8">
                                         <form method="POST" action="{{ route('game.finalize-match', $game->id) }}">
@@ -575,9 +575,9 @@
                                 <div class="relative -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 px-6 sm:px-8 py-10 bg-linear-to-b from-slate-600 via-slate-700 to-slate-800 text-center">
                                     <img :src="userTeamId === homeTeamId ? homeTeamImage : awayTeamImage"
                                          class="w-14 h-14 mx-auto mb-4 opacity-70" alt="">
-                                    <h2 class="text-2xl md:text-3xl font-bold text-slate-300 mb-2"
+                                    <h2 class="text-2xl md:text-3xl font-bold text-text-body mb-2"
                                         x-text="translations.tournamentFourth"></h2>
-                                    <p class="text-slate-400 text-sm"
+                                    <p class="text-text-secondary text-sm"
                                        x-text="userTeamId === homeTeamId ? homeTeamName : awayTeamName"></p>
                                     <div class="mt-8">
                                         <form method="POST" action="{{ route('game.finalize-match', $game->id) }}">
@@ -600,7 +600,7 @@
                                          class="w-14 h-14 mx-auto mb-4 opacity-60 grayscale" alt="">
                                     <h2 class="text-2xl md:text-3xl font-bold text-white mb-1"
                                         x-text="translations.tournamentEliminated"></h2>
-                                    <p class="text-slate-400 text-sm"
+                                    <p class="text-text-secondary text-sm"
                                        x-text="translations.tournamentEliminatedIn"></p>
                                     <div class="mt-8">
                                         <form method="POST" action="{{ route('game.finalize-match', $game->id) }}">
@@ -630,8 +630,8 @@
 
                             {{-- Semi-final loss: "Third-Place Match Awaits" --}}
                             <template x-if="tournamentResultType === 'to_third_place'">
-                                <div class="mb-4 p-4 bg-surface-700/50 border border-white/10 rounded-lg text-center">
-                                    <h3 class="text-base font-semibold text-slate-400" x-text="translations.tournamentToThirdPlace"></h3>
+                                <div class="mb-4 p-4 bg-surface-700/50 border border-border-strong rounded-lg text-center">
+                                    <h3 class="text-base font-semibold text-text-secondary" x-text="translations.tournamentToThirdPlace"></h3>
                                 </div>
                             </template>
 
@@ -664,7 +664,7 @@
                                     <div class="text-center mb-4">
                                         <template x-if="!processingReady">
                                             <button type="button" disabled
-                                                    class="inline-flex items-center gap-2 px-6 py-2 bg-slate-200 text-slate-500 font-semibold rounded-lg cursor-wait min-h-[44px]">
+                                                    class="inline-flex items-center gap-2 px-6 py-2 bg-slate-200 text-text-muted font-semibold rounded-lg cursor-wait min-h-[44px]">
                                                 <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
                                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
@@ -698,10 +698,10 @@
             {{-- Other Matches Ticker --}}
             @if(count($otherMatches) > 0)
                 <div class="mt-4 px-4 py-3">
-                    <p class="text-white/50 font-semibold text-xs uppercase mb-1.5">{{ __('game.live_other_results') }}</p>
+                    <p class="text-text-primary/50 font-semibold text-xs uppercase mb-1.5">{{ __('game.live_other_results') }}</p>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-1 text-xs">
                         <template x-for="(m, idx) in otherMatches" :key="idx">
-                            <div class="flex items-center gap-1.5 text-white/40">
+                            <div class="flex items-center gap-1.5 text-text-primary/40">
                                 <img :src="m.homeTeamImage" class="w-4 h-4">
                                 <span class="truncate max-w-24" x-text="m.homeTeam"></span>
                                 <span class="font-semibold tabular-nums whitespace-nowrap"

@@ -8,6 +8,9 @@
 
         <title>{{ config('app.name', 'Laravel') }}</title>
 
+        <!-- FOUC prevention: apply saved theme before paint -->
+        <script>(function(){var t=localStorage.getItem('virtua-theme');if(t==='light'){document.documentElement.classList.add('light');document.querySelector('meta[name=theme-color]')?.setAttribute('content','#ffffff');}})()</script>
+
         <!-- Fonts (loaded via CSS @import in app.css) -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,7 +18,7 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased bg-surface-900 text-white">
+    <body class="font-sans antialiased bg-surface-900 text-text-primary">
 
     @if(config('beta.enabled'))
         <div class="bg-amber-500/10 border-b border-amber-500/20 text-amber-400 text-center text-sm py-1.5 px-4">
@@ -31,11 +34,11 @@
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
 
             <div>
-                <x-application-logo class="w-20 h-20 fill-current text-slate-500" />
+                <x-application-logo class="w-20 h-20 fill-current text-text-muted" />
             </div>
 
             <div
-            {{ $attributes->merge(['class' => 'w-full sm:max-w-md mt-6 px-6 py-4 bg-surface-800 border border-white/5 shadow-xl overflow-hidden sm:rounded-xl']) }}
+            {{ $attributes->merge(['class' => 'w-full sm:max-w-md mt-6 px-6 py-4 bg-surface-800 border border-border-default shadow-xl overflow-hidden sm:rounded-xl']) }}
             >
                 @if(session('warning'))
                     <div class="mb-4 p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg text-amber-400 text-sm">
@@ -44,6 +47,10 @@
                 @endif
 
                 {{ $slot }}
+            </div>
+
+            <div class="mt-4">
+                <x-theme-toggle />
             </div>
         </div>
     </body>

@@ -1,10 +1,10 @@
 <section>
     <header>
-        <h2 class="text-lg font-medium text-white">
+        <h2 class="text-lg font-medium text-text-primary">
             {{ __('Profile Information') }}
         </h2>
 
-        <p class="mt-1 text-sm text-slate-400">
+        <p class="mt-1 text-sm text-text-secondary">
             {{ __("Update your account's profile information and email address.") }}
         </p>
     </header>
@@ -30,10 +30,10 @@
 
             @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
                 <div>
-                    <p class="text-sm mt-2 text-white">
+                    <p class="text-sm mt-2 text-text-primary">
                         {{ __('Your email address is unverified.') }}
 
-                        <button form="send-verification" class="underline text-sm text-slate-400 hover:text-white rounded-md focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-accent-blue">
+                        <button form="send-verification" class="underline text-sm text-text-secondary hover:text-text-primary rounded-md focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-accent-blue">
                             {{ __('Click here to re-send the verification email.') }}
                         </button>
                     </p>
@@ -49,7 +49,7 @@
 
         <div>
             <x-input-label for="locale" :value="__('Language')" />
-            <select id="locale" name="locale" class="mt-1 block w-full border-white/10 focus:border-accent-blue focus:ring-accent-blue rounded-md shadow-xs min-h-[44px]">
+            <select id="locale" name="locale" class="mt-1 block w-full border-border-strong focus:border-accent-blue focus:ring-accent-blue rounded-md shadow-xs min-h-[44px]">
                 @foreach (config('app.supported_locales') as $locale)
                     <option value="{{ $locale }}" {{ old('locale', $user->locale) === $locale ? 'selected' : '' }}>
                         {{ $locale === 'es' ? 'Español' : 'English' }}
@@ -68,7 +68,7 @@
                     x-show="show"
                     x-transition
                     x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-slate-400"
+                    class="text-sm text-text-secondary"
                 >{{ __('Saved.') }}</p>
             @endif
         </div>

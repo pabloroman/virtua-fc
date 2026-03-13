@@ -16,10 +16,10 @@
         {{-- Page Header --}}
         <div class="mt-6 mb-6 flex items-center justify-between">
             <div>
-                <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-white">{{ __('finances.budget_allocation') }}</h2>
-                <p class="text-sm text-slate-500 mt-0.5">{{ __('finances.season_budget', ['season' => $game->formatted_season]) }}</p>
+                <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary">{{ __('finances.budget_allocation') }}</h2>
+                <p class="text-sm text-text-muted mt-0.5">{{ __('finances.season_budget', ['season' => $game->formatted_season]) }}</p>
             </div>
-            <a href="{{ route('game.finances', $game->id) }}" class="text-sm text-slate-500 hover:text-white transition-colors">
+            <a href="{{ route('game.finances', $game->id) }}" class="text-sm text-text-muted hover:text-text-primary transition-colors">
                 &larr; {{ __('app.back') }}
             </a>
         </div>
@@ -36,11 +36,11 @@
         </div>
         @endif
 
-        <div class="bg-surface-800 border border-white/5 rounded-xl p-6 sm:p-8">
+        <div class="bg-surface-800 border border-border-default rounded-xl p-6 sm:p-8">
             {{-- Available Surplus Header --}}
             <div class="mb-8 text-center">
-                <div class="text-[10px] text-slate-500 uppercase tracking-widest mb-1">{{ __('finances.available_surplus') }}</div>
-                <div class="font-heading text-4xl font-bold text-white">{{ \App\Support\Money::format($availableSurplus) }}</div>
+                <div class="text-[10px] text-text-muted uppercase tracking-widest mb-1">{{ __('finances.available_surplus') }}</div>
+                <div class="font-heading text-4xl font-bold text-text-primary">{{ \App\Support\Money::format($availableSurplus) }}</div>
                 @if($finances->carried_debt > 0)
                 <div class="text-sm text-accent-red mt-1">
                     ({{ __('finances.after_debt_deduction', ['amount' => \App\Support\Money::format($finances->carried_debt)]) }})

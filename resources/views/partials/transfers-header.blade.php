@@ -6,8 +6,8 @@
         @if($game->currentInvestment)
         @php $committedBudget = \App\Models\TransferOffer::committedBudget($game->id); @endphp
         <div class="flex items-center gap-2">
-            <span class="text-sm text-slate-500">{{ __('transfers.budget') }}</span>
-            <span class="text-sm font-semibold text-white">{{ $game->currentInvestment->formatted_transfer_budget }}</span>
+            <span class="text-sm text-text-muted">{{ __('transfers.budget') }}</span>
+            <span class="text-sm font-semibold text-text-primary">{{ $game->currentInvestment->formatted_transfer_budget }}</span>
             @if($committedBudget > 0)
             <span class="text-xs text-amber-600">({{ \App\Support\Money::format($committedBudget) }} {{ __('transfers.budget_committed') }})</span>
             @endif
@@ -22,11 +22,11 @@
                     {{ __('transfers.window_open', ['window' => $currentWindow]) }}
                 </span>
             @else
-                <span class="text-sm text-slate-500">{{ __('transfers.window') }}:</span>
-                <span class="text-sm font-semibold text-white">{{ __('app.window_closed') }}</span>
+                <span class="text-sm text-text-muted">{{ __('transfers.window') }}:</span>
+                <span class="text-sm font-semibold text-text-primary">{{ __('app.window_closed') }}</span>
             @endif
             @if(isset($windowCountdown) && $windowCountdown)
-                <span class="text-xs text-slate-400">
+                <span class="text-xs text-text-secondary">
                     @if($windowCountdown['action'] === 'closes')
                         {{ __('transfers.window_closes_in', ['date' => $windowCountdown['date']->locale(app()->getLocale())->translatedFormat('d M Y')]) }}
                     @else
@@ -38,8 +38,8 @@
 
         {{-- Wage Bill --}}
         <div class="flex items-center gap-2">
-            <span class="text-sm text-slate-500">{{ __('transfers.wage_bill') }}</span>
-            <span class="text-sm font-semibold text-white">{{ \App\Support\Money::format($totalWageBill) }}{{ __('squad.per_year') }}</span>
+            <span class="text-sm text-text-muted">{{ __('transfers.wage_bill') }}</span>
+            <span class="text-sm font-semibold text-text-primary">{{ \App\Support\Money::format($totalWageBill) }}{{ __('squad.per_year') }}</span>
         </div>
     </div>
 </div>

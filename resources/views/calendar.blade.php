@@ -29,7 +29,7 @@
                         <div>
                             <div class="flex items-center justify-between text-2xl font-bold mb-2">
                                 <span class="text-accent-green">{{ $seasonStats['wins'] }}W</span>
-                                <span class="text-slate-400">{{ $seasonStats['draws'] }}D</span>
+                                <span class="text-text-secondary">{{ $seasonStats['draws'] }}D</span>
                                 <span class="text-red-500">{{ $seasonStats['losses'] }}L</span>
                             </div>
                             @if($seasonStats['played'] > 0)
@@ -43,14 +43,14 @@
                                     <div class="bg-slate-400" style="width: {{ $drawWidth }}%"></div>
                                 </div>
                             </div>
-                            <div class="text-xs text-slate-500 mt-1 text-right">{{ __('game.win_rate', ['percent' => $seasonStats['winPercent']]) }}</div>
+                            <div class="text-xs text-text-muted mt-1 text-right">{{ __('game.win_rate', ['percent' => $seasonStats['winPercent']]) }}</div>
                             @endif
                         </div>
 
                         {{-- Form --}}
                         @if(count($seasonStats['form']) > 0)
                         <div>
-                            <div class="text-sm font-medium text-slate-400 mb-2">{{ __('game.form') }}</div>
+                            <div class="text-sm font-medium text-text-secondary mb-2">{{ __('game.form') }}</div>
                             <div class="flex gap-1">
                                 @foreach($seasonStats['form'] as $result)
                                     <span class="w-8 h-8 rounded text-sm font-bold flex items-center justify-center
@@ -66,22 +66,22 @@
 
                         {{-- Goals --}}
                         <div class="pt-4 border-t">
-                            <div class="text-sm font-medium text-slate-400 mb-3">{{ __('game.goals') }}</div>
+                            <div class="text-sm font-medium text-text-secondary mb-3">{{ __('game.goals') }}</div>
                             <div class="grid grid-cols-2 gap-4">
                                 <div class="text-center p-3 bg-surface-700/50 rounded-lg">
-                                    <div class="text-2xl font-bold text-white">{{ $seasonStats['goalsFor'] }}</div>
-                                    <div class="text-xs text-slate-500">{{ __('game.scored') }}</div>
+                                    <div class="text-2xl font-bold text-text-primary">{{ $seasonStats['goalsFor'] }}</div>
+                                    <div class="text-xs text-text-muted">{{ __('game.scored') }}</div>
                                 </div>
                                 <div class="text-center p-3 bg-surface-700/50 rounded-lg">
-                                    <div class="text-2xl font-bold text-white">{{ $seasonStats['goalsAgainst'] }}</div>
-                                    <div class="text-xs text-slate-500">{{ __('game.conceded') }}</div>
+                                    <div class="text-2xl font-bold text-text-primary">{{ $seasonStats['goalsAgainst'] }}</div>
+                                    <div class="text-xs text-text-muted">{{ __('game.conceded') }}</div>
                                 </div>
                             </div>
                         </div>
 
                         {{-- Home/Away Breakdown --}}
                         <div class="pt-4 border-t">
-                            <div class="text-sm font-medium text-slate-400 mb-3">{{ __('game.home_vs_away') }}</div>
+                            <div class="text-sm font-medium text-text-secondary mb-3">{{ __('game.home_vs_away') }}</div>
                             <div class="space-y-3">
                                 {{-- Home --}}
                                 <div class="p-3 bg-accent-green/10 rounded-lg">
@@ -89,21 +89,21 @@
                                         <span class="text-sm font-semibold text-accent-green">{{ __('game.home') }}</span>
                                         <span class="text-sm font-bold text-accent-green">{{ $seasonStats['home']['points'] }} {{ __('game.pts') }}</span>
                                     </div>
-                                    <div class="text-xs text-slate-400">
+                                    <div class="text-xs text-text-secondary">
                                         {{ $seasonStats['home']['wins'] }}W {{ $seasonStats['home']['draws'] }}D {{ $seasonStats['home']['losses'] }}L
-                                        <span class="text-slate-400 mx-1">&middot;</span>
+                                        <span class="text-text-secondary mx-1">&middot;</span>
                                         {{ $seasonStats['home']['goalsFor'] }}-{{ $seasonStats['home']['goalsAgainst'] }}
                                     </div>
                                 </div>
                                 {{-- Away --}}
                                 <div class="p-3 bg-surface-700 rounded-lg">
                                     <div class="flex items-center justify-between mb-1">
-                                        <span class="text-sm font-semibold text-slate-300">{{ __('game.away') }}</span>
-                                        <span class="text-sm font-bold text-slate-300">{{ $seasonStats['away']['points'] }} {{ __('game.pts') }}</span>
+                                        <span class="text-sm font-semibold text-text-body">{{ __('game.away') }}</span>
+                                        <span class="text-sm font-bold text-text-body">{{ $seasonStats['away']['points'] }} {{ __('game.pts') }}</span>
                                     </div>
-                                    <div class="text-xs text-slate-400">
+                                    <div class="text-xs text-text-secondary">
                                         {{ $seasonStats['away']['wins'] }}W {{ $seasonStats['away']['draws'] }}D {{ $seasonStats['away']['losses'] }}L
-                                        <span class="text-slate-400 mx-1">&middot;</span>
+                                        <span class="text-text-secondary mx-1">&middot;</span>
                                         {{ $seasonStats['away']['goalsFor'] }}-{{ $seasonStats['away']['goalsAgainst'] }}
                                     </div>
                                 </div>

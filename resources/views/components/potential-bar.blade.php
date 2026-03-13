@@ -43,7 +43,7 @@
 
 <div class="flex items-center {{ $gapClass }} {{ $containerMin }}">
     {{-- Current ability number --}}
-    <span class="{{ $numberClass }} text-right shrink-0 @if($currentAbility >= 80) text-accent-green @elseif($currentAbility >= 70) text-lime-400 @elseif($currentAbility >= 60) text-accent-gold @else text-slate-500 @endif">{{ $currentAbility }}</span>
+    <span class="{{ $numberClass }} text-right shrink-0 @if($currentAbility >= 80) text-accent-green @elseif($currentAbility >= 70) text-lime-400 @elseif($currentAbility >= 60) text-accent-gold @else text-text-muted @endif">{{ $currentAbility }}</span>
 
     {{-- Bar --}}
     <div class="relative w-full {{ $barHeight }} bg-surface-600 rounded-full overflow-hidden grow">
@@ -65,6 +65,6 @@
     @if($potentialHigh)
     <span class="{{ $ceilingClass }} text-accent-blue font-medium shrink-0">{{ $potentialHigh }}</span>
     @else
-    <span class="{{ $ceilingClass }} text-slate-600 shrink-0">?</span>
+    <span class="{{ $ceilingClass }} text-text-faint shrink-0">?</span>
     @endif
 </div>

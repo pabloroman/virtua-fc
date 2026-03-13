@@ -10,7 +10,7 @@
             <div class="bg-surface-800 overflow-hidden shadow-xs sm:rounded-lg">
                 <div class="p-6 sm:p-8">
                     <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2 mb-6">
-                        <h3 class="font-semibold text-xl text-white">{{ __($competition->name) }}</h3>
+                        <h3 class="font-semibold text-xl text-text-primary">{{ __($competition->name) }}</h3>
                         <div class="flex items-center gap-4">
                             @if($cupStatus === 'champion')
                                 <span class="px-3 py-1 text-sm bg-yellow-100 text-accent-gold rounded-full">{{ __('cup.champion') }}</span>
@@ -21,13 +21,13 @@
                             @elseif($cupStatus === 'advanced')
                                 <span class="px-3 py-1 text-sm bg-accent-green/10 text-accent-green rounded-full">{{ __('cup.advanced_to_next_round') }}</span>
                             @else
-                                <span class="px-3 py-1 text-sm bg-surface-700 text-slate-400 rounded-full">{{ __('cup.not_yet_entered') }}</span>
+                                <span class="px-3 py-1 text-sm bg-surface-700 text-text-secondary rounded-full">{{ __('cup.not_yet_entered') }}</span>
                             @endif
                         </div>
                     </div>
 
                     @if($rounds->isEmpty())
-                        <div class="text-center py-12 text-slate-500">
+                        <div class="text-center py-12 text-text-muted">
                             <p>{{ __('cup.cup_data_not_available') }}</p>
                         </div>
                     @else
@@ -53,7 +53,7 @@
                                                 {{ $playerTie->getScoreDisplay() }}
                                             </div>
                                         @else
-                                            <div class="text-slate-400">{{ __('game.vs') }}</div>
+                                            <div class="text-text-secondary">{{ __('game.vs') }}</div>
                                         @endif
                                     </div>
                                     <div class="flex items-center gap-3 flex-1">
@@ -64,7 +64,7 @@
                                     </div>
                                 </div>
                                 @if($round?->twoLegged)
-                                    <div class="text-center text-sm text-slate-500 mt-2">{{ __('cup.two_legged_tie') }}</div>
+                                    <div class="text-center text-sm text-text-muted mt-2">{{ __('cup.two_legged_tie') }}</div>
                                 @endif
                             </div>
                         @elseif($playerTie && $playerTie->completed)
@@ -108,8 +108,8 @@
                                     @php $ties = $tiesByRound->get($round->round, collect()); @endphp
                                     <div class="shrink-0 w-64">
                                         <div class="text-center mb-4">
-                                            <h4 class="font-semibold text-slate-300">{{ __($round->name) }}</h4>
-                                            <div class="text-xs text-slate-400">
+                                            <h4 class="font-semibold text-text-body">{{ __($round->name) }}</h4>
+                                            <div class="text-xs text-text-secondary">
                                                 {{ $round->firstLegDate->format('M d') }}
                                                 @if($round->twoLegged)
                                                     / {{ $round->secondLegDate->format('M d') }}
@@ -119,7 +119,7 @@
 
                                         @if($ties->isEmpty())
                                             <div class="p-4 text-center border border-dashed rounded-lg">
-                                                <div class="text-slate-400 text-sm">{{ __('cup.draw_pending') }}</div>
+                                                <div class="text-text-secondary text-sm">{{ __('cup.draw_pending') }}</div>
                                             </div>
                                         @else
                                             <div class="space-y-2">
@@ -134,7 +134,7 @@
                         </div>
 
                         {{-- Legend --}}
-                        <div class="mt-8 pt-4 border-t text-xs text-slate-500">
+                        <div class="mt-8 pt-4 border-t text-xs text-text-muted">
                             <div class="flex gap-6">
                                 <div class="flex items-center gap-2">
                                     <div class="w-3 h-3 bg-accent-blue/10 border border-accent-blue/30 rounded-sm"></div>

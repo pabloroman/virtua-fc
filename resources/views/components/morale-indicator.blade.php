@@ -19,5 +19,5 @@
 
 <div {{ $attributes->merge(['class' => 'flex items-center gap-1.5']) }}>
     <div class="morale-dot {{ $dotColor }}"></div>
-    <span class="text-[10px] text-slate-400">{{ $label }}</span>
+    <span class="text-[10px] text-text-secondary">{{ $label }}</span>
 </div>

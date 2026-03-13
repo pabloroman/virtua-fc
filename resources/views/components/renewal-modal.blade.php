@@ -29,12 +29,12 @@
                 x-transition:leave="ease-in duration-150" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95">
                 <div class="p-5 md:p-6">
                     {{-- Header --}}
-                    <div class="flex items-start justify-between gap-4 pb-4 border-b border-white/10 mb-4">
+                    <div class="flex items-start justify-between gap-4 pb-4 border-b border-border-strong mb-4">
                         <div>
-                            <h3 class="font-semibold text-white">{{ $gamePlayer->name }}</h3>
-                            <p class="text-sm text-slate-500 mt-0.5">{{ __('squad.renew') }}</p>
+                            <h3 class="font-semibold text-text-primary">{{ $gamePlayer->name }}</h3>
+                            <p class="text-sm text-text-muted mt-0.5">{{ __('squad.renew') }}</p>
                         </div>
-                        <button @click="open = false" class="p-1 text-slate-400 hover:text-slate-400 rounded-sm hover:bg-surface-700 shrink-0">
+                        <button @click="open = false" class="p-1 text-text-secondary hover:text-text-secondary rounded-sm hover:bg-surface-700 shrink-0">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                         </button>
                     </div>
@@ -51,21 +51,21 @@
                                 @else bg-accent-red
                                 @endif"></span>{{ $renewalMood['label'] }}
                         </span>
-                        <span class="text-slate-500">{{ __('transfers.player_demand') }}: <span class="font-semibold text-slate-300">{{ $renewalDemand['formattedWage'] }}{{ __('squad.per_year') }}</span></span>
+                        <span class="text-text-muted">{{ __('transfers.player_demand') }}: <span class="font-semibold text-text-body">{{ $renewalDemand['formattedWage'] }}{{ __('squad.per_year') }}</span></span>
                     </div>
                     {{-- Form --}}
                     <form method="POST" action="{{ route('game.transfers.renew', [$game->id, $gamePlayer->id]) }}">
                         @csrf
-                        <div class="flex items-center justify-between text-xs text-slate-400 mb-3">
+                        <div class="flex items-center justify-between text-xs text-text-secondary mb-3">
                             <span>{{ __('transfers.current_wage') }}: {{ $gamePlayer->formatted_wage }}{{ __('squad.per_year') }}</span>
                         </div>
                         <div class="grid grid-cols-2 space-x-4 mb-4">
                             <div>
-                                <label class="text-xs text-slate-500 block mb-1">{{ __('transfers.your_offer') }}</label>
+                                <label class="text-xs text-text-muted block mb-1">{{ __('transfers.your_offer') }}</label>
                                 <x-money-input name="offer_wage" :value="$renewalMidpoint" />
                             </div>
                             <div>
-                                <label class="text-xs text-slate-500 block mb-1">{{ __('transfers.contract_duration') }}</label>
+                                <label class="text-xs text-text-muted block mb-1">{{ __('transfers.contract_duration') }}</label>
                                 <x-select-input name="offered_years" class="w-full focus:border-emerald-500 focus:ring-emerald-500">
                                     @foreach(range(1, 5) as $years)
                                         <option value="{{ $years }}" {{ $years === $renewalDemand['contractYears'] ? 'selected' : '' }}>

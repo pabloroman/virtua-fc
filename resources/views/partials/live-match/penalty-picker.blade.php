@@ -40,10 +40,10 @@
             </div>
 
             {{-- Selected kickers (ordered) --}}
-            <div class="px-4 py-3 sm:px-6 border-b border-white/5">
+            <div class="px-4 py-3 sm:px-6 border-b border-border-default">
                 <div class="flex items-center gap-2 mb-2">
-                    <span class="text-xs font-semibold text-slate-500 uppercase">{{ __('game.live_penalties') }}</span>
-                    <span class="text-xs text-slate-400" x-text="selectedPenaltyKickers.length + ' / 5'"></span>
+                    <span class="text-xs font-semibold text-text-muted uppercase">{{ __('game.live_penalties') }}</span>
+                    <span class="text-xs text-text-secondary" x-text="selectedPenaltyKickers.length + ' / 5'"></span>
                 </div>
                 <div class="space-y-1">
                     <template x-for="(kicker, idx) in selectedPenaltyKickers" :key="kicker.id">
@@ -52,10 +52,10 @@
                             <span class="text-xs font-semibold rounded-sm px-1.5 py-0.5 text-white shrink-0"
                                   :class="getPositionBadgeColor(kicker.positionGroup)"
                                   x-text="kicker.positionAbbr"></span>
-                            <span class="text-sm font-semibold text-white flex-1 truncate" x-text="kicker.name"></span>
-                            <span class="text-xs text-slate-400 shrink-0" x-text="'⭐ ' + kicker.technicalAbility"></span>
+                            <span class="text-sm font-semibold text-text-primary flex-1 truncate" x-text="kicker.name"></span>
+                            <span class="text-xs text-text-secondary shrink-0" x-text="'⭐ ' + kicker.technicalAbility"></span>
                             <button @click="removePenaltyKicker(idx)"
-                                    class="text-slate-400 hover:text-red-500 transition-colors p-1 shrink-0 min-h-[44px] flex items-center">
+                                    class="text-text-secondary hover:text-red-500 transition-colors p-1 shrink-0 min-h-[44px] flex items-center">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                                 </svg>
@@ -64,9 +64,9 @@
                     </template>
                     {{-- Empty slots --}}
                     <template x-for="i in Math.max(0, 5 - selectedPenaltyKickers.length)" :key="'empty-' + i">
-                        <div class="flex items-center gap-2 py-1.5 px-2 rounded-sm border border-dashed border-white/10">
-                            <span class="text-xs font-bold text-slate-300 w-5 text-center shrink-0" x-text="selectedPenaltyKickers.length + i"></span>
-                            <span class="text-xs text-slate-300">—</span>
+                        <div class="flex items-center gap-2 py-1.5 px-2 rounded-sm border border-dashed border-border-strong">
+                            <span class="text-xs font-bold text-text-body w-5 text-center shrink-0" x-text="selectedPenaltyKickers.length + i"></span>
+                            <span class="text-xs text-text-body">—</span>
                         </div>
                     </template>
                 </div>
@@ -83,15 +83,15 @@
                             <span class="text-xs font-semibold rounded-sm px-1.5 py-0.5 text-white shrink-0"
                                   :class="getPositionBadgeColor(player.positionGroup)"
                                   x-text="player.positionAbbr"></span>
-                            <span class="text-sm text-white flex-1 truncate" x-text="player.name"></span>
-                            <span class="text-xs text-slate-400 shrink-0" x-text="'⭐ ' + player.technicalAbility"></span>
+                            <span class="text-sm text-text-primary flex-1 truncate" x-text="player.name"></span>
+                            <span class="text-xs text-text-secondary shrink-0" x-text="'⭐ ' + player.technicalAbility"></span>
                         </button>
                     </template>
                 </div>
             </div>
 
             {{-- Footer --}}
-            <div class="px-4 py-3 sm:px-6 bg-surface-700/50 border-t border-white/5">
+            <div class="px-4 py-3 sm:px-6 bg-surface-700/50 border-t border-border-default">
                 <button @click="confirmPenaltyKickers()"
                         :disabled="selectedPenaltyKickers.length < 5 || penaltyProcessing"
                         class="w-full px-4 py-2.5 text-sm font-bold text-white rounded-lg transition-colors min-h-[44px]"

@@ -57,7 +57,7 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
     getTierColor(tier) {
         const t = parseInt(tier);
         const colors = { 0: 'text-accent-red', 1: 'text-accent-gold', 2: 'text-accent-green', 3: 'text-accent-blue', 4: 'text-purple-400' };
-        return colors[t] || 'text-slate-400';
+        return colors[t] || 'text-text-secondary';
     }
 }">
 
@@ -65,11 +65,11 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
     <div class="mb-6 p-3 rounded-lg flex items-center justify-between text-sm transition-colors duration-200"
          :class="exceedsBudget ? 'bg-accent-red/10 ring-1 ring-accent-red/20' : 'bg-surface-700/50'">
         <div class="flex items-center gap-2">
-            <span class="text-slate-500">{{ __('finances.infrastructure') }}</span>
-            <span class="font-semibold" :class="exceedsBudget ? 'text-accent-red' : 'text-white'" x-text="formatMoney(infrastructureTotal)"></span>
+            <span class="text-text-muted">{{ __('finances.infrastructure') }}</span>
+            <span class="font-semibold" :class="exceedsBudget ? 'text-accent-red' : 'text-text-primary'" x-text="formatMoney(infrastructureTotal)"></span>
         </div>
         <div class="flex items-center gap-2">
-            <span class="text-slate-500">{{ __('finances.available_remaining') }}</span>
+            <span class="text-text-muted">{{ __('finances.available_remaining') }}</span>
             <span class="font-semibold" :class="exceedsBudget ? 'text-accent-red' : 'text-accent-green'" x-text="exceedsBudget ? '-' + formatMoney(infrastructureTotal - availableSurplus) : formatMoney(availableSurplus - infrastructureTotal)"></span>
         </div>
     </div>
@@ -92,13 +92,13 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
         {{-- Infrastructure Grid --}}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             {{-- Youth Academy --}}
-            <div class="border border-white/10 rounded-lg p-4 bg-surface-700/30">
+            <div class="border border-border-strong rounded-lg p-4 bg-surface-700/30">
                 <div class="flex items-center justify-between mb-2">
-                    <h4 class="font-medium text-white">{{ __('finances.youth_academy') }}</h4>
+                    <h4 class="font-medium text-text-primary">{{ __('finances.youth_academy') }}</h4>
                     <div class="text-xs font-semibold" :class="getTierColor(youth_academy_tier)">{{ __('finances.tier_n') }} <span x-text="youth_academy_tier"></span></div>
                 </div>
-                <div class="text-lg font-bold text-white mb-1" x-text="formatMoney(youth_academy_amount)"></div>
-                <div class="text-xs text-slate-500 mb-2 h-4">
+                <div class="text-lg font-bold text-text-primary mb-1" x-text="formatMoney(youth_academy_amount)"></div>
+                <div class="text-xs text-text-muted mb-2 h-4">
                     <span x-show="youth_academy_tier == 0">{{ __('finances.youth_academy_tier_0') }}</span>
                     <span x-show="youth_academy_tier == 1">{{ __('finances.youth_academy_tier_1') }}</span>
                     <span x-show="youth_academy_tier == 2">{{ __('finances.youth_academy_tier_2') }}</span>
@@ -110,20 +110,20 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
                     <div class="track-fill" :style="'width:' + (youth_academy_tier / 4 * 100) + '%'"></div>
                     <input type="range" x-model="youth_academy_tier" min="0" max="4" step="1" {{ $isLocked ? 'disabled' : '' }}>
                 </div>
-                <div class="flex justify-between text-[10px] text-slate-600 mt-1">
+                <div class="flex justify-between text-[10px] text-text-faint mt-1">
                     <span>T0</span><span>T1</span><span>T2</span><span>T3</span><span>T4</span>
                 </div>
                 <input type="hidden" name="youth_academy" :value="youth_academy_amount / 100">
             </div>
 
             {{-- Medical --}}
-            <div class="border border-white/10 rounded-lg p-4 bg-surface-700/30">
+            <div class="border border-border-strong rounded-lg p-4 bg-surface-700/30">
                 <div class="flex items-center justify-between mb-2">
-                    <h4 class="font-medium text-white">{{ __('finances.medical') }}</h4>
+                    <h4 class="font-medium text-text-primary">{{ __('finances.medical') }}</h4>
                     <div class="text-xs font-semibold" :class="getTierColor(medical_tier)">{{ __('finances.tier_n') }} <span x-text="medical_tier"></span></div>
                 </div>
-                <div class="text-lg font-bold text-white mb-1" x-text="formatMoney(medical_amount)"></div>
-                <div class="text-xs text-slate-500 mb-2 h-4">
+                <div class="text-lg font-bold text-text-primary mb-1" x-text="formatMoney(medical_amount)"></div>
+                <div class="text-xs text-text-muted mb-2 h-4">
                     <span x-show="medical_tier == 0">{{ __('finances.medical_tier_0') }}</span>
                     <span x-show="medical_tier == 1">{{ __('finances.medical_tier_1') }}</span>
                     <span x-show="medical_tier == 2">{{ __('finances.medical_tier_2') }}</span>
@@ -135,20 +135,20 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
                     <div class="track-fill" :style="'width:' + (medical_tier / 4 * 100) + '%'"></div>
                     <input type="range" x-model="medical_tier" min="0" max="4" step="1" {{ $isLocked ? 'disabled' : '' }}>
                 </div>
-                <div class="flex justify-between text-[10px] text-slate-600 mt-1">
+                <div class="flex justify-between text-[10px] text-text-faint mt-1">
                     <span>T0</span><span>T1</span><span>T2</span><span>T3</span><span>T4</span>
                 </div>
                 <input type="hidden" name="medical" :value="medical_amount / 100">
             </div>
 
             {{-- Scouting --}}
-            <div class="border border-white/10 rounded-lg p-4 bg-surface-700/30">
+            <div class="border border-border-strong rounded-lg p-4 bg-surface-700/30">
                 <div class="flex items-center justify-between mb-2">
-                    <h4 class="font-medium text-white">{{ __('finances.scouting') }}</h4>
+                    <h4 class="font-medium text-text-primary">{{ __('finances.scouting') }}</h4>
                     <div class="text-xs font-semibold" :class="getTierColor(scouting_tier)">{{ __('finances.tier_n') }} <span x-text="scouting_tier"></span></div>
                 </div>
-                <div class="text-lg font-bold text-white mb-1" x-text="formatMoney(scouting_amount)"></div>
-                <div class="text-xs text-slate-500 mb-2 h-4">
+                <div class="text-lg font-bold text-text-primary mb-1" x-text="formatMoney(scouting_amount)"></div>
+                <div class="text-xs text-text-muted mb-2 h-4">
                     <span x-show="scouting_tier == 0">{{ __('finances.scouting_tier_0') }}</span>
                     <span x-show="scouting_tier == 1">{{ __('finances.scouting_tier_1') }}</span>
                     <span x-show="scouting_tier == 2">{{ __('finances.scouting_tier_2') }}</span>
@@ -160,20 +160,20 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
                     <div class="track-fill" :style="'width:' + (scouting_tier / 4 * 100) + '%'"></div>
                     <input type="range" x-model="scouting_tier" min="0" max="4" step="1" {{ $isLocked ? 'disabled' : '' }}>
                 </div>
-                <div class="flex justify-between text-[10px] text-slate-600 mt-1">
+                <div class="flex justify-between text-[10px] text-text-faint mt-1">
                     <span>T0</span><span>T1</span><span>T2</span><span>T3</span><span>T4</span>
                 </div>
                 <input type="hidden" name="scouting" :value="scouting_amount / 100">
             </div>
 
             {{-- Facilities --}}
-            <div class="border border-white/10 rounded-lg p-4 bg-surface-700/30">
+            <div class="border border-border-strong rounded-lg p-4 bg-surface-700/30">
                 <div class="flex items-center justify-between mb-2">
-                    <h4 class="font-medium text-white">{{ __('finances.facilities') }}</h4>
+                    <h4 class="font-medium text-text-primary">{{ __('finances.facilities') }}</h4>
                     <div class="text-xs font-semibold" :class="getTierColor(facilities_tier)">{{ __('finances.tier_n') }} <span x-text="facilities_tier"></span></div>
                 </div>
-                <div class="text-lg font-bold text-white mb-1" x-text="formatMoney(facilities_amount)"></div>
-                <div class="text-xs text-slate-500 mb-2 h-4">
+                <div class="text-lg font-bold text-text-primary mb-1" x-text="formatMoney(facilities_amount)"></div>
+                <div class="text-xs text-text-muted mb-2 h-4">
                     <span x-show="facilities_tier == 0">{{ __('finances.facilities_tier_0') }}</span>
                     <span x-show="facilities_tier == 1">{{ __('finances.facilities_tier_1') }}</span>
                     <span x-show="facilities_tier == 2">{{ __('finances.facilities_tier_2') }}</span>
@@ -185,7 +185,7 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
                     <div class="track-fill" :style="'width:' + (facilities_tier / 4 * 100) + '%'"></div>
                     <input type="range" x-model="facilities_tier" min="0" max="4" step="1" {{ $isLocked ? 'disabled' : '' }}>
                 </div>
-                <div class="flex justify-between text-[10px] text-slate-600 mt-1">
+                <div class="flex justify-between text-[10px] text-text-faint mt-1">
                     <span>T0</span><span>T1</span><span>T2</span><span>T3</span><span>T4</span>
                 </div>
                 <input type="hidden" name="facilities" :value="facilities_amount / 100">
@@ -196,8 +196,8 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
         <div class="border-2 border-accent-blue/30 rounded-lg p-4 bg-accent-blue/5 mb-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <h4 class="font-medium text-white">{{ __('finances.transfer_budget') }}</h4>
-                    <p class="text-xs text-slate-500">{{ __('finances.remainder_after_infrastructure') }}</p>
+                    <h4 class="font-medium text-text-primary">{{ __('finances.transfer_budget') }}</h4>
+                    <p class="text-xs text-text-muted">{{ __('finances.remainder_after_infrastructure') }}</p>
                 </div>
                 <div class="text-xl font-bold text-accent-blue" x-text="formatMoney(transfer_budget)"></div>
             </div>

@@ -14,7 +14,7 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="font-sans antialiased bg-surface-900 text-white"
+<body class="font-sans antialiased bg-surface-900 text-text-primary"
       x-data="{
           mobileNav: false,
           activeSection: 'overview',
@@ -34,8 +34,8 @@
       }">
 
     {{-- Mobile Top Bar --}}
-    <div class="md:hidden fixed top-0 left-0 right-0 z-40 bg-surface-900/95 backdrop-blur-md border-b border-white/5 px-4 py-3 flex items-center justify-between">
-        <button @click="mobileNav = true" class="p-1 text-slate-400 hover:text-white">
+    <div class="md:hidden fixed top-0 left-0 right-0 z-40 bg-surface-900/95 backdrop-blur-md border-b border-border-default px-4 py-3 flex items-center justify-between">
+        <button @click="mobileNav = true" class="p-1 text-text-secondary hover:text-text-primary">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/>
             </svg>
@@ -50,10 +50,10 @@
 
     {{-- Mobile Drawer --}}
     <div x-show="mobileNav" x-transition:enter="ease-out duration-300" x-transition:enter-start="-translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="ease-in duration-200" x-transition:leave-start="translate-x-0" x-transition:leave-end="-translate-x-full"
-         class="md:hidden fixed inset-y-0 left-0 z-50 w-72 bg-surface-800 border-r border-white/5 overflow-y-auto" style="display: none;">
-        <div class="px-5 py-4 border-b border-white/5 flex items-center justify-between">
+         class="md:hidden fixed inset-y-0 left-0 z-50 w-72 bg-surface-800 border-r border-border-default overflow-y-auto" style="display: none;">
+        <div class="px-5 py-4 border-b border-border-default flex items-center justify-between">
             <span class="font-heading font-bold uppercase tracking-wide text-sm">Design System</span>
-            <button @click="mobileNav = false" class="p-1 text-slate-500 hover:text-white">
+            <button @click="mobileNav = false" class="p-1 text-text-muted hover:text-text-primary">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
@@ -66,10 +66,10 @@
 
     <div class="flex min-h-screen">
         {{-- Desktop Side Navigation --}}
-        <aside class="hidden md:block w-64 shrink-0 border-r border-white/5 bg-surface-800 overflow-y-auto sticky top-0 h-screen">
-            <div class="px-5 py-5 border-b border-white/5">
-                <div class="font-heading font-bold uppercase tracking-wide text-white">VirtuaFC</div>
-                <div class="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5">Design System</div>
+        <aside class="hidden md:block w-64 shrink-0 border-r border-border-default bg-surface-800 overflow-y-auto sticky top-0 h-screen">
+            <div class="px-5 py-5 border-b border-border-default">
+                <div class="font-heading font-bold uppercase tracking-wide text-text-primary">VirtuaFC</div>
+                <div class="text-[10px] text-text-muted uppercase tracking-widest mt-0.5">Design System</div>
             </div>
             <nav class="px-3 py-4">
                 @include('design-system.partials.nav')

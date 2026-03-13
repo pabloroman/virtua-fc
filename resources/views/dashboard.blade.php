@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-white leading-tight text-center">
+        <h2 class="font-semibold text-xl text-text-primary leading-tight text-center">
             {{ __('app.load_game') }}
         </h2>
     </x-slot>
@@ -11,8 +11,8 @@
                 <div class="p-6 sm:p-8">
                     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-6">
                         <div class="flex items-center gap-3">
-                            <h3 class="font-semibold text-xl text-white">{{ __('game.your_games') }}</h3>
-                            <span class="text-sm text-slate-400">{{ __('game.game_slots_used', ['count' => $gameCount, 'max' => $maxGames]) }}</span>
+                            <h3 class="font-semibold text-xl text-text-primary">{{ __('game.your_games') }}</h3>
+                            <span class="text-sm text-text-secondary">{{ __('game.game_slots_used', ['count' => $gameCount, 'max' => $maxGames]) }}</span>
                         </div>
                         @if($canCreateGame)
                             <a href="{{ route('select-team') }}" class="text-accent-blue hover:text-accent-blue">+ {{ __('app.new_game') }}</a>
@@ -40,7 +40,7 @@
                                     @else
                                         <x-team-crest :team="$game->team" class="object-cover mx-auto h-20 w-20 shrink-0" />
                                     @endif
-                                    <h3 class="text-xl font-semibold leading-tight text-white">{{ $game->team->name }}</h3>
+                                    <h3 class="text-xl font-semibold leading-tight text-text-primary">{{ $game->team->name }}</h3>
                                     <dl class="flex flex-col justify-between">
                                         @if($game->isTournamentMode())
                                             <dd class="mb-1">
@@ -49,7 +49,7 @@
                                                 </span>
                                             </dd>
                                         @endif
-                                        <dd class="text-sm text-slate-500">{{ __('game.season_n', ['season' => $game->formatted_season]) }}</dd>
+                                        <dd class="text-sm text-text-muted">{{ __('game.season_n', ['season' => $game->formatted_season]) }}</dd>
                                         @if($game->current_date)
                                             <dd class="mt-2 mb-2">
                                                 <span class="inline-flex items-center rounded-full bg-accent-green/10 px-2 py-1 text-xs font-medium text-accent-green ring-1 ring-inset ring-green-600/20">
@@ -57,7 +57,7 @@
                                                 </span>
                                             </dd>
                                         @endif
-                                        <dd class="text-xs text-slate-400">
+                                        <dd class="text-xs text-text-secondary">
                                             {{ __('game.last_played', ['time' => $game->updated_at->diffForHumans()]) }}
                                         </dd>
                                     </dl>
@@ -68,7 +68,7 @@
                                         <button
                                             type="button"
                                             @click="confirmDelete = true"
-                                            class="inline-flex items-center justify-center w-9 h-9 min-h-[44px] sm:min-h-0 min-w-[44px] rounded-lg text-slate-400 hover:text-accent-red hover:bg-accent-red/10 transition-colors"
+                                            class="inline-flex items-center justify-center w-9 h-9 min-h-[44px] sm:min-h-0 min-w-[44px] rounded-lg text-text-secondary hover:text-accent-red hover:bg-accent-red/10 transition-colors"
                                             title="{{ __('game.delete_game') }}"
                                         >
                                             <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -83,12 +83,12 @@
                                     <svg class="w-10 h-10 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
                                     </svg>
-                                    <p class="text-sm text-slate-400 text-center">{{ __('game.confirm_delete_game') }}</p>
+                                    <p class="text-sm text-text-secondary text-center">{{ __('game.confirm_delete_game') }}</p>
                                     <div class="flex gap-3">
                                         <button
                                             type="button"
                                             @click="confirmDelete = false"
-                                            class="inline-flex items-center px-3 py-2 min-h-[44px] sm:min-h-0 bg-surface-800 border border-white/10 rounded-lg font-semibold text-xs text-slate-300 uppercase tracking-widest shadow-xs hover:bg-surface-700/50"
+                                            class="inline-flex items-center px-3 py-2 min-h-[44px] sm:min-h-0 bg-surface-800 border border-border-strong rounded-lg font-semibold text-xs text-text-body uppercase tracking-widest shadow-xs hover:bg-surface-700/50"
                                         >
                                             {{ __('app.cancel') }}
                                         </button>

@@ -21,8 +21,8 @@
                 <div class="inline-block drop-shadow-lg mb-4">
                     <x-team-crest :team="$game->team" class="w-20 h-20 md:w-28 md:h-28 mx-auto" />
                 </div>
-                <h1 class="text-3xl md:text-5xl font-bold text-white mb-1">{{ __('game.season_n', ['season' => $game->formatted_season]) }}</h1>
-                <p class="text-lg text-slate-400">{{ $game->team->name }}</p>
+                <h1 class="text-3xl md:text-5xl font-bold text-text-primary mb-1">{{ __('game.season_n', ['season' => $game->formatted_season]) }}</h1>
+                <p class="text-lg text-text-secondary">{{ $game->team->name }}</p>
             </div>
 
             {{-- Flash Messages --}}
@@ -34,8 +34,8 @@
 
             {{-- 2. Off-Season Recap (Season 2+ only) --}}
             @if($offseasonRecap && ($offseasonRecap['departures'] || $offseasonRecap['arrivals'] || $offseasonRecap['reputation_changed']))
-            <div class="bg-surface-800 rounded-xl shadow-xs border border-white/10 p-5 md:p-6 mb-6" x-data="{ showAllDep: false, showAllArr: false }">
-                <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-4">{{ __('game.offseason_recap') }}</h2>
+            <div class="bg-surface-800 rounded-xl shadow-xs border border-border-strong p-5 md:p-6 mb-6" x-data="{ showAllDep: false, showAllArr: false }">
+                <h2 class="text-xs font-semibold text-text-secondary uppercase tracking-wide mb-4">{{ __('game.offseason_recap') }}</h2>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {{-- Departures --}}
@@ -107,24 +107,24 @@
 
                 {{-- Reputation Change --}}
                 @if($offseasonRecap['reputation_changed'])
-                <div class="mt-4 flex items-center gap-2 text-sm text-slate-400 bg-surface-700/50 rounded-lg px-4 py-3">
-                    <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="mt-4 flex items-center gap-2 text-sm text-text-secondary bg-surface-700/50 rounded-lg px-4 py-3">
+                    <svg class="w-4 h-4 text-text-secondary shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
                     </svg>
                     <span>{{ __('game.reputation_changed') }}:</span>
-                    <span class="font-semibold text-white">{{ __('finances.reputation.' . $offseasonRecap['previous_reputation']) }}</span>
-                    <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <span class="font-semibold text-text-primary">{{ __('finances.reputation.' . $offseasonRecap['previous_reputation']) }}</span>
+                    <svg class="w-3.5 h-3.5 text-text-secondary shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                     </svg>
-                    <span class="font-semibold text-white">{{ __('finances.reputation.' . $offseasonRecap['current_reputation']) }}</span>
+                    <span class="font-semibold text-text-primary">{{ __('finances.reputation.' . $offseasonRecap['current_reputation']) }}</span>
                 </div>
                 @endif
             </div>
             @endif
 
             {{-- 3. Season Mission Briefing --}}
-            <div class="bg-surface-800 rounded-xl shadow-xs border border-white/10 p-5 md:p-6 mb-6">
-                <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-5">{{ __('game.season_preview') }}</h2>
+            <div class="bg-surface-800 rounded-xl shadow-xs border border-border-strong p-5 md:p-6 mb-6">
+                <h2 class="text-xs font-semibold text-text-secondary uppercase tracking-wide mb-5">{{ __('game.season_preview') }}</h2>
 
                 {{-- Board Objective --}}
                 <div class="bg-linear-to-br from-amber-50 to-orange-50 border border-accent-gold/20 rounded-xl p-4 md:p-5 mb-5">
@@ -145,35 +145,35 @@
                 {{-- Club Identity Row --}}
                 <div class="flex flex-col md:flex-row gap-3 mb-5">
                     {{-- Reputation --}}
-                    <div class="flex items-center gap-3 bg-surface-700/50 border border-white/10 rounded-lg px-4 py-3 flex-1">
+                    <div class="flex items-center gap-3 bg-surface-700/50 border border-border-strong rounded-lg px-4 py-3 flex-1">
                         <div class="w-8 h-8 rounded-lg bg-slate-200 flex items-center justify-center shrink-0">
-                            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-4 h-4 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
                             </svg>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <div class="text-[10px] text-slate-400 uppercase tracking-wide font-semibold flex items-center gap-1">
+                            <div class="text-[10px] text-text-secondary uppercase tracking-wide font-semibold flex items-center gap-1">
                                 {{ __('game.club_reputation') }}
-                                <svg x-data x-tooltip.raw="{{ __('game.reputation_help') }}" class="w-3.5 h-3.5 text-slate-400 cursor-help shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg x-data x-tooltip.raw="{{ __('game.reputation_help') }}" class="w-3.5 h-3.5 text-text-secondary cursor-help shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
                             </div>
-                            <div class="text-sm font-semibold text-white truncate">{{ __('finances.reputation.' . $reputationLevel) }}</div>
+                            <div class="text-sm font-semibold text-text-primary truncate">{{ __('finances.reputation.' . $reputationLevel) }}</div>
                         </div>
                     </div>
 
                     {{-- Stadium --}}
-                    <div class="flex items-center gap-3 bg-surface-700/50 border border-white/10 rounded-lg px-4 py-3 flex-1">
+                    <div class="flex items-center gap-3 bg-surface-700/50 border border-border-strong rounded-lg px-4 py-3 flex-1">
                         <div class="w-8 h-8 rounded-lg bg-slate-200 flex items-center justify-center shrink-0">
-                            <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-4 h-4 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                             </svg>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <div class="text-[10px] text-slate-400 uppercase tracking-wide font-semibold">{{ __('game.stadium') }}</div>
-                            <div class="text-sm font-semibold text-white truncate">{{ $game->team->stadium_name ?? '—' }}</div>
+                            <div class="text-[10px] text-text-secondary uppercase tracking-wide font-semibold">{{ __('game.stadium') }}</div>
+                            <div class="text-sm font-semibold text-text-primary truncate">{{ $game->team->stadium_name ?? '—' }}</div>
                             @if($game->team->stadium_seats)
-                            <div class="text-xs text-slate-500">{{ __('game.seats', ['count' => number_format($game->team->stadium_seats)]) }}</div>
+                            <div class="text-xs text-text-muted">{{ __('game.seats', ['count' => number_format($game->team->stadium_seats)]) }}</div>
                             @endif
                         </div>
                     </div>
@@ -182,18 +182,18 @@
             </div>
 
             {{-- 4. Squad Snapshot --}}
-            <div class="bg-surface-800 rounded-xl shadow-xs border border-white/10 p-5 md:p-6 mb-6">
+            <div class="bg-surface-800 rounded-xl shadow-xs border border-border-strong p-5 md:p-6 mb-6">
                 <div class="flex items-center justify-between mb-5">
                     <div class="flex items-center gap-2">
-                        <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wide">{{ __('game.your_squad') }}</h2>
-                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-surface-700 text-slate-300">
+                        <h2 class="text-xs font-semibold text-text-secondary uppercase tracking-wide">{{ __('game.your_squad') }}</h2>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-surface-700 text-text-body">
                             {{ __('game.players_count', ['count' => $squadSnapshot['total_players']]) }}
                         </span>
                     </div>
                 </div>
 
                 {{-- Position Coverage --}}
-                <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">{{ __('game.position_coverage') }}</h3>
+                <h3 class="text-xs font-semibold text-text-secondary uppercase tracking-wide mb-3">{{ __('game.position_coverage') }}</h3>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
                     @foreach($squadSnapshot['position_coverage'] as $group => $data)
                         @php
@@ -201,23 +201,23 @@
                                 'adequate' => 'border-accent-green/20 bg-accent-green/10/50',
                                 'thin' => 'border-accent-gold/20 bg-accent-gold/10/50',
                                 'critical' => 'border-accent-red/20 bg-accent-red/10/50',
-                                default => 'border-white/10',
+                                default => 'border-border-strong',
                             };
                             $countColor = match($data['status']) {
                                 'adequate' => 'text-accent-green',
                                 'thin' => 'text-accent-gold',
                                 'critical' => 'text-accent-red',
-                                default => 'text-slate-300',
+                                default => 'text-text-body',
                             };
                         @endphp
                         <div class="border rounded-lg p-3 {{ $statusColors }}">
                             <div class="flex items-center gap-1.5 mb-1.5">
                                 <x-position-badge :group="$group" size="sm" />
-                                <span class="text-xs font-medium text-slate-300">{{ __('squad.' . strtolower($group) . 's') }}</span>
+                                <span class="text-xs font-medium text-text-body">{{ __('squad.' . strtolower($group) . 's') }}</span>
                             </div>
                             <div class="flex items-baseline justify-between">
                                 <span class="text-lg font-bold {{ $countColor }}">{{ $data['count'] }}</span>
-                                <span class="text-xs text-slate-500">{{ $data['avg_ability'] }} OVR</span>
+                                <span class="text-xs text-text-muted">{{ $data['avg_ability'] }} OVR</span>
                             </div>
                         </div>
                     @endforeach
@@ -226,21 +226,21 @@
                 {{-- Key Stats --}}
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
                     <div class="bg-surface-700/50 rounded-lg p-3 text-center">
-                        <div class="text-xs text-slate-500 mb-1">{{ __('game.avg_overall') }}</div>
-                        <div class="text-xl font-bold text-white">{{ $squadSnapshot['avg_overall'] }}</div>
+                        <div class="text-xs text-text-muted mb-1">{{ __('game.avg_overall') }}</div>
+                        <div class="text-xl font-bold text-text-primary">{{ $squadSnapshot['avg_overall'] }}</div>
                     </div>
                     <div class="bg-surface-700/50 rounded-lg p-3 text-center">
-                        <div class="text-xs text-slate-500 mb-1">{{ __('game.avg_age') }}</div>
-                        <div class="text-xl font-bold text-white">{{ number_format($squadSnapshot['avg_age'], 1) }}</div>
+                        <div class="text-xs text-text-muted mb-1">{{ __('game.avg_age') }}</div>
+                        <div class="text-xl font-bold text-text-primary">{{ number_format($squadSnapshot['avg_age'], 1) }}</div>
                     </div>
                     <div class="bg-surface-700/50 rounded-lg p-3 text-center">
-                        <div class="text-xs text-slate-500 mb-1">{{ __('game.squad_size') }}</div>
-                        <div class="text-xl font-bold text-white">{{ $squadSnapshot['total_players'] }}</div>
-                        <div class="text-[10px] text-slate-400">{{ __('game.ideal_range', ['min' => 22, 'max' => 28]) }}</div>
+                        <div class="text-xs text-text-muted mb-1">{{ __('game.squad_size') }}</div>
+                        <div class="text-xl font-bold text-text-primary">{{ $squadSnapshot['total_players'] }}</div>
+                        <div class="text-[10px] text-text-secondary">{{ __('game.ideal_range', ['min' => 22, 'max' => 28]) }}</div>
                     </div>
                     <div class="bg-surface-700/50 rounded-lg p-3 text-center">
-                        <div class="text-xs text-slate-500 mb-1">{{ __('game.annual_wages') }}</div>
-                        <div class="text-xl font-bold text-white">{{ \App\Support\Money::format($squadSnapshot['total_wages']) }}</div>
+                        <div class="text-xs text-text-muted mb-1">{{ __('game.annual_wages') }}</div>
+                        <div class="text-xl font-bold text-text-primary">{{ \App\Support\Money::format($squadSnapshot['total_wages']) }}</div>
                     </div>
                 </div>
 
@@ -266,15 +266,15 @@
             </div>
 
             {{-- 5. Budget Allocation --}}
-            <div class="bg-surface-800 rounded-xl shadow-xs border border-white/10 p-5 md:p-6 mb-20">
+            <div class="bg-surface-800 rounded-xl shadow-xs border border-border-strong p-5 md:p-6 mb-20">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-2">
                     <div>
-                        <h2 class="text-lg font-semibold text-white">{{ __('finances.season_budget', ['season' => $game->formatted_season]) }}</h2>
-                        <p class="text-sm text-slate-500">{{ __('game.allocate_budget_hint') }}</p>
+                        <h2 class="text-lg font-semibold text-text-primary">{{ __('finances.season_budget', ['season' => $game->formatted_season]) }}</h2>
+                        <p class="text-sm text-text-muted">{{ __('game.allocate_budget_hint') }}</p>
                     </div>
                     <div class="md:text-right">
-                        <div class="text-2xl font-bold text-white">{{ \App\Support\Money::format($availableSurplus) }}</div>
-                        <div class="text-xs text-slate-500">{{ __('game.available') }}</div>
+                        <div class="text-2xl font-bold text-text-primary">{{ \App\Support\Money::format($availableSurplus) }}</div>
+                        <div class="text-xs text-text-muted">{{ __('game.available') }}</div>
                     </div>
                 </div>
 

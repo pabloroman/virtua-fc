@@ -6,7 +6,7 @@ $colors = [
     'red' => 'text-accent-red hover:text-red-400 hover:bg-accent-red/10',
     'amber' => 'text-accent-gold hover:text-amber-400 hover:bg-accent-gold/10',
     'green' => 'text-accent-green hover:text-green-400 hover:bg-accent-green/10',
-    'slate' => 'text-slate-400 hover:text-slate-300 hover:bg-surface-700',
+    'slate' => 'text-text-secondary hover:text-text-body hover:bg-surface-700',
 ];
 $colorClasses = $colors[$color] ?? $colors['blue'];
 
