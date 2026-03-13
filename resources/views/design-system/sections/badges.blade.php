@@ -251,7 +251,7 @@
     {{-- Competition Badges --}}
     <div class="mb-12">
         <h3 class="text-lg font-semibold text-text-primary mb-2">Competition Badges</h3>
-        <p class="text-sm text-text-secondary mb-4">Color-coded by competition type: domestic league (amber), domestic cup (emerald), European (blue).</p>
+        <p class="text-sm text-text-secondary mb-4">Color-coded by competition type: domestic league (amber), domestic cup (emerald), European (blue). Use the <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">x-competition-pill</code> component which resolves colors automatically via <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">CompetitionColors::badge()</code>.</p>
 
         <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3">
             <div class="flex flex-wrap gap-3">
@@ -271,9 +271,49 @@
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
-            <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="compCode">&lt;span class="px-3 py-1 text-xs font-semibold rounded-full bg-accent-gold/20 text-accent-gold"&gt;League&lt;/span&gt;
+            <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="compCode">&lt;!-- Recommended: use the component (resolves colors automatically) --&gt;
+&lt;x-competition-pill :competition="$competition" /&gt;
+&lt;x-competition-pill :competition="$competition" :round-name="$match->round_name" /&gt;
+&lt;x-competition-pill :competition="$competition" :round-number="$match->round_number" /&gt;
+
+&lt;!-- Raw markup (for reference) --&gt;
+&lt;span class="px-3 py-1 text-xs font-semibold rounded-full bg-accent-gold/20 text-accent-gold"&gt;League&lt;/span&gt;
 &lt;span class="px-3 py-1 text-xs font-semibold rounded-full bg-accent-green/20 text-accent-green"&gt;Cup&lt;/span&gt;
 &lt;span class="px-3 py-1 text-xs font-semibold rounded-full bg-accent-blue/20 text-accent-blue"&gt;European&lt;/span&gt;</code></pre>
+        </div>
+
+        {{-- Props table --}}
+        <div class="overflow-x-auto mt-4">
+            <table class="w-full text-sm">
+                <thead class="text-left border-b border-border-strong">
+                    <tr>
+                        <th class="text-[10px] text-text-muted uppercase tracking-wider font-semibold py-2 pr-4">Prop</th>
+                        <th class="text-[10px] text-text-muted uppercase tracking-wider font-semibold py-2 pr-4">Type</th>
+                        <th class="text-[10px] text-text-muted uppercase tracking-wider font-semibold py-2 pr-4">Default</th>
+                        <th class="text-[10px] text-text-muted uppercase tracking-wider font-semibold py-2">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b border-border-default">
+                        <td class="py-2 pr-4 font-mono text-xs text-accent-blue">competition</td>
+                        <td class="py-2 pr-4 text-text-secondary">Competition</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-text-muted">—</td>
+                        <td class="py-2 text-text-secondary">Competition model (determines color automatically)</td>
+                    </tr>
+                    <tr class="border-b border-border-default">
+                        <td class="py-2 pr-4 font-mono text-xs text-accent-blue">round-name</td>
+                        <td class="py-2 pr-4 text-text-secondary">string|null</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-text-muted">null</td>
+                        <td class="py-2 text-text-secondary">Optional round name shown after the pill</td>
+                    </tr>
+                    <tr class="border-b border-border-default">
+                        <td class="py-2 pr-4 font-mono text-xs text-accent-blue">round-number</td>
+                        <td class="py-2 pr-4 text-text-secondary">int|null</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-text-muted">null</td>
+                        <td class="py-2 text-text-secondary">Optional matchday number (used if round-name is null)</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 

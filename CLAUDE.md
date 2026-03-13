@@ -400,6 +400,25 @@ lang/
 
 ## UI/UX Guidelines
 
+### Design System is the Source of Truth
+
+The design system (`resources/views/design-system/`) defines the canonical look and feel of every UI pattern. **All app templates must reuse existing components and follow design system conventions.** Never invent new visual styles for elements that already have a design system definition.
+
+**Workflow for any design change:**
+
+1. **Check the design system first** — browse `resources/views/design-system/sections/` for existing patterns (badges, cards, buttons, alerts, etc.)
+2. **Check existing Blade components** — browse `resources/views/components/` for reusable components that implement those patterns
+3. **Reuse what exists** — use the existing component or pattern exactly as defined. Do not create alternative styles (e.g., don't use `ring-1 ring-inset` for a badge when the design system uses `bg-accent-*/20 text-accent-*`)
+4. **If a component doesn't exist yet** — create it in `resources/views/components/`, matching the design system's visual spec, then add it to the design system section with usage examples and a props table
+5. **If a design system pattern doesn't exist** — add the pattern to the appropriate design system section first, then implement the component
+
+**Never:**
+- Create one-off inline styles that duplicate or contradict a design system pattern
+- Use different colors, spacing, or border treatments than what the design system specifies
+- Skip checking the design system before building UI
+
+### Quality Standards
+
 When working on UI/UX tasks, implement working code (Blade/Tailwind CSS/Alpine.js) that is:
 
 - **Production-grade and functional** - Code must work correctly, not just look good in a mockup
