@@ -1,3 +1,3 @@
-<div class="-skew-x-12 bg-accent-red px-6">
-    <h1 class="text-white text-center text-[45px] font-bold">Virtua FC</h1>
+<div class="-skew-x-12 bg-red-600 px-3 sm:px-4 py-1">
+    <span class="skew-x-12 inline-block text-xl sm:text-3xl font-extrabold text-white tracking-tight" style="font-family: 'Barlow Semi Condensed', sans-serif;">Virtua FC</span>
 </div>
