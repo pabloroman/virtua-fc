@@ -32,69 +32,71 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
 };
 @endphp
 
-<div class="overflow-x-auto">
-<table class="min-w-full table-fixed text-right divide-y divide-border-default border-spacing-2">
-    <thead>
-    <tr>
-        <th class="font-semibold text-left w-8 p-2"></th>
-        <th class="font-semibold text-left p-2"></th>
-        <th class="font-semibold w-8 p-2">{{ __('game.played_abbr') }}</th>
-        <th class="font-semibold w-8 p-2 hidden md:table-cell">{{ __('game.won_abbr') }}</th>
-        <th class="font-semibold w-8 p-2 hidden md:table-cell">{{ __('game.drawn_abbr') }}</th>
-        <th class="font-semibold w-8 p-2 hidden md:table-cell">{{ __('game.lost_abbr') }}</th>
-        <th class="font-semibold w-8 p-2 hidden md:table-cell">{{ __('game.goals_for_abbr') }}</th>
-        <th class="font-semibold w-8 p-2 hidden md:table-cell">{{ __('game.goals_against_abbr') }}</th>
-        <th class="font-semibold w-8 p-2">{{ __('game.goal_diff_abbr') }}</th>
-        <th class="font-semibold w-8 p-2">{{ __('game.pts_abbr') }}</th>
-        <th class="font-semibold w-8 p-2 text-center whitespace-nowrap">{{ __('game.last_5') }}</th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach($standings as $standing)
-        @php
-            $isPlayer = $standing->team_id === $game->team_id;
-            $zoneClass = $getZoneClass($standing->position);
-        @endphp
-        <tr class="border-b px-2 text-lg {{ $zoneClass }} @if($isPlayer) bg-accent-gold/10 @endif">
-            <td class="align-middle whitespace-nowrap text-left px-2 text-text-primary font-semibold">
-                <div class="flex items-center gap-1">
-                    <span>{{ $standing->position }}</span>
-                    @if($standing->position_change !== 0)
-                        <span class="text-xs @if($standing->position_change > 0) text-green-500 @else text-red-500 @endif">
-                            {{ $standing->position_change_icon }}
-                        </span>
-                    @endif
-                </div>
-            </td>
-            <td class="align-middle whitespace-nowrap py-1.5 px-2">
-                <div class="flex items-center space-x-2 @if($isPlayer) font-semibold @endif">
-                    <x-team-crest :team="$standing->team" class="w-6 h-6" />
-                    <span>{{ $standing->team->name }}</span>
-                </div>
-            </td>
-            <td class="align-middle whitespace-nowrap p-2 text-text-secondary">{{ $standing->played }}</td>
-            <td class="align-middle whitespace-nowrap p-2 text-text-secondary hidden md:table-cell">{{ $standing->won }}</td>
-            <td class="align-middle whitespace-nowrap p-2 text-text-secondary hidden md:table-cell">{{ $standing->drawn }}</td>
-            <td class="align-middle whitespace-nowrap p-2 text-text-secondary hidden md:table-cell">{{ $standing->lost }}</td>
-            <td class="align-middle whitespace-nowrap p-2 text-text-secondary hidden md:table-cell">{{ $standing->goals_for }}</td>
-            <td class="align-middle whitespace-nowrap p-2 text-text-secondary hidden md:table-cell">{{ $standing->goals_against }}</td>
-            <td class="align-middle whitespace-nowrap p-2 text-text-secondary">{{ $standing->goal_difference }}</td>
-            <td class="align-middle whitespace-nowrap p-2 font-semibold">{{ $standing->points }}</td>
-            <td class="align-middle whitespace-nowrap p-2">
-                <div class="flex justify-center">
-                    @foreach($teamForms[$standing->team_id] ?? [] as $result)
-                        <x-form-icon :result="$result" />
-                    @endforeach
-                </div>
-            </td>
-        </tr>
-    @endforeach
-    </tbody>
-</table>
+<div class="bg-surface-800 border border-border-default rounded-xl overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="min-w-full table-fixed text-right">
+            <thead>
+            <tr class="border-b border-border-default">
+                <th class="text-[10px] text-text-muted uppercase tracking-wider text-left w-8 px-3 py-2.5"></th>
+                <th class="text-[10px] text-text-muted uppercase tracking-wider text-left px-2 py-2.5"></th>
+                <th class="text-[10px] text-text-muted uppercase tracking-wider w-8 px-2 py-2.5">{{ __('game.played_abbr') }}</th>
+                <th class="text-[10px] text-text-muted uppercase tracking-wider w-8 px-2 py-2.5 hidden md:table-cell">{{ __('game.won_abbr') }}</th>
+                <th class="text-[10px] text-text-muted uppercase tracking-wider w-8 px-2 py-2.5 hidden md:table-cell">{{ __('game.drawn_abbr') }}</th>
+                <th class="text-[10px] text-text-muted uppercase tracking-wider w-8 px-2 py-2.5 hidden md:table-cell">{{ __('game.lost_abbr') }}</th>
+                <th class="text-[10px] text-text-muted uppercase tracking-wider w-8 px-2 py-2.5 hidden md:table-cell">{{ __('game.goals_for_abbr') }}</th>
+                <th class="text-[10px] text-text-muted uppercase tracking-wider w-8 px-2 py-2.5 hidden md:table-cell">{{ __('game.goals_against_abbr') }}</th>
+                <th class="text-[10px] text-text-muted uppercase tracking-wider w-8 px-2 py-2.5">{{ __('game.goal_diff_abbr') }}</th>
+                <th class="text-[10px] text-text-muted uppercase tracking-wider w-8 px-2 py-2.5">{{ __('game.pts_abbr') }}</th>
+                <th class="text-[10px] text-text-muted uppercase tracking-wider w-8 px-2 py-2.5 text-center whitespace-nowrap">{{ __('game.last_5') }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach($standings as $standing)
+                @php
+                    $isPlayer = $standing->team_id === $game->team_id;
+                    $zoneClass = $getZoneClass($standing->position);
+                @endphp
+                <tr class="border-b border-border-default text-sm transition-colors hover:bg-[rgba(59,130,246,0.05)] {{ $zoneClass }} @if($isPlayer) bg-accent-gold/10 @endif">
+                    <td class="align-middle whitespace-nowrap text-left px-3 py-2 text-text-primary font-semibold">
+                        <div class="flex items-center gap-1">
+                            <span>{{ $standing->position }}</span>
+                            @if($standing->position_change !== 0)
+                                <span class="text-xs @if($standing->position_change > 0) text-accent-green @else text-accent-red @endif">
+                                    {{ $standing->position_change_icon }}
+                                </span>
+                            @endif
+                        </div>
+                    </td>
+                    <td class="align-middle whitespace-nowrap py-2 px-2">
+                        <div class="flex items-center space-x-2 @if($isPlayer) font-semibold @endif">
+                            <x-team-crest :team="$standing->team" class="w-6 h-6 shrink-0" />
+                            <span class="text-text-primary truncate">{{ $standing->team->name }}</span>
+                        </div>
+                    </td>
+                    <td class="align-middle whitespace-nowrap px-2 py-2 text-text-secondary tabular-nums">{{ $standing->played }}</td>
+                    <td class="align-middle whitespace-nowrap px-2 py-2 text-text-secondary tabular-nums hidden md:table-cell">{{ $standing->won }}</td>
+                    <td class="align-middle whitespace-nowrap px-2 py-2 text-text-secondary tabular-nums hidden md:table-cell">{{ $standing->drawn }}</td>
+                    <td class="align-middle whitespace-nowrap px-2 py-2 text-text-secondary tabular-nums hidden md:table-cell">{{ $standing->lost }}</td>
+                    <td class="align-middle whitespace-nowrap px-2 py-2 text-text-secondary tabular-nums hidden md:table-cell">{{ $standing->goals_for }}</td>
+                    <td class="align-middle whitespace-nowrap px-2 py-2 text-text-secondary tabular-nums hidden md:table-cell">{{ $standing->goals_against }}</td>
+                    <td class="align-middle whitespace-nowrap px-2 py-2 text-text-secondary tabular-nums">{{ $standing->goal_difference }}</td>
+                    <td class="align-middle whitespace-nowrap px-2 py-2 font-semibold text-text-primary tabular-nums">{{ $standing->points }}</td>
+                    <td class="align-middle whitespace-nowrap px-2 py-2">
+                        <div class="flex justify-center">
+                            @foreach($teamForms[$standing->team_id] ?? [] as $result)
+                                <x-form-icon :result="$result" />
+                            @endforeach
+                        </div>
+                    </td>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
+    </div>
 </div>
 
 @if(count($standingsZones) > 0)
-    <div class="flex gap-6 text-xs text-text-muted">
+    <div class="flex flex-wrap gap-x-5 gap-y-1 text-xs text-text-muted mt-3 px-1">
         @foreach($standingsZones as $zone)
             <div class="flex items-center gap-2">
                 <div class="w-3 h-3 {{ $bgColorMap[$zone['bgColor']] ?? '' }} rounded-sm"></div>
