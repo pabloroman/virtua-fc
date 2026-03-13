@@ -14,6 +14,7 @@ class CompetitionColors
             'border' => 'border-l-accent-gold',
             'badge_bg' => 'bg-accent-gold/20',
             'badge_text' => 'text-accent-gold',
+            'dot' => 'bg-accent-gold',
         ],
         'cup' => [
             'banner_bg' => 'bg-emerald-600',
@@ -22,6 +23,7 @@ class CompetitionColors
             'border' => 'border-l-accent-green',
             'badge_bg' => 'bg-accent-green/20',
             'badge_text' => 'text-accent-green',
+            'dot' => 'bg-accent-green',
         ],
         'european' => [
             'banner_bg' => 'bg-blue-600',
@@ -30,6 +32,7 @@ class CompetitionColors
             'border' => 'border-l-accent-blue',
             'badge_bg' => 'bg-accent-blue/20',
             'badge_text' => 'text-accent-blue',
+            'dot' => 'bg-accent-blue',
         ],
         'preseason' => [
             'banner_bg' => 'bg-accent-blue',
@@ -38,6 +41,7 @@ class CompetitionColors
             'border' => 'border-l-accent-blue',
             'badge_bg' => 'bg-accent-blue/20',
             'badge_text' => 'text-accent-blue',
+            'dot' => 'bg-accent-blue',
         ],
     ];
 
@@ -85,6 +89,14 @@ class CompetitionColors
     public static function border(?Competition $competition): string
     {
         return self::VARIANTS[self::category($competition)]['border'];
+    }
+
+    /**
+     * Get the dot background class for fixture rows.
+     */
+    public static function dot(?Competition $competition): string
+    {
+        return self::VARIANTS[self::category($competition)]['dot'];
     }
 
     /**

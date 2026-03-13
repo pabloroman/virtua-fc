@@ -24,7 +24,9 @@ return [
     'set_lineup' => 'Set Lineup',
     'vs' => 'vs',
     'home' => 'Home',
+    'home_abbr' => 'H',
     'away' => 'Away',
+    'away_abbr' => 'A',
     'no_form' => 'No history',
     'form' => 'Form',
 
@@ -41,6 +43,7 @@ return [
 
     // Standings
     'pts' => 'pts',
+    'team' => 'Team',
     'played_abbr' => 'P',
     'won_abbr' => 'W',
     'drawn_abbr' => 'D',
@@ -167,6 +170,7 @@ return [
     'weeks_remaining' => ':count week remaining|:count weeks remaining',
 
     // Calendar
+    'record' => 'Record',
     'win_rate' => ':percent% win rate',
     'goals' => 'Goals',
     'scored' => 'Scored',

@@ -78,19 +78,18 @@
 
                 {{-- Remaining Upcoming Fixtures --}}
                 @if($upcomingFixtures->skip(1)->isNotEmpty())
-                <div class="bg-surface-800 rounded-xl border border-border-default p-4 md:p-6">
-                    <div class="flex items-center justify-between mb-3">
-                        <h4 class="text-lg font-semibold text-text-primary">{{ __('game.upcoming_fixtures') }}</h4>
-                        <a href="{{ route('game.calendar', $game->id) }}" class="text-sm text-accent-blue hover:text-accent-blue">
+                <x-section-card :title="__('game.upcoming_fixtures')">
+                    <x-slot name="badge">
+                        <a href="{{ route('game.calendar', $game->id) }}" class="text-[10px] text-accent-blue hover:text-blue-400 transition-colors">
                             {{ __('game.full_calendar') }} &rarr;
                         </a>
-                    </div>
-                    <div class="space-y-2">
+                    </x-slot>
+                    <div class="divide-y divide-border-default">
                         @foreach($upcomingFixtures->skip(1)->take(4) as $fixture)
                             <x-fixture-row :match="$fixture" :game="$game" :show-score="false" :highlight-next="false" />
                         @endforeach
                     </div>
-                </div>
+                </x-section-card>
                 @endif
             </div>
 
@@ -99,139 +98,79 @@
             {{-- Right Column (1/3) - Notifications & Standings --}}
             <div class="space-y-8">
                 {{-- Notifications Inbox --}}
-                <div class="bg-surface-800 rounded-xl border border-border-default p-4 md:p-6">
-                    <div class="flex items-center justify-between mb-4">
+                <x-section-card :title="__('notifications.inbox')">
+                    <x-slot name="badge">
                         <div class="flex items-center gap-2">
-                            <h4 class="text-lg font-semibold text-text-primary">{{ __('notifications.inbox') }}</h4>
                             @if($unreadNotificationCount > 0)
-                            <span class="inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-accent-red rounded-full">
-                                {{ $unreadNotificationCount > 9 ? '9+' : $unreadNotificationCount }}
+                            <span class="px-1.5 py-0.5 rounded-full bg-accent-blue/10 text-[9px] font-semibold text-accent-blue">
+                                {{ $unreadNotificationCount }} {{ __('notifications.new') }}
                             </span>
                             @endif
+                            <form action="{{ route('game.notifications.read-all', $game->id) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="text-[10px] text-accent-blue hover:text-blue-400 transition-colors">{{ __('notifications.mark_all_read') }}</button>
+                            </form>
                         </div>
-                        @if($unreadNotificationCount > 0)
-                        <form action="{{ route('game.notifications.read-all', $game->id) }}" method="POST">
-                            @csrf
-                            <x-ghost-button type="submit" color="blue" size="xs">
-                                {{ __('notifications.mark_all_read') }}
-                            </x-ghost-button>
-                        </form>
-                        @endif
-                    </div>
+                    </x-slot>
 
                     @if($groupedNotifications->isEmpty())
-                    <div class="text-center py-8">
-                        <div class="text-text-body mb-2">
-                            <svg class="w-10 h-10 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    <div class="text-center py-8 px-4">
+                        <div class="text-text-faint mb-2">
+                            <svg class="w-8 h-8 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
                         </div>
-                        <p class="text-sm text-text-secondary">{{ __('notifications.all_caught_up') }}</p>
+                        <p class="text-xs text-text-muted">{{ __('notifications.all_caught_up') }}</p>
                     </div>
                     @else
-                    <div class="space-y-4">
-                        @foreach($groupedNotifications as $date => $notifications)
-                        <div>
-                            {{-- Date Header --}}
-                            <div class="text-xs font-medium text-text-muted uppercase tracking-wide mb-2">
-                                {{ \Carbon\Carbon::parse($date)->format('j M Y') }}
-                            </div>
-
-                            {{-- Notifications for this date --}}
-                            <div class="space-y-2">
-                                @foreach($notifications as $notification)
-                                @php $classes = $notification->getTypeClasses(); @endphp
-                                <form action="{{ route('game.notifications.read', [$game->id, $notification->id]) }}" method="POST">
-                                    @csrf
-                                    <button type="submit" class="w-full text-left block p-3 {{ $classes['bg'] }} border {{ $classes['border'] }} rounded-lg hover:opacity-90 transition-opacity {{ $notification->isRead() ? 'opacity-60' : '' }}">
-                                        <div class="flex items-start gap-3">
-                                            {{-- Type icon with unread indicator --}}
-                                            <div class="relative shrink-0">
-                                                <x-notification-icon :icon="$notification->icon" :icon-bg="$classes['icon_bg']" :icon-text="$classes['icon_text']" />
-                                            </div>
-
-                                            <div class="flex-1 min-w-0">
-                                                <div class="flex items-center justify-between gap-2">
-                                                    <span class="font-semibold text-sm {{ $classes['text'] }} truncate">{{ $notification->title }}</span>
-                                                    <svg class="w-4 h-4 {{ $classes['text'] }} opacity-40 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                                                    </svg>
-                                                </div>
-                                                @if($notification->message)
-                                                <p class="text-xs text-text-secondary mt-0.5">{{ $notification->message }}</p>
-                                                @endif
-                                                @php $badge = $notification->getPriorityBadge(); @endphp
-                                                @if($badge)
-                                                <span class="inline-flex items-center mt-1 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide rounded-sm {{ $badge['bg'] }} {{ $badge['text'] }}">
-                                                    {{ $badge['label'] }}
-                                                </span>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </button>
-                                </form>
-                                @endforeach
-                            </div>
-                        </div>
+                    <div class="divide-y divide-border-default">
+                        @foreach($groupedNotifications->flatten() as $notification)
+                            <x-notification-row :notification="$notification" :game="$game" />
                         @endforeach
                     </div>
                     @endif
-                </div>
+                </x-section-card>
 
                 <hr class="border-border-strong md:hidden" />
 
                 {{-- Abridged League Standings (hidden during pre-season) --}}
                 @if($leagueStandings->isNotEmpty() && empty($isPreSeason))
-                <div class="bg-surface-800 rounded-xl border border-border-default p-4 md:p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <h4 class="text-lg font-semibold text-text-primary">
-                            @if($game->isTournamentMode() && $leagueStandings->first()?->group_label)
-                                {{ __('game.group') }} {{ $leagueStandings->first()->group_label }}
-                            @else
-                                {{ __('game.standings') }}
-                            @endif
-                        </h4>
-                        <a href="{{ route('game.competition', [$game->id, $game->competition_id]) }}" class="text-sm text-accent-blue hover:text-accent-blue">
+                @php
+                    $standingsTitle = ($game->isTournamentMode() && $leagueStandings->first()?->group_label)
+                        ? __('game.group') . ' ' . $leagueStandings->first()->group_label
+                        : __('game.standings');
+                @endphp
+                <x-section-card :title="$standingsTitle">
+                    <x-slot name="badge">
+                        <a href="{{ route('game.competition', [$game->id, $game->competition_id]) }}" class="text-[10px] text-accent-blue hover:text-blue-400 transition-colors">
                             {{ __('game.full_table') }} &rarr;
                         </a>
+                    </x-slot>
+
+                    {{-- Column headers --}}
+                    <div class="grid grid-cols-[24px_1fr_28px_28px_28px_32px_36px] gap-1 px-4 py-2 text-[9px] text-text-faint uppercase tracking-wider border-b border-border-default">
+                        <span>#</span>
+                        <span>{{ __('game.team') }}</span>
+                        <span class="text-center">{{ __('game.won_abbr') }}</span>
+                        <span class="text-center">{{ __('game.drawn_abbr') }}</span>
+                        <span class="text-center">{{ __('game.lost_abbr') }}</span>
+                        <span class="text-center">{{ __('game.goal_diff_abbr') }}</span>
+                        <span class="text-right">{{ __('game.pts_abbr') }}</span>
                     </div>
 
-                    <div class="overflow-x-auto">
-                    <table class="w-full text-sm">
-                        <thead>
-                            <tr class="border-b border-border-strong text-xs text-text-muted font-semibold">
-                                <th class="text-left py-1.5 w-6 font-semibold">#</th>
-                                <th class="text-left py-1.5 font-semibold"></th>
-                                <th class="text-center py-1.5 w-8 font-semibold">{{ __('game.played_abbr') }}</th>
-                                <th class="text-center py-1.5 w-8 font-semibold">{{ __('game.goal_diff_abbr') }}</th>
-                                <th class="text-center py-1.5 w-8 font-semibold">{{ __('game.pts_abbr') }}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @php $prevPosition = 0; @endphp
-                            @foreach($leagueStandings as $standing)
-                                @php $isPlayer = $standing->team_id === $game->team_id; @endphp
-                                @if($standing->position > $prevPosition + 1)
-                                    <tr><td colspan="5" class="text-center text-text-body py-0.5 text-xs">&middot;&middot;&middot;</td></tr>
-                                @endif
-                                <tr class="border-b border-border-default {{ $isPlayer ? 'bg-accent-gold/10 font-semibold' : '' }}">
-                                    <td class="py-1.5 text-text-muted">{{ $standing->position }}</td>
-                                    <td class="py-1.5">
-                                        <div class="flex items-center gap-2">
-                                            <x-team-crest :team="$standing->team" class="w-5 h-5 shrink-0" />
-                                            <span class="truncate {{ $isPlayer ? 'text-text-primary' : 'text-text-body' }}">{{ $standing->team->name }}</span>
-                                        </div>
-                                    </td>
-                                    <td class="py-1.5 text-center text-text-secondary">{{ $standing->played }}</td>
-                                    <td class="py-1.5 text-center text-text-secondary">{{ $standing->goal_difference >= 0 ? '+' : '' }}{{ $standing->goal_difference }}</td>
-                                    <td class="py-1.5 text-center font-semibold text-text-primary">{{ $standing->points }}</td>
-                                </tr>
-                                @php $prevPosition = $standing->position; @endphp
-                            @endforeach
-                        </tbody>
-                    </table>
+                    {{-- Rows --}}
+                    <div class="divide-y divide-border-default">
+                        @php $prevPosition = 0; @endphp
+                        @foreach($leagueStandings as $standing)
+                            <x-standing-row
+                                :standing="$standing"
+                                :is-player="$standing->team_id === $game->team_id"
+                                :show-gap="$standing->position > $prevPosition + 1"
+                            />
+                            @php $prevPosition = $standing->position; @endphp
+                        @endforeach
                     </div>
-                </div>
+                </x-section-card>
                 @endif
             </div>
         </div>

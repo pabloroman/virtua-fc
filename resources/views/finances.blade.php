@@ -78,11 +78,7 @@
 
                 {{-- Budget Flow / Budget Not Set --}}
                 @if($investment)
-                <div class="bg-surface-800 border border-border-default rounded-xl overflow-hidden">
-                    <div class="px-5 py-3 border-b border-border-default flex items-center justify-between">
-                        <h4 class="font-heading text-sm font-semibold uppercase tracking-widest text-text-secondary">{{ __('finances.budget_flow') }}</h4>
-                        <span class="text-[10px] text-text-faint">{{ __('finances.season_budget', ['season' => $game->formatted_season]) }}</span>
-                    </div>
+                <x-section-card :title="__('finances.budget_flow')" :badge="__('finances.season_budget', ['season' => $game->formatted_season])">
                     <div class="px-5 py-4 space-y-0 text-sm">
                         {{-- Revenue line items --}}
                         @php
@@ -207,7 +203,7 @@
                         </div>
                         @endif
                     </div>
-                </div>
+                </x-section-card>
                 @else
                 {{-- Budget not allocated --}}
                 <div class="bg-surface-800 border-2 border-dashed border-accent-gold/30 rounded-xl text-center py-8 px-6">
@@ -221,16 +217,15 @@
                 @endif
 
                 {{-- Transaction History --}}
-                <div class="bg-surface-800 border border-border-default rounded-xl overflow-hidden" x-data="{ filter: 'all' }">
-                    <div class="px-5 py-3 border-b border-border-default flex items-center justify-between">
-                        <h4 class="font-heading text-sm font-semibold uppercase tracking-widest text-text-secondary">{{ __('finances.transaction_history') }}</h4>
-                        @if($transactions->isNotEmpty())
+                <x-section-card :title="__('finances.transaction_history')" x-data="{ filter: 'all' }">
+                    @if($transactions->isNotEmpty())
+                    <x-slot name="badge">
                         <div class="flex items-center gap-4 text-xs">
                             <span class="text-accent-green font-medium">+{{ \App\Support\Money::format($totalIncome) }} {{ __('finances.income') }}</span>
                             <span class="text-accent-red font-medium">-{{ \App\Support\Money::format($totalExpenses) }} {{ __('finances.expenses') }}</span>
                         </div>
-                        @endif
-                    </div>
+                    </x-slot>
+                    @endif
 
                     @if($transactions->isNotEmpty())
                     {{-- Filter tabs --}}
@@ -289,7 +284,7 @@
                         <p class="text-sm text-text-faint mt-1">{{ __('finances.transactions_hint') }}</p>
                     </div>
                     @endif
-                </div>
+                </x-section-card>
             </div>
 
             {{-- RIGHT COLUMN (1/3) --}}
@@ -297,10 +292,7 @@
 
                 {{-- Infrastructure --}}
                 @if($investment)
-                <div class="bg-surface-800 border border-border-default rounded-xl overflow-hidden">
-                    <div class="px-5 py-3 border-b border-border-default">
-                        <h4 class="font-heading text-sm font-semibold uppercase tracking-widest text-text-secondary">{{ __('finances.infrastructure_investment') }}</h4>
-                    </div>
+                <x-section-card :title="__('finances.infrastructure_investment')">
                     <div class="p-4 space-y-3">
                         @foreach([
                             ['key' => 'youth_academy', 'tier' => $investment->youth_academy_tier, 'amount' => $investment->formatted_youth_academy_amount],
@@ -372,7 +364,7 @@
                         </div>
                         @endforeach
                     </div>
-                </div>
+                </x-section-card>
                 @endif
 
             </div>

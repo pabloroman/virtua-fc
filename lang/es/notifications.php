@@ -3,6 +3,7 @@
 return [
     // Inbox
     'inbox' => 'Notificaciones',
+    'new' => 'nuevas',
     'mark_all_read' => 'Marcar todo como leído',
     'all_caught_up' => 'Estás al día',
 

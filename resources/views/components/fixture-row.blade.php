@@ -10,52 +10,53 @@
     $isHome = $match->home_team_id === $game->team_id;
     $opponent = $isHome ? $match->awayTeam : $match->homeTeam;
     $isNextMatch = $highlightNext && !$match->played && $nextMatchId !== null && $nextMatchId === $match->id;
+    $compColors = \App\Support\CompetitionColors::badge($match->competition);
+    $compDot = \App\Support\CompetitionColors::dot($match->competition);
 
     // Calculate result styling
     $resultClass = '';
     $resultText = '-';
+    $resultDot = '';
     if ($showScore && $match->played) {
         $yourScore = $isHome ? $match->home_score : $match->away_score;
         $oppScore = $isHome ? $match->away_score : $match->home_score;
         $result = $yourScore > $oppScore ? 'W' : ($yourScore < $oppScore ? 'L' : 'D');
         $resultClass = $result === 'W' ? 'text-accent-green' : ($result === 'L' ? 'text-accent-red' : 'text-text-secondary');
+        $resultDot = $result === 'W' ? 'bg-accent-green' : ($result === 'L' ? 'bg-accent-red' : 'bg-surface-600');
         $resultText = $yourScore . ' - ' . $oppScore;
     }
-
-    // Competition color-coded left border
-    $borderColor = \App\Support\CompetitionColors::border($match->competition);
 @endphp
 
-<div class="flex items-center px-3 py-1 gap-2 md:gap-6 rounded-lg border-l-4 {{ $borderColor }} @if($isNextMatch) bg-accent-gold/10 ring-1 ring-accent-gold/30 @elseif($match->played) bg-surface-800 @else bg-surface-700/50 border border-border-default @endif">
-    {{-- Date & Competition --}}
-    <div class="w-16">
-        <div class="text-xs text-text-body">{{ $match->scheduled_date->locale(app()->getLocale())->translatedFormat('d/m/Y') }}</div>
-        <div class="text-xs text-text-muted truncate" title="{{ __($match->competition->name ?? __('transfers.league')) }}">
-            {{ __($match->competition->name ?? __('transfers.league')) }}
-        </div>
+<div class="flex items-center gap-3 px-4 py-2.5 {{ $isNextMatch ? 'bg-accent-blue/[0.06] border-l-2 border-l-accent-blue' : '' }} hover:bg-surface-700/30 transition-colors">
+    {{-- Date + competition dot --}}
+    <div class="w-10 shrink-0 text-center">
+        <div class="text-[11px] font-medium text-text-body leading-tight">{{ $match->scheduled_date->locale(app()->getLocale())->translatedFormat('d') }}</div>
+        <div class="text-[9px] text-text-faint uppercase">{{ $match->scheduled_date->locale(app()->getLocale())->translatedFormat('M') }}</div>
+        <div class="w-3 h-0.5 rounded-full {{ $compDot }} mx-auto mt-1"></div>
     </div>
 
     {{-- Home/Away indicator --}}
-    <div>
-        <span class="text-xs font-semibold px-2 py-1 rounded-sm @if($isHome) bg-accent-green/10 text-accent-green @else bg-surface-600 text-text-secondary @endif">
-            {{ $isHome ? mb_strtoupper(__('game.home')) : mb_strtoupper(__('game.away')) }}
-        </span>
-    </div>
+    <span class="inline-flex px-2 py-0.5 text-[9px] font-semibold rounded-full shrink-0 uppercase tracking-wider {{ $isHome ? 'bg-accent-green/10 text-accent-green' : 'bg-surface-600 text-text-secondary' }}">
+        {{ $isHome ? __('game.home_abbr') : __('game.away_abbr') }}
+    </span>
 
     {{-- Opponent --}}
-    <div class="flex-1 flex items-center gap-2">
-        <x-team-crest :team="$opponent" class="w-6 h-6" />
-        <span class="font-medium text-text-primary">{{ $opponent->name }}</span>
+    <div class="flex-1 flex items-center gap-2 min-w-0">
+        <x-team-crest :team="$opponent" class="w-5 h-5 shrink-0" />
+        <span class="text-xs truncate {{ $isNextMatch ? 'text-text-primary font-medium' : 'text-text-body' }}">{{ $opponent->name }}</span>
     </div>
 
-    {{-- Result/Status --}}
-    <div class="w-20 text-center">
+    {{-- Result / Status --}}
+    <div class="shrink-0 text-right">
         @if($showScore && $match->played)
-            <span class="{{ $resultClass }} font-semibold">{{ $resultText }}</span>
+            <div class="flex items-center gap-2">
+                <div class="w-1.5 h-1.5 rounded-full {{ $resultDot }} shrink-0"></div>
+                <span class="text-[11px] font-semibold {{ $resultClass }}">{{ $resultText }}</span>
+            </div>
         @elseif($isNextMatch)
-            <span class="text-accent-gold font-semibold text-sm">{{ mb_strtoupper(__('game.next')) }}</span>
+            <span class="px-1.5 py-0.5 rounded-full bg-accent-blue/10 text-[9px] font-semibold text-accent-blue uppercase tracking-wider">{{ __('game.next') }}</span>
         @else
-            <span class="text-text-faint">-</span>
+            <span class="text-[11px] text-text-faint">-</span>
         @endif
     </div>
 </div>

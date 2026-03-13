@@ -1,6 +1,6 @@
-@props(['icon', 'iconBg' => 'bg-surface-700/500', 'iconText' => 'text-white'])
+@props(['icon', 'iconBg' => 'bg-surface-700/50', 'iconText' => 'text-text-secondary'])
 
-<div class="w-8 h-8 rounded-full {{ $iconBg }} flex items-center justify-center shrink-0">
+<div class="w-8 h-8 rounded-lg {{ $iconBg }} flex items-center justify-center shrink-0">
     @switch($icon)
         @case('injury')
             {{-- heart --}}

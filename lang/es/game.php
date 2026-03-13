@@ -24,7 +24,9 @@ return [
     'set_lineup' => 'Alinear',
     'vs' => 'vs',
     'home' => 'Casa',
+    'home_abbr' => 'L',
     'away' => 'Fuera',
+    'away_abbr' => 'V',
     'no_form' => 'Sin historial',
     'form' => 'Forma',
 
@@ -41,6 +43,7 @@ return [
 
     // Standings
     'pts' => 'pts',
+    'team' => 'Equipo',
     'played_abbr' => 'PJ',
     'won_abbr' => 'G',
     'drawn_abbr' => 'E',
@@ -167,6 +170,7 @@ return [
     'weeks_remaining' => ':count semana restante|:count semanas restantes',
 
     // Calendar
+    'record' => 'Registro',
     'win_rate' => ':percent% victorias',
     'goals' => 'Goles',
     'scored' => 'Marcados',

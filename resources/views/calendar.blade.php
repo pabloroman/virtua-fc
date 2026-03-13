@@ -14,77 +14,79 @@
             {{-- Left Column (2/3) - Calendar --}}
             <div class="md:col-span-2 space-y-8">
                 @foreach($calendar as $month => $matches)
-                    <div class="bg-surface-800 rounded-xl border border-border-default p-4 md:p-6">
-                        <h4 class="text-md font-semibold mb-3 border-b border-border-default pb-2">{{ $month }}</h4>
-                        <div class="space-y-2">
+                    <x-section-card :title="$month">
+                        <div class="divide-y divide-border-default">
                             @foreach($matches as $match)
                                 <x-fixture-row :match="$match" :game="$game" :next-match-id="$nextMatchId" />
                             @endforeach
                         </div>
-                    </div>
+                    </x-section-card>
                 @endforeach
             </div>
 
             {{-- Right Column (1/3) - Season Stats --}}
             <div class="space-y-6">
                 {{-- Record --}}
-                <div class="bg-surface-800 rounded-xl border border-border-default p-4 md:p-6">
-                    <div class="flex items-center justify-between text-2xl font-bold mb-2">
-                        <span class="text-accent-green">{{ $seasonStats['wins'] }}W</span>
-                        <span class="text-text-secondary">{{ $seasonStats['draws'] }}D</span>
-                        <span class="text-red-500">{{ $seasonStats['losses'] }}L</span>
-                    </div>
-                    @if($seasonStats['played'] > 0)
-                    <div class="w-full bg-bar-track rounded-full h-2 overflow-hidden">
-                        @php
-                            $winWidth = ($seasonStats['wins'] / $seasonStats['played']) * 100;
-                            $drawWidth = ($seasonStats['draws'] / $seasonStats['played']) * 100;
-                        @endphp
-                        <div class="h-2 flex">
-                            <div class="bg-accent-green" style="width: {{ $winWidth }}%"></div>
-                            <div class="bg-surface-600" style="width: {{ $drawWidth }}%"></div>
+                <x-section-card :title="__('game.record')">
+                    <div class="p-4 md:p-6">
+                        <div class="flex items-center justify-between text-2xl font-bold mb-2">
+                            <span class="text-accent-green">{{ $seasonStats['wins'] }}W</span>
+                            <span class="text-text-secondary">{{ $seasonStats['draws'] }}D</span>
+                            <span class="text-red-500">{{ $seasonStats['losses'] }}L</span>
                         </div>
+                        @if($seasonStats['played'] > 0)
+                        <div class="w-full bg-bar-track rounded-full h-2 overflow-hidden">
+                            @php
+                                $winWidth = ($seasonStats['wins'] / $seasonStats['played']) * 100;
+                                $drawWidth = ($seasonStats['draws'] / $seasonStats['played']) * 100;
+                            @endphp
+                            <div class="h-2 flex">
+                                <div class="bg-accent-green" style="width: {{ $winWidth }}%"></div>
+                                <div class="bg-surface-600" style="width: {{ $drawWidth }}%"></div>
+                            </div>
+                        </div>
+                        <div class="text-xs text-text-muted mt-1 text-right">{{ __('game.win_rate', ['percent' => $seasonStats['winPercent']]) }}</div>
+                        @endif
                     </div>
-                    <div class="text-xs text-text-muted mt-1 text-right">{{ __('game.win_rate', ['percent' => $seasonStats['winPercent']]) }}</div>
-                    @endif
-                </div>
+                </x-section-card>
 
                 {{-- Form --}}
                 @if(count($seasonStats['form']) > 0)
-                <div class="bg-surface-800 rounded-xl border border-border-default p-4 md:p-6">
-                    <div class="text-sm font-medium text-text-secondary mb-2">{{ __('game.form') }}</div>
-                    <div class="flex gap-1">
-                        @foreach($seasonStats['form'] as $result)
-                            <span class="w-8 h-8 rounded text-sm font-bold flex items-center justify-center
-                                @if($result === 'W') bg-accent-green text-white
-                                @elseif($result === 'D') bg-surface-600 text-white
-                                @else bg-accent-red text-white @endif">
-                                {{ $result }}
-                            </span>
-                        @endforeach
+                <x-section-card :title="__('game.form')">
+                    <div class="p-4 md:p-6">
+                        <div class="flex gap-1">
+                            @foreach($seasonStats['form'] as $result)
+                                <span class="w-8 h-8 rounded text-sm font-bold flex items-center justify-center
+                                    @if($result === 'W') bg-accent-green text-white
+                                    @elseif($result === 'D') bg-surface-600 text-white
+                                    @else bg-accent-red text-white @endif">
+                                    {{ $result }}
+                                </span>
+                            @endforeach
+                        </div>
                     </div>
-                </div>
+                </x-section-card>
                 @endif
 
                 {{-- Goals --}}
-                <div class="bg-surface-800 rounded-xl border border-border-default p-4 md:p-6">
-                    <div class="text-sm font-medium text-text-secondary mb-3">{{ __('game.goals') }}</div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="text-center p-3 bg-surface-700/50 rounded-lg">
-                            <div class="text-2xl font-bold text-text-primary">{{ $seasonStats['goalsFor'] }}</div>
-                            <div class="text-xs text-text-muted">{{ __('game.scored') }}</div>
-                        </div>
-                        <div class="text-center p-3 bg-surface-700/50 rounded-lg">
-                            <div class="text-2xl font-bold text-text-primary">{{ $seasonStats['goalsAgainst'] }}</div>
-                            <div class="text-xs text-text-muted">{{ __('game.conceded') }}</div>
+                <x-section-card :title="__('game.goals')">
+                    <div class="p-4 md:p-6">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="text-center p-3 bg-surface-700/50 rounded-lg">
+                                <div class="text-2xl font-bold text-text-primary">{{ $seasonStats['goalsFor'] }}</div>
+                                <div class="text-xs text-text-muted">{{ __('game.scored') }}</div>
+                            </div>
+                            <div class="text-center p-3 bg-surface-700/50 rounded-lg">
+                                <div class="text-2xl font-bold text-text-primary">{{ $seasonStats['goalsAgainst'] }}</div>
+                                <div class="text-xs text-text-muted">{{ __('game.conceded') }}</div>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </x-section-card>
 
                 {{-- Home/Away Breakdown --}}
-                <div class="bg-surface-800 rounded-xl border border-border-default p-4 md:p-6">
-                    <div class="text-sm font-medium text-text-secondary mb-3">{{ __('game.home_vs_away') }}</div>
-                    <div class="space-y-3">
+                <x-section-card :title="__('game.home_vs_away')">
+                    <div class="p-4 md:p-6 space-y-3">
                         {{-- Home --}}
                         <div class="p-3 bg-accent-green/10 rounded-lg">
                             <div class="flex items-center justify-between mb-1">
@@ -110,7 +112,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </x-section-card>
             </div>
         </div>
     </div>

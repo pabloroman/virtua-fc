@@ -2,21 +2,52 @@
     <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary mb-2">Cards & Containers</h2>
     <p class="text-sm text-text-secondary mb-8">Container patterns for grouping content. Cards use opacity-layered surfaces and subtle borders to create visual hierarchy on the dark background.</p>
 
-    {{-- Standard Card --}}
+    {{-- Section Card --}}
     <div class="mb-12">
-        <h3 class="text-lg font-semibold text-text-primary mb-2">Standard Card</h3>
-        <p class="text-sm text-text-secondary mb-4">The most common card pattern. A surface-800 container with a white/5 border and optional header separated by a border.</p>
+        <h3 class="text-lg font-semibold text-text-primary mb-2">Section Card <code class="text-xs text-accent-blue font-mono">&lt;x-section-card&gt;</code></h3>
+        <p class="text-sm text-text-secondary mb-4">The primary card pattern for content sections. Features a header with uppercase tracking-widest title and optional right-aligned badge, separated from the body by a border. Used for budget flow, transaction history, infrastructure, and all major content panels.</p>
 
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3">
-            <div class="bg-surface-800 border border-border-default rounded-xl overflow-hidden">
-                <div class="px-4 py-3 border-b border-border-default flex items-center justify-between">
-                    <h4 class="font-semibold text-sm text-text-primary">Card Title</h4>
-                    <span class="text-xs text-text-muted">Metadata</span>
+        {{-- Props table --}}
+        <div class="overflow-x-auto mb-4">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="text-left text-[10px] text-text-muted uppercase tracking-widest border-b border-border-default">
+                        <th class="px-3 py-2 font-semibold">Prop</th>
+                        <th class="px-3 py-2 font-semibold">Type</th>
+                        <th class="px-3 py-2 font-semibold">Default</th>
+                        <th class="px-3 py-2 font-semibold">Description</th>
+                    </tr>
+                </thead>
+                <tbody class="text-text-secondary">
+                    <tr class="border-b border-border-default">
+                        <td class="px-3 py-2 font-mono text-accent-blue text-xs">title</td>
+                        <td class="px-3 py-2">string</td>
+                        <td class="px-3 py-2 text-text-muted">null</td>
+                        <td class="px-3 py-2">Header title text. When set, renders the header bar with border separator.</td>
+                    </tr>
+                    <tr class="border-b border-border-default">
+                        <td class="px-3 py-2 font-mono text-accent-blue text-xs">badge</td>
+                        <td class="px-3 py-2">string | slot</td>
+                        <td class="px-3 py-2 text-text-muted">null</td>
+                        <td class="px-3 py-2">Right-aligned header metadata. Pass as prop for simple text, or as a named slot for rich HTML content.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        {{-- Example: with title and badge --}}
+        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3 space-y-4">
+            <x-section-card title="Budget Flow" badge="Season 2025/26">
+                <div class="px-5 py-4">
+                    <p class="text-sm text-text-secondary">Card content goes here. This is the standard section card pattern used for budget flow, transaction history, infrastructure, and all major content panels.</p>
                 </div>
-                <div class="px-4 py-4">
-                    <p class="text-sm text-text-secondary">Card content goes here. This is the standard card pattern used for budget flow, transaction history, and data sections.</p>
+            </x-section-card>
+
+            <x-section-card title="Infrastructure">
+                <div class="px-5 py-4">
+                    <p class="text-sm text-text-secondary">A section card without a badge — only the title is shown in the header.</p>
                 </div>
-            </div>
+            </x-section-card>
         </div>
 
         <div x-data="{ copied: false }" class="relative">
@@ -25,15 +56,32 @@
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
-            <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="cardCode">&lt;div class="bg-surface-800 border border-border-default rounded-xl overflow-hidden"&gt;
-    &lt;div class="px-4 py-3 border-b border-border-default flex items-center justify-between"&gt;
-        &lt;h4 class="font-semibold text-sm text-text-primary"&gt;Title&lt;/h4&gt;
-        &lt;span class="text-xs text-text-muted"&gt;Metadata&lt;/span&gt;
-    &lt;/div&gt;
-    &lt;div class="px-4 py-4"&gt;
+            <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="cardCode">{{-- With title and simple badge --}}
+&lt;x-section-card title="Budget Flow" badge="Season 2025/26"&gt;
+    &lt;div class="px-5 py-4"&gt;
         &lt;!-- Content --&gt;
     &lt;/div&gt;
-&lt;/div&gt;</code></pre>
+&lt;/x-section-card&gt;
+
+{{-- With title only (no badge) --}}
+&lt;x-section-card title="Infrastructure"&gt;
+    &lt;div class="px-5 py-4"&gt;
+        &lt;!-- Content --&gt;
+    &lt;/div&gt;
+&lt;/x-section-card&gt;
+
+{{-- With rich badge slot --}}
+&lt;x-section-card title="Transactions"&gt;
+    &lt;x-slot name="badge"&gt;
+        &lt;div class="flex items-center gap-4 text-xs"&gt;
+            &lt;span class="text-accent-green font-medium"&gt;+€12.5M Income&lt;/span&gt;
+            &lt;span class="text-accent-red font-medium"&gt;-€8.2M Expenses&lt;/span&gt;
+        &lt;/div&gt;
+    &lt;/x-slot&gt;
+    &lt;div class="px-5 py-4"&gt;
+        &lt;!-- Content --&gt;
+    &lt;/div&gt;
+&lt;/x-section-card&gt;</code></pre>
         </div>
     </div>
 
