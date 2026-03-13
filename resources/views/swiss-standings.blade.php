@@ -38,37 +38,12 @@ $defaultTab = $knockoutStarted ? 'knockout' : 'league';
 
         {{-- Knockout Phase Bracket --}}
         @if($hasKnockout)
-            <div x-show="activeTab === 'knockout'" class="mt-6 space-y-6">
-                <div class="overflow-x-auto">
-                    <div class="flex gap-4" style="min-width: fit-content;">
-                        @foreach($knockoutRounds as $round)
-                            @php $ties = $knockoutTies->get($round->round, collect()); @endphp
-                            <div class="shrink-0 w-64">
-                                <div class="text-center mb-4">
-                                    <h4 class="font-semibold text-text-body">{{ __($round->name) }}</h4>
-                                    <div class="text-xs text-text-secondary">
-                                        {{ $round->firstLegDate->format('M d') }}
-                                        @if($round->twoLegged)
-                                            / {{ $round->secondLegDate->format('M d') }}
-                                        @endif
-                                    </div>
-                                </div>
-
-                                @if($ties->isEmpty())
-                                    <div class="p-4 text-center border border-dashed rounded-lg">
-                                        <div class="text-text-secondary text-sm">-</div>
-                                    </div>
-                                @else
-                                    <div class="space-y-2">
-                                        @foreach($ties as $tie)
-                                            <x-cup-tie-card :tie="$tie" :player-team-id="$game->team_id" />
-                                        @endforeach
-                                    </div>
-                                @endif
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
+            <div x-show="activeTab === 'knockout'" class="mt-6">
+                <x-cup-bracket
+                    :rounds="$knockoutRounds"
+                    :ties-by-round="$knockoutTies"
+                    :player-team-id="$game->team_id"
+                />
             </div>
         @endif
 

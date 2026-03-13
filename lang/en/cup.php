@@ -8,6 +8,9 @@ return [
     'round_n' => 'Round :round',
     'not_yet_entered' => 'Not yet entered',
 
+    // Bracket
+    'bracket' => 'Bracket',
+
     // Data
     'cup_data_not_available' => 'Cup data not available.',
 

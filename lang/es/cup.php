@@ -8,6 +8,9 @@ return [
     'round_n' => 'Ronda :round',
     'not_yet_entered' => 'Aún no participa',
 
+    // Bracket
+    'bracket' => 'Cuadro',
+
     // Data
     'cup_data_not_available' => 'Datos de la copa no disponibles.',
 

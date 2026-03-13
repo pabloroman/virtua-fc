@@ -20,19 +20,17 @@
         <div class="mt-6 mb-6">
             <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
                 <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary">{{ __($competition->name) }}</h2>
-                <div class="flex items-center gap-3">
-                    @if($knockoutStatus === 'champion')
-                        <span class="px-3 py-1 text-sm bg-accent-gold/10 text-accent-gold rounded-full">{{ __('cup.champion') }}</span>
-                    @elseif($knockoutStatus === 'eliminated')
-                        <span class="px-3 py-1 text-sm bg-accent-red/10 text-accent-red rounded-full">{{ __('cup.eliminated') }}</span>
-                    @elseif($knockoutStatus === 'active')
-                        <span class="px-3 py-1 text-sm bg-accent-green/10 text-accent-green rounded-full">{{ __($playerTie?->firstLegMatch?->round_name ?? '') }}</span>
-                    @elseif($knockoutStatus === 'qualified')
-                        <span class="px-3 py-1 text-sm bg-accent-green/10 text-accent-green rounded-full">{{ __('game.knockout_qualified') }}</span>
-                    @elseif($knockoutStatus === 'group_stage')
-                        <span class="px-3 py-1 text-sm bg-accent-blue/10 text-blue-400 rounded-full">{{ __('game.group_stage') }}</span>
-                    @endif
-                </div>
+                @if($knockoutStatus === 'champion')
+                    <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-accent-gold/20 text-accent-gold">{{ __('cup.champion') }}</span>
+                @elseif($knockoutStatus === 'eliminated')
+                    <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-accent-red/20 text-accent-red">{{ __('cup.eliminated') }}</span>
+                @elseif($knockoutStatus === 'active')
+                    <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-accent-green/20 text-accent-green">{{ __($playerTie?->firstLegMatch?->round_name ?? '') }}</span>
+                @elseif($knockoutStatus === 'qualified')
+                    <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-accent-green/20 text-accent-green">{{ __('game.knockout_qualified') }}</span>
+                @elseif($knockoutStatus === 'group_stage')
+                    <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold bg-accent-blue/20 text-accent-blue">{{ __('game.group_stage') }}</span>
+                @endif
             </div>
         </div>
 
@@ -90,107 +88,22 @@
                 </div>
             @else
                 {{-- Player's Current Tie Highlight --}}
-                @if($playerTie && !$playerTie->completed)
-                    @php
-                        $isHome = $playerTie->home_team_id === $game->team_id;
-                        $opponent = $isHome ? $playerTie->awayTeam : $playerTie->homeTeam;
-                    @endphp
-                    <div class="mb-8 p-6 rounded-xl bg-[var(--accent-tint)] border border-accent-blue/20">
-                        <div class="text-center text-sm text-accent-blue mb-3">{{ __('cup.your_current_cup_tie', ['round' => __($playerTie->firstLegMatch?->round_name ?? '')]) }}</div>
-                        <div class="flex items-center justify-center gap-6">
-                            <div class="flex items-center gap-3 flex-1 justify-end">
-                                <span class="text-lg md:text-xl font-semibold @if($playerTie->home_team_id === $game->team_id) text-accent-blue @endif truncate">
-                                    {{ $playerTie->homeTeam->name }}
-                                </span>
-                                <x-team-crest :team="$playerTie->homeTeam" class="w-10 h-10 md:w-12 md:h-12 shrink-0" />
-                            </div>
-                            <div class="px-4 md:px-6 text-center">
-                                @if($playerTie->firstLegMatch?->played)
-                                    <div class="text-2xl font-semibold">{{ $playerTie->getScoreDisplay() }}</div>
-                                @else
-                                    <div class="text-text-secondary">{{ __('game.vs') }}</div>
-                                @endif
-                            </div>
-                            <div class="flex items-center gap-3 flex-1">
-                                <x-team-crest :team="$playerTie->awayTeam" class="w-10 h-10 md:w-12 md:h-12 shrink-0" />
-                                <span class="text-lg md:text-xl font-semibold @if($playerTie->away_team_id === $game->team_id) text-accent-blue @endif truncate">
-                                    {{ $playerTie->awayTeam->name }}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                @elseif($playerTie && $playerTie->completed)
-                    @php $won = $playerTie->winner_id === $game->team_id; @endphp
-                    <div class="mb-8 p-5 rounded-xl {{ $won ? 'bg-accent-green/10 border-accent-green/20' : 'bg-accent-red/10 border-accent-red/20' }} border">
-                        <div class="text-center text-sm {{ $won ? 'text-accent-green' : 'text-accent-red' }} mb-3">
-                            @if($knockoutStatus === 'champion')
-                                {{ __('cup.champion_message', ['competition' => __($competition->name)]) }}
-                            @elseif($won)
-                                {{ __('cup.advanced_to_next_round') }}
-                            @else
-                                {{ __('cup.eliminated') }}
-                            @endif
-                        </div>
-                        <div class="flex items-center justify-center gap-6">
-                            <div class="flex items-center gap-3 flex-1 justify-end">
-                                <span class="text-base md:text-lg font-semibold @if($playerTie->home_team_id === $game->team_id) {{ $won ? 'text-accent-green' : 'text-accent-red' }} @endif truncate">
-                                    {{ $playerTie->homeTeam->name }}
-                                </span>
-                                <x-team-crest :team="$playerTie->homeTeam" class="w-8 h-8 md:w-10 md:h-10 shrink-0" />
-                            </div>
-                            <div class="px-4 text-lg font-semibold">{{ $playerTie->getScoreDisplay() }}</div>
-                            <div class="flex items-center gap-3 flex-1">
-                                <x-team-crest :team="$playerTie->awayTeam" class="w-8 h-8 md:w-10 md:h-10 shrink-0" />
-                                <span class="text-base md:text-lg font-semibold @if($playerTie->away_team_id === $game->team_id) {{ $won ? 'text-accent-green' : 'text-accent-red' }} @endif truncate">
-                                    {{ $playerTie->awayTeam->name }}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
+                @if($playerTie)
+                    <x-cup-player-tie
+                        :tie="$playerTie"
+                        :player-team-id="$game->team_id"
+                        :competition-name="$competition->name"
+                        :cup-status="$knockoutStatus"
+                        :round-name="$playerTie->completed ? null : ($playerTie->firstLegMatch?->round_name)"
+                    />
                 @endif
 
                 {{-- Knockout Bracket --}}
-                <div class="bg-surface-800 rounded-xl border border-border-default p-4 md:p-6">
-                    <div class="overflow-x-auto">
-                        <div class="flex gap-4" style="min-width: fit-content;">
-                            @foreach($knockoutRounds as $round)
-                                @php $ties = $knockoutTies->get($round->round, collect()); @endphp
-                                <div class="shrink-0 w-64">
-                                    <div class="text-center mb-4">
-                                        <h4 class="font-semibold text-text-body">{{ __($round->name) }}</h4>
-                                        <div class="text-xs text-text-secondary">{{ $round->firstLegDate->format('d M') }}</div>
-                                    </div>
-
-                                    @if($ties->isEmpty())
-                                        <div class="p-4 text-center border border-dashed rounded-lg">
-                                            <div class="text-text-secondary text-sm">{{ __('cup.draw_pending') }}</div>
-                                        </div>
-                                    @else
-                                        <div class="space-y-2">
-                                            @foreach($ties as $tie)
-                                                <x-cup-tie-card :tie="$tie" :player-team-id="$game->team_id" />
-                                            @endforeach
-                                        </div>
-                                    @endif
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Legend --}}
-                <div class="mt-6 text-xs text-text-muted">
-                    <div class="flex gap-6">
-                        <div class="flex items-center gap-2">
-                            <div class="w-3 h-3 bg-accent-blue/10 border border-accent-blue/30 rounded-sm"></div>
-                            <span>{{ __('cup.your_matches') }}</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <div class="w-3 h-3 bg-accent-green/10 rounded-sm"></div>
-                            <span>{{ __('cup.winner') }}</span>
-                        </div>
-                    </div>
-                </div>
+                <x-cup-bracket
+                    :rounds="$knockoutRounds"
+                    :ties-by-round="$knockoutTies"
+                    :player-team-id="$game->team_id"
+                />
             @endif
         </div>
     </div>
