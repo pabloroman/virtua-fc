@@ -43,9 +43,9 @@
                     <div class="flex gap-1 mt-2">
                         @php $homeForm = $nextMatch->home_team_id === $game->team_id ? $playerForm : $opponentForm; @endphp
                         @forelse($homeForm as $result)
-                            <span class="w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center
+                            <span class="w-5 h-5 rounded-sm text-[10px] font-bold flex items-center justify-center
                                 @if($result === 'W') bg-accent-green text-white
-                                @elseif($result === 'D') bg-surface-600 text-text-secondary
+                                @elseif($result === 'D') bg-slate-500 text-white
                                 @else bg-accent-red text-white @endif">
                                 {{ $result }}
                             </span>
@@ -74,9 +74,9 @@
                     <div class="flex gap-1 mt-2">
                         @php $awayForm = $nextMatch->away_team_id === $game->team_id ? $playerForm : $opponentForm; @endphp
                         @forelse($awayForm as $result)
-                            <span class="w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center
+                            <span class="w-5 h-5 rounded-sm text-[10px] font-bold flex items-center justify-center
                                 @if($result === 'W') bg-accent-green text-white
-                                @elseif($result === 'D') bg-surface-600 text-text-secondary
+                                @elseif($result === 'D') bg-slate-500 text-white
                                 @else bg-accent-red text-white @endif">
                                 {{ $result }}
                             </span>

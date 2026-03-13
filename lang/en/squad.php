@@ -348,4 +348,7 @@ return [
     'available_players' => 'Available Players',
     'substitutes' => 'Substitutes',
     'lineup_overview' => 'Lineup Overview',
+
+    // Number
+    'number' => 'Number',
 ];

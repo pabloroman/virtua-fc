@@ -348,4 +348,7 @@ return [
     'available_players' => 'Jugadores Disponibles',
     'substitutes' => 'Suplentes',
     'lineup_overview' => 'Resumen de Alineación',
+
+    // Dorsales
+    'number' => 'Dorsal',
 ];

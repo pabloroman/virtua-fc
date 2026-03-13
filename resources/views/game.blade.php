@@ -79,15 +79,16 @@
                 {{-- Remaining Upcoming Fixtures --}}
                 @if($upcomingFixtures->skip(1)->isNotEmpty())
                 <div class="bg-surface-800 rounded-xl border border-border-default p-4 md:p-6">
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="text-lg font-semibold text-text-primary">{{ __('game.upcoming_fixtures') }}</h4>
+                        <a href="{{ route('game.calendar', $game->id) }}" class="text-sm text-accent-blue hover:text-accent-blue">
+                            {{ __('game.full_calendar') }} &rarr;
+                        </a>
+                    </div>
                     <div class="space-y-2">
                         @foreach($upcomingFixtures->skip(1)->take(4) as $fixture)
                             <x-fixture-row :match="$fixture" :game="$game" :show-score="false" :highlight-next="false" />
                         @endforeach
-                        <div class="text-center pt-1">
-                            <a href="{{ route('game.calendar', $game->id) }}" class="text-sm text-accent-blue hover:text-accent-blue">
-                                {{ __('game.full_calendar') }} &rarr;
-                            </a>
-                        </div>
                     </div>
                 </div>
                 @endif
@@ -101,7 +102,7 @@
                 <div class="bg-surface-800 rounded-xl border border-border-default p-4 md:p-6">
                     <div class="flex items-center justify-between mb-4">
                         <div class="flex items-center gap-2">
-                            <h4 class="font-semibold text-xl text-text-primary">{{ __('notifications.inbox') }}</h4>
+                            <h4 class="text-lg font-semibold text-text-primary">{{ __('notifications.inbox') }}</h4>
                             @if($unreadNotificationCount > 0)
                             <span class="inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-accent-red rounded-full">
                                 {{ $unreadNotificationCount > 9 ? '9+' : $unreadNotificationCount }}
@@ -183,7 +184,7 @@
                 @if($leagueStandings->isNotEmpty() && empty($isPreSeason))
                 <div class="bg-surface-800 rounded-xl border border-border-default p-4 md:p-6">
                     <div class="flex items-center justify-between mb-4">
-                        <h4 class="font-semibold text-xl text-text-primary">
+                        <h4 class="text-lg font-semibold text-text-primary">
                             @if($game->isTournamentMode() && $leagueStandings->first()?->group_label)
                                 {{ __('game.group') }} {{ $leagueStandings->first()->group_label }}
                             @else
@@ -237,7 +238,11 @@
         @elseif($hasRemainingMatches)
         {{-- AI Matches Remaining State --}}
         <div class="mt-6 bg-surface-800 rounded-xl border border-border-default p-4 md:p-8 text-center">
-            <div class="text-6xl mb-4">&#9917;</div>
+            <div class="text-text-body mb-4">
+                <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
             <h2 class="text-3xl font-bold text-text-primary mb-2">{{ __('game.other_competitions_in_progress') }}</h2>
             <p class="text-text-muted mb-8">{{ __('game.other_competitions_desc') }}</p>
             <form action="{{ route('game.advance', $game->id) }}" method="POST">
