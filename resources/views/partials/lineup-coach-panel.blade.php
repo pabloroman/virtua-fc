@@ -1,4 +1,4 @@
-<div class="bg-surface-700/50 rounded-lg p-4 border border-border-strong {{ $class ?? '' }}">
+<div class="bg-surface-700/50 rounded-lg p-4 border border-border-strong">
     <div class="text-xs font-semibold text-text-muted uppercase tracking-wide mb-3">{{ __('squad.coach_assistant') }}</div>
 
     {{-- Face to Face Comparison --}}

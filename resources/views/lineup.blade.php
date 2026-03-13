@@ -322,59 +322,6 @@
                             </div>
                         </div>
 
-                        {{-- Bench section --}}
-                        <div>
-                            <div class="flex items-center justify-between mb-2.5">
-                                <h3 class="font-heading text-sm font-semibold uppercase tracking-widest text-text-secondary">{{ __('squad.substitutes') }}</h3>
-                                <span class="text-[10px] text-text-faint"
-                                    x-text="(() => { const bench = selectedPlayers.filter(id => !slotAssignments.some(s => s.player?.id === id)); return bench.length + ' {{ __('squad.players_count') }}'; })()"></span>
-                            </div>
-                            <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-7 gap-2">
-                                <template x-for="benchPlayerId in selectedPlayers.filter(id => !slotAssignments.some(s => s.player?.id === id))" :key="'bench-' + benchPlayerId">
-                                    <div class="bench-card bg-surface-700/50 border border-border-default rounded-lg p-2.5 text-center cursor-pointer"
-                                         @click="toggle(benchPlayerId, false)">
-                                        <template x-if="playersData[benchPlayerId]">
-                                            <div>
-                                                <div class="relative shrink-0 mx-auto mb-1.5 w-8 h-8">
-                                                    <div class="w-8 h-8 rounded-full border flex items-center justify-center"
-                                                        :class="getAvatarCircleClasses(playersData[benchPlayerId].positionGroup)">
-                                                        <span class="font-heading font-bold text-xs"
-                                                            :class="getAvatarTextClasses(playersData[benchPlayerId].positionGroup)"
-                                                            x-text="getAvatarDisplay(playersData[benchPlayerId])"></span>
-                                                    </div>
-                                                </div>
-                                                <p class="text-[11px] font-medium text-text-primary truncate" x-text="playersData[benchPlayerId].name"></p>
-                                                <p class="text-[9px] text-text-muted uppercase font-heading tracking-wide mt-0.5">
-                                                    <span x-text="playersData[benchPlayerId].positionAbbrev"></span> ·
-                                                    <span :class="{
-                                                        'text-accent-green': playersData[benchPlayerId].overallScore >= 80,
-                                                        'text-lime-400': playersData[benchPlayerId].overallScore >= 70 && playersData[benchPlayerId].overallScore < 80,
-                                                        'text-accent-gold': playersData[benchPlayerId].overallScore >= 60 && playersData[benchPlayerId].overallScore < 70,
-                                                        'text-text-secondary': playersData[benchPlayerId].overallScore < 60,
-                                                    }" x-text="playersData[benchPlayerId].overallScore"></span>
-                                                </p>
-                                                <div class="flex items-center justify-center gap-1 mt-1.5">
-                                                    <div class="w-10 h-1 rounded-full bg-surface-600 overflow-hidden">
-                                                        <div class="h-full rounded-full fitness-bar"
-                                                            :class="{
-                                                                'bg-accent-green': playersData[benchPlayerId].fitness >= 80,
-                                                                'bg-accent-gold': playersData[benchPlayerId].fitness >= 60 && playersData[benchPlayerId].fitness < 80,
-                                                                'bg-accent-orange': playersData[benchPlayerId].fitness >= 40 && playersData[benchPlayerId].fitness < 60,
-                                                                'bg-accent-red': playersData[benchPlayerId].fitness < 40,
-                                                            }"
-                                                            :style="'width: ' + playersData[benchPlayerId].fitness + '%'"></div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </template>
-                                    </div>
-                                </template>
-                            </div>
-                        </div>
-
-                        {{-- Coach Assistant Panel (desktop: below pitch) --}}
-                        @include('partials.lineup-coach-panel', ['class' => 'hidden lg:block'])
-
                     </div>
 
                     {{-- CENTER: Available Players sidebar --}}
@@ -505,6 +452,53 @@
                             </template>
                         </div>
 
+                        {{-- Opponent Preview Card --}}
+                        <div class="bg-surface-800 border border-border-default rounded-xl p-4">
+                            <div class="flex items-center justify-between gap-2">
+                                <div class="flex items-center gap-1.5">
+                                    <x-team-crest :team="$game->team" class="w-5 h-5 shrink-0" />
+                                    <span class="text-sm font-bold text-text-primary" x-text="teamAverage || '-'"></span>
+                                </div>
+
+                                {{-- Advantage badge (reactive) --}}
+                                <template x-if="teamAverage && {{ $opponentData['teamAverage'] ?: 0 }}">
+                                    <span
+                                        class="text-[10px] font-semibold px-1.5 py-0.5 rounded-full shrink-0"
+                                        :class="{
+                                            'bg-accent-green/10 text-accent-green': teamAverage > {{ $opponentData['teamAverage'] ?: 0 }},
+                                            'bg-accent-red/10 text-accent-red': teamAverage < {{ $opponentData['teamAverage'] ?: 0 }},
+                                            'bg-surface-700 text-text-secondary': teamAverage === {{ $opponentData['teamAverage'] ?: 0 }}
+                                        }"
+                                        x-text="teamAverage > {{ $opponentData['teamAverage'] ?: 0 }} ? '+' + (teamAverage - {{ $opponentData['teamAverage'] ?: 0 }}) : (teamAverage < {{ $opponentData['teamAverage'] ?: 0 }} ? (teamAverage - {{ $opponentData['teamAverage'] ?: 0 }}) : '=')"
+                                    ></span>
+                                </template>
+                                <template x-if="!teamAverage || !{{ $opponentData['teamAverage'] ?: 0 }}">
+                                    <span class="text-[10px] text-text-secondary">vs</span>
+                                </template>
+
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-sm font-bold text-text-primary">{{ $opponentData['teamAverage'] ?: '-' }}</span>
+                                    <x-team-crest :team="$opponent" class="w-5 h-5 shrink-0" />
+                                </div>
+                            </div>
+
+                            @if(!empty($opponentData['formation']))
+                                <div class="text-center text-[10px] text-text-muted mt-2">
+                                    <span class="font-semibold text-text-body bg-surface-700 px-1.5 py-0.5 rounded-sm">{{ $opponentData['formation'] }}</span>
+                                    <span class="text-text-body mx-0.5">&middot;</span>
+                                    <span class="font-medium
+                                        @if($opponentData['mentality'] === 'defensive') text-accent-blue
+                                        @elseif($opponentData['mentality'] === 'attacking') text-accent-red
+                                        @else text-text-secondary
+                                        @endif">{{ __('squad.mentality_' . $opponentData['mentality']) }}</span>
+                                </div>
+                            @endif
+
+                            <x-ghost-button type="button" @click="$dispatch('open-modal', 'coach-assistant')" size="xs" class="w-full mt-3">
+                                {{ __('squad.coach_full_report') }} &rarr;
+                            </x-ghost-button>
+                        </div>
+
                         <div class="bg-surface-800 border border-border-default rounded-xl p-4 space-y-4">
 
                             {{-- Team Instructions --}}
@@ -543,15 +537,24 @@
                                 </x-ghost-button>
                             </div>
 
-                            {{-- Coach Assistant (mobile: inside tactics tab) --}}
-                            <div class="lg:hidden mt-4">
-                                @include('partials.lineup-coach-panel')
-                            </div>
                         </div>
                     </div>
                 </div>
             </form>
         </div>
+
+        {{-- Coach Assistant Modal --}}
+        <x-modal name="coach-assistant" max-width="lg">
+            <div class="p-5">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-heading text-lg font-semibold text-text-primary">{{ __('squad.coach_assistant') }}</h3>
+                    <x-icon-button type="button" @click="$dispatch('close-modal', 'coach-assistant')">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </x-icon-button>
+                </div>
+                @include('partials.lineup-coach-panel')
+            </div>
+        </x-modal>
     </div>
 
     @include('partials.tactical-guide-modal')
