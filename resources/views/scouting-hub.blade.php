@@ -32,7 +32,7 @@
                             ['href' => route('game.scouting', $game->id), 'label' => __('transfers.scouting_tab'), 'active' => true],
                             ['href' => route('game.explore', $game->id), 'label' => __('transfers.explore_tab'), 'active' => false],
                         ]">
-                            <button @click="helpOpen = !helpOpen" class="flex items-center gap-2 text-sm text-text-muted hover:text-text-body transition-colors whitespace-nowrap">
+                            <x-ghost-button color="slate" @click="helpOpen = !helpOpen" class="gap-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-text-secondary shrink-0">
                                     <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-7-4a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM9 9a.75.75 0 0 0 0 1.5h.253a.25.25 0 0 1 .244.304l-.459 2.066A1.75 1.75 0 0 0 10.747 15H11a.75.75 0 0 0 0-1.5h-.253a.25.25 0 0 1-.244-.304l.459-2.066A1.75 1.75 0 0 0 9.253 9H9Z" clip-rule="evenodd" />
                                 </svg>
@@ -40,7 +40,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 transition-transform hidden md:block" :class="helpOpen ? 'rotate-180' : ''">
                                     <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
                                 </svg>
-                            </button>
+                            </x-ghost-button>
                         </x-section-nav>
 
                         <div x-show="helpOpen" x-transition class="mt-3 bg-surface-700/50 border border-border-strong rounded-lg p-4 text-sm">
@@ -217,14 +217,14 @@
                                                         { key: 'ability', label: '{{ __('transfers.sort_ability') }}' },
                                                         { key: 'price', label: '{{ __('transfers.sort_price') }}' },
                                                     ]" :key="col.key">
-                                                        <button @click="toggleSort(col.key)"
-                                                            class="inline-flex items-center gap-0.5 px-2 py-1 text-[10px] font-medium rounded-full transition-colors shrink-0"
-                                                            :class="sortBy === col.key ? 'bg-accent-gold/20 text-accent-gold' : 'bg-surface-800/70 text-text-muted hover:bg-surface-800 hover:text-text-body'">
+                                                        <x-pill-button size="xs" @click="toggleSort(col.key)"
+                                                            class="rounded-full"
+                                                            x-bind:class="sortBy === col.key ? 'bg-accent-gold/20 text-accent-gold' : 'bg-surface-800/70 text-text-muted hover:bg-surface-800 hover:text-text-body'">
                                                             <span x-text="col.label"></span>
                                                             <svg x-show="sortBy === col.key" class="w-3 h-3 transition-transform" :class="sortDir === 'desc' ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
                                                             </svg>
-                                                        </button>
+                                                        </x-pill-button>
                                                     </template>
                                                 </div>
                                             </div>
@@ -293,36 +293,36 @@
                                                     <div class="flex items-center gap-1 shrink-0">
                                                         {{-- Track button (for level < 2 players, not currently tracking) --}}
                                                         <template x-if="player.intelLevel < 2 && !player.isTracking && trackingMax > 0">
-                                                            <button @click.stop="startTracking(player)"
-                                                                :disabled="trackingAvailable <= 0"
-                                                                :class="trackingAvailable > 0 ? 'text-teal-400 hover:text-teal-300 hover:bg-teal-500/10' : 'text-text-body cursor-not-allowed'"
-                                                                class="p-1.5 rounded-sm transition-colors min-h-[44px] sm:min-h-0"
-                                                                :title="trackingAvailable > 0 ? '{{ __('transfers.start_tracking') }}' : '{{ __('transfers.no_tracking_slots') }}'">
+                                                            <x-icon-button size="sm" @click.stop="startTracking(player)"
+                                                                x-bind:disabled="trackingAvailable <= 0"
+                                                                x-bind:class="trackingAvailable > 0 ? 'text-teal-400 hover:text-teal-300 hover:bg-teal-500/10' : 'text-text-body cursor-not-allowed'"
+                                                                class="min-h-[44px] sm:min-h-0"
+                                                                x-bind:title="trackingAvailable > 0 ? @js(__('transfers.start_tracking')) : @js(__('transfers.no_tracking_slots'))">
                                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                                            </button>
+                                                            </x-icon-button>
                                                         </template>
                                                         {{-- Stop tracking button (for currently tracking players) --}}
                                                         <template x-if="player.isTracking">
-                                                            <button @click.stop="stopTracking(player)"
-                                                                class="p-1.5 text-teal-400 hover:text-red-500 rounded-sm hover:bg-accent-red/10 transition-colors min-h-[44px] sm:min-h-0"
+                                                            <x-icon-button size="sm" @click.stop="stopTracking(player)"
+                                                                class="text-teal-400 hover:text-red-500 hover:bg-accent-red/10 min-h-[44px] sm:min-h-0"
                                                                 title="{{ __('transfers.stop_tracking') }}">
                                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
-                                                            </button>
+                                                            </x-icon-button>
                                                         </template>
                                                         <svg class="w-4 h-4 text-text-secondary transition-transform" :class="expandedId === player.id ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                                         </svg>
                                                         <template x-if="confirmRemoveId !== player.id">
-                                                            <button @click.stop="confirmRemoveId = player.id" class="p-1.5 text-text-body hover:text-red-500 rounded-sm hover:bg-accent-red/10 transition-colors min-h-[44px] sm:min-h-0" title="{{ __('transfers.remove_from_shortlist') }}">
+                                                            <x-icon-button size="sm" @click.stop="confirmRemoveId = player.id" class="text-text-body hover:text-red-500 hover:bg-accent-red/10 min-h-[44px] sm:min-h-0" title="{{ __('transfers.remove_from_shortlist') }}">
                                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                                                                 </svg>
-                                                            </button>
+                                                            </x-icon-button>
                                                         </template>
                                                         <template x-if="confirmRemoveId === player.id">
-                                                            <button @click.stop="removePlayer(player)" class="px-2 py-1 text-xs font-semibold text-accent-red border border-accent-red/20 rounded-sm hover:bg-accent-red/10 transition-colors min-h-[44px] sm:min-h-0">
+                                                            <x-ghost-button color="red" size="xs" @click.stop="removePlayer(player)" class="min-h-[44px] sm:min-h-0">
                                                                 {{ __('transfers.remove_from_shortlist') }}
-                                                            </button>
+                                                            </x-ghost-button>
                                                         </template>
                                                     </div>
                                                 </div>
@@ -419,9 +419,9 @@
                                                                     <template x-if="isTransferWindow && player.canAffordWage">
                                                                         <form :action="signFreeAgentRoute(player.id)" method="POST">
                                                                             <input type="hidden" name="_token" :value="csrfToken">
-                                                                            <button type="submit" class="inline-flex items-center justify-center px-4 py-1.5 min-h-[36px] bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-lg transition-colors whitespace-nowrap">
+                                                                            <x-primary-button color="green" size="xs">
                                                                                 {{ __('transfers.sign_free_agent') }}
-                                                                            </button>
+                                                                            </x-primary-button>
                                                                         </form>
                                                                     </template>
                                                                     <template x-if="!isTransferWindow">
@@ -482,9 +482,9 @@
                                                                             <input type="text" readonly :value="display" class="min-h-[32px] sm:min-h-0 w-28 text-xs text-center font-semibold text-text-primary bg-surface-800 border-x border-y-0 border-border-strong outline-hidden cursor-default focus:outline-hidden focus:ring-0 focus:border-border-strong">
                                                                             <button type="button" class="min-h-[32px] sm:min-h-0 min-w-[32px] text-sm flex items-center justify-center bg-surface-700/50 hover:bg-surface-700 active:bg-surface-600 text-text-body font-bold select-none transition-colors" @mousedown.prevent="startHold(() => increment())" @mouseup="stopHold()" @mouseleave="stopHold()" @touchstart.prevent="startHold(() => increment())" @touchend="stopHold()">+</button>
                                                                         </div>
-                                                                        <button type="submit" class="inline-flex items-center justify-center px-3 py-1.5 min-h-[36px] bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg transition-colors whitespace-nowrap">
+                                                                        <x-primary-button color="green" size="xs">
                                                                             {{ __('transfers.submit_pre_contract') }}
-                                                                        </button>
+                                                                        </x-primary-button>
                                                                     </div>
                                                                 </form>
                                                             </template>
@@ -516,15 +516,15 @@
                                                                             <input type="text" readonly :value="display" class="min-h-[32px] sm:min-h-0 w-28 text-xs text-center font-semibold text-text-primary bg-surface-800 border-x border-y-0 border-border-strong outline-hidden cursor-default focus:outline-hidden focus:ring-0 focus:border-border-strong">
                                                                             <button type="button" class="min-h-[32px] sm:min-h-0 min-w-[32px] text-sm flex items-center justify-center bg-surface-700/50 hover:bg-surface-700 active:bg-surface-600 text-text-body font-bold select-none transition-colors" @mousedown.prevent="startHold(() => increment())" @mouseup="stopHold()" @mouseleave="stopHold()" @touchstart.prevent="startHold(() => increment())" @touchend="stopHold()">+</button>
                                                                         </div>
-                                                                        <button type="submit" class="inline-flex items-center justify-center px-3 py-1.5 min-h-[36px] bg-accent-blue hover:bg-sky-700 text-white text-xs font-semibold rounded-lg transition-colors whitespace-nowrap">
+                                                                        <x-primary-button size="xs">
                                                                             {{ __('transfers.submit_bid') }}
-                                                                        </button>
+                                                                        </x-primary-button>
                                                                     </form>
                                                                     <form :action="loanRoute(player.id)" method="POST">
                                                                         <input type="hidden" name="_token" :value="csrfToken">
-                                                                        <button type="submit" class="inline-flex items-center justify-center px-3 py-1.5 min-h-[36px] border border-border-strong text-text-body text-xs font-semibold rounded-lg hover:bg-surface-700/50 transition-colors whitespace-nowrap">
+                                                                        <x-secondary-button type="submit" size="xs">
                                                                             {{ __('transfers.request_loan') }}
-                                                                        </button>
+                                                                        </x-secondary-button>
                                                                     </form>
                                                                 </div>
                                                             </template>
@@ -591,24 +591,23 @@
                                                     <td class="py-3 text-center text-text-secondary tabular-nums">{{ __('transfers.results_count', ['count' => $resultCount]) }}</td>
                                                     <td class="py-3 text-right pr-4">
                                                         <div class="flex items-center justify-end gap-2" x-data="{ confirmDelete: false }">
-                                                            <button x-data @click="$dispatch('show-scout-results', '{{ route('game.scouting.results', [$game->id, $historyReport->id]) }}')"
-                                                               class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-accent-blue hover:text-accent-blue border border-accent-blue/20 hover:bg-accent-blue/10 rounded-lg transition-colors min-h-[44px] sm:min-h-0">
+                                                            <x-action-button color="blue" type="button" x-data @click="$dispatch('show-scout-results', '{{ route('game.scouting.results', [$game->id, $historyReport->id]) }}')" class="sm:min-h-0">
                                                                 {{ __('transfers.view_results') }}
-                                                            </button>
+                                                            </x-action-button>
                                                             <template x-if="!confirmDelete">
-                                                                <button @click="confirmDelete = true" class="p-1.5 text-text-body hover:text-red-500 rounded-sm hover:bg-accent-red/10 transition-colors min-h-[44px] sm:min-h-0" title="{{ __('transfers.delete_search') }}">
+                                                                <x-icon-button size="sm" @click="confirmDelete = true" class="hover:text-red-500 hover:bg-accent-red/10 sm:min-h-0" title="{{ __('transfers.delete_search') }}">
                                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                                                     </svg>
-                                                                </button>
+                                                                </x-icon-button>
                                                             </template>
                                                             <template x-if="confirmDelete">
                                                                 <form method="POST" action="{{ route('game.scouting.delete', [$game->id, $historyReport->id]) }}" class="inline">
                                                                     @csrf
                                                                     @method('DELETE')
-                                                                    <button type="submit" class="inline-flex items-center px-2 py-1.5 text-xs font-semibold text-accent-red border border-accent-red/20 rounded-lg hover:bg-accent-red/10 transition-colors min-h-[44px] sm:min-h-0">
+                                                                    <x-action-button color="red" class="sm:min-h-0">
                                                                         {{ __('transfers.delete_search') }}
-                                                                    </button>
+                                                                    </x-action-button>
                                                                 </form>
                                                             </template>
                                                         </div>
