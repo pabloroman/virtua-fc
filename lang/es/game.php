@@ -78,6 +78,9 @@ return [
     'mentality_tip_defensive' => 'Tus goles :own, goles rival :opponent. Cierra el partido.',
     'mentality_tip_balanced' => 'Sin modificadores. Juego equilibrado.',
     'mentality_tip_attacking' => 'Tus goles :own, goles rival :opponent. Riesgo y recompensa.',
+    'mentality_summary_defensive' => 'Prioriza la solidez defensiva sobre el ataque.',
+    'mentality_summary_balanced' => 'Equilibrio entre ataque y defensa.',
+    'mentality_summary_attacking' => 'Prioriza el ataque asumiendo más riesgo defensivo.',
 
     // Playing Style
     'style_possession' => 'Posesión',

@@ -156,6 +156,7 @@ class ShowLineup
             'value' => $m->value,
             'label' => $m->label(),
             'tooltip' => $m->tooltip(),
+            'summary' => $m->summary(),
         ], Mentality::cases());
 
         $playingStyles = array_map(fn (PlayingStyle $s) => [

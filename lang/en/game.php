@@ -78,6 +78,9 @@ return [
     'mentality_tip_defensive' => 'Your goals :own, opponent goals :opponent. Shut the game down.',
     'mentality_tip_balanced' => 'No modifiers. Balanced play.',
     'mentality_tip_attacking' => 'Your goals :own, opponent goals :opponent. Risk and reward.',
+    'mentality_summary_defensive' => 'Prioritize defensive solidity over attack.',
+    'mentality_summary_balanced' => 'Balance between attack and defense.',
+    'mentality_summary_attacking' => 'Prioritize attack at the cost of defensive risk.',
 
     // Playing Style
     'style_possession' => 'Possession',

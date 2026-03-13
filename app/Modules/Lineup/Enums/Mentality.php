@@ -20,6 +20,15 @@ enum Mentality: string
         };
     }
 
+    public function summary(): string
+    {
+        return match ($this) {
+            self::DEFENSIVE => __('game.mentality_summary_defensive'),
+            self::BALANCED => __('game.mentality_summary_balanced'),
+            self::ATTACKING => __('game.mentality_summary_attacking'),
+        };
+    }
+
     public function tooltip(): string
     {
         $ownPct = self::formatModifierPct($this->ownGoalsModifier());
