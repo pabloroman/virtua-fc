@@ -35,7 +35,7 @@
             <p class="text-sm mt-1">{{ __('transfers.try_broadening') }}</p>
         </div>
     @else
-        <div class="divide-y divide-slate-100 -mx-4 md:-mx-6">
+        <div class="divide-y divide-border-default -mx-4 md:-mx-6">
             @foreach($players as $player)
                 @php
                     $detail = $playerDetails[$player->id] ?? null;
@@ -67,7 +67,7 @@
                                     @if($isFreeAgent)
                                         <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-medium bg-accent-green/10 text-accent-green">{{ __('transfers.free_agent') }}</span>
                                     @elseif($isExpiring)
-                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-medium bg-amber-100 text-accent-gold">{{ __('transfers.expiring_contract') }}</span>
+                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-medium bg-accent-gold/10 text-accent-gold">{{ __('transfers.expiring_contract') }}</span>
                                     @endif
                                 </div>
                                 <div class="flex items-center gap-2 text-xs text-text-muted mt-0.5">
@@ -124,9 +124,9 @@
                                         <div class="flex items-center justify-between gap-3">
                                             <span class="text-xs text-text-muted w-16 shrink-0">{{ __('transfers.technical') }}</span>
                                             <div class="flex items-center gap-2 flex-1 justify-end">
-                                                <div class="w-20 h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                                                <div class="w-20 h-1.5 bg-bar-track rounded-full overflow-hidden">
                                                     @php $midTech = ($techRange[0] + $techRange[1]) / 2; @endphp
-                                                    <div class="h-1.5 rounded-full {{ $midTech >= 80 ? 'bg-emerald-500' : ($midTech >= 70 ? 'bg-lime-500' : ($midTech >= 60 ? 'bg-accent-gold' : 'bg-slate-400')) }}" style="width: {{ $midTech / 99 * 100 }}%"></div>
+                                                    <div class="h-1.5 rounded-full {{ $midTech >= 80 ? 'bg-accent-green' : ($midTech >= 70 ? 'bg-lime-500' : ($midTech >= 60 ? 'bg-accent-gold' : 'bg-surface-600')) }}" style="width: {{ $midTech / 99 * 100 }}%"></div>
                                                 </div>
                                                 <span class="text-xs font-semibold tabular-nums text-text-body">{{ $techRange[0] }}-{{ $techRange[1] }}</span>
                                             </div>
@@ -135,9 +135,9 @@
                                         <div class="flex items-center justify-between gap-3">
                                             <span class="text-xs text-text-muted w-16 shrink-0">{{ __('transfers.physical') }}</span>
                                             <div class="flex items-center gap-2 flex-1 justify-end">
-                                                <div class="w-20 h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                                                <div class="w-20 h-1.5 bg-bar-track rounded-full overflow-hidden">
                                                     @php $midPhys = ($physRange[0] + $physRange[1]) / 2; @endphp
-                                                    <div class="h-1.5 rounded-full {{ $midPhys >= 80 ? 'bg-emerald-500' : ($midPhys >= 70 ? 'bg-lime-500' : ($midPhys >= 60 ? 'bg-accent-gold' : 'bg-slate-400')) }}" style="width: {{ $midPhys / 99 * 100 }}%"></div>
+                                                    <div class="h-1.5 rounded-full {{ $midPhys >= 80 ? 'bg-accent-green' : ($midPhys >= 70 ? 'bg-lime-500' : ($midPhys >= 60 ? 'bg-accent-gold' : 'bg-surface-600')) }}" style="width: {{ $midPhys / 99 * 100 }}%"></div>
                                                 </div>
                                                 <span class="text-xs font-semibold tabular-nums text-text-body">{{ $physRange[0] }}-{{ $physRange[1] }}</span>
                                             </div>
@@ -200,7 +200,7 @@
                                                 {{ __('transfers.bid_awaiting_response') }}
                                             </div>
                                         @elseif($hasOffer && $offerStatus === 'pending' && $offerIsCounter)
-                                            <div class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-accent-blue/10 text-blue-400 border border-blue-200">
+                                            <div class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-accent-blue/10 text-blue-400 border border-accent-blue/20">
                                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
                                                 {{ __('transfers.counter_offer_received') }}
                                             </div>
@@ -217,7 +217,7 @@
                                                 <label class="block text-xs font-medium text-text-secondary">{{ __('transfers.offered_wage_euros') }}</label>
                                                 <div class="flex items-center gap-2">
                                                     <x-money-input name="offered_wage" :value="(int)($preContractWage / 100)" :min="0" size="sm" />
-                                                    <button type="submit" class="inline-flex items-center justify-center px-3 py-1.5 min-h-[36px] bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg transition-colors whitespace-nowrap">
+                                                    <button type="submit" class="inline-flex items-center justify-center px-3 py-1.5 min-h-[36px] bg-accent-green hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg transition-colors whitespace-nowrap">
                                                         {{ __('transfers.submit_pre_contract') }}
                                                     </button>
                                                 </div>

@@ -66,10 +66,10 @@
         {{-- Right: overall badge + close --}}
         <div class="flex items-start gap-3 shrink-0">
             <div class="w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center text-xl md:text-2xl font-bold
-                @if($gamePlayer->overall_score >= 80) bg-emerald-500 text-white
+                @if($gamePlayer->overall_score >= 80) bg-accent-green text-white
                 @elseif($gamePlayer->overall_score >= 70) bg-lime-500 text-white
                 @elseif($gamePlayer->overall_score >= 60) bg-accent-gold text-white
-                @else bg-slate-300 text-text-body
+                @else bg-surface-600 text-text-body
                 @endif">{{ $gamePlayer->overall_score }}</div>
             <button onclick="window.dispatchEvent(new CustomEvent('close-modal', {detail: 'player-detail'}))" class="p-1 text-text-secondary hover:text-text-secondary rounded-sm hover:bg-surface-700">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -92,7 +92,7 @@
                     <span class="text-xs text-text-secondary uppercase tracking-wide w-20 shrink-0">{{ __('squad.technical_full') }}</span>
                     <div class="flex items-center gap-2.5 flex-1 justify-end">
                         <div class="w-28 h-2 bg-surface-700 rounded-full overflow-hidden">
-                            <div class="h-2 rounded-full @if($val >= 80) bg-accent-green @elseif($val >= 70) bg-lime-500 @elseif($val >= 60) bg-accent-gold @else bg-slate-400 @endif" style="width: {{ $val / 99 * 100 }}%"></div>
+                            <div class="h-2 rounded-full @if($val >= 80) bg-accent-green @elseif($val >= 70) bg-lime-500 @elseif($val >= 60) bg-accent-gold @else bg-surface-600 @endif" style="width: {{ $val / 99 * 100 }}%"></div>
                         </div>
                         <span class="text-sm font-semibold tabular-nums w-7 text-right @if($val >= 80) text-accent-green @elseif($val >= 70) text-lime-600 @elseif($val >= 60) text-amber-600 @else text-text-secondary @endif">{{ $val }}</span>
                     </div>
@@ -103,7 +103,7 @@
                     <span class="text-xs text-text-secondary uppercase tracking-wide w-20 shrink-0">{{ __('squad.physical_full') }}</span>
                     <div class="flex items-center gap-2.5 flex-1 justify-end">
                         <div class="w-28 h-2 bg-surface-700 rounded-full overflow-hidden">
-                            <div class="h-2 rounded-full @if($val >= 80) bg-accent-green @elseif($val >= 70) bg-lime-500 @elseif($val >= 60) bg-accent-gold @else bg-slate-400 @endif" style="width: {{ $val / 99 * 100 }}%"></div>
+                            <div class="h-2 rounded-full @if($val >= 80) bg-accent-green @elseif($val >= 70) bg-lime-500 @elseif($val >= 60) bg-accent-gold @else bg-surface-600 @endif" style="width: {{ $val / 99 * 100 }}%"></div>
                         </div>
                         <span class="text-sm font-semibold tabular-nums w-7 text-right @if($val >= 80) text-accent-green @elseif($val >= 70) text-lime-600 @elseif($val >= 60) text-amber-600 @else text-text-secondary @endif">{{ $val }}</span>
                     </div>
@@ -114,7 +114,7 @@
                     <span class="text-xs text-text-secondary uppercase tracking-wide w-20 shrink-0">{{ __('squad.fitness_full') }}</span>
                     <div class="flex items-center gap-2.5 flex-1 justify-end">
                         <div class="w-28 h-2 bg-surface-700 rounded-full overflow-hidden">
-                            <div class="h-2 rounded-full @if($val >= 80) bg-accent-green @elseif($val >= 70) bg-lime-500 @elseif($val >= 60) bg-accent-gold @else bg-slate-400 @endif" style="width: {{ $val }}%"></div>
+                            <div class="h-2 rounded-full @if($val >= 80) bg-accent-green @elseif($val >= 70) bg-lime-500 @elseif($val >= 60) bg-accent-gold @else bg-surface-600 @endif" style="width: {{ $val }}%"></div>
                         </div>
                         <span class="text-sm font-semibold tabular-nums w-7 text-right @if($val >= 90) text-accent-green @elseif($val >= 80) text-lime-600 @elseif($val >= 70) text-accent-gold @else text-red-500 @endif">{{ $val }}</span>
                     </div>
@@ -125,7 +125,7 @@
                     <span class="text-xs text-text-secondary uppercase tracking-wide w-20 shrink-0">{{ __('squad.morale_full') }}</span>
                     <div class="flex items-center gap-2.5 flex-1 justify-end">
                         <div class="w-28 h-2 bg-surface-700 rounded-full overflow-hidden">
-                            <div class="h-2 rounded-full @if($val >= 80) bg-accent-green @elseif($val >= 70) bg-lime-500 @elseif($val >= 60) bg-accent-gold @else bg-slate-400 @endif" style="width: {{ $val }}%"></div>
+                            <div class="h-2 rounded-full @if($val >= 80) bg-accent-green @elseif($val >= 70) bg-lime-500 @elseif($val >= 60) bg-accent-gold @else bg-surface-600 @endif" style="width: {{ $val }}%"></div>
                         </div>
                         <span class="text-sm font-semibold tabular-nums w-7 text-right @if($val >= 85) text-accent-green @elseif($val >= 75) text-lime-600 @elseif($val >= 65) text-accent-gold @else text-red-500 @endif">{{ $val }}</span>
                     </div>
@@ -182,7 +182,7 @@
                 @if($gamePlayer->isInjured())
                     <div class="flex items-center justify-between">
                         <span class="text-xs text-text-secondary uppercase tracking-wide">{{ __('app.status') }}</span>
-                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-accent-red">
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-accent-red/10 text-accent-red">
                             {{ __('game.injured') }}
                         </span>
                     </div>
@@ -190,7 +190,7 @@
                 @if($gamePlayer->isRetiring())
                     <div class="flex items-center justify-between">
                         <span class="text-xs text-text-secondary uppercase tracking-wide">{{ __('app.status') }}</span>
-                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-700">
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-accent-orange/10 text-accent-orange">
                             {{ __('squad.retiring') }}
                         </span>
                     </div>
@@ -255,7 +255,7 @@
             @if($isListed)
                 <form method="POST" action="{{ route('game.transfers.unlist', [$game->id, $gamePlayer->id]) }}">
                     @csrf
-                    <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border border-accent-red/20 text-accent-red bg-accent-red/10 hover:bg-red-100 transition-colors min-h-[44px]">
+                    <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border border-accent-red/20 text-accent-red bg-accent-red/10 hover:bg-accent-red/20 transition-colors min-h-[44px]">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
                         {{ __('squad.unlist_from_sale') }}
                     </button>
@@ -264,7 +264,7 @@
             @if($canManage)
                 <form method="POST" action="{{ route('game.loans.out', [$game->id, $gamePlayer->id]) }}">
                     @csrf
-                    <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border border-accent-gold/20 text-accent-gold bg-accent-gold/10 hover:bg-amber-100 transition-colors min-h-[44px]">
+                    <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border border-accent-gold/20 text-accent-gold bg-accent-gold/10 hover:bg-accent-gold/20 transition-colors min-h-[44px]">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
                         {{ __('squad.loan_out') }}
                     </button>
@@ -272,7 +272,7 @@
             @endif
             @if($canRelease ?? false)
                 <div x-data="{ showReleaseConfirm: false }">
-                    <button @click="showReleaseConfirm = true" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border border-accent-red/20 text-accent-red bg-accent-red/10 hover:bg-red-100 transition-colors min-h-[44px]">
+                    <button @click="showReleaseConfirm = true" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border border-accent-red/20 text-accent-red bg-accent-red/10 hover:bg-accent-red/20 transition-colors min-h-[44px]">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6v1h12v-1a6 6 0 00-6-6zM21 12h-6" /></svg>
                         {{ __('squad.release_player') }}
                     </button>
@@ -280,7 +280,7 @@
                     {{-- Release confirmation overlay --}}
                     <template x-teleport="body">
                         <div x-show="showReleaseConfirm" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4">
-                            <div x-show="showReleaseConfirm" x-transition:enter="ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" @click="showReleaseConfirm = false" class="fixed inset-0 bg-slate-800/90"></div>
+                            <div x-show="showReleaseConfirm" x-transition:enter="ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" @click="showReleaseConfirm = false" class="fixed inset-0 bg-black/80"></div>
                             <div x-show="showReleaseConfirm" x-transition:enter="ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="ease-in duration-150" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="relative bg-surface-800 rounded-xl shadow-xl max-w-sm w-full p-6 z-10" @keydown.escape.window="showReleaseConfirm = false">
                                 <h3 class="text-lg font-semibold text-text-primary mb-3">{{ __('squad.release_confirm_title') }}</h3>
                                 <p class="text-sm text-text-secondary mb-4">{{ __('squad.release_confirm_message', ['player' => $gamePlayer->name]) }}</p>
@@ -327,7 +327,7 @@
                 />
             @elseif($renewalNegotiation)
                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium
-                    {{ $renewalNegotiation->isPending() ? 'bg-amber-100 text-accent-gold' : 'bg-orange-100 text-orange-700' }}">
+                    {{ $renewalNegotiation->isPending() ? 'bg-accent-gold/10 text-accent-gold' : 'bg-accent-orange/10 text-accent-orange' }}">
                     <span class="w-1.5 h-1.5 rounded-full {{ $renewalNegotiation->isPending() ? 'bg-accent-gold animate-pulse' : 'bg-orange-500' }}"></span>
                     {{ $renewalNegotiation->isPending() ? __('transfers.negotiating') : __('transfers.player_countered') }}
                 </span>

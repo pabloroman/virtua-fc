@@ -82,7 +82,7 @@
             <polygon
                 points="{{ $toPolygon($ringPoints) }}"
                 fill="none"
-                stroke="#e2e8f0"
+                stroke="var(--border-strong, #e2e8f0)"
                 stroke-width="{{ $ring === 100 ? 1 : 0.5 }}"
             />
         @endforeach
@@ -95,7 +95,7 @@
             <line
                 x1="{{ $cx }}" y1="{{ $cy }}"
                 x2="{{ $end[0] }}" y2="{{ $end[1] }}"
-                stroke="#e2e8f0"
+                stroke="var(--border-strong, #e2e8f0)"
                 stroke-width="0.5"
             />
         @endforeach
@@ -143,8 +143,8 @@
                 y="{{ $pos['y'] }}"
                 text-anchor="{{ $pos['anchor'] }}"
                 dominant-baseline="central"
-                class="fill-slate-500 transition-colors duration-150 cursor-default select-none"
-                :class="hoveredAxis === {{ $i }} ? 'fill-slate-900 font-semibold' : 'fill-slate-500'"
+                class="fill-text-muted transition-colors duration-150 cursor-default select-none"
+                :class="hoveredAxis === {{ $i }} ? 'fill-text-primary font-semibold' : 'fill-text-muted'"
                 style="font-size: 7.5px;"
                 @mouseenter="hoveredAxis = {{ $i }}"
                 @mouseleave="hoveredAxis = null"
@@ -174,7 +174,7 @@
             x-show="hoveredAxis === {{ $i }}"
             x-cloak
             x-transition.opacity.duration.150ms
-            class="absolute left-1/2 -translate-x-1/2 bottom-0 bg-slate-800/95 text-white text-[10px] px-2.5 py-1.5 rounded-md shadow-lg whitespace-nowrap z-10 flex items-center gap-2.5"
+            class="absolute left-1/2 -translate-x-1/2 bottom-0 bg-surface-800/95 text-white text-[10px] px-2.5 py-1.5 rounded-md shadow-lg whitespace-nowrap z-10 flex items-center gap-2.5"
         >
             <span class="font-medium">{{ $pos['label'] }}</span>
             <span class="flex items-center gap-1">

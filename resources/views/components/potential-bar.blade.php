@@ -12,7 +12,7 @@
         $currentAbility >= 80 => 'bg-accent-green',
         $currentAbility >= 70 => 'bg-lime-500',
         $currentAbility >= 60 => 'bg-accent-gold',
-        default => 'bg-slate-500',
+        default => 'bg-surface-600',
     };
 
     $barHeight = match($size) {

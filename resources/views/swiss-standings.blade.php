@@ -14,89 +14,85 @@ $defaultTab = $knockoutStarted ? 'knockout' : 'league';
         <x-game-header :game="$game" :next-match="$game->next_match"></x-game-header>
     </x-slot>
 
-    <div>
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-surface-800 overflow-hidden shadow-xs sm:rounded-lg" x-data="{ activeTab: '{{ $defaultTab }}' }">
-                <div class="p-4 sm:p-6 md:p-8">
-                    <h3 class="font-semibold text-xl text-text-primary mb-6">{{ __($competition->name) }}</h3>
+    <div class="max-w-7xl mx-auto px-4 pb-8" x-data="{ activeTab: '{{ $defaultTab }}' }">
+        <div class="mt-6 mb-6">
+            <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary">{{ __($competition->name) }}</h2>
+        </div>
 
-                    {{-- Tab Navigation --}}
-                    @if($hasKnockout)
-                        <div class="flex border-b border-border-strong mb-0">
-                            <button @click="activeTab = 'league'"
-                                    :class="activeTab === 'league' ? 'border-accent-blue text-accent-blue' : 'border-transparent text-text-muted hover:text-text-body hover:border-border-strong'"
-                                    class="px-4 py-2.5 text-sm font-medium border-b-2 transition-colors">
-                                {{ __('game.league_phase') }}
-                                @if($leaguePhaseComplete)
-                                    <span class="ml-1.5 px-1.5 py-0.5 text-[10px] font-bold bg-green-600 text-white rounded-full">{{ __('game.completed') }}</span>
-                                @endif
-                            </button>
-                            <button @click="activeTab = 'knockout'"
-                                    :class="activeTab === 'knockout' ? 'border-accent-blue text-accent-blue' : 'border-transparent text-text-muted hover:text-text-body hover:border-border-strong'"
-                                    class="px-4 py-2.5 text-sm font-medium border-b-2 transition-colors">
-                                {{ __('game.knockout_phase') }}
-                            </button>
-                        </div>
+        {{-- Tab Navigation --}}
+        @if($hasKnockout)
+            <div class="flex border-b border-border-strong mb-0">
+                <button @click="activeTab = 'league'"
+                        :class="activeTab === 'league' ? 'border-accent-blue text-accent-blue' : 'border-transparent text-text-muted hover:text-text-body hover:border-border-strong'"
+                        class="px-4 py-2.5 text-sm font-medium border-b-2 transition-colors">
+                    {{ __('game.league_phase') }}
+                    @if($leaguePhaseComplete)
+                        <span class="ml-1.5 px-1.5 py-0.5 text-[10px] font-bold bg-green-600 text-white rounded-full">{{ __('game.completed') }}</span>
                     @endif
+                </button>
+                <button @click="activeTab = 'knockout'"
+                        :class="activeTab === 'knockout' ? 'border-accent-blue text-accent-blue' : 'border-transparent text-text-muted hover:text-text-body hover:border-border-strong'"
+                        class="px-4 py-2.5 text-sm font-medium border-b-2 transition-colors">
+                    {{ __('game.knockout_phase') }}
+                </button>
+            </div>
+        @endif
 
-                    {{-- Knockout Phase Bracket --}}
-                    @if($hasKnockout)
-                        <div x-show="activeTab === 'knockout'" class="mt-6 space-y-6">
-                            <div class="overflow-x-auto">
-                                <div class="flex gap-4" style="min-width: fit-content;">
-                                    @foreach($knockoutRounds as $round)
-                                        @php $ties = $knockoutTies->get($round->round, collect()); @endphp
-                                        <div class="shrink-0 w-64">
-                                            <div class="text-center mb-4">
-                                                <h4 class="font-semibold text-text-body">{{ __($round->name) }}</h4>
-                                                <div class="text-xs text-text-secondary">
-                                                    {{ $round->firstLegDate->format('M d') }}
-                                                    @if($round->twoLegged)
-                                                        / {{ $round->secondLegDate->format('M d') }}
-                                                    @endif
-                                                </div>
-                                            </div>
-
-                                            @if($ties->isEmpty())
-                                                <div class="p-4 text-center border border-dashed rounded-lg">
-                                                    <div class="text-text-secondary text-sm">-</div>
-                                                </div>
-                                            @else
-                                                <div class="space-y-2">
-                                                    @foreach($ties as $tie)
-                                                        <x-cup-tie-card :tie="$tie" :player-team-id="$game->team_id" />
-                                                    @endforeach
-                                                </div>
-                                            @endif
-                                        </div>
-                                    @endforeach
+        {{-- Knockout Phase Bracket --}}
+        @if($hasKnockout)
+            <div x-show="activeTab === 'knockout'" class="mt-6 space-y-6">
+                <div class="overflow-x-auto">
+                    <div class="flex gap-4" style="min-width: fit-content;">
+                        @foreach($knockoutRounds as $round)
+                            @php $ties = $knockoutTies->get($round->round, collect()); @endphp
+                            <div class="shrink-0 w-64">
+                                <div class="text-center mb-4">
+                                    <h4 class="font-semibold text-text-body">{{ __($round->name) }}</h4>
+                                    <div class="text-xs text-text-secondary">
+                                        {{ $round->firstLegDate->format('M d') }}
+                                        @if($round->twoLegged)
+                                            / {{ $round->secondLegDate->format('M d') }}
+                                        @endif
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                    @endif
 
-                    {{-- League Phase Standings --}}
-                    <div x-show="activeTab === 'league'" @if($hasKnockout) x-cloak @endif class="mt-6">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
-                            <div class="md:col-span-2 space-y-3">
-                                @if(!$hasKnockout)
-                                    <h4 class="font-semibold text-lg text-text-body">
-                                        {{ __('game.league_phase') }}
-                                    </h4>
+                                @if($ties->isEmpty())
+                                    <div class="p-4 text-center border border-dashed rounded-lg">
+                                        <div class="text-text-secondary text-sm">-</div>
+                                    </div>
+                                @else
+                                    <div class="space-y-2">
+                                        @foreach($ties as $tie)
+                                            <x-cup-tie-card :tie="$tie" :player-team-id="$game->team_id" />
+                                        @endforeach
+                                    </div>
                                 @endif
-
-                                @include('partials.standings-flat', [
-                                    'game' => $game,
-                                    'standings' => $standings,
-                                    'teamForms' => $teamForms,
-                                    'standingsZones' => $standingsZones,
-                                ])
                             </div>
-
-                            <x-top-scorers :top-scorers="$topScorers" :player-team-id="$game->team_id" />
-                        </div>
+                        @endforeach
                     </div>
                 </div>
+            </div>
+        @endif
+
+        {{-- League Phase Standings --}}
+        <div x-show="activeTab === 'league'" @if($hasKnockout) x-cloak @endif class="mt-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
+                <div class="md:col-span-2 space-y-3">
+                    @if(!$hasKnockout)
+                        <h4 class="font-semibold text-lg text-text-body">
+                            {{ __('game.league_phase') }}
+                        </h4>
+                    @endif
+
+                    @include('partials.standings-flat', [
+                        'game' => $game,
+                        'standings' => $standings,
+                        'teamForms' => $teamForms,
+                        'standingsZones' => $standingsZones,
+                    ])
+                </div>
+
+                <x-top-scorers :top-scorers="$topScorers" :player-team-id="$game->team_id" />
             </div>
         </div>
     </div>

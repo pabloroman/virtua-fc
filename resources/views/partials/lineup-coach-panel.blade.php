@@ -15,7 +15,7 @@
                 class="text-xs font-semibold px-2 py-0.5 rounded-full shrink-0"
                 :class="{
                     'bg-accent-green/10 text-accent-green': teamAverage > {{ $opponentData['teamAverage'] ?: 0 }},
-                    'bg-red-100 text-accent-red': teamAverage < {{ $opponentData['teamAverage'] ?: 0 }},
+                    'bg-accent-red/10 text-accent-red': teamAverage < {{ $opponentData['teamAverage'] ?: 0 }},
                     'bg-surface-700 text-text-secondary': teamAverage === {{ $opponentData['teamAverage'] ?: 0 }}
                 }"
                 x-text="teamAverage > {{ $opponentData['teamAverage'] ?: 0 }} ? '+' + (teamAverage - {{ $opponentData['teamAverage'] ?: 0 }}) : (teamAverage < {{ $opponentData['teamAverage'] ?: 0 }} ? (teamAverage - {{ $opponentData['teamAverage'] ?: 0 }}) : '=')"
@@ -53,7 +53,7 @@
             @forelse($playerForm as $result)
                 <span class="w-5 h-5 rounded text-xs font-bold flex items-center justify-center
                     @if($result === 'W') bg-accent-green text-white
-                    @elseif($result === 'D') bg-slate-400 text-white
+                    @elseif($result === 'D') bg-surface-600 text-text-body
                     @else bg-accent-red text-white @endif">
                     {{ $result }}
                 </span>
@@ -69,7 +69,7 @@
             @forelse($opponentData['form'] as $result)
                 <span class="w-5 h-5 rounded text-xs font-bold flex items-center justify-center
                     @if($result === 'W') bg-accent-green text-white
-                    @elseif($result === 'D') bg-slate-400 text-white
+                    @elseif($result === 'D') bg-surface-600 text-text-body
                     @else bg-accent-red text-white @endif">
                     {{ $result }}
                 </span>

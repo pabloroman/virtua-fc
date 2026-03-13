@@ -90,12 +90,12 @@ $tabs = [
                         <button type="button"
                                 @click="activeTab = '{{ $key }}'"
                                 :class="activeTab === '{{ $key }}'
-                                    ? 'border-b-2 border-slate-900 text-text-primary font-semibold'
+                                    ? 'border-b-2 border-accent-blue text-accent-blue font-semibold'
                                     : 'text-text-muted hover:text-text-body'"
                                 class="flex-1 shrink-0 px-3 md:px-4 py-3 text-xs md:text-sm text-center whitespace-nowrap transition-colors min-h-[44px] flex items-center justify-center gap-1.5">
                             <span>{{ $label }}</span>
                             <span class="inline-flex items-center justify-center rounded-full text-[10px] md:text-xs font-semibold min-w-[20px] h-5 px-1 transition-colors"
-                                  :class="countByGroup('{{ $key }}') > 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-surface-700 text-text-secondary'"
+                                  :class="countByGroup('{{ $key }}') > 0 ? 'bg-accent-green/10 text-accent-green' : 'bg-surface-700 text-text-secondary'"
                                   x-text="countByGroup('{{ $key }}')"></span>
                         </button>
                         @endforeach
@@ -104,12 +104,12 @@ $tabs = [
 
                 {{-- Player Lists --}}
                 @foreach ($tabs as $groupKey => $label)
-                <div x-show="activeTab === '{{ $groupKey }}'" x-cloak class="divide-y divide-slate-100">
+                <div x-show="activeTab === '{{ $groupKey }}'" x-cloak class="divide-y divide-border-default">
                     @foreach ($candidatesByGroup[$groupKey] as $candidate)
                     <button type="button"
                             @click="togglePlayer('{{ $candidate['transfermarkt_id'] }}')"
                             :class="{
-                                'bg-emerald-50 border-l-4 border-l-emerald-500': isSelected('{{ $candidate['transfermarkt_id'] }}'),
+                                'bg-accent-green/10 border-l-4 border-l-emerald-500': isSelected('{{ $candidate['transfermarkt_id'] }}'),
                                 'border-l-4 border-l-transparent hover:bg-surface-700/50': !isSelected('{{ $candidate['transfermarkt_id'] }}'),
                                 'opacity-40 cursor-not-allowed': isMaxed && !isSelected('{{ $candidate['transfermarkt_id'] }}'),
                             }"
@@ -152,9 +152,9 @@ $tabs = [
                                 <span class="text-xs font-semibold text-text-secondary">{{ $candidate['physical'] }}</span>
                             </div>
                             <div class="flex items-center justify-center w-10 h-10 md:w-11 md:h-11 rounded-lg transition-colors"
-                                 :class="isSelected('{{ $candidate['transfermarkt_id'] }}') ? 'bg-emerald-100' : 'bg-surface-700'">
+                                 :class="isSelected('{{ $candidate['transfermarkt_id'] }}') ? 'bg-accent-green/10' : 'bg-surface-700'">
                                 <span class="text-sm md:text-base font-bold"
-                                      :class="isSelected('{{ $candidate['transfermarkt_id'] }}') ? 'text-emerald-700' : 'text-text-body'">{{ $candidate['overall'] }}</span>
+                                      :class="isSelected('{{ $candidate['transfermarkt_id'] }}') ? 'text-accent-green' : 'text-text-body'">{{ $candidate['overall'] }}</span>
                             </div>
                         </div>
                     </button>

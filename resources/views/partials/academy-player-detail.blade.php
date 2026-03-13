@@ -28,7 +28,7 @@
                     <span>{{ $academyPlayer->age }} {{ __('app.years') }}</span>
                 </div>
                 @if($academyPlayer->is_on_loan)
-                    <span class="inline-block mt-1.5 text-xs bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-sm font-medium">{{ __('squad.academy_on_loan') }}</span>
+                    <span class="inline-block mt-1.5 text-xs bg-violet-500/10 text-violet-400 px-2 py-0.5 rounded-sm font-medium">{{ __('squad.academy_on_loan') }}</span>
                 @endif
             </div>
         </div>
@@ -39,10 +39,10 @@
                     @if($academyPlayer->overall >= 80) bg-emerald-500 text-white
                     @elseif($academyPlayer->overall >= 70) bg-lime-500 text-white
                     @elseif($academyPlayer->overall >= 60) bg-accent-gold text-white
-                    @else bg-slate-300 text-text-body
+                    @else bg-surface-600 text-text-body
                     @endif">{{ $academyPlayer->overall }}</div>
             @else
-                <div class="w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center text-xl md:text-2xl font-bold bg-slate-200 text-text-secondary">?</div>
+                <div class="w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center text-xl md:text-2xl font-bold bg-surface-600 text-text-secondary">?</div>
             @endif
             <button onclick="window.dispatchEvent(new CustomEvent('close-modal', {detail: 'player-detail'}))" class="p-1 text-text-secondary hover:text-text-secondary rounded-sm hover:bg-surface-700">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -67,7 +67,7 @@
                         <span class="text-xs text-text-secondary uppercase tracking-wide w-20 shrink-0">{{ __('squad.technical_full') }}</span>
                         <div class="flex items-center gap-2.5 flex-1 justify-end">
                             <div class="w-28 h-2 bg-surface-700 rounded-full overflow-hidden">
-                                <div class="h-2 rounded-full @if($val >= 80) bg-accent-green @elseif($val >= 70) bg-lime-500 @elseif($val >= 60) bg-accent-gold @else bg-slate-400 @endif" style="width: {{ $val / 99 * 100 }}%"></div>
+                                <div class="h-2 rounded-full @if($val >= 80) bg-accent-green @elseif($val >= 70) bg-lime-500 @elseif($val >= 60) bg-accent-gold @else bg-surface-600 @endif" style="width: {{ $val / 99 * 100 }}%"></div>
                             </div>
                             <span class="text-sm font-semibold tabular-nums w-7 text-right @if($val >= 80) text-accent-green @elseif($val >= 70) text-lime-600 @elseif($val >= 60) text-amber-600 @else text-text-secondary @endif">{{ $val }}</span>
                         </div>
@@ -78,7 +78,7 @@
                         <span class="text-xs text-text-secondary uppercase tracking-wide w-20 shrink-0">{{ __('squad.physical_full') }}</span>
                         <div class="flex items-center gap-2.5 flex-1 justify-end">
                             <div class="w-28 h-2 bg-surface-700 rounded-full overflow-hidden">
-                                <div class="h-2 rounded-full @if($val >= 80) bg-accent-green @elseif($val >= 70) bg-lime-500 @elseif($val >= 60) bg-accent-gold @else bg-slate-400 @endif" style="width: {{ $val / 99 * 100 }}%"></div>
+                                <div class="h-2 rounded-full @if($val >= 80) bg-accent-green @elseif($val >= 70) bg-lime-500 @elseif($val >= 60) bg-accent-gold @else bg-surface-600 @endif" style="width: {{ $val / 99 * 100 }}%"></div>
                             </div>
                             <span class="text-sm font-semibold tabular-nums w-7 text-right @if($val >= 80) text-accent-green @elseif($val >= 70) text-lime-600 @elseif($val >= 60) text-amber-600 @else text-text-secondary @endif">{{ $val }}</span>
                         </div>
@@ -87,7 +87,7 @@
                     <div class="flex items-center justify-between pt-3 border-t border-border-default">
                         <span class="text-xs text-text-muted uppercase tracking-wide font-semibold">{{ __('squad.overall') }}</span>
                         <span class="text-sm font-semibold tabular-nums
-                            @if($academyPlayer->overall >= 80) text-emerald-600
+                            @if($academyPlayer->overall >= 80) text-accent-green
                             @elseif($academyPlayer->overall >= 70) text-lime-600
                             @elseif($academyPlayer->overall >= 60) text-amber-600
                             @else text-text-muted
@@ -141,14 +141,14 @@
             </form>
             <form method="POST" action="{{ route('game.academy.loan', [$game->id, $academyPlayer->id]) }}">
                 @csrf
-                <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border border-indigo-200 text-indigo-700 bg-indigo-50 hover:bg-indigo-100 transition-colors min-h-[44px]">
+                <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border border-violet-500/20 text-violet-400 bg-violet-500/10 hover:bg-violet-500/20 transition-colors min-h-[44px]">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
                     {{ __('squad.academy_loan_out') }}
                 </button>
             </form>
             <form method="POST" action="{{ route('game.academy.dismiss', [$game->id, $academyPlayer->id]) }}" x-data x-on:submit="if (!confirm('{{ __('squad.academy_dismiss_confirm') }}')) $event.preventDefault()">
                 @csrf
-                <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border border-accent-red/20 text-accent-red bg-accent-red/10 hover:bg-red-100 transition-colors min-h-[44px]">
+                <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border border-accent-red/20 text-accent-red bg-accent-red/10 hover:bg-accent-red/20 transition-colors min-h-[44px]">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                     {{ __('squad.academy_dismiss') }}
                 </button>

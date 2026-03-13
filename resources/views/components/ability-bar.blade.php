@@ -6,7 +6,7 @@
         $value >= 80 => 'bg-accent-green',
         $value >= 70 => 'bg-lime-500',
         $value >= 60 => 'bg-accent-gold',
-        default => 'bg-slate-500',
+        default => 'bg-surface-600',
     };
     $barHeight = match($size) {
         'sm' => 'h-1.5',

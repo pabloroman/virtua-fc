@@ -35,7 +35,7 @@
         </thead>
         <tbody>
             @foreach($players as $gp)
-            <tr class="border-b border-slate-50 hover:bg-surface-700/50/50">
+            <tr class="border-b border-border-default hover:bg-surface-700/50/50">
                 {{-- Position badge --}}
                 <td class="py-0 p-2 w-12">
                     <x-position-badge :position="$gp->position" size="sm" />
@@ -48,7 +48,7 @@
                         @endif
                         <span class="font-medium text-text-primary truncate">{{ $gp->name }}</span>
                         @if($gp->is_loaned_in)
-                        <span class="text-[10px] bg-violet-100 text-violet-700 px-1.5 py-0.5 rounded-sm font-medium shrink-0">{{ __('transfers.loans') }}</span>
+                        <span class="text-[10px] bg-violet-500/10 text-violet-400 px-1.5 py-0.5 rounded-sm font-medium shrink-0">{{ __('transfers.loans') }}</span>
                         @endif
                     </div>
                     {{-- Mobile-only details --}}

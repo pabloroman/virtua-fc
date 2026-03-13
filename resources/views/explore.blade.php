@@ -5,18 +5,19 @@
         <x-game-header :game="$game" :next-match="$game->next_match"></x-game-header>
     </x-slot>
 
-    <div>
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            {{-- Flash Messages --}}
-            @if(session('success'))
-            <div class="mb-4 p-4 bg-accent-green/10 border border-accent-green/20 rounded-lg text-accent-green">
-                {{ session('success') }}
-            </div>
-            @endif
+    <div class="max-w-7xl mx-auto px-4 pb-8">
+        <div class="mt-6 mb-6">
+            <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary">{{ __('app.transfers') }}</h2>
+        </div>
 
-            <div class="bg-surface-800 overflow-hidden shadow-xs sm:rounded-lg">
-                <div class="p-4 sm:p-6 md:p-8">
-                    @include('partials.transfers-header')
+        {{-- Flash Messages --}}
+        @if(session('success'))
+        <div class="mb-4 p-4 bg-accent-green/10 border border-accent-green/20 rounded-lg text-accent-green">
+            {{ session('success') }}
+        </div>
+        @endif
+
+        @include('partials.transfers-header')
 
                     {{-- Tab Navigation --}}
                     <x-section-nav :items="[
@@ -39,8 +40,8 @@
                             <template x-for="comp in competitions" :key="comp.id">
                                 <button @click="selectCompetition(comp)"
                                         :class="selectedCompetition?.id === comp.id
-                                            ? 'bg-slate-900 text-white border-slate-900'
-                                            : 'bg-surface-800 text-text-body border-border-strong hover:border-slate-400'"
+                                            ? 'bg-surface-900 text-white border-surface-900'
+                                            : 'bg-surface-800 text-text-body border-border-strong hover:border-border-strong'"
                                         class="shrink-0 flex items-center gap-2 px-3 py-2 rounded-lg border text-sm font-medium transition-colors min-h-[44px]">
                                     <template x-if="comp.country">
                                         <img :src="'/flags/' + comp.flag + '.svg'" class="w-5 h-3.5 rounded-xs shadow-xs" :alt="comp.country">
@@ -90,7 +91,7 @@
                                         <template x-for="team in teams" :key="team.id">
                                             <button @click="selectTeam(team)"
                                                     :class="selectedTeam?.id === team.id
-                                                        ? 'bg-accent-blue/10 border-accent-blue/20 ring-1 ring-sky-200'
+                                                        ? 'bg-accent-blue/10 border-accent-blue/20 ring-1 ring-accent-blue/20'
                                                         : 'bg-surface-800 border-border-default hover:bg-surface-700/50'"
                                                     class="w-full flex items-center gap-3 p-3 rounded-lg border transition-all text-left min-h-[44px]">
                                                 <img :src="team.image" :alt="team.name" class="w-8 h-8 shrink-0 object-contain">
@@ -124,7 +125,7 @@
                                 {{-- Empty state: no team selected --}}
                                 <template x-if="!loadingSquad && !squadHtml">
                                     <div class="flex flex-col items-center justify-center py-16 text-center">
-                                        <svg class="w-16 h-16 text-slate-200 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-16 h-16 text-text-body mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                                         </svg>
                                         <p class="text-sm text-text-secondary">{{ __('transfers.explore_select_team') }}</p>
@@ -136,9 +137,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <script>

@@ -7,7 +7,7 @@
 ])
 
 <div x-data="{ open: false }" {{ $attributes->merge(['class' => '']) }}>
-    <button @click="open = true" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border border-emerald-200 text-emerald-700 bg-emerald-50 hover:bg-emerald-100 transition-colors min-h-[44px]">
+    <button @click="open = true" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border border-accent-green/20 text-accent-green bg-accent-green/10 hover:bg-accent-green/20 transition-colors min-h-[44px]">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
         {{ __('squad.renew') }}
     </button>
@@ -20,7 +20,7 @@
                 class="fixed inset-0 transition-opacity"
                 x-transition:enter="ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
                 x-transition:leave="ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
-                <div class="absolute inset-0 bg-slate-900 opacity-60"></div>
+                <div class="absolute inset-0 bg-surface-900 opacity-60"></div>
             </div>
             {{-- Dialog --}}
             <div x-show="open"
@@ -66,7 +66,7 @@
                             </div>
                             <div>
                                 <label class="text-xs text-text-muted block mb-1">{{ __('transfers.contract_duration') }}</label>
-                                <x-select-input name="offered_years" class="w-full focus:border-emerald-500 focus:ring-emerald-500">
+                                <x-select-input name="offered_years" class="w-full focus:border-accent-green focus:ring-accent-green">
                                     @foreach(range(1, 5) as $years)
                                         <option value="{{ $years }}" {{ $years === $renewalDemand['contractYears'] ? 'selected' : '' }}>
                                             {{ trans_choice('transfers.years', $years, ['count' => $years]) }}
@@ -75,7 +75,7 @@
                                 </x-select-input>
                             </div>
                         </div>
-                        <button type="submit" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition-colors min-h-[44px]">
+                        <button type="submit" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-lg bg-accent-green hover:bg-emerald-700 text-white transition-colors min-h-[44px]">
                             {{ __('transfers.negotiate') }}
                         </button>
                     </form>

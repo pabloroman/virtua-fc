@@ -33,7 +33,7 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
 @endphp
 
 <div class="overflow-x-auto">
-<table class="min-w-full table-fixed text-right divide-y divide-slate-300 border-spacing-2">
+<table class="min-w-full table-fixed text-right divide-y divide-border-default border-spacing-2">
     <thead>
     <tr>
         <th class="font-semibold text-left w-8 p-2"></th>

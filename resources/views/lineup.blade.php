@@ -280,7 +280,7 @@
                                             </div>
 
                                             {{-- Hover tooltip --}}
-                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-slate-900/95 backdrop-blur-xs text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-50 shadow-xl">
+                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-surface-900/95 backdrop-blur-xs text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-50 shadow-xl">
                                                 <div class="flex items-center gap-2">
                                                     <span class="font-semibold" x-text="slot.player?.name"></span>
                                                     <span class="px-1.5 py-0.5 bg-surface-800/15 rounded-sm font-bold text-[10px]" x-text="slot.player?.overallScore"></span>
@@ -290,7 +290,7 @@
                                                     <span class="text-text-muted">·</span>
                                                     <span :class="getCompatibilityDisplay(slot.player?.position, slot.label).class" x-text="getCompatibilityDisplay(slot.player?.position, slot.label).label"></span>
                                                 </div>
-                                                <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900/95"></div>
+                                                <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-surface-900/95"></div>
                                             </div>
                                         </div>
                                     </div>

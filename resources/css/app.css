@@ -27,6 +27,14 @@ layer(base);
   --ring-offset-bg: #0b1120;
   --stat-bar-bg: rgba(255, 255, 255, 0.06);
   --shadow-card: none;
+  --accent-tint: rgba(59, 130, 246, 0.1);
+  --accent-tint-border: rgba(59, 130, 246, 0.2);
+  --success-tint: rgba(34, 197, 94, 0.1);
+  --success-tint-border: rgba(34, 197, 94, 0.2);
+  --warning-tint: rgba(245, 158, 11, 0.1);
+  --warning-tint-border: rgba(245, 158, 11, 0.2);
+  --bar-track: #334155;
+  --overlay-bg: rgba(0, 0, 0, 0.8);
 }
 
 .light {
@@ -46,6 +54,14 @@ layer(base);
   --ring-offset-bg: #ffffff;
   --stat-bar-bg: rgba(0, 0, 0, 0.06);
   --shadow-card: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --accent-tint: rgba(59, 130, 246, 0.06);
+  --accent-tint-border: rgba(59, 130, 246, 0.15);
+  --success-tint: rgba(34, 197, 94, 0.06);
+  --success-tint-border: rgba(34, 197, 94, 0.15);
+  --warning-tint: rgba(245, 158, 11, 0.06);
+  --warning-tint-border: rgba(245, 158, 11, 0.15);
+  --bar-track: #e2e8f0;
+  --overlay-bg: rgba(0, 0, 0, 0.5);
 }
 
 @theme {
@@ -78,6 +94,15 @@ layer(base);
   --color-accent-green: #22c55e;
   --color-accent-red: #ef4444;
   --color-accent-orange: #f97316;
+
+  --color-bar-track: var(--bar-track);
+  --color-overlay-bg: var(--overlay-bg);
+  --color-accent-tint: var(--accent-tint);
+  --color-accent-tint-border: var(--accent-tint-border);
+  --color-success-tint: var(--success-tint);
+  --color-success-tint-border: var(--success-tint-border);
+  --color-warning-tint: var(--warning-tint);
+  --color-warning-tint-border: var(--warning-tint-border);
 
   --color-pitch-dark: #1a5c2a;
   --color-pitch-base: #1e6b31;

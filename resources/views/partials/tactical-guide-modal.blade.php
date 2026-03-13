@@ -26,7 +26,7 @@
             </h3>
             <div class="bg-surface-800 rounded-lg shadow-sm overflow-hidden">
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-slate-200 text-sm">
+                    <table class="min-w-full divide-y divide-border-default text-sm">
                         <thead class="bg-surface-700/50">
                             <tr>
                                 <th class="px-4 py-2.5 text-left font-semibold text-text-body">{{ __('game.tg_formation') }}</th>
@@ -35,7 +35,7 @@
                                 <th class="px-4 py-2.5 text-left font-semibold text-text-body hidden md:table-cell">{{ __('game.tg_profile') }}</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-100">
+                        <tbody class="divide-y divide-border-default">
                             @foreach($guideFormations as $f)
                             <tr>
                                 <td class="px-4 py-2.5 font-mono font-semibold text-text-primary">{{ $f['name'] }}</td>
@@ -68,7 +68,7 @@
             </h3>
             <div class="bg-surface-800 rounded-lg shadow-sm overflow-hidden">
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-slate-200 text-sm">
+                    <table class="min-w-full divide-y divide-border-default text-sm">
                         <thead class="bg-surface-700/50">
                             <tr>
                                 <th class="px-4 py-2.5 text-left font-semibold text-text-body">{{ __('game.tg_mentality') }}</th>
@@ -76,7 +76,7 @@
                                 <th class="px-4 py-2.5 text-center font-semibold text-text-body">{{ __('game.tg_goals_conceded') }}</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-100">
+                        <tbody class="divide-y divide-border-default">
                             @foreach($guideMentalities as $m)
                             <tr>
                                 <td class="px-4 py-2.5 font-semibold text-text-primary">{{ __('game.mentality_' . $m['name']) }}</td>
@@ -106,7 +106,7 @@
             </h3>
             <div class="bg-surface-800 rounded-lg shadow-sm overflow-hidden">
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-slate-200 text-sm">
+                    <table class="min-w-full divide-y divide-border-default text-sm">
                         <thead class="bg-surface-700/50">
                             <tr>
                                 <th class="px-4 py-2.5 text-left font-semibold text-text-body">{{ __('game.tg_style') }}</th>
@@ -115,7 +115,7 @@
                                 <th class="px-4 py-2.5 text-center font-semibold text-text-body">{{ __('game.tg_energy') }}</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-100">
+                        <tbody class="divide-y divide-border-default">
                             @foreach($guidePlayingStyles as $s)
                             <tr>
                                 <td class="px-4 py-2.5 font-semibold text-text-primary">{{ $s['label'] }}</td>
@@ -150,7 +150,7 @@
             </h3>
             <div class="bg-surface-800 rounded-lg shadow-sm overflow-hidden">
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-slate-200 text-sm">
+                    <table class="min-w-full divide-y divide-border-default text-sm">
                         <thead class="bg-surface-700/50">
                             <tr>
                                 <th class="px-4 py-2.5 text-left font-semibold text-text-body">{{ __('game.tg_pressing') }}</th>
@@ -159,7 +159,7 @@
                                 <th class="px-4 py-2.5 text-center font-semibold text-text-body">{{ __('game.tg_energy') }}</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-100">
+                        <tbody class="divide-y divide-border-default">
                             @foreach($guidePressingOptions as $p)
                             <tr>
                                 <td class="px-4 py-2.5 font-semibold text-text-primary">{{ $p['label'] }}</td>
@@ -188,7 +188,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="px-4 py-2 bg-accent-gold/10 border-t border-amber-100 text-xs text-accent-gold">
+                <div class="px-4 py-2 bg-accent-gold/10 border-t border-accent-gold/20 text-xs text-accent-gold">
                     {{ __('game.tg_pressing_fade_note') }}
                 </div>
             </div>
@@ -202,7 +202,7 @@
             </h3>
             <div class="bg-surface-800 rounded-lg shadow-sm overflow-hidden">
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-slate-200 text-sm">
+                    <table class="min-w-full divide-y divide-border-default text-sm">
                         <thead class="bg-surface-700/50">
                             <tr>
                                 <th class="px-4 py-2.5 text-left font-semibold text-text-body">{{ __('game.tg_line') }}</th>
@@ -211,7 +211,7 @@
                                 <th class="px-4 py-2.5 text-left font-semibold text-text-body hidden md:table-cell">{{ __('game.tg_note') }}</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-100">
+                        <tbody class="divide-y divide-border-default">
                             @foreach($guideDefensiveLines as $d)
                             <tr>
                                 <td class="px-4 py-2.5 font-semibold text-text-primary">{{ $d['label'] }}</td>
@@ -237,7 +237,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="px-4 py-2 bg-emerald-50 border-t border-emerald-100 text-xs text-emerald-700 md:hidden">
+                <div class="px-4 py-2 bg-accent-green/10 border-t border-accent-green/20 text-xs text-accent-green md:hidden">
                     {{ __('game.tg_high_line_note', ['threshold' => 80]) }}
                 </div>
             </div>
@@ -257,9 +257,9 @@
                         <div class="flex items-center gap-2 flex-wrap">
                             <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-accent-blue/10 text-accent-blue">{{ __('game.style_counter_attack') }}</span>
                             <span class="text-text-secondary text-xs">vs</span>
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-rose-100 text-rose-800">{{ __('game.mentality_attacking') }}</span>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-accent-red/10 text-accent-red">{{ __('game.mentality_attacking') }}</span>
                             <span class="text-text-secondary text-xs">+</span>
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-emerald-100 text-emerald-800">{{ __('game.defline_high_line') }}</span>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-accent-green/10 text-accent-green">{{ __('game.defline_high_line') }}</span>
                         </div>
                         <p class="text-xs text-text-muted mt-1">{{ __('game.tg_counter_bonus_desc') }}</p>
                     </div>
@@ -272,7 +272,7 @@
                         <div class="flex items-center gap-2 flex-wrap">
                             <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-accent-blue/10 text-accent-blue">{{ __('game.style_possession') }}</span>
                             <span class="text-text-secondary text-xs">vs</span>
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-amber-100 text-accent-gold">{{ __('game.pressing_high_press') }}</span>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-accent-gold/10 text-accent-gold">{{ __('game.pressing_high_press') }}</span>
                         </div>
                         <p class="text-xs text-text-muted mt-1">{{ __('game.tg_possession_penalty_desc') }}</p>
                     </div>
@@ -285,7 +285,7 @@
                         <div class="flex items-center gap-2 flex-wrap">
                             <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-accent-blue/10 text-accent-blue">{{ __('game.style_direct') }}</span>
                             <span class="text-text-secondary text-xs">vs</span>
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-amber-100 text-accent-gold">{{ __('game.pressing_high_press') }}</span>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-accent-gold/10 text-accent-gold">{{ __('game.pressing_high_press') }}</span>
                         </div>
                         <p class="text-xs text-text-muted mt-1">{{ __('game.tg_direct_bonus_desc') }}</p>
                     </div>

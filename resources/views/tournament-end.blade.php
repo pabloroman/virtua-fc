@@ -23,11 +23,11 @@ $yourAppearances = $yourSquadStats->where('appearances', '>', 0)->sortByDesc('ap
 
 // Result badge colors
 $resultBadgeClass = match($resultLabel) {
-    'champion'          => 'bg-amber-100 text-accent-gold border-amber-300',
-    'runner_up'         => 'bg-slate-200 text-text-body border-slate-400',
-    'third_place'       => 'bg-orange-100 text-orange-800 border-orange-300',
-    'semi_finalist'     => 'bg-blue-100 text-blue-400 border-blue-300',
-    'quarter_finalist'  => 'bg-accent-blue/10 text-accent-blue border-blue-200',
+    'champion'          => 'bg-accent-gold/10 text-accent-gold border-accent-gold/20',
+    'runner_up'         => 'bg-surface-600 text-text-body border-border-strong',
+    'third_place'       => 'bg-accent-orange/10 text-accent-orange border-accent-orange/20',
+    'semi_finalist'     => 'bg-accent-blue/10 text-blue-400 border-accent-blue/20',
+    'quarter_finalist'  => 'bg-accent-blue/10 text-accent-blue border-accent-blue/20',
     default             => 'bg-surface-700 text-text-secondary border-border-strong',
 };
 
@@ -72,12 +72,12 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
 @endphp
 
 <x-app-layout :hide-footer="true">
-    <div class="min-h-screen bg-linear-to-b from-slate-100 to-slate-50">
+    <div class="min-h-screen bg-surface-900">
 
         {{-- ============================================ --}}
         {{-- SECTION 1: Hero Header + Final Scoreboard    --}}
         {{-- ============================================ --}}
-        <div class="relative overflow-hidden {{ $isChampion ? 'bg-linear-to-b from-amber-600 via-amber-500 to-amber-400' : 'bg-linear-to-b from-slate-800 via-slate-700 to-slate-600' }} py-10 md:py-16 pb-16 md:pb-24">
+        <div class="relative overflow-hidden {{ $isChampion ? 'bg-linear-to-b from-amber-600 via-amber-500 to-amber-400' : 'bg-surface-800' }} py-10 md:py-16 pb-16 md:pb-24">
             {{-- Decorative elements --}}
             <div class="absolute inset-0 overflow-hidden">
                 <div class="absolute -top-20 -left-20 w-60 h-60 bg-surface-800/5 rounded-full"></div>
@@ -123,7 +123,7 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                     $homeIsWinner = $championTeamId === $homeTeam->id;
                     $awayIsWinner = $championTeamId === $awayTeam->id;
                 @endphp
-                <div class="bg-slate-900/60 backdrop-blur-xs rounded-xl p-4 md:p-6 max-w-lg mx-auto">
+                <div class="bg-surface-900/60 backdrop-blur-xs rounded-xl p-4 md:p-6 max-w-lg mx-auto">
                     <div class="text-[10px] md:text-xs uppercase tracking-widest {{ $isChampion ? 'text-amber-300/70' : 'text-white/40' }} font-semibold mb-3">
                         {{ __('season.the_final') }}
                     </div>
@@ -213,7 +213,7 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                             <button
                                 @click="tab = 'groups'"
                                 class="flex-1 py-3 text-sm font-medium text-center transition-colors min-h-[44px]"
-                                :class="tab === 'groups' ? 'text-text-primary border-b-2 border-slate-600' : 'text-text-secondary hover:text-text-secondary'"
+                                :class="tab === 'groups' ? 'text-text-primary border-b-2 border-border-strong' : 'text-text-secondary hover:text-text-secondary'"
                             >
                                 {{ __('season.group_stage_standings') }}
                             </button>
@@ -222,7 +222,7 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                             <button
                                 @click="tab = 'knockout'"
                                 class="flex-1 py-3 text-sm font-medium text-center transition-colors min-h-[44px]"
-                                :class="tab === 'knockout' ? 'text-text-primary border-b-2 border-slate-600' : 'text-text-secondary hover:text-text-secondary'"
+                                :class="tab === 'knockout' ? 'text-text-primary border-b-2 border-border-strong' : 'text-text-secondary hover:text-text-secondary'"
                             >
                                 {{ __('game.knockout_phase') }}
                             </button>
@@ -301,7 +301,7 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                                             $isHomeWinner = $tie->winner_id === $tie->home_team_id;
                                             $isAwayWinner = $tie->winner_id === $tie->away_team_id;
                                         @endphp
-                                        <div class="border rounded-lg p-3 {{ $involvesPlayer ? 'border-amber-300 bg-accent-gold/10/50' : 'border-border-strong' }}">
+                                        <div class="border rounded-lg p-3 {{ $involvesPlayer ? 'border-accent-gold/20 bg-accent-gold/10/50' : 'border-border-strong' }}">
                                             <div class="flex items-center justify-between gap-2">
                                                 <div class="flex items-center gap-2 flex-1 min-w-0 {{ $isHomeWinner ? 'font-semibold' : '' }}">
                                                     <x-team-crest :team="$tie->homeTeam" class="w-5 h-5 shrink-0" />
@@ -403,7 +403,7 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                                 $opponent = $isHome ? $match->awayTeam : $match->homeTeam;
                                 $scored = $isHome ? $match->home_score : $match->away_score;
                                 $conceded = $isHome ? $match->away_score : $match->home_score;
-                                $resultClass = $scored > $conceded ? 'bg-accent-green' : ($scored < $conceded ? 'bg-accent-red' : 'bg-slate-400');
+                                $resultClass = $scored > $conceded ? 'bg-accent-green' : ($scored < $conceded ? 'bg-accent-red' : 'bg-surface-600');
                                 $resultLetter = $scored > $conceded ? 'W' : ($scored < $conceded ? 'L' : 'D');
                             @endphp
                             <div class="flex items-center gap-2.5 py-2 px-2.5 rounded-lg {{ $loop->even ? 'bg-surface-700/50' : '' }}">
@@ -515,7 +515,7 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
 
                     {{-- Golden Glove Card --}}
                     <div class="bg-surface-800 rounded-xl shadow-xs border border-border-strong overflow-hidden">
-                        <div class="bg-linear-to-r from-sky-50 to-sky-100/50 px-5 py-4">
+                        <div class="bg-accent-blue/10 px-5 py-4">
                             <div class="flex items-center gap-2 mb-1">
                                 <span class="text-lg">&#129351;</span>
                                 <span class="text-xs text-accent-blue font-semibold uppercase tracking-wide">{{ __('season.golden_glove') }}</span>
@@ -552,10 +552,10 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
 
                     {{-- Most Assists Card --}}
                     <div class="bg-surface-800 rounded-xl shadow-xs border border-border-strong overflow-hidden">
-                        <div class="bg-linear-to-r from-emerald-50 to-emerald-100/50 px-5 py-4">
+                        <div class="bg-accent-green/10 px-5 py-4">
                             <div class="flex items-center gap-2 mb-1">
                                 <span class="text-lg">&#129351;</span>
-                                <span class="text-xs text-emerald-700 font-semibold uppercase tracking-wide">{{ __('season.most_assists') }}</span>
+                                <span class="text-xs text-accent-green font-semibold uppercase tracking-wide">{{ __('season.most_assists') }}</span>
                             </div>
                             @if($topAssisters->isNotEmpty())
                             @php $assister = $topAssisters->first(); @endphp
@@ -565,8 +565,8 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                                     <span class="font-bold text-white truncate">{{ $assister->player->name }}</span>
                                 </div>
                                 <div class="shrink-0 text-right">
-                                    <span class="text-2xl md:text-3xl font-bold text-emerald-600">{{ $assister->assists }}</span>
-                                    <span class="text-xs text-emerald-600/70 ml-0.5">{{ __('season.assists') }}</span>
+                                    <span class="text-2xl md:text-3xl font-bold text-accent-green">{{ $assister->assists }}</span>
+                                    <span class="text-xs text-accent-green/70 ml-0.5">{{ __('season.assists') }}</span>
                                 </div>
                             </div>
                             @else
@@ -576,7 +576,7 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                         @if($topAssisters->count() > 1)
                         <div class="px-5 py-3 space-y-1.5">
                             @foreach($topAssisters->skip(1) as $assister)
-                            <div class="flex items-center gap-2.5 {{ $assister->team_id === $game->team_id ? 'bg-emerald-50 -mx-2 px-2 rounded-sm' : '' }}">
+                            <div class="flex items-center gap-2.5 {{ $assister->team_id === $game->team_id ? 'bg-accent-green/10 -mx-2 px-2 rounded-sm' : '' }}">
                                 <span class="w-5 text-center text-xs font-bold text-text-secondary">{{ $loop->iteration + 1 }}</span>
                                 <x-team-crest :team="$assister->team" class="w-4 h-4 shrink-0" />
                                 <span class="flex-1 text-sm text-text-body truncate">{{ $assister->player->name }}</span>

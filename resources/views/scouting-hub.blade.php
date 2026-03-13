@@ -5,23 +5,24 @@
         <x-game-header :game="$game" :next-match="$game->next_match"></x-game-header>
     </x-slot>
 
-    <div>
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            {{-- Flash Messages --}}
-            @if(session('success'))
-            <div class="mb-4 p-4 bg-accent-green/10 border border-accent-green/20 rounded-lg text-accent-green">
-                {{ session('success') }}
-            </div>
-            @endif
-            @if(session('error'))
-            <div class="mb-4 p-4 bg-accent-red/10 border border-accent-red/20 rounded-lg text-accent-red">
-                {{ session('error') }}
-            </div>
-            @endif
+    <div class="max-w-7xl mx-auto px-4 pb-8">
+        <div class="mt-6 mb-6">
+            <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary">{{ __('app.transfers') }}</h2>
+        </div>
 
-            <div class="bg-surface-800 overflow-hidden shadow-xs sm:rounded-lg">
-                <div class="p-4 sm:p-6 md:p-8">
-                    @include('partials.transfers-header')
+        {{-- Flash Messages --}}
+        @if(session('success'))
+        <div class="mb-4 p-4 bg-accent-green/10 border border-accent-green/20 rounded-lg text-accent-green">
+            {{ session('success') }}
+        </div>
+        @endif
+        @if(session('error'))
+        <div class="mb-4 p-4 bg-accent-red/10 border border-accent-red/20 rounded-lg text-accent-red">
+            {{ session('error') }}
+        </div>
+        @endif
+
+        @include('partials.transfers-header')
 
                     {{-- Tab Navigation + How it works --}}
                     <div x-data="{ helpOpen: false }">
@@ -50,15 +51,15 @@
                                     <p class="font-semibold text-text-body mb-2">{{ __('transfers.scouting_help_search_title') }}</p>
                                     <ul class="space-y-2">
                                         <li class="flex gap-2">
-                                            <span class="mt-0.5 shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full bg-sky-200 text-accent-blue text-xs font-bold">1</span>
+                                            <span class="mt-0.5 shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full bg-accent-blue/20 text-accent-blue text-xs font-bold">1</span>
                                             <span class="text-text-secondary">{{ __('transfers.scouting_help_search_filters') }}</span>
                                         </li>
                                         <li class="flex gap-2">
-                                            <span class="mt-0.5 shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full bg-sky-200 text-accent-blue text-xs font-bold">2</span>
+                                            <span class="mt-0.5 shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full bg-accent-blue/20 text-accent-blue text-xs font-bold">2</span>
                                             <span class="text-text-secondary">{{ __('transfers.scouting_help_search_time') }}</span>
                                         </li>
                                         <li class="flex gap-2">
-                                            <span class="mt-0.5 shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full bg-sky-200 text-accent-blue text-xs font-bold">3</span>
+                                            <span class="mt-0.5 shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full bg-accent-blue/20 text-accent-blue text-xs font-bold">3</span>
                                             <span class="text-text-secondary">{{ __('transfers.scouting_help_search_scope') }}</span>
                                         </li>
                                     </ul>
@@ -203,7 +204,7 @@
                                             </h4>
                                             <div class="flex items-center gap-3">
                                                 {{-- Tracking slots indicator --}}
-                                                <div x-show="trackingMax > 0" class="flex items-center gap-1.5 text-xs text-teal-700 bg-teal-50 px-2.5 py-1 rounded-full border border-teal-200">
+                                                <div x-show="trackingMax > 0" class="flex items-center gap-1.5 text-xs text-teal-400 bg-teal-500/10 px-2.5 py-1 rounded-full border border-teal-500/20">
                                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                                     <span class="font-medium tabular-nums" x-text="trackingUsed + '/' + trackingMax"></span>
                                                 </div>
@@ -218,7 +219,7 @@
                                                     ]" :key="col.key">
                                                         <button @click="toggleSort(col.key)"
                                                             class="inline-flex items-center gap-0.5 px-2 py-1 text-[10px] font-medium rounded-full transition-colors shrink-0"
-                                                            :class="sortBy === col.key ? 'bg-amber-200 text-accent-gold' : 'bg-surface-800/70 text-text-muted hover:bg-surface-800 hover:text-text-body'">
+                                                            :class="sortBy === col.key ? 'bg-accent-gold/20 text-accent-gold' : 'bg-surface-800/70 text-text-muted hover:bg-surface-800 hover:text-text-body'">
                                                             <span x-text="col.label"></span>
                                                             <svg x-show="sortBy === col.key" class="w-3 h-3 transition-transform" :class="sortDir === 'desc' ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
@@ -229,7 +230,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="divide-y divide-slate-100">
+                                    <div class="divide-y divide-border-default">
                                         <template x-for="player in sortedPlayers" :key="player.id">
                                             <div class="px-4 md:px-5 py-3 hover:bg-surface-700/50/50">
                                                 {{-- Player Summary Row --}}
@@ -247,11 +248,11 @@
                                                                 <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-medium bg-accent-green/10 text-accent-green">{{ __('transfers.free_agent') }}</span>
                                                             </template>
                                                             <template x-if="!player.isFreeAgent && player.isExpiring">
-                                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-medium bg-amber-100 text-accent-gold">{{ __('transfers.expiring_contract') }}</span>
+                                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-medium bg-accent-gold/10 text-accent-gold">{{ __('transfers.expiring_contract') }}</span>
                                                             </template>
                                                             {{-- Active tracking indicator --}}
                                                             <template x-if="player.isTracking && player.intelLevel < 2">
-                                                                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-sm text-[10px] font-medium bg-teal-100 text-teal-700">
+                                                                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-sm text-[10px] font-medium bg-teal-500/10 text-teal-400">
                                                                     <span class="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse"></span>
                                                                     {{ __('transfers.tracking_in_progress') }}
                                                                 </span>
@@ -294,7 +295,7 @@
                                                         <template x-if="player.intelLevel < 2 && !player.isTracking && trackingMax > 0">
                                                             <button @click.stop="startTracking(player)"
                                                                 :disabled="trackingAvailable <= 0"
-                                                                :class="trackingAvailable > 0 ? 'text-teal-500 hover:text-teal-700 hover:bg-teal-50' : 'text-text-body cursor-not-allowed'"
+                                                                :class="trackingAvailable > 0 ? 'text-teal-400 hover:text-teal-300 hover:bg-teal-500/10' : 'text-text-body cursor-not-allowed'"
                                                                 class="p-1.5 rounded-sm transition-colors min-h-[44px] sm:min-h-0"
                                                                 :title="trackingAvailable > 0 ? '{{ __('transfers.start_tracking') }}' : '{{ __('transfers.no_tracking_slots') }}'">
                                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
@@ -303,7 +304,7 @@
                                                         {{-- Stop tracking button (for currently tracking players) --}}
                                                         <template x-if="player.isTracking">
                                                             <button @click.stop="stopTracking(player)"
-                                                                class="p-1.5 text-teal-600 hover:text-red-500 rounded-sm hover:bg-accent-red/10 transition-colors min-h-[44px] sm:min-h-0"
+                                                                class="p-1.5 text-teal-400 hover:text-red-500 rounded-sm hover:bg-accent-red/10 transition-colors min-h-[44px] sm:min-h-0"
                                                                 title="{{ __('transfers.stop_tracking') }}">
                                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
                                                             </button>
@@ -339,8 +340,8 @@
                                                     <template x-if="player.intelLevel === 0">
                                                         <div class="bg-surface-700/50 rounded-lg p-4">
                                                             <div class="flex flex-col items-center text-center py-2">
-                                                                <div class="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center mb-3">
-                                                                    <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                                                <div class="w-10 h-10 rounded-full bg-teal-500/10 flex items-center justify-center mb-3">
+                                                                    <svg class="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                                                 </div>
                                                                 <p class="text-sm font-semibold text-text-body mb-1">{{ __('transfers.track_to_unlock') }}</p>
                                                                 <p class="text-xs text-text-muted mb-3 max-w-xs">{{ __('transfers.track_to_unlock_desc') }}</p>
@@ -353,14 +354,14 @@
                                                                 <template x-if="!player.isTracking && trackingMax > 0">
                                                                     <button @click="startTracking(player)"
                                                                         :disabled="trackingAvailable <= 0"
-                                                                        :class="trackingAvailable > 0 ? 'bg-teal-600 hover:bg-teal-700 text-white' : 'bg-slate-200 text-text-secondary cursor-not-allowed'"
+                                                                        :class="trackingAvailable > 0 ? 'bg-teal-600 hover:bg-teal-700 text-white' : 'bg-surface-600 text-text-secondary cursor-not-allowed'"
                                                                         class="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-lg transition-colors min-h-[36px]">
                                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                                                         {{ __('transfers.start_tracking') }}
                                                                     </button>
                                                                 </template>
                                                                 <template x-if="player.isTracking">
-                                                                    <div class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-teal-50 text-teal-700 border border-teal-200">
+                                                                    <div class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-teal-500/10 text-teal-400 border border-teal-500/20">
                                                                         <span class="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse"></span>
                                                                         {{ __('transfers.tracking_in_progress') }}
                                                                     </div>
@@ -396,7 +397,7 @@
                                                                         {{ __('transfers.willingness') }}: <span x-text="player.willingnessLabel"></span>
                                                                     </span>
                                                                     <template x-if="player.rivalInterest">
-                                                                        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-medium bg-orange-50 text-orange-700 border border-orange-200">
+                                                                        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-medium bg-accent-orange/10 text-accent-orange border border-accent-orange/20">
                                                                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
                                                                             {{ __('transfers.rival_interest') }}
                                                                         </span>
@@ -406,7 +407,7 @@
 
                                                             {{-- Tracking in progress indicator for Level 1 --}}
                                                             <template x-if="player.intelLevel === 1 && player.isTracking">
-                                                                <div class="flex items-center gap-1.5 mb-3 text-xs text-teal-600">
+                                                                <div class="flex items-center gap-1.5 mb-3 text-xs text-teal-400">
                                                                     <span class="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse"></span>
                                                                     {{ __('transfers.tracking_in_progress') }} — {{ __('transfers.intel_deep') }}
                                                                 </div>
@@ -446,7 +447,7 @@
 
                                                             {{-- Action: Counter-offer received (pending with counter) --}}
                                                             <template x-if="!player.isFreeAgent && player.hasExistingOffer && player.offerStatus === 'pending' && player.offerIsCounter">
-                                                                <div class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-accent-blue/10 text-blue-400 border border-blue-200">
+                                                                <div class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-accent-blue/10 text-blue-400 border border-accent-blue/20">
                                                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
                                                                     {{ __('transfers.counter_offer_received') }}
                                                                 </div>
@@ -477,9 +478,9 @@
                                                                     }">
                                                                         <div class="inline-flex items-stretch border border-border-strong rounded-lg overflow-hidden h-[36px]">
                                                                             <input type="hidden" name="offered_wage" :value="player.wageEuros">
-                                                                            <button type="button" :disabled="atMin" :class="atMin ? 'opacity-40 cursor-not-allowed' : 'hover:bg-surface-700 active:bg-slate-200'" class="min-h-[32px] sm:min-h-0 min-w-[32px] text-sm flex items-center justify-center bg-surface-700/50 text-text-body font-bold select-none transition-colors" @mousedown.prevent="startHold(() => decrement())" @mouseup="stopHold()" @mouseleave="stopHold()" @touchstart.prevent="startHold(() => decrement())" @touchend="stopHold()">&minus;</button>
+                                                                            <button type="button" :disabled="atMin" :class="atMin ? 'opacity-40 cursor-not-allowed' : 'hover:bg-surface-700 active:bg-surface-600'" class="min-h-[32px] sm:min-h-0 min-w-[32px] text-sm flex items-center justify-center bg-surface-700/50 text-text-body font-bold select-none transition-colors" @mousedown.prevent="startHold(() => decrement())" @mouseup="stopHold()" @mouseleave="stopHold()" @touchstart.prevent="startHold(() => decrement())" @touchend="stopHold()">&minus;</button>
                                                                             <input type="text" readonly :value="display" class="min-h-[32px] sm:min-h-0 w-28 text-xs text-center font-semibold text-text-primary bg-surface-800 border-x border-y-0 border-border-strong outline-hidden cursor-default focus:outline-hidden focus:ring-0 focus:border-border-strong">
-                                                                            <button type="button" class="min-h-[32px] sm:min-h-0 min-w-[32px] text-sm flex items-center justify-center bg-surface-700/50 hover:bg-surface-700 active:bg-slate-200 text-text-body font-bold select-none transition-colors" @mousedown.prevent="startHold(() => increment())" @mouseup="stopHold()" @mouseleave="stopHold()" @touchstart.prevent="startHold(() => increment())" @touchend="stopHold()">+</button>
+                                                                            <button type="button" class="min-h-[32px] sm:min-h-0 min-w-[32px] text-sm flex items-center justify-center bg-surface-700/50 hover:bg-surface-700 active:bg-surface-600 text-text-body font-bold select-none transition-colors" @mousedown.prevent="startHold(() => increment())" @mouseup="stopHold()" @mouseleave="stopHold()" @touchstart.prevent="startHold(() => increment())" @touchend="stopHold()">+</button>
                                                                         </div>
                                                                         <button type="submit" class="inline-flex items-center justify-center px-3 py-1.5 min-h-[36px] bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg transition-colors whitespace-nowrap">
                                                                             {{ __('transfers.submit_pre_contract') }}
@@ -511,9 +512,9 @@
                                                                         <input type="hidden" name="_token" :value="csrfToken">
                                                                         <div class="inline-flex items-stretch border border-border-strong rounded-lg overflow-hidden h-[36px]">
                                                                             <input type="hidden" name="bid_amount" :value="player.bidEuros">
-                                                                            <button type="button" :disabled="atMin" :class="atMin ? 'opacity-40 cursor-not-allowed' : 'hover:bg-surface-700 active:bg-slate-200'" class="min-h-[32px] sm:min-h-0 min-w-[32px] text-sm flex items-center justify-center bg-surface-700/50 text-text-body font-bold select-none transition-colors" @mousedown.prevent="startHold(() => decrement())" @mouseup="stopHold()" @mouseleave="stopHold()" @touchstart.prevent="startHold(() => decrement())" @touchend="stopHold()">&minus;</button>
+                                                                            <button type="button" :disabled="atMin" :class="atMin ? 'opacity-40 cursor-not-allowed' : 'hover:bg-surface-700 active:bg-surface-600'" class="min-h-[32px] sm:min-h-0 min-w-[32px] text-sm flex items-center justify-center bg-surface-700/50 text-text-body font-bold select-none transition-colors" @mousedown.prevent="startHold(() => decrement())" @mouseup="stopHold()" @mouseleave="stopHold()" @touchstart.prevent="startHold(() => decrement())" @touchend="stopHold()">&minus;</button>
                                                                             <input type="text" readonly :value="display" class="min-h-[32px] sm:min-h-0 w-28 text-xs text-center font-semibold text-text-primary bg-surface-800 border-x border-y-0 border-border-strong outline-hidden cursor-default focus:outline-hidden focus:ring-0 focus:border-border-strong">
-                                                                            <button type="button" class="min-h-[32px] sm:min-h-0 min-w-[32px] text-sm flex items-center justify-center bg-surface-700/50 hover:bg-surface-700 active:bg-slate-200 text-text-body font-bold select-none transition-colors" @mousedown.prevent="startHold(() => increment())" @mouseup="stopHold()" @mouseleave="stopHold()" @touchstart.prevent="startHold(() => increment())" @touchend="stopHold()">+</button>
+                                                                            <button type="button" class="min-h-[32px] sm:min-h-0 min-w-[32px] text-sm flex items-center justify-center bg-surface-700/50 hover:bg-surface-700 active:bg-surface-600 text-text-body font-bold select-none transition-colors" @mousedown.prevent="startHold(() => increment())" @mouseup="stopHold()" @mouseleave="stopHold()" @touchstart.prevent="startHold(() => increment())" @touchend="stopHold()">+</button>
                                                                         </div>
                                                                         <button type="submit" class="inline-flex items-center justify-center px-3 py-1.5 min-h-[36px] bg-accent-blue hover:bg-sky-700 text-white text-xs font-semibold rounded-lg transition-colors whitespace-nowrap">
                                                                             {{ __('transfers.submit_bid') }}
@@ -652,7 +653,7 @@
                                                 — <span class="font-medium">{{ in_array('domestic', $searchingReport->filters['scope']) ? __('transfers.scope_domestic') : __('transfers.scope_international') }}</span>
                                             @endif
                                         </p>
-                                        <div class="w-full bg-slate-200 rounded-full h-2 mb-4">
+                                        <div class="w-full bg-bar-track rounded-full h-2 mb-4">
                                             @php $progress = (($searchingReport->weeks_total - $searchingReport->weeks_remaining) / $searchingReport->weeks_total) * 100; @endphp
                                             <div class="bg-accent-blue h-2 rounded-full transition-all" style="width: {{ $progress }}%"></div>
                                         </div>
@@ -680,9 +681,6 @@
                         </div>
                     </div>
 
-                </div>
-            </div>
-        </div>
     </div>
 
     <x-scout-search-modal :game="$game" :can-search-internationally="$canSearchInternationally" />

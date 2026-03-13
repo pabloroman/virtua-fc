@@ -17,7 +17,7 @@
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
     >
-        <div class="absolute inset-0 bg-slate-900 opacity-90"></div>
+        <div class="absolute inset-0 bg-black/80"></div>
     </div>
 
     {{-- Panel --}}
@@ -97,7 +97,7 @@
                         class="w-full px-4 py-2.5 text-sm font-bold text-white rounded-lg transition-colors min-h-[44px]"
                         :class="selectedPenaltyKickers.length >= 5 && !penaltyProcessing
                             ? 'bg-purple-700 hover:bg-purple-800'
-                            : 'bg-slate-300 cursor-not-allowed'">
+                            : 'bg-surface-600 text-text-muted cursor-not-allowed'">
                     <span x-show="!penaltyProcessing">{{ __('game.live_pen_pick_confirm') }}</span>
                     <span x-show="penaltyProcessing" class="inline-flex items-center gap-2">
                         <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

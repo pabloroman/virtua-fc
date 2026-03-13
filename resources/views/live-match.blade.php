@@ -17,7 +17,7 @@
     <body class="font-sans antialiased bg-surface-900 text-text-primary">
     <div class="min-h-screen">
     <main class="text-text-body pt-0 pb-8 sm:py-8">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8"
+        <div class="max-w-4xl mx-auto px-4 pb-8"
              x-data="liveMatch({
                 events: {{ Js::from($events) }},
                 homeTeamId: '{{ $match->home_team_id }}',
@@ -95,9 +95,9 @@
                 };
             @endphp
 
-            <div class="bg-surface-800 overflow-hidden shadow-xs sm:rounded-lg">
+            <div class="bg-surface-800 rounded-xl overflow-hidden">
                 {{-- Competition & Round Info --}}
-                <div class="px-4 py-2.5 text-center text-sm font-semibold sm:rounded-t-lg {{ $accent }}">
+                <div class="px-4 py-2.5 text-center text-sm font-semibold rounded-t-xl {{ $accent }}">
                     <div>{{ __($match->competition->name) }} &middot; {{ $match->round_name ? __($match->round_name) : __('game.matchday_n', ['number' => $match->round_number]) }}</div>
                     @if($match->homeTeam->stadium_name)
                         <div class="text-xs font-normal opacity-80">{{ $match->homeTeam->stadium_name }}</div>
@@ -140,10 +140,10 @@
                               :class="{
                                   'bg-surface-700 text-text-muted': phase === 'pre_match',
                                   'bg-accent-green/10 text-accent-green': phase === 'first_half' || phase === 'second_half',
-                                  'bg-amber-100 text-accent-gold': phase === 'half_time' || phase === 'extra_time_half_time',
-                                  'bg-orange-100 text-orange-700': phase === 'going_to_extra_time' || phase === 'extra_time_first_half' || phase === 'extra_time_second_half',
-                                  'bg-purple-100 text-purple-400': phase === 'penalties',
-                                  'bg-slate-800 text-white': phase === 'full_time',
+                                  'bg-accent-gold/10 text-accent-gold': phase === 'half_time' || phase === 'extra_time_half_time',
+                                  'bg-orange-500/10 text-orange-400': phase === 'going_to_extra_time' || phase === 'extra_time_first_half' || phase === 'extra_time_second_half',
+                                  'bg-purple-500/10 text-purple-400': phase === 'penalties',
+                                  'bg-surface-800 text-white': phase === 'full_time',
                               }">
                             <span class="relative flex h-2 w-2" x-show="isRunning">
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
@@ -193,7 +193,7 @@
                         <div class="flex h-1 rounded-full overflow-hidden bg-surface-700">
                             <div class="bg-sky-400 transition-all duration-700 ease-out rounded-l-full"
                                  :style="'width: ' + homePossession + '%'"></div>
-                            <div class="bg-sky-200 transition-all duration-700 ease-out rounded-r-full"
+                            <div class="bg-accent-blue/20 transition-all duration-700 ease-out rounded-r-full"
                                  :style="'width: ' + awayPossession + '%'"></div>
                         </div>
                     </div>
@@ -206,18 +206,18 @@
                              :style="'width: ' + timelineProgress + '%'"></div>
 
                         {{-- Half-time marker --}}
-                        <div class="absolute top-0 h-full w-px bg-slate-300"
+                        <div class="absolute top-0 h-full w-px bg-surface-600"
                              :style="'left: ' + timelineHalfMarker + '%'"></div>
 
                         {{-- 90-minute marker (only during ET) --}}
                         <template x-if="totalMinutes === 120">
-                            <div class="absolute top-0 h-full w-px bg-slate-400"
+                            <div class="absolute top-0 h-full w-px bg-surface-600"
                                  :style="'left: ' + timelineETMarker + '%'"></div>
                         </template>
 
                         {{-- ET half-time marker --}}
                         <template x-if="totalMinutes === 120">
-                            <div class="absolute top-0 h-full w-px bg-slate-300"
+                            <div class="absolute top-0 h-full w-px bg-surface-600"
                                  :style="'left: ' + timelineETHalfMarker + '%'"></div>
                         </template>
 
@@ -248,14 +248,14 @@
                                 @click="setSpeed(s)"
                                 class="px-3 py-1 text-xs font-semibold rounded-md transition-colors"
                                 :class="speed === s
-                                    ? 'bg-slate-800 text-white'
-                                    : 'bg-surface-700 text-text-secondary hover:bg-slate-200'"
+                                    ? 'bg-surface-800 text-white'
+                                    : 'bg-surface-700 text-text-secondary hover:bg-surface-600'"
                                 x-text="s + 'x'"
                             ></button>
                         </template>
                         <button
                             @click="skipToEnd()"
-                            class="px-3 py-1 text-xs font-semibold rounded-md bg-surface-700 text-text-secondary hover:bg-slate-200 transition-colors ml-2"
+                            class="px-3 py-1 text-xs font-semibold rounded-md bg-surface-700 text-text-secondary hover:bg-surface-600 transition-colors ml-2"
                             :disabled="extraTimeLoading"
                             :class="extraTimeLoading ? 'opacity-50 cursor-not-allowed' : ''">
                             {{ __('game.live_skip') }} ▸▸
@@ -325,11 +325,11 @@
                             <template x-if="penaltyKicks.length > 0 && (phase === 'penalties' || phase === 'full_time')">
                                 <div class="mb-2">
                                     {{-- Header --}}
-                                    <div class="flex items-center gap-3 py-2 px-4 rounded-t-lg bg-purple-100">
+                                    <div class="flex items-center gap-3 py-2 px-4 rounded-t-lg bg-purple-500/10">
                                         <span class="text-sm w-6 text-center shrink-0">&#127942;</span>
                                         <div class="flex-1 text-center">
-                                            <span class="text-sm font-bold text-purple-800">{{ __('game.live_penalties') }}</span>
-                                            <span class="text-lg font-bold text-purple-900 ml-2 tabular-nums"
+                                            <span class="text-sm font-bold text-purple-300">{{ __('game.live_penalties') }}</span>
+                                            <span class="text-lg font-bold text-purple-200 ml-2 tabular-nums"
                                                   x-text="penaltyHomeScore + ' - ' + penaltyAwayScore"></span>
                                         </div>
                                     </div>
@@ -348,7 +348,7 @@
                                                      class="w-4 h-4 shrink-0 object-contain">
                                                 <span class="flex-1 truncate text-sm text-text-body" x-text="kick.playerName"></span>
                                                 <span class="text-xs font-bold shrink-0 px-1.5 py-0.5 rounded-sm"
-                                                      :class="kick.scored ? 'bg-accent-green/10 text-accent-green' : 'bg-red-100 text-accent-red'"
+                                                      :class="kick.scored ? 'bg-accent-green/10 text-accent-green' : 'bg-red-500/10 text-accent-red'"
                                                       x-text="kick.scored ? translations.penScored : translations.penMissed"></span>
                                             </div>
                                         </template>
@@ -373,8 +373,8 @@
                                          :class="penaltyWinner && phase === 'full_time' ? 'rounded-t-lg' : 'rounded-lg'">
                                         <span class="text-sm w-6 text-center shrink-0">&#127942;</span>
                                         <div class="flex-1 text-center">
-                                            <span class="text-sm font-bold text-purple-800">{{ __('game.live_penalties') }}</span>
-                                            <span class="text-lg font-bold text-purple-900 ml-2 tabular-nums"
+                                            <span class="text-sm font-bold text-purple-300">{{ __('game.live_penalties') }}</span>
+                                            <span class="text-lg font-bold text-purple-200 ml-2 tabular-nums"
                                                   x-text="penaltyHomeScore + ' - ' + penaltyAwayScore"></span>
                                         </div>
                                     </div>
@@ -402,9 +402,9 @@
                             {{-- ET Half-time separator --}}
                             <template x-if="showETHalfTimeSeparator">
                                 <div class="flex items-center gap-3 py-2">
-                                    <div class="flex-1 border-t border-orange-200"></div>
+                                    <div class="flex-1 border-t border-accent-orange/20"></div>
                                     <span class="text-xs font-semibold text-orange-400 uppercase">{{ __('game.live_et_half_time') }}</span>
-                                    <div class="flex-1 border-t border-orange-200"></div>
+                                    <div class="flex-1 border-t border-accent-orange/20"></div>
                                 </div>
                             </template>
 
@@ -423,9 +423,9 @@
                             {{-- Extra Time separator --}}
                             <template x-if="showExtraTimeSeparator">
                                 <div class="flex items-center gap-3 py-2">
-                                    <div class="flex-1 border-t border-orange-200"></div>
+                                    <div class="flex-1 border-t border-accent-orange/20"></div>
                                     <span class="text-xs font-semibold text-orange-500 uppercase">{{ __('game.live_extra_time') }}</span>
-                                    <div class="flex-1 border-t border-orange-200"></div>
+                                    <div class="flex-1 border-t border-accent-orange/20"></div>
                                 </div>
                             </template>
 
@@ -524,7 +524,7 @@
 
                             {{-- Runner-up: Silver/respectful --}}
                             <template x-if="tournamentResultType === 'runner_up'">
-                                <div class="relative -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 px-6 sm:px-8 py-10 bg-linear-to-b from-slate-500 via-slate-600 to-slate-700 text-center">
+                                <div class="relative -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 px-6 sm:px-8 py-10 bg-surface-800 text-center">
                                     <div class="text-5xl mb-3">&#129352;</div>
                                     <img :src="userTeamId === homeTeamId ? homeTeamImage : awayTeamImage"
                                          class="w-16 h-16 mx-auto mb-4 opacity-90" alt="">
@@ -572,7 +572,7 @@
 
                             {{-- Fourth place: Somber --}}
                             <template x-if="tournamentResultType === 'fourth'">
-                                <div class="relative -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 px-6 sm:px-8 py-10 bg-linear-to-b from-slate-600 via-slate-700 to-slate-800 text-center">
+                                <div class="relative -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 px-6 sm:px-8 py-10 bg-surface-800 text-center">
                                     <img :src="userTeamId === homeTeamId ? homeTeamImage : awayTeamImage"
                                          class="w-14 h-14 mx-auto mb-4 opacity-70" alt="">
                                     <h2 class="text-2xl md:text-3xl font-bold text-text-body mb-2"
@@ -584,7 +584,7 @@
                                             @csrf
                                             <input type="hidden" name="tournament_end" value="1">
                                             <button type="submit"
-                                                    class="inline-flex items-center px-8 py-3 bg-surface-800/10 text-slate-200 font-semibold rounded-lg border border-white/20 hover:bg-surface-800/20 transition-colors min-h-[44px]"
+                                                    class="inline-flex items-center px-8 py-3 bg-surface-800/10 text-text-body font-semibold rounded-lg border border-white/20 hover:bg-surface-800/20 transition-colors min-h-[44px]"
                                                     x-text="translations.tournamentViewSummary"
                                                     :disabled="!processingReady">
                                             </button>
@@ -595,7 +595,7 @@
 
                             {{-- Eliminated in R32/R16/QF: Somber/dramatic --}}
                             <template x-if="tournamentResultType === 'eliminated'">
-                                <div class="relative -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 px-6 sm:px-8 py-10 bg-linear-to-b from-slate-700 via-slate-800 to-slate-900 text-center">
+                                <div class="relative -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 px-6 sm:px-8 py-10 bg-surface-900 text-center">
                                     <img :src="userTeamId === homeTeamId ? homeTeamImage : awayTeamImage"
                                          class="w-14 h-14 mx-auto mb-4 opacity-60 grayscale" alt="">
                                     <h2 class="text-2xl md:text-3xl font-bold text-white mb-1"
@@ -607,7 +607,7 @@
                                             @csrf
                                             <input type="hidden" name="tournament_end" value="1">
                                             <button type="submit"
-                                                    class="inline-flex items-center px-8 py-3 bg-surface-800/10 text-slate-200 font-semibold rounded-lg border border-white/20 hover:bg-surface-800/20 transition-colors min-h-[44px]"
+                                                    class="inline-flex items-center px-8 py-3 bg-surface-800/10 text-text-body font-semibold rounded-lg border border-white/20 hover:bg-surface-800/20 transition-colors min-h-[44px]"
                                                     x-text="translations.tournamentViewSummary"
                                                     :disabled="!processingReady">
                                             </button>
@@ -622,7 +622,7 @@
 
                             {{-- Semi-final win: "You're in the Final!" --}}
                             <template x-if="tournamentResultType === 'to_final'">
-                                <div class="mb-4 p-4 bg-linear-to-r from-amber-50 to-yellow-50 border border-accent-gold/20 rounded-lg text-center">
+                                <div class="mb-4 p-4 bg-accent-gold/10 border border-accent-gold/20 rounded-lg text-center">
                                     <div class="text-3xl mb-1">&#127942;</div>
                                     <h3 class="text-lg font-bold text-accent-gold" x-text="translations.tournamentToFinal"></h3>
                                 </div>
@@ -637,7 +637,7 @@
 
                             {{-- R32/R16/QF win: "You Advance!" --}}
                             <template x-if="tournamentResultType === 'advance'">
-                                <div class="mb-4 p-4 bg-linear-to-r from-green-50 to-emerald-50 border border-accent-green/20 rounded-lg text-center">
+                                <div class="mb-4 p-4 bg-accent-green/10 border border-accent-green/20 rounded-lg text-center">
                                     <h3 class="text-lg font-bold text-accent-green" x-text="translations.tournamentAdvance"></h3>
                                 </div>
                             </template>
@@ -650,10 +650,10 @@
                                         $injuries = collect($events)->filter(fn($e) => $e['type'] === 'injury');
                                     @endphp
                                     @if($injuries->isNotEmpty())
-                                        <div class="mb-4 p-3 bg-orange-50 rounded-lg">
-                                            <h4 class="text-sm font-semibold text-orange-800 mb-1">{{ __('game.live_injuries_report') }}</h4>
+                                        <div class="mb-4 p-3 bg-orange-500/10 rounded-lg">
+                                            <h4 class="text-sm font-semibold text-orange-400 mb-1">{{ __('game.live_injuries_report') }}</h4>
                                             @foreach($injuries as $injury)
-                                                <div class="text-xs text-orange-700">
+                                                <div class="text-xs text-orange-300">
                                                     {{ $injury['playerName'] }} &mdash;
                                                     {{ __(App\Modules\Player\Services\InjuryService::INJURY_TRANSLATION_MAP[$injury['metadata']['injury_type']] ?? 'game.live_injury') }}
                                                 </div>
@@ -664,7 +664,7 @@
                                     <div class="text-center mb-4">
                                         <template x-if="!processingReady">
                                             <button type="button" disabled
-                                                    class="inline-flex items-center gap-2 px-6 py-2 bg-slate-200 text-text-muted font-semibold rounded-lg cursor-wait min-h-[44px]">
+                                                    class="inline-flex items-center gap-2 px-6 py-2 bg-surface-600 text-text-muted font-semibold rounded-lg cursor-wait min-h-[44px]">
                                                 <svg class="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
                                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>

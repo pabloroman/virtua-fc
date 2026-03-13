@@ -5,23 +5,24 @@
         <x-game-header :game="$game" :next-match="$game->next_match"></x-game-header>
     </x-slot>
 
-    <div>
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            {{-- Flash Messages --}}
-            @if(session('success'))
-            <div class="mb-4 p-4 bg-accent-green/10 border border-accent-green/20 rounded-lg text-accent-green">
-                {{ session('success') }}
-            </div>
-            @endif
-            @if(session('error'))
-            <div class="mb-4 p-4 bg-accent-red/10 border border-accent-red/20 rounded-lg text-accent-red">
-                {{ session('error') }}
-            </div>
-            @endif
+    <div class="max-w-7xl mx-auto px-4 pb-8">
+        <div class="mt-6 mb-6">
+            <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary">{{ __('app.transfers') }}</h2>
+        </div>
 
-            <div class="bg-surface-800 overflow-hidden shadow-xs sm:rounded-lg">
-                <div class="p-4 sm:p-6 md:p-8">
-                    @include('partials.transfers-header')
+        {{-- Flash Messages --}}
+        @if(session('success'))
+        <div class="mb-4 p-4 bg-accent-green/10 border border-accent-green/20 rounded-lg text-accent-green">
+            {{ session('success') }}
+        </div>
+        @endif
+        @if(session('error'))
+        <div class="mb-4 p-4 bg-accent-red/10 border border-accent-red/20 rounded-lg text-accent-red">
+            {{ session('error') }}
+        </div>
+        @endif
+
+        @include('partials.transfers-header')
 
                     {{-- Tab Navigation --}}
                     @php
@@ -234,10 +235,10 @@
                                         $mood = $renewalMoods[$player->id] ?? null;
                                         $midpoint = $renewalMidpoints[$player->id] ?? 0;
                                     @endphp
-                                    <div x-data="{ showCounter: false }" class="bg-orange-50 rounded-lg p-4">
+                                    <div x-data="{ showCounter: false }" class="bg-accent-orange/10 rounded-lg p-4">
                                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                             <div class="flex items-center gap-4">
-                                                <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center shrink-0">
+                                                <div class="w-10 h-10 rounded-full bg-accent-orange/10 flex items-center justify-center shrink-0">
                                                     <x-position-badge :position="$player->position" size="sm" />
                                                 </div>
                                                 <div>
@@ -283,7 +284,7 @@
                                             </div>
                                         </div>
                                         {{-- Inline counter-offer form --}}
-                                        <div x-show="showCounter" x-cloak x-transition class="mt-3 pt-3 border-t border-orange-200">
+                                        <div x-show="showCounter" x-cloak x-transition class="mt-3 pt-3 border-t border-accent-orange/20">
                                             <form method="POST" action="{{ route('game.transfers.renew', [$game->id, $player->id]) }}" class="flex flex-col md:flex-row md:items-end gap-3">
                                                 @csrf
                                                 <div>
@@ -401,7 +402,7 @@
                                 <p class="text-sm text-text-muted mb-3">{{ __('transfers.completing_when_window', ['window' => $game->getNextWindowName()]) }}</p>
                                 <div class="space-y-3">
                                     @foreach($agreedTransfers as $transfer)
-                                    <div class="bg-emerald-50 rounded-lg p-4">
+                                    <div class="bg-accent-green/10 rounded-lg p-4">
                                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                             <div class="flex items-center gap-4">
                                                 <x-team-crest :team="$transfer->offeringTeam" class="w-10 h-10 shrink-0" />
@@ -416,7 +417,7 @@
                                             </div>
                                             <div class="text-right">
                                                 <div class="text-xl font-bold text-accent-green">{{ $transfer->formatted_transfer_fee }}</div>
-                                                <div class="text-xs text-emerald-700">{{ __('transfers.deal_agreed') }}</div>
+                                                <div class="text-xs text-accent-green">{{ __('transfers.deal_agreed') }}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -432,7 +433,7 @@
                                 <p class="text-sm text-text-muted mb-3">{{ __('transfers.players_leaving_free_help') }}</p>
                                 <div class="space-y-3">
                                     @foreach($agreedPreContracts as $transfer)
-                                    <div class="bg-emerald-50 rounded-lg p-4">
+                                    <div class="bg-accent-green/10 rounded-lg p-4">
                                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                             <div class="flex items-center gap-4">
                                                 <x-team-crest :team="$transfer->offeringTeam" class="w-10 h-10 shrink-0" />
@@ -504,7 +505,7 @@
                                     <div class="bg-accent-gold/10 rounded-lg p-4">
                                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                             <div class="flex items-center gap-4">
-                                                <div class="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
+                                                <div class="w-10 h-10 rounded-full bg-accent-gold/10 flex items-center justify-center shrink-0">
                                                     <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
                                                     </svg>
@@ -654,7 +655,7 @@
                                         <span class="text-xs font-normal text-text-secondary">({{ $declinedRenewals->count() }})</span>
                                     </h4>
                                 </div>
-                                <div class="divide-y divide-slate-100">
+                                <div class="divide-y divide-border-default">
                                     @foreach($declinedRenewals as $player)
                                     <div class="px-4 py-2.5">
                                         <div class="flex items-center justify-between gap-2">
@@ -681,7 +682,7 @@
                                 <div class="px-5 py-3 bg-surface-700/50 border-b">
                                     <h4 class="font-semibold text-sm text-text-primary">{{ __('transfers.pending_renewals_section') }}</h4>
                                 </div>
-                                <div class="divide-y divide-slate-100">
+                                <div class="divide-y divide-border-default">
                                     @foreach($pendingRenewals as $player)
                                     <div class="px-4 py-3">
                                         <div class="flex items-center gap-2 mb-1">
@@ -710,7 +711,7 @@
                                         <span class="text-xs font-normal text-text-secondary">({{ $loansOut->count() }})</span>
                                     </h4>
                                 </div>
-                                <div class="divide-y divide-slate-100">
+                                <div class="divide-y divide-border-default">
                                     @foreach($loansOut as $loan)
                                     <div class="px-4 py-3">
                                         <div class="flex items-center gap-3">
@@ -735,9 +736,6 @@
                         </div>
                     </div>
 
-                </div>
-            </div>
-        </div>
     </div>
 
     <x-player-detail-modal />

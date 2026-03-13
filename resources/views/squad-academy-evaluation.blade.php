@@ -5,17 +5,14 @@
         <x-game-header :game="$game" :next-match="$game->next_match"></x-game-header>
     </x-slot>
 
-    <div x-data="academyEvaluation()" class="max-w-7xl mx-auto sm:px-6 lg:px-8 pb-8">
-        <div class="bg-surface-800 overflow-hidden shadow-xs sm:rounded-lg">
-            <div class="p-4 md:p-8">
+    <div x-data="academyEvaluation()" class="max-w-7xl mx-auto px-4 pb-8">
+        <div class="mt-6 mb-6">
+            <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary">{{ __('squad.academy_evaluation') }}</h2>
+            <p class="text-xs text-text-muted mt-0.5">{{ __('squad.academy_explanation') }}</p>
+        </div>
+
                 {{-- Header --}}
-                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-                    <div>
-                        <h3 class="font-semibold text-xl text-text-primary">{{ __('squad.academy_evaluation') }}</h3>
-                        <p class="text-sm text-text-muted mt-1">
-                            {{ __('squad.academy_explanation') }}
-                        </p>
-                    </div>
+                <div class="flex flex-col md:flex-row md:items-center md:justify-end gap-4 mb-6">
 
                     {{-- Capacity bar --}}
                     <div class="flex items-center gap-3 bg-surface-700/50 rounded-lg px-4 py-3">
@@ -25,7 +22,7 @@
                                 <span x-text="seatsUsed"></span>/{{ $capacity }}
                             </span>
                         </div>
-                        <div class="w-24 h-2 bg-slate-200 rounded-full overflow-hidden">
+                        <div class="w-24 h-2 bg-bar-track rounded-full overflow-hidden">
                             <div class="h-full rounded-full transition-all duration-300"
                                  :class="seatsUsed > {{ $capacity }} ? 'bg-accent-red' : (seatsUsed >= {{ $capacity }} - 1 ? 'bg-accent-gold' : 'bg-emerald-500')"
                                  :style="'width: ' + Math.min(100, (seatsUsed / {{ max($capacity, 1) }}) * 100) + '%'">
@@ -44,9 +41,9 @@
                     @endif
 
                     @if($arrivalsRange['max'] > 0)
-                        <div class="flex items-center gap-2 bg-lime-50 border border-lime-200 rounded-lg px-3 py-2">
-                            <svg class="w-4 h-4 text-lime-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                            <span class="text-sm text-lime-700">{{ __('squad.academy_incoming', ['min' => $arrivalsRange['min'], 'max' => $arrivalsRange['max']]) }}</span>
+                        <div class="flex items-center gap-2 bg-lime-500/10 border border-lime-500/20 rounded-lg px-3 py-2">
+                            <svg class="w-4 h-4 text-lime-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                            <span class="text-sm text-lime-400">{{ __('squad.academy_incoming', ['min' => $arrivalsRange['min'], 'max' => $arrivalsRange['max']]) }}</span>
                         </div>
                     @endif
 
@@ -148,7 +145,7 @@
                                         <div class="flex items-center gap-2 mt-0.5">
                                             <span class="text-xs text-text-secondary">{{ trans_choice('squad.academy_seasons', $prospect->seasons_in_academy, ['count' => $prospect->seasons_in_academy]) }}</span>
                                             @if($mustDecide)
-                                                <span class="text-xs font-semibold text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded-sm">{{ __('squad.academy_must_decide') }}</span>
+                                                <span class="text-xs font-semibold text-accent-gold bg-accent-gold/10 px-1.5 py-0.5 rounded-sm">{{ __('squad.academy_must_decide') }}</span>
                                             @endif
                                         </div>
                                     </div>
@@ -178,12 +175,12 @@
                                                 @if($prospect->overall >= 80) bg-emerald-500 text-white
                                                 @elseif($prospect->overall >= 70) bg-lime-500 text-white
                                                 @elseif($prospect->overall >= 60) bg-accent-gold text-white
-                                                @else bg-slate-300 text-text-body
+                                                @else bg-surface-600 text-text-body
                                                 @endif">
                                                 {{ $prospect->overall }}
                                             </span>
                                         @else
-                                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-semibold bg-slate-200 text-text-secondary">?</span>
+                                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-semibold bg-surface-600 text-text-secondary">?</span>
                                         @endif
                                     </div>
 
@@ -192,7 +189,7 @@
                                         @unless($mustDecide)
                                             <button type="button"
                                                 @click="setDecision('{{ $prospect->id }}', 'keep')"
-                                                :class="decisions['{{ $prospect->id }}'] === 'keep' ? 'bg-emerald-600 text-white ring-2 ring-emerald-300' : 'bg-surface-700 text-text-secondary hover:bg-emerald-50 hover:text-emerald-700'"
+                                                :class="decisions['{{ $prospect->id }}'] === 'keep' ? 'bg-emerald-600 text-white ring-2 ring-emerald-300' : 'bg-surface-700 text-text-secondary hover:bg-accent-green/10 hover:text-accent-green'"
                                                 class="px-2.5 py-1.5 text-xs font-medium rounded-md transition-all min-h-[36px]">
                                                 {{ __('squad.academy_keep') }}
                                             </button>
@@ -208,7 +205,7 @@
                                         @unless($mustDecide)
                                             <button type="button"
                                                 @click="setDecision('{{ $prospect->id }}', 'loan')"
-                                                :class="decisions['{{ $prospect->id }}'] === 'loan' ? 'bg-indigo-600 text-white ring-2 ring-indigo-300' : 'bg-surface-700 text-text-secondary hover:bg-indigo-50 hover:text-indigo-700'"
+                                                :class="decisions['{{ $prospect->id }}'] === 'loan' ? 'bg-violet-600 text-white ring-2 ring-violet-400/30' : 'bg-surface-700 text-text-secondary hover:bg-violet-500/10 hover:text-violet-400'"
                                                 class="px-2.5 py-1.5 text-xs font-medium rounded-md transition-all min-h-[36px]">
                                                 {{ __('squad.academy_loan_out') }}
                                             </button>
@@ -241,7 +238,7 @@
 
                                     @if($mustDecide)
                                         <div class="mb-2">
-                                            <span class="text-xs font-semibold text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded-sm">{{ __('squad.academy_must_decide') }}</span>
+                                            <span class="text-xs font-semibold text-accent-gold bg-accent-gold/10 px-1.5 py-0.5 rounded-sm">{{ __('squad.academy_must_decide') }}</span>
                                         </div>
                                     @endif
 
@@ -254,7 +251,7 @@
                                                 @if($prospect->overall >= 80) bg-emerald-500 text-white
                                                 @elseif($prospect->overall >= 70) bg-lime-500 text-white
                                                 @elseif($prospect->overall >= 60) bg-accent-gold text-white
-                                                @else bg-slate-300 text-text-body
+                                                @else bg-surface-600 text-text-body
                                                 @endif">
                                                 {{ $prospect->overall }}
                                             </span>
@@ -304,19 +301,17 @@
                         <p class="text-xs text-text-secondary" x-show="!allDecided">
                             {{ __('messages.academy_evaluation_required') }}
                         </p>
-                        <div class="text-xs text-emerald-600 font-medium" x-show="allDecided" x-cloak>
+                        <div class="text-xs text-accent-green font-medium" x-show="allDecided" x-cloak>
                             &#10003; {{ __('messages.academy_evaluation_complete') }}
                         </div>
                         <button type="submit"
                                 :disabled="!allDecided"
-                                :class="allDecided ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-slate-200 text-text-secondary cursor-not-allowed'"
+                                :class="allDecided ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-surface-600 text-text-secondary cursor-not-allowed'"
                                 class="w-full md:w-auto px-6 py-3 font-semibold rounded-lg transition-colors min-h-[44px]">
                             {{ __('app.confirm') }}
                         </button>
                     </div>
                 </form>
-            </div>
-        </div>
     </div>
 
     <script>

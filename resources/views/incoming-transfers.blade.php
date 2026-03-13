@@ -5,23 +5,24 @@
         <x-game-header :game="$game" :next-match="$game->next_match"></x-game-header>
     </x-slot>
 
-    <div>
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            {{-- Flash Messages --}}
-            @if(session('success'))
-            <div class="mb-4 p-4 bg-accent-green/10 border border-accent-green/20 rounded-lg text-accent-green">
-                {{ session('success') }}
-            </div>
-            @endif
-            @if(session('error'))
-            <div class="mb-4 p-4 bg-accent-red/10 border border-accent-red/20 rounded-lg text-accent-red">
-                {{ session('error') }}
-            </div>
-            @endif
+    <div class="max-w-7xl mx-auto px-4 pb-8">
+        <div class="mt-6 mb-6">
+            <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary">{{ __('app.transfers') }}</h2>
+        </div>
 
-            <div class="bg-surface-800 overflow-hidden shadow-xs sm:rounded-lg">
-                <div class="p-4 sm:p-6 md:p-8">
-                    @include('partials.transfers-header')
+        {{-- Flash Messages --}}
+        @if(session('success'))
+        <div class="mb-4 p-4 bg-accent-green/10 border border-accent-green/20 rounded-lg text-accent-green">
+            {{ session('success') }}
+        </div>
+        @endif
+        @if(session('error'))
+        <div class="mb-4 p-4 bg-accent-red/10 border border-accent-red/20 rounded-lg text-accent-red">
+            {{ session('error') }}
+        </div>
+        @endif
+
+        @include('partials.transfers-header')
 
                     {{-- Tab Navigation --}}
                     <div x-data="{ helpOpen: false }">
@@ -162,7 +163,7 @@
                                                     <div class="text-sm text-text-secondary">
                                                         {{ $bid->gamePlayer->position_name }} &middot; {{ $bid->gamePlayer->age($game->current_date) }} {{ __('app.years') }}
                                                         @if($bid->offer_type === 'loan_in')
-                                                            &middot; <span class="text-emerald-600 font-medium">{{ __('transfers.loan_request') }}</span>
+                                                            &middot; <span class="text-accent-green font-medium">{{ __('transfers.loan_request') }}</span>
                                                         @endif
                                                     </div>
                                                 </div>
@@ -171,11 +172,11 @@
                                                 @if($bid->transfer_fee > 0)
                                                     <div class="text-xl font-bold text-amber-600">{{ $bid->formatted_transfer_fee }}</div>
                                                 @elseif($bid->isPreContract())
-                                                    <div class="text-sm font-semibold text-emerald-600">{{ __('transfers.free_transfer') }}</div>
+                                                    <div class="text-sm font-semibold text-accent-green">{{ __('transfers.free_transfer') }}</div>
                                                 @elseif($bid->isLoanIn())
-                                                    <div class="text-sm font-semibold text-emerald-600">{{ __('transfers.loan_no_fee') }}</div>
+                                                    <div class="text-sm font-semibold text-accent-green">{{ __('transfers.loan_no_fee') }}</div>
                                                 @else
-                                                    <div class="text-sm font-semibold text-emerald-600">{{ __('finances.free') }}</div>
+                                                    <div class="text-sm font-semibold text-accent-green">{{ __('finances.free') }}</div>
                                                 @endif
                                                 <div class="text-xs text-accent-gold">{{ __('transfers.response_next_matchday') }}</div>
                                             </div>
@@ -195,7 +196,7 @@
                                 <p class="text-sm text-text-muted mb-3">{{ __('transfers.completing_when_window', ['window' => $game->getNextWindowName()]) }}</p>
                                 <div class="space-y-3">
                                     @foreach($incomingAgreedTransfers as $transfer)
-                                    <div class="bg-emerald-50 rounded-lg p-4">
+                                    <div class="bg-accent-green/10 rounded-lg p-4">
                                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                             <div class="flex items-center gap-4">
                                                 @if($transfer->sellingTeam)
@@ -208,22 +209,22 @@
                                                     <div class="text-sm text-text-secondary">
                                                         {{ $transfer->gamePlayer->position_name }} &middot; {{ $transfer->gamePlayer->age($game->current_date) }} {{ __('app.years') }}
                                                         @if($transfer->offer_type === 'loan_in')
-                                                            &middot; <span class="text-emerald-600 font-medium">{{ __('transfers.loans') }}</span>
+                                                            &middot; <span class="text-accent-green font-medium">{{ __('transfers.loans') }}</span>
                                                         @endif
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="text-right">
                                                 @if($transfer->transfer_fee > 0)
-                                                    <div class="text-xl font-bold text-emerald-600">{{ $transfer->formatted_transfer_fee }}</div>
+                                                    <div class="text-xl font-bold text-accent-green">{{ $transfer->formatted_transfer_fee }}</div>
                                                 @elseif($transfer->isPreContract())
-                                                    <div class="text-sm font-semibold text-emerald-600">{{ __('transfers.free_transfer') }}</div>
+                                                    <div class="text-sm font-semibold text-accent-green">{{ __('transfers.free_transfer') }}</div>
                                                 @elseif($transfer->isLoanIn())
-                                                    <div class="text-sm font-semibold text-emerald-600">{{ __('transfers.loan_no_fee') }}</div>
+                                                    <div class="text-sm font-semibold text-accent-green">{{ __('transfers.loan_no_fee') }}</div>
                                                 @else
-                                                    <div class="text-sm font-semibold text-emerald-600">{{ __('finances.free') }}</div>
+                                                    <div class="text-sm font-semibold text-accent-green">{{ __('finances.free') }}</div>
                                                 @endif
-                                                <div class="text-xs text-emerald-700">{{ __('transfers.deal_agreed') }}</div>
+                                                <div class="text-xs text-accent-green">{{ __('transfers.deal_agreed') }}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -243,7 +244,7 @@
                                         <span class="text-xs font-normal text-text-secondary">({{ $loansIn->count() }})</span>
                                     </h4>
                                 </div>
-                                <div class="divide-y divide-slate-100">
+                                <div class="divide-y divide-border-default">
                                     @foreach($loansIn as $loan)
                                     <div class="px-4 py-3">
                                         <div class="flex items-center gap-3">
@@ -327,9 +328,6 @@
 
                     </div>
 
-                </div>
-            </div>
-        </div>
     </div>
 
     <x-scout-results-modal />
