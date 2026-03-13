@@ -464,6 +464,10 @@ layer(base);
     [x-cloak] {
         display: none !important;
     }
+
+    .tippy-content {
+        font-size: 0.75rem;
+    }
 }
 
 /* Custom scrollbar */

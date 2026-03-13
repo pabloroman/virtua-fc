@@ -1,4 +1,4 @@
-@props(['name', 'positionGroup', 'positionAbbrev' => null, 'size' => 'md'])
+@props(['name', 'positionGroup', 'positionAbbrev' => null, 'number' => null, 'size' => 'md'])
 
 @php
     $colors = match($positionGroup) {
@@ -8,8 +8,10 @@
         default      => ['from' => 'from-green-500/20', 'to' => 'to-green-600/10', 'border' => 'border-green-500/20', 'text' => 'text-green-400', 'badge_bg' => 'bg-green-500/20'],
     };
 
-    $initials = collect(explode(' ', $name))->map(fn($w) => mb_substr($w, 0, 1))->join('');
-    if (mb_strlen($initials) > 2) $initials = mb_substr($initials, 0, 1) . mb_substr($initials, -1);
+    $display = $number ?: (function() use ($name) {
+        $initials = collect(explode(' ', $name))->map(fn($w) => mb_substr($w, 0, 1))->join('');
+        return mb_strlen($initials) > 2 ? mb_substr($initials, 0, 1) . mb_substr($initials, -1) : $initials;
+    })();
 
     $circleSize = match($size) {
         'sm' => 'w-8 h-8',
@@ -30,7 +32,7 @@
 
 <div class="relative shrink-0">
     <div class="{{ $circleSize }} rounded-full bg-linear-to-br {{ $colors['from'] }} {{ $colors['to'] }} border {{ $colors['border'] }} flex items-center justify-center">
-        <span class="font-heading font-bold {{ $textSize }} {{ $colors['text'] }}">{{ $initials }}</span>
+        <span class="font-heading font-bold {{ $textSize }} {{ $colors['text'] }}">{{ $display }}</span>
     </div>
     @if($positionAbbrev)
     <span class="absolute -bottom-0.5 -right-0.5 {{ $badgeSize }} rounded-full {{ $colors['badge_bg'] }} border border-surface-800 flex items-center justify-center">

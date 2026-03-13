@@ -361,20 +361,10 @@
                                             <div>
                                                 <div class="relative shrink-0 mx-auto mb-1.5 w-8 h-8">
                                                     <div class="w-8 h-8 rounded-full border flex items-center justify-center"
-                                                        :class="{
-                                                            'bg-linear-to-br from-amber-500/20 to-amber-600/10 border-amber-500/20': playersData[benchPlayerId].positionGroup === 'Goalkeeper',
-                                                            'bg-linear-to-br from-blue-500/20 to-blue-600/10 border-blue-500/20': playersData[benchPlayerId].positionGroup === 'Defender',
-                                                            'bg-linear-to-br from-green-500/20 to-green-600/10 border-green-500/20': playersData[benchPlayerId].positionGroup === 'Midfielder',
-                                                            'bg-linear-to-br from-rose-500/20 to-rose-600/10 border-rose-500/20': playersData[benchPlayerId].positionGroup === 'Forward',
-                                                        }">
+                                                        :class="getAvatarCircleClasses(playersData[benchPlayerId].positionGroup)">
                                                         <span class="font-heading font-bold text-xs"
-                                                            :class="{
-                                                                'text-amber-400': playersData[benchPlayerId].positionGroup === 'Goalkeeper',
-                                                                'text-blue-400': playersData[benchPlayerId].positionGroup === 'Defender',
-                                                                'text-green-400': playersData[benchPlayerId].positionGroup === 'Midfielder',
-                                                                'text-rose-400': playersData[benchPlayerId].positionGroup === 'Forward',
-                                                            }"
-                                                            x-text="(() => { const parts = playersData[benchPlayerId].name.split(' '); const initials = parts.map(w => w.charAt(0)).join(''); return initials.length > 2 ? initials.charAt(0) + initials.charAt(initials.length - 1) : initials; })()"></span>
+                                                            :class="getAvatarTextClasses(playersData[benchPlayerId].positionGroup)"
+                                                            x-text="getAvatarDisplay(playersData[benchPlayerId])"></span>
                                                     </div>
                                                 </div>
                                                 <p class="text-[11px] font-medium text-text-primary truncate" x-text="playersData[benchPlayerId].name"></p>
@@ -464,7 +454,7 @@
                                                 }"
                                             >
                                                 <div class="flex items-center gap-2.5">
-                                                    <x-player-avatar :name="$player->player->name ?? $player->name" :position-group="$posGroup" size="sm" />
+                                                    <x-player-avatar :name="$player->player->name ?? $player->name" :position-group="$posGroup" :number="$player->number" size="sm" />
                                                     <div class="flex-1 min-w-0">
                                                         <div class="flex items-center gap-1.5">
                                                             <span class="text-xs font-medium text-text-primary truncate">{{ $player->name }}</span>

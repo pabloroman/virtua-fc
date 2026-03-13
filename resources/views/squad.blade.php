@@ -350,7 +350,7 @@
                                     <div class="lg:hidden px-4 py-3 cursor-pointer" @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $gp->id]) }}')">
                                         <div class="flex items-center gap-3">
                                             {{-- Avatar with position badge --}}
-                                            <x-player-avatar :name="$gp->player->name" :position-group="$groupKey" :position-abbrev="$posAbbrev" />
+                                            <x-player-avatar :name="$gp->player->name" :position-group="$groupKey" :number="$gp->number" :position-abbrev="$posAbbrev" />
 
                                             {{-- Name + details --}}
                                             <div class="flex-1 min-w-0">
@@ -409,7 +409,7 @@
 
                                         {{-- Player name with avatar --}}
                                         <div class="flex items-center gap-3 min-w-0">
-                                            <x-player-avatar :name="$gp->player->name" :position-group="$groupKey" size="sm" />
+                                            <x-player-avatar :name="$gp->player->name" :position-group="$groupKey" :number="$gp->number" size="sm" />
                                             <div class="min-w-0">
                                                 <div class="flex items-center gap-2">
                                                     <span class="text-sm font-medium text-text-primary truncate">{{ $gp->player->name }}</span>

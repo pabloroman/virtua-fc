@@ -380,6 +380,30 @@ export default function lineupManager(config) {
             return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
         },
 
+        getAvatarDisplay(player) {
+            return player?.number || this.getInitials(player?.name);
+        },
+
+        getAvatarCircleClasses(positionGroup) {
+            const map = {
+                'Goalkeeper': 'bg-linear-to-br from-amber-500/20 to-amber-600/10 border-amber-500/20',
+                'Defender':   'bg-linear-to-br from-blue-500/20 to-blue-600/10 border-blue-500/20',
+                'Midfielder': 'bg-linear-to-br from-green-500/20 to-green-600/10 border-green-500/20',
+                'Forward':    'bg-linear-to-br from-rose-500/20 to-rose-600/10 border-rose-500/20',
+            };
+            return map[positionGroup] || map['Midfielder'];
+        },
+
+        getAvatarTextClasses(positionGroup) {
+            const map = {
+                'Goalkeeper': 'text-amber-400',
+                'Defender':   'text-blue-400',
+                'Midfielder': 'text-green-400',
+                'Forward':    'text-rose-400',
+            };
+            return map[positionGroup] || map['Midfielder'];
+        },
+
         // Generate inline CSS for the player badge background based on team shirt
         getShirtStyle(role) {
             // Goalkeeper always gets a distinct amber kit

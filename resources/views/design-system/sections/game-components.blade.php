@@ -51,6 +51,10 @@
                         <x-player-avatar name="Ana López" position-group="Defender" />
                         <div class="text-[10px] text-text-muted mt-2">No badge</div>
                     </div>
+                    <div class="text-center">
+                        <x-player-avatar name="Marc Rodríguez" position-group="Goalkeeper" :number="1" />
+                        <div class="text-[10px] text-text-muted mt-2">With #</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -61,14 +65,14 @@
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
-            <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="avatarCode">&lt;!-- With position sub-badge --&gt;
-&lt;x-player-avatar :name="$player->name" :position-group="$group" :position-abbrev="$abbrev" /&gt;
+            <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="avatarCode">&lt;!-- With number and position sub-badge --&gt;
+&lt;x-player-avatar :name="$player->name" :position-group="$group" :number="$player->number" :position-abbrev="$abbrev" /&gt;
 
-&lt;!-- Without sub-badge --&gt;
+&lt;!-- Without number (falls back to initials) --&gt;
 &lt;x-player-avatar :name="$player->name" position-group="Defender" /&gt;
 
 &lt;!-- Small size (for table rows) --&gt;
-&lt;x-player-avatar :name="$player->name" :position-group="$group" size="sm" /&gt;</code></pre>
+&lt;x-player-avatar :name="$player->name" :position-group="$group" :number="$player->number" size="sm" /&gt;</code></pre>
         </div>
 
         {{-- Props table --}}
@@ -94,6 +98,12 @@
                         <td class="py-2 pr-4 text-text-secondary">string</td>
                         <td class="py-2 pr-4 font-mono text-xs text-text-muted">—</td>
                         <td class="py-2 text-text-secondary">Goalkeeper | Defender | Midfielder | Forward</td>
+                    </tr>
+                    <tr class="border-b border-border-default">
+                        <td class="py-2 pr-4 font-mono text-xs text-accent-blue">number</td>
+                        <td class="py-2 pr-4 text-text-secondary">int|null</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-text-muted">null</td>
+                        <td class="py-2 text-text-secondary">Squad number (shown instead of initials when present)</td>
                     </tr>
                     <tr class="border-b border-border-default">
                         <td class="py-2 pr-4 font-mono text-xs text-accent-blue">positionAbbrev</td>
