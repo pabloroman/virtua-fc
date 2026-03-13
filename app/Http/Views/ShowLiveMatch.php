@@ -178,6 +178,24 @@ class ShowLiveMatch
             ->values()
             ->all();
 
+        // Both teams' starting lineups for the Lineups tab
+        $mapLineup = fn (array $ids) => GamePlayer::with('player')
+            ->whereIn('id', $ids)
+            ->get()
+            ->map(fn ($p) => [
+                'name' => $p->player->name ?? '',
+                'positionAbbr' => PositionMapper::toAbbreviation($p->position),
+                'positionGroup' => $p->position_group,
+                'positionSort' => LineupService::positionSortOrder($p->position),
+                'overallScore' => $p->overall_score,
+            ])
+            ->sortBy('positionSort')
+            ->values()
+            ->all();
+
+        $homeLineupDisplay = $mapLineup($playerMatch->home_lineup ?? []);
+        $awayLineupDisplay = $mapLineup($playerMatch->away_lineup ?? []);
+
         // User's current tactical setup
         $userFormation = $isUserHome
             ? ($playerMatch->home_formation ?? '4-4-2')
@@ -266,6 +284,10 @@ class ShowLiveMatch
                 : null,
             'homePossession' => $playerMatch->home_possession ?? 50,
             'awayPossession' => $playerMatch->away_possession ?? 50,
+            'homeLineupDisplay' => $homeLineupDisplay,
+            'awayLineupDisplay' => $awayLineupDisplay,
+            'homeFormation' => $playerMatch->home_formation ?? '4-4-2',
+            'awayFormation' => $playerMatch->away_formation ?? '4-4-2',
         ]);
     }
 

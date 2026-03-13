@@ -36,10 +36,10 @@
             x-on:click.stop
         >
             {{-- Header with match context --}}
-            <div class="bg-surface-900 text-white px-4 py-3 sm:px-6 sm:py-4">
+            <div class="bg-surface-900 border-b border-border-default text-white px-4 py-3 sm:px-6 sm:py-4">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3 min-w-0">
-                        <h2 class="text-sm sm:text-base font-semibold uppercase tracking-wide truncate">{{ __('game.tactical_center') }}</h2>
+                        <h2 class="text-sm sm:text-base font-heading font-semibold uppercase tracking-wider truncate">{{ __('game.tactical_center') }}</h2>
                         <span class="inline-flex items-center gap-1.5 text-xs font-semibold rounded-full px-2.5 py-0.5 bg-accent-gold/100/20 text-amber-300 shrink-0">
                             <span class="relative flex h-1.5 w-1.5">
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
@@ -298,10 +298,10 @@
                             <div class="space-y-1">
                                 <template x-for="(sub, idx) in substitutionsMade" :key="idx">
                                     <div class="flex items-center gap-2 text-xs text-text-muted py-1">
-                                        <span class="font-mono w-6 text-right shrink-0" x-text="sub.minute + '\''"></span>
-                                        <span class="text-red-500">&#8617;</span>
+                                        <span class="font-heading font-bold w-7 text-right text-text-secondary shrink-0" x-text="sub.minute + '\''"></span>
+                                        <span class="text-accent-red text-[10px] font-semibold">OFF</span>
                                         <span class="truncate" x-text="sub.playerOutName"></span>
-                                        <span class="text-green-500">&#8618;</span>
+                                        <span class="text-accent-green text-[10px] font-semibold">ON</span>
                                         <span class="truncate" x-text="sub.playerInName"></span>
                                     </div>
                                 </template>

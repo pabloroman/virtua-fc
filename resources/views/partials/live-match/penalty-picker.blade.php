@@ -34,8 +34,8 @@
             x-on:click.stop
         >
             {{-- Header --}}
-            <div class="bg-purple-800 text-white px-4 py-3 sm:px-6 sm:py-4">
-                <h2 class="text-sm sm:text-base font-bold uppercase tracking-wide">{{ __('game.live_pen_pick_title') }}</h2>
+            <div class="bg-purple-800 border-b border-purple-700/30 text-white px-4 py-3 sm:px-6 sm:py-4">
+                <h2 class="text-sm sm:text-base font-heading font-bold uppercase tracking-wider">{{ __('game.live_pen_pick_title') }}</h2>
                 <p class="text-xs text-purple-200 mt-0.5">{{ __('game.live_pen_pick_desc') }}</p>
             </div>
 

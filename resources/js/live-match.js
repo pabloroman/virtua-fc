@@ -63,6 +63,9 @@ export default function liveMatch(config) {
         pendingDefLine: null,
         tacticsProcessing: false,
 
+        // Tab state
+        activeTab: 'events',
+
         // Clock state
         currentMinute: 0,
         speed: [1, 2, 4].includes(parseFloat(localStorage.getItem('liveMatchSpeed')))
@@ -73,6 +76,7 @@ export default function liveMatch(config) {
         //         extra_time_second_half, penalties, full_time
         phase: 'pre_match',
         isPaused: false,
+        userPaused: false,
         pauseTimer: null,
 
         // Derived state
@@ -176,7 +180,7 @@ export default function liveMatch(config) {
                 return;
             }
 
-            if (this.isPaused || this.tacticalPanelOpen || this.penaltyPickerOpen) {
+            if (this.isPaused || this.userPaused || this.tacticalPanelOpen || this.penaltyPickerOpen) {
                 this._lastTick = now;
                 this._animFrame = requestAnimationFrame(this.tick.bind(this));
                 return;
@@ -539,6 +543,10 @@ export default function liveMatch(config) {
             this._possessionNextShift = this.currentMinute + 1 + Math.random() * 2;
         },
 
+        togglePause() {
+            this.userPaused = !this.userPaused;
+        },
+
         // Speed controls
         setSpeed(s) {
             this.speed = s;
@@ -546,6 +554,8 @@ export default function liveMatch(config) {
         },
 
         skipToEnd() {
+            this.userPaused = false;
+
             // Cancel the kickoff timeout if skip is pressed during pre_match
             if (this._kickoffTimeout) {
                 clearTimeout(this._kickoffTimeout);
@@ -1424,6 +1434,15 @@ export default function liveMatch(config) {
             if (score >= 70) return 'bg-lime-500 text-white';
             if (score >= 60) return 'bg-amber-500 text-white';
             return 'bg-slate-300 text-slate-700';
+        },
+
+        getStatCount(type, side) {
+            const allEvents = [...this.revealedEvents, ...this.extraTimeEvents.filter(e => this.revealedEvents.length >= this.events.length)];
+            return allEvents.filter(event => {
+                if (event.type !== type) return false;
+                const eventSide = this.getEventSide(event);
+                return eventSide === side;
+            }).length;
         },
 
         // =============================

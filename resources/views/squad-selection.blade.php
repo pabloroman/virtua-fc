@@ -10,7 +10,7 @@ $tabs = [
 ];
 @endphp
 
-<x-app-layout>
+<x-app-layout :hide-footer="true">
     <div x-data="{
         selectedIds: [],
         activeTab: 'goalkeepers',
