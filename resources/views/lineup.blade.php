@@ -545,13 +545,8 @@
 
         {{-- Coach Assistant Modal --}}
         <x-modal name="coach-assistant" max-width="lg">
-            <div class="p-5">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="font-heading text-lg font-semibold text-text-primary">{{ __('squad.coach_assistant') }}</h3>
-                    <x-icon-button type="button" @click="$dispatch('close-modal', 'coach-assistant')">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </x-icon-button>
-                </div>
+            <x-modal-header modal-name="coach-assistant">{{ __('squad.coach_assistant') }}</x-modal-header>
+            <div class="p-5 max-h-[80vh] overflow-y-auto">
                 @include('partials.lineup-coach-panel')
             </div>
         </x-modal>

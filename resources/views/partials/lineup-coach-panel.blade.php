@@ -1,5 +1,4 @@
-<div class="bg-surface-700/50 rounded-lg p-4 border border-border-strong">
-    <div class="text-xs font-semibold text-text-muted uppercase tracking-wide mb-3">{{ __('squad.coach_assistant') }}</div>
+<div class="space-y-3">
 
     {{-- Face to Face Comparison --}}
     <div class="flex items-center justify-between gap-2 mb-1">
@@ -80,7 +79,7 @@
     </div>
 
     {{-- Radar Chart --}}
-    <div class="border-t border-border-strong pt-3 mb-3">
+    <div class="border-t border-border-default pt-3 mb-3">
         <div class="flex items-center justify-center gap-4 mb-1">
             <span class="flex items-center gap-1 text-[10px] text-text-muted">
                 <span class="w-2 h-1 rounded-xs bg-sky-400 inline-block"></span>
@@ -108,7 +107,7 @@
     </div>
 
     {{-- Tips Section --}}
-    <div class="border-t border-border-strong pt-3">
+    <div class="border-t border-border-default pt-3">
         <div class="text-[10px] font-semibold text-text-secondary uppercase tracking-wide mb-2">{{ __('squad.coach_recommendations') }}</div>
 
         {{-- Dynamic Tips --}}

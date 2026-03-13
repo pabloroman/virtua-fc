@@ -129,10 +129,68 @@
         </div>
     </div>
 
+    {{-- Modal Header Component --}}
+    <div class="mb-12">
+        <h3 class="text-lg font-semibold text-text-primary mb-2">Modal Header Component</h3>
+        <p class="text-sm text-text-secondary mb-4">Use <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">&lt;x-modal-header&gt;</code> for a consistent header with title and close button. The header sits outside the scrollable body so it stays fixed at the top.</p>
+
+        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 mb-3">
+            <div class="flex flex-wrap gap-3">
+                <x-primary-button type="button" color="blue" @click="$dispatch('open-modal', 'ds-demo-panel')">Open Panel Modal</x-primary-button>
+            </div>
+        </div>
+
+        <x-modal name="ds-demo-panel" maxWidth="lg">
+            <x-modal-header modal-name="ds-demo-panel">Panel Title</x-modal-header>
+            <div class="p-5 max-h-[80vh] overflow-y-auto">
+                <p class="text-sm text-text-secondary mb-4">This modal uses <code class="text-xs bg-surface-700 px-1 py-0.5 rounded-sm text-text-body">&lt;x-modal-header&gt;</code> for the fixed header and a scrollable body container.</p>
+                <div class="bg-surface-700/50 border border-border-strong rounded-lg p-4">
+                    <p class="text-sm text-text-secondary">Content goes here. The header stays pinned while this area scrolls.</p>
+                </div>
+            </div>
+        </x-modal>
+
+        <div x-data="{ copied: false }" class="relative mb-4">
+            <button @click="navigator.clipboard.writeText($refs.modalHeaderCode.textContent); copied = true; setTimeout(() => copied = false, 2000)"
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-text-secondary hover:text-text-body bg-surface-600 rounded-sm transition-colors">
+                <span x-show="!copied">Copy</span>
+                <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
+            </button>
+            <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="modalHeaderCode">&lt;x-modal name="my-panel" maxWidth="lg"&gt;
+    &lt;x-modal-header modal-name="my-panel"&gt;Panel Title&lt;/x-modal-header&gt;
+    &lt;div class="p-5 max-h-[80vh] overflow-y-auto"&gt;
+        &lt;!-- Scrollable content --&gt;
+    &lt;/div&gt;
+&lt;/x-modal&gt;</code></pre>
+        </div>
+
+        {{-- Props table --}}
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="text-left border-b border-border-strong">
+                    <tr>
+                        <th class="font-semibold py-2 pr-4 text-text-body">Prop</th>
+                        <th class="font-semibold py-2 pr-4 text-text-body">Type</th>
+                        <th class="font-semibold py-2 pr-4 text-text-body">Default</th>
+                        <th class="font-semibold py-2 text-text-body">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b border-border-default">
+                        <td class="py-2 pr-4 font-mono text-xs text-accent-blue">modal-name</td>
+                        <td class="py-2 pr-4 text-text-secondary">string</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-text-secondary">required</td>
+                        <td class="py-2 text-text-secondary">Name of the parent modal (used to dispatch close event)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     {{-- Usage Patterns --}}
     <div>
         <h3 class="text-lg font-semibold text-text-primary mb-2">Usage Patterns</h3>
-        <p class="text-sm text-text-secondary mb-4">Common modal content patterns in the dark theme. Always use <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">text-text-primary</code> for titles and <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">text-text-secondary</code> for descriptions inside modal panels.</p>
+        <p class="text-sm text-text-secondary mb-4">Common modal content patterns. Use <code class="text-xs bg-surface-700 px-1.5 py-0.5 rounded-sm text-text-body">&lt;x-modal-header&gt;</code> for panel/detail modals with scrollable content. Use inline headers for simple confirmation dialogs.</p>
 
         <div x-data="{ copied: false }" class="relative">
             <button @click="navigator.clipboard.writeText($refs.code.textContent); copied = true; setTimeout(() => copied = false, 2000)"
@@ -140,7 +198,15 @@
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
-            <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="code">{{-- Confirmation modal --}}
+            <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="code">{{-- Panel modal (scrollable content with fixed header) --}}
+&lt;x-modal name="report-panel" maxWidth="lg"&gt;
+    &lt;x-modal-header modal-name="report-panel"&gt;Report Title&lt;/x-modal-header&gt;
+    &lt;div class="p-5 max-h-[80vh] overflow-y-auto"&gt;
+        &lt;!-- Scrollable content --&gt;
+    &lt;/div&gt;
+&lt;/x-modal&gt;
+
+{{-- Confirmation modal (simple, no header component needed) --}}
 &lt;x-modal name="confirm-action" maxWidth="md"&gt;
     &lt;div class="p-6"&gt;
         &lt;h3 class="text-xl font-semibold text-text-primary mb-2"&gt;Title&lt;/h3&gt;
@@ -152,20 +218,6 @@
             &lt;x-primary-button color="blue"&gt;Confirm&lt;/x-primary-button&gt;
         &lt;/div&gt;
     &lt;/div&gt;
-&lt;/x-modal&gt;
-
-{{-- Form modal with focusable --}}
-&lt;x-modal name="edit-form" maxWidth="lg" focusable&gt;
-    &lt;form class="p-6"&gt;
-        &lt;h3 class="text-xl font-semibold text-text-primary mb-4"&gt;Edit Details&lt;/h3&gt;
-        &lt;!-- Form fields --&gt;
-        &lt;div class="flex justify-end gap-3 mt-6"&gt;
-            &lt;x-secondary-button type="button" @click="$dispatch('close-modal', 'edit-form')"&gt;
-                Cancel
-            &lt;/x-secondary-button&gt;
-            &lt;x-primary-button color="green"&gt;Save&lt;/x-primary-button&gt;
-        &lt;/div&gt;
-    &lt;/form&gt;
 &lt;/x-modal&gt;</code></pre>
         </div>
     </div>

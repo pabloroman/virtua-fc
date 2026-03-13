@@ -1,13 +1,7 @@
 {{-- Tactical Guide Modal --}}
 <x-modal name="tactical-guide" max-width="3xl">
+    <x-modal-header modal-name="tactical-guide">{{ __('game.tactical_guide_title') }}</x-modal-header>
     <div class="p-5 space-y-6 max-h-[80vh] overflow-y-auto">
-        {{-- Header --}}
-        <div class="flex items-center justify-between">
-            <h2 class="text-lg font-bold text-text-primary">{{ __('game.tactical_guide_title') }}</h2>
-            <x-icon-button size="sm" x-on:click="$dispatch('close-modal', 'tactical-guide')">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </x-icon-button>
-        </div>
 
         {{-- Intro --}}
         <div class="bg-surface-700/50 border border-border-strong rounded-lg p-4">
