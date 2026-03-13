@@ -19,3 +19,9 @@ High-level documentation of the game systems that power VirtuaFC. These document
 | [Transfer Market](transfer-market.md) | Scouting, buying, selling, loans, contracts |
 | [Youth Academy](academy-redesign.md) | Phased stat reveals, development, evaluations |
 | [Squad Page Redesign](squad-page-redesign.md) | UI/UX design reference |
+
+## Infrastructure
+
+| Document | Description |
+|----------|-------------|
+| [Mobile App](../mobile-app.md) | Capacitor wrapper: build, test, and publish to App Store & Google Play |
