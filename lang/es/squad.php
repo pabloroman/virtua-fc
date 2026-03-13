@@ -209,6 +209,7 @@ return [
     'academy_incoming' => ':min-:max nuevos canteranos esperados',
     'academy_on_loan' => 'Cedido',
     'academy_seasons' => ':count temporada|:count temporadas',
+    'academy_phase_label' => 'Fase',
     'academy_phase_unknown' => 'Habilidades desconocidas',
     'academy_phase_glimpse' => 'Habilidades visibles',
     'academy_phase_verdict' => 'Potencial revelado',

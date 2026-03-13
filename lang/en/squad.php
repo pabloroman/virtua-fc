@@ -209,6 +209,7 @@ return [
     'academy_incoming' => ':min-:max new academy prospects expected',
     'academy_on_loan' => 'On Loan',
     'academy_seasons' => ':count season|:count seasons',
+    'academy_phase_label' => 'Phase',
     'academy_phase_unknown' => 'Abilities unknown',
     'academy_phase_glimpse' => 'Abilities visible',
     'academy_phase_verdict' => 'Potential revealed',

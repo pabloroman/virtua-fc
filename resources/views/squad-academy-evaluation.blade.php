@@ -11,24 +11,21 @@
             <p class="text-xs text-text-muted mt-0.5">{{ __('squad.academy_explanation') }}</p>
         </div>
 
-                {{-- Header --}}
-                <div class="flex flex-col md:flex-row md:items-center md:justify-end gap-4 mb-6">
-
-                    {{-- Capacity bar --}}
-                    <div class="flex items-center gap-3 bg-surface-700/50 rounded-lg px-4 py-3">
-                        <div class="text-sm">
-                            <span class="text-text-muted">{{ __('squad.academy_capacity') }}:</span>
-                            <span class="font-bold" :class="seatsUsed > {{ $capacity }} ? 'text-accent-red' : 'text-text-primary'">
+                {{-- Summary strip --}}
+                <div class="flex gap-2.5 overflow-x-auto scrollbar-hide pb-1 mb-6">
+                    <x-summary-card :label="__('squad.academy_capacity')">
+                        <div class="flex items-center gap-2 mt-1">
+                            <span class="font-heading text-xl font-bold" :class="seatsUsed > {{ $capacity }} ? 'text-accent-red' : 'text-text-primary'">
                                 <span x-text="seatsUsed"></span>/{{ $capacity }}
                             </span>
-                        </div>
-                        <div class="w-24 h-2 bg-bar-track rounded-full overflow-hidden">
-                            <div class="h-full rounded-full transition-all duration-300"
-                                 :class="seatsUsed > {{ $capacity }} ? 'bg-accent-red' : (seatsUsed >= {{ $capacity }} - 1 ? 'bg-accent-gold' : 'bg-emerald-500')"
-                                 :style="'width: ' + Math.min(100, (seatsUsed / {{ max($capacity, 1) }}) * 100) + '%'">
+                            <div class="w-16 h-1.5 bg-bar-track rounded-full overflow-hidden">
+                                <div class="h-full rounded-full transition-all duration-300"
+                                     :class="seatsUsed > {{ $capacity }} ? 'bg-accent-red' : (seatsUsed >= {{ $capacity }} - 1 ? 'bg-accent-gold' : 'bg-emerald-500')"
+                                     :style="'width: ' + Math.min(100, (seatsUsed / {{ max($capacity, 1) }}) * 100) + '%'">
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </x-summary-card>
                 </div>
 
                 {{-- Info cards --}}
@@ -56,7 +53,7 @@
                 </div>
 
                 {{-- Action legend --}}
-                <div class="mb-6 border border-border-strong rounded-lg overflow-hidden">
+                <div class="mb-6 bg-surface-800 border border-border-default rounded-xl overflow-hidden">
                     <div class="px-4 py-3 grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div class="flex items-start gap-2.5">
                             <span class="shrink-0 mt-0.5 w-5 h-5 rounded-sm bg-emerald-600 flex items-center justify-center">
@@ -103,7 +100,7 @@
 
                     <div class="space-y-2">
                         {{-- Table header (desktop) --}}
-                        <div class="hidden md:grid md:grid-cols-12 gap-2 text-xs font-semibold text-text-muted uppercase tracking-wide px-3 py-2 border-b">
+                        <div class="hidden md:grid md:grid-cols-12 gap-2 text-[10px] font-semibold text-text-muted uppercase tracking-widest font-heading px-3 py-2 bg-surface-700/30 border-b border-border-default">
                             <div class="col-span-1"></div>
                             <div class="col-span-3">{{ __('app.name') }}</div>
                             <div class="col-span-1 text-center">{{ __('app.age') }}</div>
@@ -119,7 +116,7 @@
                                 $mustDecide = \App\Modules\Academy\Services\YouthAcademyService::mustDecide($prospect);
                                 $playerReveal = $prospect->seasons_in_academy > 1 ? 2 : $revealPhase;
                             @endphp
-                            <div class="rounded-lg border border-border-strong hover:border-border-strong transition-colors {{ $mustDecide ? 'bg-accent-gold/10/50 border-accent-gold/20' : '' }}">
+                            <div class="rounded-lg border border-border-default hover:border-border-default transition-colors {{ $mustDecide ? 'bg-accent-gold/10/50 border-accent-gold/20' : '' }}">
                                 <input type="hidden" name="decisions[{{ $prospect->id }}]" :value="decisions['{{ $prospect->id }}'] || ''" />
 
                                 {{-- Desktop row --}}

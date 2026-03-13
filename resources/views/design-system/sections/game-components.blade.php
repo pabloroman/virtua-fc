@@ -372,12 +372,12 @@
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
-            <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="fixtureRowCode">{{-- Inside a section card --}}
+            <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="fixtureRowCode">&lt;!-- Inside a section card --&gt;
 &lt;x-section-card :title="$month"&gt;
     &lt;div class="divide-y divide-border-default"&gt;
-        @foreach($matches as $match)
+        @@foreach($matches as $match)
             &lt;x-fixture-row :match="$match" :game="$game" :next-match-id="$nextMatchId" /&gt;
-        @endforeach
+        @@endforeach
     &lt;/div&gt;
 &lt;/x-section-card&gt;</code></pre>
         </div>
@@ -735,12 +735,12 @@
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
-            <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="notifRowCode">{{-- Inside a section card --}}
+            <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="notifRowCode">&lt;!-- Inside a section card --&gt;
 &lt;x-section-card :title="__('notifications.inbox')"&gt;
     &lt;div class="divide-y divide-border-default"&gt;
-        @foreach($notifications as $notification)
+        @@foreach($notifications as $notification)
             &lt;x-notification-row :notification="$notification" :game="$game" /&gt;
-        @endforeach
+        @@endforeach
     &lt;/div&gt;
 &lt;/x-section-card&gt;</code></pre>
         </div>
@@ -874,14 +874,14 @@
         &lt;span class="text-right"&gt;Pts&lt;/span&gt;
     &lt;/div&gt;
 
-    {{-- Rows --}}
+    &lt;!-- Rows --&gt;
     &lt;div class="divide-y divide-border-default"&gt;
-        @foreach($standings as $standing)
+        @@foreach($standings as $standing)
             &lt;x-standing-row
                 :standing="$standing"
-                :is-player="$standing->team_id === $game->team_id"
+                :is-player="$standing-&gt;team_id === $game-&gt;team_id"
             /&gt;
-        @endforeach
+        @@endforeach
     &lt;/div&gt;
 &lt;/x-section-card&gt;</code></pre>
         </div>
