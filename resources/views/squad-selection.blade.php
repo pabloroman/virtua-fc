@@ -57,11 +57,7 @@ $tabs = [
             </div>
 
             {{-- Flash Messages --}}
-            @if(session('error'))
-            <div class="mb-4 p-4 bg-accent-red/10 border border-accent-red/20 rounded-lg text-accent-red text-sm">
-                {{ session('error') }}
-            </div>
-            @endif
+            <x-flash-message type="error" :message="session('error')" class="mb-4" />
 
             {{-- Main Card --}}
             <div class="bg-surface-800 rounded-xl shadow-xs border border-border-strong overflow-hidden">

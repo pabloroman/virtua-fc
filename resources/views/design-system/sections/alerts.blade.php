@@ -47,29 +47,46 @@
                 <span x-show="!copied">Copy</span>
                 <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
             </button>
-            <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="code">{{-- Success --}}
-&lt;div class="flex items-start gap-3 border-l-4 border-l-emerald-500 bg-emerald-500/10 py-3 pl-4 pr-4 rounded-r-lg"&gt;
-    &lt;svg class="w-5 h-5 text-emerald-400 shrink-0 mt-0.5"&gt;...&lt;/svg&gt;
-    &lt;span class="text-sm text-emerald-400"&gt;&#123;&#123; session('success') &#125;&#125;&lt;/span&gt;
-&lt;/div&gt;
+            <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="code">&lt;!-- Session-based (self-checking — renders nothing if session key is absent) --&gt;
+&lt;x-flash-message type="success" :message="session('success')" class="mb-4" /&gt;
+&lt;x-flash-message type="error" :message="session('error')" class="mb-4" /&gt;
+&lt;x-flash-message type="warning" :message="session('warning')" class="mb-4" /&gt;
+&lt;x-flash-message type="info" :message="session('info')" class="mb-4" /&gt;
 
-{{-- Error --}}
-&lt;div class="flex items-start gap-3 border-l-4 border-l-red-500 bg-red-500/10 py-3 pl-4 pr-4 rounded-r-lg"&gt;
-    &lt;svg class="w-5 h-5 text-red-400 shrink-0 mt-0.5"&gt;...&lt;/svg&gt;
-    &lt;span class="text-sm text-red-400"&gt;&#123;&#123; session('error') &#125;&#125;&lt;/span&gt;
-&lt;/div&gt;
+&lt;!-- Slot content (when you need custom markup or conditional wrapping) --&gt;
+@@if($errors-&gt;has('limit'))
+    &lt;x-flash-message type="error" class="mb-4"&gt;
+        &#123;&#123; $errors-&gt;first('limit') &#125;&#125;
+    &lt;/x-flash-message&gt;
+@@endif</code></pre>
+        </div>
 
-{{-- Warning --}}
-&lt;div class="flex items-start gap-3 border-l-4 border-l-amber-500 bg-amber-500/10 py-3 pl-4 pr-4 rounded-r-lg"&gt;
-    &lt;svg class="w-5 h-5 text-amber-400 shrink-0 mt-0.5"&gt;...&lt;/svg&gt;
-    &lt;span class="text-sm text-amber-400"&gt;...&lt;/span&gt;
-&lt;/div&gt;
-
-{{-- Info --}}
-&lt;div class="flex items-start gap-3 border-l-4 border-l-accent-blue bg-accent-blue/10 py-3 pl-4 pr-4 rounded-r-lg"&gt;
-    &lt;svg class="w-5 h-5 text-blue-400 shrink-0 mt-0.5"&gt;...&lt;/svg&gt;
-    &lt;span class="text-sm text-blue-400"&gt;...&lt;/span&gt;
-&lt;/div&gt;</code></pre>
+        {{-- Props table --}}
+        <div class="overflow-x-auto mb-6">
+            <table class="w-full text-sm">
+                <thead class="text-left border-b border-border-strong">
+                    <tr>
+                        <th class="font-semibold py-2 pr-4 text-text-body">Prop</th>
+                        <th class="font-semibold py-2 pr-4 text-text-body">Type</th>
+                        <th class="font-semibold py-2 pr-4 text-text-body">Default</th>
+                        <th class="font-semibold py-2 text-text-body">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b border-border-default">
+                        <td class="py-2 pr-4 font-mono text-xs text-accent-blue">type</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-text-secondary">string</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-text-secondary">success</td>
+                        <td class="py-2 text-text-secondary">success | error | warning | info</td>
+                    </tr>
+                    <tr class="border-b border-border-default">
+                        <td class="py-2 pr-4 font-mono text-xs text-accent-blue">message</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-text-secondary">string|null</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-text-secondary">null</td>
+                        <td class="py-2 text-text-secondary">Message text. If null and slot is empty, nothing renders.</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
         {{-- Alert color reference --}}

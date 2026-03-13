@@ -26,11 +26,7 @@
             </div>
 
             {{-- Flash Messages --}}
-            @if(session('error'))
-            <div class="mb-6 p-4 bg-accent-red/10 border border-accent-red/20 rounded-lg text-accent-red">
-                {{ session('error') }}
-            </div>
-            @endif
+            <x-flash-message type="error" :message="session('error')" class="mb-6" />
 
             {{-- 2. Off-Season Recap (Season 2+ only) --}}
             @if($offseasonRecap && ($offseasonRecap['departures'] || $offseasonRecap['arrivals'] || $offseasonRecap['reputation_changed']))

@@ -40,11 +40,7 @@
             <div
             {{ $attributes->merge(['class' => 'w-full sm:max-w-md mt-6 px-6 py-4 bg-surface-800 border border-border-default shadow-xl overflow-hidden sm:rounded-xl']) }}
             >
-                @if(session('warning'))
-                    <div class="mb-4 p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg text-amber-400 text-sm">
-                        {{ session('warning') }}
-                    </div>
-                @endif
+                <x-flash-message type="warning" :message="session('warning')" class="mb-4" />
 
                 {{ $slot }}
             </div>

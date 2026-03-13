@@ -25,16 +25,8 @@
         </div>
 
         {{-- Flash Messages --}}
-        @if(session('error'))
-        <div class="mb-4 p-4 bg-accent-red/10 border border-accent-red/20 rounded-lg text-accent-red text-sm">
-            {{ session('error') }}
-        </div>
-        @endif
-        @if(session('success'))
-        <div class="mb-4 p-4 bg-accent-green/10 border border-accent-green/20 rounded-lg text-accent-green text-sm">
-            {{ session('success') }}
-        </div>
-        @endif
+        <x-flash-message type="error" :message="session('error')" class="mb-4" />
+        <x-flash-message type="success" :message="session('success')" class="mb-4" />
 
         <div class="bg-surface-800 border border-border-default rounded-xl p-6 sm:p-8">
             {{-- Available Surplus Header --}}

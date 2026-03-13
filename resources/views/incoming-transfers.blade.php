@@ -11,16 +11,8 @@
         </div>
 
         {{-- Flash Messages --}}
-        @if(session('success'))
-        <div class="mb-4 p-4 bg-accent-green/10 border border-accent-green/20 rounded-lg text-accent-green">
-            {{ session('success') }}
-        </div>
-        @endif
-        @if(session('error'))
-        <div class="mb-4 p-4 bg-accent-red/10 border border-accent-red/20 rounded-lg text-accent-red">
-            {{ session('error') }}
-        </div>
-        @endif
+        <x-flash-message type="success" :message="session('success')" class="mb-4" />
+        <x-flash-message type="error" :message="session('error')" class="mb-4" />
 
         @include('partials.transfers-header')
 

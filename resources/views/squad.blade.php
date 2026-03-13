@@ -114,16 +114,8 @@
             <x-section-nav :items="$squadNavItems" />
 
             {{-- Flash Messages --}}
-            @if(session('success'))
-            <div class="mt-4 p-4 bg-accent-green/10 border border-accent-green/20 rounded-lg text-accent-green text-sm">
-                {{ session('success') }}
-            </div>
-            @endif
-            @if(session('error'))
-            <div class="mt-4 p-4 bg-accent-red/10 border border-accent-red/20 rounded-lg text-accent-red text-sm">
-                {{ session('error') }}
-            </div>
-            @endif
+            <x-flash-message type="success" :message="session('success')" class="mt-4" />
+            <x-flash-message type="error" :message="session('error')" class="mt-4" />
 
             {{-- Squad trim warning --}}
             @if($game->hasPendingAction('squad_trim') || $squadSize > \App\Modules\Transfer\Services\ContractService::MAX_SQUAD_SIZE)

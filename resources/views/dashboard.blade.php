@@ -19,23 +19,19 @@
         </div>
 
         @if($errors->has('limit'))
-            <div class="mb-4 rounded-md bg-accent-red/10 p-4">
-                <p class="text-sm text-accent-red">{{ $errors->first('limit') }}</p>
-            </div>
+            <x-flash-message type="error" class="mb-4">{{ $errors->first('limit') }}</x-flash-message>
         @endif
 
-        @if(session('success'))
-            <div class="mb-4 p-4 bg-accent-green/10 border border-accent-green/20 rounded-lg text-accent-green text-sm">
-                {{ session('success') }}
-            </div>
-        @endif
+        <x-flash-message type="success" :message="session('success')" class="mb-4" />
 
         <ul role="list" class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             @foreach($games as $game)
-                <li class="col-span-1 flex flex-col rounded-lg bg-surface-800 text-center shadow-sm" x-data="{ confirmDelete: false }">
+                <li class="col-span-1 flex flex-col rounded-lg bg-surface-800 text-center shadow-sm border border-border-default" x-data="{ confirmDelete: false }">
                     <div class="flex flex-1 flex-col p-8 space-y-3" x-show="!confirmDelete">
                         @if($game->isTournamentMode())
-                            <x-team-crest :team="$game->team" class="rounded-md object-cover mx-auto h-18 w-24 shrink-0" />
+                            <div class="min-h-20 content-center">
+                            <x-team-crest :team="$game->team" class="rounded-md object-cover mx-auto h-16 w-20 shrink-0" />
+                            </div>
                         @else
                             <x-team-crest :team="$game->team" class="object-cover mx-auto h-20 w-20 shrink-0" />
                         @endif
@@ -47,8 +43,16 @@
                                         {{ __('game.mode_tournament_badge') }}
                                     </span>
                                 </dd>
+                            @elseif($game->isCareerMode())
+                            <dd class="mb-1">
+                                <span class="inline-flex items-center rounded-full bg-accent-gold/10 px-2.5 py-0.5 text-xs font-medium text-accent-gold ring-1 ring-inset ring-amber-600/20">
+                                    {{ __('game.mode_career') }}
+                                </span>
+                            </dd>
                             @endif
-                            <dd class="text-sm text-text-muted">{{ __('game.season_n', ['season' => $game->formatted_season]) }}</dd>
+
+                            <hr class="pt-4 mt-4 border-t border-border-default">
+
                             @if($game->current_date)
                                 <dd class="mt-2 mb-2">
                                     <span class="inline-flex items-center rounded-full bg-accent-green/10 px-2 py-1 text-xs font-medium text-accent-green ring-1 ring-inset ring-green-600/20">
