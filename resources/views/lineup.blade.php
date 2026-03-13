@@ -93,7 +93,7 @@
 
                 {{-- ===== Page Header + Controls ===== --}}
                 <div class="mt-6 flex flex-col gap-3">
-                    <div class="flex items-center justify-between">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                         <div class="flex items-center gap-3">
                             <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary">{{ __('squad.tactics') }}</h2>
                             <div class="flex items-baseline gap-1">
@@ -117,38 +117,20 @@
                         </div>
                     </div>
 
-                    {{-- Formation + Mentality inline controls --}}
-                    <div class="flex flex-col sm:flex-row gap-3">
-                        <div class="flex items-center gap-2 overflow-x-auto scrollbar-hide">
-                            <span class="text-[10px] text-text-muted uppercase tracking-wider shrink-0">{{ __('squad.formation') }}</span>
-                            <div class="flex gap-1">
-                                <template x-for="option in formationOptions" :key="'fo-' + option.value">
-                                    <x-pill-button size="xs"
-                                        type="button"
-                                        @click="selectedFormation = option.value; updateAutoLineup()"
-                                        class="formation-option rounded-md border border-border-strong font-heading tracking-wide font-semibold"
-                                        x-bind:class="selectedFormation === option.value && 'active'"
-                                        x-text="option.label"></x-pill-button>
-                                </template>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-2 sm:ml-auto">
-                            <span class="text-[10px] text-text-muted uppercase tracking-wider shrink-0">{{ __('squad.mentality') }}</span>
-                            <div class="flex gap-1 bg-surface-700 rounded-lg p-0.5">
-                                <template x-for="option in mentalityOptions" :key="'mo-' + option.value">
-                                    <x-pill-button size="xs"
-                                        type="button"
-                                        @click="selectedMentality = option.value"
-                                        class="mentality-btn rounded-md uppercase tracking-wider font-semibold"
-                                        x-bind:class="{
-                                            'active bg-surface-600': selectedMentality === option.value,
-                                            'text-blue-400': option.value === 'defensive',
-                                            'text-text-body': option.value === 'balanced',
-                                            'text-accent-red': option.value === 'attacking',
-                                        }"
-                                        x-text="option.label"></x-pill-button>
-                                </template>
-                            </div>
+                    <div class="border-t border-border-default"></div>
+
+                    {{-- Formation inline controls --}}
+                    <div class="flex items-center gap-2 overflow-x-auto scrollbar-hide">
+                        <span class="text-[10px] text-text-muted uppercase tracking-wider shrink-0">{{ __('squad.formation') }}</span>
+                        <div class="flex gap-1">
+                            <template x-for="option in formationOptions" :key="'fo-' + option.value">
+                                <x-pill-button size="sm"
+                                    type="button"
+                                    @click="selectedFormation = option.value; updateAutoLineup()"
+                                    class="formation-option rounded-md border border-border-strong font-heading tracking-wide font-semibold"
+                                    x-bind:class="selectedFormation === option.value && 'active'"
+                                    x-text="option.label"></x-pill-button>
+                            </template>
                         </div>
                     </div>
                 </div>
@@ -176,13 +158,19 @@
                 <div class="mt-4 flex flex-col lg:flex-row gap-4">
 
                     {{-- LEFT: Pitch + Coach (sticky on desktop) --}}
-                    <div class="lg:flex-2 lg:sticky lg:top-[60px] lg:self-start lg:max-h-[calc(100vh-80px)] lg:overflow-y-auto space-y-4"
+                    <div class="lg:flex-2 space-y-4"
                          :class="{ 'hidden lg:block': activeLineupTab !== 'pitch' }">
 
                         {{-- PITCH VISUALIZATION --}}
                         <div>
                             <div id="pitch-container" class="pitch aspect-3/4 sm:aspect-2/3 lg:aspect-3/4 w-full max-w-lg mx-auto lg:max-w-none relative"
                                 :style="(positioningSlotId !== null || draggingSlotId !== null) ? 'touch-action: none' : ''">
+
+                                {{-- Field area with sideline padding --}}
+                                <div id="pitch-field" class="absolute inset-x-[4%] inset-y-[3%]">
+
+                                {{-- Sideline border --}}
+                                <div class="absolute inset-0 border border-pitch-line pointer-events-none"></div>
 
                                 {{-- Pitch markings --}}
                                 <div class="pitch-center-line"></div>
@@ -191,43 +179,27 @@
                                 <div class="pitch-box-bottom"></div>
                                 <div class="pitch-six-top"></div>
                                 <div class="pitch-six-bottom"></div>
+                                <div class="pitch-arc-top"></div>
+                                <div class="pitch-arc-bottom"></div>
                                 <div class="absolute left-1/2 top-1/2 w-2 h-2 rounded-full bg-white/20 -translate-x-1/2 -translate-y-1/2"></div>
+                                <div class="pitch-penalty-spot-top"></div>
+                                <div class="pitch-penalty-spot-bottom"></div>
 
-                                {{-- Opponent goal label --}}
-                                <div class="absolute top-1 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-black/30 rounded-b text-[8px] text-white/40 uppercase tracking-widest font-heading">
-                                    {{ __('squad.opponent_goal') }}
-                                </div>
-
-                                {{-- Field area (aligned with sidelines) --}}
-                                <div id="pitch-field" class="absolute inset-0">
-
-                                {{-- Grid Overlay --}}
+                                {{-- Grid Overlay (invisible until repositioning/dragging) --}}
                                 <template x-if="gridConfig">
                                     <div class="absolute inset-0 pointer-events-none" :class="{ 'pointer-events-auto': positioningSlotId !== null }">
-                                        <template x-for="col in gridConfig.cols - 1" :key="'gv-' + col">
-                                            <div class="absolute top-0 bottom-0 border-l border-border-strong"
-                                                :style="`left: ${(col / gridConfig.cols) * 100}%`"></div>
-                                        </template>
-                                        <template x-for="row in gridConfig.rows - 1" :key="'gh-' + row">
-                                            <div class="absolute left-0 right-0 border-t border-border-strong"
-                                                :style="`top: ${(row / gridConfig.rows) * 100}%`"></div>
-                                        </template>
-                                        <div class="absolute top-0 bottom-0 right-0 border-r border-border-strong"></div>
-                                        <div class="absolute left-0 right-0 bottom-0 border-b border-border-strong"></div>
-
                                         <template x-if="positioningSlotId !== null || draggingSlotId !== null">
                                             <div class="absolute inset-0">
                                                 <template x-for="row in gridConfig.rows" :key="'gr-' + row">
                                                     <template x-for="col in gridConfig.cols" :key="'gc-' + (row-1) + '-' + (col-1)">
                                                         <div
                                                             x-data="{ get state() { return getGridCellState(col-1, row-1) } }"
-                                                            class="absolute transition-colors duration-150 border-t border-l"
+                                                            class="absolute transition-colors duration-150"
                                                             :style="`left: ${((col-1) / gridConfig.cols) * 100}%; top: ${(1 - (row / gridConfig.rows)) * 100}%; width: ${100 / gridConfig.cols}%; height: ${100 / gridConfig.rows}%; ${(positioningSlotId !== null && state === 'valid') ? 'cursor: pointer; pointer-events: auto' : ''}`"
                                                             :class="{
                                                                 [getZoneColorClass(currentSlots.find(s => s.id === (positioningSlotId ?? draggingSlotId))?.role)]: state === 'valid',
-                                                                'bg-surface-800/5 border-border-default': state === 'occupied',
-                                                                'bg-black/15 border-transparent': state === 'invalid',
-                                                                'border-transparent': state === 'neutral',
+                                                                'bg-surface-800/5': state === 'occupied',
+                                                                'bg-black/15': state === 'invalid',
                                                             }"
                                                             @click="positioningSlotId !== null && state === 'valid' && handleGridCellClick(col-1, row-1)"
                                                         ></div>
@@ -262,11 +234,12 @@
                                         {{-- Filled Slot --}}
                                         <div
                                             x-show="slot.player"
-                                            class="group relative cursor-pointer"
+                                            class="relative cursor-pointer flex flex-col items-center"
                                             @click="selectForRepositioning(slot.id)"
                                             @mousedown="startDrag(slot.id, $event)"
                                             @touchstart="startDrag(slot.id, $event)"
                                         >
+                                            {{-- Shirt badge --}}
                                             <div
                                                 class="relative w-11 h-11 rounded-xl shadow-lg border border-white/20 transform transition-all duration-200 hover:scale-110 hover:shadow-xl"
                                                 :class="{
@@ -278,21 +251,20 @@
                                                 <div class="absolute inset-0 flex items-center justify-center">
                                                     <span class="font-bold text-xs leading-none inline-flex items-center justify-center w-7 h-7 rounded-full" :style="getNumberStyle(slot.role)" x-text="slot.player?.number || getInitials(slot.player?.name)"></span>
                                                 </div>
+
+                                                {{-- OVR badge --}}
+                                                <span class="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-0.5 rounded-sm text-[9px] font-bold leading-none flex items-center justify-center shadow-sm"
+                                                    :class="{
+                                                        'bg-accent-green text-white': slot.player?.overallScore >= 80,
+                                                        'bg-lime-500 text-white': slot.player?.overallScore >= 70 && slot.player?.overallScore < 80,
+                                                        'bg-accent-gold text-white': slot.player?.overallScore >= 60 && slot.player?.overallScore < 70,
+                                                        'bg-accent-orange text-white': slot.player?.overallScore < 60,
+                                                    }"
+                                                    x-text="slot.player?.overallScore"></span>
                                             </div>
 
-                                            {{-- Hover tooltip --}}
-                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-surface-900/95 backdrop-blur-xs text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-50 shadow-xl">
-                                                <div class="flex items-center gap-2">
-                                                    <span class="font-semibold" x-text="slot.player?.name"></span>
-                                                    <span class="px-1.5 py-0.5 bg-surface-800/15 rounded-sm font-bold text-[10px]" x-text="slot.player?.overallScore"></span>
-                                                </div>
-                                                <div class="flex items-center gap-2 mt-1 text-text-body">
-                                                    <span x-text="slot.displayLabel"></span>
-                                                    <span class="text-text-muted">·</span>
-                                                    <span :class="getCompatibilityDisplay(slot.player?.position, slot.label).class" x-text="getCompatibilityDisplay(slot.player?.position, slot.label).label"></span>
-                                                </div>
-                                                <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-surface-900/95"></div>
-                                            </div>
+                                            {{-- Player surname --}}
+                                            <span class="mt-0.5 text-[8px] font-semibold text-white uppercase tracking-wide leading-tight text-center max-w-[60px] truncate drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]" x-text="getSurname(slot.player?.name)"></span>
                                         </div>
                                     </div>
                                 </template>
@@ -301,17 +273,21 @@
                                 <div
                                     x-show="draggingSlotId !== null && dragPosition"
                                     x-cloak
-                                    class="absolute transform -translate-x-1/2 -translate-y-1/2 z-40 pointer-events-none"
+                                    class="absolute transform -translate-x-1/2 -translate-y-1/2 z-40 pointer-events-none flex flex-col items-center"
                                     :style="dragPosition ? `left: ${dragPosition.x}%; top: ${dragPosition.y}%` : ''"
                                 >
                                     <template x-if="draggingSlotId !== null">
-                                        <div class="w-11 h-11 rounded-xl shadow-xl border-2 border-border-default0 opacity-80"
-                                            :style="getShirtStyle(currentSlots.find(s => s.id === draggingSlotId)?.role || 'Midfielder')">
-                                            <div class="absolute inset-0 flex items-center justify-center">
-                                                <span class="font-bold text-xs leading-none inline-flex items-center justify-center w-7 h-7 rounded-full"
-                                                    :style="getNumberStyle(currentSlots.find(s => s.id === draggingSlotId)?.role || 'Midfielder')"
-                                                    x-text="(() => { const s = slotAssignments.find(sa => sa.id === draggingSlotId); return s?.player?.number || getInitials(s?.player?.name); })()"></span>
+                                        <div class="flex flex-col items-center">
+                                            <div class="relative w-11 h-11 rounded-xl shadow-xl border-2 border-white/30 opacity-80"
+                                                :style="getShirtStyle(currentSlots.find(s => s.id === draggingSlotId)?.role || 'Midfielder')">
+                                                <div class="absolute inset-0 flex items-center justify-center">
+                                                    <span class="font-bold text-xs leading-none inline-flex items-center justify-center w-7 h-7 rounded-full"
+                                                        :style="getNumberStyle(currentSlots.find(s => s.id === draggingSlotId)?.role || 'Midfielder')"
+                                                        x-text="(() => { const s = slotAssignments.find(sa => sa.id === draggingSlotId); return s?.player?.number || getInitials(s?.player?.name); })()"></span>
+                                                </div>
                                             </div>
+                                            <span class="mt-0.5 text-[8px] font-semibold text-white uppercase tracking-wide leading-tight text-center max-w-[60px] truncate drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]"
+                                                x-text="(() => { const s = slotAssignments.find(sa => sa.id === draggingSlotId); return getSurname(s?.player?.name); })()"></span>
                                         </div>
                                     </template>
                                 </div>
@@ -421,7 +397,7 @@
                             </div>
 
                             {{-- Player list --}}
-                            <div class="max-h-[400px] lg:max-h-[520px] overflow-y-auto">
+                            <div>
                                 @foreach([
                                     ['name' => __('squad.goalkeepers'), 'players' => $goalkeepers, 'role' => 'Goalkeeper'],
                                     ['name' => __('squad.defenders'), 'players' => $defenders, 'role' => 'Defender'],
@@ -491,8 +467,13 @@
                             </div>
                         </div>
 
+                    </div>
+
+                    {{-- RIGHT: Lineup Overview + Tactical Controls --}}
+                    <div :class="{ 'hidden lg:block': activeLineupTab !== 'tactics' }" class="space-y-4 lg:w-64 lg:shrink-0">
+
                         {{-- Lineup Overview --}}
-                        <div class="bg-surface-800 border border-border-default rounded-xl p-4 mt-4">
+                        <div class="bg-surface-800 border border-border-default rounded-xl p-4">
                             <h3 class="font-heading text-sm font-semibold uppercase tracking-widest text-text-secondary mb-3">{{ __('squad.lineup_overview') }}</h3>
                             <div class="grid grid-cols-2 gap-3">
                                 <div>
@@ -523,15 +504,18 @@
                                 </div>
                             </template>
                         </div>
-                    </div>
 
-                    {{-- RIGHT: Tactical Controls --}}
-                    <div :class="{ 'hidden lg:block': activeLineupTab !== 'tactics' }">
                         <div class="bg-surface-800 border border-border-default rounded-xl p-4 space-y-4">
 
                             {{-- Team Instructions --}}
                             <div class="space-y-3">
                                 <h4 class="font-heading text-sm font-semibold uppercase tracking-widest text-text-secondary">{{ __('game.instructions_title') }}</h4>
+
+                                {{-- Mentality --}}
+                                <div>
+                                    <div class="text-[10px] font-medium text-text-secondary uppercase tracking-wide mb-1">{{ __('squad.mentality') }}</div>
+                                    <x-tactical-select model="selectedMentality" options="mentalityOptions" label="{{ __('squad.mentality') }}" summary-field="summary" />
+                                </div>
 
                                 {{-- Playing Style --}}
                                 <div>

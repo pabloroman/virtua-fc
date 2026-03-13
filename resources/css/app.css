@@ -288,14 +288,6 @@ layer(base);
   position: relative;
   border-radius: 8px;
   overflow: hidden;
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border: 2px solid var(--color-pitch-line);
-    border-radius: 8px;
-    pointer-events: none;
-  }
 }
 
 @utility pitch-center-line {
@@ -369,6 +361,66 @@ layer(base);
   border-top: 1px solid var(--color-pitch-line);
   border-left: 1px solid var(--color-pitch-line);
   border-right: 1px solid var(--color-pitch-line);
+  pointer-events: none;
+}
+
+@utility pitch-arc-top {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  clip-path: inset(15% 0 50% 0);
+  &::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 11%;
+    width: 80px;
+    height: 80px;
+    transform: translate(-50%, -50%);
+    border: 1px solid var(--color-pitch-line);
+    border-radius: 50%;
+  }
+}
+
+@utility pitch-arc-bottom {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  clip-path: inset(50% 0 15% 0);
+  &::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 11%;
+    width: 80px;
+    height: 80px;
+    transform: translate(-50%, 50%);
+    border: 1px solid var(--color-pitch-line);
+    border-radius: 50%;
+  }
+}
+
+@utility pitch-penalty-spot-top {
+  position: absolute;
+  left: 50%;
+  top: 11%;
+  width: 6px;
+  height: 6px;
+  transform: translate(-50%, -50%);
+  background: var(--color-pitch-line);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+@utility pitch-penalty-spot-bottom {
+  position: absolute;
+  left: 50%;
+  bottom: 11%;
+  width: 6px;
+  height: 6px;
+  transform: translate(-50%, 50%);
+  background: var(--color-pitch-line);
+  border-radius: 50%;
   pointer-events: none;
 }
 

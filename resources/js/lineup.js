@@ -109,6 +109,17 @@ export default function lineupManager(config) {
             return Math.round(total / this.selectedPlayers.length);
         },
 
+        get averageFitness() {
+            if (this.selectedPlayers.length === 0) return 0;
+            let total = 0;
+            this.selectedPlayers.forEach(id => {
+                if (this.playersData[id]) {
+                    total += this.playersData[id].fitness;
+                }
+            });
+            return Math.round(total / this.selectedPlayers.length);
+        },
+
         get coachTips() {
             const tips = [];
             const t = this.translations;
@@ -378,6 +389,12 @@ export default function lineupManager(config) {
                 return parts[0].substring(0, 2).toUpperCase();
             }
             return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+        },
+
+        getSurname(name) {
+            if (!name) return '';
+            const parts = name.trim().split(/\s+/);
+            return parts[parts.length - 1];
         },
 
         getAvatarDisplay(player) {
