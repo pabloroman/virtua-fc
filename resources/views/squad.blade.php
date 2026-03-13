@@ -134,25 +134,8 @@
             @endif
 
             {{-- ===== Squad Header ===== --}}
-            <div class="mt-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
-                <div>
-                    <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary">{{ $isCareerMode ? __('squad.first_team') : __('squad.squad') }}</h2>
-                    <p class="text-xs text-text-muted mt-0.5">
-                        {{ $squadSize }} {{ __('squad.players_count') }} · {{ __('squad.avg_age') }} {{ $avgAge }} · {{ __('squad.avg_ovr') }} {{ $avgOverall }}
-                    </p>
-                </div>
-                @if($isCareerMode)
-                <div class="flex items-center gap-4 text-xs">
-                    <div class="flex items-center gap-1.5">
-                        <span class="text-text-muted">{{ __('squad.squad_value') }}</span>
-                        <span class="font-semibold text-text-primary">{{ \App\Support\Money::format($squadValue) }}</span>
-                    </div>
-                    <div class="flex items-center gap-1.5">
-                        <span class="text-text-muted">{{ __('squad.wage_bill') }}</span>
-                        <span class="font-semibold text-text-primary">{{ \App\Support\Money::format($wageBill) }}{{ __('squad.per_year') }}</span>
-                    </div>
-                </div>
-                @endif
+            <div class="mt-6">
+                <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary">{{ $isCareerMode ? __('squad.first_team') : __('squad.squad') }}</h2>
             </div>
 
             {{-- ===== Summary Cards ===== --}}
@@ -163,8 +146,10 @@
                 <x-summary-card :label="__('squad.morale_full')" :value="$avgMorale" x-data x-tooltip.raw="{{ __('squad.tooltip_morale') }}" :value-class="$avgMorale >= 80 ? 'text-accent-green' : ($avgMorale >= 65 ? 'text-text-primary' : 'text-amber-500')" />
                 <x-summary-card :label="__('squad.avg_ovr')" :value="$avgOverall" x-data x-tooltip.raw="{{ __('squad.tooltip_avg_overall') }}" :value-class="$avgOverall >= 75 ? 'text-accent-green' : ($avgOverall >= 65 ? 'text-text-primary' : 'text-amber-500')" />
                 @if($isCareerMode)
-                <x-summary-card :label="__('squad.squad_value')" :value="\App\Support\Money::format($squadValue)" class="min-w-[130px]" />
-                <x-summary-card :label="__('squad.wage_bill')" :value="\App\Support\Money::format($wageBill)" class="min-w-[130px]" />
+                <div class="md:ml-auto flex gap-2.5 shrink-0">
+                    <x-summary-card :label="__('squad.squad_value')" :value="\App\Support\Money::format($squadValue)" class="min-w-[130px]" />
+                    <x-summary-card :label="__('squad.wage_bill')" :value="\App\Support\Money::format($wageBill)" class="min-w-[130px]" />
+                </div>
                 @endif
             </div>
 
@@ -201,7 +186,7 @@
                             {{ __('squad.stats') }}
                         </x-pill-button>
                         <x-pill-button size="xs" @click="viewMode = 'numbers'" x-bind:class="viewMode === 'numbers' ? 'bg-surface-800 shadow-xs text-text-primary' : 'text-text-muted hover:text-text-body'" class="rounded-md">
-                            #
+                            {{ __('squad.numbers') }}
                         </x-pill-button>
                     </div>
 
@@ -302,7 +287,7 @@
 
                                 {{-- Numbers header --}}
                                 <template x-if="viewMode === 'numbers'">
-                                    <span class="text-center">#</span>
+                                    <span class="text-center">{{ __('squad.number') }}</span>
                                 </template>
                             </div>
                         </div>
