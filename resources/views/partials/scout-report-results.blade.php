@@ -93,7 +93,7 @@
                             <x-icon-button
                                 @click.stop="if(toggling) return; toggling = true; fetch('{{ route('game.scouting.shortlist.toggle', [$game->id, $player->id]) }}', { method: 'POST', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' } }).then(r => r.json()).then(data => { if(data.success === false) { alert(data.message); toggling = false; return; } shortlisted = !shortlisted; toggling = false; window.dispatchEvent(new CustomEvent('shortlist-toggled', { detail: { action: data.action, playerId: data.playerId, player: data.player || null } })); }).catch(() => { toggling = false; })"
                                 class="sm:min-h-0"
-                                x-bind:class="shortlisted ? 'text-amber-500 hover:text-amber-600' : 'text-text-body hover:text-amber-400'"
+                                x-bind:class="shortlisted ? 'text-accent-gold hover:text-amber-400' : 'text-text-body hover:text-accent-gold'"
                                 x-bind:title="shortlisted ? @js(__('transfers.remove_from_shortlist')) : @js(__('transfers.add_to_shortlist'))"
                             >
                                 <svg class="w-5 h-5" x-bind:fill="shortlisted ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24">
@@ -151,7 +151,7 @@
                                         @if(!$isFreeAgent && $player->contract_until)
                                             <div class="flex items-center justify-between">
                                                 <span class="text-xs text-text-muted">{{ __('transfers.contract_until') }}</span>
-                                                <span class="text-xs font-semibold {{ $isExpiring ? 'text-amber-600' : 'text-text-body' }}">{{ $player->contract_until->format('M Y') }}</span>
+                                                <span class="text-xs font-semibold {{ $isExpiring ? 'text-accent-gold' : 'text-text-body' }}">{{ $player->contract_until->format('M Y') }}</span>
                                             </div>
                                         @endif
                                     </div>
@@ -167,7 +167,7 @@
                                         </div>
                                         <div class="flex items-center justify-between">
                                             <span class="text-xs text-text-muted">{{ __('transfers.wage_demand') }}</span>
-                                            <span class="text-xs font-semibold {{ $canAffordWage ? 'text-text-primary' : 'text-amber-600' }}">{{ $formattedWageDemand }}{{ __('squad.per_year') }}</span>
+                                            <span class="text-xs font-semibold {{ $canAffordWage ? 'text-text-primary' : 'text-accent-gold' }}">{{ $formattedWageDemand }}{{ __('squad.per_year') }}</span>
                                         </div>
                                         <div class="flex items-center justify-between pt-1 border-t border-border-strong">
                                             <span class="text-xs text-text-muted">{{ __('transfers.your_transfer_budget') }}</span>
@@ -190,7 +190,7 @@
                                                     {{ __('transfers.window_closed_for_signing') }}
                                                 </div>
                                             @else
-                                                <div class="text-xs text-amber-600 font-medium">
+                                                <div class="text-xs text-accent-gold font-medium">
                                                     {{ __('transfers.wage_exceeds_budget') }}
                                                 </div>
                                             @endif

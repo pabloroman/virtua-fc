@@ -9,7 +9,7 @@
             <span class="text-sm text-text-muted">{{ __('transfers.budget') }}</span>
             <span class="text-sm font-semibold text-text-primary">{{ $game->currentInvestment->formatted_transfer_budget }}</span>
             @if($committedBudget > 0)
-            <span class="text-xs text-amber-600">({{ \App\Support\Money::format($committedBudget) }} {{ __('transfers.budget_committed') }})</span>
+            <span class="text-xs text-accent-gold">({{ \App\Support\Money::format($committedBudget) }} {{ __('transfers.budget_committed') }})</span>
             @endif
         </div>
         @endif
@@ -17,7 +17,7 @@
         {{-- Window Status --}}
         <div class="flex items-center gap-2">
             @if($isTransferWindow)
-                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-accent-green/10 text-green-800">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-accent-green/10 text-accent-green">
                     <span class="w-1.5 h-1.5 bg-accent-green rounded-full animate-pulse"></span>
                     {{ __('transfers.window_open', ['window' => $currentWindow]) }}
                 </span>

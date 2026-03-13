@@ -35,21 +35,21 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
                     @if($loanedCount > 0)
                         <div class="flex items-center gap-2 bg-accent-blue/10 border border-accent-blue/20 rounded-lg px-3 py-2">
-                            <svg class="w-4 h-4 text-sky-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 17l-4 4m0 0l-4-4m4 4V3"/></svg>
+                            <svg class="w-4 h-4 text-accent-blue shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 17l-4 4m0 0l-4-4m4 4V3"/></svg>
                             <span class="text-sm text-accent-blue">{{ trans_choice('squad.academy_returning_loans', $loanedCount, ['count' => $loanedCount]) }}</span>
                         </div>
                     @endif
 
                     @if($arrivalsRange['max'] > 0)
                         <div class="flex items-center gap-2 bg-lime-500/10 border border-lime-500/20 rounded-lg px-3 py-2">
-                            <svg class="w-4 h-4 text-lime-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                            <span class="text-sm text-lime-400">{{ __('squad.academy_incoming', ['min' => $arrivalsRange['min'], 'max' => $arrivalsRange['max']]) }}</span>
+                            <svg class="w-4 h-4 text-lime-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                            <span class="text-sm text-lime-500">{{ __('squad.academy_incoming', ['min' => $arrivalsRange['min'], 'max' => $arrivalsRange['max']]) }}</span>
                         </div>
                     @endif
 
                     @if($occupiedSeats > $capacity && $capacity > 0)
                         <div class="flex items-center gap-2 bg-accent-red/10 border border-accent-red/20 rounded-lg px-3 py-2">
-                            <svg class="w-4 h-4 text-red-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.072 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+                            <svg class="w-4 h-4 text-accent-red shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.072 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
                             <span class="text-sm text-accent-red">{{ __('squad.academy_over_capacity') }}</span>
                         </div>
                     @endif
@@ -154,12 +154,12 @@
                                     <div class="col-span-1 text-center text-sm">{{ $prospect->age }}</div>
 
                                     {{-- Technical --}}
-                                    <div class="col-span-1 text-center text-sm @if($playerReveal >= 1) @if($prospect->technical_ability >= 80) text-accent-green @elseif($prospect->technical_ability >= 70) text-lime-600 @elseif($prospect->technical_ability < 60) text-text-secondary @endif @endif">
+                                    <div class="col-span-1 text-center text-sm @if($playerReveal >= 1) @if($prospect->technical_ability >= 80) text-accent-green @elseif($prospect->technical_ability >= 70) text-lime-500 @elseif($prospect->technical_ability < 60) text-text-secondary @endif @endif">
                                         {{ $playerReveal >= 1 ? $prospect->technical_ability : '?' }}
                                     </div>
 
                                     {{-- Physical --}}
-                                    <div class="col-span-1 text-center text-sm @if($playerReveal >= 1) @if($prospect->physical_ability >= 80) text-accent-green @elseif($prospect->physical_ability >= 70) text-lime-600 @elseif($prospect->physical_ability < 60) text-text-secondary @endif @endif">
+                                    <div class="col-span-1 text-center text-sm @if($playerReveal >= 1) @if($prospect->physical_ability >= 80) text-accent-green @elseif($prospect->physical_ability >= 70) text-lime-500 @elseif($prospect->physical_ability < 60) text-text-secondary @endif @endif">
                                         {{ $playerReveal >= 1 ? $prospect->physical_ability : '?' }}
                                     </div>
 

@@ -56,7 +56,7 @@
                                 {{-- OUT transfers --}}
                                 @foreach($activity['out'] as $transfer)
                                     <div class="flex items-center gap-1.5 md:gap-2 text-sm min-h-[28px]">
-                                        <span class="text-red-500 font-bold w-4 shrink-0 text-center" title="{{ __('transfers.transfer_activity_out') }}">&#x2197;</span>
+                                        <span class="text-accent-red font-bold w-4 shrink-0 text-center" title="{{ __('transfers.transfer_activity_out') }}">&#x2197;</span>
                                         <x-position-badge :position="$transfer['position']" size="sm" />
                                         <span class="text-text-primary truncate min-w-0">{{ $transfer['playerName'] }}</span>
                                         <span class="text-text-secondary shrink-0">&rarr;</span>
@@ -73,7 +73,7 @@
                                 {{-- IN transfers --}}
                                 @foreach($activity['in'] as $transfer)
                                     <div class="flex items-center gap-1.5 md:gap-2 text-sm min-h-[28px]">
-                                        <span class="text-emerald-500 font-bold w-4 shrink-0 text-center" title="{{ __('transfers.transfer_activity_in') }}">&#x2199;</span>
+                                        <span class="text-accent-green font-bold w-4 shrink-0 text-center" title="{{ __('transfers.transfer_activity_in') }}">&#x2199;</span>
                                         <x-position-badge :position="$transfer['position']" size="sm" />
                                         <span class="text-text-primary truncate min-w-0">{{ $transfer['playerName'] }}</span>
                                         @if($transfer['fromTeamId'])
@@ -120,7 +120,7 @@
                                 {{-- OUT transfers --}}
                                 @foreach($activity['out'] as $transfer)
                                     <div class="flex items-center gap-1.5 md:gap-2 text-sm min-h-[28px]">
-                                        <span class="text-red-500 font-bold w-4 shrink-0 text-center" title="{{ __('transfers.transfer_activity_out') }}">&#x2197;</span>
+                                        <span class="text-accent-red font-bold w-4 shrink-0 text-center" title="{{ __('transfers.transfer_activity_out') }}">&#x2197;</span>
                                         <x-position-badge :position="$transfer['position']" size="sm" />
                                         <span class="text-text-primary truncate min-w-0">{{ $transfer['playerName'] }}</span>
                                         <span class="text-text-secondary shrink-0">&rarr;</span>
@@ -137,7 +137,7 @@
                                 {{-- IN transfers --}}
                                 @foreach($activity['in'] as $transfer)
                                     <div class="flex items-center gap-1.5 md:gap-2 text-sm min-h-[28px]">
-                                        <span class="text-emerald-500 font-bold w-4 shrink-0 text-center" title="{{ __('transfers.transfer_activity_in') }}">&#x2199;</span>
+                                        <span class="text-accent-green font-bold w-4 shrink-0 text-center" title="{{ __('transfers.transfer_activity_in') }}">&#x2199;</span>
                                         <x-position-badge :position="$transfer['position']" size="sm" />
                                         <span class="text-text-primary truncate min-w-0">{{ $transfer['playerName'] }}</span>
                                         @if($transfer['fromTeamId'])

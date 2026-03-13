@@ -69,9 +69,9 @@
                                 <div>
                                     <p class="font-semibold text-text-body mb-2">{{ __('transfers.scouting_help_shortlist_title') }}</p>
                                     <ul class="space-y-1 text-text-secondary">
-                                        <li class="flex gap-2"><span class="text-amber-500 shrink-0">&#9733;</span> {{ __('transfers.scouting_help_shortlist_star') }}</li>
-                                        <li class="flex gap-2"><span class="text-sky-500 shrink-0">&#8594;</span> {{ __('transfers.scouting_help_shortlist_bid') }}</li>
-                                        <li class="flex gap-2"><span class="text-emerald-500 shrink-0">&#8644;</span> {{ __('transfers.scouting_help_shortlist_loan') }}</li>
+                                        <li class="flex gap-2"><span class="text-accent-gold shrink-0">&#9733;</span> {{ __('transfers.scouting_help_shortlist_star') }}</li>
+                                        <li class="flex gap-2"><span class="text-accent-blue shrink-0">&#8594;</span> {{ __('transfers.scouting_help_shortlist_bid') }}</li>
+                                        <li class="flex gap-2"><span class="text-accent-green shrink-0">&#8644;</span> {{ __('transfers.scouting_help_shortlist_loan') }}</li>
                                         <li class="flex gap-2"><span class="text-text-secondary shrink-0">&#10003;</span> {{ __('transfers.scouting_help_shortlist_precontract') }}</li>
                                     </ul>
                                 </div>
@@ -196,7 +196,7 @@
                                     <div class="px-5 py-3 bg-accent-gold/10 border-b border-accent-gold/20">
                                         <div class="flex items-center justify-between gap-2">
                                             <h4 class="font-semibold text-sm text-text-primary flex items-center gap-2">
-                                                <svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
+                                                <svg class="w-4 h-4 text-accent-gold" fill="currentColor" viewBox="0 0 20 20">
                                                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                                                 </svg>
                                                 {{ __('transfers.shortlist') }}
@@ -232,7 +232,7 @@
                                     </div>
                                     <div class="divide-y divide-border-default">
                                         <template x-for="player in sortedPlayers" :key="player.id">
-                                            <div class="px-4 md:px-5 py-3 hover:bg-surface-700/50/50">
+                                            <div class="px-4 md:px-5 py-3 hover:bg-surface-700/50">
                                                 {{-- Player Summary Row --}}
                                                 <div class="flex items-center gap-3 cursor-pointer" @click="toggleExpand(player)">
                                                     {{-- Position badge --}}
@@ -428,7 +428,7 @@
                                                                         </div>
                                                                     </template>
                                                                     <template x-if="isTransferWindow && !player.canAffordWage">
-                                                                        <div class="text-xs text-amber-600 font-medium">
+                                                                        <div class="text-xs text-accent-gold font-medium">
                                                                             {{ __('transfers.wage_exceeds_budget') }}
                                                                         </div>
                                                                     </template>
@@ -579,7 +579,7 @@
                                                         $ageLabel = $ageMin . '-' . $ageMax;
                                                     }
                                                 @endphp
-                                                <tr class="border-t border-border-default hover:bg-surface-700/50/50">
+                                                <tr class="border-t border-border-default hover:bg-surface-700/50">
                                                     <td class="py-3 pl-4">
                                                         <span class="font-medium text-text-primary">{{ isset($filters['position']) ? \App\Support\PositionMapper::filterToDisplayName($filters['position']) : '-' }}</span>
                                                         <div class="text-xs text-text-secondary md:hidden">{{ $histScopeLabel }}</div>
@@ -637,7 +637,7 @@
                                 {{-- Searching State --}}
                                 <div class="border rounded-lg p-5 bg-accent-blue/10">
                                     <div class="text-center">
-                                        <svg class="w-10 h-10 mx-auto mb-3 text-sky-500 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-10 h-10 mx-auto mb-3 text-accent-blue animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                                         </svg>
                                         <h4 class="font-semibold text-text-primary mb-1">{{ __('transfers.scout_searching') }}</h4>

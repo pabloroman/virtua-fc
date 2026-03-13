@@ -55,9 +55,9 @@
                                 <div>
                                     <p class="font-semibold text-text-body mb-2">{{ __('transfers.transfers_help_selling_title') }}</p>
                                     <ul class="space-y-1 text-text-secondary">
-                                        <li class="flex gap-2"><span class="text-amber-500 shrink-0">&#9679;</span> {{ __('transfers.transfers_help_selling_list') }}</li>
-                                        <li class="flex gap-2"><span class="text-red-400 shrink-0">&#9679;</span> {{ __('transfers.transfers_help_selling_unsolicited') }}</li>
-                                        <li class="flex gap-2"><span class="text-emerald-500 shrink-0">&#9679;</span> {{ __('transfers.transfers_help_selling_accept') }}</li>
+                                        <li class="flex gap-2"><span class="text-accent-gold shrink-0">&#9679;</span> {{ __('transfers.transfers_help_selling_list') }}</li>
+                                        <li class="flex gap-2"><span class="text-accent-red shrink-0">&#9679;</span> {{ __('transfers.transfers_help_selling_unsolicited') }}</li>
+                                        <li class="flex gap-2"><span class="text-accent-green shrink-0">&#9679;</span> {{ __('transfers.transfers_help_selling_accept') }}</li>
                                     </ul>
                                 </div>
 
@@ -65,9 +65,9 @@
                                 <div>
                                     <p class="font-semibold text-text-body mb-2">{{ __('transfers.transfers_help_contracts_title') }}</p>
                                     <ul class="space-y-1 text-text-secondary">
-                                        <li class="flex gap-2"><span class="text-red-400 shrink-0">&#9679;</span> {{ __('transfers.transfers_help_contracts_expiring') }}</li>
-                                        <li class="flex gap-2"><span class="text-sky-500 shrink-0">&#9679;</span> {{ __('transfers.transfers_help_contracts_renew') }}</li>
-                                        <li class="flex gap-2"><span class="text-amber-500 shrink-0">&#9679;</span> {{ __('transfers.transfers_help_contracts_wages') }}</li>
+                                        <li class="flex gap-2"><span class="text-accent-red shrink-0">&#9679;</span> {{ __('transfers.transfers_help_contracts_expiring') }}</li>
+                                        <li class="flex gap-2"><span class="text-accent-blue shrink-0">&#9679;</span> {{ __('transfers.transfers_help_contracts_renew') }}</li>
+                                        <li class="flex gap-2"><span class="text-accent-gold shrink-0">&#9679;</span> {{ __('transfers.transfers_help_contracts_wages') }}</li>
                                     </ul>
                                 </div>
 
@@ -75,7 +75,7 @@
                                 <div>
                                     <p class="font-semibold text-text-body mb-2">{{ __('transfers.transfers_help_loans_title') }}</p>
                                     <ul class="space-y-1 text-text-secondary">
-                                        <li class="flex gap-2"><span class="text-sky-500 shrink-0">&#9679;</span> {{ __('transfers.transfers_help_loans_out') }}</li>
+                                        <li class="flex gap-2"><span class="text-accent-blue shrink-0">&#9679;</span> {{ __('transfers.transfers_help_loans_out') }}</li>
                                     </ul>
                                 </div>
                             </div>
@@ -249,13 +249,13 @@
                                                     <div class="text-sm text-text-secondary mt-0.5">
                                                         {{ __('transfers.your_bid_amount', ['amount' => $negotiation->formatted_user_offer]) }}
                                                         <span class="text-text-body mx-1">&rarr;</span>
-                                                        <span class="font-semibold text-orange-600">{{ __('transfers.they_ask', ['amount' => $negotiation->formatted_counter_offer . __('squad.per_year')]) }}</span>
+                                                        <span class="font-semibold text-accent-orange">{{ __('transfers.they_ask', ['amount' => $negotiation->formatted_counter_offer . __('squad.per_year')]) }}</span>
                                                     </div>
                                                     @if($mood)
                                                         <div class="mt-1">
                                                             <span class="inline-flex items-center gap-1 text-xs font-medium
                                                                 @if($mood['color'] === 'green') text-accent-green
-                                                                @elseif($mood['color'] === 'amber') text-amber-600
+                                                                @elseif($mood['color'] === 'amber') text-accent-gold
                                                                 @else text-red-500
                                                                 @endif">
                                                                 <span class="w-1.5 h-1.5 rounded-full
@@ -506,7 +506,7 @@
                                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                             <div class="flex items-center gap-4">
                                                 <div class="w-10 h-10 rounded-full bg-accent-gold/10 flex items-center justify-center shrink-0">
-                                                    <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <svg class="w-5 h-5 text-accent-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
                                                     </svg>
                                                 </div>
@@ -631,7 +631,7 @@
                                                     <div>
                                                         <span class="font-medium text-text-primary truncate">{{ $player->player->name }}</span>
                                                         @if($hasPendingOffer)
-                                                            <div class="text-xs text-amber-600">{{ __('squad.has_pre_contract_offers') }}</div>
+                                                            <div class="text-xs text-accent-gold">{{ __('squad.has_pre_contract_offers') }}</div>
                                                         @endif
                                                     </div>
                                                 </div>

@@ -94,7 +94,7 @@
                         <div class="w-28 h-2 bg-surface-700 rounded-full overflow-hidden">
                             <div class="h-2 rounded-full @if($val >= 80) bg-accent-green @elseif($val >= 70) bg-lime-500 @elseif($val >= 60) bg-accent-gold @else bg-surface-600 @endif" style="width: {{ $val / 99 * 100 }}%"></div>
                         </div>
-                        <span class="text-sm font-semibold tabular-nums w-7 text-right @if($val >= 80) text-accent-green @elseif($val >= 70) text-lime-600 @elseif($val >= 60) text-amber-600 @else text-text-secondary @endif">{{ $val }}</span>
+                        <span class="text-sm font-semibold tabular-nums w-7 text-right @if($val >= 80) text-accent-green @elseif($val >= 70) text-lime-500 @elseif($val >= 60) text-accent-gold @else text-text-secondary @endif">{{ $val }}</span>
                     </div>
                 </div>
                 {{-- Physical --}}
@@ -105,7 +105,7 @@
                         <div class="w-28 h-2 bg-surface-700 rounded-full overflow-hidden">
                             <div class="h-2 rounded-full @if($val >= 80) bg-accent-green @elseif($val >= 70) bg-lime-500 @elseif($val >= 60) bg-accent-gold @else bg-surface-600 @endif" style="width: {{ $val / 99 * 100 }}%"></div>
                         </div>
-                        <span class="text-sm font-semibold tabular-nums w-7 text-right @if($val >= 80) text-accent-green @elseif($val >= 70) text-lime-600 @elseif($val >= 60) text-amber-600 @else text-text-secondary @endif">{{ $val }}</span>
+                        <span class="text-sm font-semibold tabular-nums w-7 text-right @if($val >= 80) text-accent-green @elseif($val >= 70) text-lime-500 @elseif($val >= 60) text-accent-gold @else text-text-secondary @endif">{{ $val }}</span>
                     </div>
                 </div>
                 {{-- Fitness --}}
@@ -116,7 +116,7 @@
                         <div class="w-28 h-2 bg-surface-700 rounded-full overflow-hidden">
                             <div class="h-2 rounded-full @if($val >= 80) bg-accent-green @elseif($val >= 70) bg-lime-500 @elseif($val >= 60) bg-accent-gold @else bg-surface-600 @endif" style="width: {{ $val }}%"></div>
                         </div>
-                        <span class="text-sm font-semibold tabular-nums w-7 text-right @if($val >= 90) text-accent-green @elseif($val >= 80) text-lime-600 @elseif($val >= 70) text-accent-gold @else text-red-500 @endif">{{ $val }}</span>
+                        <span class="text-sm font-semibold tabular-nums w-7 text-right @if($val >= 90) text-accent-green @elseif($val >= 80) text-lime-500 @elseif($val >= 70) text-accent-gold @else text-red-500 @endif">{{ $val }}</span>
                     </div>
                 </div>
                 {{-- Morale --}}
@@ -127,7 +127,7 @@
                         <div class="w-28 h-2 bg-surface-700 rounded-full overflow-hidden">
                             <div class="h-2 rounded-full @if($val >= 80) bg-accent-green @elseif($val >= 70) bg-lime-500 @elseif($val >= 60) bg-accent-gold @else bg-surface-600 @endif" style="width: {{ $val }}%"></div>
                         </div>
-                        <span class="text-sm font-semibold tabular-nums w-7 text-right @if($val >= 85) text-accent-green @elseif($val >= 75) text-lime-600 @elseif($val >= 65) text-accent-gold @else text-red-500 @endif">{{ $val }}</span>
+                        <span class="text-sm font-semibold tabular-nums w-7 text-right @if($val >= 85) text-accent-green @elseif($val >= 75) text-lime-500 @elseif($val >= 65) text-accent-gold @else text-red-500 @endif">{{ $val }}</span>
                     </div>
                 </div>
                 @if($devStatus)
@@ -137,7 +137,7 @@
                     <span class="inline-flex items-center gap-1 text-xs font-semibold
                             @if($devStatus === 'growing') text-accent-green
                             @elseif($devStatus === 'peak') text-accent-blue
-                            @else text-orange-600
+                            @else text-accent-orange
                             @endif">
                             @if($devStatus === 'growing')
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg>

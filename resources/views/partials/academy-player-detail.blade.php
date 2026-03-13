@@ -69,7 +69,7 @@
                             <div class="w-28 h-2 bg-surface-700 rounded-full overflow-hidden">
                                 <div class="h-2 rounded-full @if($val >= 80) bg-accent-green @elseif($val >= 70) bg-lime-500 @elseif($val >= 60) bg-accent-gold @else bg-surface-600 @endif" style="width: {{ $val / 99 * 100 }}%"></div>
                             </div>
-                            <span class="text-sm font-semibold tabular-nums w-7 text-right @if($val >= 80) text-accent-green @elseif($val >= 70) text-lime-600 @elseif($val >= 60) text-amber-600 @else text-text-secondary @endif">{{ $val }}</span>
+                            <span class="text-sm font-semibold tabular-nums w-7 text-right @if($val >= 80) text-accent-green @elseif($val >= 70) text-lime-500 @elseif($val >= 60) text-accent-gold @else text-text-secondary @endif">{{ $val }}</span>
                         </div>
                     </div>
                     {{-- Physical --}}
@@ -80,7 +80,7 @@
                             <div class="w-28 h-2 bg-surface-700 rounded-full overflow-hidden">
                                 <div class="h-2 rounded-full @if($val >= 80) bg-accent-green @elseif($val >= 70) bg-lime-500 @elseif($val >= 60) bg-accent-gold @else bg-surface-600 @endif" style="width: {{ $val / 99 * 100 }}%"></div>
                             </div>
-                            <span class="text-sm font-semibold tabular-nums w-7 text-right @if($val >= 80) text-accent-green @elseif($val >= 70) text-lime-600 @elseif($val >= 60) text-amber-600 @else text-text-secondary @endif">{{ $val }}</span>
+                            <span class="text-sm font-semibold tabular-nums w-7 text-right @if($val >= 80) text-accent-green @elseif($val >= 70) text-lime-500 @elseif($val >= 60) text-accent-gold @else text-text-secondary @endif">{{ $val }}</span>
                         </div>
                     </div>
                     {{-- Average --}}
@@ -88,8 +88,8 @@
                         <span class="text-xs text-text-muted uppercase tracking-wide font-semibold">{{ __('squad.overall') }}</span>
                         <span class="text-sm font-semibold tabular-nums
                             @if($academyPlayer->overall >= 80) text-accent-green
-                            @elseif($academyPlayer->overall >= 70) text-lime-600
-                            @elseif($academyPlayer->overall >= 60) text-amber-600
+                            @elseif($academyPlayer->overall >= 70) text-lime-500
+                            @elseif($academyPlayer->overall >= 60) text-accent-gold
                             @else text-text-muted
                             @endif">{{ $academyPlayer->overall }}</span>
                     </div>

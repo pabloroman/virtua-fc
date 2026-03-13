@@ -90,10 +90,10 @@
                                 <p class="font-semibold text-text-body mb-2">{{ __('squad.academy_help_evaluations_title') }}</p>
                                 <p class="text-text-muted mb-2">{{ __('squad.academy_help_evaluation_desc') }}</p>
                                 <ul class="space-y-1 text-text-secondary">
-                                    <li class="flex gap-2"><span class="text-emerald-500 shrink-0">↑</span> {{ __('squad.academy_help_promote') }}</li>
-                                    <li class="flex gap-2"><span class="text-sky-500 shrink-0">⇄</span> {{ __('squad.academy_help_loan') }}</li>
+                                    <li class="flex gap-2"><span class="text-accent-green shrink-0">↑</span> {{ __('squad.academy_help_promote') }}</li>
+                                    <li class="flex gap-2"><span class="text-accent-blue shrink-0">⇄</span> {{ __('squad.academy_help_loan') }}</li>
                                     <li class="flex gap-2"><span class="text-text-secondary shrink-0">✓</span> {{ __('squad.academy_help_keep') }}</li>
-                                    <li class="flex gap-2"><span class="text-red-400 shrink-0">✕</span> {{ __('squad.academy_help_dismiss') }}</li>
+                                    <li class="flex gap-2"><span class="text-accent-red shrink-0">✕</span> {{ __('squad.academy_help_dismiss') }}</li>
                                 </ul>
                                 <p class="mt-3 text-xs text-text-secondary">{{ __('squad.academy_help_age_rule') }} {{ __('squad.academy_help_capacity_rule') }}</p>
                             </div>
@@ -171,7 +171,7 @@
                                                         {{-- Technical --}}
                                                         <td class="border-l border-border-strong py-2 pl-3 text-center hidden md:table-cell">
                                                             @if($playerReveal >= 1)
-                                                                <x-ability-bar :value="$prospect->technical_ability" size="sm" class="text-xs font-medium justify-center @if($prospect->technical_ability >= 80) text-accent-green @elseif($prospect->technical_ability >= 70) text-lime-600 @elseif($prospect->technical_ability < 60) text-text-secondary @endif" />
+                                                                <x-ability-bar :value="$prospect->technical_ability" size="sm" class="text-xs font-medium justify-center @if($prospect->technical_ability >= 80) text-accent-green @elseif($prospect->technical_ability >= 70) text-lime-500 @elseif($prospect->technical_ability < 60) text-text-secondary @endif" />
                                                             @else
                                                                 <span class="text-text-body">?</span>
                                                             @endif
@@ -179,7 +179,7 @@
                                                         {{-- Physical --}}
                                                         <td class="py-2 text-center hidden md:table-cell">
                                                             @if($playerReveal >= 1)
-                                                                <x-ability-bar :value="$prospect->physical_ability" size="sm" class="text-xs font-medium justify-center @if($prospect->physical_ability >= 80) text-accent-green @elseif($prospect->physical_ability >= 70) text-lime-600 @elseif($prospect->physical_ability < 60) text-text-secondary @endif" />
+                                                                <x-ability-bar :value="$prospect->physical_ability" size="sm" class="text-xs font-medium justify-center @if($prospect->physical_ability >= 80) text-accent-green @elseif($prospect->physical_ability >= 70) text-lime-500 @elseif($prospect->physical_ability < 60) text-text-secondary @endif" />
                                                             @else
                                                                 <span class="text-text-body">?</span>
                                                             @endif
