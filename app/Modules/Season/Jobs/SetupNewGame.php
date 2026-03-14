@@ -120,7 +120,7 @@ class SetupNewGame implements ShouldQueue
 
             // Record activation event
             app(\App\Modules\Season\Services\ActivationTracker::class)
-                ->record($game->user_id, \App\Models\ActivationEvent::EVENT_SETUP_COMPLETED, $this->gameId);
+                ->record($game->user_id, \App\Models\ActivationEvent::EVENT_SETUP_COMPLETED, $this->gameId, $this->gameMode);
 
             // Notify the user that the summer transfer window is open
             if ($this->gameMode === Game::MODE_CAREER) {

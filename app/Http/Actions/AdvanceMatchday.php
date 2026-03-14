@@ -49,10 +49,10 @@ class AdvanceMatchday
 
     private function recordActivationEvents(Game $game): void
     {
-        $this->activationTracker->record($game->user_id, ActivationEvent::EVENT_FIRST_MATCH_PLAYED, $game->id);
+        $this->activationTracker->record($game->user_id, ActivationEvent::EVENT_FIRST_MATCH_PLAYED, $game->id, $game->game_mode);
 
         if ($game->current_matchday >= 5) {
-            $this->activationTracker->record($game->user_id, ActivationEvent::EVENT_MATCHDAY_5_REACHED, $game->id);
+            $this->activationTracker->record($game->user_id, ActivationEvent::EVENT_MATCHDAY_5_REACHED, $game->id, $game->game_mode);
         }
     }
 

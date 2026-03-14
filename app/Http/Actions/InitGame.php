@@ -38,7 +38,7 @@ class InitGame
                 teamId: $request->get('team_id'),
             );
 
-            $this->activationTracker->record($request->user()->id, ActivationEvent::EVENT_GAME_CREATED, $game->id);
+            $this->activationTracker->record($request->user()->id, ActivationEvent::EVENT_GAME_CREATED, $game->id, Game::MODE_TOURNAMENT);
 
             return redirect()->route('show-game', $game->id);
         }
@@ -49,7 +49,7 @@ class InitGame
             gameMode: $gameMode,
         );
 
-        $this->activationTracker->record($request->user()->id, ActivationEvent::EVENT_GAME_CREATED, $game->id);
+        $this->activationTracker->record($request->user()->id, ActivationEvent::EVENT_GAME_CREATED, $game->id, $gameMode);
 
         return redirect()->route('game.welcome', $game->id);
     }

@@ -22,7 +22,7 @@ class CompleteWelcome
 
         $game->completeWelcome();
 
-        $this->activationTracker->record($game->user_id, ActivationEvent::EVENT_WELCOME_COMPLETED, $gameId);
+        $this->activationTracker->record($game->user_id, ActivationEvent::EVENT_WELCOME_COMPLETED, $gameId, $game->game_mode);
 
         return redirect()->route('game.onboarding', $gameId);
     }

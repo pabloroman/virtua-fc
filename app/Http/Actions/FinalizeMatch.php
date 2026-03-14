@@ -3,8 +3,10 @@
 namespace App\Http\Actions;
 
 use App\Events\SeasonCompleted;
+use App\Models\ActivationEvent;
 use App\Modules\Match\Services\MatchdayOrchestrator;
 use App\Modules\Match\Services\MatchFinalizationService;
+use App\Modules\Season\Services\ActivationTracker;
 use App\Models\Game;
 use App\Models\GameMatch;
 use Illuminate\Http\Request;
@@ -14,6 +16,7 @@ class FinalizeMatch
     public function __construct(
         private readonly MatchFinalizationService $finalizationService,
         private readonly MatchdayOrchestrator $orchestrator,
+        private readonly ActivationTracker $activationTracker,
     ) {}
 
     public function __invoke(Request $request, string $gameId)
@@ -76,6 +79,8 @@ class FinalizeMatch
 
             $game->refresh()->setRelations([]);
         }
+
+        $this->activationTracker->record($game->user_id, ActivationEvent::EVENT_TOURNAMENT_COMPLETED, $game->id, Game::MODE_TOURNAMENT);
 
         return redirect()->route('game.tournament-end', $game->id);
     }

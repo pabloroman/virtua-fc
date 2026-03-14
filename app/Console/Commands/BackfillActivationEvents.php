@@ -8,7 +8,6 @@ use App\Models\GameMatch;
 use App\Models\SeasonArchive;
 use App\Models\User;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 
 class BackfillActivationEvents extends Command
 {
@@ -26,6 +25,7 @@ class BackfillActivationEvents extends Command
         $this->backfillFirstMatchPlayed();
         $this->backfillMatchday5Reached();
         $this->backfillSeasonCompleted();
+        $this->backfillTournamentCompleted();
 
         $this->info('Backfill complete.');
 
@@ -37,6 +37,7 @@ class BackfillActivationEvents extends Command
         $rows = User::all()->map(fn (User $user) => [
             'user_id' => $user->id,
             'game_id' => null,
+            'game_mode' => null,
             'event' => ActivationEvent::EVENT_REGISTERED,
             'occurred_at' => $user->created_at,
         ])->toArray();
@@ -50,6 +51,7 @@ class BackfillActivationEvents extends Command
         $rows = Game::all()->map(fn (Game $game) => [
             'user_id' => $game->user_id,
             'game_id' => $game->id,
+            'game_mode' => $game->game_mode,
             'event' => ActivationEvent::EVENT_GAME_CREATED,
             'occurred_at' => $game->created_at,
         ])->toArray();
@@ -65,6 +67,7 @@ class BackfillActivationEvents extends Command
             ->map(fn (Game $game) => [
                 'user_id' => $game->user_id,
                 'game_id' => $game->id,
+                'game_mode' => $game->game_mode,
                 'event' => ActivationEvent::EVENT_SETUP_COMPLETED,
                 'occurred_at' => $game->setup_completed_at,
             ])->toArray();
@@ -76,11 +79,13 @@ class BackfillActivationEvents extends Command
     private function backfillWelcomeCompleted(): void
     {
         $rows = Game::where('needs_welcome', false)
+            ->where('game_mode', Game::MODE_CAREER)
             ->whereNotNull('setup_completed_at')
             ->get()
             ->map(fn (Game $game) => [
                 'user_id' => $game->user_id,
                 'game_id' => $game->id,
+                'game_mode' => Game::MODE_CAREER,
                 'event' => ActivationEvent::EVENT_WELCOME_COMPLETED,
                 'occurred_at' => $game->setup_completed_at->addMinute(),
             ])->toArray();
@@ -92,11 +97,13 @@ class BackfillActivationEvents extends Command
     private function backfillOnboardingCompleted(): void
     {
         $rows = Game::where('needs_onboarding', false)
+            ->where('game_mode', Game::MODE_CAREER)
             ->whereNotNull('setup_completed_at')
             ->get()
             ->map(fn (Game $game) => [
                 'user_id' => $game->user_id,
                 'game_id' => $game->id,
+                'game_mode' => Game::MODE_CAREER,
                 'event' => ActivationEvent::EVENT_ONBOARDING_COMPLETED,
                 'occurred_at' => $game->setup_completed_at->addMinutes(2),
             ])->toArray();
@@ -124,6 +131,7 @@ class BackfillActivationEvents extends Command
                 $rows[] = [
                     'user_id' => $game->user_id,
                     'game_id' => $game->id,
+                    'game_mode' => $game->game_mode,
                     'event' => ActivationEvent::EVENT_FIRST_MATCH_PLAYED,
                     'occurred_at' => $firstMatch->scheduled_date ?? $game->setup_completed_at?->addMinutes(5),
                 ];
@@ -141,6 +149,7 @@ class BackfillActivationEvents extends Command
             ->map(fn (Game $game) => [
                 'user_id' => $game->user_id,
                 'game_id' => $game->id,
+                'game_mode' => $game->game_mode,
                 'event' => ActivationEvent::EVENT_MATCHDAY_5_REACHED,
                 'occurred_at' => $game->setup_completed_at?->addMinutes(10) ?? $game->created_at,
             ])->toArray();
@@ -152,17 +161,42 @@ class BackfillActivationEvents extends Command
     private function backfillSeasonCompleted(): void
     {
         $gameIds = SeasonArchive::distinct()->pluck('game_id');
-        $games = Game::whereIn('id', $gameIds)->get();
+        $games = Game::whereIn('id', $gameIds)
+            ->where('game_mode', Game::MODE_CAREER)
+            ->get();
 
         $rows = $games->map(fn (Game $game) => [
             'user_id' => $game->user_id,
             'game_id' => $game->id,
+            'game_mode' => Game::MODE_CAREER,
             'event' => ActivationEvent::EVENT_SEASON_COMPLETED,
             'occurred_at' => $game->setup_completed_at?->addMinutes(30) ?? $game->created_at,
         ])->toArray();
 
         $count = $this->insertIgnore($rows);
         $this->info("Season completed: {$count} events inserted.");
+    }
+
+    private function backfillTournamentCompleted(): void
+    {
+        // Tournament games with no unplayed matches are completed
+        $games = Game::where('game_mode', Game::MODE_TOURNAMENT)
+            ->whereNotNull('setup_completed_at')
+            ->get()
+            ->filter(function (Game $game) {
+                return ! $game->matches()->where('played', false)->exists();
+            });
+
+        $rows = $games->map(fn (Game $game) => [
+            'user_id' => $game->user_id,
+            'game_id' => $game->id,
+            'game_mode' => Game::MODE_TOURNAMENT,
+            'event' => ActivationEvent::EVENT_TOURNAMENT_COMPLETED,
+            'occurred_at' => $game->setup_completed_at?->addMinutes(30) ?? $game->created_at,
+        ])->toArray();
+
+        $count = $this->insertIgnore($rows);
+        $this->info("Tournament completed: {$count} events inserted.");
     }
 
     private function insertIgnore(array $rows): int

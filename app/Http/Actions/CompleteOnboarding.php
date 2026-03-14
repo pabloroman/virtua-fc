@@ -50,7 +50,7 @@ class CompleteOnboarding
         $game->refresh()->setRelations([]);
         $game->completeOnboarding();
 
-        $this->activationTracker->record($game->user_id, ActivationEvent::EVENT_ONBOARDING_COMPLETED, $gameId);
+        $this->activationTracker->record($game->user_id, ActivationEvent::EVENT_ONBOARDING_COMPLETED, $gameId, $game->game_mode);
 
         event(new SeasonStarted($game));
 

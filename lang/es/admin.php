@@ -29,4 +29,8 @@ return [
     'funnel_first_match_played' => 'Primer partido jugado',
     'funnel_matchday_5_reached' => 'Jornada 5 alcanzada',
     'funnel_season_completed' => 'Temporada completada',
+    'funnel_tournament_completed' => 'Torneo completado',
+    'mode_all' => 'Todos',
+    'mode_career' => 'Carrera',
+    'mode_tournament' => 'Torneo',
 ];

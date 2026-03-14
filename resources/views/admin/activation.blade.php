@@ -6,19 +6,31 @@
     </x-slot>
 
     <div class="max-w-7xl mx-auto px-4 pb-8">
-        {{-- Header with title and period filter --}}
-        <div class="mt-6 mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        {{-- Header with title --}}
+        <div class="mt-6 mb-6">
             <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary">{{ __('admin.activation_title') }}</h2>
+        </div>
 
-            <div class="flex items-center gap-2">
-                @foreach(['7' => '7d', '30' => '30d', '90' => '90d', 'all' => __('admin.all_time')] as $value => $label)
-                    <a href="{{ route('admin.activation', ['period' => $value]) }}"
-                       class="px-3 py-1.5 text-xs font-medium rounded-md transition-colors min-h-[44px] flex items-center
-                              {{ $period === (string) $value ? 'bg-accent-primary text-white' : 'bg-surface-700 text-text-secondary hover:text-text-primary' }}">
-                        {{ $label }}
-                    </a>
-                @endforeach
-            </div>
+        {{-- Mode tabs --}}
+        <div class="flex items-center gap-2 mb-4 overflow-x-auto scrollbar-hide">
+            @foreach(['all' => __('admin.mode_all'), 'career' => __('admin.mode_career'), 'tournament' => __('admin.mode_tournament')] as $value => $label)
+                <a href="{{ route('admin.activation', ['mode' => $value, 'period' => $period]) }}"
+                   class="px-4 py-2 text-sm font-medium rounded-lg transition-colors min-h-[44px] flex items-center shrink-0
+                          {{ $mode === $value ? 'bg-accent-primary text-white' : 'bg-surface-700 text-text-secondary hover:text-text-primary' }}">
+                    {{ $label }}
+                </a>
+            @endforeach
+        </div>
+
+        {{-- Period filter --}}
+        <div class="flex items-center gap-2 mb-6">
+            @foreach(['7' => '7d', '30' => '30d', '90' => '90d', 'all' => __('admin.all_time')] as $value => $label)
+                <a href="{{ route('admin.activation', ['period' => $value, 'mode' => $mode]) }}"
+                   class="px-3 py-1.5 text-xs font-medium rounded-md transition-colors min-h-[44px] flex items-center
+                          {{ $period === (string) $value ? 'bg-surface-600 text-text-primary' : 'bg-surface-700/50 text-text-muted hover:text-text-secondary' }}">
+                    {{ $label }}
+                </a>
+            @endforeach
         </div>
 
         {{-- Summary cards --}}
@@ -45,7 +57,7 @@
                 @foreach($steps as $i => $step)
                     <div class="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
                         {{-- Step label --}}
-                        <div class="md:w-48 shrink-0">
+                        <div class="md:w-56 shrink-0">
                             <span class="text-xs text-text-muted">{{ $i }}.</span>
                             <span class="text-sm text-text-primary">{{ $step['label'] }}</span>
                         </div>
@@ -83,7 +95,7 @@
             </div>
         </div>
 
-        {{-- Mobile drop-off table (visible only on mobile where inline drop-off is hidden) --}}
+        {{-- Mobile drop-off table --}}
         <div class="mt-6 md:hidden bg-surface-700/30 border border-border-default rounded-xl p-4">
             <h3 class="text-sm font-semibold text-text-primary uppercase tracking-wider mb-4">{{ __('admin.drop_off_rates') }}</h3>
             <div class="space-y-2">

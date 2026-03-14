@@ -20,6 +20,7 @@ class RecordSeasonCompleted
             $game->user_id,
             ActivationEvent::EVENT_SEASON_COMPLETED,
             $game->id,
+            $game->game_mode,
         );
     }
 }

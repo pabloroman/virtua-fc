@@ -29,4 +29,8 @@ return [
     'funnel_first_match_played' => 'First match played',
     'funnel_matchday_5_reached' => 'Matchday 5 reached',
     'funnel_season_completed' => 'Season completed',
+    'funnel_tournament_completed' => 'Tournament completed',
+    'mode_all' => 'All',
+    'mode_career' => 'Career',
+    'mode_tournament' => 'Tournament',
 ];
