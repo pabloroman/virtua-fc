@@ -28,3 +28,10 @@ yarn-error.log
 frankenphp
 frankenphp-worker.php
 .DS_Store
+
+# Capacitor native platform build artifacts
+ios/App/Pods/
+ios/capacitor-cordova-ios-plugins/
+android/.gradle/
+android/app/build/
+android/capacitor-cordova-android-plugins/

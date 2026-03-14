@@ -73,6 +73,11 @@ class User extends Authenticatable
         return $this->hasMany(Game::class);
     }
 
+    public function deviceTokens(): HasMany
+    {
+        return $this->hasMany(DeviceToken::class);
+    }
+
     /**
      * Get the attributes that should be cast.
      *

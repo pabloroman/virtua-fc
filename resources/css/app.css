@@ -582,6 +582,14 @@ input[type="radio"]:checked {
         }
     }
 
+    /* Safe area insets for native app (iOS notch/Dynamic Island, Android cutouts) */
+    body {
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+    }
+
     [x-cloak] {
         display: none !important;
     }
