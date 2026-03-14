@@ -13,6 +13,7 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <script>(function(){var t=localStorage.getItem('virtua-theme');if(t==='light'){document.documentElement.classList.add('light');document.querySelector('meta[name=theme-color]')?.setAttribute('content','#ffffff');}})()</script>
     </head>
     <body class="font-sans antialiased bg-surface-900 text-text-primary">
     <div class="min-h-screen">
@@ -91,7 +92,7 @@
 
             <div>
                 {{-- Sticky Header --}}
-                <div class="sticky top-0 z-40 bg-surface-900/98 backdrop-blur-md border-b border-white/5">
+                <div class="sticky top-0 z-40 bg-surface-900/98 backdrop-blur-md border-b border-border-default">
                 {{-- Top Meta Bar --}}
                 <div class="relative flex items-center justify-between px-4 py-2.5">
                     {{-- Left: Competition indicator --}}
@@ -170,8 +171,8 @@
                                   'bg-accent-green/10 text-accent-green': phase === 'first_half' || phase === 'second_half',
                                   'bg-accent-gold/10 text-accent-gold': phase === 'half_time' || phase === 'extra_time_half_time',
                                   'bg-orange-500/10 text-orange-400': phase === 'going_to_extra_time' || phase === 'extra_time_first_half' || phase === 'extra_time_second_half',
-                                  'bg-purple-500/10 text-purple-400': phase === 'penalties',
-                                  'bg-surface-700 text-white': phase === 'full_time',
+                                  'bg-purple-500/10 text-penalty-text': phase === 'penalties',
+                                  'bg-surface-700 text-text-primary': phase === 'full_time',
                               }">
                             <span class="relative flex h-2 w-2" x-show="isRunning">
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
@@ -258,7 +259,7 @@
                         {{-- Pause/Play --}}
                         <button
                             @click="togglePause()"
-                            class="w-8 h-8 rounded-lg bg-surface-700 border border-white/5 flex items-center justify-center text-text-muted hover:text-text-primary transition-colors"
+                            class="w-8 h-8 rounded-lg bg-surface-700 border border-border-default flex items-center justify-center text-text-muted hover:text-text-primary transition-colors"
                             :class="userPaused ? 'text-accent-gold' : ''">
                             <svg x-show="!userPaused" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-4">
                                 <path d="M4.5 2a.5.5 0 0 0-.5.5v11a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-11a.5.5 0 0 0-.5-.5h-1ZM10.5 2a.5.5 0 0 0-.5.5v11a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-11a.5.5 0 0 0-.5-.5h-1Z" />
@@ -269,7 +270,7 @@
                         </button>
 
                         {{-- Speed selector --}}
-                        <div class="inline-flex bg-surface-700 rounded-lg p-0.5 border border-white/5">
+                        <div class="inline-flex bg-surface-700 rounded-lg p-0.5 border border-border-default">
                             <template x-for="s in [1, 2, 4]" :key="s">
                                 <button
                                     @click="setSpeed(s)"
@@ -285,7 +286,7 @@
                         {{-- Skip to end --}}
                         <button
                             @click="skipToEnd()"
-                            class="w-8 h-8 rounded-lg bg-surface-700 border border-white/5 flex items-center justify-center text-text-muted hover:text-text-primary transition-colors"
+                            class="w-8 h-8 rounded-lg bg-surface-700 border border-border-default flex items-center justify-center text-text-muted hover:text-text-primary transition-colors"
                             x-bind:disabled="extraTimeLoading"
                             :class="extraTimeLoading ? 'opacity-50 cursor-not-allowed' : ''">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-4">
@@ -298,7 +299,7 @@
                 </div>{{-- /sticky header --}}
 
                 {{-- Tab Navigation --}}
-                <div class="flex items-center justify-center gap-0 px-4 border-b border-white/5 overflow-x-auto scrollbar-hide">
+                <div class="flex items-center justify-center gap-0 px-4 border-b border-border-default overflow-x-auto scrollbar-hide">
                     @foreach(['events' => __('game.live_tab_events'), 'stats' => __('game.live_tab_stats'), 'lineups' => __('game.live_tab_lineups')] as $tab => $label)
                         <button
                             @click="activeTab = '{{ $tab }}'"
@@ -332,8 +333,8 @@
                                     <div class="flex items-center gap-3 py-2 px-4 rounded-t-lg bg-purple-500/10">
                                         <span class="text-sm w-6 text-center shrink-0">&#127942;</span>
                                         <div class="flex-1 text-center">
-                                            <span class="text-sm font-heading font-bold uppercase tracking-wider text-purple-300">{{ __('game.live_penalties') }}</span>
-                                            <span class="text-lg font-heading font-extrabold text-purple-200 ml-2 tabular-nums"
+                                            <span class="text-sm font-heading font-bold uppercase tracking-wider text-penalty-text">{{ __('game.live_penalties') }}</span>
+                                            <span class="text-lg font-heading font-extrabold text-penalty-score ml-2 tabular-nums"
                                                   x-text="penaltyHomeScore + ' - ' + penaltyAwayScore"></span>
                                         </div>
                                     </div>
@@ -346,7 +347,7 @@
                                                  x-transition:enter="transition ease-out duration-300"
                                                  x-transition:enter-start="opacity-0 -translate-y-1"
                                                  x-transition:enter-end="opacity-100 translate-y-0">
-                                                <span class="w-5 text-right text-xs font-heading font-bold text-purple-400 shrink-0"
+                                                <span class="w-5 text-right text-xs font-heading font-bold text-penalty-text shrink-0"
                                                       x-text="kick.round"></span>
                                                 <img :src="kick.side === 'home' ? homeTeamImage : awayTeamImage"
                                                      class="w-4 h-4 shrink-0 object-contain">
@@ -377,8 +378,8 @@
                                          :class="penaltyWinner && phase === 'full_time' ? 'rounded-t-lg' : 'rounded-lg'">
                                         <span class="text-sm w-6 text-center shrink-0">&#127942;</span>
                                         <div class="flex-1 text-center">
-                                            <span class="text-sm font-heading font-bold uppercase tracking-wider text-purple-300">{{ __('game.live_penalties') }}</span>
-                                            <span class="text-lg font-heading font-extrabold text-purple-200 ml-2 tabular-nums"
+                                            <span class="text-sm font-heading font-bold uppercase tracking-wider text-penalty-text">{{ __('game.live_penalties') }}</span>
+                                            <span class="text-lg font-heading font-extrabold text-penalty-score ml-2 tabular-nums"
                                                   x-text="penaltyHomeScore + ' - ' + penaltyAwayScore"></span>
                                         </div>
                                     </div>
@@ -394,7 +395,7 @@
                             {{-- ET Second half events --}}
                             <template x-for="(event, idx) in etSecondHalfEvents" :key="'etsh-' + idx">
                                 <div class="flex items-center gap-3 py-2.5 px-3 rounded-lg transition-all duration-300"
-                                     :class="isGoalEvent(event) ? 'bg-white/4 border-l-2 border-l-accent-gold' : 'border-l-2 border-l-transparent'"
+                                     :class="isGoalEvent(event) ? 'bg-goal-highlight border-l-2 border-l-accent-gold' : 'border-l-2 border-l-transparent'"
                                      x-transition:enter="transition ease-out duration-300"
                                      x-transition:enter-start="opacity-0 -translate-y-2"
                                      x-transition:enter-end="opacity-100 translate-y-0"
@@ -415,7 +416,7 @@
                             {{-- ET First half events --}}
                             <template x-for="(event, idx) in etFirstHalfEvents" :key="'etfh-' + idx">
                                 <div class="flex items-center gap-3 py-2.5 px-3 rounded-lg transition-all duration-300"
-                                     :class="isGoalEvent(event) ? 'bg-white/4 border-l-2 border-l-accent-gold' : 'border-l-2 border-l-transparent'"
+                                     :class="isGoalEvent(event) ? 'bg-goal-highlight border-l-2 border-l-accent-gold' : 'border-l-2 border-l-transparent'"
                                      x-transition:enter="transition ease-out duration-300"
                                      x-transition:enter-start="opacity-0 -translate-y-2"
                                      x-transition:enter-end="opacity-100 translate-y-0"
@@ -436,7 +437,7 @@
                             {{-- Second half events (newest first) --}}
                             <template x-for="(event, idx) in secondHalfEvents" :key="'sh-' + idx">
                                 <div class="flex items-center gap-3 py-2.5 px-3 rounded-lg transition-all duration-300"
-                                     :class="isGoalEvent(event) ? 'bg-white/4 border-l-2 border-l-accent-gold' : 'border-l-2 border-l-transparent'"
+                                     :class="isGoalEvent(event) ? 'bg-goal-highlight border-l-2 border-l-accent-gold' : 'border-l-2 border-l-transparent'"
                                      x-transition:enter="transition ease-out duration-300"
                                      x-transition:enter-start="opacity-0 -translate-y-2"
                                      x-transition:enter-end="opacity-100 translate-y-0"
@@ -457,7 +458,7 @@
                             {{-- First half events (newest first) --}}
                             <template x-for="(event, idx) in firstHalfEvents" :key="'fh-' + idx">
                                 <div class="flex items-center gap-3 py-2.5 px-3 rounded-lg transition-all duration-300"
-                                     :class="isGoalEvent(event) ? 'bg-white/4 border-l-2 border-l-accent-gold' : 'border-l-2 border-l-transparent'"
+                                     :class="isGoalEvent(event) ? 'bg-goal-highlight border-l-2 border-l-accent-gold' : 'border-l-2 border-l-transparent'"
                                      x-transition:enter="transition ease-out duration-300"
                                      x-transition:enter-start="opacity-0 -translate-y-2"
                                      x-transition:enter-end="opacity-100 translate-y-0"
@@ -551,7 +552,7 @@
                         </div>
 
                         {{-- Cards --}}
-                        <div class="flex items-center justify-between pt-3 border-t border-white/5">
+                        <div class="flex items-center justify-between pt-3 border-t border-border-default">
                             <div class="flex items-center gap-3">
                                 <div class="flex items-center gap-1">
                                     <div class="w-3 h-4 rounded-[2px] bg-accent-gold"></div>
@@ -693,7 +694,7 @@
                  x-transition:leave-start="translate-y-0"
                  x-transition:leave-end="translate-y-full"
             >
-                <div class="bg-surface-800/95 backdrop-blur-md border-t border-white/5 px-4 py-3">
+                <div class="bg-surface-800/95 backdrop-blur-md border-t border-border-default px-4 py-3">
 
                     {{-- During play: Tactical buttons --}}
                     <div x-show="phase !== 'full_time'" class="flex items-center gap-2.5">

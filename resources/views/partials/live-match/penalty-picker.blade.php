@@ -48,7 +48,7 @@
                 <div class="space-y-1">
                     <template x-for="(kicker, idx) in selectedPenaltyKickers" :key="kicker.id">
                         <div class="flex items-center gap-2 py-1.5 px-2 rounded-sm bg-purple-500/10">
-                            <span class="text-xs font-bold text-purple-400 w-5 text-center shrink-0" x-text="idx + 1"></span>
+                            <span class="text-xs font-bold text-penalty-text w-5 text-center shrink-0" x-text="idx + 1"></span>
                             <span class="text-xs font-semibold rounded-sm px-1.5 py-0.5 text-white shrink-0"
                                   :class="getPositionBadgeColor(kicker.positionGroup)"
                                   x-text="kicker.positionAbbr"></span>

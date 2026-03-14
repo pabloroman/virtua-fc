@@ -36,11 +36,11 @@
             x-on:click.stop
         >
             {{-- Header with match context --}}
-            <div class="bg-surface-900 border-b border-border-default text-white px-4 py-3 sm:px-6 sm:py-4">
+            <div class="bg-surface-900 border-b border-border-default text-text-primary px-4 py-3 sm:px-6 sm:py-4">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3 min-w-0">
                         <h2 class="text-sm sm:text-base font-heading font-semibold uppercase tracking-wider truncate">{{ __('game.tactical_center') }}</h2>
-                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold rounded-full px-2.5 py-0.5 bg-accent-gold/100/20 text-amber-300 shrink-0">
+                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold rounded-full px-2.5 py-0.5 bg-accent-gold/100/20 text-accent-gold shrink-0">
                             <span class="relative flex h-1.5 w-1.5">
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
                                 <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-amber-400"></span>

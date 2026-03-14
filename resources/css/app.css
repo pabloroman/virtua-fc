@@ -35,6 +35,9 @@ layer(base);
   --warning-tint-border: rgba(245, 158, 11, 0.2);
   --bar-track: #334155;
   --overlay-bg: rgba(0, 0, 0, 0.8);
+  --goal-highlight: rgba(255, 255, 255, 0.04);
+  --penalty-text: #d8b4fe;
+  --penalty-score: #e9d5ff;
 }
 
 .light {
@@ -62,6 +65,9 @@ layer(base);
   --warning-tint-border: rgba(245, 158, 11, 0.15);
   --bar-track: #e2e8f0;
   --overlay-bg: rgba(0, 0, 0, 0.5);
+  --goal-highlight: rgba(0, 0, 0, 0.04);
+  --penalty-text: #7c3aed;
+  --penalty-score: #6b21a8;
 }
 
 @theme {
@@ -108,6 +114,10 @@ layer(base);
   --color-pitch-base: #1e6b31;
   --color-pitch-light: #22783a;
   --color-pitch-line: rgba(255, 255, 255, 0.25);
+
+  --color-goal-highlight: var(--goal-highlight);
+  --color-penalty-text: var(--penalty-text);
+  --color-penalty-score: var(--penalty-score);
 }
 
 /*
