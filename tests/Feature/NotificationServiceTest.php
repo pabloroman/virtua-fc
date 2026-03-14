@@ -162,10 +162,10 @@ class NotificationServiceTest extends TestCase
         ]);
 
         // Each type has its own unique color
-        $this->assertStringContainsString('red', $injury->getTypeClasses()['bg']);
-        $this->assertStringContainsString('blue', $transfer->getTypeClasses()['bg']);
-        $this->assertStringContainsString('emerald', $advancement->getTypeClasses()['bg']);
-        $this->assertStringContainsString('rose', $elimination->getTypeClasses()['bg']);
+        $this->assertStringContainsString('red', $injury->getTypeClasses()['icon_bg']);
+        $this->assertStringContainsString('blue', $transfer->getTypeClasses()['icon_bg']);
+        $this->assertStringContainsString('emerald', $advancement->getTypeClasses()['icon_bg']);
+        $this->assertStringContainsString('rose', $elimination->getTypeClasses()['icon_bg']);
 
         // All types return icon classes
         foreach ([$injury, $transfer, $advancement, $elimination] as $notification) {
