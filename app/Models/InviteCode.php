@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $times_used
  * @property bool $invite_sent
  * @property \Illuminate\Support\Carbon|null $invite_sent_at
+ * @property \Illuminate\Support\Carbon|null $reminder_sent_at
  * @property \Illuminate\Support\Carbon|null $expires_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -39,6 +40,7 @@ class InviteCode extends Model
         'times_used',
         'invite_sent',
         'invite_sent_at',
+        'reminder_sent_at',
         'expires_at',
     ];
 
@@ -47,6 +49,7 @@ class InviteCode extends Model
         return [
             'invite_sent' => 'boolean',
             'invite_sent_at' => 'datetime',
+            'reminder_sent_at' => 'datetime',
             'expires_at' => 'datetime',
             'max_uses' => 'integer',
             'times_used' => 'integer',
