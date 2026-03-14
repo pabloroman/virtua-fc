@@ -110,13 +110,12 @@
         @else
             {{-- Active academy players --}}
             @if($academyCount > 0)
-                <div class="bg-surface-800 border border-border-default rounded-xl overflow-hidden">
+                <div x-data class="bg-surface-800 border border-border-default rounded-xl overflow-hidden">
                     {{-- Table header --}}
                     <div class="hidden md:block">
-                        <div class="grid grid-cols-[40px_1fr_48px_48px_48px_48px_64px_56px] gap-1.5 items-center px-4 py-2 bg-surface-700/30 border-b border-border-default text-[10px] text-text-muted uppercase tracking-widest font-semibold">
+                        <div class="grid grid-cols-[40px_1fr_48px_48px_48px_56px_56px] gap-1.5 items-center px-4 py-2 bg-surface-700/30 border-b border-border-default text-[10px] text-text-muted uppercase tracking-widest font-semibold">
                             <span></span>
                             <span>{{ __('app.name') }}</span>
-                            <span class="text-center">{{ __('app.country') }}</span>
                             <span class="text-center">{{ __('app.age') }}</span>
                             <span class="text-center">{{ __('squad.technical') }}</span>
                             <span class="text-center">{{ __('squad.physical') }}</span>
@@ -163,7 +162,7 @@
                                 </div>
 
                                 {{-- Desktop row --}}
-                                <div class="hidden md:grid grid-cols-[40px_1fr_48px_48px_48px_48px_64px_56px] gap-1.5 items-center px-4 py-2.5 border-b border-border-default cursor-pointer hover:bg-surface-700/30 transition-colors"
+                                <div class="hidden md:grid grid-cols-[40px_1fr_48px_48px_48px_56px_56px] gap-1.5 items-center px-4 py-2.5 border-b border-border-default cursor-pointer hover:bg-surface-700/30 transition-colors"
                                      @click="$dispatch('show-player-detail', '{{ route('game.academy.detail', [$game->id, $prospect->id]) }}')"
                                 >
                                     {{-- Position --}}
@@ -178,8 +177,6 @@
                                         <span class="text-sm font-medium text-text-primary truncate">{{ $prospect->name }}</span>
                                         <span class="text-xs text-text-secondary shrink-0">{{ trans_choice('squad.academy_seasons', $prospect->seasons_in_academy, ['count' => $prospect->seasons_in_academy]) }}</span>
                                     </div>
-                                    {{-- Nationality --}}
-                                    <td class="hidden"></td>
                                     {{-- Age --}}
                                     <span class="text-xs text-text-secondary text-center tabular-nums">{{ $prospect->age }}</span>
                                     {{-- Technical --}}
@@ -219,7 +216,7 @@
 
             {{-- Loaned players section --}}
             @if($loanedPlayers->isNotEmpty())
-                <div class="mt-6">
+                <div x-data class="mt-6">
                     <x-section-card :title="__('squad.academy_on_loan') . ' (' . $loanedPlayers->count() . ')'">
                         <div class="divide-y divide-border-default">
                             @foreach($loanedPlayers as $prospect)
