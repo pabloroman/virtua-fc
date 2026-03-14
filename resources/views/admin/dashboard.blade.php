@@ -5,19 +5,19 @@
 
     {{-- Summary stats --}}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-4">
+        <div class="bg-surface-800 border border-border-default rounded-xl p-4">
             <div class="text-xs text-text-muted uppercase tracking-wider mb-1">{{ __('admin.total_users') }}</div>
             <div class="font-heading text-2xl font-bold text-text-primary">{{ number_format($totalUsers) }}</div>
         </div>
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-4">
+        <div class="bg-surface-800 border border-border-default rounded-xl p-4">
             <div class="text-xs text-text-muted uppercase tracking-wider mb-1">{{ __('admin.total_games') }}</div>
             <div class="font-heading text-2xl font-bold text-text-primary">{{ number_format($totalGames) }}</div>
         </div>
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-4">
+        <div class="bg-surface-800 border border-border-default rounded-xl p-4">
             <div class="text-xs text-text-muted uppercase tracking-wider mb-1">{{ __('admin.new_users_7d') }}</div>
             <div class="font-heading text-2xl font-bold text-accent-primary">{{ number_format($newUsers7d) }}</div>
         </div>
-        <div class="bg-surface-700/30 border border-border-default rounded-xl p-4">
+        <div class="bg-surface-800 border border-border-default rounded-xl p-4">
             <div class="text-xs text-text-muted uppercase tracking-wider mb-1">{{ __('admin.new_games_7d') }}</div>
             <div class="font-heading text-2xl font-bold text-accent-primary">{{ number_format($newGames7d) }}</div>
         </div>

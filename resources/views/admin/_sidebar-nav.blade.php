@@ -27,7 +27,7 @@
     </a>
 </nav>
 
-<div class="px-3 py-4 border-t border-border-default">
+<div class="px-3 py-4 border-t border-border-default space-y-1">
     <a href="{{ route('dashboard') }}"
        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium min-h-[44px] text-text-muted hover:text-text-secondary hover:bg-surface-700/50 transition-colors">
         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -35,4 +35,6 @@
         </svg>
         {{ __('admin.back_to_app') }}
     </a>
+
+    <x-theme-toggle />
 </div>

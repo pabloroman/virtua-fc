@@ -20,7 +20,7 @@
                         <td class="px-4 py-3 text-sm text-text-primary">
                             {{ $user->name }}
                             @if($user->is_admin)
-                                <span class="ml-1 inline-flex items-center rounded-full bg-purple-500/10 px-2 py-0.5 text-xs font-medium text-purple-400 ring-1 ring-inset ring-purple-700/10">Admin</span>
+                                <span class="ml-1 inline-flex items-center rounded-full bg-purple-500/10 px-2 py-0.5 text-xs font-medium text-purple-500 ring-1 ring-inset ring-purple-500/20">Admin</span>
                             @endif
                         </td>
                         <td class="px-4 py-3 text-sm text-text-muted hidden md:table-cell">{{ $user->email }}</td>
