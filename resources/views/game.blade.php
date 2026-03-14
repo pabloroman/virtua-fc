@@ -9,54 +9,46 @@
         {{-- Pending action alert --}}
         @if($game->hasPendingActions())
             @php $pendingAction = $game->getFirstPendingAction(); @endphp
-            <div class="mt-6 p-4 bg-accent-gold/10 border border-accent-gold/20 rounded-lg flex items-center justify-between gap-4">
-                <div class="flex items-center gap-3">
-                    <svg class="w-5 h-5 text-amber-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <x-status-banner color="gold" :title="__('messages.action_required')" class="mt-6">
+                <x-slot name="icon">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
                     </svg>
-                    <span class="text-sm text-accent-gold font-medium">{{ __('messages.action_required') }}</span>
-                </div>
+                </x-slot>
                 @if($pendingAction && $pendingAction['route'])
                 <x-primary-button-link color="amber" :href="route($pendingAction['route'], $game->id)" class="shrink-0">
                     {{ __('messages.action_required_short') }}
                 </x-primary-button-link>
                 @endif
-            </div>
+            </x-status-banner>
         @endif
 
         {{-- Pre-Season Banner --}}
         @if(!empty($isPreSeason))
-        <div class="mt-6 p-4 bg-[var(--accent-tint)] border border-accent-blue/20 rounded-lg flex flex-col md:flex-row md:items-center md:justify-between gap-3" x-data="{ confirmSkip: false }">
-            <div class="flex items-start gap-3">
-                <div class="w-10 h-10 rounded-full bg-accent-blue/10 flex items-center justify-center shrink-0">
-                    <svg class="w-5 h-5 text-accent-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                </div>
-                <div>
-                    <h4 class="font-semibold text-accent-blue">{{ __('game.pre_season_banner_title') }}</h4>
-                    <p class="text-sm text-accent-blue mt-0.5">
-                        {{ __('game.pre_season_banner_desc', ['date' => isset($seasonStartDate) ? $seasonStartDate->locale(app()->getLocale())->translatedFormat('d M Y') : '']) }}
-                    </p>
-                </div>
-            </div>
-            <div class="shrink-0">
-                <x-secondary-button @click="confirmSkip = true" x-show="!confirmSkip">
-                    {{ __('game.pre_season_skip') }}
+        <x-status-banner color="blue"
+            :title="__('game.pre_season_banner_title')"
+            :description="__('game.pre_season_banner_desc', ['date' => isset($seasonStartDate) ? $seasonStartDate->locale(app()->getLocale())->translatedFormat('d M Y') : ''])"
+            class="mt-6" x-data="{ confirmSkip: false }">
+            <x-slot name="icon">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+            </x-slot>
+            <x-secondary-button @click="confirmSkip = true" x-show="!confirmSkip">
+                {{ __('game.pre_season_skip') }}
+            </x-secondary-button>
+            <div x-show="confirmSkip" x-cloak class="flex items-center gap-2">
+                <form action="{{ route('game.skip-pre-season', $game->id) }}" method="POST" class="inline">
+                    @csrf
+                    <x-primary-button color="sky">
+                        {{ __('app.confirm') }}
+                    </x-primary-button>
+                </form>
+                <x-secondary-button @click="confirmSkip = false">
+                    {{ __('app.cancel') }}
                 </x-secondary-button>
-                <div x-show="confirmSkip" x-cloak class="flex items-center gap-2">
-                    <form action="{{ route('game.skip-pre-season', $game->id) }}" method="POST" class="inline">
-                        @csrf
-                        <x-primary-button color="sky">
-                            {{ __('app.confirm') }}
-                        </x-primary-button>
-                    </form>
-                    <x-secondary-button @click="confirmSkip = false">
-                        {{ __('app.cancel') }}
-                    </x-secondary-button>
-                </div>
             </div>
-        </div>
+        </x-status-banner>
         @endif
 
         @if($nextMatch)

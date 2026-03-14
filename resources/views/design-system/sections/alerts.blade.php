@@ -168,6 +168,126 @@
         </div>
     </div>
 
+    {{-- Status Banners --}}
+    <div class="mb-12">
+        <h3 class="text-lg font-semibold text-text-primary mb-2">Status Banners</h3>
+        <p class="text-sm text-text-secondary mb-4">Contextual banners with icon, title, optional description, and action slot. Used for pre-season notices, action-required alerts, and other page-level status messages.</p>
+
+        <div class="bg-surface-700/30 border border-border-default rounded-xl p-6 space-y-3 mb-3">
+            {{-- Warning with action --}}
+            <x-status-banner color="gold" title="Action required">
+                <x-slot name="icon">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                    </svg>
+                </x-slot>
+                <x-primary-button-link color="amber" href="#">
+                    Go to lineup
+                </x-primary-button-link>
+            </x-status-banner>
+
+            {{-- Info with description --}}
+            <x-status-banner color="blue" title="Pre-season" description="The season starts on 15 Aug 2025. Prepare your squad and set your budget.">
+                <x-slot name="icon">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                </x-slot>
+                <x-secondary-button>Skip pre-season</x-secondary-button>
+            </x-status-banner>
+
+            {{-- Success --}}
+            <x-status-banner color="green" title="Transfer completed" description="Pedri has joined your squad.">
+                <x-slot name="icon">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </x-slot>
+            </x-status-banner>
+
+            {{-- Error --}}
+            <x-status-banner color="red" title="Squad too large" description="You must release or loan out 2 players before the deadline.">
+                <x-slot name="icon">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </x-slot>
+            </x-status-banner>
+        </div>
+
+        <div x-data="{ copied: false }" class="relative mb-4">
+            <button @click="navigator.clipboard.writeText($refs.code.textContent); copied = true; setTimeout(() => copied = false, 2000)"
+                    class="absolute top-3 right-3 px-2 py-1 text-[10px] font-medium text-text-secondary hover:text-text-body bg-surface-600 rounded-sm transition-colors">
+                <span x-show="!copied">Copy</span>
+                <span x-show="copied" x-cloak class="text-accent-green">Copied!</span>
+            </button>
+            <pre class="bg-surface-700 text-text-body rounded-lg p-4 overflow-x-auto text-xs leading-relaxed"><code x-ref="code">&lt;!-- Warning banner with action button --&gt;
+&lt;x-status-banner color="gold" :title="__('messages.action_required')"&gt;
+    &lt;x-slot name="icon"&gt;
+        &lt;svg class="w-5 h-5" ...&gt;...&lt;/svg&gt;
+    &lt;/x-slot&gt;
+    &lt;x-primary-button-link color="amber" :href="$url"&gt;Go&lt;/x-primary-button-link&gt;
+&lt;/x-status-banner&gt;
+
+&lt;!-- Info banner with title + description --&gt;
+&lt;x-status-banner color="blue" :title="__('game.pre_season')" :description="__('game.pre_season_desc')"&gt;
+    &lt;x-slot name="icon"&gt;
+        &lt;svg class="w-5 h-5" ...&gt;...&lt;/svg&gt;
+    &lt;/x-slot&gt;
+    &lt;x-secondary-button&gt;Skip&lt;/x-secondary-button&gt;
+&lt;/x-status-banner&gt;
+
+&lt;!-- Minimal (no action slot, no icon) --&gt;
+&lt;x-status-banner color="green" title="Transfer completed" /&gt;</code></pre>
+        </div>
+
+        {{-- Props table --}}
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="text-left border-b border-border-strong">
+                    <tr>
+                        <th class="font-semibold py-2 pr-4 text-text-body">Prop</th>
+                        <th class="font-semibold py-2 pr-4 text-text-body">Type</th>
+                        <th class="font-semibold py-2 pr-4 text-text-body">Default</th>
+                        <th class="font-semibold py-2 text-text-body">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b border-border-default">
+                        <td class="py-2 pr-4 font-mono text-xs text-accent-blue">color</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-text-secondary">string</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-text-secondary">blue</td>
+                        <td class="py-2 text-text-secondary">blue | gold | red | green</td>
+                    </tr>
+                    <tr class="border-b border-border-default">
+                        <td class="py-2 pr-4 font-mono text-xs text-accent-blue">icon</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-text-secondary">slot</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-text-secondary">null</td>
+                        <td class="py-2 text-text-secondary">SVG icon displayed in a circular container.</td>
+                    </tr>
+                    <tr class="border-b border-border-default">
+                        <td class="py-2 pr-4 font-mono text-xs text-accent-blue">title</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-text-secondary">string|null</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-text-secondary">null</td>
+                        <td class="py-2 text-text-secondary">Bold heading text.</td>
+                    </tr>
+                    <tr class="border-b border-border-default">
+                        <td class="py-2 pr-4 font-mono text-xs text-accent-blue">description</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-text-secondary">string|null</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-text-secondary">null</td>
+                        <td class="py-2 text-text-secondary">Secondary text below the title.</td>
+                    </tr>
+                    <tr class="border-b border-border-default">
+                        <td class="py-2 pr-4 font-mono text-xs text-accent-blue">default slot</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-text-secondary">slot</td>
+                        <td class="py-2 pr-4 font-mono text-xs text-text-secondary">—</td>
+                        <td class="py-2 text-text-secondary">Action area (buttons, links) aligned to the right on desktop.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     {{-- Actionable Warning Card --}}
     <div>
         <h3 class="text-lg font-semibold text-text-primary mb-2">Actionable Warning Card</h3>
