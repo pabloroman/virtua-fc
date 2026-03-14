@@ -20,6 +20,7 @@ use App\Modules\Notification\Listeners\SendCompetitionProgressNotifications;
 use App\Modules\Notification\Listeners\SendMatchNotifications;
 use App\Modules\Match\Listeners\UpdateGoalkeeperStats;
 use App\Modules\Match\Listeners\UpdateLeagueStandings;
+use App\Modules\Season\Listeners\RecordSeasonCompleted;
 use App\Modules\Season\Listeners\SimulateOtherLeagues;
 use App\Modules\Competition\Services\CompetitionHandlerResolver;
 use Illuminate\Support\Facades\Event;
@@ -71,5 +72,6 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(SeasonStarted::class, GenerateInitialAcademyBatch::class);
 
         Event::listen(SeasonCompleted::class, SimulateOtherLeagues::class);
+        Event::listen(SeasonCompleted::class, RecordSeasonCompleted::class);
     }
 }

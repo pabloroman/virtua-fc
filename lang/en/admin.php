@@ -11,4 +11,22 @@ return [
     'current_user' => 'You',
     'impersonating_banner' => 'You are impersonating :name (:email)',
     'stop_impersonating' => 'Stop impersonating',
+
+    // Activation funnel
+    'activation_title' => 'Activation Funnel',
+    'all_time' => 'All',
+    'invites_sent' => 'Invites Sent',
+    'users_registered' => 'Users Registered',
+    'conversion_to_first_match' => 'Conversion to First Match',
+    'funnel_steps' => 'Funnel Steps',
+    'drop_off_rates' => 'Drop-off Rates',
+    'funnel_invite_sent' => 'Invite sent',
+    'funnel_registered' => 'Registered',
+    'funnel_game_created' => 'Game created',
+    'funnel_setup_completed' => 'Setup completed',
+    'funnel_welcome_completed' => 'Welcome completed',
+    'funnel_onboarding_completed' => 'Onboarding completed',
+    'funnel_first_match_played' => 'First match played',
+    'funnel_matchday_5_reached' => 'Matchday 5 reached',
+    'funnel_season_completed' => 'Season completed',
 ];

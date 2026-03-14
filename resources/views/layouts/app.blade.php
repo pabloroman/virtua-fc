@@ -84,6 +84,7 @@
                                 </form>
                                 @if(auth()->user()?->is_admin)
                                     <a href="{{ route('admin.users') }}" class="hover:text-text-secondary transition-colors">Admin</a>
+                                    <a href="{{ route('admin.activation') }}" class="hover:text-text-secondary transition-colors">{{ __('admin.activation_title') }}</a>
                                 @endif
                                 <x-theme-toggle />
                             </nav>

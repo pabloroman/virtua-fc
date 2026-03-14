@@ -3,14 +3,17 @@
 namespace App\Http\Actions;
 
 use App\Events\SeasonStarted;
+use App\Models\ActivationEvent;
 use App\Models\Game;
 use App\Modules\Finance\Services\BudgetAllocationService;
+use App\Modules\Season\Services\ActivationTracker;
 use Illuminate\Http\Request;
 
 class CompleteOnboarding
 {
     public function __construct(
         private BudgetAllocationService $budgetService,
+        private ActivationTracker $activationTracker,
     ) {}
 
     public function __invoke(Request $request, string $gameId)
@@ -46,6 +49,8 @@ class CompleteOnboarding
         // Complete onboarding
         $game->refresh()->setRelations([]);
         $game->completeOnboarding();
+
+        $this->activationTracker->record($game->user_id, ActivationEvent::EVENT_ONBOARDING_COMPLETED, $gameId);
 
         event(new SeasonStarted($game));
 

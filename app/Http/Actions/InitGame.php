@@ -2,6 +2,8 @@
 
 namespace App\Http\Actions;
 
+use App\Models\ActivationEvent;
+use App\Modules\Season\Services\ActivationTracker;
 use App\Modules\Season\Services\GameCreationService;
 use App\Modules\Season\Services\TournamentCreationService;
 use App\Models\Game;
@@ -13,6 +15,7 @@ class InitGame
     public function __construct(
         private readonly GameCreationService $gameCreationService,
         private readonly TournamentCreationService $tournamentCreationService,
+        private readonly ActivationTracker $activationTracker,
     ) {}
 
     public function __invoke(Request $request)
@@ -35,6 +38,8 @@ class InitGame
                 teamId: $request->get('team_id'),
             );
 
+            $this->activationTracker->record($request->user()->id, ActivationEvent::EVENT_GAME_CREATED, $game->id);
+
             return redirect()->route('show-game', $game->id);
         }
 
@@ -43,6 +48,8 @@ class InitGame
             teamId: $request->get('team_id'),
             gameMode: $gameMode,
         );
+
+        $this->activationTracker->record($request->user()->id, ActivationEvent::EVENT_GAME_CREATED, $game->id);
 
         return redirect()->route('game.welcome', $game->id);
     }

@@ -3,19 +3,24 @@
 namespace App\Http\Actions;
 
 use App\Events\SeasonCompleted;
+use App\Models\ActivationEvent;
 use App\Modules\Match\Services\MatchdayOrchestrator;
+use App\Modules\Season\Services\ActivationTracker;
 use App\Models\Game;
 
 class AdvanceMatchday
 {
     public function __construct(
         private readonly MatchdayOrchestrator $orchestrator,
+        private readonly ActivationTracker $activationTracker,
     ) {}
 
     public function __invoke(string $gameId)
     {
         $game = Game::findOrFail($gameId);
         $result = $this->orchestrator->advance($game);
+
+        $this->recordActivationEvents($game);
 
         return match ($result->type) {
             'blocked' => $this->redirectBlocked($gameId, $result->pendingAction),
@@ -40,6 +45,15 @@ class AdvanceMatchday
         event(new SeasonCompleted($game));
 
         return redirect()->route('show-game', $gameId);
+    }
+
+    private function recordActivationEvents(Game $game): void
+    {
+        $this->activationTracker->record($game->user_id, ActivationEvent::EVENT_FIRST_MATCH_PLAYED, $game->id);
+
+        if ($game->current_matchday >= 5) {
+            $this->activationTracker->record($game->user_id, ActivationEvent::EVENT_MATCHDAY_5_REACHED, $game->id);
+        }
     }
 
     private function redirectBlocked(string $gameId, ?array $pendingAction)

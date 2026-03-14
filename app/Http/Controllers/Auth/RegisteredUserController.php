@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
+use App\Models\ActivationEvent;
+use App\Modules\Season\Services\ActivationTracker;
 use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
@@ -68,6 +70,8 @@ class RegisteredUserController extends Controller
         $invite?->consume();
 
         event(new Registered($user));
+
+        app(ActivationTracker::class)->record($user->id, ActivationEvent::EVENT_REGISTERED);
 
         Auth::login($user);
 

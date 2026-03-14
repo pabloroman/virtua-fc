@@ -79,6 +79,10 @@ class SetupTournamentGame implements ShouldQueue
 
         // Mark setup as complete
         Game::where('id', $this->gameId)->update(['setup_completed_at' => now()]);
+
+        // Record activation event
+        app(\App\Modules\Season\Services\ActivationTracker::class)
+            ->record($game->user_id, \App\Models\ActivationEvent::EVENT_SETUP_COMPLETED, $this->gameId);
     }
 
     private function createCompetitionEntries(): void

@@ -11,4 +11,22 @@ return [
     'current_user' => 'Tú',
     'impersonating_banner' => 'Estás suplantando a :name (:email)',
     'stop_impersonating' => 'Dejar de suplantar',
+
+    // Activation funnel
+    'activation_title' => 'Embudo de activación',
+    'all_time' => 'Todo',
+    'invites_sent' => 'Invitaciones enviadas',
+    'users_registered' => 'Usuarios registrados',
+    'conversion_to_first_match' => 'Conversión a primer partido',
+    'funnel_steps' => 'Pasos del embudo',
+    'drop_off_rates' => 'Tasas de abandono',
+    'funnel_invite_sent' => 'Invitación enviada',
+    'funnel_registered' => 'Registrado',
+    'funnel_game_created' => 'Partida creada',
+    'funnel_setup_completed' => 'Configuración completada',
+    'funnel_welcome_completed' => 'Bienvenida completada',
+    'funnel_onboarding_completed' => 'Onboarding completado',
+    'funnel_first_match_played' => 'Primer partido jugado',
+    'funnel_matchday_5_reached' => 'Jornada 5 alcanzada',
+    'funnel_season_completed' => 'Temporada completada',
 ];
