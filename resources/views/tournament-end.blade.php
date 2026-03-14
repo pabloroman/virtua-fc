@@ -77,11 +77,11 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
         {{-- ============================================ --}}
         {{-- SECTION 1: Hero Header + Final Scoreboard    --}}
         {{-- ============================================ --}}
-        <div class="relative overflow-hidden {{ $isChampion ? 'bg-linear-to-b from-amber-600 via-amber-500 to-amber-400' : 'bg-surface-800' }} py-10 md:py-16 pb-16 md:pb-24">
+        <div class="relative overflow-hidden {{ $isChampion ? 'bg-linear-to-b from-amber-600 via-amber-500 to-amber-400' : 'bg-linear-to-b from-slate-800 to-slate-900' }} py-10 md:py-16 pb-16 md:pb-24">
             {{-- Decorative elements --}}
             <div class="absolute inset-0 overflow-hidden">
-                <div class="absolute -top-20 -left-20 w-60 h-60 bg-surface-800/5 rounded-full"></div>
-                <div class="absolute -bottom-10 -right-10 w-80 h-80 bg-surface-800/5 rounded-full"></div>
+                <div class="absolute -top-20 -left-20 w-60 h-60 bg-white/5 rounded-full"></div>
+                <div class="absolute -bottom-10 -right-10 w-80 h-80 bg-white/5 rounded-full"></div>
                 @if($isChampion)
                 <div class="absolute top-8 left-1/4 text-amber-300/30 text-4xl">&#9733;</div>
                 <div class="absolute top-16 right-1/4 text-amber-300/30 text-3xl">&#9733;</div>
@@ -122,7 +122,7 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                     $homeIsWinner = $championTeamId === $homeTeam->id;
                     $awayIsWinner = $championTeamId === $awayTeam->id;
                 @endphp
-                <div class="bg-surface-900/60 backdrop-blur-xs rounded-xl border border-white/10 p-4 md:p-6 max-w-lg mx-auto">
+                <div class="bg-slate-900/70 backdrop-blur-xs rounded-xl border border-white/10 p-4 md:p-6 max-w-lg mx-auto">
                     <div class="text-[10px] md:text-xs font-heading uppercase tracking-widest {{ $isChampion ? 'text-amber-300/70' : 'text-white/40' }} font-semibold mb-3">
                         {{ __('season.the_final') }}
                     </div>
