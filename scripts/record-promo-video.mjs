@@ -3,7 +3,7 @@
  * record-promo-video.mjs
  *
  * Playwright script that records a ~60s promo video touring all key screens
- * of a VirtuaFC career mode game at 1920×1080.
+ * of a VirtuaFC career mode game at 2880×1620 (2x Retina).
  *
  * Prerequisites:
  *   - `composer dev` running (server + queue + vite)
@@ -114,7 +114,7 @@ const browser = await chromium.launch({ headless: true });
 // ── Step 1: Authenticate (off-camera) ─────────────────────────────────────
 console.log('1. Authenticating...');
 const authContext = await browser.newContext({
-  viewport: { width: 1920, height: 1080 },
+  viewport: { width: 1440, height: 810 },
   locale: 'es-ES',
 });
 const authPage = await authContext.newPage();
@@ -130,12 +130,13 @@ console.log('   ✓ Logged in\n');
 // ── Step 2: Create recorded context ───────────────────────────────────────
 console.log('2. Starting recording...');
 const context = await browser.newContext({
-  viewport: { width: 1920, height: 1080 },
+  viewport: { width: 1440, height: 810 },
+  deviceScaleFactor: 2,
   locale: 'es-ES',
   storageState,
   recordVideo: {
     dir: VIDEO_DIR,
-    size: { width: 1920, height: 1080 },
+    size: { width: 2880, height: 1620 },
   },
 });
 
@@ -148,15 +149,9 @@ const page = await context.newPage();
 console.log('   ✓ Recording context ready\n');
 
 try {
-  // ── Screen 1: Dashboard (~4s) ─────────────────────────────────────────
-  console.log('3. Screen: Dashboard');
-  await page.goto(`${BASE_URL}/dashboard`, { waitUntil: 'networkidle' });
-  await pause(4000);
-
-  // ── Screen 2: Game Home (~6s) ─────────────────────────────────────────
-  console.log('4. Screen: Game Home');
-  await page.click(`a[href*="/game/${GAME_ID}"]`);
-  await page.waitForLoadState('networkidle');
+  // ── Screen 1: Game Home (~6s) ─────────────────────────────────────────
+  console.log('3. Screen: Game Home');
+  await page.goto(`${BASE_URL}/game/${GAME_ID}`, { waitUntil: 'networkidle' });
   await pause(3000);
   await smoothScrollToBottom(page, 1500);
   await pause(1500);
@@ -170,14 +165,43 @@ try {
   await pause(1500);
   await smoothScrollToTop(page, 800);
 
-  // ── Screen 4: Lineup (~5s) ────────────────────────────────────────────
+  // ── Screen 4: Lineup — configure tactics & save (~10s) ──────────────
   console.log('6. Screen: Lineup');
   await page.goto(`${BASE_URL}/game/${GAME_ID}/lineup`, { waitUntil: 'networkidle' });
-  await pause(5000);
+  await pause(1500);
 
-  // ── Screen 5: Play Match (~2s) ────────────────────────────────────────
+  // Select 4-3-3 formation
+  console.log('   Selecting 4-3-3 formation...');
+  const formationBtn = page.locator('.formation-option', { hasText: '4-3-3' });
+  await formationBtn.click();
+  await pause(800);
+
+  // Select offensive mentality via Alpine.js data
+  console.log('   Selecting offensive mentality...');
+  await page.evaluate(() => {
+    const el = document.querySelector('[x-data]');
+    if (el && el._x_dataStack) {
+      el._x_dataStack[0].selectedMentality = 'attacking';
+    }
+  });
+  await pause(800);
+
+  // Click auto-select button
+  console.log('   Auto-selecting lineup...');
+  const autoSelectBtn = page.locator('button', { hasText: /auto/i });
+  await autoSelectBtn.click();
+  await pause(1500);
+
+  // Click save/confirm button
+  console.log('   Saving lineup...');
+  const saveBtn = page.locator('button[type="submit"]', { hasText: /confirmar|confirm/i });
+  await saveBtn.click();
+  await page.waitForLoadState('networkidle');
+  await pause(1500);
+
+  // ── Screen 5: Play Match ──────────────────────────────────────────────
   console.log('7. Screen: Playing match (advance)');
-  // Navigate back to game home first
+  // Navigate to game home
   await page.goto(`${BASE_URL}/game/${GAME_ID}`, { waitUntil: 'networkidle' });
   await pause(500);
 
@@ -210,7 +234,19 @@ try {
     { timeout: 60000 }
   );
   console.log('   ✓ Match complete');
-  await pause(4000); // Pause to show the final score
+  await pause(2000); // Brief pause to show the final score
+
+  // Click stats tab
+  console.log('   Viewing stats...');
+  const statsTab = page.locator('button', { hasText: /estad[íi]sticas|stats/i });
+  await statsTab.click();
+  await pause(3000);
+
+  // Click results tab
+  console.log('   Viewing results...');
+  const resultsTab = page.locator('button', { hasText: /resultados|results/i });
+  await resultsTab.click();
+  await pause(3000);
 
   // ── Screen 7: Finalize Match (~4s) ────────────────────────────────────
   console.log('9. Screen: Finalizing match');
@@ -231,12 +267,6 @@ try {
   await page.waitForLoadState('networkidle');
   await pause(1000);
 
-  // ── Screen 7b: Results (~4s) ──────────────────────────────────────────
-  console.log('9b. Screen: Match Results');
-  // Navigate to results page for the latest matchday
-  await page.goto(`${BASE_URL}/game/${GAME_ID}/results/ESP1/9`, { waitUntil: 'networkidle' });
-  await pause(4000);
-
   // ── Screen 8: Standings (~5s) ─────────────────────────────────────────
   console.log('10. Screen: Standings');
   if (COMPETITION_ID) {
@@ -251,21 +281,6 @@ try {
   await smoothScrollToBottom(page, 1500);
   await pause(1500);
   await smoothScrollToTop(page, 800);
-
-  // ── Screen 9: Scouting/Transfers (~5s) ────────────────────────────────
-  console.log('11. Screen: Transfers');
-  await page.goto(`${BASE_URL}/game/${GAME_ID}/transfers`, { waitUntil: 'networkidle' });
-  await pause(2500);
-  await smoothScrollToBottom(page, 1500);
-  await pause(1000);
-  await smoothScrollToTop(page, 500);
-
-  // ── Screen 10: Finances (~4s) ─────────────────────────────────────────
-  console.log('12. Screen: Finances');
-  await page.goto(`${BASE_URL}/game/${GAME_ID}/finances`, { waitUntil: 'networkidle' });
-  await pause(2000);
-  await smoothScrollToBottom(page, 1200);
-  await pause(1500);
 
   console.log('\n✓ All screens recorded!\n');
 } catch (err) {
@@ -292,7 +307,12 @@ await browser.close();
 
 console.log(`\n📹 Video saved: ${outputPath}`);
 console.log('');
-console.log('Optional: Convert to MP4 with:');
+console.log('Optional: Convert to MP4 (visually lossless) with:');
 console.log(
-  '  ffmpeg -i videos/virtuafc-promo.webm -c:v libx264 -preset slow -crf 18 -pix_fmt yuv420p videos/virtuafc-promo.mp4'
+  '  ffmpeg -i videos/virtuafc-promo.webm -c:v libx264 -preset veryslow -crf 0 -pix_fmt yuv444p videos/virtuafc-promo.mp4'
+);
+console.log('');
+console.log('Or for a smaller file with near-lossless quality:');
+console.log(
+  '  ffmpeg -i videos/virtuafc-promo.webm -c:v libx264 -preset veryslow -crf 12 -pix_fmt yuv444p videos/virtuafc-promo.mp4'
 );
