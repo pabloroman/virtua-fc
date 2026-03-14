@@ -4,68 +4,86 @@
     $isHome = $tie->home_team_id === $playerTeamId;
     $opponent = $isHome ? $tie->awayTeam : $tie->homeTeam;
     $isTwoLegged = $tie->isTwoLegged();
+    $resolutionType = $tie->resolution['type'] ?? 'normal';
+
+    if ($tie->completed) {
+        $won = $tie->winner_id === $playerTeamId;
+        $accentColor = $won ? 'green' : 'red';
+    } else {
+        $won = null;
+        $accentColor = 'blue';
+    }
 @endphp
 
-@if(!$tie->completed)
-    {{-- Active Tie --}}
-    <div class="mb-8 p-4 md:p-6 rounded-xl bg-[var(--accent-tint)] border border-accent-blue/20">
-        @if($roundName)
-            <div class="text-center text-sm text-accent-blue mb-3">{{ __('cup.your_current_cup_tie', ['round' => __($roundName)]) }}</div>
+<div class="mb-8 rounded-xl overflow-hidden border
+    {{ $accentColor === 'blue' ? 'border-accent-blue/20' : ($accentColor === 'green' ? 'border-accent-green/20' : 'border-accent-red/20') }}">
+
+    {{-- Header bar --}}
+    <div class="px-4 py-2 flex items-center justify-between
+        {{ $accentColor === 'blue' ? 'bg-accent-blue/10' : ($accentColor === 'green' ? 'bg-accent-green/10' : 'bg-accent-red/10') }}">
+        <span class="text-[10px] font-heading font-semibold uppercase tracking-widest
+            {{ $accentColor === 'blue' ? 'text-accent-blue' : ($accentColor === 'green' ? 'text-accent-green' : 'text-accent-red') }}">
+            @if($tie->completed)
+                @if($cupStatus === 'champion' && $competitionName)
+                    {{ __('cup.champion_message', ['competition' => __($competitionName)]) }}
+                @elseif($won)
+                    {{ __('cup.advanced_to_next_round') }}
+                @else
+                    {{ __('cup.eliminated') }}
+                @endif
+            @elseif($roundName)
+                {{ __('cup.your_current_cup_tie', ['round' => __($roundName)]) }}
+            @else
+                {{ __('cup.upcoming_tie') }}
+            @endif
+        </span>
+        @if($isTwoLegged && !$tie->completed)
+            <span class="text-[10px] text-text-muted uppercase tracking-wider">{{ __('cup.two_legged_tie') }}</span>
         @endif
+    </div>
+
+    {{-- Match display --}}
+    <div class="bg-surface-800 px-4 py-4 md:px-6 md:py-5">
         <div class="flex items-center justify-center gap-3 md:gap-6">
-            <div class="flex items-center gap-2 md:gap-3 flex-1 justify-end min-w-0">
-                <span class="text-base md:text-xl font-semibold truncate @if($tie->home_team_id === $playerTeamId) text-accent-blue @endif">
+            {{-- Home team --}}
+            <div class="flex items-center gap-2.5 md:gap-3 flex-1 justify-end min-w-0">
+                <span class="font-heading text-sm md:text-xl font-semibold truncate
+                    {{ $tie->completed && $tie->winner_id !== $tie->home_team_id ? 'text-text-muted' : 'text-text-primary' }}">
                     {{ $tie->homeTeam->name }}
                 </span>
-                <x-team-crest :team="$tie->homeTeam" class="w-10 h-10 md:w-12 md:h-12 shrink-0" />
+                <x-team-crest :team="$tie->homeTeam" class="w-10 h-10 md:w-14 md:h-14 shrink-0" />
             </div>
-            <div class="px-2 md:px-6 text-center shrink-0">
+
+            {{-- Score / VS --}}
+            <div class="px-2 md:px-5 text-center shrink-0">
                 @if($tie->firstLegMatch?->played)
-                    <div class="text-xl md:text-2xl font-semibold tabular-nums">{{ $tie->getScoreDisplay() }}</div>
+                    <div class="font-heading text-2xl md:text-3xl font-bold tabular-nums text-text-primary">
+                        {{ $tie->getScoreDisplay() }}
+                    </div>
+                    @if($tie->completed && $resolutionType !== 'normal')
+                        <div class="text-[10px] text-text-muted mt-0.5 uppercase tracking-wider">
+                            @if($resolutionType === 'penalties')
+                                {{ __('cup.pens') }} {{ $tie->resolution['penalties'] }}
+                            @elseif($resolutionType === 'extra_time')
+                                {{ __('cup.aet') }}
+                            @elseif($resolutionType === 'aggregate')
+                                {{ __('cup.agg') }} {{ $tie->resolution['aggregate'] }}
+                            @endif
+                        </div>
+                    @endif
                 @else
-                    <div class="text-text-secondary text-sm">{{ __('game.vs') }}</div>
+                    <div class="font-heading text-lg md:text-xl font-semibold text-text-muted tracking-wider">{{ __('game.vs') }}</div>
                 @endif
             </div>
-            <div class="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
-                <x-team-crest :team="$tie->awayTeam" class="w-10 h-10 md:w-12 md:h-12 shrink-0" />
-                <span class="text-base md:text-xl font-semibold truncate @if($tie->away_team_id === $playerTeamId) text-accent-blue @endif">
-                    {{ $tie->awayTeam->name }}
-                </span>
-            </div>
-        </div>
-        @if($isTwoLegged)
-            <div class="text-center text-xs text-text-muted mt-2">{{ __('cup.two_legged_tie') }}</div>
-        @endif
-    </div>
-@else
-    {{-- Completed Tie --}}
-    @php $won = $tie->winner_id === $playerTeamId; @endphp
-    <div class="mb-8 p-4 md:p-5 rounded-xl {{ $won ? 'bg-accent-green/10 border-accent-green/20' : 'bg-accent-red/10 border-accent-red/20' }} border">
-        <div class="text-center text-sm {{ $won ? 'text-accent-green' : 'text-accent-red' }} mb-3">
-            @if($cupStatus === 'champion' && $competitionName)
-                {{ __('cup.champion_message', ['competition' => __($competitionName)]) }}
-            @elseif($won)
-                {{ __('cup.advanced_to_next_round') }}
-            @else
-                {{ __('cup.eliminated') }}
-            @endif
-        </div>
-        <div class="flex items-center justify-center gap-3 md:gap-6">
-            <div class="flex items-center gap-2 md:gap-3 flex-1 justify-end min-w-0">
-                <span class="text-sm md:text-lg font-semibold truncate @if($tie->home_team_id === $playerTeamId) {{ $won ? 'text-accent-green' : 'text-accent-red' }} @endif">
-                    {{ $tie->homeTeam->name }}
-                </span>
-                <x-team-crest :team="$tie->homeTeam" class="w-8 h-8 md:w-10 md:h-10 shrink-0" />
-            </div>
-            <div class="px-2 md:px-4 text-base md:text-lg font-semibold tabular-nums shrink-0">
-                {{ $tie->getScoreDisplay() }}
-            </div>
-            <div class="flex items-center gap-2 md:gap-3 flex-1 min-w-0">
-                <x-team-crest :team="$tie->awayTeam" class="w-8 h-8 md:w-10 md:h-10 shrink-0" />
-                <span class="text-sm md:text-lg font-semibold truncate @if($tie->away_team_id === $playerTeamId) {{ $won ? 'text-accent-green' : 'text-accent-red' }} @endif">
+
+            {{-- Away team --}}
+            <div class="flex items-center gap-2.5 md:gap-3 flex-1 min-w-0">
+                <x-team-crest :team="$tie->awayTeam" class="w-10 h-10 md:w-14 md:h-14 shrink-0" />
+                <span class="font-heading text-sm md:text-xl font-semibold truncate
+                    {{ $tie->completed && $tie->winner_id !== $tie->away_team_id ? 'text-text-muted' : 'text-text-primary' }}">
                     {{ $tie->awayTeam->name }}
                 </span>
             </div>
         </div>
     </div>
-@endif
+</div>
