@@ -576,19 +576,13 @@
                                         @endphp
                                         @if($negotiation)
                                         <tbody>
-                                            <tr class="border-t border-border-default transition-colors hover:bg-[rgba(59,130,246,0.05)]">
+                                            <tr x-data class="border-t border-border-default transition-colors hover:bg-[rgba(59,130,246,0.05)] cursor-pointer"
+                                                @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $player->id]) }}')">
                                                 <td class="py-2.5 pl-4 text-center">
                                                     <x-position-badge :position="$player->position" size="sm" />
                                                 </td>
-                                                <td class="py-2.5 pr-3">
-                                                    <div class="flex items-center gap-1.5">
-                                                        <x-icon-button size="sm" x-data @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $player->id]) }}')">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="w-4 h-4">
-                                                                <path fill-rule="evenodd" d="M19.5 21a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3h-5.379a.75.75 0 0 1-.53-.22L11.47 3.66A2.25 2.25 0 0 0 9.879 3H4.5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h15Zm-6.75-10.5a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V10.5Z" clip-rule="evenodd" />
-                                                            </svg>
-                                                        </x-icon-button>
-                                                        <span class="font-medium text-text-primary truncate">{{ $player->player->name }}</span>
-                                                    </div>
+                                                <td class="py-2.5 pl-2 pr-3">
+                                                    <span class="font-medium text-text-primary truncate">{{ $player->player->name }}</span>
                                                 </td>
                                                 <td class="py-2.5 text-center text-text-secondary tabular-nums hidden md:table-cell">{{ $player->age($game->current_date) }}</td>
                                                 <td class="py-2.5 text-center text-text-secondary tabular-nums hidden md:table-cell pr-4">{{ $player->formatted_wage }}</td>
@@ -605,23 +599,17 @@
                                             $mood = $renewalMoods[$player->id] ?? null;
                                             $hasPendingOffer = $preContractOffers->where('game_player_id', $player->id)->isNotEmpty();
                                         @endphp
-                                        <tr class="border-t border-border-default transition-colors {{ $hasPendingOffer ? 'bg-accent-red/10' : 'hover:bg-[rgba(59,130,246,0.05)]' }}">
+                                        <tr x-data class="border-t border-border-default transition-colors cursor-pointer {{ $hasPendingOffer ? 'bg-accent-red/10' : 'hover:bg-[rgba(59,130,246,0.05)]' }}"
+                                            @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $player->id]) }}')">
                                             <td class="py-2.5 pl-4 text-center">
                                                 <x-position-badge :position="$player->position" size="sm" />
                                             </td>
-                                            <td class="py-2.5 pr-3">
-                                                <div class="flex items-center gap-1.5">
-                                                    <x-icon-button size="sm" x-data @click="$dispatch('show-player-detail', '{{ route('game.player.detail', [$game->id, $player->id]) }}')">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="w-4 h-4">
-                                                            <path fill-rule="evenodd" d="M19.5 21a3 3 0 0 0 3-3V9a3 3 0 0 0-3-3h-5.379a.75.75 0 0 1-.53-.22L11.47 3.66A2.25 2.25 0 0 0 9.879 3H4.5a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h15Zm-6.75-10.5a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V10.5Z" clip-rule="evenodd" />
-                                                        </svg>
-                                                    </x-icon-button>
-                                                    <div>
-                                                        <span class="font-medium text-text-primary truncate">{{ $player->player->name }}</span>
-                                                        @if($hasPendingOffer)
-                                                            <div class="text-xs text-accent-gold">{{ __('squad.has_pre_contract_offers') }}</div>
-                                                        @endif
-                                                    </div>
+                                            <td class="py-2.5 pl-2 pr-3">
+                                                <div>
+                                                    <span class="font-medium text-text-primary truncate">{{ $player->player->name }}</span>
+                                                    @if($hasPendingOffer)
+                                                        <div class="text-xs text-accent-gold">{{ __('squad.has_pre_contract_offers') }}</div>
+                                                    @endif
                                                 </div>
                                             </td>
                                             <td class="py-2.5 text-center text-text-secondary tabular-nums hidden md:table-cell">{{ $player->age($game->current_date) }}</td>
