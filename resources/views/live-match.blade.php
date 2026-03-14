@@ -774,7 +774,9 @@
                         {{-- Continue button --}}
                         <form method="POST" action="{{ route('game.finalize-match', $game->id) }}">
                             @csrf
-                            <input x-show="isTournamentDecisive" type="hidden" name="tournament_end" value="1">
+                            <template x-if="isTournamentDecisive">
+                                <input type="hidden" name="tournament_end" value="1">
+                            </template>
                             <x-primary-button type="submit"
                                     class="w-full justify-center gap-2"
                                     x-bind:disabled="!processingReady">
