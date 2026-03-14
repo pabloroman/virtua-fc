@@ -92,12 +92,12 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
         {{-- Infrastructure Grid --}}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             {{-- Youth Academy --}}
-            <div class="border border-border-strong rounded-lg p-4 bg-surface-700/30">
+            <div class="bg-surface-700/50 border border-border-default rounded-lg p-4">
                 <div class="flex items-center justify-between mb-2">
-                    <h4 class="font-medium text-text-primary">{{ __('finances.youth_academy') }}</h4>
-                    <div class="text-xs font-semibold" :class="getTierColor(youth_academy_tier)">{{ __('finances.tier_n') }} <span x-text="youth_academy_tier"></span></div>
+                    <h4 class="font-heading text-xs font-semibold uppercase tracking-widest text-text-secondary">{{ __('finances.youth_academy') }}</h4>
+                    <div class="font-heading text-xs font-semibold" :class="getTierColor(youth_academy_tier)">{{ __('finances.tier_n') }} <span x-text="youth_academy_tier"></span></div>
                 </div>
-                <div class="text-lg font-bold text-text-primary mb-1" x-text="formatMoney(youth_academy_amount)"></div>
+                <div class="font-heading text-lg font-bold text-text-primary mb-1" x-text="formatMoney(youth_academy_amount)"></div>
                 <div class="text-xs text-text-muted mb-2 h-4">
                     <span x-show="youth_academy_tier == 0">{{ __('finances.youth_academy_tier_0') }}</span>
                     <span x-show="youth_academy_tier == 1">{{ __('finances.youth_academy_tier_1') }}</span>
@@ -117,12 +117,12 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
             </div>
 
             {{-- Medical --}}
-            <div class="border border-border-strong rounded-lg p-4 bg-surface-700/30">
+            <div class="bg-surface-700/50 border border-border-default rounded-lg p-4">
                 <div class="flex items-center justify-between mb-2">
-                    <h4 class="font-medium text-text-primary">{{ __('finances.medical') }}</h4>
-                    <div class="text-xs font-semibold" :class="getTierColor(medical_tier)">{{ __('finances.tier_n') }} <span x-text="medical_tier"></span></div>
+                    <h4 class="font-heading text-xs font-semibold uppercase tracking-widest text-text-secondary">{{ __('finances.medical') }}</h4>
+                    <div class="font-heading text-xs font-semibold" :class="getTierColor(medical_tier)">{{ __('finances.tier_n') }} <span x-text="medical_tier"></span></div>
                 </div>
-                <div class="text-lg font-bold text-text-primary mb-1" x-text="formatMoney(medical_amount)"></div>
+                <div class="font-heading text-lg font-bold text-text-primary mb-1" x-text="formatMoney(medical_amount)"></div>
                 <div class="text-xs text-text-muted mb-2 h-4">
                     <span x-show="medical_tier == 0">{{ __('finances.medical_tier_0') }}</span>
                     <span x-show="medical_tier == 1">{{ __('finances.medical_tier_1') }}</span>
@@ -142,12 +142,12 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
             </div>
 
             {{-- Scouting --}}
-            <div class="border border-border-strong rounded-lg p-4 bg-surface-700/30">
+            <div class="bg-surface-700/50 border border-border-default rounded-lg p-4">
                 <div class="flex items-center justify-between mb-2">
-                    <h4 class="font-medium text-text-primary">{{ __('finances.scouting') }}</h4>
-                    <div class="text-xs font-semibold" :class="getTierColor(scouting_tier)">{{ __('finances.tier_n') }} <span x-text="scouting_tier"></span></div>
+                    <h4 class="font-heading text-xs font-semibold uppercase tracking-widest text-text-secondary">{{ __('finances.scouting') }}</h4>
+                    <div class="font-heading text-xs font-semibold" :class="getTierColor(scouting_tier)">{{ __('finances.tier_n') }} <span x-text="scouting_tier"></span></div>
                 </div>
-                <div class="text-lg font-bold text-text-primary mb-1" x-text="formatMoney(scouting_amount)"></div>
+                <div class="font-heading text-lg font-bold text-text-primary mb-1" x-text="formatMoney(scouting_amount)"></div>
                 <div class="text-xs text-text-muted mb-2 h-4">
                     <span x-show="scouting_tier == 0">{{ __('finances.scouting_tier_0') }}</span>
                     <span x-show="scouting_tier == 1">{{ __('finances.scouting_tier_1') }}</span>
@@ -167,12 +167,12 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
             </div>
 
             {{-- Facilities --}}
-            <div class="border border-border-strong rounded-lg p-4 bg-surface-700/30">
+            <div class="bg-surface-700/50 border border-border-default rounded-lg p-4">
                 <div class="flex items-center justify-between mb-2">
-                    <h4 class="font-medium text-text-primary">{{ __('finances.facilities') }}</h4>
-                    <div class="text-xs font-semibold" :class="getTierColor(facilities_tier)">{{ __('finances.tier_n') }} <span x-text="facilities_tier"></span></div>
+                    <h4 class="font-heading text-xs font-semibold uppercase tracking-widest text-text-secondary">{{ __('finances.facilities') }}</h4>
+                    <div class="font-heading text-xs font-semibold" :class="getTierColor(facilities_tier)">{{ __('finances.tier_n') }} <span x-text="facilities_tier"></span></div>
                 </div>
-                <div class="text-lg font-bold text-text-primary mb-1" x-text="formatMoney(facilities_amount)"></div>
+                <div class="font-heading text-lg font-bold text-text-primary mb-1" x-text="formatMoney(facilities_amount)"></div>
                 <div class="text-xs text-text-muted mb-2 h-4">
                     <span x-show="facilities_tier == 0">{{ __('finances.facilities_tier_0') }}</span>
                     <span x-show="facilities_tier == 1">{{ __('finances.facilities_tier_1') }}</span>
@@ -193,13 +193,13 @@ $submitLabel = $submitLabel ?? __('finances.confirm_budget_allocation');
         </div>
 
         {{-- Transfer Budget (Auto-calculated) --}}
-        <div class="border-2 border-accent-blue/30 rounded-lg p-4 bg-accent-blue/5 mb-6">
+        <div class="border border-accent-blue/20 rounded-lg bg-accent-blue/10 p-4 mb-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <h4 class="font-medium text-text-primary">{{ __('finances.transfer_budget') }}</h4>
+                    <h4 class="font-heading text-sm font-semibold text-text-primary">{{ __('finances.transfer_budget') }}</h4>
                     <p class="text-xs text-text-muted">{{ __('finances.remainder_after_infrastructure') }}</p>
                 </div>
-                <div class="text-xl font-bold text-accent-blue" x-text="formatMoney(transfer_budget)"></div>
+                <div class="font-heading text-xl font-bold text-accent-blue" x-text="formatMoney(transfer_budget)"></div>
             </div>
             <input type="hidden" name="transfer_budget" :value="transfer_budget / 100">
         </div>
