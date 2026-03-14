@@ -127,20 +127,7 @@
                             </div>
                         </template>
                         <template x-if="phase === 'full_time'">
-                            <form method="POST" action="{{ route('game.finalize-match', $game->id) }}">
-                                @csrf
-                                <input type="hidden" x-bind:name="isTournamentDecisive ? 'tournament_end' : ''" value="1">
-                                <x-primary-button type="submit" size="xs"
-                                        class="gap-1.5"
-                                        x-bind:disabled="!processingReady">
-                                    <svg x-show="!processingReady" class="animate-spin w-3 h-3" viewBox="0 0 24 24" fill="none">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                                    </svg>
-                                    <span x-text="processingReady ? '{{ __('game.live_continue') }}' : '{{ __('game.processing_short') }}'"></span>
-                                    <svg x-show="processingReady" class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                                </x-primary-button>
-                            </form>
+                            <span class="text-[10px] font-semibold uppercase tracking-wider text-text-muted">{{ __('game.live_full_time') }}</span>
                         </template>
                     </div>
                 </div>
@@ -504,136 +491,7 @@
                     <template x-if="phase === 'full_time'">
                         <div class="mt-6 pt-6 border-t border-border-strong">
 
-                            {{-- ============================== --}}
-                            {{-- TOURNAMENT DRAMATIC RESULTS    --}}
-                            {{-- ============================== --}}
-
-                            {{-- Champion: Gold celebration --}}
-                            <template x-if="tournamentResultType === 'champion'">
-                                <div class="relative -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 px-6 sm:px-8 py-10 bg-linear-to-b from-amber-400 via-yellow-500 to-amber-600 text-center overflow-hidden">
-                                    {{-- Decorative stars --}}
-                                    <div class="absolute inset-0 opacity-20">
-                                        <div class="absolute top-4 left-8 text-4xl">&#11088;</div>
-                                        <div class="absolute top-12 right-12 text-3xl">&#11088;</div>
-                                        <div class="absolute bottom-8 left-16 text-2xl">&#11088;</div>
-                                        <div class="absolute bottom-4 right-8 text-4xl">&#11088;</div>
-                                    </div>
-                                    <div class="relative z-10">
-                                        <div class="text-6xl mb-3">&#127942;</div>
-                                        <img :src="userTeamId === homeTeamId ? homeTeamImage : awayTeamImage"
-                                             class="w-20 h-20 mx-auto mb-4 drop-shadow-lg" alt="">
-                                        <h2 class="font-heading text-3xl md:text-4xl font-extrabold text-white mb-2 drop-shadow-md"
-                                            x-text="translations.tournamentChampion"></h2>
-                                        <p class="text-amber-100 text-lg font-semibold"
-                                           x-text="userTeamId === homeTeamId ? homeTeamName : awayTeamName"></p>
-                                    </div>
-                                    <div class="relative z-10 mt-8">
-                                        <form method="POST" action="{{ route('game.finalize-match', $game->id) }}">
-                                            @csrf
-                                            <input type="hidden" name="tournament_end" value="1">
-                                            <x-secondary-button type="submit"
-                                                    class="px-8 py-3 text-accent-gold font-bold shadow-lg hover:bg-accent-gold/10"
-                                                    x-text="translations.tournamentViewSummary"
-                                                    x-bind:disabled="!processingReady">
-                                            </x-secondary-button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </template>
-
-                            {{-- Runner-up: Silver/respectful --}}
-                            <template x-if="tournamentResultType === 'runner_up'">
-                                <div class="relative -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 px-6 sm:px-8 py-10 bg-surface-800 text-center">
-                                    <div class="text-5xl mb-3">&#129352;</div>
-                                    <img :src="userTeamId === homeTeamId ? homeTeamImage : awayTeamImage"
-                                         class="w-16 h-16 mx-auto mb-4 opacity-90" alt="">
-                                    <h2 class="font-heading text-2xl md:text-3xl font-bold text-white mb-2"
-                                        x-text="translations.tournamentRunnerUp"></h2>
-                                    <p class="text-text-body text-sm"
-                                       x-text="userTeamId === homeTeamId ? homeTeamName : awayTeamName"></p>
-                                    <div class="mt-8">
-                                        <form method="POST" action="{{ route('game.finalize-match', $game->id) }}">
-                                            @csrf
-                                            <input type="hidden" name="tournament_end" value="1">
-                                            <x-secondary-button type="submit"
-                                                    class="px-8 py-3 bg-surface-800/10 text-white border-white/20 hover:bg-surface-800/20"
-                                                    x-text="translations.tournamentViewSummary"
-                                                    x-bind:disabled="!processingReady">
-                                            </x-secondary-button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </template>
-
-                            {{-- Third place: Bronze tinted --}}
-                            <template x-if="tournamentResultType === 'third'">
-                                <div class="relative -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 px-6 sm:px-8 py-10 bg-linear-to-b from-orange-600 via-amber-700 to-orange-800 text-center">
-                                    <div class="text-5xl mb-3">&#129353;</div>
-                                    <img :src="userTeamId === homeTeamId ? homeTeamImage : awayTeamImage"
-                                         class="w-16 h-16 mx-auto mb-4" alt="">
-                                    <h2 class="font-heading text-2xl md:text-3xl font-bold text-white mb-2"
-                                        x-text="translations.tournamentThird"></h2>
-                                    <p class="text-orange-200 text-sm"
-                                       x-text="userTeamId === homeTeamId ? homeTeamName : awayTeamName"></p>
-                                    <div class="mt-8">
-                                        <form method="POST" action="{{ route('game.finalize-match', $game->id) }}">
-                                            @csrf
-                                            <input type="hidden" name="tournament_end" value="1">
-                                            <x-secondary-button type="submit"
-                                                    class="px-8 py-3 bg-surface-800/10 text-white border-white/20 hover:bg-surface-800/20"
-                                                    x-text="translations.tournamentViewSummary"
-                                                    x-bind:disabled="!processingReady">
-                                            </x-secondary-button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </template>
-
-                            {{-- Fourth place: Somber --}}
-                            <template x-if="tournamentResultType === 'fourth'">
-                                <div class="relative -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 px-6 sm:px-8 py-10 bg-surface-800 text-center">
-                                    <img :src="userTeamId === homeTeamId ? homeTeamImage : awayTeamImage"
-                                         class="w-14 h-14 mx-auto mb-4 opacity-70" alt="">
-                                    <h2 class="font-heading text-2xl md:text-3xl font-bold text-text-body mb-2"
-                                        x-text="translations.tournamentFourth"></h2>
-                                    <p class="text-text-secondary text-sm"
-                                       x-text="userTeamId === homeTeamId ? homeTeamName : awayTeamName"></p>
-                                    <div class="mt-8">
-                                        <form method="POST" action="{{ route('game.finalize-match', $game->id) }}">
-                                            @csrf
-                                            <input type="hidden" name="tournament_end" value="1">
-                                            <x-secondary-button type="submit"
-                                                    class="px-8 py-3 bg-surface-800/10 text-text-body border-white/20 hover:bg-surface-800/20"
-                                                    x-text="translations.tournamentViewSummary"
-                                                    x-bind:disabled="!processingReady">
-                                            </x-secondary-button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </template>
-
-                            {{-- Eliminated in R32/R16/QF: Somber/dramatic --}}
-                            <template x-if="tournamentResultType === 'eliminated'">
-                                <div class="relative -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 px-6 sm:px-8 py-10 bg-surface-900 text-center">
-                                    <img :src="userTeamId === homeTeamId ? homeTeamImage : awayTeamImage"
-                                         class="w-14 h-14 mx-auto mb-4 opacity-60 grayscale" alt="">
-                                    <h2 class="font-heading text-2xl md:text-3xl font-bold text-white mb-1"
-                                        x-text="translations.tournamentEliminated"></h2>
-                                    <p class="text-text-secondary text-sm"
-                                       x-text="translations.tournamentEliminatedIn"></p>
-                                    <div class="mt-8">
-                                        <form method="POST" action="{{ route('game.finalize-match', $game->id) }}">
-                                            @csrf
-                                            <input type="hidden" name="tournament_end" value="1">
-                                            <x-secondary-button type="submit"
-                                                    class="px-8 py-3 bg-surface-800/10 text-text-body border-white/20 hover:bg-surface-800/20"
-                                                    x-text="translations.tournamentViewSummary"
-                                                    x-bind:disabled="!processingReady">
-                                            </x-secondary-button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </template>
+                            {{-- Tournament result banners (compact, details in bottom bar) --}}
 
                             {{-- ============================== --}}
                             {{-- NON-DECISIVE / NORMAL RESULTS  --}}
@@ -661,27 +519,7 @@
                                 </div>
                             </template>
 
-                            {{-- Standard full-time content (non-decisive tournaments + all non-tournament matches) --}}
-                            <template x-if="!isTournamentDecisive">
-                                <div>
-                                    {{-- Injury details revealed at full time --}}
-                                    @php
-                                        $injuries = collect($events)->filter(fn($e) => $e['type'] === 'injury');
-                                    @endphp
-                                    @if($injuries->isNotEmpty())
-                                        <div class="mb-4 p-3 bg-orange-500/10 rounded-lg">
-                                            <h4 class="text-sm font-heading font-semibold text-orange-400 mb-1">{{ __('game.live_injuries_report') }}</h4>
-                                            @foreach($injuries as $injury)
-                                                <div class="text-xs text-orange-300">
-                                                    {{ $injury['playerName'] }} &mdash;
-                                                    {{ __(App\Modules\Player\Services\InjuryService::INJURY_TRANSLATION_MAP[$injury['metadata']['injury_type']] ?? 'game.live_injury') }}
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    @endif
-
-                                </div>
-                            </template>
+                            {{-- Injury report moved to fixed bottom bar for non-tournament matches --}}
                         </div>
                     </template>
                 </div>
@@ -846,7 +684,7 @@
 
             {{-- Fixed Bottom Action Bar --}}
             <div class="fixed bottom-0 inset-x-0 z-30"
-                 x-show="phase !== 'full_time' && phase !== 'pre_match' && phase !== 'going_to_extra_time' && phase !== 'penalties' && !tacticalPanelOpen"
+                 x-show="phase !== 'pre_match' && phase !== 'going_to_extra_time' && phase !== 'penalties' && !tacticalPanelOpen"
                  x-cloak
                  x-transition:enter="transition ease-out duration-200"
                  x-transition:enter-start="translate-y-full"
@@ -856,28 +694,114 @@
                  x-transition:leave-end="translate-y-full"
             >
                 <div class="bg-surface-800/95 backdrop-blur-md border-t border-white/5 px-4 py-3">
-                    <div class="flex items-center gap-2.5">
-                            <x-secondary-button
-                                @click="openTacticalPanel('substitutions')"
-                                class="flex-1 justify-center gap-2"
-                            >
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
-                                </svg>
-                                {{ __('game.tactical_tab_substitutions') }}
-                                <span class="text-text-muted tabular-nums" x-text="'(' + substitutionsMade.length + '/' + effectiveMaxSubstitutions + ')'"></span>
-                            </x-secondary-button>
-                            <x-secondary-button
-                                @click="openTacticalPanel('tactics')"
-                                class="flex-1 justify-center gap-2"
-                            >
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                </svg>
-                                {{ __('game.tactical_tab_tactics') }}
-                            </x-secondary-button>
+
+                    {{-- During play: Tactical buttons --}}
+                    <div x-show="phase !== 'full_time'" class="flex items-center gap-2.5">
+                        <x-secondary-button
+                            @click="openTacticalPanel('substitutions')"
+                            class="flex-1 justify-center gap-2"
+                        >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+                            </svg>
+                            {{ __('game.tactical_tab_substitutions') }}
+                            <span class="text-text-muted tabular-nums" x-text="'(' + substitutionsMade.length + '/' + effectiveMaxSubstitutions + ')'"></span>
+                        </x-secondary-button>
+                        <x-secondary-button
+                            @click="openTacticalPanel('tactics')"
+                            class="flex-1 justify-center gap-2"
+                        >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            {{ __('game.tactical_tab_tactics') }}
+                        </x-secondary-button>
                     </div>
+
+                    {{-- At full time: Result summary + Continue --}}
+                    <div x-show="phase === 'full_time'" x-cloak>
+                        {{-- Tournament result label --}}
+                        <template x-if="isTournamentDecisive">
+                            <div class="flex items-center justify-center gap-2 mb-2">
+                                <span class="text-lg"
+                                      x-text="tournamentResultType === 'champion' ? '&#127942;'
+                                           : tournamentResultType === 'runner_up' ? '&#129352;'
+                                           : tournamentResultType === 'third' ? '&#129353;'
+                                           : ''"></span>
+                                <span class="font-heading text-sm font-bold uppercase tracking-wider"
+                                      :class="{
+                                          'text-accent-gold': tournamentResultType === 'champion',
+                                          'text-text-secondary': tournamentResultType === 'runner_up' || tournamentResultType === 'fourth',
+                                          'text-accent-orange': tournamentResultType === 'third',
+                                          'text-accent-red': tournamentResultType === 'eliminated',
+                                      }"
+                                      x-text="tournamentResultType === 'champion' ? translations.tournamentChampion
+                                           : tournamentResultType === 'runner_up' ? translations.tournamentRunnerUp
+                                           : tournamentResultType === 'third' ? translations.tournamentThird
+                                           : tournamentResultType === 'fourth' ? translations.tournamentFourth
+                                           : tournamentResultType === 'eliminated' ? translations.tournamentEliminated
+                                           : ''"></span>
+                            </div>
+                        </template>
+
+                        {{-- Score + result label --}}
+                        <div class="flex items-center justify-center gap-3 mb-3">
+                            <img :src="homeTeamImage" class="w-6 h-6 shrink-0 object-contain" alt="">
+                            <span class="font-heading text-lg font-extrabold text-text-primary tabular-nums"
+                                  x-text="homeScore + ' - ' + awayScore"></span>
+                            <img :src="awayTeamImage" class="w-6 h-6 shrink-0 object-contain" alt="">
+                            <template x-if="!isTournamentDecisive">
+                                <span class="text-xs font-heading font-semibold uppercase tracking-wider"
+                                      :class="{
+                                          'text-accent-green': (userTeamId === homeTeamId && homeScore > awayScore) || (userTeamId === awayTeamId && awayScore > homeScore),
+                                          'text-accent-gold': homeScore === awayScore,
+                                          'text-accent-red': (userTeamId === homeTeamId && homeScore < awayScore) || (userTeamId === awayTeamId && awayScore < homeScore),
+                                      }"
+                                      x-text="(userTeamId === homeTeamId && homeScore > awayScore) || (userTeamId === awayTeamId && awayScore > homeScore)
+                                          ? '{{ __('game.live_result_win') }}'
+                                          : (homeScore === awayScore ? '{{ __('game.live_result_draw') }}'
+                                          : '{{ __('game.live_result_loss') }}')"></span>
+                            </template>
+                        </div>
+
+                        {{-- Eliminated round context --}}
+                        <template x-if="tournamentResultType === 'eliminated'">
+                            <p class="text-center text-xs text-text-muted mb-3" x-text="translations.tournamentEliminatedIn"></p>
+                        </template>
+
+                        {{-- Injury summary (compact) --}}
+                        @php
+                            $injuries = collect($events)->filter(fn($e) => $e['type'] === 'injury');
+                        @endphp
+                        @if($injuries->isNotEmpty())
+                            <div class="flex items-center justify-center gap-2 mb-3 text-xs text-accent-orange">
+                                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                <span>
+                                    @foreach($injuries as $i => $injury)
+                                        {{ $injury['playerName'] }}@if(!$loop->last), @endif
+                                    @endforeach
+                                </span>
+                            </div>
+                        @endif
+
+                        {{-- Continue button --}}
+                        <form method="POST" action="{{ route('game.finalize-match', $game->id) }}">
+                            @csrf
+                            <input x-show="isTournamentDecisive" type="hidden" name="tournament_end" value="1">
+                            <x-primary-button type="submit"
+                                    class="w-full justify-center gap-2"
+                                    x-bind:disabled="!processingReady">
+                                <svg x-show="!processingReady" class="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                </svg>
+                                <span x-text="processingReady ? '{{ __('game.live_continue') }}' : '{{ __('game.processing_short') }}'"></span>
+                                <svg x-show="processingReady" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </x-primary-button>
+                        </form>
+                    </div>
+
                 </div>
             </div>
         </div>
