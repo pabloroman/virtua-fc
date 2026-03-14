@@ -36,15 +36,15 @@
                             <template x-for="comp in competitions" :key="comp.id">
                                 <x-pill-button @click="selectCompetition(comp)"
                                         x-bind:class="selectedCompetition?.id === comp.id
-                                            ? 'bg-surface-900 text-white border-surface-900'
-                                            : 'bg-surface-800 text-text-body border-border-strong hover:border-border-strong'"
+                                            ? 'bg-accent-blue/15 text-accent-blue border-accent-blue/30'
+                                            : 'bg-surface-800 text-text-body border-border-default hover:border-border-strong'"
                                         class="shrink-0 gap-2 rounded-lg border min-h-[44px]">
                                     <template x-if="comp.country">
                                         <img :src="'/flags/' + comp.flag + '.svg'" class="w-5 h-3.5 rounded-xs shadow-xs" :alt="comp.country">
                                     </template>
                                     <span x-text="comp.name"></span>
                                     <span class="text-xs px-1.5 py-0.5 rounded-full"
-                                          :class="selectedCompetition?.id === comp.id ? 'bg-surface-800/20' : 'bg-surface-700 text-text-muted'"
+                                          :class="selectedCompetition?.id === comp.id ? 'bg-accent-blue/20 text-accent-blue' : 'bg-surface-700 text-text-muted'"
                                           x-text="comp.teamCount"></span>
                                 </x-pill-button>
                             </template>

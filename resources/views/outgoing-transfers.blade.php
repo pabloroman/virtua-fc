@@ -40,7 +40,7 @@
                             </x-ghost-button>
                         </x-section-nav>
 
-                        <div x-show="helpOpen" x-transition class="mt-3 bg-surface-700/50 border border-border-strong rounded-lg p-4 text-sm">
+                        <div x-show="helpOpen" x-transition class="mt-3 bg-surface-800 border border-border-default rounded-xl p-4 text-sm">
                             <p class="text-text-secondary mb-4">{{ __('transfers.transfers_help_intro') }}</p>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
                                 {{-- Selling --}}
@@ -110,12 +110,12 @@
 
                             {{-- UNSOLICITED OFFERS — red accent --}}
                             @if($unsolicitedOffers->isNotEmpty())
-                            <div class="border-l-4 border-l-red-500 pl-5">
+                            <div class="border-l-4 border-l-accent-red pl-5">
                                 <h4 class="font-semibold text-lg text-text-primary mb-1">{{ __('transfers.unsolicited_offers') }}</h4>
                                 <p class="text-sm text-text-muted mb-3">{{ __('transfers.unsolicited_offers_help') }}</p>
                                 <div class="space-y-3">
                                     @foreach($unsolicitedOffers as $offer)
-                                    <div class="bg-accent-red/10 rounded-lg p-4">
+                                    <div class="bg-accent-red/10 border border-accent-red/20 rounded-xl p-4">
                                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                             <div class="flex items-center gap-4">
                                                 <x-team-crest :team="$offer->offeringTeam" class="w-10 h-10 shrink-0" />
@@ -165,12 +165,12 @@
 
                             {{-- PRE-CONTRACT OFFERS — red accent --}}
                             @if($preContractOffers->isNotEmpty())
-                            <div class="border-l-4 border-l-red-500 pl-5">
+                            <div class="border-l-4 border-l-accent-red pl-5">
                                 <h4 class="font-semibold text-lg text-text-primary mb-1">{{ __('transfers.pre_contract_offers_received') }}</h4>
                                 <p class="text-sm text-text-muted mb-3">{{ __('transfers.pre_contract_offers_help') }}</p>
                                 <div class="space-y-3">
                                     @foreach($preContractOffers as $offer)
-                                    <div class="bg-accent-red/10 rounded-lg p-4">
+                                    <div class="bg-accent-red/10 border border-accent-red/20 rounded-xl p-4">
                                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                             <div class="flex items-center gap-4">
                                                 <x-team-crest :team="$offer->offeringTeam" class="w-10 h-10 shrink-0" />
@@ -215,9 +215,9 @@
                             </div>
                             @endif
 
-                            {{-- RENEWAL COUNTER-OFFERS — orange accent (needs action) --}}
+                            {{-- RENEWAL COUNTER-OFFERS — gold accent (needs action) --}}
                             @if($counteredNegotiations->isNotEmpty())
-                            <div class="border-l-4 border-l-orange-500 pl-5">
+                            <div class="border-l-4 border-l-accent-gold pl-5">
                                 <h4 class="font-semibold text-lg text-text-primary mb-1">{{ __('transfers.renewal_counter_offers') }}</h4>
                                 <p class="text-sm text-text-muted mb-3">{{ __('transfers.renewal_counter_offers_help') }}</p>
                                 <div class="space-y-3">
@@ -227,10 +227,10 @@
                                         $mood = $renewalMoods[$player->id] ?? null;
                                         $midpoint = $renewalMidpoints[$player->id] ?? 0;
                                     @endphp
-                                    <div x-data="{ showCounter: false }" class="bg-accent-orange/10 rounded-lg p-4">
+                                    <div x-data="{ showCounter: false }" class="bg-accent-gold/10 border border-accent-gold/20 rounded-xl p-4">
                                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                             <div class="flex items-center gap-4">
-                                                <div class="w-10 h-10 rounded-full bg-accent-orange/10 flex items-center justify-center shrink-0">
+                                                <div class="w-10 h-10 rounded-full bg-accent-gold/20 flex items-center justify-center shrink-0">
                                                     <x-position-badge :position="$player->position" size="sm" />
                                                 </div>
                                                 <div>
@@ -241,14 +241,14 @@
                                                     <div class="text-sm text-text-secondary mt-0.5">
                                                         {{ __('transfers.your_bid_amount', ['amount' => $negotiation->formatted_user_offer]) }}
                                                         <span class="text-text-body mx-1">&rarr;</span>
-                                                        <span class="font-semibold text-accent-orange">{{ __('transfers.they_ask', ['amount' => $negotiation->formatted_counter_offer . __('squad.per_year')]) }}</span>
+                                                        <span class="font-semibold text-accent-gold">{{ __('transfers.they_ask', ['amount' => $negotiation->formatted_counter_offer . __('squad.per_year')]) }}</span>
                                                     </div>
                                                     @if($mood)
                                                         <div class="mt-1">
                                                             <span class="inline-flex items-center gap-1 text-xs font-medium
                                                                 @if($mood['color'] === 'green') text-accent-green
                                                                 @elseif($mood['color'] === 'amber') text-accent-gold
-                                                                @else text-red-500
+                                                                @else text-accent-red
                                                                 @endif">
                                                                 <span class="w-1.5 h-1.5 rounded-full
                                                                     @if($mood['color'] === 'green') bg-accent-green
@@ -276,7 +276,7 @@
                                             </div>
                                         </div>
                                         {{-- Inline counter-offer form --}}
-                                        <div x-show="showCounter" x-cloak x-transition class="mt-3 pt-3 border-t border-accent-orange/20">
+                                        <div x-show="showCounter" x-cloak x-transition class="mt-3 pt-3 border-t border-accent-gold/20">
                                             <form method="POST" action="{{ route('game.transfers.renew', [$game->id, $player->id]) }}" class="flex flex-col md:flex-row md:items-end gap-3">
                                                 @csrf
                                                 <div>
@@ -285,7 +285,7 @@
                                                 </div>
                                                 <div>
                                                     <label class="text-xs text-text-muted block mb-1">{{ __('transfers.contract_duration') }}</label>
-                                                    <x-select-input name="offered_years" class="w-full focus:border-orange-500 focus:ring-orange-500">
+                                                    <x-select-input name="offered_years" class="w-full">
                                                         @foreach(range(1, 5) as $years)
                                                             <option value="{{ $years }}" {{ $years === ($negotiation->preferred_years ?? 3) ? 'selected' : '' }}>
                                                                 {{ trans_choice('transfers.years', $years, ['count' => $years]) }}
@@ -302,9 +302,9 @@
                             </div>
                             @endif
 
-                            {{-- RENEWAL OFFERS PENDING — sky accent (waiting for response) --}}
+                            {{-- RENEWAL OFFERS PENDING — blue accent (waiting for response) --}}
                             @if($pendingOfferNegotiations->isNotEmpty())
-                            <div class="border-l-4 border-l-sky-500 pl-5">
+                            <div class="border-l-4 border-l-accent-blue pl-5">
                                 <h4 class="font-semibold text-lg text-text-primary mb-1">{{ __('transfers.renewal_offers_sent') }}</h4>
                                 <p class="text-sm text-text-muted mb-3">{{ __('transfers.renewal_offers_sent_help') }}</p>
                                 <div class="space-y-3">
@@ -312,10 +312,10 @@
                                     @php
                                         $negotiation = $activeNegotiations->get($player->id);
                                     @endphp
-                                    <div class="bg-accent-blue/10 rounded-lg p-4">
+                                    <div class="bg-accent-blue/10 border border-accent-blue/20 rounded-xl p-4">
                                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                             <div class="flex items-center gap-4">
-                                                <div class="w-10 h-10 rounded-full bg-accent-blue/10 flex items-center justify-center shrink-0">
+                                                <div class="w-10 h-10 rounded-full bg-accent-blue/20 flex items-center justify-center shrink-0">
                                                     <x-position-badge :position="$player->position" size="sm" />
                                                 </div>
                                                 <div>
@@ -343,14 +343,14 @@
                             </div>
                             @endif
 
-                            {{-- OFFERS FOR LISTED PLAYERS — amber accent --}}
+                            {{-- OFFERS FOR LISTED PLAYERS — gold accent --}}
                             @if($listedOffers->isNotEmpty())
-                            <div class="border-l-4 border-l-amber-500 pl-5">
+                            <div class="border-l-4 border-l-accent-gold pl-5">
                                 <h4 class="font-semibold text-lg text-text-primary mb-1">{{ __('transfers.offers_received') }}</h4>
                                 <p class="text-sm text-text-muted mb-3">{{ __('transfers.offers_received_help') }}</p>
                                 <div class="space-y-3">
                                     @foreach($listedOffers as $offer)
-                                    <div class="bg-accent-gold/10 rounded-lg p-4">
+                                    <div class="bg-accent-gold/10 border border-accent-gold/20 rounded-xl p-4">
                                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                             <div class="flex items-center gap-4">
                                                 <x-team-crest :team="$offer->offeringTeam" class="w-10 h-10 shrink-0" />
@@ -387,14 +387,14 @@
                             </div>
                             @endif
 
-                            {{-- AGREED OUTGOING TRANSFERS — emerald accent --}}
+                            {{-- AGREED OUTGOING TRANSFERS — green accent --}}
                             @if($agreedTransfers->isNotEmpty())
-                            <div class="border-l-4 border-l-emerald-500 pl-5">
+                            <div class="border-l-4 border-l-accent-green pl-5">
                                 <h4 class="font-semibold text-lg text-text-primary mb-1">{{ __('transfers.agreed_transfers') }}</h4>
                                 <p class="text-sm text-text-muted mb-3">{{ __('transfers.completing_when_window', ['window' => $game->getNextWindowName()]) }}</p>
                                 <div class="space-y-3">
                                     @foreach($agreedTransfers as $transfer)
-                                    <div class="bg-accent-green/10 rounded-lg p-4">
+                                    <div class="bg-accent-green/10 border border-accent-green/20 rounded-xl p-4">
                                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                             <div class="flex items-center gap-4">
                                                 <x-team-crest :team="$transfer->offeringTeam" class="w-10 h-10 shrink-0" />
@@ -418,14 +418,14 @@
                             </div>
                             @endif
 
-                            {{-- PLAYERS LEAVING ON FREE — emerald accent --}}
+                            {{-- PLAYERS LEAVING ON FREE — green accent --}}
                             @if($agreedPreContracts->isNotEmpty())
-                            <div class="border-l-4 border-l-emerald-500 pl-5">
+                            <div class="border-l-4 border-l-accent-green pl-5">
                                 <h4 class="font-semibold text-lg text-text-primary mb-1">{{ __('transfers.players_leaving_free') }}</h4>
                                 <p class="text-sm text-text-muted mb-3">{{ __('transfers.players_leaving_free_help') }}</p>
                                 <div class="space-y-3">
                                     @foreach($agreedPreContracts as $transfer)
-                                    <div class="bg-accent-green/10 rounded-lg p-4">
+                                    <div class="bg-accent-green/10 border border-accent-green/20 rounded-xl p-4">
                                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                             <div class="flex items-center gap-4">
                                                 <x-team-crest :team="$transfer->offeringTeam" class="w-10 h-10 shrink-0" />
@@ -449,18 +449,18 @@
                             </div>
                             @endif
 
-                            {{-- LOAN SEARCHES — sky accent --}}
+                            {{-- LOAN SEARCHES — blue accent --}}
                             @if($loanSearches->isNotEmpty())
-                            <div class="border-l-4 border-l-sky-500 pl-5">
+                            <div class="border-l-4 border-l-accent-blue pl-5">
                                 <h4 class="font-semibold text-lg text-text-primary mb-1">{{ __('transfers.loan_searches_section') }}</h4>
                                 <p class="text-sm text-text-muted mb-3">{{ __('transfers.loan_searches_help') }}</p>
                                 <div class="space-y-3">
                                     @foreach($loanSearches as $gamePlayer)
-                                    <div class="bg-accent-blue/10 rounded-lg p-4">
+                                    <div class="bg-accent-blue/10 border border-accent-blue/20 rounded-xl p-4">
                                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                             <div class="flex items-center gap-4">
-                                                <div class="w-10 h-10 rounded-full bg-accent-blue/10 flex items-center justify-center shrink-0">
-                                                    <svg class="w-5 h-5 text-sky-500 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <div class="w-10 h-10 rounded-full bg-accent-blue/20 flex items-center justify-center shrink-0">
+                                                    <svg class="w-5 h-5 text-accent-blue animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                                                     </svg>
                                                 </div>
@@ -484,9 +484,9 @@
                             </div>
                             @endif
 
-                            {{-- LISTED PLAYERS FOR SALE — amber accent --}}
+                            {{-- LISTED PLAYERS FOR SALE — gold accent --}}
                             @if($listedPlayers->isNotEmpty())
-                            <div class="border-l-4 border-l-amber-500 pl-5">
+                            <div class="border-l-4 border-l-accent-gold pl-5">
                                 <h4 class="font-semibold text-lg text-text-primary mb-1">{{ __('transfers.listed_players') }}</h4>
                                 <p class="text-sm text-text-muted mb-3">
                                     {{ __('transfers.listed_players_help') }}
@@ -494,10 +494,10 @@
                                 </p>
                                 <div class="space-y-3">
                                     @foreach($listedPlayers as $player)
-                                    <div class="bg-accent-gold/10 rounded-lg p-4">
+                                    <div class="bg-accent-gold/10 border border-accent-gold/20 rounded-xl p-4">
                                         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                             <div class="flex items-center gap-4">
-                                                <div class="w-10 h-10 rounded-full bg-accent-gold/10 flex items-center justify-center shrink-0">
+                                                <div class="w-10 h-10 rounded-full bg-accent-gold/20 flex items-center justify-center shrink-0">
                                                     <svg class="w-5 h-5 text-accent-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
                                                     </svg>
@@ -527,22 +527,21 @@
                             {{-- FULL-WIDTH: Recent Sales --}}
                             {{-- ============================== --}}
                             @if($recentTransfers->isNotEmpty())
-                                <div class="mt-8 pt-6">
-                                    <h4 class="font-semibold text-sm text-text-muted uppercase tracking-wide mb-3">{{ __('transfers.recent_sales') }}</h4>
-                                    <div class="space-y-1">
-                                        @foreach($recentTransfers as $transfer)
-                                            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-1 py-2 text-sm">
-                                                <div class="flex items-center gap-3">
-                                                    <x-team-crest :team="$transfer->offeringTeam" class="w-6 h-6 shrink-0" />
-                                                    <span class="text-text-secondary">
-                                    {{ $transfer->gamePlayer->player->name }} &rarr; {{ $transfer->offeringTeam->name }}
-                                </span>
-                                                </div>
-                                                <span class="font-semibold text-accent-green">{{ $transfer->formatted_transfer_fee }}</span>
+                            <x-section-card :title="__('transfers.recent_sales')">
+                                <div class="divide-y divide-border-default">
+                                    @foreach($recentTransfers as $transfer)
+                                        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-1 px-5 py-2.5 text-sm">
+                                            <div class="flex items-center gap-3">
+                                                <x-team-crest :team="$transfer->offeringTeam" class="w-6 h-6 shrink-0" />
+                                                <span class="text-text-secondary">
+                                                    {{ $transfer->gamePlayer->player->name }} &rarr; {{ $transfer->offeringTeam->name }}
+                                                </span>
                                             </div>
-                                        @endforeach
-                                    </div>
+                                            <span class="font-semibold text-accent-green">{{ $transfer->formatted_transfer_fee }}</span>
+                                        </div>
+                                    @endforeach
                                 </div>
+                            </x-section-card>
                             @endif
 
                         </div>
@@ -554,21 +553,18 @@
 
                             {{-- EXPIRING CONTRACTS + ACTIVE NEGOTIATIONS --}}
                             @if($renewalEligiblePlayers->isNotEmpty() || $negotiatingPlayers->isNotEmpty())
-                            <div class="border rounded-lg overflow-hidden">
-                                <div class="px-5 py-3 bg-surface-700/50 border-b">
-                                    <h4 class="font-semibold text-sm text-text-primary flex items-center gap-2">
-                                        {{ __('transfers.expiring_contracts_section') }}
-                                        <span class="text-xs font-normal text-text-secondary">({{ $renewalEligiblePlayers->count() + $negotiatingPlayers->count() }})</span>
-                                    </h4>
-                                </div>
+                            <x-section-card :title="__('transfers.expiring_contracts_section')">
+                                <x-slot name="badge">
+                                    <span class="text-xs text-text-secondary">({{ $renewalEligiblePlayers->count() + $negotiatingPlayers->count() }})</span>
+                                </x-slot>
                                 <div class="overflow-x-auto">
                                     <table class="w-full text-sm">
-                                        <thead class="text-left bg-surface-700/50/50 border-b border-border-default">
+                                        <thead class="text-left border-b border-border-default">
                                             <tr>
-                                                <th class="font-medium py-2 pl-3 w-10 text-text-secondary"></th>
-                                                <th class="font-medium py-2 text-text-muted">{{ __('app.name') }}</th>
-                                                <th class="font-medium py-2 text-center w-12 hidden md:table-cell text-text-muted">{{ __('app.age') }}</th>
-                                                <th class="font-medium py-2 text-center hidden md:table-cell text-text-muted pr-3">{{ __('app.wage') }}</th>
+                                                <th class="py-2.5 pl-4 w-10"></th>
+                                                <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider">{{ __('app.name') }}</th>
+                                                <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider text-center w-12 hidden md:table-cell">{{ __('app.age') }}</th>
+                                                <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider text-center hidden md:table-cell pr-4">{{ __('app.wage') }}</th>
                                             </tr>
                                         </thead>
 
@@ -580,8 +576,8 @@
                                         @endphp
                                         @if($negotiation)
                                         <tbody>
-                                            <tr class="border-t border-border-default">
-                                                <td class="py-2.5 pl-3 text-center">
+                                            <tr class="border-t border-border-default transition-colors hover:bg-[rgba(59,130,246,0.05)]">
+                                                <td class="py-2.5 pl-4 text-center">
                                                     <x-position-badge :position="$player->position" size="sm" />
                                                 </td>
                                                 <td class="py-2.5 pr-3">
@@ -594,8 +590,8 @@
                                                         <span class="font-medium text-text-primary truncate">{{ $player->player->name }}</span>
                                                     </div>
                                                 </td>
-                                                <td class="py-2.5 text-center text-text-muted hidden md:table-cell">{{ $player->age($game->current_date) }}</td>
-                                                <td class="py-2.5 text-center text-text-muted hidden md:table-cell pr-3">{{ $player->formatted_wage }}</td>
+                                                <td class="py-2.5 text-center text-text-secondary tabular-nums hidden md:table-cell">{{ $player->age($game->current_date) }}</td>
+                                                <td class="py-2.5 text-center text-text-secondary tabular-nums hidden md:table-cell pr-4">{{ $player->formatted_wage }}</td>
                                             </tr>
                                         </tbody>
                                         @endif
@@ -609,8 +605,8 @@
                                             $mood = $renewalMoods[$player->id] ?? null;
                                             $hasPendingOffer = $preContractOffers->where('game_player_id', $player->id)->isNotEmpty();
                                         @endphp
-                                        <tr class="border-t border-border-default {{ $hasPendingOffer ? 'bg-accent-red/10' : '' }}">
-                                            <td class="py-2.5 pl-3 text-center">
+                                        <tr class="border-t border-border-default transition-colors {{ $hasPendingOffer ? 'bg-accent-red/10' : 'hover:bg-[rgba(59,130,246,0.05)]' }}">
+                                            <td class="py-2.5 pl-4 text-center">
                                                 <x-position-badge :position="$player->position" size="sm" />
                                             </td>
                                             <td class="py-2.5 pr-3">
@@ -628,21 +624,21 @@
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td class="py-2.5 text-center text-text-muted hidden md:table-cell">{{ $player->age($game->current_date) }}</td>
-                                            <td class="py-2.5 text-center text-text-muted hidden md:table-cell pr-3">{{ $player->formatted_wage }}</td>
+                                            <td class="py-2.5 text-center text-text-secondary tabular-nums hidden md:table-cell">{{ $player->age($game->current_date) }}</td>
+                                            <td class="py-2.5 text-center text-text-secondary tabular-nums hidden md:table-cell pr-4">{{ $player->formatted_wage }}</td>
                                         </tr>
                                         @endforeach
                                         </tbody>
                                     </table>
                                 </div>
-                            </div>
+                            </x-section-card>
                             @endif
 
                             {{-- DECLINED RENEWALS --}}
                             @if($declinedRenewals->isNotEmpty())
-                            <div class="border rounded-lg overflow-hidden opacity-60">
-                                <div class="px-5 py-3 bg-surface-700/50 border-b">
-                                    <h4 class="font-semibold text-sm text-text-muted flex items-center gap-2">
+                            <x-section-card class="opacity-60">
+                                <div class="px-5 py-3 border-b border-border-default">
+                                    <h4 class="font-heading text-sm font-semibold uppercase tracking-widest text-text-muted flex items-center gap-2">
                                         {{ __('transfers.declined_renewals') }}
                                         <span class="text-xs font-normal text-text-secondary">({{ $declinedRenewals->count() }})</span>
                                     </h4>
@@ -665,20 +661,17 @@
                                     </div>
                                     @endforeach
                                 </div>
-                            </div>
+                            </x-section-card>
                             @endif
 
                             {{-- PENDING RENEWALS --}}
                             @if($pendingRenewals->isNotEmpty())
-                            <div class="border rounded-lg overflow-hidden">
-                                <div class="px-5 py-3 bg-surface-700/50 border-b">
-                                    <h4 class="font-semibold text-sm text-text-primary">{{ __('transfers.pending_renewals_section') }}</h4>
-                                </div>
+                            <x-section-card :title="__('transfers.pending_renewals_section')">
                                 <div class="divide-y divide-border-default">
                                     @foreach($pendingRenewals as $player)
                                     <div class="px-4 py-3">
                                         <div class="flex items-center gap-2 mb-1">
-                                            <svg class="w-4 h-4 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg class="w-4 h-4 text-accent-green shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                             </svg>
                                             <span class="font-medium text-sm text-text-primary truncate">{{ $player->player->name }}</span>
@@ -691,18 +684,15 @@
                                     </div>
                                     @endforeach
                                 </div>
-                            </div>
+                            </x-section-card>
                             @endif
 
                             {{-- LOANS OUT --}}
                             @if($loansOut->isNotEmpty())
-                            <div class="border rounded-lg overflow-hidden">
-                                <div class="px-5 py-3 bg-surface-700/50 border-b">
-                                    <h4 class="font-semibold text-sm text-text-primary flex items-center gap-2">
-                                        {{ __('transfers.loans_out_section') }}
-                                        <span class="text-xs font-normal text-text-secondary">({{ $loansOut->count() }})</span>
-                                    </h4>
-                                </div>
+                            <x-section-card :title="__('transfers.loans_out_section')">
+                                <x-slot name="badge">
+                                    <span class="text-xs text-text-secondary">({{ $loansOut->count() }})</span>
+                                </x-slot>
                                 <div class="divide-y divide-border-default">
                                     @foreach($loansOut as $loan)
                                     <div class="px-4 py-3">
@@ -722,7 +712,7 @@
                                     </div>
                                     @endforeach
                                 </div>
-                            </div>
+                            </x-section-card>
                             @endif
 
                         </div>

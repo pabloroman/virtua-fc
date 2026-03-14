@@ -24,24 +24,24 @@
 <div class="overflow-x-auto">
     <table class="w-full text-sm">
         <thead>
-            <tr class="text-left text-xs text-text-secondary border-b border-border-default">
-                <th class="pb-2 font-medium"></th>
-                <th class="pb-2 font-medium"></th>
-                <th class="pb-2 font-medium hidden md:table-cell">{{ __('transfers.explore_age') }}</th>
-                <th class="pb-2 font-medium hidden md:table-cell">{{ __('transfers.explore_value') }}</th>
-                <th class="pb-2 font-medium hidden md:table-cell">{{ __('transfers.explore_contract_year') }}</th>
-                <th class="pb-2 font-medium w-10"></th>
+            <tr class="text-left border-b border-border-default">
+                <th class="py-2.5 pl-4 w-12"></th>
+                <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider"></th>
+                <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider text-center hidden md:table-cell">{{ __('transfers.explore_age') }}</th>
+                <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider hidden md:table-cell">{{ __('transfers.explore_value') }}</th>
+                <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider text-center hidden md:table-cell">{{ __('transfers.explore_contract_year') }}</th>
+                <th class="py-2.5 pr-4 w-10"></th>
             </tr>
         </thead>
         <tbody>
             @foreach($players as $gp)
-            <tr class="border-b border-border-default hover:bg-surface-700/50">
+            <tr class="border-b border-border-default transition-colors hover:bg-[rgba(59,130,246,0.05)]">
                 {{-- Position badge --}}
-                <td class="py-0 p-2 w-12">
+                <td class="py-2.5 pl-4">
                     <x-position-badge :position="$gp->position" size="sm" />
                 </td>
                 {{-- Name + nationality + mobile details --}}
-                <td class="py-0 pr-3">
+                <td class="py-2.5 pr-3">
                     <div class="flex items-center gap-2">
                         @if($gp->nationality_flag['code'] ?? null)
                         <img src="/flags/{{ $gp->nationality_flag['code'] }}.svg" class="w-4 h-3 rounded-xs shadow-xs shrink-0" title="{{ $gp->nationality_flag['name'] }}">
@@ -52,7 +52,7 @@
                         @endif
                     </div>
                     {{-- Mobile-only details --}}
-                    <div class="md:hidden text-xs text-text-secondary mt-0.5">
+                    <div class="md:hidden text-xs text-text-muted mt-0.5">
                         <span>{{ $gp->age($game->current_date) }} {{ __('app.years') }}</span>
                         <span class="mx-1">&middot;</span>
                         <span>{{ \App\Support\Money::format($gp->market_value_cents) }}</span>
@@ -61,13 +61,13 @@
                     </div>
                 </td>
                 {{-- Age --}}
-                <td class="py-0 pr-3 hidden md:table-cell text-text-secondary">{{ $gp->age($game->current_date) }}</td>
+                <td class="py-2.5 pr-3 hidden md:table-cell text-center text-text-secondary tabular-nums">{{ $gp->age($game->current_date) }}</td>
                 {{-- Market value --}}
-                <td class="py-0 pr-3 hidden md:table-cell text-text-secondary font-medium">{{ \App\Support\Money::format($gp->market_value_cents) }}</td>
+                <td class="py-2.5 pr-3 hidden md:table-cell text-text-secondary tabular-nums">{{ \App\Support\Money::format($gp->market_value_cents) }}</td>
                 {{-- Contract --}}
-                <td class="py-0 pr-3 hidden md:table-cell text-text-muted">{{ $gp->contract_until?->year ?? '—' }}</td>
+                <td class="py-2.5 pr-3 hidden md:table-cell text-center text-text-muted tabular-nums">{{ $gp->contract_until?->year ?? '—' }}</td>
                 {{-- Shortlist star --}}
-                <td class="py-0 text-center"
+                <td class="py-2.5 pr-4 text-center"
                     x-data="{
                         isShortlisted: {{ $gp->is_shortlisted ? 'true' : 'false' }},
                         async toggle() {

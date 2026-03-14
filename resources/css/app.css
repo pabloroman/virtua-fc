@@ -70,6 +70,18 @@ layer(base);
   --penalty-score: #6b21a8;
 }
 
+input[type="checkbox"],
+input[type="radio"] {
+  background-color: transparent !important;
+  border: 1.5px solid var(--text-muted) !important;
+}
+
+input[type="checkbox"]:checked,
+input[type="radio"]:checked {
+  background-color: var(--color-accent-blue) !important;
+  border-color: var(--color-accent-blue) !important;
+}
+
 @theme {
   --font-heading:
     Barlow Condensed, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
