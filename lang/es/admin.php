@@ -1,6 +1,20 @@
 <?php
 
 return [
+    // Admin panel
+    'admin_panel' => 'Panel de admin',
+    'dashboard_title' => 'Panel de administración',
+    'nav_dashboard' => 'Inicio',
+    'nav_users' => 'Usuarios',
+    'nav_activation' => 'Embudo de activación',
+    'back_to_app' => 'Volver a la app',
+    'total_users' => 'Usuarios totales',
+    'total_games' => 'Partidas totales',
+    'new_users_7d' => 'Nuevos usuarios (7d)',
+    'new_games_7d' => 'Nuevas partidas (7d)',
+    'users_description' => 'Gestionar usuarios y suplantar identidades',
+    'activation_description' => 'Analizar conversión y retención de usuarios',
+
     'users_title' => 'Administración de usuarios',
     'user' => 'Usuario',
     'email' => 'Email',

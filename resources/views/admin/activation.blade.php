@@ -1,15 +1,7 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary leading-tight text-center">
-            {{ __('admin.activation_title') }}
-        </h2>
-    </x-slot>
-
-    <div class="max-w-7xl mx-auto px-4 pb-8">
-        {{-- Header with title --}}
-        <div class="mt-6 mb-6">
-            <h2 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary">{{ __('admin.activation_title') }}</h2>
-        </div>
+<x-admin-layout>
+    <h1 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary mb-6">
+        {{ __('admin.activation_title') }}
+    </h1>
 
         {{-- Mode tabs --}}
         <div class="flex items-center gap-2 mb-4 overflow-x-auto scrollbar-hide">
@@ -111,5 +103,4 @@
                 @endforeach
             </div>
         </div>
-    </div>
-</x-app-layout>
+</x-admin-layout>

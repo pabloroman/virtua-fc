@@ -1,6 +1,20 @@
 <?php
 
 return [
+    // Admin panel
+    'admin_panel' => 'Admin Panel',
+    'dashboard_title' => 'Admin Dashboard',
+    'nav_dashboard' => 'Dashboard',
+    'nav_users' => 'Users',
+    'nav_activation' => 'Activation Funnel',
+    'back_to_app' => 'Back to App',
+    'total_users' => 'Total Users',
+    'total_games' => 'Total Games',
+    'new_users_7d' => 'New Users (7d)',
+    'new_games_7d' => 'New Games (7d)',
+    'users_description' => 'Manage users and impersonate accounts',
+    'activation_description' => 'Analyze user conversion and retention',
+
     'users_title' => 'User Administration',
     'user' => 'User',
     'email' => 'Email',

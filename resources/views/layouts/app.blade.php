@@ -83,8 +83,7 @@
                                     <button type="submit" class="text-text-muted hover:text-text-secondary transition-colors cursor-pointer">{{ __('app.log_out') }}</button>
                                 </form>
                                 @if(auth()->user()?->is_admin)
-                                    <a href="{{ route('admin.users') }}" class="hover:text-text-secondary transition-colors">Admin</a>
-                                    <a href="{{ route('admin.activation') }}" class="hover:text-text-secondary transition-colors">{{ __('admin.activation_title') }}</a>
+                                    <a href="{{ route('admin.dashboard') }}" class="hover:text-text-secondary transition-colors">Admin</a>
                                 @endif
                                 <x-theme-toggle />
                             </nav>
