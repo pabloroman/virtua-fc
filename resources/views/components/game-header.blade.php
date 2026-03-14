@@ -24,7 +24,7 @@
                     </x-icon-button>
                     {{-- Team badge + name --}}
                     <div class="flex items-center gap-2.5">
-                        <x-team-crest :team="$game->team" class="w-8 h-8 rounded-lg shrink-0" />
+                        <x-team-crest :team="$game->team" class="w-8 h-8 shrink-0" />
                         <div class="hidden sm:block">
                             <h1 class="font-heading font-semibold text-base text-text-primary leading-none tracking-wide uppercase">{{ $game->team->name }}</h1>
                             <p class="text-[10px] text-text-muted uppercase tracking-widest mt-0.5">
@@ -86,11 +86,11 @@
                         </div>
                         @if($game->hasPendingActions())
                             @php $pendingAction = $game->getFirstPendingAction(); @endphp
-                            <x-primary-button-link color="amber" :href="$pendingAction && $pendingAction['route'] ? route($pendingAction['route'], $game->id) : route('show-game', $game->id)" class="gap-2 animate-pulse">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <x-primary-button-link color="amber" :href="$pendingAction && $pendingAction['route'] ? route($pendingAction['route'], $game->id) : route('show-game', $game->id)" class="whitespace-nowrap gap-2 animate-pulse">
+                                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
                                 </svg>
-                                {{ __('messages.action_required_short') }}
+                                <span class="hidden sm:inline">{{ __('messages.action_required_short') }}</span>
                             </x-primary-button-link>
                         @elseif($continueToHome)
                             <x-primary-button-link :href="route('show-game', $game->id)">{{ __('app.continue') }}</x-primary-button-link>
@@ -139,7 +139,7 @@
             {{-- Drawer Header --}}
             <div class="flex items-center justify-between p-4 border-b border-border-strong">
                 <div class="flex items-center gap-3 min-w-0">
-                    <x-team-crest :team="$game->team" class="w-10 h-10 rounded-lg shrink-0" />
+                    <x-team-crest :team="$game->team" class="w-10 h-10 shrink-0" />
                     <div class="min-w-0">
                         <h3 class="font-heading font-semibold text-sm text-text-primary truncate uppercase tracking-wide">{{ $game->team->name }}</h3>
                         <p class="text-[10px] text-text-muted uppercase tracking-widest">{{ __('game.season') }} {{ $game->formatted_season }}</p>
