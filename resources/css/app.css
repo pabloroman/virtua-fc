@@ -574,6 +574,17 @@ layer(base);
         display: none !important;
     }
 
+    .tippy-box {
+        background-color: var(--surface-600) !important;
+        border: 1px solid var(--border-strong) !important;
+        border-radius: 0.5rem !important;
+        color: var(--text-primary) !important;
+    }
+
+    .tippy-box > .tippy-arrow::before {
+        color: var(--surface-600) !important;
+    }
+
     .tippy-content {
         font-size: 0.75rem;
     }
