@@ -91,7 +91,7 @@
 
             {{-- Footer --}}
             <div class="px-4 py-3 sm:px-6 bg-surface-700/50 border-t border-border-default">
-                <x-primary-button-spin type="button" @click="confirmPenaltyKickers()"
+                <x-primary-button-spin type="button" @click="confirmPenaltyKickers()" loading="penaltyProcessing"
                         x-bind:disabled="selectedPenaltyKickers.length < 5 || penaltyProcessing"
                         class="w-full bg-purple-700 hover:bg-purple-800">
                     {{ __('game.live_pen_pick_confirm') }}
