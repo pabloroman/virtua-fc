@@ -51,4 +51,8 @@ return [
     'switch_light_mode' => 'Switch to light mode',
     'switch_dark_mode' => 'Switch to dark mode',
 
+    // Common UI
+    'close' => 'Close',
+    'or' => 'or',
+
 ];

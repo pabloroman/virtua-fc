@@ -10,6 +10,7 @@ use App\Models\GamePlayer;
 use App\Models\GameStanding;
 use App\Models\MatchEvent;
 use App\Models\Team;
+use App\Models\TournamentChallenge;
 use Illuminate\Support\Collection;
 
 class ShowTournamentEnd
@@ -132,6 +133,9 @@ class ShowTournamentEnd
             ->orderByDesc('appearances')
             ->get();
 
+        // Existing challenge for this game (if any)
+        $existingChallenge = TournamentChallenge::where('game_id', $gameId)->first();
+
         return view('tournament-end', [
             'game' => $game,
             'competition' => $competition,
@@ -150,6 +154,7 @@ class ShowTournamentEnd
             'topAssisters' => $topAssisters,
             'topGoalkeepers' => $topGoalkeepers,
             'yourSquadStats' => $yourSquadStats,
+            'existingChallenge' => $existingChallenge,
         ]);
     }
 
