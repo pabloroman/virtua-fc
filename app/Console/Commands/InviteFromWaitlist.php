@@ -13,7 +13,7 @@ class InviteFromWaitlist extends Command
 {
     protected $signature = 'beta:invite-waitlist
                             {--email= : Invite a specific email from the waitlist}
-                            {--count= : Number of oldest waitlist entries to invite}
+                            {--count= : Number of random waitlist entries to invite}
                             {--dry-run : Show what would be sent without actually sending}
                             {--expires= : Expiration date for invite codes (Y-m-d)}';
 
@@ -74,7 +74,7 @@ class InviteFromWaitlist extends Command
         }
 
         $entries = WaitlistEntry::whereDoesntHave('inviteCode')
-            ->orderBy('created_at')
+            ->inRandomOrder()
             ->limit($count)
             ->get();
 
