@@ -638,11 +638,25 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                         @if($existingChallenge)
                             <button
                                 @click="
+                                    const copyFallback = () => {
+                                        const ta = document.createElement('textarea');
+                                        ta.value = challengeUrl;
+                                        ta.style.position = 'fixed';
+                                        ta.style.opacity = '0';
+                                        document.body.appendChild(ta);
+                                        ta.select();
+                                        document.execCommand('copy');
+                                        document.body.removeChild(ta);
+                                        challengeCopied = true;
+                                        setTimeout(() => challengeCopied = false, 2000);
+                                    };
                                     if (navigator.clipboard) {
                                         navigator.clipboard.writeText(challengeUrl).then(() => {
                                             challengeCopied = true;
                                             setTimeout(() => challengeCopied = false, 2000);
-                                        });
+                                        }).catch(copyFallback);
+                                    } else {
+                                        copyFallback();
                                     }
                                 "
                                 class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-600 hover:to-yellow-500 text-slate-900 rounded-lg text-sm font-semibold shadow-lg transition-all min-h-[44px]"
@@ -759,10 +773,27 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                             <p class="text-xs text-slate-500 mt-0.5 truncate">{{ session('challenge_url') }}</p>
                             <div class="flex gap-2 mt-2">
                                 <button @click="
-                                    navigator.clipboard.writeText('{{ session('challenge_url') }}').then(() => {
+                                    const url = '{{ session('challenge_url') }}';
+                                    const fallback = () => {
+                                        const ta = document.createElement('textarea');
+                                        ta.value = url;
+                                        ta.style.position = 'fixed';
+                                        ta.style.opacity = '0';
+                                        document.body.appendChild(ta);
+                                        ta.select();
+                                        document.execCommand('copy');
+                                        document.body.removeChild(ta);
                                         linkCopied = true;
                                         setTimeout(() => linkCopied = false, 2000);
-                                    });
+                                    };
+                                    if (navigator.clipboard) {
+                                        navigator.clipboard.writeText(url).then(() => {
+                                            linkCopied = true;
+                                            setTimeout(() => linkCopied = false, 2000);
+                                        }).catch(fallback);
+                                    } else {
+                                        fallback();
+                                    }
                                 " class="text-xs font-semibold text-amber-700 hover:text-amber-800 min-h-[44px] flex items-center">
                                     <span x-show="!linkCopied">{{ __('season.copy_link') }}</span>
                                     <span x-show="linkCopied" x-cloak class="text-green-600">{{ __('season.copied_to_clipboard') }}</span>
