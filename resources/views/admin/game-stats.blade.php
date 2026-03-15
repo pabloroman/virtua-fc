@@ -25,7 +25,7 @@
                             @endif
                             <span class="text-sm text-text-primary truncate w-28 shrink-0">{{ $entry->team?->name ?? '—' }}</span>
                             <div class="flex-1 h-5 bg-surface-700 rounded-sm overflow-hidden">
-                                <div class="h-full bg-accent-primary/60 rounded-sm" style="width: {{ ($entry->picks / $maxPicks) * 100 }}%"></div>
+                                <div class="h-full bg-accent-blue/60 rounded-sm" style="width: {{ ($entry->picks / $maxPicks) * 100 }}%"></div>
                             </div>
                             <span class="text-xs text-text-muted shrink-0 w-12 text-right">{{ $entry->picks }}</span>
                         </div>
@@ -76,7 +76,7 @@
                         $totalMentality = $mentalities->sum('usage_count');
                         $mentalityColors = [
                             'defensive' => 'bg-accent-blue/60',
-                            'balanced'  => 'bg-accent-amber/60',
+                            'balanced'  => 'bg-accent-gold/60',
                             'attacking' => 'bg-accent-red/60',
                         ];
                         $mentalityLabels = [
@@ -116,7 +116,7 @@
                     @php $heightPct = ($entry->count / $maxSeason) * 100; @endphp
                     <div class="flex-1 flex flex-col items-center justify-end h-full gap-1">
                         <span class="text-xs text-text-muted">{{ $entry->count }}</span>
-                        <div class="w-full bg-accent-primary/60 rounded-t-sm" style="height: {{ $heightPct }}%"></div>
+                        <div class="w-full bg-accent-blue/60 rounded-t-sm" style="height: {{ $heightPct }}%"></div>
                         <span class="text-xs text-text-muted truncate max-w-full">S{{ $entry->season }}</span>
                     </div>
                 @endforeach

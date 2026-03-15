@@ -43,7 +43,7 @@
                 </div>
             @endif
 
-            <div class="flex flex-1" x-data="{ sidebarOpen: false }">
+            <div class="flex flex-col md:flex-row flex-1" x-data="{ sidebarOpen: false }">
                 {{-- Mobile header --}}
                 <div class="md:hidden flex items-center justify-between px-4 py-3 border-b border-border-default bg-surface-800">
                     <button @click="sidebarOpen = true" class="min-h-[44px] min-w-[44px] flex items-center justify-center text-text-muted hover:text-text-primary">
