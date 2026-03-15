@@ -39,18 +39,18 @@ class PitchGrid
     ];
 
     /**
-     * Check if a cell is within a slot's valid zone.
+     * Check if a cell is valid for a slot.
+     * GK stays locked to its zone; outfield players can go anywhere on rows 1-13.
      */
     public static function isValidCell(string $slotLabel, int $col, int $row): bool
     {
-        $zone = self::SLOT_ZONES[$slotLabel] ?? null;
-        if (! $zone) {
-            return false;
+        if ($slotLabel === 'GK') {
+            $zone = self::SLOT_ZONES['GK'];
+
+            return $col >= $zone[0] && $col <= $zone[1] && $row >= $zone[2] && $row <= $zone[3];
         }
 
-        [$colMin, $colMax, $rowMin, $rowMax] = $zone;
-
-        return $col >= $colMin && $col <= $colMax && $row >= $rowMin && $row <= $rowMax;
+        return $col >= 0 && $col < self::GRID_COLS && $row >= 1 && $row < self::GRID_ROWS;
     }
 
     /**
