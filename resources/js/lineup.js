@@ -373,11 +373,15 @@ export default function lineupManager(config) {
                 const response = await fetch(`${this.autoLineupUrl}?formation=${this.selectedFormation}`);
                 const data = await response.json();
                 this.autoLineup = data.autoLineup;
-                this.selectedPlayers = [...this.autoLineup];
+
+                // Clear slot-specific state (slot IDs change per formation)
                 this.manualAssignments = {};
                 this.pitchPositions = {};
                 this.positioningSlotId = null;
                 this.assigningSlotId = null;
+
+                // Keep currently selected players — _autoAssignToSlots will
+                // re-slot them into the new formation's positions automatically.
             } catch (e) {
                 console.error('Failed to fetch auto lineup', e);
             }
