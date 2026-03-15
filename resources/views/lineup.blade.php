@@ -651,7 +651,8 @@
         {{-- Save Tactical Preset Modal --}}
         <x-modal name="save-preset" maxWidth="sm">
         <form method="POST" action="{{ route('game.tactical-presets.save', $game->id) }}"
-              x-data="{ presetName: '' }">
+              x-data="{ presetName: '' }"
+              @submit="_isSaving = true">
             @csrf
             <div class="p-5">
                 <h3 class="text-lg font-semibold text-text-primary mb-4">{{ __('squad.save_preset') }}</h3>
