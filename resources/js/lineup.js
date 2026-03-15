@@ -391,12 +391,6 @@ export default function lineupManager(config) {
             return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
         },
 
-        getSurname(name) {
-            if (!name) return '';
-            const parts = name.trim().split(/\s+/);
-            return parts[parts.length - 1];
-        },
-
         getAvatarDisplay(player) {
             return player?.number || this.getInitials(player?.name);
         },

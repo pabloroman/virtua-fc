@@ -263,8 +263,8 @@
                                                     x-text="slot.player?.overallScore"></span>
                                             </div>
 
-                                            {{-- Player surname --}}
-                                            <span class="mt-0.5 text-[8px] font-semibold text-white uppercase tracking-wide leading-tight text-center max-w-[60px] truncate drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]" x-text="getSurname(slot.player?.name)"></span>
+                                            {{-- Player name --}}
+                                            <span class="mt-0.5 text-[8px] font-semibold text-white uppercase tracking-wide leading-tight text-center max-w-[66px] line-clamp-2 break-words drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]" x-text="slot.player?.name"></span>
                                         </div>
                                     </div>
                                 </template>
@@ -286,8 +286,8 @@
                                                         x-text="(() => { const s = slotAssignments.find(sa => sa.id === draggingSlotId); return s?.player?.number || getInitials(s?.player?.name); })()"></span>
                                                 </div>
                                             </div>
-                                            <span class="mt-0.5 text-[8px] font-semibold text-white uppercase tracking-wide leading-tight text-center max-w-[60px] truncate drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]"
-                                                x-text="(() => { const s = slotAssignments.find(sa => sa.id === draggingSlotId); return getSurname(s?.player?.name); })()"></span>
+                                            <span class="mt-0.5 text-[8px] font-semibold text-white uppercase tracking-wide leading-tight text-center max-w-[66px] line-clamp-2 break-words drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]"
+                                                x-text="(() => { const s = slotAssignments.find(sa => sa.id === draggingSlotId); return s?.player?.name; })()"></span>
                                         </div>
                                     </template>
                                 </div>
