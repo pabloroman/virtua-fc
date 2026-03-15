@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -105,7 +106,7 @@ class Team extends Model
     {
         // National teams use flag SVGs
         if (($this->attributes['type'] ?? 'club') === 'national') {
-            return '/flags/' . strtolower($this->country) . '.svg';
+            return Storage::disk('assets')->url('flags/' . strtolower($this->country) . '.svg');
         }
 
         $originalUrl = $this->attributes['image'] ?? null;
@@ -113,7 +114,7 @@ class Team extends Model
         if ($this->transfermarkt_id) {
             $localPath = "crests/{$this->transfermarkt_id}.png";
             if (file_exists(public_path($localPath))) {
-                return "/{$localPath}";
+                return Storage::disk('assets')->url($localPath);
             }
         }
 

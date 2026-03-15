@@ -30,14 +30,14 @@
 <div class="px-5 py-4 bg-surface-900/50 border-b border-border-default">
     <div class="flex items-center gap-4">
         <div class="relative shrink-0">
-            <img src="/img/default-player.jpg" class="h-20 w-auto md:h-24 rounded-lg border border-border-default bg-surface-700" alt="">
+            <img src="{{ Storage::disk('assets')->url('img/default-player.jpg') }}" class="h-20 w-auto md:h-24 rounded-lg border border-border-default bg-surface-700" alt="">
         </div>
 
         <div class="flex-1 min-w-0">
             <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-text-muted">
                 @if($nationalityFlag)
                     <span class="inline-flex items-center gap-1.5">
-                        <img src="/flags/{{ $nationalityFlag['code'] }}.svg" class="w-4 h-3 rounded-sm shadow-xs">
+                        <img src="{{ Storage::disk('assets')->url('flags/' . $nationalityFlag['code'] . '.svg') }}" class="w-4 h-3 rounded-sm shadow-xs">
                         {{ __('countries.' . $nationalityFlag['name']) }}
                     </span>
                 @endif

@@ -126,7 +126,7 @@
                             {{-- Name --}}
                             <div class="flex items-center gap-2 min-w-0 cursor-pointer" @click="$dispatch('show-player-detail', '{{ route('game.academy.detail', [$game->id, $prospect->id]) }}')">
                                 @if($prospect->nationality_flag)
-                                    <img src="/flags/{{ $prospect->nationality_flag['code'] }}.svg" class="w-4 h-3 rounded-sm shadow-xs shrink-0" title="{{ $prospect->nationality_flag['name'] }}">
+                                    <img src="{{ Storage::disk('assets')->url('flags/' . $prospect->nationality_flag['code'] . '.svg') }}" class="w-4 h-3 rounded-sm shadow-xs shrink-0" title="{{ $prospect->nationality_flag['name'] }}">
                                 @endif
                                 <span class="text-sm font-medium text-text-primary truncate">{{ $prospect->name }}</span>
                                 <span class="text-xs text-text-secondary shrink-0">{{ trans_choice('squad.academy_seasons', $prospect->seasons_in_academy, ['count' => $prospect->seasons_in_academy]) }}</span>

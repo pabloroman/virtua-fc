@@ -172,7 +172,7 @@
                                     {{-- Name --}}
                                     <div class="flex items-center gap-2 min-w-0">
                                         @if($prospect->nationality_flag)
-                                            <img src="/flags/{{ $prospect->nationality_flag['code'] }}.svg" class="w-4 h-3 rounded-sm shadow-xs shrink-0" title="{{ $prospect->nationality_flag['name'] }}">
+                                            <img src="{{ Storage::disk('assets')->url('flags/' . $prospect->nationality_flag['code'] . '.svg') }}" class="w-4 h-3 rounded-sm shadow-xs shrink-0" title="{{ $prospect->nationality_flag['name'] }}">
                                         @endif
                                         <span class="text-sm font-medium text-text-primary truncate">{{ $prospect->name }}</span>
                                         <span class="text-xs text-text-secondary shrink-0">{{ trans_choice('squad.academy_seasons', $prospect->seasons_in_academy, ['count' => $prospect->seasons_in_academy]) }}</span>
@@ -232,7 +232,7 @@
                                         <div class="text-xs text-text-secondary mt-0.5">{{ trans_choice('squad.academy_seasons', $prospect->seasons_in_academy, ['count' => $prospect->seasons_in_academy]) }}</div>
                                     </div>
                                     @if($prospect->nationality_flag)
-                                        <img src="/flags/{{ $prospect->nationality_flag['code'] }}.svg" class="w-5 h-4 rounded-sm shadow-xs shrink-0 hidden md:block" title="{{ $prospect->nationality_flag['name'] }}">
+                                        <img src="{{ Storage::disk('assets')->url('flags/' . $prospect->nationality_flag['code'] . '.svg') }}" class="w-5 h-4 rounded-sm shadow-xs shrink-0 hidden md:block" title="{{ $prospect->nationality_flag['name'] }}">
                                     @endif
                                     <span class="text-xs text-text-secondary hidden md:block">{{ $prospect->age }}</span>
                                     <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-xs font-semibold bg-surface-600 text-text-secondary shrink-0">—</span>

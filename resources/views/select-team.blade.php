@@ -96,7 +96,7 @@
                                         ? 'bg-accent-red text-white'
                                         : 'bg-surface-700 text-text-secondary hover:text-text-body hover:bg-surface-600'"
                                     class="gap-2 shrink-0">
-                                    <img class="w-5 h-4 rounded-sm shadow-sm" src="/flags/{{ $competition->flag }}.svg" alt="">
+                                    <img class="w-5 h-4 rounded-sm shadow-sm" src="{{ Storage::disk('assets')->url('flags/' . $competition->flag . '.svg') }}" alt="">
                                     <span>{{ __($competition->name) }}</span>
                                 </x-pill-button>
                             @endforeach

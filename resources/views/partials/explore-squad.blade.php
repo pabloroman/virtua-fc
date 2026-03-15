@@ -44,7 +44,7 @@
                 <td class="py-2.5 pr-3">
                     <div class="flex items-center gap-2">
                         @if($gp->nationality_flag['code'] ?? null)
-                        <img src="/flags/{{ $gp->nationality_flag['code'] }}.svg" class="w-4 h-3 rounded-xs shadow-xs shrink-0" title="{{ $gp->nationality_flag['name'] }}">
+                        <img src="{{ Storage::disk('assets')->url('flags/' . $gp->nationality_flag['code'] . '.svg') }}" class="w-4 h-3 rounded-xs shadow-xs shrink-0" title="{{ $gp->nationality_flag['name'] }}">
                         @endif
                         <span class="font-medium text-text-primary truncate">{{ $gp->name }}</span>
                         @if($gp->is_loaned_in)

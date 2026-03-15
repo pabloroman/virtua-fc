@@ -400,7 +400,7 @@
                                                 </div>
                                                 @if($gp->nationality_flag)
                                                 <div class="flex items-center gap-1 mt-0.5">
-                                                    <img src="/flags/{{ $gp->nationality_flag['code'] }}.svg" class="w-4 h-3 rounded-sm shadow-xs" title="{{ $gp->nationality_flag['name'] }}">
+                                                    <img src="{{ Storage::disk('assets')->url('flags/' . $gp->nationality_flag['code'] . '.svg') }}" class="w-4 h-3 rounded-sm shadow-xs" title="{{ $gp->nationality_flag['name'] }}">
                                                 </div>
                                                 @endif
                                             </div>

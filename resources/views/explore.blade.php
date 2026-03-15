@@ -40,7 +40,7 @@
                                             : 'bg-surface-800 text-text-body border-border-default hover:border-border-strong'"
                                         class="shrink-0 gap-2 rounded-lg border min-h-[44px]">
                                     <template x-if="comp.country">
-                                        <img :src="'/flags/' + comp.flag + '.svg'" class="w-5 h-3.5 rounded-xs shadow-xs" :alt="comp.country">
+                                        <img :src="assetUrl + '/flags/' + comp.flag + '.svg'" class="w-5 h-3.5 rounded-xs shadow-xs" :alt="comp.country">
                                     </template>
                                     <span x-text="comp.name"></span>
                                     <span class="text-xs px-1.5 py-0.5 rounded-full"
@@ -139,6 +139,7 @@
         function exploreApp() {
             return {
                 competitions: @json($competitions),
+                assetUrl: '{{ rtrim(Storage::disk('assets')->url(''), '/') }}',
                 selectedCompetition: null,
                 teams: [],
                 selectedTeam: null,

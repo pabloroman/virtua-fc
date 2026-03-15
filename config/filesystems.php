@@ -43,6 +43,14 @@ return [
             'throw' => false,
         ],
 
+        'assets' => [
+            'driver' => 'local',
+            'root' => public_path(),
+            'url' => env('CDN_URL', env('APP_URL', 'http://localhost')),
+            'visibility' => 'public',
+            'throw' => false,
+        ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
