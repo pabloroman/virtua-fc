@@ -647,10 +647,9 @@
                 @include('partials.lineup-coach-panel')
             </div>
         </x-modal>
-    </div>
 
-    {{-- Save Tactical Preset Modal --}}
-    <x-modal name="save-preset" maxWidth="sm">
+        {{-- Save Tactical Preset Modal --}}
+        <x-modal name="save-preset" maxWidth="sm">
         <form method="POST" action="{{ route('game.tactical-presets.save', $game->id) }}"
               x-data="{ presetName: '' }">
             @csrf
@@ -689,7 +688,8 @@
                 </div>
             </div>
         </form>
-    </x-modal>
+        </x-modal>
+    </div>
 
     @include('partials.tactical-guide-modal')
     <x-player-detail-modal />
