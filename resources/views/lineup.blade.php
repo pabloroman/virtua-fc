@@ -158,7 +158,7 @@
                 <div class="mt-4 flex flex-col lg:flex-row gap-4">
 
                     {{-- LEFT: Pitch + Coach (sticky on desktop) --}}
-                    <div class="lg:flex-2 space-y-4"
+                    <div class="lg:flex-2 space-y-4 lg:sticky lg:top-4 lg:self-start"
                          :class="{ 'hidden lg:block': activeLineupTab !== 'pitch' }">
 
                         {{-- PITCH VISUALIZATION --}}
