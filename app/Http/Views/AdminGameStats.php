@@ -2,7 +2,7 @@
 
 namespace App\Http\Views;
 
-use App\Services\GameStatsService;
+use App\Modules\Analytics\Services\GameStatsService;
 use Illuminate\Http\Request;
 
 class AdminGameStats

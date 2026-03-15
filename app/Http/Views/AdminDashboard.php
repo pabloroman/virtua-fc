@@ -2,24 +2,13 @@
 
 namespace App\Http\Views;
 
-use App\Models\Game;
-use App\Models\User;
+use App\Modules\Analytics\Services\DashboardStatsService;
 use Illuminate\Http\Request;
 
 class AdminDashboard
 {
-    public function __invoke(Request $request)
+    public function __invoke(Request $request, DashboardStatsService $stats)
     {
-        $totalUsers = User::count();
-        $totalGames = Game::count();
-        $newUsers7d = User::where('created_at', '>=', now()->subDays(7))->count();
-        $newGames7d = Game::where('created_at', '>=', now()->subDays(7))->count();
-
-        return view('admin.dashboard', [
-            'totalUsers' => $totalUsers,
-            'totalGames' => $totalGames,
-            'newUsers7d' => $newUsers7d,
-            'newGames7d' => $newGames7d,
-        ]);
+        return view('admin.dashboard', $stats->getSummary());
     }
 }

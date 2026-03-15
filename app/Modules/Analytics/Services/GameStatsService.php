@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Modules\Analytics\Services;
 
 use App\Models\Game;
 use Illuminate\Support\Collection;
