@@ -662,7 +662,7 @@
         {{-- Save Tactical Preset Modal --}}
         <x-modal name="save-preset" maxWidth="sm">
         <form method="POST" action="{{ route('game.tactical-presets.save', $game->id) }}"
-              x-data="{ presetName: '' }"
+              x-data="{ presetName: '', applyNow: false }"
               @submit="_isSaving = true">
             @csrf
             <div class="p-5">
@@ -675,6 +675,12 @@
                         placeholder="{{ __('squad.preset_name_placeholder') }}"
                         maxlength="30" required autofocus>
                 </div>
+
+                <label class="flex items-center gap-2 mb-4 cursor-pointer select-none">
+                    <input type="checkbox" name="apply_now" value="1" x-model="applyNow"
+                        class="rounded border-border-strong bg-surface-700 text-accent-blue focus:ring-accent-blue focus:ring-offset-0">
+                    <span class="text-sm text-text-secondary">{{ __('squad.preset_apply_now') }}</span>
+                </label>
 
                 {{-- Hidden fields carrying current lineup state --}}
                 <input type="hidden" name="formation" :value="selectedFormation">
@@ -695,7 +701,7 @@
                         {{ __('app.cancel') }}
                     </x-secondary-button>
                     <x-primary-button type="submit" color="blue" x-bind:disabled="!presetName.trim()">
-                        {{ __('app.confirm') }}
+                        <span x-text="applyNow ? '{{ __('squad.save_and_confirm') }}' : '{{ __('app.confirm') }}'"></span>
                     </x-primary-button>
                 </div>
             </div>

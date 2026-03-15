@@ -357,6 +357,8 @@ return [
     'save_preset' => 'Save tactic',
     'preset_name' => 'Name',
     'preset_name_placeholder' => 'E.g.: Starters, Cup, Subs...',
+    'preset_apply_now' => 'Use this tactic for the next match',
+    'save_and_confirm' => 'Save & confirm',
     'preset_delete_confirm' => 'Delete this saved tactic?',
 
     // Number
