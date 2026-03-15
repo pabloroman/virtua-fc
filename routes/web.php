@@ -5,6 +5,7 @@ use App\Http\Actions\StartImpersonation;
 use App\Http\Actions\StopImpersonation;
 use App\Http\Views\AdminActivation;
 use App\Http\Views\AdminDashboard;
+use App\Http\Views\AdminGameStats;
 use App\Http\Views\AdminUsers;
 use App\Http\Actions\DeleteGame;
 use App\Http\Actions\AcceptCounterOffer;
@@ -222,6 +223,7 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/', AdminDashboard::class)->name('dashboard');
         Route::get('/users', AdminUsers::class)->name('users');
         Route::get('/activation', AdminActivation::class)->name('activation');
+        Route::get('/game-stats', AdminGameStats::class)->name('game-stats');
         Route::post('/impersonate/{userId}', StartImpersonation::class)->name('impersonate');
     });
 });
