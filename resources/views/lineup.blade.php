@@ -195,13 +195,16 @@
                                                         <div
                                                             x-data="{ get state() { return getGridCellState(col-1, row-1) } }"
                                                             class="absolute transition-colors duration-150"
-                                                            :style="`left: ${((col-1) / gridConfig.cols) * 100}%; top: ${(1 - (row / gridConfig.rows)) * 100}%; width: ${100 / gridConfig.cols}%; height: ${100 / gridConfig.rows}%; ${(positioningSlotId !== null && state === 'valid') ? 'cursor: pointer; pointer-events: auto' : ''}`"
+                                                            :style="`left: ${((col-1) / gridConfig.cols) * 100}%; top: ${(1 - (row / gridConfig.rows)) * 100}%; width: ${100 / gridConfig.cols}%; height: ${100 / gridConfig.rows}%; ${(positioningSlotId !== null && state.startsWith('valid')) ? 'cursor: pointer; pointer-events: auto' : ''}`"
                                                             :class="{
-                                                                [getZoneColorClass(currentSlots.find(s => s.id === (positioningSlotId ?? draggingSlotId))?.role)]: state === 'valid',
+                                                                'bg-blue-500/25': state === 'valid-def',
+                                                                'bg-emerald-500/25': state === 'valid-mid',
+                                                                'bg-red-500/25': state === 'valid-fwd',
+                                                                [getZoneColorClass('Goalkeeper')]: state === 'valid',
                                                                 'bg-surface-800/5': state === 'occupied',
                                                                 'bg-black/15': state === 'invalid',
                                                             }"
-                                                            @click="positioningSlotId !== null && state === 'valid' && handleGridCellClick(col-1, row-1)"
+                                                            @click="positioningSlotId !== null && state.startsWith('valid') && handleGridCellClick(col-1, row-1)"
                                                         ></div>
                                                     </template>
                                                 </template>

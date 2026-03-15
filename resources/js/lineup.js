@@ -572,14 +572,20 @@ export default function lineupManager(config) {
         },
 
         /**
-         * Check if a grid cell is within a slot's valid zone.
+         * Check if a grid cell is valid for a slot.
+         * GK stays locked to its zone; outfield players can go anywhere on the outfield (rows 1-13).
          */
         isValidGridCell(slotLabel, col, row) {
             const gc = this.gridConfig;
             if (!gc) return false;
-            const zone = gc.zones[slotLabel];
-            if (!zone) return false;
-            return col >= zone[0] && col <= zone[1] && row >= zone[2] && row <= zone[3];
+
+            if (slotLabel === 'GK') {
+                const zone = gc.zones['GK'];
+                if (!zone) return false;
+                return col >= zone[0] && col <= zone[1] && row >= zone[2] && row <= zone[3];
+            }
+
+            return col >= 0 && col < gc.cols && row >= 1 && row < gc.rows;
         },
 
         /**
@@ -646,7 +652,7 @@ export default function lineupManager(config) {
 
         /**
          * Get the cell state for a grid cell relative to the currently positioning slot.
-         * Returns: 'valid', 'occupied', 'invalid', or 'neutral'
+         * Returns: 'valid-def', 'valid-mid', 'valid-fwd', 'valid' (GK), 'occupied', 'invalid', or 'neutral'
          */
         getGridCellState(col, row) {
             if (this.positioningSlotId === null && this.draggingSlotId === null) return 'neutral';
@@ -657,7 +663,14 @@ export default function lineupManager(config) {
 
             if (!this.isValidGridCell(slot.label, col, row)) return 'invalid';
             if (this.isCellOccupied(col, row, activeSlotId)) return 'occupied';
-            return 'valid';
+
+            // GK stays simple
+            if (slot.role === 'Goalkeeper') return 'valid';
+
+            // Color outfield cells by zone for visual guidance
+            if (row <= 4) return 'valid-def';
+            if (row <= 9) return 'valid-mid';
+            return 'valid-fwd';
         },
 
         // ----- Drag-and-drop -----
