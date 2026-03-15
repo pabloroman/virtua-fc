@@ -224,9 +224,13 @@
                                             x-show="!slot.player"
                                             @click="assigningSlotId = assigningSlotId === slot.id ? null : slot.id; positioningSlotId = null; if (assigningSlotId !== null) activeLineupTab = 'squad'"
                                             class="w-11 h-11 rounded-full border-2 flex items-center justify-center backdrop-blur-xs cursor-pointer transition-all duration-200"
-                                            :class="assigningSlotId === slot.id
-                                                ? 'border-white bg-surface-800/30 ring-2 ring-white/60 scale-110 animate-pulse'
-                                                : 'border-dashed border-white/40 bg-surface-800/5 hover:border-white/70 hover:bg-surface-800/15'"
+                                            :class="listDragPlayerId
+                                                ? (listDragNearestSlotId === slot.id
+                                                    ? 'border-white bg-surface-800/30 ring-2 ring-white/60 scale-110 animate-pulse'
+                                                    : 'border-dashed border-white/60 bg-surface-800/15')
+                                                : (assigningSlotId === slot.id
+                                                    ? 'border-white bg-surface-800/30 ring-2 ring-white/60 scale-110 animate-pulse'
+                                                    : 'border-dashed border-white/40 bg-surface-800/5 hover:border-white/70 hover:bg-surface-800/15')"
                                         >
                                             <span class="text-[10px] font-semibold tracking-wide" :class="assigningSlotId === slot.id ? 'text-white' : 'text-white/60'" x-text="slot.displayLabel"></span>
                                         </div>
@@ -294,6 +298,13 @@
 
                                 </div> {{-- /pitch-field --}}
 
+                                {{-- List-drag drop zone overlay --}}
+                                <div
+                                    x-show="listDragPlayerId && listDragOverPitch"
+                                    x-cloak
+                                    class="absolute inset-0 z-[5] rounded-inherit border-2 border-dashed border-accent-green/40 bg-accent-green/5 pointer-events-none transition-opacity duration-200"
+                                ></div>
+
                                 {{-- Grid positioning indicator banner --}}
                                 <div
                                     x-show="positioningSlotId !== null"
@@ -324,6 +335,29 @@
 
                     </div>
 
+                    {{-- List-to-pitch drag ghost (fixed position, follows cursor across containers) --}}
+                    <div
+                        x-show="listDragPlayerId && listDragGhostPos"
+                        x-cloak
+                        class="fixed z-50 pointer-events-none flex flex-col items-center transform -translate-x-1/2 -translate-y-1/2"
+                        :style="listDragGhostPos ? `left: ${listDragGhostPos.x}px; top: ${listDragGhostPos.y}px` : ''"
+                    >
+                        <template x-if="listDragPlayerId">
+                            <div class="flex flex-col items-center">
+                                <div class="relative w-11 h-11 rounded-xl shadow-xl border-2 border-white/30 opacity-80"
+                                    :style="getShirtStyle(getPlayerRole(listDragPlayerId))">
+                                    <div class="absolute inset-0 flex items-center justify-center">
+                                        <span class="font-bold text-xs leading-none inline-flex items-center justify-center w-7 h-7 rounded-full"
+                                            :style="getNumberStyle(getPlayerRole(listDragPlayerId))"
+                                            x-text="playersData[listDragPlayerId]?.number || getInitials(playersData[listDragPlayerId]?.name)"></span>
+                                    </div>
+                                </div>
+                                <span class="mt-0.5 text-[8px] font-semibold text-white uppercase tracking-wide leading-tight text-center max-w-[66px] line-clamp-2 break-words drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]"
+                                    x-text="playersData[listDragPlayerId]?.name"></span>
+                            </div>
+                        </template>
+                    </div>
+
                     {{-- CENTER: Available Players sidebar --}}
                     <div class="lg:flex-2 lg:min-w-[280px]" :class="{ 'hidden lg:block': activeLineupTab !== 'squad' }">
                         <div class="bg-surface-800 border border-border-default rounded-xl overflow-hidden" x-data="{ posTab: 'all' }">
@@ -344,7 +378,7 @@
                             </div>
 
                             {{-- Player list --}}
-                            <div>
+                            <div :class="{ 'select-none': listDragPlayerId }">
                                 @foreach([
                                     ['name' => __('squad.goalkeepers'), 'players' => $goalkeepers, 'role' => 'Goalkeeper'],
                                     ['name' => __('squad.defenders'), 'players' => $defenders, 'role' => 'Defender'],
@@ -368,11 +402,13 @@
                                             <div
                                                 x-show="posTab === 'all' || posTab === '{{ $posGroup }}'"
                                                 @click="toggle('{{ $player->id }}', {{ $isUnavailable ? 'true' : 'false' }})"
+                                                @mousedown="startListDrag('{{ $player->id }}', $event)"
                                                 @mouseenter="hoveredPlayerId = '{{ $player->id }}'"
                                                 @mouseleave="hoveredPlayerId = null"
                                                 class="available-player px-3 py-2.5 border-b border-border-default {{ $isUnavailable ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer' }}"
                                                 :class="{
                                                     'bg-accent-blue/10 border-accent-blue/20': isSelected('{{ $player->id }}'),
+                                                    'opacity-30': listDragPlayerId === '{{ $player->id }}',
                                                     'opacity-50': !isSelected('{{ $player->id }}') && selectedCount >= 11 && !{{ $isUnavailable ? 'true' : 'false' }}
                                                 }"
                                             >

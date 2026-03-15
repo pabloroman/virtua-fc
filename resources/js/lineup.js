@@ -31,6 +31,15 @@ export default function lineupManager(config) {
         dragPosition: null, // { x, y } in percentage coordinates during drag
         _pitchEl: null, // reference to pitch container DOM element
 
+        // List-to-pitch drag state
+        listDragPlayerId: null,       // player being dragged from list
+        listDragGhostPos: null,       // {x, y} viewport pixels for fixed ghost
+        listDragOverPitch: false,     // cursor is over pitch element
+        listDragNearestSlotId: null,  // nearest compatible empty slot
+        _listDragMoved: false,        // distance threshold reached (5px)
+        _listDragStartCoords: null,   // {x, y} for distance threshold
+        _listDragPendingId: null,     // player ID pending drag activation
+
         // Dirty tracking: snapshot of initial state to detect unsaved changes
         _initialPlayers: null,
         _initialFormation: null,
@@ -78,6 +87,10 @@ export default function lineupManager(config) {
             // Bound drag handlers (created once, registered lazily during drag)
             this._boundDragMove = (e) => this._onDragMove(e);
             this._boundDragEnd = (e) => this._onDragEnd(e);
+
+            // Bound list-to-pitch drag handlers
+            this._boundListDragMove = (e) => this._onListDragMove(e);
+            this._boundListDragEnd = (e) => this._onListDragEnd(e);
         },
 
         get isDirty() {
@@ -312,6 +325,12 @@ export default function lineupManager(config) {
         // Toggle player selection (from player list)
         toggle(id, isUnavailable) {
             if (isUnavailable) return;
+
+            // Suppress click after a list-to-pitch drag gesture
+            if (this._listDragMoved) {
+                this._listDragMoved = false;
+                return;
+            }
 
             // If an empty slot is waiting for assignment, assign this player to it
             if (this.assigningSlotId !== null && !this.isSelected(id)) {
@@ -744,6 +763,168 @@ export default function lineupManager(config) {
                 this._pitchEl = document.getElementById('pitch-field');
             }
             return this._pitchEl;
+        },
+
+        // =====================================================================
+        // List-to-Pitch Drag (drag from player sidebar to pitch)
+        // =====================================================================
+
+        /**
+         * Get the role string for a player (for getShirtStyle).
+         */
+        getPlayerRole(playerId) {
+            const p = this.playersData[playerId];
+            return p?.positionGroup || 'Midfielder';
+        },
+
+        /**
+         * Start a list-to-pitch drag from a player row.
+         * Uses a 5px threshold before activating to disambiguate from clicks.
+         */
+        startListDrag(playerId, event) {
+            // Desktop only (lg breakpoint = 1024px)
+            if (window.innerWidth < 1024) return;
+            // Guards: already selected, squad full, unavailable
+            if (this.isSelected(playerId)) return;
+            if (this.selectedCount >= 11) return;
+            const player = this.playersData[playerId];
+            if (!player || !player.isAvailable) return;
+
+            event.preventDefault();
+
+            // Enter pending state — not yet dragging until 5px threshold
+            const coords = this._getEventCoords(event);
+            this._listDragPendingId = playerId;
+            this._listDragStartCoords = { x: coords.clientX, y: coords.clientY };
+            this._listDragMoved = false;
+
+            // Clear other interaction modes
+            this.assigningSlotId = null;
+            this.positioningSlotId = null;
+
+            document.addEventListener('mousemove', this._boundListDragMove);
+            document.addEventListener('mouseup', this._boundListDragEnd);
+            document.addEventListener('touchmove', this._boundListDragMove, { passive: false });
+            document.addEventListener('touchend', this._boundListDragEnd);
+        },
+
+        _onListDragMove(event) {
+            if (!this._listDragPendingId && !this.listDragPlayerId) return;
+            event.preventDefault();
+
+            const coords = this._getEventCoords(event);
+
+            // Check 5px threshold before activating drag
+            if (this._listDragPendingId && !this.listDragPlayerId) {
+                const dx = coords.clientX - this._listDragStartCoords.x;
+                const dy = coords.clientY - this._listDragStartCoords.y;
+                if (Math.sqrt(dx * dx + dy * dy) < 5) return;
+
+                // Activate drag
+                this.listDragPlayerId = this._listDragPendingId;
+                this._listDragPendingId = null;
+                this._listDragMoved = true;
+            }
+
+            // Update ghost position (viewport pixels for fixed positioning)
+            this.listDragGhostPos = { x: coords.clientX, y: coords.clientY };
+
+            // Hit-test against pitch element
+            const pitchEl = this._getPitchElement();
+            if (!pitchEl) return;
+
+            const rect = pitchEl.getBoundingClientRect();
+            const overPitch = coords.clientX >= rect.left && coords.clientX <= rect.right
+                           && coords.clientY >= rect.top && coords.clientY <= rect.bottom;
+            this.listDragOverPitch = overPitch;
+
+            // Find nearest compatible empty slot
+            if (overPitch) {
+                this.listDragNearestSlotId = this._findNearestEmptySlot(coords.clientX, coords.clientY);
+            } else {
+                this.listDragNearestSlotId = null;
+            }
+        },
+
+        _onListDragEnd(event) {
+            // Clean up listeners
+            document.removeEventListener('mousemove', this._boundListDragMove);
+            document.removeEventListener('mouseup', this._boundListDragEnd);
+            document.removeEventListener('touchmove', this._boundListDragMove);
+            document.removeEventListener('touchend', this._boundListDragEnd);
+
+            // If threshold was never reached, let click fire normally
+            if (!this.listDragPlayerId) {
+                this._listDragPendingId = null;
+                this._listDragStartCoords = null;
+                return;
+            }
+
+            const playerId = this.listDragPlayerId;
+
+            if (this.listDragOverPitch) {
+                // Select the player
+                this.selectedPlayers.push(playerId);
+
+                if (this.listDragNearestSlotId !== null) {
+                    // Assign to the nearest compatible empty slot
+                    this.manualAssignments = { ...this.manualAssignments, [this.listDragNearestSlotId]: playerId };
+                }
+                // If no nearest slot, auto-assign handles it via slotAssignments computed
+            }
+            // If not over pitch, cancel (don't select)
+
+            // Reset all list-drag state
+            this.listDragPlayerId = null;
+            this.listDragGhostPos = null;
+            this.listDragOverPitch = false;
+            this.listDragNearestSlotId = null;
+            this._listDragPendingId = null;
+            this._listDragStartCoords = null;
+        },
+
+        /**
+         * Find the nearest empty, compatible slot to the cursor position.
+         * Returns slot ID or null.
+         */
+        _findNearestEmptySlot(clientX, clientY) {
+            const pitchEl = this._getPitchElement();
+            if (!pitchEl) return null;
+
+            const rect = pitchEl.getBoundingClientRect();
+            const cursorXPct = ((clientX - rect.left) / rect.width) * 100;
+            const cursorYPct = ((clientY - rect.top) / rect.height) * 100;
+
+            const player = this.playersData[this.listDragPlayerId];
+            if (!player) return null;
+
+            let bestSlotId = null;
+            let bestDist = Infinity;
+
+            for (const slot of this.slotAssignments) {
+                if (slot.player) continue; // skip filled slots
+
+                const compatibility = this.getSlotCompatibility(player.position, slot.label);
+                if (compatibility < 20) continue; // skip incompatible slots
+
+                const pos = this.getEffectivePosition(slot.id);
+                if (!pos) continue;
+
+                // pos.x/pos.y are pitch percentages; screen renders y inverted (top: 100-pos.y%)
+                const slotScreenXPct = pos.x;
+                const slotScreenYPct = 100 - pos.y;
+
+                const dx = cursorXPct - slotScreenXPct;
+                const dy = cursorYPct - slotScreenYPct;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (dist < bestDist) {
+                    bestDist = dist;
+                    bestSlotId = slot.id;
+                }
+            }
+
+            return bestSlotId;
         },
 
     };
