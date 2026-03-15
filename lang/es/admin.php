@@ -47,4 +47,14 @@ return [
     'mode_all' => 'Todos',
     'mode_career' => 'Carrera',
     'mode_tournament' => 'Torneo',
+
+    // Game stats
+    'nav_game_stats' => 'Estadísticas',
+    'game_stats_title' => 'Estadísticas del Juego',
+    'game_stats_description' => 'Descubre cómo juegan los usuarios',
+    'team_popularity' => 'Popularidad de Equipos',
+    'formation_preferences' => 'Formaciones Preferidas',
+    'mentality_distribution' => 'Distribución de Mentalidad',
+    'season_progress' => 'Progreso de Temporadas',
+    'no_data' => 'Sin datos aún',
 ];
