@@ -67,7 +67,7 @@ class FrontendSmokeTest extends TestCase
             'current_matchday' => 1,
             'setup_completed_at' => now(),
             'needs_welcome' => false,
-            'needs_onboarding' => false,
+            'needs_new_season_setup' => false,
             'game_mode' => 'career',
         ]);
 
@@ -394,7 +394,7 @@ class FrontendSmokeTest extends TestCase
     }
 
     // =============================================
-    // Welcome & onboarding (special game state)
+    // Welcome & new-season setup (special game state)
     // =============================================
 
     public function test_welcome_page_loads(): void
@@ -406,12 +406,12 @@ class FrontendSmokeTest extends TestCase
             ->assertOk();
     }
 
-    public function test_onboarding_page_loads(): void
+    public function test_new_season_page_loads(): void
     {
-        $this->game->update(['needs_onboarding' => true]);
+        $this->game->update(['needs_new_season_setup' => true]);
 
         $this->actingAs($this->user)
-            ->get("/game/{$this->game->id}/onboarding")
+            ->get("/game/{$this->game->id}/new-season")
             ->assertOk();
     }
 
@@ -438,7 +438,7 @@ class FrontendSmokeTest extends TestCase
             'current_matchday' => 38,
             'setup_completed_at' => now(),
             'needs_welcome' => false,
-            'needs_onboarding' => false,
+            'needs_new_season_setup' => false,
             'game_mode' => 'career',
         ]);
 
@@ -635,7 +635,7 @@ class FrontendSmokeTest extends TestCase
             'current_date' => '2026-06-01',
             'setup_completed_at' => now(),
             'needs_welcome' => false,
-            'needs_onboarding' => true,
+            'needs_new_season_setup' => true,
             'game_mode' => 'tournament',
         ]);
 
@@ -666,7 +666,7 @@ class FrontendSmokeTest extends TestCase
             'current_date' => '2025-07-15',
             'setup_completed_at' => now(),
             'needs_welcome' => false,
-            'needs_onboarding' => false,
+            'needs_new_season_setup' => false,
             'game_mode' => 'tournament',
         ]);
 

@@ -26,9 +26,9 @@ class ShowGame
             return redirect()->route('game.welcome', $gameId);
         }
 
-        // Redirect to onboarding if setup or onboarding not completed
-        if (!$game->isSetupComplete() || $game->needsOnboarding()) {
-            return redirect()->route('game.onboarding', $gameId);
+        // Redirect to new-season setup if setup or new-season setup not completed
+        if (!$game->isSetupComplete() || $game->needsNewSeasonSetup()) {
+            return redirect()->route('game.new-season', $gameId);
         }
 
         // Show loading screen while season transition runs in background

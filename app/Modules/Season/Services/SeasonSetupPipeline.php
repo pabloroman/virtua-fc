@@ -7,7 +7,7 @@ use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Season\Processors\BudgetProjectionProcessor;
 use App\Modules\Season\Processors\ContinentalAndCupInitProcessor;
 use App\Modules\Season\Processors\LeagueFixtureProcessor;
-use App\Modules\Season\Processors\OnboardingResetProcessor;
+use App\Modules\Season\Processors\NewSeasonResetProcessor;
 use App\Modules\Season\Processors\PreSeasonFixtureProcessor;
 use App\Modules\Season\Processors\SquadCapEnforcementProcessor;
 use App\Modules\Season\Processors\StandingsResetProcessor;
@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Log;
 
 /**
  * Sets up the new season: fixtures, standings, budgets, competitions,
- * academy evaluation, and onboarding. Used by both new game creation
+ * academy evaluation, and new-season setup. Used by both new game creation
  * and season transitions.
  */
 class SeasonSetupPipeline
@@ -33,7 +33,7 @@ class SeasonSetupPipeline
         ContinentalAndCupInitProcessor $competitionInitialization,
         SquadCapEnforcementProcessor $squadCapEnforcement,
         PreSeasonFixtureProcessor $preSeasonFixture,
-        OnboardingResetProcessor $onboardingReset,
+        NewSeasonResetProcessor $newSeasonReset,
     ) {
         $this->processors = [
             $fixtureGeneration,
@@ -43,7 +43,7 @@ class SeasonSetupPipeline
             $competitionInitialization,
             $squadCapEnforcement,
             $preSeasonFixture,
-            $onboardingReset,
+            $newSeasonReset,
         ];
 
         usort($this->processors, fn ($a, $b) => $a->priority() <=> $b->priority());

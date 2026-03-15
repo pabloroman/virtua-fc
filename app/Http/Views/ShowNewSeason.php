@@ -13,7 +13,7 @@ use App\Models\SeasonArchive;
 use App\Models\TeamReputation;
 use App\Support\PositionMapper;
 
-class ShowOnboarding
+class ShowNewSeason
 {
     public function __construct(
         private readonly BudgetProjectionService $projectionService,
@@ -44,8 +44,8 @@ class ShowOnboarding
             ]);
         }
 
-        // If onboarding is complete, redirect to main game
-        if (!$game->needsOnboarding()) {
+        // If new-season setup is complete, redirect to main game
+        if (!$game->needsNewSeasonSetup()) {
             return redirect()->route('show-game', $gameId);
         }
 
@@ -95,7 +95,7 @@ class ShowOnboarding
             $offseasonRecap = $this->buildOffseasonRecap($game, $squad, $reputationLevel);
         }
 
-        return view('onboarding', [
+        return view('new-season', [
             'game' => $game,
             'finances' => $finances,
             'investment' => $investment,

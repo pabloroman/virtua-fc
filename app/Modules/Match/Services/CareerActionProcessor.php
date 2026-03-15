@@ -171,7 +171,7 @@ class CareerActionProcessor
         $month = (int) $game->current_date->format('n');
 
         // Summer window notification is handled at season start
-        // (SetupNewGame + OnboardingResetProcessor). Only detect winter here.
+        // (SetupNewGame + NewSeasonResetProcessor). Only detect winter here.
         if ($month !== 1) {
             return;
         }

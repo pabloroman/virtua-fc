@@ -8,11 +8,11 @@ use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Models\Game;
 
 /**
- * Resets the onboarding flag so the player must configure
+ * Resets the new-season setup flag so the player must configure
  * their investment allocation for the upcoming season.
  * Also notifies about the summer transfer window being open.
  */
-class OnboardingResetProcessor implements SeasonProcessor
+class NewSeasonResetProcessor implements SeasonProcessor
 {
     public function __construct(
         private NotificationService $notificationService,
@@ -29,7 +29,7 @@ class OnboardingResetProcessor implements SeasonProcessor
             return $data;
         }
 
-        $game->update(['needs_onboarding' => true]);
+        $game->update(['needs_new_season_setup' => true]);
 
         $this->notificationService->notifyTransferWindowOpen($game, 'summer');
 

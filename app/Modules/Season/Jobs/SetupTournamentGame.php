@@ -206,7 +206,7 @@ class SetupTournamentGame implements ShouldQueue
                 continue;
             }
 
-            // Skip user's team — their players are created during squad selection onboarding
+            // Skip user's team — their players are created during squad selection
             if ($teamData['uuid'] === $this->teamId) {
                 continue;
             }

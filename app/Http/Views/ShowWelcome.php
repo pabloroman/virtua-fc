@@ -11,10 +11,10 @@ class ShowWelcome
     {
         $game = Game::with('team')->findOrFail($gameId);
 
-        // If welcome is already complete, go to onboarding or game
+        // If welcome is already complete, go to new-season setup or game
         if (!$game->needsWelcome()) {
-            if ($game->needsOnboarding()) {
-                return redirect()->route('game.onboarding', $gameId);
+            if ($game->needsNewSeasonSetup()) {
+                return redirect()->route('game.new-season', $gameId);
             }
             return redirect()->route('show-game', $gameId);
         }

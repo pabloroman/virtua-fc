@@ -13,14 +13,14 @@ class ShowSquadSelection
     {
         $game = Game::with('team')->findOrFail($gameId);
 
-        // Only for tournament mode during onboarding
-        if (!$game->isTournamentMode() || !$game->needsOnboarding()) {
+        // Only for tournament mode during new-season setup
+        if (!$game->isTournamentMode() || !$game->needsNewSeasonSetup()) {
             return redirect()->route('show-game', $gameId);
         }
 
         // Wait for background setup to finish
         if (!$game->isSetupComplete()) {
-            return redirect()->route('game.onboarding', $gameId);
+            return redirect()->route('game.new-season', $gameId);
         }
 
         $candidates = $this->loadCandidates($game);
@@ -38,7 +38,7 @@ class ShowSquadSelection
             }
 
             SaveSquadSelection::createTournamentGamePlayers($game->id, $game->team_id, $allTmIds, $positionByTmId);
-            $game->completeOnboarding();
+            $game->completeNewSeasonSetup();
 
             return redirect()->route('show-game', $game->id)
                 ->with('success', __('squad.squad_confirmed'));

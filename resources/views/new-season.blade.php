@@ -244,7 +244,7 @@
                     :available-surplus="$availableSurplus"
                     :tiers="$tiers"
                     :tier-thresholds="$tierThresholds"
-                    :form-action="route('game.onboarding.complete', $game->id)"
+                    :form-action="route('game.new-season.complete', $game->id)"
                     :submit-label="__('game.begin_season')"
                 />
             </div>

@@ -39,7 +39,7 @@ return [
     'funnel_game_created' => 'Partida creada',
     'funnel_setup_completed' => 'Configuración completada',
     'funnel_welcome_completed' => 'Bienvenida completada',
-    'funnel_onboarding_completed' => 'Onboarding completado',
+    'funnel_onboarding_completed' => 'Configuración de temporada completada',
     'funnel_first_match_played' => 'Primer partido jugado',
     'funnel_matchday_5_reached' => 'Jornada 5 alcanzada',
     'funnel_season_completed' => 'Temporada completada',

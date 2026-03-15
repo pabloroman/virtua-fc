@@ -96,7 +96,7 @@ class BackfillActivationEvents extends Command
 
     private function backfillOnboardingCompleted(): void
     {
-        $rows = Game::where('needs_onboarding', false)
+        $rows = Game::where('needs_new_season_setup', false)
             ->where('game_mode', Game::MODE_CAREER)
             ->whereNotNull('setup_completed_at')
             ->get()

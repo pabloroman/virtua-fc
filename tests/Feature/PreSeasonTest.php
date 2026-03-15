@@ -47,7 +47,7 @@ class PreSeasonTest extends TestCase
             'current_matchday' => 0,
             'pre_season' => true,
             'setup_completed_at' => now(),
-            'needs_onboarding' => false,
+            'needs_new_season_setup' => false,
             'needs_welcome' => false,
         ]);
     }

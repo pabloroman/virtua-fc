@@ -21,7 +21,7 @@ use Illuminate\Database\Eloquent\Builder;
  * @property int $current_matchday
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property bool $needs_onboarding
+ * @property bool $needs_new_season_setup
  * @property bool $needs_welcome
  * @property bool $pre_season
  * @property string|null $season_goal
@@ -77,7 +77,7 @@ use Illuminate\Database\Eloquent\Builder;
  * @method static Builder<static>|Game whereDefaultMentality($value)
  * @method static Builder<static>|Game whereGameMode($value)
  * @method static Builder<static>|Game whereId($value)
- * @method static Builder<static>|Game whereNeedsOnboarding($value)
+ * @method static Builder<static>|Game whereNeedsNewSeasonSetup($value)
  * @method static Builder<static>|Game wherePlayerName($value)
  * @method static Builder<static>|Game whereSeason($value)
  * @method static Builder<static>|Game whereSeasonGoal($value)
@@ -117,7 +117,7 @@ class Game extends Model
         'current_date',
         'current_matchday',
         'season_goal',
-        'needs_onboarding',
+        'needs_new_season_setup',
         'needs_welcome',
         'pre_season',
         'pending_actions',
@@ -131,7 +131,7 @@ class Game extends Model
         'current_date' => 'date',
         'current_matchday' => 'integer',
         'season_goal' => 'string',
-        'needs_onboarding' => 'boolean',
+        'needs_new_season_setup' => 'boolean',
         'needs_welcome' => 'boolean',
         'pre_season' => 'boolean',
         'pending_actions' => 'array',
@@ -720,7 +720,7 @@ class Game extends Model
     }
 
     // ==========================================
-    // Welcome & Onboarding
+    // Welcome & New Season Setup
     // ==========================================
 
     /**
@@ -740,19 +740,19 @@ class Game extends Model
     }
 
     /**
-     * Check if the game needs onboarding (season budget allocation).
+     * Check if the game needs new-season setup (season budget allocation).
      */
-    public function needsOnboarding(): bool
+    public function needsNewSeasonSetup(): bool
     {
-        return $this->needs_onboarding ?? false;
+        return $this->needs_new_season_setup ?? false;
     }
 
     /**
-     * Complete the onboarding process.
+     * Complete the new-season setup process.
      */
-    public function completeOnboarding(): void
+    public function completeNewSeasonSetup(): void
     {
-        $this->update(['needs_onboarding' => false]);
+        $this->update(['needs_new_season_setup' => false]);
     }
 
     // ==========================================

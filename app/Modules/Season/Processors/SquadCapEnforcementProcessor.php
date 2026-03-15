@@ -11,7 +11,7 @@ class SquadCapEnforcementProcessor implements SeasonProcessor
 {
     public function priority(): int
     {
-        return 109; // After ContinentalAndCupInit (106), before OnboardingReset (110)
+        return 109; // After ContinentalAndCupInit (106), before NewSeasonReset (110)
     }
 
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData

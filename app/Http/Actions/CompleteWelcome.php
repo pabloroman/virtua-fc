@@ -17,13 +17,13 @@ class CompleteWelcome
         $game = Game::findOrFail($gameId);
 
         if (!$game->needsWelcome()) {
-            return redirect()->route('game.onboarding', $gameId);
+            return redirect()->route('game.new-season', $gameId);
         }
 
         $game->completeWelcome();
 
         $this->activationTracker->record($game->user_id, ActivationEvent::EVENT_WELCOME_COMPLETED, $gameId, $game->game_mode);
 
-        return redirect()->route('game.onboarding', $gameId);
+        return redirect()->route('game.new-season', $gameId);
     }
 }

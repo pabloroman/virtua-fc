@@ -39,14 +39,14 @@ echo "==> Step 3: Processing SetupNewGame job..."
 php artisan queue:work --stop-when-empty --timeout=120
 echo ""
 
-echo "==> Step 4: Skipping welcome, onboarding, and pre-season..."
+echo "==> Step 4: Skipping welcome, new-season setup, and pre-season..."
 php artisan tinker --execute="
     \$game = \App\Models\Game::find('$GAME_ID');
     \$game->needs_welcome = false;
-    \$game->needs_onboarding = false;
+    \$game->needs_new_season_setup = false;
     \$game->pre_season = false;
     \$game->save();
-    echo 'Done: needs_welcome=false, needs_onboarding=false, pre_season=false';
+    echo 'Done: needs_welcome=false, needs_new_season_setup=false, pre_season=false';
 "
 echo ""
 

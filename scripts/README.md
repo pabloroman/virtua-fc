@@ -27,7 +27,7 @@ This takes 1-3 minutes and does the following:
 1. **Seeds reference data** (`php artisan app:seed-reference-data --fresh`) — full production profile with La Liga, Segunda Division, Copa del Rey, Champions League, etc. Creates a default user `test@test.com` / `password`.
 2. **Creates a career game** with Real Madrid via `GameCreationService`.
 3. **Processes the setup job** (`queue:work --stop-when-empty`) — generates fixtures, standings, budgets, etc.
-4. **Skips onboarding flows** — disables the welcome screen, onboarding wizard, and pre-season so the video starts in the main game UI.
+4. **Skips setup flows** — disables the welcome screen, new-season setup, and pre-season so the video starts in the main game UI.
 5. **Simulates 8 matchdays** — creates realistic standings, results, and player form.
 6. **Outputs `GAME_ID` and `COMPETITION_ID`** — copy these for the next step.
 

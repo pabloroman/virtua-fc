@@ -20,7 +20,7 @@ class SaveSquadSelection
     {
         $game = Game::with('team')->findOrFail($gameId);
 
-        if (!$game->isTournamentMode() || !$game->needsOnboarding()) {
+        if (!$game->isTournamentMode() || !$game->needsNewSeasonSetup()) {
             return redirect()->route('show-game', $gameId);
         }
 
@@ -49,7 +49,7 @@ class SaveSquadSelection
 
         self::createTournamentGamePlayers($gameId, $game->team_id, $selectedTmIds, $positionByTmId);
 
-        $game->completeOnboarding();
+        $game->completeNewSeasonSetup();
 
         return redirect()->route('show-game', $gameId)
             ->with('success', __('squad.squad_confirmed'));

@@ -39,7 +39,7 @@ return [
     'funnel_game_created' => 'Game created',
     'funnel_setup_completed' => 'Setup completed',
     'funnel_welcome_completed' => 'Welcome completed',
-    'funnel_onboarding_completed' => 'Onboarding completed',
+    'funnel_onboarding_completed' => 'New season setup completed',
     'funnel_first_match_played' => 'First match played',
     'funnel_matchday_5_reached' => 'Matchday 5 reached',
     'funnel_season_completed' => 'Season completed',

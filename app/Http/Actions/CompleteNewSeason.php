@@ -9,7 +9,7 @@ use App\Modules\Finance\Services\BudgetAllocationService;
 use App\Modules\Season\Services\ActivationTracker;
 use Illuminate\Http\Request;
 
-class CompleteOnboarding
+class CompleteNewSeason
 {
     public function __construct(
         private BudgetAllocationService $budgetService,
@@ -20,14 +20,14 @@ class CompleteOnboarding
     {
         $game = Game::findOrFail($gameId);
 
-        // Ensure onboarding is still needed
-        if (!$game->needsOnboarding()) {
+        // Ensure new-season setup is still needed
+        if (!$game->needsNewSeasonSetup()) {
             return redirect()->route('show-game', $gameId);
         }
 
         $finances = $game->currentFinances;
         if (!$finances) {
-            return redirect()->route('game.onboarding', $gameId)
+            return redirect()->route('game.new-season', $gameId)
                 ->with('error', __('messages.budget_no_projections'));
         }
 
@@ -42,13 +42,13 @@ class CompleteOnboarding
         try {
             $this->budgetService->allocate($game, $validated);
         } catch (\InvalidArgumentException $e) {
-            return redirect()->route('game.onboarding', $gameId)
+            return redirect()->route('game.new-season', $gameId)
                 ->with('error', __($e->getMessage()));
         }
 
-        // Complete onboarding
+        // Complete new-season setup
         $game->refresh()->setRelations([]);
-        $game->completeOnboarding();
+        $game->completeNewSeasonSetup();
 
         $this->activationTracker->record($game->user_id, ActivationEvent::EVENT_ONBOARDING_COMPLETED, $gameId, $game->game_mode);
 

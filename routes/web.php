@@ -9,7 +9,7 @@ use App\Http\Views\AdminGameStats;
 use App\Http\Views\AdminUsers;
 use App\Http\Actions\DeleteGame;
 use App\Http\Actions\AcceptCounterOffer;
-use App\Http\Actions\CompleteOnboarding;
+use App\Http\Actions\CompleteNewSeason;
 use App\Http\Actions\CompleteWelcome;
 use App\Http\Actions\AcceptTransferOffer;
 use App\Http\Actions\SignFreeAgent;
@@ -54,7 +54,7 @@ use App\Http\Views\SelectTeam;
 use App\Http\Views\ShowCalendar;
 use App\Http\Views\ShowFinances;
 use App\Http\Views\ShowGame;
-use App\Http\Views\ShowOnboarding;
+use App\Http\Views\ShowNewSeason;
 use App\Http\Views\ShowWelcome;
 use App\Http\Views\ShowCompetition;
 use App\Http\Views\ShowLiveMatch;
@@ -190,11 +190,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/game/{gameId}/welcome', ShowWelcome::class)->name('game.welcome');
         Route::post('/game/{gameId}/welcome', CompleteWelcome::class)->name('game.welcome.complete');
 
-        // Onboarding (season budget allocation)
-        Route::get('/game/{gameId}/onboarding', ShowOnboarding::class)->name('game.onboarding');
-        Route::post('/game/{gameId}/onboarding', CompleteOnboarding::class)->name('game.onboarding.complete');
+        // New Season (season budget allocation)
+        Route::get('/game/{gameId}/new-season', ShowNewSeason::class)->name('game.new-season');
+        Route::post('/game/{gameId}/new-season', CompleteNewSeason::class)->name('game.new-season.complete');
 
-        // Squad Selection (Tournament mode onboarding)
+        // Squad Selection (Tournament mode new-season setup)
         Route::get('/game/{gameId}/squad-selection', ShowSquadSelection::class)->name('game.squad-selection');
         Route::post('/game/{gameId}/squad-selection', SaveSquadSelection::class)->name('game.squad-selection.save');
 

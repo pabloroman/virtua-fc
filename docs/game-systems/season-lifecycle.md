@@ -36,7 +36,7 @@ Season transitions run two pipelines sequentially. Each processor implements `Se
 
 **Phase 2 — Budget & academy** (priority 50-55): Generate budget projections, trigger academy evaluation.
 
-**Phase 3 — Competitions & onboarding** (priority 106-110): Initialize continental/cup competitions, enforce squad cap, reset onboarding.
+**Phase 3 — Competitions & new-season setup** (priority 106-110): Initialize continental/cup competitions, enforce squad cap, reset new-season setup flag.
 
 ## Key Files
 
