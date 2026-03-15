@@ -423,7 +423,6 @@
                                                         </div>
                                                         <div class="flex items-center gap-2 mt-0.5">
                                                             <span class="text-[9px] text-text-muted font-heading uppercase">{{ $posAbbrev }}</span>
-                                                            <span class="text-[9px] text-text-secondary">{{ $player->overall_score }}</span>
                                                             @if(!$isUnavailable)
                                                             <div class="flex items-center gap-1">
                                                                 <div class="w-8 h-1 rounded-full bg-surface-600 overflow-hidden">
@@ -434,6 +433,7 @@
                                                             @endif
                                                         </div>
                                                     </div>
+                                                    <x-rating-badge :value="$player->overall_score" size="sm" class="shrink-0" />
                                                     @if(!$isUnavailable)
                                                     <div class="w-5 h-5 rounded-sm border flex items-center justify-center transition-colors shrink-0"
                                                         :class="isSelected('{{ $player->id }}') ? 'border-accent-blue bg-accent-blue' : 'border-border-strong'">
