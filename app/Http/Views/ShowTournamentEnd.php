@@ -11,15 +11,10 @@ use App\Models\GameStanding;
 use App\Models\MatchEvent;
 use App\Models\Team;
 use App\Models\TournamentChallenge;
-use App\Modules\Squad\Services\SquadHighlightsService;
 use Illuminate\Support\Collection;
 
 class ShowTournamentEnd
 {
-    public function __construct(
-        private readonly SquadHighlightsService $highlightsService,
-    ) {}
-
     public function __invoke(string $gameId)
     {
         $game = Game::with('team')->findOrFail($gameId);
@@ -138,9 +133,6 @@ class ShowTournamentEnd
             ->orderByDesc('appearances')
             ->get();
 
-        // Squad highlights (bold picks, omissions, top scorer)
-        $squadHighlights = $this->highlightsService->compute($game);
-
         // Existing challenge for this game (if any)
         $existingChallenge = TournamentChallenge::where('game_id', $gameId)->first();
 
@@ -162,7 +154,6 @@ class ShowTournamentEnd
             'topAssisters' => $topAssisters,
             'topGoalkeepers' => $topGoalkeepers,
             'yourSquadStats' => $yourSquadStats,
-            'squadHighlights' => $squadHighlights,
             'existingChallenge' => $existingChallenge,
         ]);
     }

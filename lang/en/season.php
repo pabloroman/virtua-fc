@@ -157,12 +157,6 @@ return [
     'copied_to_clipboard' => 'Copied!',
     'your_squad_stats' => 'Your Squad Stats',
 
-    // Squad highlights
-    'bold_picks' => 'Bold Picks',
-    'bold_picks_desc' => 'Underrated players you selected who stepped up on the big stage.',
-    'key_omissions' => 'Key Omissions',
-    'key_omissions_desc' => 'Top-rated players you left out of your squad.',
-
     // Share card
     'create_share_card' => 'Create Share Card',
     'generating_image' => 'Generating image',

@@ -3,7 +3,6 @@
     'competition',
     'resultLabel',
     'yourRecord',
-    'squadHighlights',
     'isChampion' => false,
 ])
 
@@ -16,8 +15,6 @@ $resultColorMap = [
     'quarter_finalist'  => ['bg' => '#1e40af', 'text' => '#FFFFFF', 'accent' => '#93c5fd'],
 ];
 $colors = $resultColorMap[$resultLabel] ?? ['bg' => '#334155', 'text' => '#FFFFFF', 'accent' => '#94a3b8'];
-$boldPicks = $squadHighlights['bold_picks'] ?? [];
-$topScorer = $squadHighlights['top_scorer'] ?? null;
 @endphp
 
 {{-- Share Card: self-contained with inline styles for html2canvas --}}
@@ -66,42 +63,6 @@ $topScorer = $squadHighlights['top_scorer'] ?? null;
             </div>
             @endforeach
         </div>
-
-        {{-- Top Scorer --}}
-        @if($topScorer)
-        <div style="background: rgba(255,255,255,0.08); border-radius: 10px; padding: 10px 14px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between;">
-            <div>
-                <div style="font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: {{ $colors['accent'] }}; font-weight: 600; margin-bottom: 2px;">{{ __('season.top_scorer') }}</div>
-                <div style="font-size: 15px; font-weight: 700;">{{ $topScorer['name'] }}</div>
-            </div>
-            <div style="text-align: right;">
-                <span style="font-size: 28px; font-weight: 800; color: {{ $colors['accent'] }};">{{ $topScorer['goals'] }}</span>
-                <span style="font-size: 10px; color: rgba(255,255,255,0.5); margin-left: 2px;">{{ __('season.goals') }}</span>
-            </div>
-        </div>
-        @endif
-
-        {{-- Bold Picks --}}
-        @if(count($boldPicks) > 0)
-        <div style="margin-bottom: 16px;">
-            <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: {{ $colors['accent'] }}; font-weight: 600; margin-bottom: 8px;">
-                {{ __('season.bold_picks') }}
-            </div>
-            @foreach($boldPicks as $pick)
-            <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 0; {{ !$loop->last ? 'border-bottom: 1px solid rgba(255,255,255,0.06);' : '' }}">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 13px; font-weight: 600;">{{ $pick['name'] }}</span>
-                    <span style="font-size: 10px; color: rgba(255,255,255,0.35); background: rgba(255,255,255,0.08); padding: 1px 6px; border-radius: 4px;">{{ $pick['overall'] }} OVR</span>
-                </div>
-                <div style="font-size: 12px; color: rgba(255,255,255,0.6);">
-                    @if($pick['goals'] > 0){{ $pick['goals'] }}G @endif
-                    @if($pick['assists'] > 0){{ $pick['assists'] }}A @endif
-                    {{ $pick['appearances'] }}{{ __('season.played_abbr') }}
-                </div>
-            </div>
-            @endforeach
-        </div>
-        @endif
 
         {{-- Footer --}}
         <div style="position: absolute; bottom: 20px; left: 28px; right: 28px; display: flex; align-items: center; justify-content: space-between;">

@@ -17,7 +17,6 @@ use Illuminate\Support\Str;
  * @property string $result_label
  * @property array $stats
  * @property array $squad_player_ids
- * @property array $squad_highlights
  */
 class TournamentChallenge extends Model
 {
@@ -32,13 +31,11 @@ class TournamentChallenge extends Model
         'result_label',
         'stats',
         'squad_player_ids',
-        'squad_highlights',
     ];
 
     protected $casts = [
         'stats' => 'array',
         'squad_player_ids' => 'array',
-        'squad_highlights' => 'array',
     ];
 
     public function game(): BelongsTo

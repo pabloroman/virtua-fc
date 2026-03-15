@@ -157,12 +157,6 @@ return [
     'copied_to_clipboard' => '¡Copiado!',
     'your_squad_stats' => 'Estadísticas de tu plantilla',
 
-    // Squad highlights
-    'bold_picks' => 'Apuestas Arriesgadas',
-    'bold_picks_desc' => 'Jugadores infravalorados que seleccionaste y que brillaron en el gran escenario.',
-    'key_omissions' => 'Grandes Ausencias',
-    'key_omissions_desc' => 'Jugadores mejor valorados que dejaste fuera de tu convocatoria.',
-
     // Share card
     'create_share_card' => 'Crear Tarjeta para Compartir',
     'generating_image' => 'Generando imagen',

@@ -3,9 +3,6 @@
 /** @var App\Models\Team $team */
 
 $stats = $challenge->stats;
-$highlights = $challenge->squad_highlights;
-$boldPicks = $highlights['bold_picks'] ?? [];
-$topScorer = $highlights['top_scorer'] ?? null;
 
 $resultColorMap = [
     'champion'          => ['gradient' => 'from-amber-600 via-amber-500 to-amber-400', 'badge_bg' => 'bg-amber-100 text-amber-800', 'accent' => 'text-amber-600'],
@@ -94,38 +91,6 @@ $colors = $resultColorMap[$challenge->result_label] ?? ['gradient' => 'from-slat
                     @endforeach
                 </div>
 
-                {{-- Top Scorer --}}
-                @if($topScorer)
-                <div class="flex items-center justify-between bg-amber-50 rounded-lg p-3 mb-4">
-                    <div>
-                        <div class="text-[10px] text-amber-700 font-semibold uppercase tracking-wide">{{ __('season.top_scorer') }}</div>
-                        <div class="text-sm font-bold text-slate-900">{{ $topScorer['name'] }}</div>
-                    </div>
-                    <div>
-                        <span class="text-xl font-bold text-amber-600">{{ $topScorer['goals'] }}</span>
-                        <span class="text-xs text-amber-600/70">{{ __('season.goals') }}</span>
-                    </div>
-                </div>
-                @endif
-
-                {{-- Bold Picks --}}
-                @if(count($boldPicks) > 0)
-                <div>
-                    <div class="text-[10px] text-violet-700 font-semibold uppercase tracking-wide mb-2">{{ __('season.bold_picks') }}</div>
-                    @foreach($boldPicks as $pick)
-                    <div class="flex items-center justify-between py-1.5 {{ !$loop->last ? 'border-b border-slate-100' : '' }}">
-                        <div class="flex items-center gap-2">
-                            <span class="text-sm font-medium text-slate-800">{{ $pick['name'] }}</span>
-                            <span class="text-[10px] text-violet-600 bg-violet-50 px-1.5 py-0.5 rounded font-semibold">{{ $pick['overall'] }} OVR</span>
-                        </div>
-                        <div class="text-xs text-slate-400">
-                            @if($pick['goals'] > 0){{ $pick['goals'] }}G @endif
-                            @if($pick['assists'] > 0){{ $pick['assists'] }}A @endif
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
-                @endif
             </div>
 
             {{-- Challenge CTA Card --}}

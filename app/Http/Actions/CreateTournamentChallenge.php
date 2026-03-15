@@ -4,15 +4,11 @@ namespace App\Http\Actions;
 
 use App\Models\Game;
 use App\Models\GameMatch;
+use App\Models\GamePlayer;
 use App\Models\TournamentChallenge;
-use App\Modules\Squad\Services\SquadHighlightsService;
 
 class CreateTournamentChallenge
 {
-    public function __construct(
-        private readonly SquadHighlightsService $highlightsService,
-    ) {}
-
     public function __invoke(string $gameId)
     {
         $game = Game::with('team')->findOrFail($gameId);
@@ -36,11 +32,15 @@ class CreateTournamentChallenge
         // Compute team record
         $yourRecord = $this->computeTeamRecord($game);
 
-        // Compute squad highlights
-        $squadHighlights = $this->highlightsService->compute($game);
-
         // Get squad player transfermarkt IDs
-        $squadPlayerIds = $this->highlightsService->getSquadTransfermarktIds($game);
+        $squadPlayerIds = GamePlayer::where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->with('player')
+            ->get()
+            ->pluck('player.transfermarkt_id')
+            ->filter()
+            ->values()
+            ->toArray();
 
         $challenge = TournamentChallenge::create([
             'game_id' => $gameId,
@@ -51,7 +51,6 @@ class CreateTournamentChallenge
             'result_label' => $resultLabel,
             'stats' => $yourRecord,
             'squad_player_ids' => $squadPlayerIds,
-            'squad_highlights' => $squadHighlights,
         ]);
 
         return back()->with('challenge_url', $challenge->getShareUrl());

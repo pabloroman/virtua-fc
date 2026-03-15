@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('result_label'); // champion, runner_up, semi_finalist, etc.
             $table->json('stats'); // {played, won, drawn, lost, goals_for, goals_against}
             $table->json('squad_player_ids'); // array of transfermarkt_ids
-            $table->json('squad_highlights'); // {bold_picks: [...], omissions: [...], top_scorer: {...}}
             $table->timestamps();
 
             $table->index('share_token');

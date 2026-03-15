@@ -16,7 +16,6 @@
 /** @var \Illuminate\Support\Collection $topAssisters */
 /** @var \Illuminate\Support\Collection $topGoalkeepers */
 /** @var \Illuminate\Support\Collection $yourSquadStats */
-/** @var array $squadHighlights */
 /** @var App\Models\TournamentChallenge|null $existingChallenge */
 
 $isChampion = $championTeamId === $game->team_id;
@@ -594,61 +593,7 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
             </div>
 
             {{-- ============================================ --}}
-            {{-- SECTION 4: Bold Picks Highlight              --}}
-            {{-- ============================================ --}}
-            @if(!empty($squadHighlights['bold_picks']))
-            <div class="mt-8 mb-6">
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                    <div class="bg-gradient-to-r from-violet-50 to-purple-100/50 px-5 py-4">
-                        <div class="flex items-center gap-2 mb-1">
-                            <span class="text-lg">&#9889;</span>
-                            <span class="text-xs text-violet-700 font-semibold uppercase tracking-wide">{{ __('season.bold_picks') }}</span>
-                        </div>
-                        <p class="text-xs text-violet-600/70">{{ __('season.bold_picks_desc') }}</p>
-                    </div>
-                    <div class="px-5 py-3 space-y-2">
-                        @foreach($squadHighlights['bold_picks'] as $pick)
-                        <div class="flex items-center justify-between gap-3">
-                            <div class="flex items-center gap-2 min-w-0">
-                                <span class="text-sm font-semibold text-slate-900 truncate">{{ $pick['name'] }}</span>
-                                <span class="shrink-0 text-[10px] text-violet-600 bg-violet-100 px-1.5 py-0.5 rounded font-semibold">{{ $pick['overall'] }} OVR</span>
-                            </div>
-                            <div class="shrink-0 flex items-center gap-2 text-xs text-slate-500">
-                                @if($pick['goals'] > 0)<span class="font-semibold text-slate-700">{{ $pick['goals'] }}G</span>@endif
-                                @if($pick['assists'] > 0)<span class="font-semibold text-slate-700">{{ $pick['assists'] }}A</span>@endif
-                                <span>{{ $pick['appearances'] }}{{ __('season.played_abbr') }}</span>
-                            </div>
-                        </div>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-            @endif
-
-            @if(!empty($squadHighlights['omissions']))
-            <div class="mb-6">
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                    <div class="bg-gradient-to-r from-rose-50 to-red-100/50 px-5 py-4">
-                        <div class="flex items-center gap-2 mb-1">
-                            <span class="text-lg">&#10060;</span>
-                            <span class="text-xs text-rose-700 font-semibold uppercase tracking-wide">{{ __('season.key_omissions') }}</span>
-                        </div>
-                        <p class="text-xs text-rose-600/70">{{ __('season.key_omissions_desc') }}</p>
-                    </div>
-                    <div class="px-5 py-3 space-y-2">
-                        @foreach($squadHighlights['omissions'] as $omission)
-                        <div class="flex items-center justify-between gap-3">
-                            <span class="text-sm font-medium text-slate-700 truncate">{{ $omission['name'] }}</span>
-                            <span class="shrink-0 text-[10px] text-rose-600 bg-rose-100 px-1.5 py-0.5 rounded font-semibold">{{ $omission['overall'] }} OVR</span>
-                        </div>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-            @endif
-
-            {{-- ============================================ --}}
-            {{-- SECTION 5: Share & Challenge CTAs             --}}
+            {{-- SECTION 4: Share & Challenge CTAs             --}}
             {{-- ============================================ --}}
             <div class="mt-10 mb-10" x-data="shareCard()">
 
@@ -659,7 +604,6 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                         :competition="$competition"
                         :resultLabel="$resultLabel"
                         :yourRecord="$yourRecord"
-                        :squadHighlights="$squadHighlights"
                         :isChampion="$isChampion"
                     />
                 </div>
