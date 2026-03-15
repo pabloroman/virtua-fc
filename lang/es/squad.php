@@ -352,6 +352,13 @@ return [
     'substitutes' => 'Suplentes',
     'lineup_overview' => 'Resumen de Alineación',
 
+    // Tactical presets
+    'presets' => 'Guardadas',
+    'save_preset' => 'Guardar táctica',
+    'preset_name' => 'Nombre',
+    'preset_name_placeholder' => 'Ej: Titulares, Copa, Suplentes...',
+    'preset_delete_confirm' => '¿Eliminar esta táctica guardada?',
+
     // Dorsales
     'number' => 'Dorsal',
 ];

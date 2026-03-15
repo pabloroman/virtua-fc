@@ -116,6 +116,13 @@ return [
     'tracking_stopped' => 'Stopped tracking :player.',
     'tracking_slots_full' => 'All tracking slots are in use. Stop tracking another player first.',
 
+    // Tactical presets
+    'preset_saved' => 'Tactic saved.',
+    'preset_updated' => 'Tactic updated.',
+    'preset_deleted' => 'Tactic deleted.',
+    'preset_loaded' => '":name" tactic loaded.',
+    'preset_limit_reached' => 'Maximum of 3 saved tactics reached.',
+
     // Game management
     'game_deleted' => 'Game deleted successfully.',
     'game_limit_reached' => 'You have reached the maximum limit of 3 games. Delete one to create another.',

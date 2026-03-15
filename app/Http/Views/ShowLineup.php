@@ -26,7 +26,7 @@ class ShowLineup
 
     public function __invoke(string $gameId)
     {
-        $game = Game::with(['team', 'tactics'])->findOrFail($gameId);
+        $game = Game::with(['team', 'tactics', 'tacticalPresets'])->findOrFail($gameId);
         $match = $game->next_match;
 
         abort_unless($match, 404);
@@ -270,6 +270,7 @@ class ShowLineup
             'userRadar' => $userRadar,
             'opponentRadar' => $opponentRadar,
             'matchesMissedMap' => $matchesMissedMap,
+            'tacticalPresets' => $game->tacticalPresets,
         ]);
     }
 

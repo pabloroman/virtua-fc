@@ -276,6 +276,11 @@ class Game extends Model
         return $this->hasOne(GameTactics::class);
     }
 
+    public function tacticalPresets(): HasMany
+    {
+        return $this->hasMany(GameTacticalPreset::class)->orderBy('sort_order');
+    }
+
     public function matches(): HasMany
     {
         return $this->hasMany(GameMatch::class);

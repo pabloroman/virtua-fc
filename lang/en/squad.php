@@ -352,6 +352,13 @@ return [
     'substitutes' => 'Substitutes',
     'lineup_overview' => 'Lineup Overview',
 
+    // Tactical presets
+    'presets' => 'Presets',
+    'save_preset' => 'Save tactic',
+    'preset_name' => 'Name',
+    'preset_name_placeholder' => 'E.g.: Starters, Cup, Subs...',
+    'preset_delete_confirm' => 'Delete this saved tactic?',
+
     // Number
     'number' => 'Number',
 ];
