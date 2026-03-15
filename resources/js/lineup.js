@@ -592,13 +592,21 @@ export default function lineupManager(config) {
          * Check if a cell is occupied by another slot.
          */
         isCellOccupied(col, row, excludeSlotId) {
+            return this._findSlotAtCell(col, row, excludeSlotId) !== null;
+        },
+
+        /**
+         * Find the slot occupying a cell (excluding a given slot).
+         * Returns the slot object or null.
+         */
+        _findSlotAtCell(col, row, excludeSlotId) {
             const assignments = this.slotAssignments;
             for (const slot of assignments) {
                 if (slot.id === excludeSlotId || !slot.player) continue;
                 const cell = this.getSlotCell(slot.id);
-                if (cell && cell.col === col && cell.row === row) return true;
+                if (cell && cell.col === col && cell.row === row) return slot;
             }
-            return false;
+            return null;
         },
 
         /**
@@ -616,16 +624,30 @@ export default function lineupManager(config) {
         },
 
         /**
-         * Place a slot at a specific grid cell.
+         * Place a slot at a specific grid cell. If occupied, swap positions.
          */
         setSlotGridPosition(slotId, col, row) {
             const slot = this.currentSlots.find(s => s.id === slotId);
             if (!slot) return;
 
             if (!this.isValidGridCell(slot.label, col, row)) return;
-            if (this.isCellOccupied(col, row, slotId)) return;
 
-            this.pitchPositions = { ...this.pitchPositions, [String(slotId)]: [col, row] };
+            const occupying = this._findSlotAtCell(col, row, slotId);
+            const newPositions = { ...this.pitchPositions };
+
+            if (occupying) {
+                // Don't swap with GK
+                if (occupying.role === 'Goalkeeper') return;
+
+                // Move occupying slot to dragged slot's old cell
+                const draggedCell = this.getSlotCell(slotId);
+                if (draggedCell) {
+                    newPositions[String(occupying.id)] = [draggedCell.col, draggedCell.row];
+                }
+            }
+
+            newPositions[String(slotId)] = [col, row];
+            this.pitchPositions = newPositions;
             this.positioningSlotId = null;
         },
 
@@ -662,7 +684,10 @@ export default function lineupManager(config) {
             if (!slot) return 'neutral';
 
             if (!this.isValidGridCell(slot.label, col, row)) return 'invalid';
-            if (this.isCellOccupied(col, row, activeSlotId)) return 'occupied';
+
+            // Occupied by GK = blocked; occupied by outfield = swappable (treat as valid)
+            const occupying = this._findSlotAtCell(col, row, activeSlotId);
+            if (occupying && occupying.role === 'Goalkeeper') return 'occupied';
 
             // GK stays simple
             if (slot.role === 'Goalkeeper') return 'valid';
