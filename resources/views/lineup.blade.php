@@ -54,6 +54,7 @@
             coach_opponent_defensive_setup: @js(__('squad.coach_opponent_defensive_setup')),
             coach_opponent_attacking_setup: @js(__('squad.coach_opponent_attacking_setup')),
             coach_opponent_deep_block: @js(__('squad.coach_opponent_deep_block')),
+            coach_out_of_position: @js(__('squad.coach_out_of_position')),
             mentality_defensive: @js(__('squad.mentality_defensive')),
             mentality_balanced: @js(__('squad.mentality_balanced')),
             mentality_attacking: @js(__('squad.mentality_attacking')),
@@ -124,7 +125,7 @@
                         <span class="text-[10px] text-text-muted uppercase tracking-wider shrink-0">{{ __('squad.formation') }}</span>
                         <div class="flex gap-1">
                             <template x-for="option in formationOptions" :key="'fo-' + option.value">
-                                <x-pill-button size="sm"
+                                <x-pill-button
                                     type="button"
                                     @click="selectedFormation = option.value; updateAutoLineup()"
                                     class="formation-option rounded-md border border-border-strong font-heading tracking-wide font-semibold"
@@ -158,7 +159,7 @@
                 <div class="mt-4 flex flex-col lg:flex-row gap-4">
 
                     {{-- LEFT: Pitch + Coach (sticky on desktop) --}}
-                    <div class="lg:flex-2 space-y-4"
+                    <div class="lg:flex-2 space-y-4 lg:sticky lg:top-4 lg:self-start"
                          :class="{ 'hidden lg:block': activeLineupTab !== 'pitch' }">
 
                         {{-- PITCH VISUALIZATION --}}
@@ -195,13 +196,16 @@
                                                         <div
                                                             x-data="{ get state() { return getGridCellState(col-1, row-1) } }"
                                                             class="absolute transition-colors duration-150"
-                                                            :style="`left: ${((col-1) / gridConfig.cols) * 100}%; top: ${(1 - (row / gridConfig.rows)) * 100}%; width: ${100 / gridConfig.cols}%; height: ${100 / gridConfig.rows}%; ${(positioningSlotId !== null && state === 'valid') ? 'cursor: pointer; pointer-events: auto' : ''}`"
+                                                            :style="`left: ${((col-1) / gridConfig.cols) * 100}%; top: ${(1 - (row / gridConfig.rows)) * 100}%; width: ${100 / gridConfig.cols}%; height: ${100 / gridConfig.rows}%; ${(positioningSlotId !== null && state.startsWith('valid')) ? 'cursor: pointer; pointer-events: auto' : ''}`"
                                                             :class="{
-                                                                [getZoneColorClass(currentSlots.find(s => s.id === (positioningSlotId ?? draggingSlotId))?.role)]: state === 'valid',
+                                                                'bg-blue-500/25': state === 'valid-def',
+                                                                'bg-emerald-500/25': state === 'valid-mid',
+                                                                'bg-red-500/25': state === 'valid-fwd',
+                                                                [getZoneColorClass('Goalkeeper')]: state === 'valid',
                                                                 'bg-surface-800/5': state === 'occupied',
                                                                 'bg-black/15': state === 'invalid',
                                                             }"
-                                                            @click="positioningSlotId !== null && state === 'valid' && handleGridCellClick(col-1, row-1)"
+                                                            @click="positioningSlotId !== null && state.startsWith('valid') && handleGridCellClick(col-1, row-1)"
                                                         ></div>
                                                     </template>
                                                 </template>
@@ -224,9 +228,13 @@
                                             x-show="!slot.player"
                                             @click="assigningSlotId = assigningSlotId === slot.id ? null : slot.id; positioningSlotId = null; if (assigningSlotId !== null) activeLineupTab = 'squad'"
                                             class="w-11 h-11 rounded-full border-2 flex items-center justify-center backdrop-blur-xs cursor-pointer transition-all duration-200"
-                                            :class="assigningSlotId === slot.id
-                                                ? 'border-white bg-surface-800/30 ring-2 ring-white/60 scale-110 animate-pulse'
-                                                : 'border-dashed border-white/40 bg-surface-800/5 hover:border-white/70 hover:bg-surface-800/15'"
+                                            :class="listDragPlayerId
+                                                ? (listDragNearestSlotId === slot.id
+                                                    ? 'border-white bg-surface-800/30 ring-2 ring-white/60 scale-110 animate-pulse'
+                                                    : 'border-dashed border-white/60 bg-surface-800/15')
+                                                : (assigningSlotId === slot.id
+                                                    ? 'border-white bg-surface-800/30 ring-2 ring-white/60 scale-110 animate-pulse'
+                                                    : 'border-dashed border-white/40 bg-surface-800/5 hover:border-white/70 hover:bg-surface-800/15')"
                                         >
                                             <span class="text-[10px] font-semibold tracking-wide" :class="assigningSlotId === slot.id ? 'text-white' : 'text-white/60'" x-text="slot.displayLabel"></span>
                                         </div>
@@ -261,6 +269,25 @@
                                                         'bg-accent-orange text-white': slot.player?.overallScore < 60,
                                                     }"
                                                     x-text="slot.player?.overallScore"></span>
+
+                                                {{-- Remove button (visible on hover / repositioning mode on mobile) --}}
+                                                <button
+                                                    type="button"
+                                                    @mousedown.stop @touchstart.stop
+                                                    @click.stop="removeFromSlot(slot.player?.id); positioningSlotId = null"
+                                                    class="absolute -top-1.5 -left-1.5 w-[18px] h-[18px] rounded-full bg-red-500 text-white flex items-center justify-center shadow-sm transition-opacity duration-150"
+                                                    :class="positioningSlotId === slot.id ? 'opacity-100' : 'opacity-0 group-hover/slot:opacity-100'"
+                                                >
+                                                    <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                                                </button>
+
+                                                {{-- Compatibility dot: hidden=natural/good (60+), yellow=acceptable (40-59), red=poor (<40) --}}
+                                                <span
+                                                    x-show="slot.compatibility > 0 && slot.compatibility < 60"
+                                                    x-cloak
+                                                    class="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full shadow-sm border border-black/20"
+                                                    :class="slot.compatibility < 40 ? 'bg-accent-red' : 'bg-accent-gold'"
+                                                ></span>
                                             </div>
 
                                             {{-- Player name --}}
@@ -294,6 +321,13 @@
 
                                 </div> {{-- /pitch-field --}}
 
+                                {{-- List-drag drop zone overlay --}}
+                                <div
+                                    x-show="listDragPlayerId && listDragOverPitch"
+                                    x-cloak
+                                    class="absolute inset-0 z-[5] rounded-inherit border-2 border-dashed border-accent-green/40 bg-accent-green/5 pointer-events-none transition-opacity duration-200"
+                                ></div>
+
                                 {{-- Grid positioning indicator banner --}}
                                 <div
                                     x-show="positioningSlotId !== null"
@@ -324,6 +358,29 @@
 
                     </div>
 
+                    {{-- List-to-pitch drag ghost (fixed position, follows cursor across containers) --}}
+                    <div
+                        x-show="listDragPlayerId && listDragGhostPos"
+                        x-cloak
+                        class="fixed z-50 pointer-events-none flex flex-col items-center transform -translate-x-1/2 -translate-y-1/2"
+                        :style="listDragGhostPos ? `left: ${listDragGhostPos.x}px; top: ${listDragGhostPos.y}px` : ''"
+                    >
+                        <template x-if="listDragPlayerId">
+                            <div class="flex flex-col items-center">
+                                <div class="relative w-11 h-11 rounded-xl shadow-xl border-2 border-white/30 opacity-80"
+                                    :style="getShirtStyle(getPlayerRole(listDragPlayerId))">
+                                    <div class="absolute inset-0 flex items-center justify-center">
+                                        <span class="font-bold text-xs leading-none inline-flex items-center justify-center w-7 h-7 rounded-full"
+                                            :style="getNumberStyle(getPlayerRole(listDragPlayerId))"
+                                            x-text="playersData[listDragPlayerId]?.number || getInitials(playersData[listDragPlayerId]?.name)"></span>
+                                    </div>
+                                </div>
+                                <span class="mt-0.5 text-[8px] font-semibold text-white uppercase tracking-wide leading-tight text-center max-w-[66px] line-clamp-2 break-words drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]"
+                                    x-text="playersData[listDragPlayerId]?.name"></span>
+                            </div>
+                        </template>
+                    </div>
+
                     {{-- CENTER: Available Players sidebar --}}
                     <div class="lg:flex-2 lg:min-w-[280px]" :class="{ 'hidden lg:block': activeLineupTab !== 'squad' }">
                         <div class="bg-surface-800 border border-border-default rounded-xl overflow-hidden" x-data="{ posTab: 'all' }">
@@ -344,7 +401,7 @@
                             </div>
 
                             {{-- Player list --}}
-                            <div>
+                            <div :class="{ 'select-none': listDragPlayerId }">
                                 @foreach([
                                     ['name' => __('squad.goalkeepers'), 'players' => $goalkeepers, 'role' => 'Goalkeeper'],
                                     ['name' => __('squad.defenders'), 'players' => $defenders, 'role' => 'Defender'],
@@ -368,11 +425,13 @@
                                             <div
                                                 x-show="posTab === 'all' || posTab === '{{ $posGroup }}'"
                                                 @click="toggle('{{ $player->id }}', {{ $isUnavailable ? 'true' : 'false' }})"
+                                                @mousedown="startListDrag('{{ $player->id }}', $event)"
                                                 @mouseenter="hoveredPlayerId = '{{ $player->id }}'"
                                                 @mouseleave="hoveredPlayerId = null"
                                                 class="available-player px-3 py-2.5 border-b border-border-default {{ $isUnavailable ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer' }}"
                                                 :class="{
                                                     'bg-accent-blue/10 border-accent-blue/20': isSelected('{{ $player->id }}'),
+                                                    'opacity-30': listDragPlayerId === '{{ $player->id }}',
                                                     'opacity-50': !isSelected('{{ $player->id }}') && selectedCount >= 11 && !{{ $isUnavailable ? 'true' : 'false' }}
                                                 }"
                                             >
@@ -387,7 +446,6 @@
                                                         </div>
                                                         <div class="flex items-center gap-2 mt-0.5">
                                                             <span class="text-[9px] text-text-muted font-heading uppercase">{{ $posAbbrev }}</span>
-                                                            <span class="text-[9px] text-text-secondary">{{ $player->overall_score }}</span>
                                                             @if(!$isUnavailable)
                                                             <div class="flex items-center gap-1">
                                                                 <div class="w-8 h-1 rounded-full bg-surface-600 overflow-hidden">
@@ -398,6 +456,7 @@
                                                             @endif
                                                         </div>
                                                     </div>
+                                                    <x-rating-badge :value="$player->overall_score" size="sm" class="shrink-0" />
                                                     @if(!$isUnavailable)
                                                     <div class="w-5 h-5 rounded-sm border flex items-center justify-center transition-colors shrink-0"
                                                         :class="isSelected('{{ $player->id }}') ? 'border-accent-blue bg-accent-blue' : 'border-border-strong'">
