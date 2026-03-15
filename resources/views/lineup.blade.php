@@ -124,7 +124,7 @@
                         <span class="text-[10px] text-text-muted uppercase tracking-wider shrink-0">{{ __('squad.formation') }}</span>
                         <div class="flex gap-1">
                             <template x-for="option in formationOptions" :key="'fo-' + option.value">
-                                <x-pill-button size="sm"
+                                <x-pill-button
                                     type="button"
                                     @click="selectedFormation = option.value; updateAutoLineup()"
                                     class="formation-option rounded-md border border-border-strong font-heading tracking-wide font-semibold"
