@@ -54,6 +54,7 @@
             coach_opponent_defensive_setup: @js(__('squad.coach_opponent_defensive_setup')),
             coach_opponent_attacking_setup: @js(__('squad.coach_opponent_attacking_setup')),
             coach_opponent_deep_block: @js(__('squad.coach_opponent_deep_block')),
+            coach_out_of_position: @js(__('squad.coach_out_of_position')),
             mentality_defensive: @js(__('squad.mentality_defensive')),
             mentality_balanced: @js(__('squad.mentality_balanced')),
             mentality_attacking: @js(__('squad.mentality_attacking')),
@@ -279,6 +280,14 @@
                                                 >
                                                     <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                                                 </button>
+
+                                                {{-- Compatibility dot: hidden=natural/good (60+), yellow=acceptable (40-59), red=poor (<40) --}}
+                                                <span
+                                                    x-show="slot.compatibility > 0 && slot.compatibility < 60"
+                                                    x-cloak
+                                                    class="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full shadow-sm border border-black/20"
+                                                    :class="slot.compatibility < 40 ? 'bg-accent-red' : 'bg-accent-gold'"
+                                                ></span>
                                             </div>
 
                                             {{-- Player name --}}

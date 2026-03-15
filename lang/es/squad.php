@@ -105,6 +105,7 @@ return [
     'coach_opponent_defensive_setup' => 'Rival previsto con :formation (:mentality). Considera un enfoque ofensivo para desbloquearlos.',
     'coach_opponent_attacking_setup' => 'Rival previsto con :formation (:mentality). Dejarán espacios — una defensa sólida puede aprovecharlos.',
     'coach_opponent_deep_block' => 'Rival con 5 defensas. Amplitud y paciencia serán clave.',
+    'coach_out_of_position' => ':names fuera de posición. Rendirán peor en el partido.',
     'mentality_defensive' => 'Defensiva',
     'mentality_balanced' => 'Equilibrada',
     'mentality_attacking' => 'Ofensiva',
