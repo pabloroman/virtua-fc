@@ -265,6 +265,17 @@
                                                         'bg-accent-orange text-white': slot.player?.overallScore < 60,
                                                     }"
                                                     x-text="slot.player?.overallScore"></span>
+
+                                                {{-- Remove button (visible on hover / repositioning mode on mobile) --}}
+                                                <button
+                                                    type="button"
+                                                    @mousedown.stop @touchstart.stop
+                                                    @click.stop="removeFromSlot(slot.player?.id); positioningSlotId = null"
+                                                    class="absolute -top-1.5 -left-1.5 w-[18px] h-[18px] rounded-full bg-red-500 text-white flex items-center justify-center shadow-sm transition-opacity duration-150"
+                                                    :class="positioningSlotId === slot.id ? 'opacity-100' : 'opacity-0 group-hover/slot:opacity-100'"
+                                                >
+                                                    <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                                                </button>
                                             </div>
 
                                             {{-- Player name --}}
