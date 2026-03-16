@@ -36,6 +36,8 @@ class ProfileUpdateRequest extends FormRequest
             ],
             'bio' => ['nullable', 'string', 'max:160'],
             'is_profile_public' => ['boolean'],
+            'country' => ['nullable', 'string', 'size:2'],
+            'province' => ['nullable', 'string', 'max:50', 'required_if:country,ES'],
             'locale' => ['required', 'string', Rule::in(config('app.supported_locales'))],
         ];
     }

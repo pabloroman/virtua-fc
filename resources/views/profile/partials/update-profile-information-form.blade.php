@@ -6,6 +6,8 @@
       x-data="{
           name: '{{ old('name', $user->name) }}',
           bio: '{{ old('bio', $user->bio ?? '') }}',
+          country: '{{ old('country', $user->country ?? '') }}',
+          province: '{{ old('province', $user->province ?? '') }}',
           get initials() {
               let parts = this.name.trim().split(/\s+/).map(w => w.charAt(0)).join('');
               return parts.length > 2 ? parts.charAt(0) + parts.charAt(parts.length - 1) : parts;
@@ -67,6 +69,30 @@
                   placeholder="{{ __('profile.bio_hint') }}">{{ old('bio', $user->bio) }}</textarea>
         <p class="mt-1 text-xs text-text-muted text-right"><span x-text="bio.length">{{ strlen(old('bio', $user->bio ?? '')) }}</span>/160</p>
         <x-input-error class="mt-2" :messages="$errors->get('bio')" />
+    </div>
+
+    <div>
+        <x-input-label for="country" :value="__('profile.country')" />
+        <select id="country" name="country" x-model="country"
+                class="mt-1 block w-full bg-surface-700 border border-border-strong text-text-primary focus:border-accent-blue focus:ring-accent-blue rounded-lg shadow-xs text-sm min-h-[44px]">
+            <option value="">{{ __('profile.country_placeholder') }}</option>
+            @foreach(\App\Support\ProfileCountries::all() as $code => $name)
+                <option value="{{ $code }}">{{ $name }}</option>
+            @endforeach
+        </select>
+        <x-input-error class="mt-2" :messages="$errors->get('country')" />
+    </div>
+
+    <div x-show="country === 'ES'" x-cloak>
+        <x-input-label for="province" :value="__('profile.province')" />
+        <select id="province" name="province" x-model="province"
+                class="mt-1 block w-full bg-surface-700 border border-border-strong text-text-primary focus:border-accent-blue focus:ring-accent-blue rounded-lg shadow-xs text-sm min-h-[44px]">
+            <option value="">{{ __('profile.province_placeholder') }}</option>
+            @foreach(\App\Support\SpanishProvinces::all() as $province)
+                <option value="{{ $province }}">{{ $province }}</option>
+            @endforeach
+        </select>
+        <x-input-error class="mt-2" :messages="$errors->get('province')" />
     </div>
 
     <div>

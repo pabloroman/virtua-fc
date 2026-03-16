@@ -23,6 +23,8 @@ use Illuminate\Notifications\Notifiable;
  * @property string|null $username
  * @property string|null $bio
  * @property bool $is_profile_public
+ * @property string|null $country
+ * @property string|null $province
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Game> $games
  * @property-read int|null $games_count
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
@@ -62,6 +64,8 @@ class User extends Authenticatable
         'username',
         'bio',
         'is_profile_public',
+        'country',
+        'province',
     ];
 
     /**
