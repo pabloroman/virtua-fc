@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * @property int $id
@@ -23,6 +24,7 @@ use Illuminate\Notifications\Notifiable;
  * @property string|null $username
  * @property string|null $bio
  * @property bool $is_profile_public
+ * @property string|null $avatar
  * @property string|null $country
  * @property string|null $province
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Game> $games
@@ -50,6 +52,8 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
+    public const AVATARS = ['blue', 'green', 'orange', 'pink', 'purple', 'red', 'sky', 'turquoise', 'wine', 'yellow'];
+
     /**
      * The attributes that are mass assignable.
      *
@@ -64,6 +68,7 @@ class User extends Authenticatable
         'username',
         'bio',
         'is_profile_public',
+        'avatar',
         'country',
         'province',
     ];
@@ -110,13 +115,8 @@ class User extends Authenticatable
             : $initials;
     }
 
-    public function getAvatarColor(): string
+    public function getAvatarUrl(): string
     {
-        $palette = [
-            'blue', 'emerald', 'violet', 'amber',
-            'rose', 'cyan', 'orange', 'fuchsia',
-        ];
-
-        return $palette[crc32($this->username ?? $this->name) % count($palette)];
+        return Storage::disk('assets')->url('managers/'.($this->avatar ?? 'blue').'.png');
     }
 }

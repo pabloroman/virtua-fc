@@ -76,6 +76,7 @@
 
                             {{-- Navigation links --}}
                             <nav class="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-text-muted">
+                                @if(auth()->user())
                                 <a href="{{ route('select-team') }}" class="hover:text-text-secondary transition-colors">{{ __('app.new_game') }}</a>
                                 <a href="{{ route('dashboard') }}" class="hover:text-text-secondary transition-colors">{{ __('app.load_game') }}</a>
                                 <form method="POST" action="{{ route('logout') }}" class="inline">
@@ -84,6 +85,7 @@
                                 </form>
                                 @if(auth()->user()?->is_admin)
                                     <a href="{{ route('admin.dashboard') }}" class="hover:text-text-secondary transition-colors">Admin</a>
+                                @endif
                                 @endif
                                 <x-theme-toggle />
                             </nav>

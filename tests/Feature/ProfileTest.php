@@ -30,21 +30,20 @@ class ProfileTest extends TestCase
             ->patch('/profile', [
                 'name' => 'Test User',
                 'username' => 'testuser',
-                'email' => 'test@example.com',
+                'avatar' => 'blue',
                 'locale' => 'es',
             ]);
 
         $response
             ->assertSessionHasNoErrors()
-            ->assertRedirect('/profile');
+            ->assertRedirect('/dashboard');
 
         $user->refresh();
 
         $this->assertSame('Test User', $user->name);
         $this->assertSame('testuser', $user->username);
-        $this->assertSame('test@example.com', $user->email);
+        $this->assertSame('blue', $user->avatar);
         $this->assertSame('es', $user->locale);
-        $this->assertNull($user->email_verified_at);
     }
 
     public function test_email_verification_status_is_unchanged_when_the_email_address_is_unchanged(): void
@@ -56,15 +55,13 @@ class ProfileTest extends TestCase
             ->patch('/profile', [
                 'name' => 'Test User',
                 'username' => 'testuser',
-                'email' => $user->email,
+                'avatar' => 'red',
                 'locale' => 'en',
             ]);
 
         $response
             ->assertSessionHasNoErrors()
-            ->assertRedirect('/profile');
-
-        $this->assertNotNull($user->refresh()->email_verified_at);
+            ->assertRedirect('/dashboard');
     }
 
     public function test_user_can_delete_their_account(): void
@@ -145,7 +142,7 @@ class ProfileTest extends TestCase
             ->patch('/profile', [
                 'name' => $user->name,
                 'username' => 'takenname',
-                'email' => $user->email,
+                'avatar' => 'blue',
                 'locale' => 'es',
             ]);
 

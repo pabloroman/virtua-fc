@@ -1,8 +1,8 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-text-primary leading-tight">
-            {{ $user->name }}
-        </h2>
+        <div class="flex justify-center">
+            <x-application-logo />
+        </div>
     </x-slot>
 
     <div class="py-6 md:py-12">
@@ -10,10 +10,20 @@
             {{-- Profile Header --}}
             <x-section-card>
                 <div class="p-5 flex flex-col items-center text-center gap-3">
-                    <x-avatar :name="$user->name" size="xl" />
+                    @if($user->avatar)
+                        <div class="size-20 rounded-full overflow-hidden flex items-start justify-center">
+                            <img src="{{ $user->getAvatarUrl() }}" alt="{{ $user->username }}" class="size-28 max-w-none -mt-1">
+                        </div>
+                    @else
+                        <div class="size-20 rounded-full bg-surface-700 flex items-center justify-center">
+                            <svg class="w-10 h-10 text-text-muted" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                            </svg>
+                        </div>
+                    @endif
 
                     <div>
-                        <h3 class="text-lg font-heading font-bold text-text-primary">{{ $user->name }}</h3>
+                        <h3 class="text-2xl font-heading font-bold text-text-primary">{{ $user->name }}</h3>
                         @if($user->username)
                             <span class="text-sm text-text-muted">{{ '@' . $user->username }}</span>
                         @endif
