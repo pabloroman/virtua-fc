@@ -15,7 +15,7 @@ class EnsureGameOwnership
         $gameId = $request->route('gameId');
 
         if ($gameId) {
-            $ownerId = Cache::remember("game_owner:{$gameId}", 60, function () use ($gameId) {
+            $ownerId = Cache::rememberForever("game_owner:{$gameId}", function () use ($gameId) {
                 return Game::where('id', $gameId)->value('user_id');
             });
 
