@@ -55,8 +55,9 @@ class ShowCompetition
             ->orderBy('position')
             ->get();
 
-        // Get form (last 5 results) for each team
-        $teamForms = $this->getTeamForms($game->id, $competition->id, $standings->pluck('team_id'));
+        $teamForms = $standings->mapWithKeys(fn ($s) => [
+            $s->team_id => $s->form ? str_split($s->form) : []
+        ])->all();
 
         // Top scorers in this competition (from match events)
         $topScorers = $this->getCompetitionTopScorers($game->id, $competition->id);
@@ -112,7 +113,9 @@ class ShowCompetition
             ->orderBy('position')
             ->get();
 
-        $teamForms = $this->getTeamForms($game->id, $competition->id, $standings->pluck('team_id'));
+        $teamForms = $standings->mapWithKeys(fn ($s) => [
+            $s->team_id => $s->form ? str_split($s->form) : []
+        ])->all();
 
         $topScorers = $this->getCompetitionTopScorers($game->id, $competition->id);
 
@@ -206,7 +209,9 @@ class ShowCompetition
             ->orderBy('position')
             ->get();
 
-        $teamForms = $this->getTeamForms($game->id, $competition->id, $standings->pluck('team_id'));
+        $teamForms = $standings->mapWithKeys(fn ($s) => [
+            $s->team_id => $s->form ? str_split($s->form) : []
+        ])->all();
         $topScorers = $this->getCompetitionTopScorers($game->id, $competition->id);
 
         $groupedStandings = $standings->whereNotNull('group_label')->isNotEmpty()
@@ -269,49 +274,6 @@ class ShowCompetition
             'playerTie' => $playerTie,
             'knockoutStatus' => $knockoutStatus,
         ]);
-    }
-
-    /**
-     * Get the last 5 match results for each team.
-     *
-     * @return array<string, array<string>> Team ID => array of results ('W', 'D', 'L')
-     */
-    private function getTeamForms(string $gameId, string $competitionId, $teamIds): array
-    {
-        // Fetch all played matches in a single query instead of one per team
-        $allMatches = GameMatch::where('game_id', $gameId)
-            ->where('competition_id', $competitionId)
-            ->where('played', true)
-            ->orderByDesc('scheduled_date')
-            ->get();
-
-        $forms = [];
-
-        foreach ($teamIds as $teamId) {
-            $teamMatches = $allMatches->filter(function ($match) use ($teamId) {
-                return $match->home_team_id === $teamId || $match->away_team_id === $teamId;
-            })->take(5);
-
-            $form = [];
-            foreach ($teamMatches as $match) {
-                $isHome = $match->home_team_id === $teamId;
-                $teamScore = $isHome ? $match->home_score : $match->away_score;
-                $oppScore = $isHome ? $match->away_score : $match->home_score;
-
-                if ($teamScore > $oppScore) {
-                    $form[] = 'W';
-                } elseif ($teamScore < $oppScore) {
-                    $form[] = 'L';
-                } else {
-                    $form[] = 'D';
-                }
-            }
-
-            // Reverse so oldest is first (left to right = oldest to newest)
-            $forms[$teamId] = array_reverse($form);
-        }
-
-        return $forms;
     }
 
     /**

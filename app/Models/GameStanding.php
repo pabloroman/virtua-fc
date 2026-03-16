@@ -61,6 +61,7 @@ class GameStanding extends Model
         'goals_for',
         'goals_against',
         'points',
+        'form',
     ];
 
     protected $casts = [
