@@ -421,4 +421,14 @@ class CountryCodeMapper
     {
         return array_keys(self::$countryToCode);
     }
+
+    /**
+     * Get the full name-to-code mapping.
+     *
+     * @return array<string, string>
+     */
+    public static function getMap(): array
+    {
+        return self::$countryToCode;
+    }
 }

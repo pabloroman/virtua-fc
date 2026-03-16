@@ -102,5 +102,39 @@
                 </li>
             @endforeach
         </ul>
+
+        {{-- Manager Profile --}}
+        <div class="mt-10">
+            <h3 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary mb-6">{{ __('profile.your_manager_profile') }}</h3>
+
+            @if($user->username)
+                <a href="{{ route('profile.edit') }}" class="block group">
+                    <div class="flex items-center gap-4 rounded-lg bg-surface-800 border border-border-default p-5 transition hover:border-accent-blue/50">
+                        <div class="size-14 rounded-full overflow-hidden shrink-0 flex items-start justify-center">
+                            <img src="{{ $user->getAvatarUrl() }}" alt="{{ $user->username }}" class="size-20 max-w-none -mt-1">
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <p class="font-heading font-semibold text-text-primary text-base tracking-wide truncate">{{ $user->username }}</p>
+                            @if($user->country)
+                                <p class="text-sm text-text-secondary truncate">{{ \Locale::getDisplayRegion('und_'.$user->country, app()->getLocale()) }}</p>
+                            @endif
+                        </div>
+                        <span class="text-xs text-text-muted group-hover:text-accent-blue transition shrink-0">{{ __('profile.edit_profile') }}</span>
+                    </div>
+                </a>
+            @else
+                <a href="{{ route('profile.edit') }}" class="block group">
+                    <div class="flex flex-col items-center gap-3 rounded-lg bg-surface-800 border border-dashed border-border-strong p-8 transition hover:border-accent-blue/50">
+                        <div class="w-14 h-14 rounded-full bg-surface-700 flex items-center justify-center">
+                            <svg class="w-7 h-7 text-text-muted" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                            </svg>
+                        </div>
+                        <p class="text-sm text-text-secondary">{{ __('profile.no_profile_yet') }}</p>
+                        <span class="text-sm font-semibold text-accent-blue group-hover:underline">{{ __('profile.create_profile') }}</span>
+                    </div>
+                </a>
+            @endif
+        </div>
     </div>
 </x-app-layout>

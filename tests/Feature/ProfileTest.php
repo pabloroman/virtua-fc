@@ -29,20 +29,21 @@ class ProfileTest extends TestCase
             ->actingAs($user)
             ->patch('/profile', [
                 'name' => 'Test User',
-                'email' => 'test@example.com',
+                'username' => 'testuser',
+                'avatar' => 'blue',
                 'locale' => 'es',
             ]);
 
         $response
             ->assertSessionHasNoErrors()
-            ->assertRedirect('/profile');
+            ->assertRedirect('/dashboard');
 
         $user->refresh();
 
         $this->assertSame('Test User', $user->name);
-        $this->assertSame('test@example.com', $user->email);
+        $this->assertSame('testuser', $user->username);
+        $this->assertSame('blue', $user->avatar);
         $this->assertSame('es', $user->locale);
-        $this->assertNull($user->email_verified_at);
     }
 
     public function test_email_verification_status_is_unchanged_when_the_email_address_is_unchanged(): void
@@ -53,15 +54,14 @@ class ProfileTest extends TestCase
             ->actingAs($user)
             ->patch('/profile', [
                 'name' => 'Test User',
-                'email' => $user->email,
+                'username' => 'testuser',
+                'avatar' => 'red',
                 'locale' => 'en',
             ]);
 
         $response
             ->assertSessionHasNoErrors()
-            ->assertRedirect('/profile');
-
-        $this->assertNotNull($user->refresh()->email_verified_at);
+            ->assertRedirect('/dashboard');
     }
 
     public function test_user_can_delete_their_account(): void
@@ -98,5 +98,54 @@ class ProfileTest extends TestCase
             ->assertRedirect('/profile');
 
         $this->assertNotNull($user->fresh());
+    }
+
+    public function test_public_profile_is_accessible(): void
+    {
+        $user = User::factory()->create([
+            'username' => 'publicmanager',
+            'is_profile_public' => true,
+        ]);
+
+        $response = $this->get('/manager/publicmanager');
+
+        $response->assertOk();
+    }
+
+    public function test_private_profile_returns_404(): void
+    {
+        $user = User::factory()->create([
+            'username' => 'privatemanager',
+            'is_profile_public' => false,
+        ]);
+
+        $response = $this->get('/manager/privatemanager');
+
+        $response->assertNotFound();
+    }
+
+    public function test_profile_is_public_by_default(): void
+    {
+        $user = User::factory()->create();
+
+        $this->assertTrue($user->is_profile_public);
+    }
+
+    public function test_username_must_be_unique(): void
+    {
+        $existingUser = User::factory()->create(['username' => 'takenname']);
+        $user = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->from('/profile')
+            ->patch('/profile', [
+                'name' => $user->name,
+                'username' => 'takenname',
+                'avatar' => 'blue',
+                'locale' => 'es',
+            ]);
+
+        $response->assertSessionHasErrors('username');
     }
 }

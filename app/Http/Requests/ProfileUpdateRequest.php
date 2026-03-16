@@ -17,14 +17,19 @@ class ProfileUpdateRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'email' => [
+            'username' => [
                 'required',
                 'string',
+                'alpha_num',
+                'min:3',
+                'max:30',
                 'lowercase',
-                'email',
-                'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
+            'avatar' => ['required', 'string', Rule::in(User::AVATARS)],
+            'bio' => ['nullable', 'string', 'max:160'],
+            'country' => ['nullable', 'string', 'size:2'],
+            'province' => ['nullable', 'string', 'max:50', 'required_if:country,ES'],
             'locale' => ['required', 'string', Rule::in(config('app.supported_locales'))],
         ];
     }
