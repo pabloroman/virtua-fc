@@ -3,6 +3,7 @@
 namespace App\Http\Views;
 
 use App\Modules\Competition\Services\CalendarService;
+use App\Modules\Match\DTOs\MatchdayAdvanceResult;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Season\Jobs\ProcessSeasonTransition;
 use App\Models\CupTie;
@@ -52,6 +53,34 @@ class ShowGame
                 'game' => $game,
                 'title' => __('game.processing_career_actions'),
                 'message' => __('game.processing_career_actions_message'),
+            ]);
+        }
+
+        // Matchday advance completed — consume result and redirect
+        if ($advanceResult = $game->matchday_advance_result) {
+            $game->update(['matchday_advance_result' => null]);
+            $result = MatchdayAdvanceResult::fromArray($advanceResult);
+
+            return match ($result->type) {
+                'live_match' => redirect()->route('game.live-match', [
+                    'gameId' => $gameId,
+                    'matchId' => $result->matchId,
+                ]),
+                'season_complete' => redirect()->route('game.season-end', $gameId),
+                'done' => redirect()->route('show-game', $gameId),
+                'blocked' => $result->pendingAction && $result->pendingAction['route']
+                    ? redirect()->route($result->pendingAction['route'], $gameId)->with('warning', __('messages.action_required'))
+                    : redirect()->route('show-game', $gameId)->with('warning', __('messages.action_required')),
+            };
+        }
+
+        // Show loading screen while matchday advance runs in background
+        if ($game->isAdvancingMatchday()) {
+            return view('game-loading', [
+                'game' => $game,
+                'title' => __('game.simulating_matches'),
+                'message' => __('game.simulating_matches_message'),
+                'showCrest' => true,
             ]);
         }
 

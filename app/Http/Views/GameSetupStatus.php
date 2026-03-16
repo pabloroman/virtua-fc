@@ -3,6 +3,7 @@
 namespace App\Http\Views;
 
 use App\Models\Game;
+use App\Modules\Match\Jobs\ProcessMatchdayAdvance;
 use App\Modules\Season\Jobs\ProcessSeasonTransition;
 use App\Modules\Season\Jobs\SetupNewGame;
 use Illuminate\Http\JsonResponse;
@@ -34,10 +35,17 @@ class GameSetupStatus
         // Recovery: clear flag if career actions are stuck for > 2 minutes
         $game->clearStuckCareerActions();
 
+        // Recovery: re-dispatch if matchday advance is stuck for > 2 minutes
+        if ($game->isAdvancingMatchday() && $game->matchday_advancing_at->lt(now()->subMinutes(2))) {
+            ProcessMatchdayAdvance::dispatch($game->id);
+            $game->update(['matchday_advancing_at' => now()]);
+        }
+
         return response()->json([
             'ready' => $game->isSetupComplete()
                 && !$game->isTransitioningSeason()
-                && !$game->isProcessingCareerActions(),
+                && !$game->isProcessingCareerActions()
+                && !$game->isAdvancingMatchday(),
         ]);
     }
 }

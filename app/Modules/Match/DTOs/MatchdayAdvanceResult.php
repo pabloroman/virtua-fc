@@ -29,4 +29,22 @@ readonly class MatchdayAdvanceResult
     {
         return new self(type: 'done');
     }
+
+    public function toArray(): array
+    {
+        return [
+            'type' => $this->type,
+            'matchId' => $this->matchId,
+            'pendingAction' => $this->pendingAction,
+        ];
+    }
+
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            type: $data['type'],
+            matchId: $data['matchId'] ?? null,
+            pendingAction: $data['pendingAction'] ?? null,
+        );
+    }
 }

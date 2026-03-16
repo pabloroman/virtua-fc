@@ -125,6 +125,8 @@ class Game extends Model
         'season_transitioning_at',
         'career_actions_processing_at',
         'pending_finalization_match_id',
+        'matchday_advancing_at',
+        'matchday_advance_result',
     ];
 
     protected $casts = [
@@ -138,6 +140,8 @@ class Game extends Model
         'setup_completed_at' => 'datetime',
         'season_transitioning_at' => 'datetime',
         'career_actions_processing_at' => 'datetime',
+        'matchday_advancing_at' => 'datetime',
+        'matchday_advance_result' => 'array',
     ];
 
     // ==========================================
@@ -167,6 +171,33 @@ class Game extends Model
     public function isProcessingCareerActions(): bool
     {
         return $this->career_actions_processing_at !== null;
+    }
+
+    public function isAdvancingMatchday(): bool
+    {
+        return $this->matchday_advancing_at !== null;
+    }
+
+    /**
+     * Clear a stuck matchday advance flag (> 2 minutes old).
+     * Returns true if the flag was cleared.
+     */
+    public function clearStuckMatchdayAdvance(): bool
+    {
+        if (! $this->isAdvancingMatchday()) {
+            return false;
+        }
+
+        if (! $this->matchday_advancing_at->lt(now()->subMinutes(2))) {
+            return false;
+        }
+
+        $this->update([
+            'matchday_advancing_at' => null,
+            'matchday_advance_result' => null,
+        ]);
+
+        return true;
     }
 
     /**
