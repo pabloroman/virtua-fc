@@ -4,6 +4,7 @@ namespace App\Modules\Transfer\Services;
 
 use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Transfer\Services\ScoutingService;
+use App\Models\ClubProfile;
 use App\Models\Competition;
 use App\Models\FinancialTransaction;
 use App\Models\Game;
@@ -12,6 +13,7 @@ use App\Models\GameTransfer;
 use App\Models\Loan;
 use App\Models\ShortlistedPlayer;
 use App\Models\Team;
+use App\Models\TeamReputation;
 use App\Models\TransferOffer;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -81,6 +83,18 @@ class TransferService
      * Pre-contract offer expiry in days.
      */
     private const PRE_CONTRACT_OFFER_EXPIRY_DAYS = TransferOffer::PRE_CONTRACT_OFFER_EXPIRY_DAYS;
+
+    /**
+     * Minimum player tier (1-5, from PlayerTierService) for a buyer
+     * to be interested, keyed by reputation tier.
+     */
+    private const MIN_TIER_BY_REPUTATION = [
+        ClubProfile::REPUTATION_LOCAL        => 1,
+        ClubProfile::REPUTATION_MODEST       => 1,
+        ClubProfile::REPUTATION_ESTABLISHED  => 2,
+        ClubProfile::REPUTATION_CONTINENTAL  => 3,
+        ClubProfile::REPUTATION_ELITE        => 4,
+    ];
 
     /**
      * Transfer windows configuration.
@@ -913,8 +927,9 @@ class TransferService
 
         $squadValues = $this->getSquadValues($game, $leagueTeamIds);
         $leagueTeams = Team::whereIn('id', $leagueTeamIds)->get()->keyBy('id');
+        $reputationLevels = TeamReputation::resolveLevels($game->id, $leagueTeamIds);
 
-        return ['leagueTeams' => $leagueTeams, 'squadValues' => $squadValues];
+        return ['leagueTeams' => $leagueTeams, 'squadValues' => $squadValues, 'reputationLevels' => $reputationLevels];
     }
 
     /**
@@ -928,10 +943,12 @@ class TransferService
     {
         $playerTeamId = $player->team_id;
         $playerValue = $player->market_value_cents;
+        $playerTier = $player->tier;
 
         if ($buyerPool) {
             $squadValues = $buyerPool['squadValues'];
             $leagueTeams = $buyerPool['leagueTeams'];
+            $reputationLevels = $buyerPool['reputationLevels'];
 
             // Filter to teams whose squad value can support the transfer fee
             $eligibleTeamIds = $squadValues
@@ -941,6 +958,12 @@ class TransferService
 
             $buyers = $leagueTeams->only($eligibleTeamIds)
                 ->reject(fn ($team) => $team->id === $playerTeamId)
+                ->reject(function ($team) use ($reputationLevels, $playerTier) {
+                    $reputation = $reputationLevels[$team->id] ?? ClubProfile::REPUTATION_LOCAL;
+                    $minTier = self::MIN_TIER_BY_REPUTATION[$reputation] ?? 1;
+
+                    return $playerTier < $minTier;
+                })
                 ->values();
 
             return ['buyers' => $buyers, 'squadValues' => $squadValues];
@@ -961,6 +984,18 @@ class TransferService
         $eligibleTeamIds = $squadValues
             ->filter(fn ($totalValue) => $totalValue * self::MAX_FEE_TO_SQUAD_VALUE_RATIO >= $playerValue)
             ->keys()
+            ->toArray();
+
+        // Filter out teams whose reputation demands higher quality than the player offers
+        $reputationLevels = TeamReputation::resolveLevels($game->id, $eligibleTeamIds);
+        $eligibleTeamIds = collect($eligibleTeamIds)
+            ->reject(function ($teamId) use ($reputationLevels, $playerTier) {
+                $reputation = $reputationLevels[$teamId] ?? ClubProfile::REPUTATION_LOCAL;
+                $minTier = self::MIN_TIER_BY_REPUTATION[$reputation] ?? 1;
+
+                return $playerTier < $minTier;
+            })
+            ->values()
             ->toArray();
 
         $buyers = Team::whereIn('id', $eligibleTeamIds)->get();
