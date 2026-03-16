@@ -1288,7 +1288,7 @@ class TransferService
         }
 
         $player = $offer->gamePlayer;
-        $parentTeamId = $player->team_id;
+        $parentTeamId = $offer->selling_team_id ?? $player->team_id;
         $returnDate = $game->getSeasonEndDate();
 
         Loan::create([
