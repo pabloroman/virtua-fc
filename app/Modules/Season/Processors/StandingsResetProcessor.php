@@ -86,6 +86,7 @@ class StandingsResetProcessor implements SeasonProcessor
                 'goals_for' => 0,
                 'goals_against' => 0,
                 'points' => 0,
+                'form' => null,
             ]);
 
         // Clean up stale standings from non-player leagues (old division data, bootstrapped zeros)
