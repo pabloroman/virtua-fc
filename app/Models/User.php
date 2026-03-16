@@ -20,6 +20,9 @@ use Illuminate\Notifications\Notifiable;
  * @property \Illuminate\Support\Carbon|null $feedback_requested_at
  * @property bool $is_admin
  * @property string $locale
+ * @property string|null $username
+ * @property string|null $bio
+ * @property bool $is_profile_public
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Game> $games
  * @property-read int|null $games_count
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
@@ -56,6 +59,9 @@ class User extends Authenticatable
         'password',
         'feedback_requested_at',
         'locale',
+        'username',
+        'bio',
+        'is_profile_public',
     ];
 
     /**
@@ -85,6 +91,28 @@ class User extends Authenticatable
             'password' => 'hashed',
             'feedback_requested_at' => 'datetime',
             'is_admin' => 'boolean',
+            'is_profile_public' => 'boolean',
         ];
+    }
+
+    public function getInitials(): string
+    {
+        $initials = collect(explode(' ', $this->name))
+            ->map(fn ($w) => mb_substr($w, 0, 1))
+            ->join('');
+
+        return mb_strlen($initials) > 2
+            ? mb_substr($initials, 0, 1) . mb_substr($initials, -1)
+            : $initials;
+    }
+
+    public function getAvatarColor(): string
+    {
+        $palette = [
+            'blue', 'emerald', 'violet', 'amber',
+            'rose', 'cyan', 'orange', 'fuchsia',
+        ];
+
+        return $palette[crc32($this->username ?? $this->name) % count($palette)];
     }
 }

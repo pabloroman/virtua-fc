@@ -29,6 +29,7 @@ class ProfileTest extends TestCase
             ->actingAs($user)
             ->patch('/profile', [
                 'name' => 'Test User',
+                'username' => 'testuser',
                 'email' => 'test@example.com',
                 'locale' => 'es',
             ]);
@@ -40,6 +41,7 @@ class ProfileTest extends TestCase
         $user->refresh();
 
         $this->assertSame('Test User', $user->name);
+        $this->assertSame('testuser', $user->username);
         $this->assertSame('test@example.com', $user->email);
         $this->assertSame('es', $user->locale);
         $this->assertNull($user->email_verified_at);
@@ -53,6 +55,7 @@ class ProfileTest extends TestCase
             ->actingAs($user)
             ->patch('/profile', [
                 'name' => 'Test User',
+                'username' => 'testuser',
                 'email' => $user->email,
                 'locale' => 'en',
             ]);
@@ -98,5 +101,54 @@ class ProfileTest extends TestCase
             ->assertRedirect('/profile');
 
         $this->assertNotNull($user->fresh());
+    }
+
+    public function test_public_profile_is_accessible(): void
+    {
+        $user = User::factory()->create([
+            'username' => 'publicmanager',
+            'is_profile_public' => true,
+        ]);
+
+        $response = $this->get('/manager/publicmanager');
+
+        $response->assertOk();
+    }
+
+    public function test_private_profile_returns_404(): void
+    {
+        $user = User::factory()->create([
+            'username' => 'privatemanager',
+            'is_profile_public' => false,
+        ]);
+
+        $response = $this->get('/manager/privatemanager');
+
+        $response->assertNotFound();
+    }
+
+    public function test_profile_is_public_by_default(): void
+    {
+        $user = User::factory()->create();
+
+        $this->assertTrue($user->is_profile_public);
+    }
+
+    public function test_username_must_be_unique(): void
+    {
+        $existingUser = User::factory()->create(['username' => 'takenname']);
+        $user = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->from('/profile')
+            ->patch('/profile', [
+                'name' => $user->name,
+                'username' => 'takenname',
+                'email' => $user->email,
+                'locale' => 'es',
+            ]);
+
+        $response->assertSessionHasErrors('username');
     }
 }
