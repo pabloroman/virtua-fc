@@ -531,6 +531,10 @@ input[type="radio"]:checked {
     color: white;
     border-color: #3b82f6;
   }
+  &.active:hover {
+    background: #2563eb;
+    border-color: #2563eb;
+  }
 }
 
 @utility mentality-btn {
