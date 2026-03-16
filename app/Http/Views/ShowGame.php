@@ -76,6 +76,15 @@ class ShowGame
 
         // Show loading screen while matchday advance runs in background
         if ($game->isAdvancingMatchday()) {
+            $nextMatch = $this->loadNextMatch($game);
+
+            if ($nextMatch) {
+                return view('game-loading-matchday', [
+                    'game' => $game,
+                    'nextMatch' => $nextMatch,
+                ]);
+            }
+
             return view('game-loading', [
                 'game' => $game,
                 'title' => __('game.simulating_matches'),

@@ -216,8 +216,8 @@ return [
     'processing_actions' => 'Procesando...',
     'processing_career_actions' => 'Procesando acciones del juego...',
     'processing_career_actions_message' => 'Transferencias, contratos y otras acciones se están procesando.',
-    'simulating_matches' => 'Simulando partidos...',
-    'simulating_matches_message' => 'Los partidos de la jornada se están simulando.',
+    'simulating_matches' => 'Calentamiento...',
+    'simulating_matches_message' => 'Los equipos están calentando...',
 
     // Live match
     'live_pre_match' => 'Previo al partido',
