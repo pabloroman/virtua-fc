@@ -17,7 +17,9 @@ class SendBetaInviteReminder implements ShouldQueue
 
     public function __construct(
         public InviteCode $inviteCode,
-    ) {}
+    ) {
+        $this->onQueue('mail');
+    }
 
     public function handle(): void
     {

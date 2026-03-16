@@ -47,7 +47,9 @@ class SetupNewGame implements ShouldQueue
         public string $competitionId,
         public string $season,
         public string $gameMode,
-    ) {}
+    ) {
+        $this->onQueue('setup');
+    }
 
     public function handle(
         ContractService $contractService,

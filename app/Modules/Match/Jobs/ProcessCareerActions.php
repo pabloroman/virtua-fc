@@ -23,7 +23,9 @@ class ProcessCareerActions implements ShouldQueue, ShouldBeUnique
     public function __construct(
         public string $gameId,
         public int $ticks,
-    ) {}
+    ) {
+        $this->onQueue('gameplay');
+    }
 
     public function uniqueId(): string
     {

@@ -17,7 +17,9 @@ class SendBetaFeedbackRequest implements ShouldQueue
 
     public function __construct(
         public User $user,
-    ) {}
+    ) {
+        $this->onQueue('mail');
+    }
 
     public function handle(): void
     {

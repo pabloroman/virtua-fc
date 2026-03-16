@@ -84,7 +84,9 @@ return [
     */
 
     'waits' => [
-        'redis:default' => 60,
+        'redis:gameplay' => 15,
+        'redis:setup' => 120,
+        'redis:mail' => 300,
     ],
 
     /*
@@ -180,9 +182,9 @@ return [
     */
 
     'defaults' => [
-        'supervisor-1' => [
+        'supervisor-gameplay' => [
             'connection' => 'redis',
-            'queue' => ['default'],
+            'queue' => ['gameplay'],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
             'maxProcesses' => 1,
@@ -193,20 +195,62 @@ return [
             'timeout' => 60,
             'nice' => 0,
         ],
+        'supervisor-setup' => [
+            'connection' => 'redis',
+            'queue' => ['setup'],
+            'balance' => 'auto',
+            'autoScalingStrategy' => 'time',
+            'maxProcesses' => 1,
+            'maxTime' => 0,
+            'maxJobs' => 0,
+            'memory' => 256,
+            'tries' => 1,
+            'timeout' => 300,
+            'nice' => 0,
+        ],
+        'supervisor-mail' => [
+            'connection' => 'redis',
+            'queue' => ['mail'],
+            'balance' => 'auto',
+            'autoScalingStrategy' => 'time',
+            'maxProcesses' => 1,
+            'maxTime' => 0,
+            'maxJobs' => 0,
+            'memory' => 64,
+            'tries' => 3,
+            'timeout' => 30,
+            'nice' => 0,
+        ],
     ],
 
     'environments' => [
         'production' => [
-            'supervisor-1' => [
-                'maxProcesses' => 10,
+            'supervisor-gameplay' => [
+                'maxProcesses' => 15,
+                'balanceMaxShift' => 3,
+                'balanceCooldown' => 3,
+            ],
+            'supervisor-setup' => [
+                'maxProcesses' => 5,
+                'balanceMaxShift' => 1,
+                'balanceCooldown' => 3,
+            ],
+            'supervisor-mail' => [
+                'maxProcesses' => 2,
                 'balanceMaxShift' => 1,
                 'balanceCooldown' => 3,
             ],
         ],
 
         'local' => [
-            'supervisor-1' => [
-                'maxProcesses' => 3,
+            'supervisor-gameplay' => [
+                'maxProcesses' => 2,
+            ],
+            'supervisor-setup' => [
+                'maxProcesses' => 1,
+            ],
+            'supervisor-mail' => [
+                'maxProcesses' => 1,
             ],
         ],
     ],

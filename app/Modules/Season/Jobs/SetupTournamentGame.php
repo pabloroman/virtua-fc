@@ -34,7 +34,9 @@ class SetupTournamentGame implements ShouldQueue
     public function __construct(
         public string $gameId,
         public string $teamId,
-    ) {}
+    ) {
+        $this->onQueue('setup');
+    }
 
     public function handle(
         StandingsCalculator $standingsCalculator,
