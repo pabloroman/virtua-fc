@@ -129,7 +129,7 @@
                                 <div class="flex items-center gap-1 shrink-0">
                                     <button type="button"
                                         @click="loadPreset(preset)"
-                                        class="formation-option flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-surface-700 border border-border-strong text-sm font-medium text-text-body hover:bg-surface-600 hover:border-accent-blue/40 min-h-[36px]"
+                                        class="formation-option flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-surface-700 border border-border-strong text-sm font-medium text-text-body hover:bg-blue-500/10 hover:border-blue-500/50 min-h-[36px]"
                                         x-bind:class="activePresetId === preset.id && 'active'">
                                         <span class="text-[10px] font-heading tracking-wide" x-bind:class="activePresetId === preset.id ? 'text-blue-200' : 'text-text-muted'" x-text="preset.formation"></span>
                                         <span x-text="preset.name"></span>
