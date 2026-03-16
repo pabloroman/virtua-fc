@@ -59,6 +59,12 @@ return [
             'throw' => false,
         ],
 
+        'season-archives' => [
+            'driver' => env('SEASON_ARCHIVES_DISK_DRIVER', 'local'),
+            'root' => storage_path('app/season-archives'),
+            'throw' => true,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

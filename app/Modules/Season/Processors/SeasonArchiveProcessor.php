@@ -60,20 +60,21 @@ class SeasonArchiveProcessor implements SeasonProcessor
         // Capture transfer activity
         $transferActivity = $this->captureTransferActivity($game);
 
-        // Compress detailed match events
-        $eventsArchive = $this->compressMatchEvents($game);
+        // Capture match events
+        $matchEvents = $this->captureMatchEvents($game);
 
-        // Create archive record
-        SeasonArchive::create([
-            'game_id' => $game->id,
-            'season' => $season,
-            'final_standings' => $standings,
-            'player_season_stats' => $playerStats,
-            'season_awards' => $awards,
-            'match_results' => $matchResults,
-            'transfer_activity' => $transferActivity,
-            'match_events_archive' => $eventsArchive,
-        ]);
+        // Upload to object storage and create reference record
+        SeasonArchive::createInStorage(
+            ['game_id' => $game->id, 'season' => $season],
+            [
+                'final_standings' => $standings,
+                'player_season_stats' => $playerStats,
+                'season_awards' => $awards,
+                'match_results' => $matchResults,
+                'transfer_activity' => $transferActivity,
+                'match_events' => $matchEvents,
+            ],
+        );
 
         // Delete archived data to free up space
         $this->deleteArchivedData($game);
@@ -292,9 +293,9 @@ class SeasonArchiveProcessor implements SeasonProcessor
     }
 
     /**
-     * Compress all match events into a gzipped blob.
+     * Capture all match events as an array.
      */
-    private function compressMatchEvents(Game $game): ?string
+    private function captureMatchEvents(Game $game): array
     {
         $events = [];
 
@@ -312,11 +313,7 @@ class SeasonArchiveProcessor implements SeasonProcessor
                 }
             });
 
-        if (empty($events)) {
-            return null;
-        }
-
-        return base64_encode(gzcompress(json_encode($events), 9));
+        return $events;
     }
 
     /**
