@@ -2,6 +2,7 @@ export default function lineupManager(config) {
     return {
         // State
         activeLineupTab: 'squad',
+        presets: config.presets || [],
         selectedPlayers: config.currentLineup || [],
         selectedFormation: config.currentFormation,
         selectedMentality: config.currentMentality,
@@ -110,6 +111,29 @@ export default function lineupManager(config) {
         get selectedCount() { return this.selectedPlayers.length },
         get currentSlots() { return this.formationSlots[this.selectedFormation] || [] },
         get hasManualAssignments() { return Object.keys(this.manualAssignments).length > 0 },
+
+        get activePresetId() {
+            const sorted = [...this.selectedPlayers].sort();
+            return this.presets.find(p =>
+                p.formation === this.selectedFormation &&
+                p.mentality === this.selectedMentality &&
+                p.playing_style === this.selectedPlayingStyle &&
+                p.pressing === this.selectedPressing &&
+                p.defensive_line === this.selectedDefLine &&
+                JSON.stringify(p.lineup) === JSON.stringify(sorted)
+            )?.id ?? null;
+        },
+
+        loadPreset(preset) {
+            this.selectedFormation = preset.formation;
+            this.selectedMentality = preset.mentality;
+            this.selectedPlayingStyle = preset.playing_style;
+            this.selectedPressing = preset.pressing;
+            this.selectedDefLine = preset.defensive_line;
+            this.selectedPlayers = [...preset.lineup];
+            this.manualAssignments = preset.slot_assignments ? { ...preset.slot_assignments } : {};
+            this.pitchPositions = preset.pitch_positions ? { ...preset.pitch_positions } : {};
+        },
 
         get teamAverage() {
             if (this.selectedPlayers.length === 0) return 0;

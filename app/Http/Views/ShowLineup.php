@@ -271,6 +271,18 @@ class ShowLineup
             'opponentRadar' => $opponentRadar,
             'matchesMissedMap' => $matchesMissedMap,
             'tacticalPresets' => $game->tacticalPresets,
+            'presetsConfig' => $game->tacticalPresets->map(fn ($p) => [
+                'id' => $p->id,
+                'name' => $p->name,
+                'formation' => $p->formation,
+                'lineup' => collect($p->lineup)->sort()->values()->all(),
+                'mentality' => $p->mentality,
+                'playing_style' => $p->playing_style,
+                'pressing' => $p->pressing,
+                'defensive_line' => $p->defensive_line,
+                'slot_assignments' => $p->slot_assignments,
+                'pitch_positions' => $p->pitch_positions,
+            ])->values(),
         ]);
     }
 

@@ -120,7 +120,6 @@ return [
     'preset_saved' => 'Táctica guardada.',
     'preset_updated' => 'Táctica actualizada.',
     'preset_deleted' => 'Táctica eliminada.',
-    'preset_loaded' => 'Táctica ":name" cargada.',
     'preset_limit_reached' => 'Máximo de 3 tácticas guardadas alcanzado.',
 
     // Game management

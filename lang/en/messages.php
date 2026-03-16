@@ -120,7 +120,6 @@ return [
     'preset_saved' => 'Tactic saved.',
     'preset_updated' => 'Tactic updated.',
     'preset_deleted' => 'Tactic deleted.',
-    'preset_loaded' => '":name" tactic loaded.',
     'preset_limit_reached' => 'Maximum of 3 saved tactics reached.',
 
     // Game management

@@ -35,6 +35,7 @@
         opponentMentality: @js($opponentData['mentality'] ?? null),
         userTeamAverage: {{ $userTeamAverage ?: 0 }},
         isHome: @js($isHome),
+        presets: @js($presetsConfig),
         translations: {
             natural: '{{ __('squad.natural') }}',
             veryGood: '{{ __('squad.very_good') }}',
@@ -121,32 +122,26 @@
                     <div class="border-t border-border-default"></div>
 
                     {{-- Saved tactical presets --}}
-                    <div class="flex items-center gap-2 overflow-x-auto scrollbar-hide">
+                    <div class="flex items-center gap-2 overflow-x-auto scrollbar-hide" x-show="presets.length > 0 || {{ $tacticalPresets->count() < 3 ? 'true' : 'false' }}">
                         <span class="text-[10px] text-text-muted uppercase tracking-wider shrink-0">{{ __('squad.presets') }}</span>
                         <div class="flex gap-1.5">
-                            @foreach($tacticalPresets as $preset)
+                            <template x-for="preset in presets" :key="preset.id">
                                 <div class="flex items-center gap-1 shrink-0">
                                     <button type="button"
-                                        @click="
-                                            _isSaving = true;
-                                            let f = document.createElement('form');
-                                            f.method = 'POST';
-                                            f.action = '{{ route('game.tactical-presets.load', [$game->id, $preset->id]) }}';
-                                            f.innerHTML = '<input type=hidden name=_token value={{ csrf_token() }}>';
-                                            document.body.appendChild(f);
-                                            f.submit();
-                                        "
-                                        class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-surface-700 border border-border-strong text-sm font-medium text-text-body hover:bg-surface-600 hover:border-accent-blue/40 transition-colors min-h-[36px]">
-                                        <span class="text-[10px] text-text-muted font-heading tracking-wide">{{ $preset->formation }}</span>
-                                        <span>{{ $preset->name }}</span>
+                                        @click="loadPreset(preset)"
+                                        class="formation-option flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-surface-700 border border-border-strong text-sm font-medium text-text-body hover:bg-surface-600 hover:border-accent-blue/40 min-h-[36px]"
+                                        x-bind:class="activePresetId === preset.id && 'active'">
+                                        <span class="text-[10px] font-heading tracking-wide" x-bind:class="activePresetId === preset.id ? 'text-blue-200' : 'text-text-muted'" x-text="preset.formation"></span>
+                                        <span x-text="preset.name"></span>
                                     </button>
                                     <button type="button"
+                                        x-bind:data-id="preset.id"
                                         @click="
                                             if (!confirm('{{ __('squad.preset_delete_confirm') }}')) return;
                                             _isSaving = true;
                                             let f = document.createElement('form');
                                             f.method = 'POST';
-                                            f.action = '{{ route('game.tactical-presets.delete', [$game->id, $preset->id]) }}';
+                                            f.action = '{{ url('game/' . $game->id . '/tactical-presets') }}/' + preset.id;
                                             f.innerHTML = '<input type=hidden name=_token value={{ csrf_token() }}><input type=hidden name=_method value=DELETE>';
                                             document.body.appendChild(f);
                                             f.submit();
@@ -156,7 +151,7 @@
                                         <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                                     </button>
                                 </div>
-                            @endforeach
+                            </template>
                             @if($tacticalPresets->count() < 3)
                                 <button type="button"
                                     @click="$dispatch('open-modal', 'save-preset')"

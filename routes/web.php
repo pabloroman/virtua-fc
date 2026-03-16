@@ -36,7 +36,7 @@ use App\Http\Actions\RequestLoan;
 use App\Http\Actions\SaveLineup;
 use App\Http\Actions\SaveTacticalPreset;
 use App\Http\Actions\DeleteTacticalPreset;
-use App\Http\Actions\LoadTacticalPreset;
+
 use App\Http\Actions\SaveSquadSelection;
 use App\Http\Views\ShowSquadSelection;
 use App\Http\Actions\SubmitScoutSearch;
@@ -134,7 +134,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/game/{gameId}/lineup/auto', GetAutoLineup::class)->name('game.lineup.auto');
         Route::post('/game/{gameId}/tactical-presets', SaveTacticalPreset::class)->name('game.tactical-presets.save');
         Route::delete('/game/{gameId}/tactical-presets/{presetId}', DeleteTacticalPreset::class)->name('game.tactical-presets.delete');
-        Route::post('/game/{gameId}/tactical-presets/{presetId}/load', LoadTacticalPreset::class)->name('game.tactical-presets.load');
+
         Route::post('/game/{gameId}/match/{matchId}/substitute', ProcessSubstitution::class)->name('game.match.substitute');
         Route::post('/game/{gameId}/match/{matchId}/tactics', ProcessTacticalChange::class)->name('game.match.tactics');
         Route::post('/game/{gameId}/match/{matchId}/extra-time', ProcessExtraTime::class)->name('game.match.extra-time');
