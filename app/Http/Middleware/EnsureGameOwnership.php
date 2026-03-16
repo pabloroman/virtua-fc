@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Models\Game;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Symfony\Component\HttpFoundation\Response;
 
 class EnsureGameOwnership
@@ -14,9 +15,11 @@ class EnsureGameOwnership
         $gameId = $request->route('gameId');
 
         if ($gameId) {
-            $game = Game::find($gameId);
+            $ownerId = Cache::remember("game_owner:{$gameId}", 60, function () use ($gameId) {
+                return Game::where('id', $gameId)->value('user_id');
+            });
 
-            if (! $game || $game->user_id !== $request->user()->id) {
+            if (! $ownerId || $ownerId !== $request->user()->id) {
                 abort(403);
             }
         }

@@ -74,27 +74,23 @@ class StandingsCalculator
             return;
         }
 
-        $ids = $standingIds->values()->toArray();
-        $idList = "'" . implode("','", $ids) . "'";
-        $columns = ['played', 'won', 'drawn', 'lost', 'goals_for', 'goals_against', 'points'];
-        $setClauses = [];
-
-        foreach ($columns as $column) {
-            $cases = [];
+        // Update each team's standing individually within a transaction.
+        // With ~20 teams per competition this is fast, and each query is
+        // parameterized so PostgreSQL can cache the plan.
+        DB::transaction(function () use ($standingIds, $increments) {
             foreach ($standingIds as $teamId => $standingId) {
-                $amount = $increments[$teamId][$column] ?? 0;
-                if ($amount !== 0) {
-                    $cases[] = "WHEN id = '{$standingId}' THEN {$column} + {$amount}";
-                }
+                $inc = $increments[$teamId];
+                GameStanding::where('id', $standingId)->update([
+                    'played' => DB::raw('played + ' . (int) $inc['played']),
+                    'won' => DB::raw('won + ' . (int) $inc['won']),
+                    'drawn' => DB::raw('drawn + ' . (int) $inc['drawn']),
+                    'lost' => DB::raw('lost + ' . (int) $inc['lost']),
+                    'goals_for' => DB::raw('goals_for + ' . (int) $inc['goals_for']),
+                    'goals_against' => DB::raw('goals_against + ' . (int) $inc['goals_against']),
+                    'points' => DB::raw('points + ' . (int) $inc['points']),
+                ]);
             }
-            if (! empty($cases)) {
-                $setClauses[] = "{$column} = CASE " . implode(' ', $cases) . " ELSE {$column} END";
-            }
-        }
-
-        if (! empty($setClauses)) {
-            DB::statement('UPDATE game_standings SET ' . implode(', ', $setClauses) . " WHERE id IN ({$idList})");
-        }
+        });
     }
 
     /**
@@ -217,23 +213,16 @@ class StandingsCalculator
             }
         }
 
-        // Bulk update positions in a single query
-        $ids = array_keys($positionUpdates);
-        $idList = "'" . implode("','", $ids) . "'";
-
-        $posCases = [];
-        $prevCases = [];
-        foreach ($positionUpdates as $id => $values) {
-            $posCases[] = "WHEN id = '{$id}' THEN {$values['position']}";
-            $prevCases[] = "WHEN id = '{$id}' THEN {$values['prev_position']}";
-        }
-
-        DB::statement(
-            'UPDATE game_standings SET '
-            . 'position = CASE ' . implode(' ', $posCases) . ' END, '
-            . 'prev_position = CASE ' . implode(' ', $prevCases) . ' END '
-            . "WHERE id IN ({$idList})"
-        );
+        // Update positions individually — ~20 teams per competition, each
+        // query is parameterized so PostgreSQL can cache the plan.
+        DB::transaction(function () use ($positionUpdates) {
+            foreach ($positionUpdates as $id => $values) {
+                GameStanding::where('id', $id)->update([
+                    'position' => $values['position'],
+                    'prev_position' => $values['prev_position'],
+                ]);
+            }
+        });
     }
 
     /**
