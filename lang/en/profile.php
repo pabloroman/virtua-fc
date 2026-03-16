@@ -42,5 +42,6 @@ return [
     'no_profile_yet' => "You haven't set up your manager profile yet.",
     'create_profile' => 'Set up profile',
     'edit_profile' => 'Edit profile',
+    'view_profile' => 'View profile',
     'choose_avatar' => 'Choose your avatar',
 ];

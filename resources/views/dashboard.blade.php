@@ -24,7 +24,7 @@
 
         <x-flash-message type="success" :message="session('success')" class="mb-4" />
 
-        <ul role="list" class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <ul role="list" class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3">
             @foreach($games as $game)
                 <li class="col-span-1 flex flex-col rounded-lg bg-surface-800 text-center shadow-sm border border-border-default" x-data="{ confirmDelete: false }">
                     <div class="flex flex-1 flex-col p-8 space-y-3" x-show="!confirmDelete">
@@ -108,20 +108,21 @@
             <h3 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary mb-6">{{ __('profile.your_manager_profile') }}</h3>
 
             @if($user->username)
-                <a href="{{ route('profile.edit') }}" class="block group">
-                    <div class="flex items-center gap-4 rounded-lg bg-surface-800 border border-border-default p-5 transition hover:border-accent-blue/50">
-                        <div class="size-14 rounded-full overflow-hidden shrink-0 flex items-start justify-center">
-                            <img src="{{ $user->getAvatarUrl() }}" alt="{{ $user->username }}" class="size-20 max-w-none -mt-1">
-                        </div>
-                        <div class="min-w-0 flex-1">
-                            <p class="font-heading font-semibold text-text-primary text-base tracking-wide truncate">{{ $user->username }}</p>
-                            @if($user->country)
-                                <p class="text-sm text-text-secondary truncate">{{ \Locale::getDisplayRegion('und_'.$user->country, app()->getLocale()) }}</p>
-                            @endif
-                        </div>
-                        <span class="text-xs text-text-muted group-hover:text-accent-blue transition shrink-0">{{ __('profile.edit_profile') }}</span>
+                <div class="flex items-center gap-4 rounded-lg bg-surface-800 border border-border-default p-5">
+                    <div class="size-14 rounded-full overflow-hidden shrink-0 flex items-start justify-center">
+                        <img src="{{ $user->getAvatarUrl() }}" alt="{{ $user->username }}" class="size-20 max-w-none -mt-1">
                     </div>
-                </a>
+                    <div class="min-w-0 flex-1">
+                        <p class="font-heading font-semibold text-text-primary text-base tracking-wide truncate">{{ $user->username }}</p>
+                        @if($user->country)
+                            <p class="text-sm text-text-secondary truncate">{{ \Locale::getDisplayRegion('und_'.$user->country, app()->getLocale()) }}</p>
+                        @endif
+                    </div>
+                    <div class="flex items-center gap-3 shrink-0">
+                        <a href="{{ route('manager.profile', $user->username) }}" class="text-xs text-text-muted hover:text-accent-blue transition">{{ __('profile.view_profile') }}</a>
+                        <a href="{{ route('profile.edit') }}" class="text-xs text-text-muted hover:text-accent-blue transition">{{ __('profile.edit_profile') }}</a>
+                    </div>
+                </div>
             @else
                 <a href="{{ route('profile.edit') }}" class="block group">
                     <div class="flex flex-col items-center gap-3 rounded-lg bg-surface-800 border border-dashed border-border-strong p-8 transition hover:border-accent-blue/50">

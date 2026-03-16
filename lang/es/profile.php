@@ -42,5 +42,6 @@ return [
     'no_profile_yet' => 'Aún no has configurado tu perfil de mánager.',
     'create_profile' => 'Configurar perfil',
     'edit_profile' => 'Editar perfil',
+    'view_profile' => 'Ver perfil',
     'choose_avatar' => 'Elige tu avatar',
 ];
