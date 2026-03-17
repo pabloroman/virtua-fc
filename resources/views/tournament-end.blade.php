@@ -592,6 +592,13 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
             </div>
 
             {{-- ============================================ --}}
+            {{-- DONATION CTA                                 --}}
+            {{-- ============================================ --}}
+            <div class="mb-4">
+                <x-donation-cta />
+            </div>
+
+            {{-- ============================================ --}}
             {{-- SECTION 4: Bottom CTAs                       --}}
             {{-- ============================================ --}}
             <div class="mt-10 mb-10 text-center space-y-4" x-data="{ copied: false }">

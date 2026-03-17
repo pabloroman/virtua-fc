@@ -51,4 +51,9 @@ return [
     'switch_light_mode' => 'Cambiar a modo claro',
     'switch_dark_mode' => 'Cambiar a modo oscuro',
 
+    // Donation
+    'donation_title' => '¿Te gusta VirtuaFC?',
+    'donation_description' => 'Si disfrutas del juego, considera apoyar su desarrollo. Tu donación ayuda a mantener VirtuaFC gratis y sin anuncios.',
+    'donation_button' => 'Apoya VirtuaFC',
+
 ];
