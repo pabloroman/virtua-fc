@@ -77,8 +77,8 @@
             </div>
 
             {{-- Split layout: Pitch (left) + Controls (right) --}}
-            <div class="flex-1 min-h-0 overflow-y-auto lg:overflow-hidden">
-                <div class="flex flex-col lg:flex-row h-full">
+            <div class="flex-1 min-h-0 overflow-y-auto lg:overflow-y-hidden">
+                <div class="flex flex-col lg:flex-row lg:h-full">
 
                     {{-- LEFT: Pitch visualization --}}
                     <div class="lg:w-[55%] lg:shrink-0 lg:overflow-y-auto lg:border-r lg:border-border-default bg-surface-900/50 p-3 sm:p-4">
@@ -106,7 +106,7 @@
                     </div>
 
                     {{-- RIGHT: Controls panel --}}
-                    <div class="flex flex-col lg:w-[45%] lg:min-h-0">
+                    <div class="flex flex-col lg:w-[45%] lg:min-h-0 lg:overflow-hidden">
                         {{-- Tab bar --}}
                         <div class="border-b border-border-strong bg-surface-700/50 shrink-0">
                             <div class="flex overflow-x-auto scrollbar-hide">
