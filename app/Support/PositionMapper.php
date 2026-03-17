@@ -186,6 +186,31 @@ class PositionMapper
     }
 
     /**
+     * Get canonical positions for a group filter key (gk, def, mid, fwd).
+     *
+     * @return string[]|null  Null if the filter key is not recognized.
+     */
+    public static function getPositionsForGroupFilter(string $filterKey): ?array
+    {
+        $groupName = match ($filterKey) {
+            'gk' => 'Goalkeeper',
+            'def' => 'Defender',
+            'mid' => 'Midfielder',
+            'fwd' => 'Forward',
+            default => null,
+        };
+
+        if ($groupName === null) {
+            return null;
+        }
+
+        return array_keys(array_filter(
+            self::$positionToGroup,
+            fn (string $group) => $group === $groupName,
+        ));
+    }
+
+    /**
      * Get localized group abbreviation for a position group name.
      */
     public static function getGroupAbbreviation(string $group): string

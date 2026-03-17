@@ -21,13 +21,6 @@ class ExploreService
         'Forward' => 3,
     ];
 
-    private const POSITION_FILTER_MAP = [
-        'gk' => ['Goalkeeper'],
-        'def' => ['Centre-Back', 'Left-Back', 'Right-Back'],
-        'mid' => ['Defensive Midfield', 'Central Midfield', 'Attacking Midfield', 'Left Midfield', 'Right Midfield'],
-        'fwd' => ['Left Winger', 'Right Winger', 'Centre-Forward', 'Second Striker'],
-    ];
-
     public function __construct(
         private readonly ScoutingService $scoutingService,
     ) {}
@@ -124,8 +117,9 @@ class ExploreService
             ->whereNull('team_id')
             ->with('player');
 
-        if ($positionFilter !== 'all' && isset(self::POSITION_FILTER_MAP[$positionFilter])) {
-            $query->whereIn('position', self::POSITION_FILTER_MAP[$positionFilter]);
+        $positions = PositionMapper::getPositionsForGroupFilter($positionFilter);
+        if ($positions !== null) {
+            $query->whereIn('position', $positions);
         }
 
         $players = $query->get();
