@@ -24,6 +24,7 @@ return [
 
     // Authentication
     'log_out' => 'Log Out',
+    'edit_profile' => 'Edit profile',
     'new_game' => 'New game',
     'all_teams' => 'All Teams',
     'load_game' => 'Load game',

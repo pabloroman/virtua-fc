@@ -24,6 +24,7 @@ return [
 
     // Authentication
     'log_out' => 'Cerrar Sesión',
+    'edit_profile' => 'Editar perfil',
     'new_game' => 'Nueva partida',
     'all_teams' => 'Todas las selecciones',
     'load_game' => 'Cargar partida',
