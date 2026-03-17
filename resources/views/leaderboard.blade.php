@@ -120,11 +120,11 @@
                             {{-- Mobile Layout --}}
                             <div class="md:hidden px-4 py-3">
                                 <div class="flex items-center gap-3">
-                                    <span class="font-heading text-lg font-bold text-text-muted w-8 text-center shrink-0 {{ $rank <= 3 ? 'text-amber-400' : '' }}">
+                                    <span class="font-heading text-lg font-bold text-text-muted w-8 text-center shrink-0 {{ $rank <= 3 ? 'text-amber-500' : '' }}">
                                         {{ $rank }}
                                     </span>
 
-                                    <div class="size-9 rounded-full overflow-hidden shrink-0">
+                                    <div class="size-9 rounded-full overflow-hidden shrink-0 flex items-start justify-center">
                                         <img src="{{ $avatarUrl }}" alt="" class="size-12 max-w-none -mt-0.5">
                                     </div>
 
@@ -159,12 +159,12 @@
 
                             {{-- Desktop Layout --}}
                             <div class="hidden md:grid grid-cols-[3rem_1fr_4rem_5rem_8rem_4rem_4rem] gap-2 px-4 py-2.5 items-center transition-colors hover:bg-surface-700/30">
-                                <span class="font-heading text-base font-bold text-center {{ $rank <= 3 ? 'text-amber-400' : 'text-text-muted' }}">
+                                <span class="font-heading text-base font-bold text-center {{ $rank <= 3 ? 'text-amber-500' : 'text-text-muted' }}">
                                     {{ $rank }}
                                 </span>
 
                                 <div class="flex items-center gap-2.5 min-w-0">
-                                    <div class="size-8 rounded-full overflow-hidden shrink-0">
+                                    <div class="size-8 rounded-full overflow-hidden shrink-0 flex items-start justify-center">
                                         <img src="{{ $avatarUrl }}" alt="" class="size-11 max-w-none -mt-0.5">
                                     </div>
                                     <div class="min-w-0">
