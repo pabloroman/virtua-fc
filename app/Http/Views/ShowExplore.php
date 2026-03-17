@@ -2,55 +2,26 @@
 
 namespace App\Http\Views;
 
-use App\Models\Competition;
-use App\Models\CompetitionEntry;
 use App\Models\Game;
 use App\Models\GamePlayer;
 use App\Models\ShortlistedPlayer;
 use App\Models\TransferOffer;
+use App\Modules\Transfer\Services\ExploreService;
 use Illuminate\Http\Request;
 
 class ShowExplore
 {
+    public function __construct(
+        private readonly ExploreService $exploreService,
+    ) {}
+
     public function __invoke(Request $request, string $gameId)
     {
         $game = Game::with(['team', 'finances'])->findOrFail($gameId);
         abort_if($game->isTournamentMode(), 404);
 
-        // Get all competitions that have teams with players in this game
-        $competitionIds = CompetitionEntry::where('game_id', $gameId)
-            ->distinct()
-            ->pluck('competition_id');
-
-        $teamCounts = CompetitionEntry::where('game_id', $gameId)
-            ->whereIn('competition_id', $competitionIds)
-            ->selectRaw('competition_id, count(*) as team_count')
-            ->groupBy('competition_id')
-            ->pluck('team_count', 'competition_id');
-
-        $competitions = Competition::whereIn('id', $competitionIds)
-            ->where('role', Competition::ROLE_LEAGUE)
-            ->where('scope', Competition::SCOPE_DOMESTIC)
-            ->orderBy('country')
-            ->get()
-            ->map(function (Competition $comp) use ($teamCounts) {
-                return [
-                    'id' => $comp->id,
-                    'name' => __($comp->name),
-                    'country' => $comp->country,
-                    'flag' => $comp->flag,
-                    'tier' => $comp->tier,
-                    'scope' => $comp->scope,
-                    'teamCount' => $teamCounts->get($comp->id, 0),
-                ];
-            })
-            ->filter(fn ($c) => $c['teamCount'] > 0)
-            ->values();
-
-        // Free agent count
-        $freeAgentCount = GamePlayer::where('game_id', $gameId)
-            ->whereNull('team_id')
-            ->count();
+        $competitions = $this->exploreService->getCompetitionsWithTeamCounts($gameId);
+        $freeAgentCount = $this->exploreService->getFreeAgentCount($gameId);
 
         // Shortlisted player IDs for star toggle state
         $shortlistedIds = ShortlistedPlayer::where('game_id', $gameId)
