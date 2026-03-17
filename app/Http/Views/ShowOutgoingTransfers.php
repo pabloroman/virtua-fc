@@ -4,6 +4,7 @@ namespace App\Http\Views;
 
 use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Transfer\Services\LoanService;
+use App\Modules\Transfer\Services\TransferHeaderService;
 use App\Modules\Transfer\Services\TransferService;
 use App\Models\Game;
 use App\Models\GamePlayer;
@@ -17,6 +18,7 @@ class ShowOutgoingTransfers
         private readonly TransferService $transferService,
         private readonly ContractService $contractService,
         private readonly LoanService $loanService,
+        private readonly TransferHeaderService $headerService,
     ) {}
 
     public function __invoke(string $gameId)
@@ -157,24 +159,6 @@ class ShowOutgoingTransfers
             ->get()
             ->filter(fn (GamePlayer $p) => $p->isContractExpiring($seasonEndDate) && $p->hasDeclinedRenewal());
 
-        // Transfer window info
-        $isTransferWindow = $game->isTransferWindowOpen();
-        $currentWindow = $game->getCurrentWindowName();
-        $windowCountdown = $game->getWindowCountdown();
-
-        // Wage bill
-        $totalWageBill = GamePlayer::where('game_id', $gameId)
-            ->where('team_id', $game->team_id)
-            ->sum('annual_wage');
-
-        // Badge count for Fichajes tab (counter-offers)
-        $counterOfferCount = TransferOffer::where('game_id', $gameId)
-            ->where('status', TransferOffer::STATUS_PENDING)
-            ->where('direction', TransferOffer::DIRECTION_INCOMING)
-            ->whereNotNull('asking_price')
-            ->whereColumn('asking_price', '>', 'transfer_fee')
-            ->count();
-
         return view('outgoing-transfers', [
             'game' => $game,
             'unsolicitedOffers' => $unsolicitedOffers,
@@ -194,11 +178,7 @@ class ShowOutgoingTransfers
             'activeNegotiations' => $activeNegotiations,
             'negotiatingPlayers' => $negotiatingPlayers,
             'renewalMidpoints' => $renewalMidpoints,
-            'currentWindow' => $currentWindow,
-            'isTransferWindow' => $isTransferWindow,
-            'windowCountdown' => $windowCountdown,
-            'totalWageBill' => $totalWageBill,
-            'counterOfferCount' => $counterOfferCount,
+            ...$this->headerService->getHeaderData($game),
         ]);
     }
 }

@@ -3,8 +3,8 @@
 namespace App\Http\Views;
 
 use App\Modules\Transfer\Services\LoanService;
+use App\Modules\Transfer\Services\TransferHeaderService;
 use App\Models\Game;
-use App\Models\GamePlayer;
 use App\Models\TransferOffer;
 use Illuminate\Http\Request;
 
@@ -12,6 +12,7 @@ class ShowIncomingTransfers
 {
     public function __construct(
         private readonly LoanService $loanService,
+        private readonly TransferHeaderService $headerService,
     ) {}
 
     public function __invoke(Request $request, string $gameId)
@@ -61,44 +62,15 @@ class ShowIncomingTransfers
         $loans = $this->loanService->getActiveLoans($game);
         $loansIn = $loans['in'];
 
-        // Transfer window info (for shared header)
-        $isTransferWindow = $game->isTransferWindowOpen();
-        $currentWindow = $game->getCurrentWindowName();
-        $windowCountdown = $game->getWindowCountdown();
-
-        // Wage bill (for shared header)
-        $totalWageBill = GamePlayer::where('game_id', $gameId)
-            ->where('team_id', $game->team_id)
-            ->sum('annual_wage');
-
-        // Badge count for Salidas tab
-        $salidaBadgeCount = TransferOffer::where('game_id', $gameId)
-            ->where('status', TransferOffer::STATUS_PENDING)
-            ->whereHas('gamePlayer', function ($query) use ($game) {
-                $query->where('team_id', $game->team_id);
-            })
-            ->where('expires_at', '>=', $game->current_date)
-            ->whereIn('offer_type', [
-                TransferOffer::TYPE_UNSOLICITED,
-                TransferOffer::TYPE_LISTED,
-                TransferOffer::TYPE_PRE_CONTRACT,
-            ])
-            ->count();
-
         return view('incoming-transfers', [
             'game' => $game,
-            'isTransferWindow' => $isTransferWindow,
-            'currentWindow' => $currentWindow,
             'counterOffers' => $counterOffers,
             'pendingBids' => $regularPendingBids,
             'rejectedBids' => $rejectedBids,
             'recentSignings' => $recentSignings,
             'incomingAgreedTransfers' => $incomingAgreedTransfers,
             'loansIn' => $loansIn,
-            'windowCountdown' => $windowCountdown,
-            'totalWageBill' => $totalWageBill,
-            'salidaBadgeCount' => $salidaBadgeCount,
-            'counterOfferCount' => $counterOffers->count(),
+            ...$this->headerService->getHeaderData($game),
         ]);
     }
 }
