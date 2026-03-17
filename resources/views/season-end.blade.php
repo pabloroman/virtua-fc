@@ -19,12 +19,12 @@ $borderColorMap = [
 ];
 
 $bgColorMap = [
-    'bg-accent-blue' => 'bg-accent-blue',
+    'bg-blue-500' => 'bg-blue-500',
     'bg-orange-500' => 'bg-orange-500',
-    'bg-accent-red' => 'bg-accent-red',
+    'bg-red-500' => 'bg-red-500',
     'bg-green-300' => 'bg-green-300',
-    'bg-accent-green' => 'bg-accent-green',
-    'bg-accent-gold' => 'bg-accent-gold',
+    'bg-green-500' => 'bg-green-500',
+    'bg-yellow-500' => 'bg-yellow-500',
 ];
 
 $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
