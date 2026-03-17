@@ -174,7 +174,7 @@
                                         <button @click="selectPositionFilter(filter.key)"
                                                 :class="selectedPositionFilter === filter.key
                                                     ? 'bg-accent-green/10 border-accent-green/20 ring-1 ring-accent-green/20'
-                                                    : 'bg-surface-800 border-border-default hover:bg-surface-700/50'"
+                                                    : 'bg-surface-700 border-border-strong hover:bg-surface-600/50'"
                                                 class="w-full flex items-center gap-3 p-3 rounded-lg border transition-all text-left min-h-[44px]">
                                             <span class="text-sm font-medium text-text-primary" x-text="filter.label"></span>
                                         </button>

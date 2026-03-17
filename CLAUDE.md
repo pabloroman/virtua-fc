@@ -480,6 +480,37 @@ The app uses a custom root font-size override (`resources/css/app.css`): 14px on
 - **Never hide critical game actions on mobile** — the user must be able to play the full game on their phone
 - **Avoid hover-only interactions** — anything behind `:hover` must also be accessible via tap/click
 
+## Dark Mode & Light Mode (Required)
+
+**Every new UI feature must look correct in both dark mode and light mode.** This is not optional — treat it with the same priority as mobile responsiveness. A feature that only looks good in one theme is incomplete.
+
+### How Theming Works
+
+The app uses CSS custom properties defined in `resources/css/app.css`. Dark mode is the `:root` default; light mode activates via the `.light` class on the `<html>` element. All semantic color tokens (surfaces, text, borders, accents) have both dark and light values.
+
+### Key Surface Scale
+
+| Token | Dark | Light | Usage |
+|-------|------|-------|-------|
+| `surface-900` | `#0b1120` (deepest navy) | `#ffffff` (white) | Page background |
+| `surface-800` | `#0f172a` (dark navy) | `#f8fafc` (near-white) | Card backgrounds |
+| `surface-700` | `#1e293b` (slate) | `#f1f5f9` (light gray) | Elevated elements, hover states |
+| `surface-600` | `#334155` (medium slate) | `#e2e8f0` (gray) | Borders, tracks, dividers |
+
+### Core Principles
+
+- **Use semantic tokens, not raw colors**: Always use `bg-surface-*`, `text-text-*`, `border-border-*`, and `bg-accent-*` utilities. Never hardcode hex colors like `bg-slate-800` or `text-white` — these won't adapt to theme changes.
+- **Check contrast in both themes**: `bg-surface-800` against `bg-surface-900` has minimal contrast in light mode (`#f8fafc` vs `#ffffff`). For interactive elements that need to stand out (buttons, cards, list items), prefer `bg-surface-700` or add a visible `border-border-default` / `border-border-strong`.
+- **Accent colors work in both themes**: `bg-accent-blue/10`, `bg-accent-green/15`, etc. are designed to be visible in both modes. Use these for active/selected states.
+- **Test by toggling**: Switch between themes during development to verify both look correct. Elements that rely on subtle background differences (like text-only buttons on `surface-800`) often disappear in light mode.
+
+### Things to Avoid
+
+- **Never use `bg-surface-800`** for interactive elements (buttons, list items, cards) that sit directly on the page background — the contrast is insufficient in light mode. Use `bg-surface-700` or add a visible border instead.
+- **Never use raw Tailwind colors** (`bg-slate-700`, `text-gray-300`, `border-zinc-600`) — these don't participate in theme switching
+- **Never assume dark mode** — don't use `text-white`, `bg-black`, or other absolute colors for themed content
+- **Never use opacity-based backgrounds** (`bg-white/5`) as the only visual differentiator — the result differs dramatically between themes
+
 ## Backend Performance
 
 When implementing backend code, pay attention to performance and scalability:
