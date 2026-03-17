@@ -305,6 +305,7 @@ return [
     'tactical_mentality' => 'Mentality',
     'tactical_mentality_hint' => 'Control the balance between attacking risk and defensive solidity.',
     'tactical_resume' => 'Close & resume',
+    'pitch_tap_to_sub' => 'Tap a player on the pitch to substitute them',
     'tactical_subs_made' => 'Substitutions made',
     'tactical_apply' => 'Apply changes',
     'tactical_no_changes' => 'No tactical changes to apply.',

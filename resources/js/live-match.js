@@ -1,3 +1,13 @@
+import {
+    getEffectivePosition as _getEffectivePosition,
+    getInitials as _getInitials,
+    getShirtStyle as _getShirtStyle,
+    getNumberStyle as _getNumberStyle,
+    getPlayerEnergy as _getPlayerEnergy,
+    getEnergyColor,
+    assignPlayersToSlots,
+} from './modules/pitch-renderer.js';
+
 export default function liveMatch(config) {
     return {
         // Config (from server)
@@ -54,6 +64,15 @@ export default function liveMatch(config) {
         isTournamentKnockout: config.isTournamentKnockout || false,
         knockoutRoundNumber: config.knockoutRoundNumber || null,
         knockoutRoundName: config.knockoutRoundName || '',
+
+        // Pitch visualization config
+        formationSlots: config.formationSlots || {},
+        teamColors: config.teamColors || null,
+        slotCompatibility: config.slotCompatibility || {},
+        gridConfig: config.gridConfig || null,
+
+        // Pitch interaction state (for tap-to-substitute)
+        livePitchSelectedOutId: null,
 
         // Tactical change state
         pendingFormation: null,
@@ -939,6 +958,7 @@ export default function liveMatch(config) {
             this.tacticalPanelOpen = false;
             this.selectedPlayerOut = null;
             this.selectedPlayerIn = null;
+            this.livePitchSelectedOutId = null;
             this.pendingSubs = [];
             this.pendingFormation = null;
             this.pendingMentality = null;
@@ -1215,6 +1235,7 @@ export default function liveMatch(config) {
         resetSubstitutions() {
             this.selectedPlayerOut = null;
             this.selectedPlayerIn = null;
+            this.livePitchSelectedOutId = null;
             this.pendingSubs = [];
         },
 
@@ -1482,6 +1503,116 @@ export default function liveMatch(config) {
 
         isGoalEvent(event) {
             return event.type === 'goal' || event.type === 'own_goal';
+        },
+
+        // =====================================================================
+        // Pitch Visualization (shared with lineup page)
+        // =====================================================================
+
+        get currentPitchSlots() {
+            const formation = this.pendingFormation ?? this.activeFormation;
+            return this.formationSlots[formation] || [];
+        },
+
+        /**
+         * Computed slot assignments for the pitch display.
+         * Maps current lineup players onto formation slots.
+         */
+        get slotAssignments() {
+            const slots = this.currentPitchSlots.map(slot => ({
+                ...slot,
+                player: null,
+                compatibility: 0,
+                isManual: false,
+            }));
+
+            // Build current active lineup (initial + substitutions applied)
+            const activeLineup = this.getActiveLineupPlayers();
+
+            return assignPlayersToSlots(slots, activeLineup, this.slotCompatibility);
+        },
+
+        /**
+         * Get the current active lineup players (starting XI with substitutions applied).
+         */
+        getActiveLineupPlayers() {
+            const subbedOutIds = new Set(this.substitutionsMade.map(s => s.playerOutId));
+            const subbedInIds = new Set(this.substitutionsMade.map(s => s.playerInId));
+
+            // Filter starting lineup: remove subbed out players
+            const remaining = this.lineupPlayers.filter(p => !subbedOutIds.has(p.id));
+
+            // Add subbed-in players from bench
+            const subbedIn = this.benchPlayers.filter(p => subbedInIds.has(p.id));
+
+            return [...remaining, ...subbedIn];
+        },
+
+        getEffectivePosition(slotId) {
+            const gc = this.gridConfig;
+            if (!gc) return null;
+            return _getEffectivePosition(slotId, {}, this.currentPitchSlots, gc.cols, gc.rows);
+        },
+
+        getShirtStyle(role) {
+            return _getShirtStyle(role, this.teamColors);
+        },
+
+        getNumberStyle(role) {
+            return _getNumberStyle(role, this.teamColors);
+        },
+
+        getInitials(name) {
+            return _getInitials(name);
+        },
+
+        /**
+         * Handle tapping a player on the pitch to select for substitution.
+         */
+        handlePitchPlayerClick(slot) {
+            if (!slot.player) return;
+            if (this.tacticalTab !== 'substitutions') {
+                this.tacticalTab = 'substitutions';
+            }
+
+            // If this player is already selected, deselect
+            if (this.livePitchSelectedOutId === slot.player.id) {
+                this.livePitchSelectedOutId = null;
+                this.selectedPlayerOut = null;
+                return;
+            }
+
+            // Can't select if no subs/windows left
+            if (!this.canSubstitute || !this.hasWindowsLeft) return;
+
+            // Find this player in the lineup players list for the full data object
+            const playerData = this.lineupPlayers.find(p => p.id === slot.player.id)
+                || this.benchPlayers.find(p => p.id === slot.player.id);
+
+            if (playerData) {
+                this.livePitchSelectedOutId = slot.player.id;
+                this.selectedPlayerOut = playerData;
+            }
+        },
+
+        /**
+         * Get energy for a player badge on the pitch (live mode).
+         */
+        getPitchPlayerEnergy(player) {
+            if (!player) return 100;
+            // Try to find full player data with minuteEntered
+            const fullData = this.lineupPlayers.find(p => p.id === player.id)
+                || this.benchPlayers.find(p => p.id === player.id);
+            if (!fullData) return 100;
+            return _getPlayerEnergy(fullData, this.currentMinute);
+        },
+
+        /**
+         * Get energy bar color class for pitch display.
+         */
+        getPitchEnergyColor(player) {
+            const energy = this.getPitchPlayerEnergy(player);
+            return getEnergyColor(energy);
         },
 
         getPositionBadgeColor(group) {
