@@ -277,6 +277,14 @@ return [
     'explore_forwards' => 'Delanteros',
     'explore_age' => 'Edad',
     'explore_value' => 'Valor',
+    'explore_free_agents' => 'Agentes Libres',
+    'explore_free_agents_hint' => 'Explora agentes libres disponibles. Añádelos a seguimiento para información detallada.',
+    'explore_free_agents_empty' => 'No hay agentes libres disponibles.',
+    'explore_filter_all' => 'Todos',
+    'explore_free_agent_willing' => 'Interesado',
+    'explore_free_agent_reluctant' => 'Difícil',
+    'explore_free_agent_unwilling' => 'Sin interés',
+    'explore_window_closed_hint' => 'Ventana de fichajes cerrada',
 
     // Tracking
     'tracking_slots' => ':used/:max seguimientos',

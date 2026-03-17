@@ -67,6 +67,7 @@ use App\Http\Views\ShowScoutingHub;
 use App\Http\Views\ShowScoutReportResults;
 use App\Http\Views\ShowExplore;
 use App\Http\Views\ExploreTeams;
+use App\Http\Views\ExploreFreeAgents;
 use App\Http\Views\ExploreSquad;
 use App\Http\Views\ShowSeasonEnd;
 use App\Http\Views\ShowTournamentEnd;
@@ -174,6 +175,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/game/{gameId}/explore', ShowExplore::class)->name('game.explore');
         Route::get('/game/{gameId}/explore/teams/{competitionId}', ExploreTeams::class)->name('game.explore.teams');
         Route::get('/game/{gameId}/explore/squad/{teamId}', ExploreSquad::class)->name('game.explore.squad');
+        Route::get('/game/{gameId}/explore/free-agents', ExploreFreeAgents::class)->name('game.explore.free-agents');
 
         // Loans (redirect old URL to transfers)
         Route::get('/game/{gameId}/loans', function (string $gameId) {

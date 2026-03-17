@@ -47,6 +47,11 @@ class ShowExplore
             ->filter(fn ($c) => $c['teamCount'] > 0)
             ->values();
 
+        // Free agent count
+        $freeAgentCount = GamePlayer::where('game_id', $gameId)
+            ->whereNull('team_id')
+            ->count();
+
         // Shortlisted player IDs for star toggle state
         $shortlistedIds = ShortlistedPlayer::where('game_id', $gameId)
             ->pluck('game_player_id')
@@ -87,6 +92,7 @@ class ShowExplore
         return view('explore', [
             'game' => $game,
             'competitions' => $competitions,
+            'freeAgentCount' => $freeAgentCount,
             'shortlistedIds' => $shortlistedIds,
             'isTransferWindow' => $isTransferWindow,
             'currentWindow' => $currentWindow,

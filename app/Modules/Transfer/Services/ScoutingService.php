@@ -14,6 +14,7 @@ use App\Models\TeamReputation;
 use App\Models\TransferOffer;
 use App\Support\Money;
 use Illuminate\Support\Collection;
+use App\Modules\Player\Services\PlayerTierService;
 use App\Modules\Transfer\Services\ContractService;
 
 class ScoutingService
@@ -29,6 +30,18 @@ class ScoutingService
         3 => 0.20,
         4 => 0.08,
         5 => 0.02,
+    ];
+
+    /**
+     * Minimum team reputation required for a free agent to accept, based on player tier.
+     * Higher-tier free agents demand higher-reputation clubs.
+     */
+    private const MIN_REPUTATION_BY_PLAYER_TIER = [
+        5 => ClubProfile::REPUTATION_CONTINENTAL,  // €50M+ World Class → need continental+
+        4 => ClubProfile::REPUTATION_ESTABLISHED,   // €20M+ Excellent → need established+
+        3 => ClubProfile::REPUTATION_MODEST,         // €5M+ Good → need modest+
+        2 => ClubProfile::REPUTATION_LOCAL,           // €1M+ Average → any team
+        1 => ClubProfile::REPUTATION_LOCAL,           // <€1M Developing → any team
     ];
 
     /** Default modifier for gaps of 5+. */
@@ -737,6 +750,47 @@ class ScoutingService
         }
 
         return self::REPUTATION_GAP_MODIFIERS[$gap] ?? self::REPUTATION_GAP_MAX_MODIFIER;
+    }
+
+    // =========================================
+    // FREE AGENT REPUTATION GATE
+    // =========================================
+
+    /**
+     * Check whether a free agent is willing to sign for a given team,
+     * based on the player's tier vs the team's reputation.
+     */
+    public function canSignFreeAgent(GamePlayer $player, string $gameId, string $teamId): bool
+    {
+        return $this->getFreeAgentWillingnessLevel($player, $gameId, $teamId) === 'willing';
+    }
+
+    /**
+     * Determine a free agent's willingness to sign for a team.
+     *
+     * @return string 'willing' (will sign), 'reluctant' (1 tier below minimum), or 'unwilling' (2+ below)
+     */
+    public function getFreeAgentWillingnessLevel(GamePlayer $player, string $gameId, string $teamId): string
+    {
+        $playerTier = $player->tier ?? PlayerTierService::tierFromMarketValue($player->market_value_cents);
+        $minReputation = self::MIN_REPUTATION_BY_PLAYER_TIER[$playerTier] ?? ClubProfile::REPUTATION_LOCAL;
+
+        $teamReputation = TeamReputation::resolveLevel($gameId, $teamId);
+
+        $teamIndex = ClubProfile::getReputationTierIndex($teamReputation);
+        $minIndex = ClubProfile::getReputationTierIndex($minReputation);
+
+        $gap = $minIndex - $teamIndex;
+
+        if ($gap <= 0) {
+            return 'willing';
+        }
+
+        if ($gap === 1) {
+            return 'reluctant';
+        }
+
+        return 'unwilling';
     }
 
     // =========================================

@@ -29,13 +29,13 @@
                          x-init="init()">
 
                         {{-- Hint --}}
-                        <p class="text-sm text-text-muted mb-5">{{ __('transfers.explore_hint') }}</p>
+                        <p class="text-sm text-text-muted mb-5" x-show="viewMode === 'competition'">{{ __('transfers.explore_hint') }}</p>
 
-                        {{-- Competition Selector --}}
+                        {{-- Competition Selector + Free Agents pill --}}
                         <div class="flex overflow-x-auto scrollbar-hide gap-2 pb-3 mb-5 border-b border-border-default">
                             <template x-for="comp in competitions" :key="comp.id">
                                 <x-pill-button @click="selectCompetition(comp)"
-                                        x-bind:class="selectedCompetition?.id === comp.id
+                                        x-bind:class="viewMode === 'competition' && selectedCompetition?.id === comp.id
                                             ? 'bg-accent-blue/15 text-accent-blue border-accent-blue/30'
                                             : 'bg-surface-800 text-text-body border-border-default hover:border-border-strong'"
                                         class="shrink-0 gap-2 rounded-lg border min-h-[44px]">
@@ -44,14 +44,30 @@
                                     </template>
                                     <span x-text="comp.name"></span>
                                     <span class="text-xs px-1.5 py-0.5 rounded-full"
-                                          :class="selectedCompetition?.id === comp.id ? 'bg-accent-blue/20 text-accent-blue' : 'bg-surface-700 text-text-muted'"
+                                          :class="viewMode === 'competition' && selectedCompetition?.id === comp.id ? 'bg-accent-blue/20 text-accent-blue' : 'bg-surface-700 text-text-muted'"
                                           x-text="comp.teamCount"></span>
                                 </x-pill-button>
                             </template>
+
+                            {{-- Free Agents pill --}}
+                            @if($freeAgentCount > 0)
+                            <x-pill-button @click="selectFreeAgents()"
+                                    x-bind:class="viewMode === 'freeAgents'
+                                        ? 'bg-accent-green/15 text-accent-green border-accent-green/30'
+                                        : 'bg-surface-800 text-text-body border-border-default hover:border-border-strong'"
+                                    class="shrink-0 gap-2 rounded-lg border min-h-[44px]">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                <span>{{ __('transfers.explore_free_agents') }}</span>
+                                <span class="text-xs px-1.5 py-0.5 rounded-full"
+                                      :class="viewMode === 'freeAgents' ? 'bg-accent-green/20 text-accent-green' : 'bg-surface-700 text-text-muted'">{{ $freeAgentCount }}</span>
+                            </x-pill-button>
+                            @endif
                         </div>
 
-                        {{-- Two-column layout (desktop) / Tab toggle (mobile) --}}
-                        <div class="flex flex-col md:flex-row gap-6">
+                        {{-- Competition mode: Two-column layout (desktop) / Tab toggle (mobile) --}}
+                        <div x-show="viewMode === 'competition'" class="flex flex-col md:flex-row gap-6">
 
                             {{-- Mobile tab toggle --}}
                             <div class="flex md:hidden border-b border-border-strong mb-2">
@@ -132,6 +148,58 @@
                                 <div x-show="!loadingSquad && squadHtml" x-ref="squadPanel"></div>
                             </div>
                         </div>
+
+                        {{-- Free Agents mode: Two-column layout with position filters --}}
+                        <div x-show="viewMode === 'freeAgents'" class="flex flex-col md:flex-row gap-6">
+
+                            {{-- Mobile tab toggle --}}
+                            <div class="flex md:hidden border-b border-border-strong mb-2">
+                                <x-tab-button @click="mobileView = 'teams'"
+                                        x-bind:class="mobileView === 'teams' ? 'border-accent-green text-accent-green' : 'border-transparent text-text-muted'"
+                                        class="flex-1 text-center min-h-[44px]">
+                                    {{ __('transfers.explore_filter_all') }}
+                                </x-tab-button>
+                                <x-tab-button @click="mobileView = 'squad'"
+                                        x-bind:class="mobileView === 'squad' ? 'border-accent-green text-accent-green' : 'border-transparent text-text-muted'"
+                                        class="flex-1 text-center min-h-[44px]">
+                                    {{ __('app.players') }}
+                                </x-tab-button>
+                            </div>
+
+                            {{-- Left column: Position filters --}}
+                            <div class="md:w-1/3 md:pr-2"
+                                 :class="{ 'hidden md:block': mobileView === 'squad' }">
+                                <div class="space-y-1">
+                                    <template x-for="filter in positionFilters" :key="filter.key">
+                                        <button @click="selectPositionFilter(filter.key)"
+                                                :class="selectedPositionFilter === filter.key
+                                                    ? 'bg-accent-green/10 border-accent-green/20 ring-1 ring-accent-green/20'
+                                                    : 'bg-surface-800 border-border-default hover:bg-surface-700/50'"
+                                                class="w-full flex items-center gap-3 p-3 rounded-lg border transition-all text-left min-h-[44px]">
+                                            <span class="text-sm font-medium text-text-primary" x-text="filter.label"></span>
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
+
+                            {{-- Right column: Free agents list --}}
+                            <div class="md:w-2/3 md:border-l md:border-border-default md:pl-6"
+                                 :class="{ 'hidden md:block': mobileView === 'teams' }">
+
+                                {{-- Loading state --}}
+                                <template x-if="loadingFreeAgents">
+                                    <div class="flex items-center justify-center py-12">
+                                        <svg class="animate-spin h-6 w-6 text-text-secondary" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                    </div>
+                                </template>
+
+                                {{-- Free agents content (server-rendered HTML) --}}
+                                <div x-show="!loadingFreeAgents" x-ref="freeAgentPanel"></div>
+                            </div>
+                        </div>
                     </div>
     </div>
 
@@ -140,14 +208,24 @@
             return {
                 competitions: @json($competitions),
                 assetUrl: '{{ rtrim(Storage::disk('assets')->url(''), '/') }}',
+                viewMode: 'competition',
                 selectedCompetition: null,
                 teams: [],
                 selectedTeam: null,
                 squadHtml: '',
                 loadingTeams: false,
                 loadingSquad: false,
+                loadingFreeAgents: false,
                 mobileView: 'teams',
                 gameId: '{{ $game->id }}',
+                selectedPositionFilter: 'all',
+                positionFilters: [
+                    { key: 'all', label: @js(__('transfers.explore_filter_all')) },
+                    { key: 'gk', label: @js(__('transfers.explore_goalkeepers')) },
+                    { key: 'def', label: @js(__('transfers.explore_defenders')) },
+                    { key: 'mid', label: @js(__('transfers.explore_midfielders')) },
+                    { key: 'fwd', label: @js(__('transfers.explore_forwards')) },
+                ],
 
                 init() {
                     if (this.competitions.length > 0) {
@@ -156,6 +234,7 @@
                 },
 
                 async selectCompetition(comp) {
+                    this.viewMode = 'competition';
                     this.selectedCompetition = comp;
                     this.selectedTeam = null;
                     this.squadHtml = '';
@@ -188,6 +267,35 @@
                         this.$refs.squadPanel.innerHTML = '';
                     } finally {
                         this.loadingSquad = false;
+                    }
+                },
+
+                selectFreeAgents() {
+                    this.viewMode = 'freeAgents';
+                    this.selectedCompetition = null;
+                    this.selectedPositionFilter = 'all';
+                    this.mobileView = 'teams';
+                    this.loadFreeAgents('all');
+                },
+
+                selectPositionFilter(position) {
+                    this.selectedPositionFilter = position;
+                    this.mobileView = 'squad';
+                    this.loadFreeAgents(position);
+                },
+
+                async loadFreeAgents(position) {
+                    this.loadingFreeAgents = true;
+
+                    try {
+                        const response = await fetch(`/game/${this.gameId}/explore/free-agents?position=${position}`);
+                        const html = await response.text();
+                        this.$refs.freeAgentPanel.innerHTML = html;
+                        this.$nextTick(() => Alpine.initTree(this.$refs.freeAgentPanel));
+                    } catch (e) {
+                        if (this.$refs.freeAgentPanel) this.$refs.freeAgentPanel.innerHTML = '';
+                    } finally {
+                        this.loadingFreeAgents = false;
                     }
                 },
 

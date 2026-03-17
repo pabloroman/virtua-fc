@@ -14,6 +14,7 @@ return [
     // Free agent signing
     'free_agent_signed' => '¡:player ha fichado por tu equipo como agente libre!',
     'not_free_agent' => 'Este jugador no es agente libre.',
+    'free_agent_reputation_too_low' => 'Este jugador no tiene interés en fichar por un club de tu nivel de reputación.',
     'transfer_window_closed' => 'La ventana de fichajes está cerrada.',
     'wage_budget_exceeded' => 'Fichar a este jugador superaría tu presupuesto salarial.',
 

@@ -40,6 +40,12 @@ class SignFreeAgent
                 ->with('error', __('messages.squad_full', ['max' => ContractService::MAX_SQUAD_SIZE]));
         }
 
+        // Reputation gate: free agent must be willing to join
+        if (! $this->scoutingService->canSignFreeAgent($player, $game->id, $game->team_id)) {
+            return redirect()->route('game.transfers', $gameId)
+                ->with('error', __('messages.free_agent_reputation_too_low'));
+        }
+
         // Check wage affordability
         $wageDemand = $this->scoutingService->calculateWageDemand($player);
         $currentWageBill = GamePlayer::where('game_id', $game->id)

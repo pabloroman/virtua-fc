@@ -272,6 +272,14 @@ return [
     'explore_forwards' => 'Forwards',
     'explore_age' => 'Age',
     'explore_value' => 'Value',
+    'explore_free_agents' => 'Free Agents',
+    'explore_free_agents_hint' => 'Browse available free agents. Shortlist and scout for detailed ability intel.',
+    'explore_free_agents_empty' => 'No free agents available.',
+    'explore_filter_all' => 'All',
+    'explore_free_agent_willing' => 'Interested',
+    'explore_free_agent_reluctant' => 'Difficult',
+    'explore_free_agent_unwilling' => 'Not interested',
+    'explore_window_closed_hint' => 'Transfer window closed',
 
     // Tracking
     'tracking_slots' => ':used/:max tracking slots',
