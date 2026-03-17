@@ -6,6 +6,7 @@ use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Season\Processors\ContractExpirationProcessor;
 use App\Modules\Season\Processors\ContractRenewalProcessor;
+use App\Modules\Season\Processors\LeaderboardStatsProcessor;
 use App\Modules\Season\Processors\LoanReturnProcessor;
 use App\Modules\Season\Processors\PlayerDevelopmentProcessor;
 use App\Modules\Season\Processors\PlayerRetirementProcessor;
@@ -35,6 +36,7 @@ class SeasonClosingPipeline
 
     public function __construct(
         SeasonArchiveProcessor $seasonArchive,
+        LeaderboardStatsProcessor $leaderboardStats,
         LoanReturnProcessor $loanReturn,
         PreContractTransferProcessor $preContractTransfer,
         ContractExpirationProcessor $contractExpiration,
@@ -54,6 +56,7 @@ class SeasonClosingPipeline
     ) {
         $this->processors = [
             $seasonArchive,
+            $leaderboardStats,
             $loanReturn,
             $preContractTransfer,
             $contractExpiration,

@@ -20,6 +20,7 @@ use App\Modules\Notification\Listeners\SendCompetitionProgressNotifications;
 use App\Modules\Notification\Listeners\SendMatchNotifications;
 use App\Modules\Match\Listeners\UpdateGoalkeeperStats;
 use App\Modules\Match\Listeners\UpdateLeagueStandings;
+use App\Modules\Match\Listeners\UpdateManagerStats;
 use App\Modules\Season\Listeners\RecordSeasonCompleted;
 use App\Modules\Season\Listeners\SimulateOtherLeagues;
 use App\Modules\Competition\Services\CompetitionHandlerResolver;
@@ -64,6 +65,7 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(MatchFinalized::class, UpdateGoalkeeperStats::class);
         Event::listen(MatchFinalized::class, SendMatchNotifications::class);
         Event::listen(MatchFinalized::class, SendCompetitionProgressNotifications::class);
+        Event::listen(MatchFinalized::class, UpdateManagerStats::class);
 
         Event::listen(CupTieResolved::class, AwardCupPrizeMoney::class);
         Event::listen(CupTieResolved::class, ConductNextCupRoundDraw::class);

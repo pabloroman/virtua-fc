@@ -82,6 +82,7 @@ use App\Http\Views\ShowPlayerDetail;
 use App\Http\Views\ShowSquad;
 use App\Http\Views\ShowTransferActivity;
 use App\Http\Views\ShowOutgoingTransfers;
+use App\Http\Views\ShowLeaderboard;
 use App\Http\Views\ShowManagerProfile;
 use App\Http\Actions\ProcessSubstitution;
 use App\Http\Actions\ProcessTacticalChange;
@@ -94,6 +95,7 @@ Route::get('/', function () {
 });
 
 Route::get('/legal', fn () => view('legal'))->name('legal');
+Route::get('/leaderboard', ShowLeaderboard::class)->name('leaderboard');
 Route::get('/manager/{username}', ShowManagerProfile::class)->name('manager.profile');
 Route::get('/design-system', fn () => view('design-system.index', [
     'allTeams' => \App\Support\TeamColors::all(),
