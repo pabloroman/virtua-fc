@@ -98,10 +98,10 @@
                                   x-text="availableMentalities.find(m => m.value === (pendingMentality ?? activeMentality))?.label ?? ''"></span>
                         </div>
 
-                        {{-- Pitch tap hint (shown when substitutions available) --}}
-                        <p x-show="canSubstitute && hasWindowsLeft && tacticalTab === 'substitutions'"
+                        {{-- Pitch interaction hints --}}
+                        <p x-show="canSubstitute && hasWindowsLeft && tacticalTab === 'substitutions' && positioningSlotId === null"
                            class="text-center text-[10px] text-text-secondary mt-1">
-                            {{ __('game.pitch_tap_to_sub') }}
+                            {{ __('game.pitch_tap_or_drag') }}
                         </p>
                     </div>
 

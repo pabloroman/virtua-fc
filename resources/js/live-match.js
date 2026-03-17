@@ -6,6 +6,11 @@ import {
     getPlayerEnergy as _getPlayerEnergy,
     getEnergyColor,
     assignPlayersToSlots,
+    getEventCoords as _getEventCoords,
+    getDragPosition,
+    getCellFromClientCoords,
+    isValidGridCell as _isValidGridCell,
+    getZoneColorClass as _getZoneColorClass,
 } from './modules/pitch-renderer.js';
 
 export default function liveMatch(config) {
@@ -73,6 +78,15 @@ export default function liveMatch(config) {
 
         // Pitch interaction state (for tap-to-substitute)
         livePitchSelectedOutId: null,
+
+        // Pitch drag-and-drop state (for repositioning players)
+        draggingSlotId: null,
+        dragPosition: null,
+        positioningSlotId: null,
+        livePitchPositions: {},
+        _dragStartCoords: null,
+        _wasDragging: false,
+        _livePitchEl: null,
 
         // Tactical change state
         pendingFormation: null,
@@ -166,6 +180,10 @@ export default function liveMatch(config) {
         },
 
         init() {
+            // Bind drag handlers for pitch repositioning
+            this._boundDragMove = (e) => this._onDragMove(e);
+            this._boundDragEnd = (e) => this._onDragEnd(e);
+
             // Start polling for career actions completion
             this.startProcessingPoll();
 
@@ -962,6 +980,9 @@ export default function liveMatch(config) {
             this.pendingSubs = [];
             this.pendingFormation = null;
             this.pendingMentality = null;
+            this.draggingSlotId = null;
+            this.dragPosition = null;
+            this.positioningSlotId = null;
             this.injuryAlertPlayer = null;
             document.body.classList.remove('overflow-y-hidden');
         },
@@ -1060,6 +1081,7 @@ export default function liveMatch(config) {
                 // Update active tactics
                 if (result.formation) {
                     this.activeFormation = result.formation;
+                    this.livePitchPositions = {}; // Reset custom positions on formation change
                 }
                 if (result.mentality) {
                     this.activeMentality = result.mentality;
@@ -1514,6 +1536,11 @@ export default function liveMatch(config) {
             return this.formationSlots[formation] || [];
         },
 
+        // Alias for pitch-display component compatibility (lineup uses currentSlots)
+        get currentSlots() {
+            return this.currentPitchSlots;
+        },
+
         /**
          * Computed slot assignments for the pitch display.
          * Maps current lineup players onto formation slots.
@@ -1551,7 +1578,7 @@ export default function liveMatch(config) {
         getEffectivePosition(slotId) {
             const gc = this.gridConfig;
             if (!gc) return null;
-            return _getEffectivePosition(slotId, {}, this.currentPitchSlots, gc.cols, gc.rows);
+            return _getEffectivePosition(slotId, this.livePitchPositions, this.currentPitchSlots, gc.cols, gc.rows);
         },
 
         getShirtStyle(role) {
@@ -1570,6 +1597,12 @@ export default function liveMatch(config) {
          * Handle tapping a player on the pitch to select for substitution.
          */
         handlePitchPlayerClick(slot) {
+            // If we just finished a drag, suppress the click
+            if (this._wasDragging) {
+                this._wasDragging = false;
+                return;
+            }
+
             if (!slot.player) return;
             if (this.tacticalTab !== 'substitutions') {
                 this.tacticalTab = 'substitutions';
@@ -1630,6 +1663,161 @@ export default function liveMatch(config) {
             if (score >= 70) return 'bg-lime-500 text-white';
             if (score >= 60) return 'bg-amber-500 text-white';
             return 'bg-slate-300 text-slate-700';
+        },
+
+        // =====================================================================
+        // Pitch Drag & Repositioning (live match)
+        // =====================================================================
+
+        _getLivePitchElement() {
+            if (!this._livePitchEl) {
+                this._livePitchEl = document.getElementById('live-pitch-field');
+            }
+            return this._livePitchEl;
+        },
+
+        startDrag(slotId, event) {
+            const slot = this.currentPitchSlots.find(s => s.id === slotId);
+            if (slot && slot.role === 'Goalkeeper') return;
+
+            event.preventDefault();
+
+            // Record start coords for tap-vs-drag threshold
+            const coords = _getEventCoords(event);
+            this._dragStartCoords = { x: coords.clientX, y: coords.clientY };
+            this._wasDragging = false;
+            this._pendingDragSlotId = slotId;
+
+            document.addEventListener('mousemove', this._boundDragMove);
+            document.addEventListener('mouseup', this._boundDragEnd);
+            document.addEventListener('touchmove', this._boundDragMove, { passive: false });
+            document.addEventListener('touchend', this._boundDragEnd);
+        },
+
+        _onDragMove(event) {
+            if (!this._pendingDragSlotId && this.draggingSlotId === null) return;
+            event.preventDefault();
+
+            const coords = _getEventCoords(event);
+
+            // Check if we've exceeded the tap-vs-drag threshold (5px)
+            if (this._pendingDragSlotId && !this.draggingSlotId) {
+                const dx = coords.clientX - this._dragStartCoords.x;
+                const dy = coords.clientY - this._dragStartCoords.y;
+                if (Math.sqrt(dx * dx + dy * dy) < 5) return;
+
+                // Threshold exceeded — activate drag
+                this.draggingSlotId = this._pendingDragSlotId;
+                this._pendingDragSlotId = null;
+                this._wasDragging = true;
+                this.positioningSlotId = null;
+            }
+
+            this.dragPosition = getDragPosition(coords.clientX, coords.clientY, this._getLivePitchElement());
+        },
+
+        _onDragEnd(event) {
+            const coords = _getEventCoords(event);
+
+            if (this.draggingSlotId !== null) {
+                const cell = getCellFromClientCoords(coords.clientX, coords.clientY, this._getLivePitchElement(), this.gridConfig);
+                if (cell) {
+                    this.setSlotGridPosition(this.draggingSlotId, cell.col, cell.row);
+                }
+            }
+
+            this.draggingSlotId = null;
+            this.dragPosition = null;
+            this._pendingDragSlotId = null;
+            this._dragStartCoords = null;
+
+            document.removeEventListener('mousemove', this._boundDragMove);
+            document.removeEventListener('mouseup', this._boundDragEnd);
+            document.removeEventListener('touchmove', this._boundDragMove);
+            document.removeEventListener('touchend', this._boundDragEnd);
+        },
+
+        getSlotCell(slotId) {
+            const customPos = this.livePitchPositions[String(slotId)];
+            if (customPos) return { col: customPos[0], row: customPos[1] };
+            const gc = this.gridConfig;
+            if (!gc) return null;
+            const formation = this.pendingFormation ?? this.activeFormation;
+            const defaultCells = gc.defaultCells[formation];
+            return defaultCells ? defaultCells[slotId] : null;
+        },
+
+        _findSlotAtCell(col, row, excludeSlotId) {
+            const assignments = this.slotAssignments;
+            for (const slot of assignments) {
+                if (slot.id === excludeSlotId || !slot.player) continue;
+                const cell = this.getSlotCell(slot.id);
+                if (cell && cell.col === col && cell.row === row) return slot;
+            }
+            return null;
+        },
+
+        setSlotGridPosition(slotId, col, row) {
+            const slot = this.currentPitchSlots.find(s => s.id === slotId);
+            if (!slot) return;
+            if (!_isValidGridCell(slot.label, col, row, this.gridConfig)) return;
+
+            const occupying = this._findSlotAtCell(col, row, slotId);
+            const newPositions = { ...this.livePitchPositions };
+
+            if (occupying) {
+                if (occupying.role === 'Goalkeeper') return;
+                const draggedCell = this.getSlotCell(slotId);
+                if (draggedCell) {
+                    newPositions[String(occupying.id)] = [draggedCell.col, draggedCell.row];
+                }
+            }
+
+            newPositions[String(slotId)] = [col, row];
+            this.livePitchPositions = newPositions;
+            this.positioningSlotId = null;
+        },
+
+        selectForRepositioning(slotId) {
+            const slot = this.currentPitchSlots.find(s => s.id === slotId);
+            if (slot && slot.role === 'Goalkeeper') return;
+            if (this.positioningSlotId === slotId) {
+                this.positioningSlotId = null;
+            } else {
+                this.positioningSlotId = slotId;
+            }
+        },
+
+        handleGridCellClick(col, row) {
+            if (this.positioningSlotId === null) return;
+            this.setSlotGridPosition(this.positioningSlotId, col, row);
+        },
+
+        isValidGridCell(slotLabel, col, row) {
+            return _isValidGridCell(slotLabel, col, row, this.gridConfig);
+        },
+
+        getGridCellState(col, row) {
+            if (this.positioningSlotId === null && this.draggingSlotId === null) return 'neutral';
+
+            const activeSlotId = this.positioningSlotId ?? this.draggingSlotId;
+            const slot = this.currentPitchSlots.find(s => s.id === activeSlotId);
+            if (!slot) return 'neutral';
+
+            if (!_isValidGridCell(slot.label, col, row, this.gridConfig)) return 'invalid';
+
+            const occupying = this._findSlotAtCell(col, row, activeSlotId);
+            if (occupying && occupying.role === 'Goalkeeper') return 'occupied';
+
+            if (slot.role === 'Goalkeeper') return 'valid';
+
+            if (row <= 4) return 'valid-def';
+            if (row <= 9) return 'valid-mid';
+            return 'valid-fwd';
+        },
+
+        getZoneColorClass(role) {
+            return _getZoneColorClass(role);
         },
 
         getStatCount(type, side) {

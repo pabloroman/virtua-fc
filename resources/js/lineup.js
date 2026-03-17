@@ -4,6 +4,11 @@ import {
     getInitials as _getInitials,
     getShirtStyle as _getShirtStyle,
     getNumberStyle as _getNumberStyle,
+    getEventCoords as _getEventCoords,
+    getDragPosition,
+    getCellFromClientCoords,
+    isValidGridCell as _isValidGridCell,
+    getZoneColorClass as _getZoneColorClass,
 } from './modules/pitch-renderer.js';
 
 export default function lineupManager(config) {
@@ -541,16 +546,7 @@ export default function lineupManager(config) {
          * GK stays locked to its zone; outfield players can go anywhere on the outfield (rows 1-13).
          */
         isValidGridCell(slotLabel, col, row) {
-            const gc = this.gridConfig;
-            if (!gc) return false;
-
-            if (slotLabel === 'GK') {
-                const zone = gc.zones['GK'];
-                if (!zone) return false;
-                return col >= zone[0] && col <= zone[1] && row >= zone[2] && row <= zone[3];
-            }
-
-            return col >= 0 && col < gc.cols && row >= 1 && row < gc.rows;
+            return _isValidGridCell(slotLabel, col, row, this.gridConfig);
         },
 
         /**
@@ -628,13 +624,7 @@ export default function lineupManager(config) {
          * Get the zone highlight color class for a position group.
          */
         getZoneColorClass(role) {
-            switch (role) {
-                case 'Goalkeeper': return 'bg-amber-500/30 border-amber-400/40';
-                case 'Defender': return 'bg-blue-500/30 border-blue-400/40';
-                case 'Midfielder': return 'bg-emerald-500/30 border-emerald-400/40';
-                case 'Forward': return 'bg-red-500/30 border-red-400/40';
-                default: return 'bg-white/20 border-white/30';
-            }
+            return _getZoneColorClass(role);
         },
 
         /**
@@ -684,23 +674,23 @@ export default function lineupManager(config) {
             document.addEventListener('touchmove', this._boundDragMove, { passive: false });
             document.addEventListener('touchend', this._boundDragEnd);
 
-            const coords = this._getEventCoords(event);
-            this._updateDragPosition(coords.clientX, coords.clientY);
+            const coords = _getEventCoords(event);
+            this.dragPosition = getDragPosition(coords.clientX, coords.clientY, this._getPitchElement());
         },
 
         _onDragMove(event) {
             if (this.draggingSlotId === null) return;
             event.preventDefault();
 
-            const coords = this._getEventCoords(event);
-            this._updateDragPosition(coords.clientX, coords.clientY);
+            const coords = _getEventCoords(event);
+            this.dragPosition = getDragPosition(coords.clientX, coords.clientY, this._getPitchElement());
         },
 
         _onDragEnd(event) {
             if (this.draggingSlotId === null) return;
 
-            const coords = this._getEventCoords(event);
-            const cell = this._getCellFromClientCoords(coords.clientX, coords.clientY);
+            const coords = _getEventCoords(event);
+            const cell = getCellFromClientCoords(coords.clientX, coords.clientY, this._getPitchElement(), this.gridConfig);
 
             if (cell) {
                 this.setSlotGridPosition(this.draggingSlotId, cell.col, cell.row);
@@ -714,55 +704,6 @@ export default function lineupManager(config) {
             document.removeEventListener('mouseup', this._boundDragEnd);
             document.removeEventListener('touchmove', this._boundDragMove);
             document.removeEventListener('touchend', this._boundDragEnd);
-        },
-
-        _updateDragPosition(clientX, clientY) {
-            const pitchEl = this._getPitchElement();
-            if (!pitchEl) return;
-
-            const rect = pitchEl.getBoundingClientRect();
-            const x = ((clientX - rect.left) / rect.width) * 100;
-            const y = ((clientY - rect.top) / rect.height) * 100;
-
-            this.dragPosition = {
-                x: Math.max(0, Math.min(100, x)),
-                y: Math.max(0, Math.min(100, y)),
-            };
-        },
-
-        _getCellFromClientCoords(clientX, clientY) {
-            const pitchEl = this._getPitchElement();
-            if (!pitchEl) return null;
-
-            const rect = pitchEl.getBoundingClientRect();
-            const xPct = ((clientX - rect.left) / rect.width) * 100;
-            const yPct = ((clientY - rect.top) / rect.height) * 100;
-
-            // Convert to grid coordinates (y is inverted: top of element = high row)
-            // The pitch renders y=0 at bottom, so top: 100-y%
-            // Screen top = y=100, screen bottom = y=0
-            const pitchY = 100 - yPct;
-
-            const gc = this.gridConfig;
-            if (!gc) return null;
-
-            const col = Math.round((xPct - 100 / (gc.cols * 2)) / (100 / gc.cols));
-            const row = Math.round((pitchY - 100 / (gc.rows * 2)) / (100 / gc.rows));
-
-            return {
-                col: Math.max(0, Math.min(gc.cols - 1, col)),
-                row: Math.max(0, Math.min(gc.rows - 1, row)),
-            };
-        },
-
-        _getEventCoords(event) {
-            if (event.touches && event.touches.length > 0) {
-                return { clientX: event.touches[0].clientX, clientY: event.touches[0].clientY };
-            }
-            if (event.changedTouches && event.changedTouches.length > 0) {
-                return { clientX: event.changedTouches[0].clientX, clientY: event.changedTouches[0].clientY };
-            }
-            return { clientX: event.clientX, clientY: event.clientY };
         },
 
         _getPitchElement() {

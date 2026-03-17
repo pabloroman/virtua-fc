@@ -306,6 +306,7 @@ return [
     'tactical_mentality_hint' => 'Controla el balance entre riesgo ofensivo y solidez defensiva.',
     'tactical_resume' => 'Cerrar y reanudar',
     'pitch_tap_to_sub' => 'Toca un jugador en el campo para sustituirlo',
+    'pitch_tap_or_drag' => 'Toca para sustituir · Arrastra para reposicionar',
     'tactical_subs_made' => 'Sustituciones realizadas',
     'tactical_apply' => 'Aplicar cambios',
     'tactical_no_changes' => 'No hay cambios tácticos que aplicar.',

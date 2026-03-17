@@ -30,7 +30,7 @@
 <div>
     <div id="{{ $isLive ? 'live-pitch-container' : 'pitch-container' }}"
          class="pitch {{ $aspectClass }} w-full {{ $compact ? '' : 'max-w-lg mx-auto lg:max-w-none' }} relative"
-         @if($isLineup) :style="(positioningSlotId !== null || draggingSlotId !== null) ? 'touch-action: none' : ''" @endif
+         :style="(positioningSlotId !== null || draggingSlotId !== null) ? 'touch-action: none' : ''"
     >
 
         {{-- Field area with sideline padding --}}
@@ -52,8 +52,7 @@
         <div class="pitch-penalty-spot-top"></div>
         <div class="pitch-penalty-spot-bottom"></div>
 
-        @if($isLineup)
-        {{-- Grid Overlay (lineup mode only — invisible until repositioning/dragging) --}}
+        {{-- Grid Overlay (invisible until repositioning/dragging) --}}
         <template x-if="gridConfig">
             <div class="absolute inset-0 pointer-events-none" :class="{ 'pointer-events-auto': positioningSlotId !== null }">
                 <template x-if="positioningSlotId !== null || draggingSlotId !== null">
@@ -80,17 +79,16 @@
                 </template>
             </div>
         </template>
-        @endif
 
         {{-- Player Slots --}}
         <template x-for="slot in slotAssignments" :key="'pitch-slot-' + slot.id">
             <div
                 class="absolute transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 group/slot"
                 :class="{
-                    @if($isLineup) 'opacity-30': draggingSlotId === slot.id, @endif
-                    @if($isLive) 'opacity-30': slot.player && livePitchSelectedOutId === slot.player?.id, @endif
+                    'opacity-30': draggingSlotId === slot.id,
+                    @if($isLive) 'opacity-30': slot.player && livePitchSelectedOutId === slot.player?.id && draggingSlotId !== slot.id, @endif
                 }"
-                :style="(() => { const pos = getEffectivePosition(slot.id); return pos ? `left: ${pos.x}%; top: ${100 - pos.y}%; z-index: {{ $isLineup ? 'positioningSlotId === slot.id ? 20 : 10' : '10' }}` : '' })()"
+                :style="(() => { const pos = getEffectivePosition(slot.id); return pos ? `left: ${pos.x}%; top: ${100 - pos.y}%; z-index: ${positioningSlotId === slot.id ? 20 : 10}` : '' })()"
                 @if($isLineup)
                     @mouseenter="$el.style.zIndex = 30"
                     @mouseleave="$el.style.zIndex = positioningSlotId === slot.id ? 20 : 10"
@@ -125,6 +123,8 @@
                     @endif
                     @if($isLive)
                         @click="handlePitchPlayerClick(slot)"
+                        @mousedown="startDrag(slot.id, $event)"
+                        @touchstart="startDrag(slot.id, $event)"
                     @endif
                 >
                     {{-- Shirt badge --}}
@@ -136,7 +136,8 @@
                                 'ring-2 ring-white/70 scale-110 shadow-xl': hoveredPlayerId && hoveredPlayerId === slot.player?.id && positioningSlotId !== slot.id,
                             @endif
                             @if($isLive)
-                                'ring-2 ring-red-400 ring-offset-1 ring-offset-red-600/50 scale-110': livePitchSelectedOutId === slot.player?.id,
+                                'ring-2 ring-red-400 ring-offset-1 ring-offset-red-600/50 scale-110': livePitchSelectedOutId === slot.player?.id && positioningSlotId !== slot.id,
+                                'ring-2 ring-white ring-offset-1 ring-offset-emerald-600 scale-110': positioningSlotId === slot.id,
                             @endif
                         }"
                         :style="getShirtStyle(slot.role)"
@@ -194,8 +195,7 @@
             </div>
         </template>
 
-        @if($isLineup)
-        {{-- Drag ghost (lineup mode only) --}}
+        {{-- Drag ghost --}}
         <div
             x-show="draggingSlotId !== null && dragPosition"
             x-cloak
@@ -204,30 +204,21 @@
         >
             <template x-if="draggingSlotId !== null">
                 <div class="flex flex-col items-center">
-                    <div class="relative w-11 h-11 rounded-xl shadow-xl border-2 border-white/30 opacity-80"
+                    <div class="relative {{ $compact ? 'w-9 h-9 rounded-lg' : 'w-11 h-11 rounded-xl' }} shadow-xl border-2 border-white/30 opacity-80"
                         :style="getShirtStyle(currentSlots.find(s => s.id === draggingSlotId)?.role || 'Midfielder')">
                         <div class="absolute inset-0 flex items-center justify-center">
-                            <span class="font-bold text-xs leading-none inline-flex items-center justify-center w-7 h-7 rounded-full"
+                            <span class="font-bold {{ $compact ? 'text-[10px] leading-none inline-flex items-center justify-center w-6 h-6' : 'text-xs leading-none inline-flex items-center justify-center w-7 h-7' }} rounded-full"
                                 :style="getNumberStyle(currentSlots.find(s => s.id === draggingSlotId)?.role || 'Midfielder')"
                                 x-text="(() => { const s = slotAssignments.find(sa => sa.id === draggingSlotId); return s?.player?.number || getInitials(s?.player?.name); })()"></span>
                         </div>
                     </div>
-                    <span class="mt-0.5 text-[8px] font-semibold text-white uppercase tracking-wide leading-tight text-center max-w-[66px] line-clamp-2 break-words drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]"
+                    <span class="{{ $compact ? 'mt-0 text-[7px] max-w-[52px]' : 'mt-0.5 text-[8px] max-w-[66px]' }} font-semibold text-white uppercase tracking-wide leading-tight text-center line-clamp-2 break-words drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]"
                         x-text="(() => { const s = slotAssignments.find(sa => sa.id === draggingSlotId); return s?.player?.name; })()"></span>
                 </div>
             </template>
         </div>
-        @endif
 
         </div> {{-- /pitch-field --}}
-
-        @if($isLineup)
-        {{-- List-drag drop zone overlay (lineup mode only) --}}
-        <div
-            x-show="listDragPlayerId && listDragOverPitch"
-            x-cloak
-            class="absolute inset-0 z-[5] rounded-inherit border-2 border-dashed border-accent-green/40 bg-accent-green/5 pointer-events-none transition-opacity duration-200"
-        ></div>
 
         {{-- Grid positioning indicator banner --}}
         <div
@@ -241,6 +232,14 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </x-icon-button>
         </div>
+
+        @if($isLineup)
+        {{-- List-drag drop zone overlay (lineup mode only) --}}
+        <div
+            x-show="listDragPlayerId && listDragOverPitch"
+            x-cloak
+            class="absolute inset-0 z-[5] rounded-inherit border-2 border-dashed border-accent-green/40 bg-accent-green/5 pointer-events-none transition-opacity duration-200"
+        ></div>
 
         {{-- Slot assignment indicator banner --}}
         <div

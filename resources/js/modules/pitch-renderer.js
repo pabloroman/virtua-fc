@@ -173,6 +173,80 @@ export function getEnergyTextColor(energy) {
 }
 
 // =====================================================================
+// Grid & Drag helpers (shared between lineup and live match)
+// =====================================================================
+
+/**
+ * Extract clientX/clientY from a mouse or touch event.
+ */
+export function getEventCoords(event) {
+    if (event.touches && event.touches.length > 0) {
+        return { clientX: event.touches[0].clientX, clientY: event.touches[0].clientY };
+    }
+    if (event.changedTouches && event.changedTouches.length > 0) {
+        return { clientX: event.changedTouches[0].clientX, clientY: event.changedTouches[0].clientY };
+    }
+    return { clientX: event.clientX, clientY: event.clientY };
+}
+
+/**
+ * Convert client coordinates to pitch-percentage drag position.
+ */
+export function getDragPosition(clientX, clientY, pitchEl) {
+    if (!pitchEl) return null;
+    const rect = pitchEl.getBoundingClientRect();
+    const x = ((clientX - rect.left) / rect.width) * 100;
+    const y = ((clientY - rect.top) / rect.height) * 100;
+    return {
+        x: Math.max(0, Math.min(100, x)),
+        y: Math.max(0, Math.min(100, y)),
+    };
+}
+
+/**
+ * Convert client coordinates to a grid cell {col, row}.
+ */
+export function getCellFromClientCoords(clientX, clientY, pitchEl, gridConfig) {
+    if (!pitchEl || !gridConfig) return null;
+    const rect = pitchEl.getBoundingClientRect();
+    const xPct = ((clientX - rect.left) / rect.width) * 100;
+    const yPct = ((clientY - rect.top) / rect.height) * 100;
+    const pitchY = 100 - yPct;
+    const col = Math.round((xPct - 100 / (gridConfig.cols * 2)) / (100 / gridConfig.cols));
+    const row = Math.round((pitchY - 100 / (gridConfig.rows * 2)) / (100 / gridConfig.rows));
+    return {
+        col: Math.max(0, Math.min(gridConfig.cols - 1, col)),
+        row: Math.max(0, Math.min(gridConfig.rows - 1, row)),
+    };
+}
+
+/**
+ * Check if a grid cell is valid for a given slot label.
+ */
+export function isValidGridCell(slotLabel, col, row, gridConfig) {
+    if (!gridConfig) return false;
+    if (slotLabel === 'GK') {
+        const zone = gridConfig.zones['GK'];
+        if (!zone) return false;
+        return col >= zone[0] && col <= zone[1] && row >= zone[2] && row <= zone[3];
+    }
+    return col >= 0 && col < gridConfig.cols && row >= 1 && row < gridConfig.rows;
+}
+
+/**
+ * Get the zone highlight color class for a position group.
+ */
+export function getZoneColorClass(role) {
+    switch (role) {
+        case 'Goalkeeper': return 'bg-amber-500/30 border-amber-400/40';
+        case 'Defender': return 'bg-blue-500/30 border-blue-400/40';
+        case 'Midfielder': return 'bg-emerald-500/30 border-emerald-400/40';
+        case 'Forward': return 'bg-red-500/30 border-red-400/40';
+        default: return 'bg-white/20 border-white/30';
+    }
+}
+
+// =====================================================================
 // Slot assignment helpers
 // =====================================================================
 
