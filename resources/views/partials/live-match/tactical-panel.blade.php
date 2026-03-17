@@ -142,11 +142,11 @@
                         </div>
 
                         {{-- Tab panels --}}
-                        <div class="flex-1 min-h-0 overflow-y-auto">
-                          <div class="grid [&>div]:col-start-1 [&>div]:row-start-1">
+                        <div class="flex-1 min-h-0 relative">
+                          <div class="absolute inset-0 grid [&>div]:col-start-1 [&>div]:row-start-1">
 
                             {{-- Substitutions tab --}}
-                            <div class="p-4 sm:p-5 transition-opacity duration-150"
+                            <div class="p-4 sm:p-5 transition-opacity duration-150 overflow-y-auto"
                                  :class="tacticalTab === 'substitutions' ? 'opacity-100 relative z-10' : 'opacity-0 invisible pointer-events-none'"
                             >
 
@@ -317,7 +317,7 @@
                             </div>
 
                             {{-- Tactics tab --}}
-                            <div class="p-4 sm:p-5 transition-opacity duration-150"
+                            <div class="p-4 sm:p-5 transition-opacity duration-150 overflow-y-auto"
                                  :class="tacticalTab === 'tactics' ? 'opacity-100 relative z-10' : 'opacity-0 invisible pointer-events-none'"
                             >
                                 <div class="space-y-5">
