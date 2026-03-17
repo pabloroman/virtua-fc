@@ -28,4 +28,5 @@ return [
     'draws' => 'D',
     'losses' => 'L',
     'matches_suffix' => 'matches',
+    'team' => 'Team',
 ];

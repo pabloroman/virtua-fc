@@ -24,9 +24,10 @@ class ShowLeaderboard
 
         $query = ManagerStats::query()
             ->join('users', 'users.id', '=', 'manager_stats.user_id')
+            ->leftJoin('teams', 'teams.id', '=', 'manager_stats.team_id')
             ->where('users.is_profile_public', true)
             ->where('manager_stats.matches_played', '>=', self::MIN_MATCHES)
-            ->select('manager_stats.*', 'users.name', 'users.username', 'users.avatar', 'users.country', 'users.province');
+            ->select('manager_stats.*', 'users.name', 'users.username', 'users.avatar', 'users.country', 'users.province', 'teams.name as team_name', 'teams.image as team_image');
 
         if ($country) {
             $query->where('users.country', $country);

@@ -173,6 +173,8 @@ class LeaderboardTest extends TestCase
         // First: a win to build streak
         $stats = ManagerStats::create([
             'user_id' => $user->id,
+            'game_id' => $game->id,
+            'team_id' => $team->id,
             'matches_played' => 3,
             'matches_won' => 3,
             'current_unbeaten_streak' => 3,

@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * @property int $id
  * @property int $user_id
+ * @property string|null $game_id
+ * @property string|null $team_id
  * @property int $matches_played
  * @property int $matches_won
  * @property int $matches_drawn
@@ -18,6 +20,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $seasons_completed
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\User $user
+ * @property-read \App\Models\Game|null $game
+ * @property-read \App\Models\Team|null $team
  */
 class ManagerStats extends Model
 {
@@ -26,6 +30,8 @@ class ManagerStats extends Model
 
     protected $fillable = [
         'user_id',
+        'game_id',
+        'team_id',
         'matches_played',
         'matches_won',
         'matches_drawn',
@@ -50,6 +56,16 @@ class ManagerStats extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function game(): BelongsTo
+    {
+        return $this->belongsTo(Game::class);
+    }
+
+    public function team(): BelongsTo
+    {
+        return $this->belongsTo(Team::class);
     }
 
     /**

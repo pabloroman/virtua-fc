@@ -21,7 +21,8 @@ class LeaderboardStatsProcessor implements SeasonProcessor
     public function process(Game $game, SeasonTransitionData $data): SeasonTransitionData
     {
         $stats = ManagerStats::firstOrCreate(
-            ['user_id' => $game->user_id],
+            ['game_id' => $game->id],
+            ['user_id' => $game->user_id, 'team_id' => $game->team_id],
         );
 
         $stats->increment('seasons_completed');

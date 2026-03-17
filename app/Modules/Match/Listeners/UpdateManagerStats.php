@@ -31,7 +31,8 @@ class UpdateManagerStats
         }
 
         $stats = ManagerStats::firstOrCreate(
-            ['user_id' => $game->user_id],
+            ['game_id' => $game->id],
+            ['user_id' => $game->user_id, 'team_id' => $game->team_id],
         );
 
         $stats->recordResult($result);

@@ -6,27 +6,24 @@ use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\ManagerStats;
 use App\Models\SeasonArchive;
-use App\Models\User;
 use Illuminate\Console\Command;
 
 class BackfillManagerStats extends Command
 {
     protected $signature = 'app:backfill-manager-stats';
 
-    protected $description = 'Backfill manager leaderboard stats from existing match history';
+    protected $description = 'Backfill manager leaderboard stats from existing match history (one row per game)';
 
     public function handle(): int
     {
-        $users = User::whereHas('games', function ($query) {
-            $query->where('game_mode', Game::MODE_CAREER);
-        })->get();
+        $games = Game::where('game_mode', Game::MODE_CAREER)->get();
 
-        $this->info("Processing {$users->count()} users with career games...");
+        $this->info("Processing {$games->count()} career games...");
 
-        $bar = $this->output->createProgressBar($users->count());
+        $bar = $this->output->createProgressBar($games->count());
 
-        foreach ($users as $user) {
-            $this->backfillUser($user);
+        foreach ($games as $game) {
+            $this->backfillGame($game);
             $bar->advance();
         }
 
@@ -37,52 +34,45 @@ class BackfillManagerStats extends Command
         return self::SUCCESS;
     }
 
-    private function backfillUser(User $user): void
+    private function backfillGame(Game $game): void
     {
-        $careerGames = $user->games()->where('game_mode', Game::MODE_CAREER)->get();
-
         $won = 0;
         $drawn = 0;
         $lost = 0;
         $currentStreak = 0;
         $longestStreak = 0;
-        $seasonsCompleted = 0;
 
-        foreach ($careerGames as $game) {
-            // Count completed seasons from archives
-            $seasonsCompleted += SeasonArchive::where('game_id', $game->id)->count();
+        $seasonsCompleted = SeasonArchive::where('game_id', $game->id)->count();
 
-            // Get all played matches for the user's team, ordered chronologically
-            $matches = GameMatch::where('game_id', $game->id)
-                ->where('played', true)
-                ->where(function ($query) use ($game) {
-                    $query->where('home_team_id', $game->team_id)
-                        ->orWhere('away_team_id', $game->team_id);
-                })
-                ->orderBy('scheduled_date')
-                ->orderBy('round_number')
-                ->get();
+        $matches = GameMatch::where('game_id', $game->id)
+            ->where('played', true)
+            ->where(function ($query) use ($game) {
+                $query->where('home_team_id', $game->team_id)
+                    ->orWhere('away_team_id', $game->team_id);
+            })
+            ->orderBy('scheduled_date')
+            ->orderBy('round_number')
+            ->get();
 
-            foreach ($matches as $match) {
-                $result = $this->determineResult($match, $game->team_id);
+        foreach ($matches as $match) {
+            $result = $this->determineResult($match, $game->team_id);
 
-                if ($result === null) {
-                    continue;
-                }
+            if ($result === null) {
+                continue;
+            }
 
-                match ($result) {
-                    'win' => $won++,
-                    'draw' => $drawn++,
-                    'loss' => $lost++,
-                };
+            match ($result) {
+                'win' => $won++,
+                'draw' => $drawn++,
+                'loss' => $lost++,
+            };
 
-                if ($result === 'loss') {
-                    $currentStreak = 0;
-                } else {
-                    $currentStreak++;
-                    if ($currentStreak > $longestStreak) {
-                        $longestStreak = $currentStreak;
-                    }
+            if ($result === 'loss') {
+                $currentStreak = 0;
+            } else {
+                $currentStreak++;
+                if ($currentStreak > $longestStreak) {
+                    $longestStreak = $currentStreak;
                 }
             }
         }
@@ -94,8 +84,10 @@ class BackfillManagerStats extends Command
         }
 
         ManagerStats::updateOrCreate(
-            ['user_id' => $user->id],
+            ['game_id' => $game->id],
             [
+                'user_id' => $game->user_id,
+                'team_id' => $game->team_id,
                 'matches_played' => $total,
                 'matches_won' => $won,
                 'matches_drawn' => $drawn,

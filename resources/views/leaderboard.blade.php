@@ -129,14 +129,23 @@
                                     </div>
 
                                     <div class="min-w-0 flex-1">
-                                        @if($manager->username)
-                                            <a href="{{ route('manager.profile', $manager->username) }}" class="text-sm font-medium text-text-primary hover:text-accent-blue truncate block">
-                                                {{ $manager->name }}
-                                            </a>
+                                        <div class="flex items-center gap-1.5">
+                                            @if($manager->username)
+                                                <a href="{{ route('manager.profile', $manager->username) }}" class="text-sm font-medium text-text-primary hover:text-accent-blue truncate">
+                                                    {{ $manager->name }}
+                                                </a>
+                                            @else
+                                                <span class="text-sm font-medium text-text-primary truncate">{{ $manager->name }}</span>
+                                            @endif
+                                        </div>
+                                        @if($manager->team_name)
+                                            <div class="flex items-center gap-1 mt-0.5">
+                                                <img src="{{ $manager->team_image }}" alt="{{ $manager->team_name }}" class="size-3.5 shrink-0">
+                                                <span class="text-xs text-text-muted truncate">{{ $manager->team_name }}</span>
+                                            </div>
                                         @else
-                                            <span class="text-sm font-medium text-text-primary truncate block">{{ $manager->name }}</span>
+                                            <span class="text-xs text-text-muted">{{ $manager->matches_played }} {{ __('leaderboard.matches_suffix') }}</span>
                                         @endif
-                                        <span class="text-xs text-text-muted">{{ $manager->matches_played }} {{ __('leaderboard.matches_suffix') }}</span>
                                     </div>
 
                                     <div class="text-right shrink-0">
@@ -158,13 +167,21 @@
                                     <div class="size-8 rounded-full overflow-hidden shrink-0">
                                         <img src="{{ $avatarUrl }}" alt="" class="size-11 max-w-none -mt-0.5">
                                     </div>
-                                    @if($manager->username)
-                                        <a href="{{ route('manager.profile', $manager->username) }}" class="text-sm font-medium text-text-primary hover:text-accent-blue truncate">
-                                            {{ $manager->name }}
-                                        </a>
-                                    @else
-                                        <span class="text-sm font-medium text-text-primary truncate">{{ $manager->name }}</span>
-                                    @endif
+                                    <div class="min-w-0">
+                                        @if($manager->username)
+                                            <a href="{{ route('manager.profile', $manager->username) }}" class="text-sm font-medium text-text-primary hover:text-accent-blue truncate block">
+                                                {{ $manager->name }}
+                                            </a>
+                                        @else
+                                            <span class="text-sm font-medium text-text-primary truncate block">{{ $manager->name }}</span>
+                                        @endif
+                                        @if($manager->team_name)
+                                            <div class="flex items-center gap-1 mt-0.5">
+                                                <img src="{{ $manager->team_image }}" alt="{{ $manager->team_name }}" class="size-3.5 shrink-0">
+                                                <span class="text-xs text-text-muted truncate">{{ $manager->team_name }}</span>
+                                            </div>
+                                        @endif
+                                    </div>
                                 </div>
 
                                 <span class="text-sm text-text-secondary text-center">{{ $manager->matches_played }}</span>

@@ -28,4 +28,5 @@ return [
     'draws' => 'E',
     'losses' => 'D',
     'matches_suffix' => 'partidos',
+    'team' => 'Equipo',
 ];
