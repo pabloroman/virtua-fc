@@ -49,6 +49,8 @@ Uses invokable single-action classes instead of traditional controllers:
 - **Actions:** `App\Http\Actions\*` - handle form submissions and game commands (21 classes)
 - **Views:** `App\Http\Views\*` - prepare data for Blade templates (19 classes)
 
+**Views and Actions must stay thin.** They should only orchestrate: validate input, call a service, return a response. Business logic, database queries, and data transformations belong in service classes (`app/Modules/*/Services/` or `app/Services/`). Never put complex queries or domain logic directly in a View or Action class.
+
 Authentication is handled by Laravel Breeze controllers in `App\Http\Controllers\Auth\`.
 
 Example: `ShowGame` → `views/game.blade.php`, `AdvanceMatchday` handles playing matches.
