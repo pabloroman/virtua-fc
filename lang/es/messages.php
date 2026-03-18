@@ -26,6 +26,7 @@ return [
     // Counter offer
     'counter_offer_accepted' => '¡Contraoferta aceptada! :player se unirá cuando abra la ventana de :window.',
     'counter_offer_accepted_immediate' => '¡Fichaje completado! :player se ha unido a tu plantilla.',
+    'counter_offer_rejected' => 'Has rechazado la contraoferta por :player.',
     'counter_offer_expired' => 'Esta oferta ya no está disponible.',
 
     // Loan messages

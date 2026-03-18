@@ -26,6 +26,7 @@ return [
     // Counter offer
     'counter_offer_accepted' => 'Counter offer accepted! :player will join when the :window window opens.',
     'counter_offer_accepted_immediate' => 'Transfer complete! :player has joined your squad.',
+    'counter_offer_rejected' => 'You rejected the counter offer for :player.',
     'counter_offer_expired' => 'This offer is no longer available.',
 
     // Loan messages

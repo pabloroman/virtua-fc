@@ -123,6 +123,7 @@ return [
     'counter_offer_received' => 'Contraoferta Recibida',
     'transfer_agreed' => 'Fichaje Acordado',
     'accept_counter' => 'Aceptar Contraoferta',
+    'reject_counter' => 'Rechazar',
     'already_bidding' => 'Ya tienes una oferta por este jugador',
     'scouting_assessment' => 'Evaluación del Ojeador',
     'financial_details' => 'Detalles Financieros',

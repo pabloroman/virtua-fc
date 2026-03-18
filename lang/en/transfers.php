@@ -122,6 +122,7 @@ return [
     'counter_offer_received' => 'Counter Offer Received',
     'transfer_agreed' => 'Transfer Agreed',
     'accept_counter' => 'Accept Counter Offer',
+    'reject_counter' => 'Reject',
     'already_bidding' => 'You already have a bid for this player',
     'scouting_assessment' => 'Scouting Assessment',
     'financial_details' => 'Financial Details',

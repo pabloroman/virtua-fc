@@ -121,10 +121,16 @@
                                                 <div class="md:text-right">
                                                     <div class="text-xl font-bold text-accent-red">{{ \App\Support\Money::format($bid->asking_price) }}</div>
                                                 </div>
-                                                <form method="post" action="{{ route('game.scouting.counter.accept', [$game->id, $bid->id]) }}">
-                                                    @csrf
-                                                    <x-primary-button color="green">{{ __('transfers.accept_counter') }}</x-primary-button>
-                                                </form>
+                                                <div class="flex items-center gap-2">
+                                                    <form method="post" action="{{ route('game.scouting.counter.reject', [$game->id, $bid->id]) }}">
+                                                        @csrf
+                                                        <x-ghost-button color="red">{{ __('transfers.reject_counter') }}</x-ghost-button>
+                                                    </form>
+                                                    <form method="post" action="{{ route('game.scouting.counter.accept', [$game->id, $bid->id]) }}">
+                                                        @csrf
+                                                        <x-primary-button color="green">{{ __('transfers.accept_counter') }}</x-primary-button>
+                                                    </form>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
