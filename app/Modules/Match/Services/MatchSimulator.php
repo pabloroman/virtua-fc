@@ -821,13 +821,20 @@ class MatchSimulator
             $awayCardEvents = $this->generateCardEventsInRange($awayTeam->id, $awayPlayers, $goalDifference, $fromMinute + 1, 93, $matchFraction, $existingYellowPlayerIds);
             $events = $events->merge($homeCardEvents)->merge($awayCardEvents);
 
+            // Exclude sent-off players from injury generation
+            $sentOffPlayerIds = $events->filter(fn ($e) => $e->type === 'red_card')
+                ->pluck('gamePlayerId')
+                ->all();
+            $homePlayersForInjury = $homePlayers->reject(fn ($p) => in_array($p->id, $sentOffPlayerIds));
+            $awayPlayersForInjury = $awayPlayers->reject(fn ($p) => in_array($p->id, $sentOffPlayerIds));
+
             // Generate injuries and auto-substitute before goal generation
             // so team strength reflects the replacement player
             $injuryMaxMinute = 85;
             $lineupChanged = false;
 
             if (! in_array($homeTeam->id, $existingInjuryTeamIds) && $fromMinute + 1 <= $injuryMaxMinute) {
-                $homeInjuryEvents = $this->generateInjuryEventsInRange($homeTeam->id, $homePlayers, $fromMinute + 1, $injuryMaxMinute, $game);
+                $homeInjuryEvents = $this->generateInjuryEventsInRange($homeTeam->id, $homePlayersForInjury, $fromMinute + 1, $injuryMaxMinute, $game);
                 $events = $events->merge($homeInjuryEvents);
                 if ($homeInjuryEvents->isNotEmpty() && $homeBenchPlayers !== null && $homeBenchPlayers->isNotEmpty()) {
                     [$subEvents, $homePlayers, $homeBenchPlayers] = $this->processInjurySubstitution(
@@ -840,7 +847,7 @@ class MatchSimulator
                 }
             }
             if (! in_array($awayTeam->id, $existingInjuryTeamIds) && $fromMinute + 1 <= $injuryMaxMinute) {
-                $awayInjuryEvents = $this->generateInjuryEventsInRange($awayTeam->id, $awayPlayers, $fromMinute + 1, $injuryMaxMinute, $game);
+                $awayInjuryEvents = $this->generateInjuryEventsInRange($awayTeam->id, $awayPlayersForInjury, $fromMinute + 1, $injuryMaxMinute, $game);
                 $events = $events->merge($awayInjuryEvents);
                 if ($awayInjuryEvents->isNotEmpty() && $awayBenchPlayers !== null && $awayBenchPlayers->isNotEmpty()) {
                     [$subEvents, $awayPlayers, $awayBenchPlayers] = $this->processInjurySubstitution(
