@@ -44,4 +44,21 @@ return [
     'edit_profile' => 'Editar perfil',
     'view_profile' => 'Ver perfil',
     'choose_avatar' => 'Elige tu avatar',
+
+    // Career Stats
+    'career_stats' => 'Estadísticas',
+    'matches_played' => 'Partidos',
+    'wins' => 'Victorias',
+    'draws' => 'Empates',
+    'losses' => 'Derrotas',
+    'win_percentage' => '% Victorias',
+    'best_streak' => 'Mejor Racha',
+    'seasons' => 'Temporadas',
+
+    // Trophy Room
+    'trophy_room' => 'Palmarés',
+    'league_title' => 'Liga',
+    'cup_title' => 'Copa',
+    'european_title' => 'Europa',
+    'supercup_title' => 'Supercopa',
 ];
