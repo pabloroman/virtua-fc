@@ -28,12 +28,6 @@ class SignFreeAgent
                 ->with('error', __('messages.not_free_agent'));
         }
 
-        // Must be during transfer window
-        if (! $game->isTransferWindowOpen()) {
-            return redirect()->route('game.transfers', $gameId)
-                ->with('error', __('messages.transfer_window_closed'));
-        }
-
         // Squad size cap
         if (ContractService::isSquadFull($game)) {
             return redirect()->route('game.transfers', $gameId)

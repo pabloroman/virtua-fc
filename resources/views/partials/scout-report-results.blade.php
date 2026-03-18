@@ -178,17 +178,13 @@
                                     {{-- Action Buttons --}}
                                     <div class="mt-4 space-y-2">
                                         @if($isFreeAgent)
-                                            @if($isTransferWindow && $canAffordWage)
+                                            @if($canAffordWage)
                                                 <form method="POST" action="{{ route('game.scouting.sign-free-agent', [$game->id, $player->id]) }}">
                                                     @csrf
                                                     <x-primary-button color="green" size="xs">
                                                         {{ __('transfers.sign_free_agent') }}
                                                     </x-primary-button>
                                                 </form>
-                                            @elseif(!$isTransferWindow)
-                                                <div class="text-xs text-text-muted italic">
-                                                    {{ __('transfers.window_closed_for_signing') }}
-                                                </div>
                                             @else
                                                 <div class="text-xs text-accent-gold font-medium">
                                                     {{ __('transfers.wage_exceeds_budget') }}
