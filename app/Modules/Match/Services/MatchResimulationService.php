@@ -301,14 +301,19 @@ class MatchResimulationService
         $handlerType = $competition->handler_type ?? 'league';
         $rules = $this->eligibilityService->rulesForHandlerType($handlerType);
 
-        // Pre-load all suspensions for affected players in this competition (single query)
-        $suspensionsByPlayer = PlayerSuspension::where('competition_id', $competitionId)
-            ->whereIn('game_player_id', $affectedPlayerIds)
-            ->get()
-            ->keyBy('game_player_id');
+        // Skip card suspension reversal for pre-season matches (no suspensions to revert)
+        $isPreseason = $handlerType === 'preseason';
+
+        if (! $isPreseason) {
+            // Pre-load all suspensions for affected players in this competition (single query)
+            $suspensionsByPlayer = PlayerSuspension::where('competition_id', $competitionId)
+                ->whereIn('game_player_id', $affectedPlayerIds)
+                ->get()
+                ->keyBy('game_player_id');
+        }
 
         foreach ($eventsToRevert as $event) {
-            if ($event->event_type === 'yellow_card') {
+            if (! $isPreseason && $event->event_type === 'yellow_card') {
                 // Check if this yellow was at a suspension threshold before reverting
                 $record = $suspensionsByPlayer->get($event->game_player_id);
                 $yellowsBefore = $record->yellow_cards ?? 0;
@@ -322,7 +327,7 @@ class MatchResimulationService
                 }
             }
 
-            if ($event->event_type === 'red_card') {
+            if (! $isPreseason && $event->event_type === 'red_card') {
                 $suspension = $suspensionsByPlayer->get($event->game_player_id);
                 if ($suspension && $suspension->matches_remaining > 0) {
                     $suspension->update(['matches_remaining' => 0]);
@@ -514,6 +519,9 @@ class MatchResimulationService
         }
 
         // Process special events
+        // Skip card suspensions for pre-season matches (cards are recorded but don't carry over)
+        $isPreseason = $handlerType === 'preseason';
+
         foreach ($specialEvents as $event) {
             $player = $players->get($event->gamePlayerId);
             if (! $player) {
@@ -522,11 +530,15 @@ class MatchResimulationService
 
             switch ($event->type) {
                 case 'yellow_card':
-                    $this->eligibilityService->processYellowCard($player->id, $competitionId, $handlerType);
+                    if (! $isPreseason) {
+                        $this->eligibilityService->processYellowCard($player->id, $competitionId, $handlerType);
+                    }
                     break;
                 case 'red_card':
-                    $isSecondYellow = $event->metadata['second_yellow'] ?? false;
-                    $this->eligibilityService->processRedCard($player, $isSecondYellow, $competitionId);
+                    if (! $isPreseason) {
+                        $isSecondYellow = $event->metadata['second_yellow'] ?? false;
+                        $this->eligibilityService->processRedCard($player, $isSecondYellow, $competitionId);
+                    }
                     break;
                 case 'injury':
                     $injuryType = $event->metadata['injury_type'] ?? 'Unknown injury';
