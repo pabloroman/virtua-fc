@@ -40,6 +40,11 @@ class ProcessSeasonTransition implements ShouldQueue
         // Phase 1: Close old season
         $data = $closingPipeline->run($game);
 
+        // Advance game to the new season (after closing processors finish,
+        // so they all see the old season when looking up simulated data)
+        $game->refresh()->setRelations([]);
+        $game->update(['season' => $data->newSeason]);
+
         // Phase 2: Set up new season
         $game->refresh()->setRelations([]);
         $setupPipeline->run($game, $data);

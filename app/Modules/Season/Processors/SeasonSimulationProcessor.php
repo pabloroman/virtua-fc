@@ -9,6 +9,7 @@ use App\Models\Competition;
 use App\Models\CompetitionEntry;
 use App\Models\Game;
 use App\Models\GameStanding;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Generates simulated standings for non-played leagues at season end.
@@ -60,7 +61,14 @@ class SeasonSimulationProcessor implements SeasonProcessor
                 ->exists();
 
             if (!$hasRealStandings) {
-                $this->simulationService->simulateLeague($game, $league);
+                $simulated = $this->simulationService->simulateLeague($game, $league);
+
+                Log::info('Simulated league season', [
+                    'game_id' => $game->id,
+                    'season' => $game->season,
+                    'competition_id' => $league->id,
+                    'result_count' => count($simulated->results ?? []),
+                ]);
             }
         }
     }

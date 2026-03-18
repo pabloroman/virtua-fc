@@ -72,7 +72,7 @@ class ConfigDrivenPromotionRule implements PromotionRelegationRule
                 }
             }
 
-            $this->validateTeamCount($promoted, $expectedCount, 'promoted', $this->bottomDivision);
+            $this->validateTeamCount($promoted, $expectedCount, 'promoted', $this->bottomDivision, $game);
 
             return $promoted;
         }
@@ -82,7 +82,7 @@ class ConfigDrivenPromotionRule implements PromotionRelegationRule
 
         $promoted = $this->getEligibleSimulatedPromotions($game, $totalPromoted);
 
-        $this->validateTeamCount($promoted, $expectedCount, 'promoted', $this->bottomDivision);
+        $this->validateTeamCount($promoted, $expectedCount, 'promoted', $this->bottomDivision, $game);
 
         return $promoted;
     }
@@ -99,7 +99,7 @@ class ConfigDrivenPromotionRule implements PromotionRelegationRule
         );
 
         if (!empty($relegated)) {
-            $this->validateTeamCount($relegated, $expectedCount, 'relegated', $this->topDivision);
+            $this->validateTeamCount($relegated, $expectedCount, 'relegated', $this->topDivision, $game);
 
             return $relegated;
         }
@@ -107,7 +107,7 @@ class ConfigDrivenPromotionRule implements PromotionRelegationRule
         // Fall back to simulated results
         $relegated = $this->getSimulatedTeamsByPosition($game, $this->topDivision, $this->relegatedPositions);
 
-        $this->validateTeamCount($relegated, $expectedCount, 'relegated', $this->topDivision);
+        $this->validateTeamCount($relegated, $expectedCount, 'relegated', $this->topDivision, $game);
 
         return $relegated;
     }
@@ -120,16 +120,27 @@ class ConfigDrivenPromotionRule implements PromotionRelegationRule
      * @param  string  $type  'promoted' or 'relegated'
      * @param  string  $competitionId  The competition being queried
      */
-    private function validateTeamCount(array $teams, int $expectedCount, string $type, string $competitionId): void
+    private function validateTeamCount(array $teams, int $expectedCount, string $type, string $competitionId, ?Game $game = null): void
     {
         if (count($teams) !== $expectedCount) {
             $teamIds = array_column($teams, 'teamId');
+            $season = $game?->season ?? 'unknown';
+
+            $standingsCount = $game ? GameStanding::where('game_id', $game->id)
+                ->where('competition_id', $competitionId)->count() : 'N/A';
+
+            $simulatedExists = $game ? SimulatedSeason::where('game_id', $game->id)
+                ->where('season', $season)
+                ->where('competition_id', $competitionId)
+                ->exists() : false;
 
             throw new \RuntimeException(
                 "Promotion/relegation imbalance: expected {$expectedCount} {$type} teams " .
                 "from {$competitionId}, got " . count($teams) . ". " .
                 "Team IDs: " . json_encode($teamIds) . ". " .
-                "Divisions: {$this->topDivision} <-> {$this->bottomDivision}."
+                "Divisions: {$this->topDivision} <-> {$this->bottomDivision}. " .
+                "Season: {$season}. Standings rows: {$standingsCount}. " .
+                "Simulated data exists: " . ($simulatedExists ? 'yes' : 'no') . "."
             );
         }
     }
