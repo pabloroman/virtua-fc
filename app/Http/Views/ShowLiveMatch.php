@@ -309,6 +309,10 @@ class ShowLiveMatch
             'teamColors' => $teamColorsHex,
             'slotCompatibility' => $slotCompatibility,
             'gridConfig' => $gridConfig,
+            'positionsUrl' => route('game.match.positions', ['gameId' => $game->id, 'matchId' => $playerMatch->id]),
+            'initialPitchPositions' => ($playerMatch->home_team_id === $game->team_id
+                ? $playerMatch->home_pitch_positions
+                : $playerMatch->away_pitch_positions) ?? [],
         ]);
     }
 

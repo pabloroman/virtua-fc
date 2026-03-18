@@ -88,6 +88,7 @@ use App\Http\Views\ShowLeaderboard;
 use App\Http\Views\ShowManagerProfile;
 use App\Http\Actions\ProcessSubstitution;
 use App\Http\Actions\ProcessTacticalChange;
+use App\Http\Actions\SavePitchPositions;
 use App\Http\Actions\PromoteAcademyPlayer;
 use App\Http\Actions\StartNewSeason;
 use Illuminate\Support\Facades\Route;
@@ -144,6 +145,7 @@ Route::middleware('auth')->group(function () {
 
         Route::post('/game/{gameId}/match/{matchId}/substitute', ProcessSubstitution::class)->name('game.match.substitute');
         Route::post('/game/{gameId}/match/{matchId}/tactics', ProcessTacticalChange::class)->name('game.match.tactics');
+        Route::post('/game/{gameId}/match/{matchId}/positions', SavePitchPositions::class)->name('game.match.positions');
         Route::post('/game/{gameId}/match/{matchId}/extra-time', ProcessExtraTime::class)->name('game.match.extra-time');
         Route::post('/game/{gameId}/match/{matchId}/penalties', ProcessPenalties::class)->name('game.match.penalties');
         Route::post('/game/{gameId}/finalize-match', FinalizeMatch::class)->name('game.finalize-match');

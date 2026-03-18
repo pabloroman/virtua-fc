@@ -431,10 +431,31 @@
                     </x-primary-button>
                 </div>
 
+                {{-- Save positions (visible when positions have been changed) --}}
+                <div x-show="hasUnsavedPositions" class="flex items-center gap-2">
+                    <x-secondary-button
+                        @click="resetPitchPositions()"
+                        class="gap-1.5"
+                    >
+                        {{ __('game.positions_reset') }}
+                    </x-secondary-button>
+
+                    <x-primary-button
+                        color="emerald"
+                        type="button"
+                        @click="savePitchPositions()"
+                        x-bind:disabled="positionsSaving"
+                        class="ml-auto gap-1.5"
+                    >
+                        <span x-show="!positionsSaving">{{ __('game.positions_save') }}</span>
+                        <span x-show="positionsSaving">{{ __('game.sub_processing') }}</span>
+                    </x-primary-button>
+                </div>
+
                 {{-- Resume match (always visible) --}}
                 <x-secondary-button
                     @click="safeCloseTacticalPanel()"
-                    x-bind:disabled="subProcessing || tacticsProcessing"
+                    x-bind:disabled="subProcessing || tacticsProcessing || positionsSaving"
                     class="w-full justify-center gap-2"
                 >
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
