@@ -57,7 +57,7 @@ Example: `ShowGame` → `views/game.blade.php`, `AdvanceMatchday` handles playin
 
 ### Modular Monolith Architecture
 
-The codebase follows a **modular monolith** pattern. Domain logic is organized into 10 modules under `app/Modules/`, each with its own services, contracts, DTOs, and events:
+The codebase follows a **modular monolith** pattern. Domain logic is organized into 11 modules under `app/Modules/`, each with its own services, contracts, DTOs, and events:
 
 | Module | Purpose | Key services |
 |--------|---------|-------------|
@@ -69,6 +69,7 @@ The codebase follows a **modular monolith** pattern. Domain logic is organized i
 | **Competition** | Structure & config | `CountryConfig`, `StandingsCalculator`, `CupDrawService`, handlers config |
 | **Finance** | Economic model | `BudgetProjectionService`, `SeasonSimulationService` |
 | **Season** | Lifecycle orchestration | `SeasonClosingPipeline`, `SeasonSetupPipeline`, `GameCreationService`, 22 processors |
+| **Manager** | Manager profile & trophies | `ManagerProfileService`, `TrophyRecordingProcessor` |
 | **Notification** | In-game messaging | `NotificationService`, event listeners |
 | **Academy** | Youth development | `YouthAcademyService` |
 
@@ -201,6 +202,9 @@ app/
 │   │   ├── Contracts/    # SeasonProcessor
 │   │   ├── DTOs/         # SeasonTransitionData
 │   │   └── Jobs/         # SetupNewGame, SetupTournamentGame
+│   ├── Manager/          # Manager profile & trophies
+│   │   ├── Services/     # ManagerProfileService
+│   │   └── Processors/   # TrophyRecordingProcessor
 │   ├── Notification/     # In-game messaging
 │   │   ├── Services/     # NotificationService
 │   │   └── Listeners/    # SendMatchNotifications, SendCupTieNotifications

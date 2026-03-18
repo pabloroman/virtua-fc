@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\Season\Processors;
+namespace App\Modules\Manager\Processors;
 
 use App\Models\Competition;
 use App\Models\CompetitionEntry;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Modules\Manager\Services;
 
 use App\Models\ManagerStats;
 use App\Models\ManagerTrophy;

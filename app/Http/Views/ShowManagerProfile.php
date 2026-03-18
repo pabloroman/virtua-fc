@@ -3,7 +3,7 @@
 namespace App\Http\Views;
 
 use App\Models\User;
-use App\Services\ManagerProfileService;
+use App\Modules\Manager\Services\ManagerProfileService;
 
 class ShowManagerProfile
 {

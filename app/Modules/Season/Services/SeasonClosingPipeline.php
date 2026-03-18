@@ -20,7 +20,7 @@ use App\Modules\Season\Processors\SquadReplenishmentProcessor;
 use App\Modules\Season\Processors\StatsResetProcessor;
 use App\Modules\Season\Processors\SupercupQualificationProcessor;
 use App\Modules\Season\Processors\TransferMarketResetProcessor;
-use App\Modules\Season\Processors\TrophyRecordingProcessor;
+use App\Modules\Manager\Processors\TrophyRecordingProcessor;
 use App\Modules\Season\Processors\UefaQualificationProcessor;
 use App\Modules\Season\Processors\YouthAcademyClosingProcessor;
 use App\Models\Game;
