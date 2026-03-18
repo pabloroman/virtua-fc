@@ -309,7 +309,7 @@ return [
     'pitch_tap_or_drag' => 'Tap to substitute · Drag to reposition',
     'tactical_subs_made' => 'Substitutions made',
     'tactical_apply' => 'Apply changes',
-    'positions_save' => 'Save positions',
+    'positions_apply' => 'Apply positions',
     'positions_reset' => 'Reset positions',
     'tactical_no_changes' => 'No tactical changes to apply.',
     'tactical_unsaved_changes' => 'You have unsubmitted changes. Close anyway?',

@@ -83,13 +83,11 @@ export default function liveMatch(config) {
         draggingSlotId: null,
         dragPosition: null,
         positioningSlotId: null,
-        livePitchPositions: config.initialPitchPositions || {},
-        _savedPitchPositions: JSON.parse(JSON.stringify(config.initialPitchPositions || {})),
+        livePitchPositions: {},
+        _savedPitchPositions: {},
         _dragStartCoords: null,
         _wasDragging: false,
         _livePitchEl: null,
-        positionsUrl: config.positionsUrl || '',
-        positionsSaving: false,
 
         // Tactical change state
         pendingFormation: null,
@@ -1831,45 +1829,10 @@ export default function liveMatch(config) {
             return current !== saved;
         },
 
-        async savePitchPositions() {
-            if (!this.hasUnsavedPositions || this.positionsSaving) return;
-            this.positionsSaving = true;
-
-            try {
-                // Build full position map (including defaults for slots without custom positions)
-                const positions = {};
-                for (const slot of this.currentPitchSlots) {
-                    const customPos = this.livePitchPositions[String(slot.id)];
-                    if (customPos) {
-                        positions[String(slot.id)] = customPos;
-                    } else {
-                        positions[String(slot.id)] = [slot.col, slot.row];
-                    }
-                }
-
-                const response = await fetch(this.positionsUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': this.csrfToken,
-                        'Accept': 'application/json',
-                    },
-                    body: JSON.stringify({ pitch_positions: positions }),
-                });
-
-                if (!response.ok) {
-                    console.error('Save positions failed:', await response.json());
-                    return;
-                }
-
-                const result = await response.json();
-                // Update saved state to match current
-                this._savedPitchPositions = JSON.parse(JSON.stringify(this.livePitchPositions));
-            } catch (err) {
-                console.error('Save positions request failed:', err);
-            } finally {
-                this.positionsSaving = false;
-            }
+        applyPitchPositions() {
+            if (!this.hasUnsavedPositions) return;
+            this._savedPitchPositions = JSON.parse(JSON.stringify(this.livePitchPositions));
+            this.positioningSlotId = null;
         },
 
         resetPitchPositions() {

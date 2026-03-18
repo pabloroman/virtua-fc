@@ -309,7 +309,7 @@ return [
     'pitch_tap_or_drag' => 'Toca para sustituir · Arrastra para reposicionar',
     'tactical_subs_made' => 'Sustituciones realizadas',
     'tactical_apply' => 'Aplicar cambios',
-    'positions_save' => 'Guardar posiciones',
+    'positions_apply' => 'Aplicar posiciones',
     'positions_reset' => 'Restablecer posiciones',
     'tactical_no_changes' => 'No hay cambios tácticos que aplicar.',
     'tactical_unsaved_changes' => 'Tienes cambios sin confirmar. ¿Cerrar de todos modos?',
