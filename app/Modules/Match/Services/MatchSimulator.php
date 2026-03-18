@@ -803,6 +803,17 @@ class MatchSimulator
         $homeScore = $this->poissonRandom($homeExpectedGoals);
         $awayScore = $this->poissonRandom($awayExpectedGoals);
 
+        // A team with no players cannot score — force their goals to 0.
+        // This prevents phantom goals that have no events, which would be
+        // lost during resimulation (subs/tactical changes) and cause
+        // incorrect extra time triggers in cup matches.
+        if ($homePlayers->isEmpty()) {
+            $homeScore = 0;
+        }
+        if ($awayPlayers->isEmpty()) {
+            $awayScore = 0;
+        }
+
         if ($homePlayers->isNotEmpty() && $awayPlayers->isNotEmpty()) {
             // Generate cards first using the initial Poisson score for goal-difference bias
             $goalDifference = $homeScore - $awayScore;
@@ -914,6 +925,31 @@ class MatchSimulator
             $events = $this->reassignEventsFromUnavailablePlayers(
                 $events, $homePlayers, $awayPlayers
             );
+        } elseif ($homePlayers->isNotEmpty() || $awayPlayers->isNotEmpty()) {
+            // One team has no players (e.g. lower-division cup opponent).
+            // Generate goal events only for the team with players so that
+            // goals are backed by events and survive resimulation.
+            $teamWithPlayers = $homePlayers->isNotEmpty() ? 'home' : 'away';
+            $scoringPlayers = $teamWithPlayers === 'home' ? $homePlayers : $awayPlayers;
+            $scoringTeamId = $teamWithPlayers === 'home' ? $homeTeam->id : $awayTeam->id;
+            $concedingTeamId = $teamWithPlayers === 'home' ? $awayTeam->id : $homeTeam->id;
+            $goalCount = $teamWithPlayers === 'home' ? $homeScore : $awayScore;
+
+            $maxGoalsCap = config('match_simulation.max_goals_cap', 0);
+            if ($maxGoalsCap > 0) {
+                $goalCount = min($goalCount, $maxGoalsCap);
+                if ($teamWithPlayers === 'home') {
+                    $homeScore = $goalCount;
+                } else {
+                    $awayScore = $goalCount;
+                }
+            }
+
+            $goalEvents = $this->generateGoalEventsInRange(
+                $goalCount, $scoringTeamId, $concedingTeamId,
+                $scoringPlayers, collect(), $fromMinute + 1, 93
+            );
+            $events = $events->merge($goalEvents)->sortBy('minute')->values();
         }
 
         $possession = $this->calculatePossession(
@@ -1398,6 +1434,14 @@ class MatchSimulator
         $homeScore = $this->poissonRandom($homeExpectedGoals);
         $awayScore = $this->poissonRandom($awayExpectedGoals);
 
+        // A team with no players cannot score — force their goals to 0.
+        if ($homePlayers->isEmpty()) {
+            $homeScore = 0;
+        }
+        if ($awayPlayers->isEmpty()) {
+            $awayScore = 0;
+        }
+
         // Generate goal events in range [fromMinute+1, 120]
         $minMinute = $fromMinute + 1;
         $maxMinute = 120;
@@ -1419,6 +1463,19 @@ class MatchSimulator
             $events = $this->reassignEventsFromUnavailablePlayers(
                 $events, $homePlayers, $awayPlayers
             );
+        } elseif ($homePlayers->isNotEmpty() || $awayPlayers->isNotEmpty()) {
+            // One team has no players — generate events only for the team with players.
+            $teamWithPlayers = $homePlayers->isNotEmpty() ? 'home' : 'away';
+            $scoringPlayers = $teamWithPlayers === 'home' ? $homePlayers : $awayPlayers;
+            $scoringTeamId = $teamWithPlayers === 'home' ? $homeTeam->id : $awayTeam->id;
+            $concedingTeamId = $teamWithPlayers === 'home' ? $awayTeam->id : $homeTeam->id;
+            $goalCount = $teamWithPlayers === 'home' ? $homeScore : $awayScore;
+
+            $goalEvents = $this->generateGoalEventsInRange(
+                $goalCount, $scoringTeamId, $concedingTeamId,
+                $scoringPlayers, collect(), $minMinute, $maxMinute
+            );
+            $events = $events->merge($goalEvents)->sortBy('minute')->values();
         }
 
         $possession = $this->calculatePossession(
