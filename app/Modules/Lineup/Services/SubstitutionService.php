@@ -7,9 +7,6 @@ use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Models\MatchEvent;
 use App\Models\PlayerSuspension;
-use Illuminate\Support\Str;
-use App\Modules\Match\Services\ExtraTimeAndPenaltyService;
-use App\Modules\Match\Services\MatchResimulationService;
 
 class SubstitutionService
 {
@@ -21,24 +18,21 @@ class SubstitutionService
 
     public const MAX_ET_WINDOWS = 4;
 
-    public function __construct(
-        private readonly MatchResimulationService $resimulationService,
-        private readonly ExtraTimeAndPenaltyService $extraTimeService,
-    ) {}
+    public function __construct() {}
 
     /**
-     * Validate substitution rules and delegate to processBatchSubstitution on success.
+     * Validate substitution rules only (no processing).
      *
      * @throws \InvalidArgumentException with a raw translation key on validation failure
      */
-    public function validateAndProcessBatchSubstitution(
+    public function validateBatchSubstitution(
         GameMatch $match,
         Game $game,
         array $newSubstitutions,
         int $minute,
         array $previousSubstitutions,
         bool $isExtraTime = false,
-    ): array {
+    ): void {
         // Use higher limits during extra time (6th sub, 4th window)
         $maxSubs = $isExtraTime ? self::MAX_ET_SUBSTITUTIONS : self::MAX_SUBSTITUTIONS;
         $maxWindows = $isExtraTime ? self::MAX_ET_WINDOWS : self::MAX_WINDOWS;
@@ -132,82 +126,8 @@ class SubstitutionService
             $batchOutIds[] = $playerOutId;
             $batchInIds[] = $playerInId;
         }
-
-        return $this->processBatchSubstitution($match, $game, $newSubstitutions, $minute, $previousSubstitutions, $isExtraTime);
     }
 
-    /**
-     * Process a batch of substitutions: revert future events, re-simulate remainder, apply new result.
-     * All subs in the batch happen at the same minute (one "window").
-     *
-     * @param  array  $newSubstitutions  Subs to make now [{playerOutId, playerInId}]
-     * @param  array  $previousSubstitutions  Previous subs already made this match [{playerOutId, playerInId, minute}]
-     * @param  bool  $isExtraTime  Whether this substitution happens during extra time
-     * @return array  Response payload for the frontend
-     */
-    public function processBatchSubstitution(
-        GameMatch $match,
-        Game $game,
-        array $newSubstitutions,
-        int $minute,
-        array $previousSubstitutions,
-        bool $isExtraTime = false,
-    ): array {
-        $isUserHome = $match->isHomeTeam($game->team_id);
-
-        // Build the active lineup for both teams (applying ALL subs including the new batch)
-        $allSubs = array_merge(
-            $previousSubstitutions,
-            array_map(fn ($s) => [
-                'playerOutId' => $s['playerOutId'],
-                'playerInId' => $s['playerInId'],
-                'minute' => $minute,
-            ], $newSubstitutions),
-        );
-
-        $userLineup = $this->buildActiveLineup($match, $game->team_id, $allSubs);
-        $teams = $this->loadTeamsForResimulation($match, $game, $userLineup, $allSubs);
-        ['homePlayers' => $homePlayers, 'awayPlayers' => $awayPlayers, 'homeBench' => $homeBench, 'awayBench' => $awayBench] = $teams;
-
-        // Delegate re-simulation to shared service (pass all subs for energy calculation)
-        if ($isExtraTime) {
-            $result = $this->resimulationService->resimulateExtraTime($match, $game, $minute, $homePlayers, $awayPlayers, $allSubs, $homeBench, $awayBench);
-        } else {
-            $result = $this->resimulationService->resimulate($match, $game, $minute, $homePlayers, $awayPlayers, $allSubs, $homeBench, $awayBench);
-        }
-
-        // Increment appearances, create events, and collect sub records for batch write
-        $substitutions = $match->substitutions ?? [];
-        foreach ($newSubstitutions as $sub) {
-            GamePlayer::where('id', $sub['playerInId'])
-                ->update([
-                    'appearances' => \Illuminate\Support\Facades\DB::raw('appearances + 1'),
-                    'season_appearances' => \Illuminate\Support\Facades\DB::raw('season_appearances + 1'),
-                ]);
-
-            $substitutions[] = [
-                'team_id' => $game->team_id,
-                'player_out_id' => $sub['playerOutId'],
-                'player_in_id' => $sub['playerInId'],
-                'minute' => $minute,
-            ];
-
-            MatchEvent::create([
-                'id' => Str::uuid()->toString(),
-                'game_id' => $game->id,
-                'game_match_id' => $match->id,
-                'game_player_id' => $sub['playerOutId'],
-                'team_id' => $game->team_id,
-                'minute' => $minute,
-                'event_type' => MatchEvent::TYPE_SUBSTITUTION,
-                'metadata' => json_encode(['player_in_id' => $sub['playerInId']]),
-            ]);
-        }
-        $match->update(['substitutions' => $substitutions]);
-
-        // Build the response for the frontend
-        return $this->buildBatchResponse($match, $game, $minute, $newSubstitutions, $result->newHomeScore, $result->newAwayScore, $isExtraTime, $result->homePossession, $result->awayPossession);
-    }
 
     /**
      * Build the active lineup for the user's team considering all substitutions.
@@ -277,48 +197,4 @@ class SubstitutionService
         ];
     }
 
-    /**
-     * Build the JSON response for a batch substitution.
-     */
-    private function buildBatchResponse(GameMatch $match, Game $game, int $minute, array $newSubstitutions, int $newHomeScore, int $newAwayScore, bool $isExtraTime = false, int $homePossession = 50, int $awayPossession = 50): array
-    {
-        $formattedEvents = $this->resimulationService->buildEventsResponse($match, $minute);
-
-        // Load player names for each substitution
-        $playerIds = [];
-        foreach ($newSubstitutions as $sub) {
-            $playerIds[] = $sub['playerOutId'];
-            $playerIds[] = $sub['playerInId'];
-        }
-        $players = GamePlayer::with('player')->whereIn('id', $playerIds)->get()->keyBy('id');
-
-        $substitutionDetails = array_map(fn ($sub) => [
-            'playerOutId' => $sub['playerOutId'],
-            'playerInId' => $sub['playerInId'],
-            'playerOutName' => $players->get($sub['playerOutId'])?->player->name ?? '',
-            'playerInName' => $players->get($sub['playerInId'])?->player->name ?? '',
-            'minute' => $minute,
-            'teamId' => $game->team_id,
-        ], $newSubstitutions);
-
-        $response = [
-            'newScore' => [
-                'home' => $newHomeScore,
-                'away' => $newAwayScore,
-            ],
-            'newEvents' => $formattedEvents,
-            'substitutions' => $substitutionDetails,
-            'homePossession' => $homePossession,
-            'awayPossession' => $awayPossession,
-        ];
-
-        if ($isExtraTime) {
-            $response['isExtraTime'] = true;
-            $response['needsPenalties'] = $this->extraTimeService->checkNeedsPenalties(
-                $match->fresh(), $newHomeScore, $newAwayScore
-            );
-        }
-
-        return $response;
-    }
 }

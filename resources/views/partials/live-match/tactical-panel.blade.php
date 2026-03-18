@@ -5,13 +5,13 @@
     x-show="tacticalPanelOpen"
     x-cloak
     class="fixed inset-0 z-50 overflow-hidden"
-    x-on:keydown.escape.window="if (tacticalPanelOpen && !subProcessing && !tacticsProcessing) safeCloseTacticalPanel()"
+    x-on:keydown.escape.window="if (tacticalPanelOpen && !applyingChanges) safeCloseTacticalPanel()"
 >
     {{-- Backdrop --}}
     <div
         x-show="tacticalPanelOpen"
         class="fixed inset-0 transform transition-all"
-        x-on:click="if (!subProcessing && !tacticsProcessing) safeCloseTacticalPanel()"
+        x-on:click="if (!applyingChanges) safeCloseTacticalPanel()"
         x-transition:enter="ease-out duration-300"
         x-transition:enter-start="opacity-0"
         x-transition:enter-end="opacity-100"
@@ -59,7 +59,7 @@
                         {{-- Close button --}}
                         <x-icon-button
                             @click="safeCloseTacticalPanel()"
-                            x-bind:disabled="subProcessing || tacticsProcessing"
+                            x-bind:disabled="applyingChanges"
                         >
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -120,6 +120,7 @@
                                     {{ __('game.tactical_tab_substitutions') }}
                                     <span class="text-xs font-normal ml-1" :class="tacticalTab === 'substitutions' ? 'text-text-muted' : 'text-text-secondary'"
                                           x-text="'(' + substitutionsMade.length + '/' + effectiveMaxSubstitutions + ' · ' + windowsUsed + '/' + effectiveMaxWindows + ')'"></span>
+                                    <span x-show="hasSubPendingChanges" class="inline-flex w-1.5 h-1.5 rounded-full bg-accent-blue ml-1 shrink-0"></span>
                                     <div
                                         x-show="tacticalTab === 'substitutions'"
                                         class="absolute bottom-0 left-0 right-0 h-0.5 bg-surface-800"
@@ -133,6 +134,7 @@
                                         : 'text-text-secondary hover:text-text-secondary border-transparent'"
                                 >
                                     {{ __('game.tactical_tab_tactics') }}
+                                    <span x-show="hasTacticalChanges" class="inline-flex w-1.5 h-1.5 rounded-full bg-accent-blue ml-1 shrink-0"></span>
                                     <div
                                         x-show="tacticalTab === 'tactics'"
                                         class="absolute bottom-0 left-0 right-0 h-0.5 bg-surface-800"
@@ -198,7 +200,7 @@
                                                 <x-icon-button
                                                     @click="removePendingSub(idx)"
                                                     class="ml-auto shrink-0 hover:text-red-500"
-                                                    x-bind:disabled="subProcessing"
+                                                    x-bind:disabled="applyingChanges"
                                                 >
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -378,11 +380,10 @@
             {{-- Sticky footer: actions + resume --}}
             <div class="border-t border-border-strong bg-surface-900 px-4 py-3 sm:px-6 space-y-2 shrink-0">
 
-                {{-- Substitutions tab actions --}}
-                <div x-show="tacticalTab === 'substitutions'" class="flex items-center gap-2">
+                {{-- Per-tab inline actions (add another sub, per-tab resets) --}}
+                <div x-show="tacticalTab === 'substitutions' && (selectedPlayerOut || selectedPlayerIn || pendingSubs.length > 0)" class="flex items-center gap-2">
                     <x-secondary-button
                         @click="resetSubstitutions()"
-                        x-show="selectedPlayerOut || selectedPlayerIn || pendingSubs.length > 0"
                         class="gap-1.5"
                     >
                         {{ __('game.sub_reset') }}
@@ -391,43 +392,39 @@
                     <x-secondary-button
                         @click="addPendingSub()"
                         x-show="selectedPlayerOut && selectedPlayerIn && canAddMoreToPending && subsRemaining > 1"
-                        class="gap-1.5"
+                        class="ml-auto gap-1.5"
                     >
                         {{ __('game.sub_add_another') }}
                     </x-secondary-button>
-
-                    <x-primary-button
-                        color="sky"
-                        type="button"
-                        @click="confirmSubstitutions()"
-                        x-bind:disabled="(!selectedPlayerOut || !selectedPlayerIn) && pendingSubs.length === 0 || subProcessing"
-                        x-show="(canSubstitute && hasWindowsLeft) || pendingSubs.length > 0"
-                        class="ml-auto gap-1.5"
-                    >
-                        <span x-show="!subProcessing">{{ __('game.sub_confirm') }}</span>
-                        <span x-show="subProcessing">{{ __('game.sub_processing') }}</span>
-                    </x-primary-button>
                 </div>
 
-                {{-- Tactics tab actions --}}
-                <div x-show="tacticalTab === 'tactics'" class="flex items-center gap-2">
+                <div x-show="tacticalTab === 'tactics' && hasTacticalChanges" class="flex items-center gap-2">
                     <x-secondary-button
                         @click="resetTactics()"
-                        x-show="hasTacticalChanges"
                         class="gap-1.5"
                     >
                         {{ __('game.sub_reset') }}
                     </x-secondary-button>
+                </div>
+
+                {{-- Unified "Apply All Changes" button --}}
+                <div x-show="hasAnyPendingChanges" class="flex items-center gap-2">
+                    <x-secondary-button
+                        @click="resetAllChanges()"
+                        class="gap-1.5"
+                    >
+                        {{ __('game.tactical_reset_all') }}
+                    </x-secondary-button>
 
                     <x-primary-button
                         color="sky"
                         type="button"
-                        @click="confirmTacticalChanges()"
-                        x-bind:disabled="!hasTacticalChanges || tacticsProcessing"
+                        @click="confirmAllChanges()"
+                        x-bind:disabled="applyingChanges"
                         class="ml-auto gap-1.5"
                     >
-                        <span x-show="!tacticsProcessing">{{ __('game.tactical_apply') }}</span>
-                        <span x-show="tacticsProcessing">{{ __('game.sub_processing') }}</span>
+                        <span x-show="!applyingChanges">{{ __('game.tactical_apply_all') }}</span>
+                        <span x-show="applyingChanges">{{ __('game.sub_processing') }}</span>
                     </x-primary-button>
                 </div>
 
@@ -453,7 +450,7 @@
                 {{-- Resume match (always visible) --}}
                 <x-secondary-button
                     @click="safeCloseTacticalPanel()"
-                    x-bind:disabled="subProcessing || tacticsProcessing"
+                    x-bind:disabled="applyingChanges"
                     class="w-full justify-center gap-2"
                 >
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">

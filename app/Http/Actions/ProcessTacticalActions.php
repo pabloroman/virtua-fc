@@ -7,6 +7,7 @@ use App\Modules\Lineup\Enums\Formation;
 use App\Modules\Lineup\Enums\Mentality;
 use App\Modules\Lineup\Enums\PlayingStyle;
 use App\Modules\Lineup\Enums\PressingIntensity;
+use App\Modules\Lineup\Services\SubstitutionService;
 use App\Modules\Lineup\Services\TacticalChangeService;
 use App\Models\Game;
 use App\Models\GameMatch;
@@ -14,10 +15,11 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
-class ProcessTacticalChange
+class ProcessTacticalActions
 {
     public function __construct(
         private readonly TacticalChangeService $tacticalChangeService,
+        private readonly SubstitutionService $substitutionService,
     ) {}
 
     public function __invoke(Request $request, string $gameId, string $matchId): JsonResponse
@@ -27,18 +29,19 @@ class ProcessTacticalChange
             ->where('game_id', $gameId)
             ->findOrFail($matchId);
 
-        // Validate that the match is currently pending finalization (i.e. being played right now)
         if ($game->pending_finalization_match_id !== $match->id) {
             return response()->json(['error' => __('game.match_not_in_progress')], 403);
         }
 
-        // Validate that the match involves the user's team
         if (! $match->involvesTeam($game->team_id)) {
             return response()->json(['error' => __('game.sub_error_not_your_match')], 422);
         }
 
         $validated = $request->validate([
             'minute' => 'required|integer|min:1|max:120',
+            'substitutions' => 'array|max:'.SubstitutionService::MAX_ET_SUBSTITUTIONS,
+            'substitutions.*.playerOutId' => 'required|string',
+            'substitutions.*.playerInId' => 'required|string',
             'formation' => ['nullable', 'string', Rule::enum(Formation::class)],
             'mentality' => ['nullable', 'string', Rule::enum(Mentality::class)],
             'playing_style' => ['nullable', 'string', Rule::enum(PlayingStyle::class)],
@@ -50,30 +53,47 @@ class ProcessTacticalChange
             'previousSubstitutions.*.minute' => 'required|integer',
         ]);
 
-        // At least one tactical change must be provided
-        $hasChange = ! empty($validated['formation'])
+        $hasSubs = ! empty($validated['substitutions']);
+        $hasTactics = ! empty($validated['formation'])
             || ! empty($validated['mentality'])
             || ! empty($validated['playing_style'])
             || ! empty($validated['pressing'])
             || ! empty($validated['defensive_line']);
 
-        if (! $hasChange) {
+        if (! $hasSubs && ! $hasTactics) {
             return response()->json(['error' => __('game.tactical_no_changes')], 422);
         }
 
         $isExtraTime = $validated['minute'] > 90;
 
-        $result = $this->tacticalChangeService->processTacticalChange(
+        // Validate substitutions if present
+        if ($hasSubs) {
+            try {
+                $this->substitutionService->validateBatchSubstitution(
+                    $match,
+                    $game,
+                    $validated['substitutions'],
+                    $validated['minute'],
+                    $validated['previousSubstitutions'] ?? [],
+                    isExtraTime: $isExtraTime,
+                );
+            } catch (\InvalidArgumentException $e) {
+                return response()->json(['error' => __($e->getMessage())], 422);
+            }
+        }
+
+        $result = $this->tacticalChangeService->processLiveMatchChanges(
             $match,
             $game,
             $validated['minute'],
             $validated['previousSubstitutions'] ?? [],
+            $validated['substitutions'] ?? [],
             $validated['formation'] ?? null,
             $validated['mentality'] ?? null,
+            $validated['playing_style'] ?? null,
+            $validated['pressing'] ?? null,
+            $validated['defensive_line'] ?? null,
             isExtraTime: $isExtraTime,
-            playingStyle: $validated['playing_style'] ?? null,
-            pressing: $validated['pressing'] ?? null,
-            defensiveLine: $validated['defensive_line'] ?? null,
         );
 
         return response()->json($result);

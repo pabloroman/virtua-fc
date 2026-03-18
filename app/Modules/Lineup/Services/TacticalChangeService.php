@@ -4,6 +4,10 @@ namespace App\Modules\Lineup\Services;
 
 use App\Models\Game;
 use App\Models\GameMatch;
+use App\Models\GamePlayer;
+use App\Models\MatchEvent;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use App\Modules\Match\Services\ExtraTimeAndPenaltyService;
 use App\Modules\Match\Services\MatchResimulationService;
 use App\Modules\Lineup\Services\SubstitutionService;
@@ -17,25 +21,25 @@ class TacticalChangeService
     ) {}
 
     /**
-     * Process a tactical change (formation, mentality, and/or instructions) mid-match.
-     * Updates match record, then re-simulates the remainder.
+     * Process combined tactical actions (substitutions + tactical changes) in a single re-simulation.
      */
-    public function processTacticalChange(
+    public function processLiveMatchChanges(
         GameMatch $match,
         Game $game,
         int $minute,
         array $previousSubstitutions,
+        array $newSubstitutions = [],
         ?string $formation = null,
         ?string $mentality = null,
-        bool $isExtraTime = false,
         ?string $playingStyle = null,
         ?string $pressing = null,
         ?string $defensiveLine = null,
+        bool $isExtraTime = false,
     ): array {
         $isUserHome = $match->isHomeTeam($game->team_id);
         $prefix = $isUserHome ? 'home' : 'away';
 
-        // Update match tactical fields (match-only, not game defaults)
+        // Apply tactical changes to the match record
         $matchUpdates = [];
 
         if ($formation !== null) {
@@ -58,22 +62,82 @@ class TacticalChangeService
             $match->update($matchUpdates);
         }
 
-        // Build active lineup (applying previous subs)
-        $userLineup = $this->substitutionService->buildActiveLineup($match, $game->team_id, $previousSubstitutions);
-        $teams = $this->substitutionService->loadTeamsForResimulation($match, $game, $userLineup, $previousSubstitutions);
+        // Build allSubs = previous + new (with minute)
+        $allSubs = array_merge(
+            $previousSubstitutions,
+            array_map(fn ($s) => [
+                'playerOutId' => $s['playerOutId'],
+                'playerInId' => $s['playerInId'],
+                'minute' => $minute,
+            ], $newSubstitutions),
+        );
+
+        // Build active lineup and load teams for resimulation
+        $userLineup = $this->substitutionService->buildActiveLineup($match, $game->team_id, $allSubs);
+        $teams = $this->substitutionService->loadTeamsForResimulation($match, $game, $userLineup, $allSubs);
         ['homePlayers' => $homePlayers, 'awayPlayers' => $awayPlayers, 'homeBench' => $homeBench, 'awayBench' => $awayBench] = $teams;
 
-        // Capture effective values before re-simulation (which updates match scores in-place)
+        // Capture effective tactical values before re-simulation
         $effectiveFormation = $match->{"{$prefix}_formation"};
         $effectiveMentality = $match->{"{$prefix}_mentality"};
 
-        // Re-simulate with updated tactics (pass previous subs for energy calculation)
+        // Single re-simulation with all changes applied
         if ($isExtraTime) {
-            $result = $this->resimulationService->resimulateExtraTime($match, $game, $minute, $homePlayers, $awayPlayers, $previousSubstitutions, $homeBench, $awayBench);
+            $result = $this->resimulationService->resimulateExtraTime($match, $game, $minute, $homePlayers, $awayPlayers, $allSubs, $homeBench, $awayBench);
         } else {
-            $result = $this->resimulationService->resimulate($match, $game, $minute, $homePlayers, $awayPlayers, $previousSubstitutions, $homeBench, $awayBench);
+            $result = $this->resimulationService->resimulate($match, $game, $minute, $homePlayers, $awayPlayers, $allSubs, $homeBench, $awayBench);
         }
 
+        // Record substitutions if any
+        $substitutionDetails = [];
+        if (! empty($newSubstitutions)) {
+            $substitutions = $match->substitutions ?? [];
+            $playerIds = [];
+
+            foreach ($newSubstitutions as $sub) {
+                GamePlayer::where('id', $sub['playerInId'])
+                    ->update([
+                        'appearances' => DB::raw('appearances + 1'),
+                        'season_appearances' => DB::raw('season_appearances + 1'),
+                    ]);
+
+                $substitutions[] = [
+                    'team_id' => $game->team_id,
+                    'player_out_id' => $sub['playerOutId'],
+                    'player_in_id' => $sub['playerInId'],
+                    'minute' => $minute,
+                ];
+
+                MatchEvent::create([
+                    'id' => Str::uuid()->toString(),
+                    'game_id' => $game->id,
+                    'game_match_id' => $match->id,
+                    'game_player_id' => $sub['playerOutId'],
+                    'team_id' => $game->team_id,
+                    'minute' => $minute,
+                    'event_type' => MatchEvent::TYPE_SUBSTITUTION,
+                    'metadata' => json_encode(['player_in_id' => $sub['playerInId']]),
+                ]);
+
+                $playerIds[] = $sub['playerOutId'];
+                $playerIds[] = $sub['playerInId'];
+            }
+
+            $match->update(['substitutions' => $substitutions]);
+
+            // Load player names for response
+            $players = GamePlayer::with('player')->whereIn('id', $playerIds)->get()->keyBy('id');
+            $substitutionDetails = array_map(fn ($sub) => [
+                'playerOutId' => $sub['playerOutId'],
+                'playerInId' => $sub['playerInId'],
+                'playerOutName' => $players->get($sub['playerOutId'])?->player->name ?? '',
+                'playerInName' => $players->get($sub['playerInId'])?->player->name ?? '',
+                'minute' => $minute,
+                'teamId' => $game->team_id,
+            ], $newSubstitutions);
+        }
+
+        // Build combined response
         $response = [
             'newScore' => [
                 'home' => $result->newHomeScore,
@@ -87,6 +151,7 @@ class TacticalChangeService
             'defensiveLine' => $match->{"{$prefix}_defensive_line"},
             'homePossession' => $result->homePossession,
             'awayPossession' => $result->awayPossession,
+            'substitutions' => $substitutionDetails,
         ];
 
         if ($isExtraTime) {
