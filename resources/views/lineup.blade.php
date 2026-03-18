@@ -463,7 +463,6 @@
                                                     $matchData['count'] ?? null,
                                                     $matchData['approx'] ?? false,
                                                 );
-                                                $posAbbrev = \App\Support\PositionMapper::toAbbreviation($player->position);
                                                 $posGroup = \App\Support\PositionMapper::getPositionGroup($player->position);
                                             @endphp
                                             <div
@@ -489,7 +488,7 @@
                                                             @endif
                                                         </div>
                                                         <div class="flex items-center gap-2 mt-0.5">
-                                                            <span class="text-[9px] text-text-muted font-heading uppercase">{{ $posAbbrev }}</span>
+                                                            <x-position-badge :position="$player->position" size="sm" />
                                                             @if(!$isUnavailable)
                                                             <div class="flex items-center gap-1">
                                                                 <div class="w-8 h-1 rounded-full bg-surface-600 overflow-hidden">
