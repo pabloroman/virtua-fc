@@ -23,7 +23,7 @@ class BackfillActivationEvents extends Command
         $this->backfillWelcomeCompleted();
         $this->backfillOnboardingCompleted();
         $this->backfillFirstMatchPlayed();
-        $this->backfillMatchday5Reached();
+        $this->backfill5MatchesPlayed();
         $this->backfillSeasonCompleted();
         $this->backfillTournamentCompleted();
 
@@ -142,20 +142,30 @@ class BackfillActivationEvents extends Command
         $this->info("First match played: {$count} events inserted.");
     }
 
-    private function backfillMatchday5Reached(): void
+    private function backfill5MatchesPlayed(): void
     {
-        $rows = Game::where('current_matchday', '>=', 5)
-            ->get()
-            ->map(fn (Game $game) => [
-                'user_id' => $game->user_id,
-                'game_id' => $game->id,
-                'game_mode' => $game->game_mode,
-                'event' => ActivationEvent::EVENT_MATCHDAY_5_REACHED,
-                'occurred_at' => $game->setup_completed_at?->addMinutes(10) ?? $game->created_at,
-            ])->toArray();
+        $games = Game::whereNotNull('setup_completed_at')->get();
+        $rows = [];
+
+        foreach ($games as $game) {
+            $matchesPlayed = GameMatch::where('game_id', $game->id)
+                ->where('played', true)
+                ->where(fn ($q) => $q->where('home_team_id', $game->team_id)->orWhere('away_team_id', $game->team_id))
+                ->count();
+
+            if ($matchesPlayed >= 5) {
+                $rows[] = [
+                    'user_id' => $game->user_id,
+                    'game_id' => $game->id,
+                    'game_mode' => $game->game_mode,
+                    'event' => ActivationEvent::EVENT_5_MATCHES_PLAYED,
+                    'occurred_at' => $game->setup_completed_at->addMinutes(10),
+                ];
+            }
+        }
 
         $count = $this->insertIgnore($rows);
-        $this->info("Matchday 5 reached: {$count} events inserted.");
+        $this->info("5 matches played: {$count} events inserted.");
     }
 
     private function backfillSeasonCompleted(): void

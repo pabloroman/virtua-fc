@@ -15,7 +15,7 @@ class ActivationEvent extends Model
     public const EVENT_WELCOME_COMPLETED = 'welcome_completed';
     public const EVENT_ONBOARDING_COMPLETED = 'onboarding_completed';
     public const EVENT_FIRST_MATCH_PLAYED = 'first_match_played';
-    public const EVENT_MATCHDAY_5_REACHED = 'matchday_5_reached';
+    public const EVENT_5_MATCHES_PLAYED = '5_matches_played';
     public const EVENT_SEASON_COMPLETED = 'season_completed';
     public const EVENT_TOURNAMENT_COMPLETED = 'tournament_completed';
 
@@ -26,7 +26,7 @@ class ActivationEvent extends Model
         self::EVENT_WELCOME_COMPLETED,
         self::EVENT_ONBOARDING_COMPLETED,
         self::EVENT_FIRST_MATCH_PLAYED,
-        self::EVENT_MATCHDAY_5_REACHED,
+        self::EVENT_5_MATCHES_PLAYED,
         self::EVENT_SEASON_COMPLETED,
         self::EVENT_TOURNAMENT_COMPLETED,
     ];
@@ -38,7 +38,7 @@ class ActivationEvent extends Model
         self::EVENT_WELCOME_COMPLETED,
         self::EVENT_ONBOARDING_COMPLETED,
         self::EVENT_FIRST_MATCH_PLAYED,
-        self::EVENT_MATCHDAY_5_REACHED,
+        self::EVENT_5_MATCHES_PLAYED,
         self::EVENT_SEASON_COMPLETED,
     ];
 
@@ -47,7 +47,7 @@ class ActivationEvent extends Model
         self::EVENT_GAME_CREATED,
         self::EVENT_SETUP_COMPLETED,
         self::EVENT_FIRST_MATCH_PLAYED,
-        self::EVENT_MATCHDAY_5_REACHED,
+        self::EVENT_5_MATCHES_PLAYED,
         self::EVENT_TOURNAMENT_COMPLETED,
     ];
 

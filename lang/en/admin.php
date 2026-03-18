@@ -41,7 +41,7 @@ return [
     'funnel_welcome_completed' => 'Welcome completed',
     'funnel_onboarding_completed' => 'New season setup completed',
     'funnel_first_match_played' => 'First match played',
-    'funnel_matchday_5_reached' => 'Matchday 5 reached',
+    'funnel_5_matches_played' => '5 matches played',
     'funnel_season_completed' => 'Season completed',
     'funnel_tournament_completed' => 'Tournament completed',
     'mode_all' => 'All',

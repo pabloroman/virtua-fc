@@ -5,6 +5,7 @@ namespace App\Modules\Match\Jobs;
 use App\Events\SeasonCompleted;
 use App\Models\ActivationEvent;
 use App\Models\Game;
+use App\Models\GameMatch;
 use App\Modules\Match\Services\MatchdayOrchestrator;
 use App\Modules\Season\Services\ActivationTracker;
 use Illuminate\Bus\Queueable;
@@ -54,8 +55,13 @@ class ProcessMatchdayAdvance implements ShouldQueue, ShouldBeUnique
         $game->refresh();
         $activationTracker->record($game->user_id, ActivationEvent::EVENT_FIRST_MATCH_PLAYED, $game->id, $game->game_mode);
 
-        if ($game->current_matchday >= 5) {
-            $activationTracker->record($game->user_id, ActivationEvent::EVENT_MATCHDAY_5_REACHED, $game->id, $game->game_mode);
+        $matchesPlayed = GameMatch::where('game_id', $game->id)
+            ->where('played', true)
+            ->where(fn ($q) => $q->where('home_team_id', $game->team_id)->orWhere('away_team_id', $game->team_id))
+            ->count();
+
+        if ($matchesPlayed >= 5) {
+            $activationTracker->record($game->user_id, ActivationEvent::EVENT_5_MATCHES_PLAYED, $game->id, $game->game_mode);
         }
 
         // Store result and clear processing flag
