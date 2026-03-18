@@ -741,7 +741,7 @@ export default function lineupManager(config) {
             event.preventDefault();
 
             // Enter pending state — not yet dragging until 5px threshold
-            const coords = this._getEventCoords(event);
+            const coords = _getEventCoords(event);
             this._listDragPendingId = playerId;
             this._listDragStartCoords = { x: coords.clientX, y: coords.clientY };
             this._listDragMoved = false;
@@ -760,7 +760,7 @@ export default function lineupManager(config) {
             if (!this._listDragPendingId && !this.listDragPlayerId) return;
             event.preventDefault();
 
-            const coords = this._getEventCoords(event);
+            const coords = _getEventCoords(event);
 
             // Check 5px threshold before activating drag
             if (this._listDragPendingId && !this.listDragPlayerId) {

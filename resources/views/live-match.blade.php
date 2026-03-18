@@ -63,6 +63,8 @@
                 teamColors: {{ Js::from($teamColors) }},
                 slotCompatibility: {{ Js::from($slotCompatibility) }},
                 gridConfig: {{ Js::from($gridConfig) }},
+                pitchPositions: {{ Js::from($pitchPositions) }},
+                manualAssignments: {{ Js::from($slotAssignments) }},
                 translations: {
                     unsavedTacticalChanges: {!! Js::from(__('game.tactical_unsaved_changes')) !!},
                     extraTime: {!! Js::from(__('game.live_extra_time')) !!},

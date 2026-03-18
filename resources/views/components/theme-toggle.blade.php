@@ -10,7 +10,7 @@
     }"
     @click="toggle()"
     class="rounded-lg"
-    x-bind:aria-label="light ? @js(__('app.switch_dark_mode')) : @js(__('app.switch_light_mode'))"
+    x-bind:aria-label="light ? '{{ __('app.switch_dark_mode') }}' : '{{ __('app.switch_light_mode') }}'"
 >
     {{-- Sun icon (shown in dark mode) --}}
     <svg x-show="!light" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">

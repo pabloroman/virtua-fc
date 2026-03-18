@@ -82,8 +82,10 @@ export default function liveMatch(config) {
         draggingSlotId: null,
         dragPosition: null,
         positioningSlotId: null,
-        livePitchPositions: {},
-        _savedPitchPositions: {},
+        livePitchPositions: config.pitchPositions || {},
+        manualAssignments: config.manualAssignments || {},
+        _savedPitchPositions: config.pitchPositions ? { ...config.pitchPositions } : {},
+        _positionJustApplied: false,
         _dragStartCoords: null,
         _wasDragging: false,
         _livePitchEl: null,
@@ -983,6 +985,7 @@ export default function liveMatch(config) {
             this.dragPosition = null;
             this.positioningSlotId = null;
             this.injuryAlertPlayer = null;
+            this._positionJustApplied = false;
             document.body.classList.remove('overflow-y-hidden');
         },
 
@@ -992,12 +995,6 @@ export default function liveMatch(config) {
         },
 
         get hasPendingChanges() {
-            return this.hasSubPendingChanges
-                || this.hasTacticalChanges
-                || this.hasUnsavedPositions;
-        },
-
-        get hasAnyPendingChanges() {
             return this.hasSubPendingChanges || this.hasTacticalChanges;
         },
 
@@ -1058,7 +1055,7 @@ export default function liveMatch(config) {
                 this.addPendingSub();
             }
 
-            if (!this.hasAnyPendingChanges || this.applyingChanges) return;
+            if (!this.hasPendingChanges || this.applyingChanges) return;
             this.applyingChanges = true;
 
             const minute = Math.floor(this.currentMinute);
@@ -1140,9 +1137,12 @@ export default function liveMatch(config) {
 
                 // Update active tactics
                 if (result.formation) {
+                    const formationChanged = result.formation !== this.activeFormation;
                     this.activeFormation = result.formation;
-                    this.livePitchPositions = {};
-                    this._savedPitchPositions = {};
+                    if (formationChanged) {
+                        this.livePitchPositions = {};
+                        this._savedPitchPositions = {};
+                    }
                 }
                 if (result.mentality) {
                     this.activeMentality = result.mentality;
@@ -1470,7 +1470,7 @@ export default function liveMatch(config) {
             // Build current active lineup (initial + substitutions applied)
             const activeLineup = this.getActiveLineupPlayers();
 
-            return assignPlayersToSlots(slots, activeLineup, this.slotCompatibility);
+            return assignPlayersToSlots(slots, activeLineup, this.slotCompatibility, this.manualAssignments);
         },
 
         /**
@@ -1689,6 +1689,8 @@ export default function liveMatch(config) {
 
             newPositions[String(slotId)] = [col, row];
             this.livePitchPositions = newPositions;
+            this._savedPitchPositions = JSON.parse(JSON.stringify(newPositions));
+            this._positionJustApplied = true;
             this.positioningSlotId = null;
         },
 
@@ -1734,21 +1736,8 @@ export default function liveMatch(config) {
             return _getZoneColorClass(role);
         },
 
-        get hasUnsavedPositions() {
-            const current = JSON.stringify(this.livePitchPositions);
-            const saved = JSON.stringify(this._savedPitchPositions);
-            return current !== saved;
-        },
-
-        applyPitchPositions() {
-            if (!this.hasUnsavedPositions) return;
-            this._savedPitchPositions = JSON.parse(JSON.stringify(this.livePitchPositions));
-            this.positioningSlotId = null;
-        },
-
-        resetPitchPositions() {
-            this.livePitchPositions = JSON.parse(JSON.stringify(this._savedPitchPositions));
-            this.positioningSlotId = null;
+        confirmPositionChange() {
+            this._positionJustApplied = false;
         },
 
         getStatCount(type, side) {

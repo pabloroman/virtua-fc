@@ -59,7 +59,6 @@
                         {{-- Close button --}}
                         <x-icon-button
                             @click="safeCloseTacticalPanel()"
-                            x-bind:disabled="applyingChanges"
                         >
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -211,6 +210,18 @@
                                     </div>
                                 </template>
 
+                                {{-- Inline sub actions: reset + add another --}}
+                                <div x-show="pendingSubs.length > 0 || (selectedPlayerOut && selectedPlayerIn)"
+                                     class="flex items-center gap-2 mb-3">
+                                    <button @click="resetSubstitutions()" class="text-xs text-text-secondary hover:text-text-primary transition-colors">
+                                        {{ __('game.sub_reset') }}
+                                    </button>
+                                    <button x-show="selectedPlayerOut && selectedPlayerIn && canAddMoreToPending && subsRemaining > 1"
+                                            @click="addPendingSub()" class="ml-auto text-xs text-accent-blue hover:underline transition-colors">
+                                        {{ __('game.sub_add_another') }}
+                                    </button>
+                                </div>
+
                                 {{-- Selected player out indicator (from pitch tap) --}}
                                 <div x-show="livePitchSelectedOutId && selectedPlayerOut" class="mb-3 flex items-center gap-2 px-3 py-2 bg-accent-red/10 border border-accent-red/20 rounded-md text-sm">
                                     <span class="inline-flex items-center justify-center w-7 h-7 text-xs -skew-x-12 font-semibold text-white shrink-0"
@@ -322,6 +333,13 @@
                             <div class="p-4 sm:p-5 transition-opacity duration-150 lg:overflow-y-auto"
                                  :class="tacticalTab === 'tactics' ? 'opacity-100 relative z-10' : 'opacity-0 invisible pointer-events-none'"
                             >
+                                {{-- Inline tactics reset --}}
+                                <div x-show="hasTacticalChanges" class="flex justify-end -mt-1 mb-2">
+                                    <button @click="resetTactics()" class="text-xs text-text-secondary hover:text-text-primary transition-colors">
+                                        {{ __('game.sub_reset') }}
+                                    </button>
+                                </div>
+
                                 <div class="space-y-5">
                                     {{-- Formation picker --}}
                                     <div>
@@ -377,42 +395,13 @@
                 </div>{{-- /flex split --}}
             </div>
 
-            {{-- Sticky footer: actions + resume --}}
-            <div class="border-t border-border-strong bg-surface-900 px-4 py-3 sm:px-6 space-y-2 shrink-0">
+            {{-- Sticky footer: one action row max --}}
+            <div x-show="hasPendingChanges || _positionJustApplied"
+                 class="border-t border-border-strong bg-surface-900 px-4 py-3 sm:px-6 shrink-0">
 
-                {{-- Per-tab inline actions (add another sub, per-tab resets) --}}
-                <div x-show="tacticalTab === 'substitutions' && (selectedPlayerOut || selectedPlayerIn || pendingSubs.length > 0)" class="flex items-center gap-2">
-                    <x-secondary-button
-                        @click="resetSubstitutions()"
-                        class="gap-1.5"
-                    >
-                        {{ __('game.sub_reset') }}
-                    </x-secondary-button>
-
-                    <x-secondary-button
-                        @click="addPendingSub()"
-                        x-show="selectedPlayerOut && selectedPlayerIn && canAddMoreToPending && subsRemaining > 1"
-                        class="ml-auto gap-1.5"
-                    >
-                        {{ __('game.sub_add_another') }}
-                    </x-secondary-button>
-                </div>
-
-                <div x-show="tacticalTab === 'tactics' && hasTacticalChanges" class="flex items-center gap-2">
-                    <x-secondary-button
-                        @click="resetTactics()"
-                        class="gap-1.5"
-                    >
-                        {{ __('game.sub_reset') }}
-                    </x-secondary-button>
-                </div>
-
-                {{-- Unified "Apply All Changes" button --}}
-                <div x-show="hasAnyPendingChanges" class="flex items-center gap-2">
-                    <x-secondary-button
-                        @click="resetAllChanges()"
-                        class="gap-1.5"
-                    >
+                {{-- Subs/tactics pending: primary action --}}
+                <div x-show="hasPendingChanges" class="flex items-center gap-2">
+                    <x-secondary-button @click="resetAllChanges()" class="gap-1.5">
                         {{ __('game.tactical_reset_all') }}
                     </x-secondary-button>
 
@@ -428,36 +417,12 @@
                     </x-primary-button>
                 </div>
 
-                {{-- Apply/reset positions (visible when positions have been changed) --}}
-                <div x-show="hasUnsavedPositions" class="flex items-center gap-2">
-                    <x-secondary-button
-                        @click="resetPitchPositions()"
-                        class="gap-1.5"
-                    >
-                        {{ __('game.positions_reset') }}
-                    </x-secondary-button>
-
-                    <x-primary-button
-                        color="emerald"
-                        type="button"
-                        @click="applyPitchPositions()"
-                        class="ml-auto gap-1.5"
-                    >
+                {{-- Position just changed: noop confirm (only when no subs/tactics pending) --}}
+                <div x-show="!hasPendingChanges && _positionJustApplied" class="flex justify-end">
+                    <x-primary-button color="emerald" type="button" @click="confirmPositionChange()">
                         {{ __('game.positions_apply') }}
                     </x-primary-button>
                 </div>
-
-                {{-- Resume match (always visible) --}}
-                <x-secondary-button
-                    @click="safeCloseTacticalPanel()"
-                    x-bind:disabled="applyingChanges"
-                    class="w-full justify-center gap-2"
-                >
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z"/>
-                    </svg>
-                    {{ __('game.tactical_resume') }}
-                </x-secondary-button>
             </div>
         </div>
     </div>

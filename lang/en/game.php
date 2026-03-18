@@ -304,7 +304,6 @@ return [
     'tactical_formation_hint' => 'Modify your team\'s attack and defence bonuses.',
     'tactical_mentality' => 'Mentality',
     'tactical_mentality_hint' => 'Control the balance between attacking risk and defensive solidity.',
-    'tactical_resume' => 'Close & resume',
     'pitch_tap_to_sub' => 'Tap a player on the pitch to substitute them',
     'pitch_tap_or_drag' => 'Tap to substitute · Drag to reposition',
     'tactical_subs_made' => 'Substitutions made',
@@ -312,7 +311,6 @@ return [
     'tactical_apply_all' => 'Apply changes',
     'tactical_reset_all' => 'Reset all',
     'positions_apply' => 'Apply positions',
-    'positions_reset' => 'Reset positions',
     'tactical_no_changes' => 'No tactical changes to apply.',
     'tactical_unsaved_changes' => 'You have unsubmitted changes. Close anyway?',
 

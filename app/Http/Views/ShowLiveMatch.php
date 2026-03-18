@@ -308,6 +308,8 @@ class ShowLiveMatch
             'teamColors' => $teamColorsHex,
             'slotCompatibility' => $slotCompatibility,
             'gridConfig' => $gridConfig,
+            'pitchPositions' => $game->tactics?->default_pitch_positions ?? [],
+            'slotAssignments' => $game->tactics?->default_slot_assignments ?? [],
         ]);
     }
 
