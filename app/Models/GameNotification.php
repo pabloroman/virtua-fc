@@ -72,6 +72,8 @@ class GameNotification extends Model
     public const TYPE_TRANSFER_WINDOW_OPEN = 'transfer_window_open';
     public const TYPE_PLAYER_RELEASED = 'player_released';
     public const TYPE_TRACKING_INTEL_READY = 'tracking_intel_ready';
+    public const TYPE_EMERGENCY_SIGNING = 'emergency_signing';
+    public const TYPE_MATCH_FORFEIT = 'match_forfeit';
 
     // Priorities
     public const PRIORITY_MILESTONE = 'milestone';
@@ -108,6 +110,8 @@ class GameNotification extends Model
         self::TYPE_TRANSFER_WINDOW_OPEN => 'scouting',
         self::TYPE_PLAYER_RELEASED => 'squad',
         self::TYPE_TRACKING_INTEL_READY => 'scouting',
+        self::TYPE_EMERGENCY_SIGNING => 'squad',
+        self::TYPE_MATCH_FORFEIT => 'squad',
     ];
 
     protected $fillable = [
@@ -367,6 +371,16 @@ class GameNotification extends Model
                 'icon_bg' => 'bg-teal-500/10',
                 'icon_text' => 'text-teal-500',
                 'dot' => 'bg-teal-500',
+            ],
+            self::TYPE_EMERGENCY_SIGNING => [
+                'icon_bg' => 'bg-orange-500/10',
+                'icon_text' => 'text-orange-500',
+                'dot' => 'bg-orange-500',
+            ],
+            self::TYPE_MATCH_FORFEIT => [
+                'icon_bg' => 'bg-red-500/10',
+                'icon_text' => 'text-red-500',
+                'dot' => 'bg-red-500',
             ],
             default => [
                 'icon_bg' => 'bg-slate-500/10',

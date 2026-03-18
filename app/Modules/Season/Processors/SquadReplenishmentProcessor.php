@@ -2,6 +2,7 @@
 
 namespace App\Modules\Season\Processors;
 
+use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Season\Contracts\SeasonProcessor;
 use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Squad\DTOs\GeneratedPlayerData;
@@ -118,6 +119,7 @@ class SquadReplenishmentProcessor implements SeasonProcessor
 
     public function __construct(
         private readonly PlayerGeneratorService $playerGenerator,
+        private readonly NotificationService $notificationService,
     ) {}
 
     public function priority(): int
@@ -169,6 +171,41 @@ class SquadReplenishmentProcessor implements SeasonProcessor
 
             foreach ($youthPlayers as $youth) {
                 $generatedPlayers[] = $youth;
+            }
+        }
+
+        // Emergency replenishment for user's team (safety net for expired contracts/retirements)
+        $userPlayers = GamePlayer::where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->get();
+
+        if ($userPlayers->count() < self::MIN_SQUAD_SIZE) {
+            $teamAvgAbility = $this->calculateTeamAverageAbility($userPlayers);
+            $positionCounts = $userPlayers->groupBy('position')->map->count();
+            $positionsToFill = $this->determinePositionsToFill($positionCounts, $userPlayers->count());
+
+            $emergencyNames = [];
+            foreach ($positionsToFill as $position) {
+                $newPlayer = $this->generatePlayer(
+                    $game,
+                    $game->team_id,
+                    $position,
+                    $teamAvgAbility,
+                    $data->newSeason,
+                );
+
+                $emergencyNames[] = $newPlayer->player->name;
+                $generatedPlayers[] = [
+                    'playerId' => $newPlayer->id,
+                    'playerName' => $newPlayer->player->name,
+                    'position' => $newPlayer->position,
+                    'teamId' => $game->team_id,
+                    'type' => 'emergency_replenishment',
+                ];
+            }
+
+            if (! empty($emergencyNames)) {
+                $this->notificationService->notifyEmergencySignings($game, $emergencyNames);
             }
         }
 

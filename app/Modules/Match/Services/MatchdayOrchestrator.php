@@ -173,11 +173,50 @@ class MatchdayOrchestrator
         // --- Ensure lineups ---
         $this->lineupService->ensureLineupsForMatches($matches, $game, $allPlayers, $suspendedPlayerIds, $clubProfiles);
 
-        // --- Simulate matches ---
-        $matchResults = $this->simulateMatches($matches, $game, $allPlayers);
+        // --- Check for forfeit (user's team has < 7 available players) ---
+        $playerMatch = $matches->first(fn ($m) => $m->involvesTeam($game->team_id));
+        $forfeitResult = null;
+
+        if ($playerMatch) {
+            $isUserHome = $playerMatch->isHomeTeam($game->team_id);
+            $userLineupField = $isUserHome ? 'home_lineup' : 'away_lineup';
+            $userLineupCount = count($playerMatch->$userLineupField ?? []);
+            $userSquadSize = $allPlayers->get($game->team_id, collect())->count();
+
+            // Only forfeit if the team actually has players but too few available.
+            // A squad of 0 means the game is in a test/setup state — let the simulator handle it.
+            if ($userSquadSize > 0 && $userLineupCount < 7) {
+                // Forfeit: 0-3 loss for the user's team
+                $forfeitResult = [
+                    'matchId' => $playerMatch->id,
+                    'homeTeamId' => $playerMatch->home_team_id,
+                    'awayTeamId' => $playerMatch->away_team_id,
+                    'homeScore' => $isUserHome ? 0 : 3,
+                    'awayScore' => $isUserHome ? 3 : 0,
+                    'homePossession' => 50,
+                    'awayPossession' => 50,
+                    'competitionId' => $playerMatch->competition_id,
+                    'events' => [],
+                ];
+
+                $this->notificationService->notifyMatchForfeit($game);
+            }
+        }
+
+        // --- Simulate matches (skip forfeited match) ---
+        $forfeitedMatchId = $forfeitResult ? $playerMatch->id : null;
+        $matchesToSimulate = $forfeitedMatchId
+            ? $matches->reject(fn ($m) => $m->id === $forfeitedMatchId)
+            : $matches;
+        $matchResults = $this->simulateMatches($matchesToSimulate, $game, $allPlayers);
+
+        if ($forfeitResult) {
+            $matchResults[] = $forfeitResult;
+            // Forfeited match is not a live match — process all effects immediately
+            $playerMatch = null;
+        }
 
         // Identify user's match — its score-dependent effects are deferred to finalization
-        $playerMatch = $matches->first(fn ($m) => $m->involvesTeam($game->team_id));
         $deferMatchId = $playerMatch?->id;
 
         // --- Process results ---

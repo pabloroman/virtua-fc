@@ -786,6 +786,41 @@ class NotificationService
     }
 
     // ==========================================
+    // Emergency & Forfeit Notifications
+    // ==========================================
+
+    /**
+     * Create a notification when emergency free agents are signed for the user's team.
+     */
+    public function notifyEmergencySignings(Game $game, array $playerNames): GameNotification
+    {
+        return $this->create(
+            game: $game,
+            type: GameNotification::TYPE_EMERGENCY_SIGNING,
+            title: __('notifications.emergency_signing_title'),
+            message: __('notifications.emergency_signing_message', [
+                'count' => count($playerNames),
+                'players' => implode(', ', $playerNames),
+            ]),
+            priority: GameNotification::PRIORITY_CRITICAL,
+        );
+    }
+
+    /**
+     * Create a notification when a match is forfeited due to insufficient players.
+     */
+    public function notifyMatchForfeit(Game $game): GameNotification
+    {
+        return $this->create(
+            game: $game,
+            type: GameNotification::TYPE_MATCH_FORFEIT,
+            title: __('notifications.match_forfeit_title'),
+            message: __('notifications.match_forfeit_message'),
+            priority: GameNotification::PRIORITY_CRITICAL,
+        );
+    }
+
+    // ==========================================
     // Helpers
     // ==========================================
 
@@ -820,6 +855,8 @@ class NotificationService
             GameNotification::TYPE_TRANSFER_WINDOW_OPEN => 'transfer',
             GameNotification::TYPE_PLAYER_RELEASED => 'transfer_complete',
             GameNotification::TYPE_TRACKING_INTEL_READY => 'scout',
+            GameNotification::TYPE_EMERGENCY_SIGNING => 'transfer_complete',
+            GameNotification::TYPE_MATCH_FORFEIT => 'eliminated',
             default => 'bell',
         };
     }

@@ -137,6 +137,14 @@ return [
     'tracking_report_ready' => 'Tu ojeador ha elaborado un informe sobre :player — rango de habilidad y detalles financieros disponibles.',
     'tracking_deep_intel_ready' => 'Tu ojeador ha completado la intel profunda de :player — disposición a salir e interés de rivales revelados.',
 
+    // Fichajes de emergencia
+    'emergency_signing_title' => 'Refuerzo de emergencia',
+    'emergency_signing_message' => 'Tu plantilla estaba en niveles críticos. Se han fichado :count agentes libres para asegurar que puedas alinear un equipo: :players.',
+
+    // Partido perdido por incomparecencia
+    'match_forfeit_title' => 'Partido perdido por incomparecencia',
+    'match_forfeit_message' => 'Tu equipo no pudo alinear el mínimo de 7 jugadores. El partido se ha registrado como una derrota 0-3.',
+
     // Reputation changes
     'reputation_change_title' => 'Reputación del club modificada',
     'reputation_improved' => 'La reputación de tu club ha ascendido a :tier. Patrocinadores, jugadores y aficionados lo notan.',

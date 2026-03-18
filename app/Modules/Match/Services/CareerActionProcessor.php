@@ -5,6 +5,7 @@ namespace App\Modules\Match\Services;
 use App\Models\AcademyPlayer;
 use App\Models\Game;
 use App\Models\GameNotification;
+use App\Models\GamePlayer;
 use App\Models\TransferOffer;
 use App\Modules\Academy\Services\YouthAcademyService;
 use App\Modules\Notification\Services\NotificationService;
@@ -108,6 +109,9 @@ class CareerActionProcessor
         // Check for expiring transfer offers (2 days or less)
         $this->checkExpiringOffers($game);
 
+        // Warn about expiring contracts (6 months and 3 months before expiry)
+        $this->checkExpiringContracts($game);
+
         // Develop academy players each matchday
         $this->youthAcademyService->developPlayers($game);
 
@@ -163,6 +167,43 @@ class CareerActionProcessor
             if (! in_array($offer->id, $recentlyNotifiedOfferIds)) {
                 $this->notificationService->notifyExpiringOffer($game, $offer);
             }
+        }
+    }
+
+    private function checkExpiringContracts(Game $game): void
+    {
+        $currentDate = $game->current_date;
+        $sixMonthsOut = $currentDate->copy()->addMonths(6);
+
+        $expiringPlayers = GamePlayer::with('player')
+            ->where('game_id', $game->id)
+            ->where('team_id', $game->team_id)
+            ->whereNull('pending_annual_wage') // not already renewed
+            ->where('contract_until', '<=', $sixMonthsOut)
+            ->where('contract_until', '>', $currentDate)
+            ->get();
+
+        if ($expiringPlayers->isEmpty()) {
+            return;
+        }
+
+        // Batch-load recent contract expiry notifications to avoid per-player queries
+        $cutoff = $currentDate->copy()->subDays(30);
+        $recentlyNotifiedPlayerIds = GameNotification::where('game_id', $game->id)
+            ->where('type', GameNotification::TYPE_CONTRACT_EXPIRING)
+            ->where('game_date', '>', $cutoff)
+            ->get(['metadata'])
+            ->pluck('metadata.player_id')
+            ->filter()
+            ->toArray();
+
+        foreach ($expiringPlayers as $player) {
+            if (in_array($player->id, $recentlyNotifiedPlayerIds)) {
+                continue;
+            }
+
+            $monthsLeft = (int) $currentDate->diffInMonths($player->contract_until);
+            $this->notificationService->notifyExpiringContract($game, $player, $monthsLeft);
         }
     }
 

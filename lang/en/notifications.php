@@ -137,6 +137,14 @@ return [
     'tracking_report_ready' => 'Your scout has gathered a report on :player — ability range and financial details are now available.',
     'tracking_deep_intel_ready' => 'Your scout has completed deep intel on :player — transfer willingness and rival interest revealed.',
 
+    // Emergency signings
+    'emergency_signing_title' => 'Emergency squad reinforcement',
+    'emergency_signing_message' => 'Your squad was critically low. :count free agents have been signed to ensure you can field a team: :players.',
+
+    // Match forfeit
+    'match_forfeit_title' => 'Match forfeited',
+    'match_forfeit_message' => 'Your team could not field the minimum 7 players. The match has been recorded as a 0-3 defeat.',
+
     // Reputation changes
     'reputation_change_title' => 'Club reputation changed',
     'reputation_improved' => 'Your club\'s reputation has grown to :tier. Sponsors, players and fans are taking notice.',
