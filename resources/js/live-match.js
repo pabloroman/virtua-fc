@@ -1157,23 +1157,28 @@ export default function liveMatch(config) {
                     this.activeDefLine = result.defensiveLine;
                 }
 
+                // Filter events up to current minute and add sub events to feed
                 if (isET) {
                     this.extraTimeEvents = this.extraTimeEvents.filter(e => e.minute <= minute);
-                    this.revealedEvents = this.revealedEvents.filter(e => e.minute <= minute);
+                } else {
+                    this.events = this.events.filter(e => e.minute <= minute);
+                }
+                this.revealedEvents = this.revealedEvents.filter(e => e.minute <= minute);
 
-                    // Add substitution events to feed
-                    if (result.substitutions) {
-                        for (const sub of result.substitutions) {
-                            this.revealedEvents.unshift({
-                                minute,
-                                type: 'substitution',
-                                playerName: sub.playerOutName,
-                                playerInName: sub.playerInName,
-                                teamId: sub.teamId,
-                            });
-                        }
+                if (result.substitutions) {
+                    for (const sub of result.substitutions) {
+                        this.revealedEvents.unshift({
+                            minute,
+                            type: 'substitution',
+                            playerName: sub.playerOutName,
+                            playerInName: sub.playerInName,
+                            teamId: sub.teamId,
+                        });
                     }
+                }
 
+                // Append new events and update scores
+                if (isET) {
                     if (result.newEvents && result.newEvents.length > 0) {
                         this.extraTimeEvents.push(...result.newEvents);
                         this.extraTimeEvents.sort((a, b) => a.minute - b.minute);
@@ -1191,25 +1196,7 @@ export default function liveMatch(config) {
                     this.etHomeScore = result.newScore.home;
                     this.etAwayScore = result.newScore.away;
                     this._needsPenalties = result.needsPenalties || false;
-
-                    this.recalculateScore();
                 } else {
-                    this.events = this.events.filter(e => e.minute <= minute);
-                    this.revealedEvents = this.revealedEvents.filter(e => e.minute <= minute);
-
-                    // Add substitution events to feed
-                    if (result.substitutions) {
-                        for (const sub of result.substitutions) {
-                            this.revealedEvents.unshift({
-                                minute,
-                                type: 'substitution',
-                                playerName: sub.playerOutName,
-                                playerInName: sub.playerInName,
-                                teamId: sub.teamId,
-                            });
-                        }
-                    }
-
                     if (result.newEvents && result.newEvents.length > 0) {
                         this.events.push(...result.newEvents);
                         this.events.sort((a, b) => a.minute - b.minute);
@@ -1228,9 +1215,9 @@ export default function liveMatch(config) {
                     this.finalAwayScore = result.newScore.away;
 
                     this.events = this.synthesizeGoalsIfNeeded(this.events);
-
-                    this.recalculateScore();
                 }
+
+                this.recalculateScore();
 
                 // Update possession
                 if (result.homePossession !== undefined) {

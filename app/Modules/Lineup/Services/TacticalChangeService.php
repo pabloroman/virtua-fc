@@ -93,14 +93,9 @@ class TacticalChangeService
         if (! empty($newSubstitutions)) {
             $substitutions = $match->substitutions ?? [];
             $playerIds = [];
+            $eventRows = [];
 
             foreach ($newSubstitutions as $sub) {
-                GamePlayer::where('id', $sub['playerInId'])
-                    ->update([
-                        'appearances' => DB::raw('appearances + 1'),
-                        'season_appearances' => DB::raw('season_appearances + 1'),
-                    ]);
-
                 $substitutions[] = [
                     'team_id' => $game->team_id,
                     'player_out_id' => $sub['playerOutId'],
@@ -108,7 +103,7 @@ class TacticalChangeService
                     'minute' => $minute,
                 ];
 
-                MatchEvent::create([
+                $eventRows[] = [
                     'id' => Str::uuid()->toString(),
                     'game_id' => $game->id,
                     'game_match_id' => $match->id,
@@ -117,12 +112,19 @@ class TacticalChangeService
                     'minute' => $minute,
                     'event_type' => MatchEvent::TYPE_SUBSTITUTION,
                     'metadata' => json_encode(['player_in_id' => $sub['playerInId']]),
-                ]);
+                ];
 
                 $playerIds[] = $sub['playerOutId'];
                 $playerIds[] = $sub['playerInId'];
             }
 
+            // Batch: increment appearances, insert events, update match
+            $playerInIds = array_column($newSubstitutions, 'playerInId');
+            GamePlayer::whereIn('id', $playerInIds)->update([
+                'appearances' => DB::raw('appearances + 1'),
+                'season_appearances' => DB::raw('season_appearances + 1'),
+            ]);
+            MatchEvent::insert($eventRows);
             $match->update(['substitutions' => $substitutions]);
 
             // Load player names for response

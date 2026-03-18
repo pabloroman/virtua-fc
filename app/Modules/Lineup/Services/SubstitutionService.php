@@ -18,8 +18,6 @@ class SubstitutionService
 
     public const MAX_ET_WINDOWS = 4;
 
-    public function __construct() {}
-
     /**
      * Validate substitution rules only (no processing).
      *
