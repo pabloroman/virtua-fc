@@ -137,6 +137,7 @@
                             @endif
                             @if($isLive)
                                 'ring-2 ring-red-400 ring-offset-1 ring-offset-red-600/50 scale-110': livePitchSelectedOutId === slot.player?.id && positioningSlotId !== slot.id,
+                                'ring-2 ring-green-400 ring-offset-1 ring-offset-green-600/50 scale-105': slot.player?.isPendingSub && livePitchSelectedOutId !== slot.player?.id && positioningSlotId !== slot.id,
                                 'ring-2 ring-white ring-offset-1 ring-offset-emerald-600 scale-110': positioningSlotId === slot.id,
                             @endif
                         }"

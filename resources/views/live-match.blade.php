@@ -87,6 +87,11 @@
                     tournamentSimulating: {!! Js::from(__('game.tournament_simulating')) !!},
                     continueDashboard: {!! Js::from(__('game.live_continue_dashboard')) !!},
                     processingActions: {!! Js::from(__('game.processing_actions')) !!},
+                    confirmFormation: {!! Js::from(__('game.confirm_formation')) !!},
+                    confirmMentality: {!! Js::from(__('game.confirm_mentality')) !!},
+                    confirmPlayingStyle: {!! Js::from(__('game.confirm_playing_style')) !!},
+                    confirmPressing: {!! Js::from(__('game.confirm_pressing')) !!},
+                    confirmDefLine: {!! Js::from(__('game.confirm_def_line')) !!},
                 },
              })"
              x-on:keydown.escape.window="if (!tacticalPanelOpen) skipToEnd()"

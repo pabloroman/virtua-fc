@@ -105,7 +105,7 @@
                     </div>
 
                     {{-- RIGHT: Controls panel --}}
-                    <div class="flex flex-col lg:w-[45%] lg:min-h-0 lg:overflow-hidden">
+                    <div class="flex flex-col lg:w-[45%] lg:min-h-0 lg:overflow-hidden relative">
                         {{-- Tab bar --}}
                         <div class="border-b border-border-strong bg-surface-700/50 shrink-0">
                             <div class="flex overflow-x-auto scrollbar-hide">
@@ -390,6 +390,70 @@
 
                           </div>{{-- /grid --}}
                         </div>
+
+                        {{-- Confirmation overlay --}}
+                        <div x-show="showingConfirmation"
+                             x-transition:enter="ease-out duration-200"
+                             x-transition:enter-start="opacity-0"
+                             x-transition:enter-end="opacity-100"
+                             x-transition:leave="ease-in duration-150"
+                             x-transition:leave-start="opacity-100"
+                             x-transition:leave-end="opacity-0"
+                             class="absolute inset-0 z-20 bg-surface-800 overflow-y-auto"
+                        >
+                            <div class="p-4 sm:p-5">
+                                <h3 class="text-sm font-heading font-semibold uppercase tracking-wider text-text-primary mb-4">
+                                    {{ __('game.confirm_title') }}
+                                </h3>
+
+                                {{-- Substitutions summary --}}
+                                <template x-if="confirmationSummary.subs.length > 0">
+                                    <div class="mb-4">
+                                        <h4 class="text-xs font-semibold text-text-muted uppercase mb-2">{{ __('game.confirm_subs_heading') }}</h4>
+                                        <div class="space-y-1.5">
+                                            <template x-for="(sub, idx) in confirmationSummary.subs" :key="idx">
+                                                <div class="flex items-center gap-2 px-3 py-2 bg-surface-700 rounded-md text-sm">
+                                                    <span class="inline-flex items-center justify-center w-6 h-6 text-[10px] -skew-x-12 font-semibold text-white shrink-0"
+                                                          :class="getPositionBadgeColor(sub.playerOutGroup)">
+                                                        <span class="skew-x-12" x-text="sub.playerOutAbbr"></span>
+                                                    </span>
+                                                    <span class="truncate text-accent-red font-medium" x-text="sub.playerOut"></span>
+                                                    <svg class="w-3.5 h-3.5 text-text-muted shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                                                    </svg>
+                                                    <span class="inline-flex items-center justify-center w-6 h-6 text-[10px] -skew-x-12 font-semibold text-white shrink-0"
+                                                          :class="getPositionBadgeColor(sub.playerInGroup)">
+                                                        <span class="skew-x-12" x-text="sub.playerInAbbr"></span>
+                                                    </span>
+                                                    <span class="truncate text-accent-green font-medium" x-text="sub.playerIn"></span>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </template>
+
+                                {{-- Tactical changes summary --}}
+                                <template x-if="confirmationSummary.tactics.length > 0">
+                                    <div class="mb-4">
+                                        <h4 class="text-xs font-semibold text-text-muted uppercase mb-2">{{ __('game.confirm_tactics_heading') }}</h4>
+                                        <div class="space-y-1.5">
+                                            <template x-for="(change, idx) in confirmationSummary.tactics" :key="idx">
+                                                <div class="flex items-center gap-2 px-3 py-2 bg-surface-700 rounded-md text-sm">
+                                                    <span class="text-text-secondary font-medium shrink-0" x-text="change.label"></span>
+                                                    <span class="ml-auto flex items-center gap-1.5 text-xs">
+                                                        <span class="text-text-muted line-through" x-text="change.from"></span>
+                                                        <svg class="w-3 h-3 text-text-muted shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                                                        </svg>
+                                                        <span class="text-accent-blue font-semibold" x-text="change.to"></span>
+                                                    </span>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
                     </div>
 
                 </div>{{-- /flex split --}}
@@ -401,18 +465,20 @@
 
                 {{-- Subs/tactics pending: primary action --}}
                 <div x-show="hasPendingChanges" class="flex items-center gap-2">
-                    <x-secondary-button @click="resetAllChanges()" class="gap-1.5">
-                        {{ __('game.tactical_reset_all') }}
+                    <x-secondary-button @click="showingConfirmation ? cancelConfirmation() : resetAllChanges()" class="gap-1.5">
+                        <span x-show="!showingConfirmation">{{ __('game.tactical_reset_all') }}</span>
+                        <span x-show="showingConfirmation">{{ __('game.confirm_back') }}</span>
                     </x-secondary-button>
 
                     <x-primary-button
                         color="sky"
                         type="button"
-                        @click="confirmAllChanges()"
+                        @click="showingConfirmation ? confirmAllChanges() : showConfirmation()"
                         x-bind:disabled="applyingChanges"
                         class="ml-auto gap-1.5"
                     >
-                        <span x-show="!applyingChanges">{{ __('game.tactical_apply_all') }}</span>
+                        <span x-show="!applyingChanges && !showingConfirmation">{{ __('game.tactical_apply_all') }}</span>
+                        <span x-show="!applyingChanges && showingConfirmation">{{ __('game.confirm_apply') }}</span>
                         <span x-show="applyingChanges">{{ __('game.sub_processing') }}</span>
                     </x-primary-button>
                 </div>

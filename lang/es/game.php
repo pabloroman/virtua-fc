@@ -313,6 +313,16 @@ return [
     'positions_apply' => 'Aplicar posiciones',
     'tactical_no_changes' => 'No hay cambios tácticos que aplicar.',
     'tactical_unsaved_changes' => 'Tienes cambios sin confirmar. ¿Cerrar de todos modos?',
+    'confirm_title' => 'Revisar cambios',
+    'confirm_subs_heading' => 'Sustituciones',
+    'confirm_tactics_heading' => 'Cambios tácticos',
+    'confirm_formation' => 'Formación',
+    'confirm_mentality' => 'Mentalidad',
+    'confirm_playing_style' => 'Estilo de juego',
+    'confirm_pressing' => 'Presión',
+    'confirm_def_line' => 'Línea defensiva',
+    'confirm_back' => 'Volver',
+    'confirm_apply' => 'Confirmar',
 
     // Results page
     'matchday_results' => 'Resultados :name',

@@ -313,6 +313,16 @@ return [
     'positions_apply' => 'Apply positions',
     'tactical_no_changes' => 'No tactical changes to apply.',
     'tactical_unsaved_changes' => 'You have unsubmitted changes. Close anyway?',
+    'confirm_title' => 'Review changes',
+    'confirm_subs_heading' => 'Substitutions',
+    'confirm_tactics_heading' => 'Tactical changes',
+    'confirm_formation' => 'Formation',
+    'confirm_mentality' => 'Mentality',
+    'confirm_playing_style' => 'Playing style',
+    'confirm_pressing' => 'Pressing',
+    'confirm_def_line' => 'Defensive line',
+    'confirm_back' => 'Back',
+    'confirm_apply' => 'Confirm',
 
     // Results page
     'matchday_results' => ':name Results',

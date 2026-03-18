@@ -97,6 +97,7 @@ export default function liveMatch(config) {
         pendingPressing: null,
         pendingDefLine: null,
         applyingChanges: false,
+        showingConfirmation: false,
 
         // Tab state
         activeTab: 'events',
@@ -986,6 +987,7 @@ export default function liveMatch(config) {
             this.positioningSlotId = null;
             this.injuryAlertPlayer = null;
             this._positionJustApplied = false;
+            this.showingConfirmation = false;
             document.body.classList.remove('overflow-y-hidden');
         },
 
@@ -1047,6 +1049,92 @@ export default function liveMatch(config) {
         resetAllChanges() {
             this.resetSubstitutions();
             this.resetTactics();
+            this.showingConfirmation = false;
+        },
+
+        getOptionLabel(options, value) {
+            const opt = options.find(o => o.value === value);
+            return opt ? opt.label : value;
+        },
+
+        get confirmationSummary() {
+            const summary = { subs: [], tactics: [] };
+
+            // Pending subs
+            for (const sub of this.pendingSubs) {
+                summary.subs.push({
+                    playerOut: sub.playerOut.name,
+                    playerOutAbbr: sub.playerOut.positionAbbr,
+                    playerOutGroup: sub.playerOut.positionGroup,
+                    playerIn: sub.playerIn.name,
+                    playerInAbbr: sub.playerIn.positionAbbr,
+                    playerInGroup: sub.playerIn.positionGroup,
+                });
+            }
+
+            // Also include auto-added pair if present
+            if (this.selectedPlayerOut && this.selectedPlayerIn) {
+                const alreadyPending = summary.subs.some(
+                    s => s.playerOut === this.selectedPlayerOut.name && s.playerIn === this.selectedPlayerIn.name
+                );
+                if (!alreadyPending) {
+                    summary.subs.push({
+                        playerOut: this.selectedPlayerOut.name,
+                        playerOutAbbr: this.selectedPlayerOut.positionAbbr,
+                        playerOutGroup: this.selectedPlayerOut.positionGroup,
+                        playerIn: this.selectedPlayerIn.name,
+                        playerInAbbr: this.selectedPlayerIn.positionAbbr,
+                        playerInGroup: this.selectedPlayerIn.positionGroup,
+                    });
+                }
+            }
+
+            // Tactical changes
+            if (this.pendingFormation !== null && this.pendingFormation !== this.activeFormation) {
+                summary.tactics.push({
+                    label: this.translations.confirmFormation ?? 'Formation',
+                    from: this.activeFormation,
+                    to: this.pendingFormation,
+                });
+            }
+            if (this.pendingMentality !== null && this.pendingMentality !== this.activeMentality) {
+                summary.tactics.push({
+                    label: this.translations.confirmMentality ?? 'Mentality',
+                    from: this.getOptionLabel(this.availableMentalities, this.activeMentality),
+                    to: this.getOptionLabel(this.availableMentalities, this.pendingMentality),
+                });
+            }
+            if (this.pendingPlayingStyle !== null && this.pendingPlayingStyle !== this.activePlayingStyle) {
+                summary.tactics.push({
+                    label: this.translations.confirmPlayingStyle ?? 'Playing style',
+                    from: this.getOptionLabel(this.availablePlayingStyles, this.activePlayingStyle),
+                    to: this.getOptionLabel(this.availablePlayingStyles, this.pendingPlayingStyle),
+                });
+            }
+            if (this.pendingPressing !== null && this.pendingPressing !== this.activePressing) {
+                summary.tactics.push({
+                    label: this.translations.confirmPressing ?? 'Pressing',
+                    from: this.getOptionLabel(this.availablePressing, this.activePressing),
+                    to: this.getOptionLabel(this.availablePressing, this.pendingPressing),
+                });
+            }
+            if (this.pendingDefLine !== null && this.pendingDefLine !== this.activeDefLine) {
+                summary.tactics.push({
+                    label: this.translations.confirmDefLine ?? 'Defensive line',
+                    from: this.getOptionLabel(this.availableDefLine, this.activeDefLine),
+                    to: this.getOptionLabel(this.availableDefLine, this.pendingDefLine),
+                });
+            }
+
+            return summary;
+        },
+
+        showConfirmation() {
+            this.showingConfirmation = true;
+        },
+
+        cancelConfirmation() {
+            this.showingConfirmation = false;
         },
 
         async confirmAllChanges() {
@@ -1457,7 +1545,8 @@ export default function liveMatch(config) {
 
         /**
          * Computed slot assignments for the pitch display.
-         * Maps current lineup players onto formation slots.
+         * Maps current lineup players onto formation slots,
+         * then previews pending substitutions inline.
          */
         get slotAssignments() {
             const slots = this.currentPitchSlots.map(slot => ({
@@ -1470,7 +1559,30 @@ export default function liveMatch(config) {
             // Build current active lineup (initial + substitutions applied)
             const activeLineup = this.getActiveLineupPlayers();
 
-            return assignPlayersToSlots(slots, activeLineup, this.slotCompatibility, this.manualAssignments);
+            const assignments = assignPlayersToSlots(slots, activeLineup, this.slotCompatibility, this.manualAssignments);
+
+            // Preview pending subs on the pitch: swap out → in
+            const allPendingSubs = [...this.pendingSubs];
+            if (this.selectedPlayerOut && this.selectedPlayerIn) {
+                const alreadyPending = allPendingSubs.some(
+                    s => s.playerOut.id === this.selectedPlayerOut.id
+                );
+                if (!alreadyPending) {
+                    allPendingSubs.push({
+                        playerOut: this.selectedPlayerOut,
+                        playerIn: this.selectedPlayerIn,
+                    });
+                }
+            }
+
+            for (const sub of allPendingSubs) {
+                const slot = assignments.find(s => s.player?.id === sub.playerOut.id);
+                if (slot) {
+                    slot.player = { ...sub.playerIn, isPendingSub: true };
+                }
+            }
+
+            return assignments;
         },
 
         /**
