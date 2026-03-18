@@ -11,6 +11,7 @@ use App\Modules\Lineup\Enums\PressingIntensity;
 use App\Modules\Lineup\Services\LineupService;
 use App\Modules\Match\DTOs\MatchdayAdvanceResult;
 use App\Modules\Match\DTOs\MatchEventData;
+use App\Modules\Match\DTOs\MatchResult;
 use App\Modules\Match\Jobs\ProcessCareerActions;
 use App\Modules\Notification\Services\NotificationService;
 use App\Modules\Squad\Services\EligibilityService;
@@ -333,6 +334,10 @@ class MatchdayOrchestrator
             matchSeed: $match->id,
         );
 
+        // Capture performance data before next simulation overwrites it
+        $performances = $this->matchSimulator->getMatchPerformances();
+        $mvpPlayerId = $this->calculateMvp($result, $performances);
+
         return [
             'matchId' => $match->id,
             'homeTeamId' => $match->home_team_id,
@@ -342,6 +347,7 @@ class MatchdayOrchestrator
             'homePossession' => $result->homePossession,
             'awayPossession' => $result->awayPossession,
             'competitionId' => $match->competition_id,
+            'mvpPlayerId' => $mvpPlayerId,
             'events' => $result->events->map(fn (MatchEventData $e) => $e->toArray())->all(),
         ];
     }
@@ -729,6 +735,58 @@ class MatchdayOrchestrator
                 );
             }
         }
+    }
+
+    /**
+     * Calculate the MVP (Most Valuable Player) for a match.
+     *
+     * Combines each player's match performance modifier with event-based bonuses
+     * (goals, assists) and penalties (cards). The player with the highest
+     * combined score is selected as MVP.
+     *
+     * @param  MatchResult  $result  The match result with events
+     * @param  array<string, float>  $performances  Map of player ID to performance modifier (0.7-1.3)
+     */
+    private function calculateMvp(MatchResult $result, array $performances): ?string
+    {
+        if (empty($performances)) {
+            return null;
+        }
+
+        // Count events per player
+        $goals = [];
+        $assists = [];
+        $yellowCards = [];
+        $redCards = [];
+
+        foreach ($result->events as $event) {
+            match ($event->type) {
+                'goal' => $goals[$event->gamePlayerId] = ($goals[$event->gamePlayerId] ?? 0) + 1,
+                'assist' => $assists[$event->gamePlayerId] = ($assists[$event->gamePlayerId] ?? 0) + 1,
+                'yellow_card' => $yellowCards[$event->gamePlayerId] = ($yellowCards[$event->gamePlayerId] ?? 0) + 1,
+                'red_card' => $redCards[$event->gamePlayerId] = ($redCards[$event->gamePlayerId] ?? 0) + 1,
+                default => null,
+            };
+        }
+
+        // Score each player: base performance + event bonuses
+        $bestPlayerId = null;
+        $bestScore = -INF;
+
+        foreach ($performances as $playerId => $performance) {
+            $score = $performance
+                + (($goals[$playerId] ?? 0) * 0.15)
+                + (($assists[$playerId] ?? 0) * 0.08)
+                - (($yellowCards[$playerId] ?? 0) * 0.03)
+                - (($redCards[$playerId] ?? 0) * 0.10);
+
+            if ($score > $bestScore) {
+                $bestScore = $score;
+                $bestPlayerId = $playerId;
+            }
+        }
+
+        return $bestPlayerId;
     }
 
     /**

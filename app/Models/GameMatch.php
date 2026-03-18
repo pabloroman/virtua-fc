@@ -32,8 +32,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string|null $away_formation
  * @property string|null $home_mentality
  * @property string|null $away_mentality
+ * @property string|null $mvp_player_id
  * @property array<array-key, mixed>|null $substitutions
  * @property-read \App\Models\Team $awayTeam
+ * @property-read \App\Models\GamePlayer|null $mvpPlayer
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\MatchEvent> $cardEvents
  * @property-read int|null $card_events_count
  * @property-read \App\Models\Competition $competition
@@ -111,6 +113,7 @@ class GameMatch extends Model
         'away_score_penalties',
         'home_possession',
         'away_possession',
+        'mvp_player_id',
         'substitutions',
     ];
 
@@ -165,6 +168,11 @@ class GameMatch extends Model
     public function cupTie(): BelongsTo
     {
         return $this->belongsTo(CupTie::class);
+    }
+
+    public function mvpPlayer(): BelongsTo
+    {
+        return $this->belongsTo(GamePlayer::class, 'mvp_player_id');
     }
 
     public function isCupMatch(): bool

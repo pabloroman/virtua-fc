@@ -65,6 +65,8 @@
                 gridConfig: {{ Js::from($gridConfig) }},
                 pitchPositions: {{ Js::from($pitchPositions) }},
                 manualAssignments: {{ Js::from($slotAssignments) }},
+                mvpPlayerName: {!! $mvpPlayerName ? Js::from($mvpPlayerName) : 'null' !!},
+                mvpPlayerTeamId: {!! $mvpPlayerTeamId ? "'" . $mvpPlayerTeamId . "'" : 'null' !!},
                 translations: {
                     unsavedTacticalChanges: {!! Js::from(__('game.tactical_unsaved_changes')) !!},
                     extraTime: {!! Js::from(__('game.live_extra_time')) !!},
@@ -92,6 +94,7 @@
                     confirmPlayingStyle: {!! Js::from(__('game.confirm_playing_style')) !!},
                     confirmPressing: {!! Js::from(__('game.confirm_pressing')) !!},
                     confirmDefLine: {!! Js::from(__('game.confirm_def_line')) !!},
+                    mvpOfTheMatch: {!! Js::from(__('game.mvp_of_the_match')) !!},
                 },
              })"
              x-on:keydown.escape.window="if (!tacticalPanelOpen) skipToEnd()"
@@ -783,6 +786,15 @@
                         {{-- Eliminated round context --}}
                         <template x-if="tournamentResultType === 'eliminated'">
                             <p class="text-center text-xs text-text-muted mb-3" x-text="translations.tournamentEliminatedIn"></p>
+                        </template>
+
+                        {{-- MVP of the match --}}
+                        <template x-if="mvpPlayerName">
+                            <div class="flex items-center justify-center gap-2 text-sm mb-3 py-2 px-3 rounded-lg bg-accent-yellow/10">
+                                <span class="text-accent-yellow text-base">&#9733;</span>
+                                <span class="text-text-secondary" x-text="translations.mvpOfTheMatch"></span>
+                                <span class="font-semibold text-text-primary" x-text="mvpPlayerName"></span>
+                            </div>
                         </template>
 
                         {{-- Continue button --}}

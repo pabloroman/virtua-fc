@@ -133,6 +133,7 @@ class MatchResultProcessor
         $awayCases = [];
         $homePossCases = [];
         $awayPossCases = [];
+        $mvpCases = [];
 
         foreach ($matchResults as $result) {
             $id = $result['matchId'];
@@ -143,6 +144,10 @@ class MatchResultProcessor
             $awayPoss = $result['awayPossession'] ?? 50;
             $homePossCases[] = "WHEN id = '{$id}' THEN {$homePoss}";
             $awayPossCases[] = "WHEN id = '{$id}' THEN {$awayPoss}";
+            $mvpId = $result['mvpPlayerId'] ?? null;
+            $mvpCases[] = $mvpId
+                ? "WHEN id = '{$id}' THEN '{$mvpId}'"
+                : "WHEN id = '{$id}' THEN NULL";
         }
 
         $idList = "'" . implode("','", $ids) . "'";
@@ -153,6 +158,7 @@ class MatchResultProcessor
                 away_score = CASE " . implode(' ', $awayCases) . " END,
                 home_possession = CASE " . implode(' ', $homePossCases) . " END,
                 away_possession = CASE " . implode(' ', $awayPossCases) . " END,
+                mvp_player_id = CASE " . implode(' ', $mvpCases) . " END,
                 played = true
             WHERE id IN ({$idList})
         ");

@@ -442,4 +442,8 @@ return [
     'pre_season_banner_desc' => 'La temporada comienza el :date. Aprovecha para configurar tu plantilla, jugar amistosos y fichar jugadores.',
     'pre_season_skip' => 'Saltar Pretemporada',
     'pre_season_skipped' => 'Pretemporada saltada. La temporada ha comenzado.',
+
+    // MVP
+    'mvp' => 'MVP',
+    'mvp_of_the_match' => 'MVP del partido',
 ];

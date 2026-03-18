@@ -69,7 +69,7 @@ class CalendarService
      */
     public function getMatchdayResults(string $gameId, string $competitionId, int $matchday, ?string $roundName = null): Collection
     {
-        return GameMatch::with(['homeTeam', 'awayTeam', 'events.gamePlayer.player', 'competition'])
+        return GameMatch::with(['homeTeam', 'awayTeam', 'events.gamePlayer.player', 'competition', 'mvpPlayer.player'])
             ->where('game_id', $gameId)
             ->where('competition_id', $competitionId)
             ->where('round_number', $matchday)

@@ -116,6 +116,20 @@
                             </div>
                         </div>
                     @endif
+
+                    {{-- MVP of the Match --}}
+                    @if($playerMatch->mvpPlayer)
+                        <div class="mt-3 pt-3 border-t border-border-default">
+                            <div class="flex items-center justify-center gap-2 text-sm">
+                                <span class="text-accent-yellow text-base">&#9733;</span>
+                                <span class="text-text-secondary">{{ __('game.mvp') }}</span>
+                                <span class="font-semibold text-text-primary">{{ $playerMatch->mvpPlayer->player->name }}</span>
+                                <span class="text-xs px-1.5 py-0.5 rounded bg-surface-700 text-text-muted">
+                                    {{ $playerMatch->mvpPlayer->team_id === $playerMatch->home_team_id ? $playerMatch->homeTeam->name : $playerMatch->awayTeam->name }}
+                                </span>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
         @endif
