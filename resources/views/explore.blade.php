@@ -28,11 +28,33 @@
                          x-data="exploreApp()"
                          x-init="init()">
 
+                        {{-- Search bar --}}
+                        <div class="relative mb-5">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="w-4 h-4 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </div>
+                            <input type="text"
+                                   x-model="searchQuery"
+                                   @input.debounce.350ms="searchPlayers()"
+                                   @keydown.escape="clearSearch()"
+                                   :placeholder="@js(__('transfers.explore_search_placeholder'))"
+                                   class="w-full pl-10 pr-10 py-2.5 bg-surface-700 border border-border-default rounded-lg text-sm text-text-primary placeholder-text-muted focus:outline-none focus:border-accent-blue/50 focus:ring-1 focus:ring-accent-blue/30 min-h-[44px]">
+                            <button x-show="searchQuery.length > 0"
+                                    @click="clearSearch()"
+                                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-text-muted hover:text-text-primary">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+
                         {{-- Hint --}}
                         <p class="text-sm text-text-muted mb-5" x-show="viewMode === 'competition'">{{ __('transfers.explore_hint') }}</p>
 
                         {{-- Competition Selector + Free Agents pill --}}
-                        <div class="flex overflow-x-auto scrollbar-hide gap-2 pb-3 mb-5 border-b border-border-default">
+                        <div x-show="viewMode !== 'search'" class="flex overflow-x-auto scrollbar-hide gap-2 pb-3 mb-5 border-b border-border-default">
                             <template x-for="comp in competitions" :key="comp.id">
                                 <x-pill-button @click="selectCompetition(comp)"
                                         x-bind:class="viewMode === 'competition' && selectedCompetition?.id === comp.id
@@ -149,6 +171,22 @@
                             </div>
                         </div>
 
+                        {{-- Search results mode --}}
+                        <div x-show="viewMode === 'search'">
+                            {{-- Loading state --}}
+                            <template x-if="loadingSearch">
+                                <div class="flex items-center justify-center py-12">
+                                    <svg class="animate-spin h-6 w-6 text-text-secondary" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                </div>
+                            </template>
+
+                            {{-- Search results content (server-rendered HTML) --}}
+                            <div x-show="!loadingSearch" x-ref="searchPanel"></div>
+                        </div>
+
                         {{-- Free Agents mode: Two-column layout with position filters --}}
                         <div x-show="viewMode === 'freeAgents'" class="flex flex-col md:flex-row gap-6">
 
@@ -216,6 +254,9 @@
                 loadingTeams: false,
                 loadingSquad: false,
                 loadingFreeAgents: false,
+                loadingSearch: false,
+                searchQuery: '',
+                previousViewMode: 'competition',
                 mobileView: 'teams',
                 gameId: '{{ $game->id }}',
                 selectedPositionFilter: 'all',
@@ -296,6 +337,42 @@
                         if (this.$refs.freeAgentPanel) this.$refs.freeAgentPanel.innerHTML = '';
                     } finally {
                         this.loadingFreeAgents = false;
+                    }
+                },
+
+                async searchPlayers() {
+                    const query = this.searchQuery.trim();
+                    if (query.length < 2) {
+                        if (this.viewMode === 'search') {
+                            this.viewMode = this.previousViewMode;
+                        }
+                        if (this.$refs.searchPanel) this.$refs.searchPanel.innerHTML = '';
+                        return;
+                    }
+
+                    if (this.viewMode !== 'search') {
+                        this.previousViewMode = this.viewMode;
+                        this.viewMode = 'search';
+                    }
+                    this.loadingSearch = true;
+
+                    try {
+                        const response = await fetch(`/game/${this.gameId}/explore/search?query=${encodeURIComponent(query)}`);
+                        const html = await response.text();
+                        this.$refs.searchPanel.innerHTML = html;
+                        this.$nextTick(() => Alpine.initTree(this.$refs.searchPanel));
+                    } catch (e) {
+                        if (this.$refs.searchPanel) this.$refs.searchPanel.innerHTML = '';
+                    } finally {
+                        this.loadingSearch = false;
+                    }
+                },
+
+                clearSearch() {
+                    this.searchQuery = '';
+                    if (this.$refs.searchPanel) this.$refs.searchPanel.innerHTML = '';
+                    if (this.viewMode === 'search') {
+                        this.viewMode = this.previousViewMode;
                     }
                 },
 

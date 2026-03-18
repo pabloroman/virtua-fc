@@ -137,6 +137,34 @@ class ExploreService
     }
 
     /**
+     * Search players by name across the entire game.
+     * Returns up to 30 results sorted by position group then market value.
+     */
+    public function searchPlayersByName(Game $game, string $query): Collection
+    {
+        $players = GamePlayer::where('game_id', $game->id)
+            ->whereHas('player', function ($q) use ($query) {
+                $driver = $q->getQuery()->getConnection()->getDriverName();
+                if ($driver === 'pgsql') {
+                    $q->whereRaw('LOWER(name) LIKE ?', ['%' . mb_strtolower($query) . '%']);
+                } else {
+                    $q->where('name', 'LIKE', '%' . $query . '%');
+                }
+            })
+            ->with(['player', 'team'])
+            ->limit(30)
+            ->get();
+
+        $shortlistedIds = $this->getShortlistedIds($game->id, $players->pluck('id')->toArray());
+
+        return $players->map(function ($gp) use ($shortlistedIds) {
+            $gp->is_shortlisted = in_array($gp->id, $shortlistedIds);
+
+            return $gp;
+        })->sort(fn ($a, $b) => $this->sortByPositionThenValue($a, $b))->values();
+    }
+
+    /**
      * Count free agents in a game.
      */
     public function getFreeAgentCount(string $gameId): int
