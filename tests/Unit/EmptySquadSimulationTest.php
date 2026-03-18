@@ -3,15 +3,16 @@
 namespace Tests\Unit;
 
 use App\Models\Game;
-use App\Models\GamePlayer;
 use App\Models\Team;
 use App\Modules\Match\Services\MatchSimulator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Tests\Traits\CreatesLineups;
 
 class EmptySquadSimulationTest extends TestCase
 {
     use RefreshDatabase;
+    use CreatesLineups;
 
     private MatchSimulator $simulator;
 
@@ -19,36 +20,6 @@ class EmptySquadSimulationTest extends TestCase
     {
         parent::setUp();
         $this->simulator = new MatchSimulator;
-    }
-
-    private function createLineup(Game $game, Team $team, int $count = 11, int $ability = 70): \Illuminate\Support\Collection
-    {
-        $positions = [
-            'Goalkeeper',
-            'Centre-Back', 'Centre-Back', 'Left-Back', 'Right-Back',
-            'Central Midfield', 'Central Midfield', 'Defensive Midfield',
-            'Right Winger', 'Left Winger',
-            'Centre-Forward',
-        ];
-
-        $players = collect();
-        for ($i = 0; $i < $count; $i++) {
-            $player = GamePlayer::factory()
-                ->forGame($game)
-                ->forTeam($team)
-                ->create([
-                    'position' => $positions[$i] ?? 'Central Midfield',
-                    'game_technical_ability' => $ability,
-                    'game_physical_ability' => $ability,
-                    'fitness' => 95,
-                    'morale' => 80,
-                ]);
-
-            $player->setRelation('game', $game);
-            $players->push($player);
-        }
-
-        return $players;
     }
 
     public function test_empty_away_squad_always_scores_zero(): void

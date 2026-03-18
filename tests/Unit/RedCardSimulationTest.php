@@ -15,10 +15,12 @@ use App\Modules\Match\Services\MatchSimulator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use ReflectionMethod;
 use Tests\TestCase;
+use Tests\Traits\CreatesLineups;
 
 class RedCardSimulationTest extends TestCase
 {
     use RefreshDatabase;
+    use CreatesLineups;
 
     private MatchSimulator $simulator;
 
@@ -33,39 +35,6 @@ class RedCardSimulationTest extends TestCase
 
         $this->calculateTeamStrength = new ReflectionMethod(MatchSimulator::class, 'calculateTeamStrength');
         $this->simulateGoalsWithRedCardSplit = new ReflectionMethod(MatchSimulator::class, 'simulateGoalsWithRedCardSplit');
-    }
-
-    /**
-     * Create a lineup of GamePlayers for a team.
-     */
-    private function createLineup(Game $game, Team $team, int $count = 11, int $ability = 70): \Illuminate\Support\Collection
-    {
-        $positions = [
-            'Goalkeeper',
-            'Centre-Back', 'Centre-Back', 'Left-Back', 'Right-Back',
-            'Central Midfield', 'Central Midfield', 'Defensive Midfield',
-            'Right Winger', 'Left Winger',
-            'Centre-Forward',
-        ];
-
-        $players = collect();
-        for ($i = 0; $i < $count; $i++) {
-            $player = GamePlayer::factory()
-                ->forGame($game)
-                ->forTeam($team)
-                ->create([
-                    'position' => $positions[$i] ?? 'Central Midfield',
-                    'game_technical_ability' => $ability,
-                    'game_physical_ability' => $ability,
-                    'fitness' => 95,
-                    'morale' => 80,
-                ]);
-
-            $player->setRelation('game', $game);
-            $players->push($player);
-        }
-
-        return $players;
     }
 
     public function test_team_strength_with_10_players_is_not_amateur_fallback(): void

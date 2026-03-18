@@ -929,25 +929,9 @@ class MatchSimulator
             // One team has no players (e.g. lower-division cup opponent).
             // Generate goal events only for the team with players so that
             // goals are backed by events and survive resimulation.
-            $teamWithPlayers = $homePlayers->isNotEmpty() ? 'home' : 'away';
-            $scoringPlayers = $teamWithPlayers === 'home' ? $homePlayers : $awayPlayers;
-            $scoringTeamId = $teamWithPlayers === 'home' ? $homeTeam->id : $awayTeam->id;
-            $concedingTeamId = $teamWithPlayers === 'home' ? $awayTeam->id : $homeTeam->id;
-            $goalCount = $teamWithPlayers === 'home' ? $homeScore : $awayScore;
-
-            $maxGoalsCap = config('match_simulation.max_goals_cap', 0);
-            if ($maxGoalsCap > 0) {
-                $goalCount = min($goalCount, $maxGoalsCap);
-                if ($teamWithPlayers === 'home') {
-                    $homeScore = $goalCount;
-                } else {
-                    $awayScore = $goalCount;
-                }
-            }
-
-            $goalEvents = $this->generateGoalEventsInRange(
-                $goalCount, $scoringTeamId, $concedingTeamId,
-                $scoringPlayers, collect(), $fromMinute + 1, 93
+            [$homeScore, $awayScore, $goalEvents] = $this->generateSingleTeamGoalEvents(
+                $homeTeam, $awayTeam, $homePlayers, $awayPlayers,
+                $homeScore, $awayScore, $fromMinute + 1, 93,
             );
             $events = $events->merge($goalEvents)->sortBy('minute')->values();
         }
@@ -1185,6 +1169,46 @@ class MatchSimulator
         }
 
         return $candidates->sortByDesc(fn ($p) => $p->overall_score)->first();
+    }
+
+    /**
+     * Generate goal events when only one team has players (the other squad is empty).
+     * Applies max_goals_cap and returns updated scores alongside the events.
+     *
+     * @return array{0: int, 1: int, 2: Collection<MatchEventData>} [homeScore, awayScore, goalEvents]
+     */
+    private function generateSingleTeamGoalEvents(
+        Team $homeTeam,
+        Team $awayTeam,
+        Collection $homePlayers,
+        Collection $awayPlayers,
+        int $homeScore,
+        int $awayScore,
+        int $minMinute,
+        int $maxMinute,
+    ): array {
+        $homeHasPlayers = $homePlayers->isNotEmpty();
+        $scoringPlayers = $homeHasPlayers ? $homePlayers : $awayPlayers;
+        $scoringTeamId = $homeHasPlayers ? $homeTeam->id : $awayTeam->id;
+        $concedingTeamId = $homeHasPlayers ? $awayTeam->id : $homeTeam->id;
+        $goalCount = $homeHasPlayers ? $homeScore : $awayScore;
+
+        $maxGoalsCap = config('match_simulation.max_goals_cap', 0);
+        if ($maxGoalsCap > 0) {
+            $goalCount = min($goalCount, $maxGoalsCap);
+            if ($homeHasPlayers) {
+                $homeScore = $goalCount;
+            } else {
+                $awayScore = $goalCount;
+            }
+        }
+
+        $events = $this->generateGoalEventsInRange(
+            $goalCount, $scoringTeamId, $concedingTeamId,
+            $scoringPlayers, collect(), $minMinute, $maxMinute,
+        );
+
+        return [$homeScore, $awayScore, $events];
     }
 
     /**
@@ -1465,15 +1489,9 @@ class MatchSimulator
             );
         } elseif ($homePlayers->isNotEmpty() || $awayPlayers->isNotEmpty()) {
             // One team has no players — generate events only for the team with players.
-            $teamWithPlayers = $homePlayers->isNotEmpty() ? 'home' : 'away';
-            $scoringPlayers = $teamWithPlayers === 'home' ? $homePlayers : $awayPlayers;
-            $scoringTeamId = $teamWithPlayers === 'home' ? $homeTeam->id : $awayTeam->id;
-            $concedingTeamId = $teamWithPlayers === 'home' ? $awayTeam->id : $homeTeam->id;
-            $goalCount = $teamWithPlayers === 'home' ? $homeScore : $awayScore;
-
-            $goalEvents = $this->generateGoalEventsInRange(
-                $goalCount, $scoringTeamId, $concedingTeamId,
-                $scoringPlayers, collect(), $minMinute, $maxMinute
+            [$homeScore, $awayScore, $goalEvents] = $this->generateSingleTeamGoalEvents(
+                $homeTeam, $awayTeam, $homePlayers, $awayPlayers,
+                $homeScore, $awayScore, $minMinute, $maxMinute,
             );
             $events = $events->merge($goalEvents)->sortBy('minute')->values();
         }
