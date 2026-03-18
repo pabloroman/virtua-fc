@@ -279,6 +279,10 @@ return [
     'explore_free_agent_willing' => 'Interested',
     'explore_free_agent_reluctant' => 'Difficult',
     'explore_free_agent_unwilling' => 'Not interested',
+    'explore_search_placeholder' => 'Search player by name...',
+    'explore_search_results_title' => 'Search Results',
+    'explore_search_no_results' => 'No players found.',
+    'explore_search_team' => 'Team',
     'explore_window_closed_hint' => 'Transfer window closed',
 
     // Tracking

@@ -284,6 +284,10 @@ return [
     'explore_free_agent_willing' => 'Interesado',
     'explore_free_agent_reluctant' => 'Difícil',
     'explore_free_agent_unwilling' => 'Sin interés',
+    'explore_search_placeholder' => 'Buscar jugador por nombre...',
+    'explore_search_results_title' => 'Resultados de búsqueda',
+    'explore_search_no_results' => 'No se encontraron jugadores.',
+    'explore_search_team' => 'Equipo',
     'explore_window_closed_hint' => 'Ventana de fichajes cerrada',
 
     // Tracking
