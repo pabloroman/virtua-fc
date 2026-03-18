@@ -58,6 +58,9 @@ class AITransferMarketService
     /** Maximum squad size — buyers can't exceed this */
     private const MAX_SQUAD_SIZE = 30;
 
+    /** Minimum free agents to preserve — AI stops signing when pool drops to this */
+    private const MIN_FREE_AGENT_POOL = 15;
+
     public function __construct(
         private readonly ContractService $contractService,
         private readonly NotificationService $notificationService,
@@ -191,9 +194,19 @@ class AITransferMarketService
             return 0;
         }
 
+        // Preserve a minimum pool of free agents for the user
+        $maxSignings = max(0, $freeAgents->count() - self::MIN_FREE_AGENT_POOL);
+        if ($maxSignings === 0) {
+            return 0;
+        }
+
         $count = 0;
 
         foreach ($freeAgents->shuffle() as $freeAgent) {
+            if ($count >= $maxSignings) {
+                break;
+            }
+
             $bestTeam = $this->findBestTeamForFreeAgent($freeAgent, $teamRosters, $teamAverages, $teams);
 
             if (! $bestTeam) {

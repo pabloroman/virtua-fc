@@ -406,7 +406,7 @@
                                                             {{-- Action: Free agent signing --}}
                                                             <template x-if="player.isFreeAgent && !player.hasExistingOffer">
                                                                 <div>
-                                                                    <template x-if="isTransferWindow && player.canAffordWage">
+                                                                    <template x-if="player.canAffordWage">
                                                                         <form :action="signFreeAgentRoute(player.id)" method="POST">
                                                                             <input type="hidden" name="_token" :value="csrfToken">
                                                                             <x-primary-button color="green" size="xs">
@@ -414,12 +414,7 @@
                                                                             </x-primary-button>
                                                                         </form>
                                                                     </template>
-                                                                    <template x-if="!isTransferWindow">
-                                                                        <div class="text-xs text-text-muted italic">
-                                                                            {{ __('transfers.window_closed_for_signing') }}
-                                                                        </div>
-                                                                    </template>
-                                                                    <template x-if="isTransferWindow && !player.canAffordWage">
+                                                                    <template x-if="!player.canAffordWage">
                                                                         <div class="text-xs text-accent-gold font-medium">
                                                                             {{ __('transfers.wage_exceeds_budget') }}
                                                                         </div>

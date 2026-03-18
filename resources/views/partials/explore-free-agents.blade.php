@@ -38,6 +38,7 @@
                     <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider text-center hidden md:table-cell">{{ __('transfers.explore_age') }}</th>
                     <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider hidden md:table-cell">{{ __('transfers.explore_value') }}</th>
                     <th class="py-2.5 text-[10px] text-text-muted uppercase tracking-wider text-center hidden md:table-cell">{{ __('transfers.willingness') }}</th>
+                    <th class="py-2.5 w-16"></th>
                     <th class="py-2.5 pr-4 w-10"></th>
                 </tr>
             </thead>
@@ -88,6 +89,17 @@
                             } }}">
                             {{ __('transfers.explore_free_agent_' . $willingness) }}
                         </span>
+                    </td>
+                    {{-- Sign button --}}
+                    <td class="py-2.5 pr-2 text-center">
+                        @if($gp->free_agent_willingness === 'willing')
+                            <form method="POST" action="{{ route('game.scouting.sign-free-agent', [$game->id, $gp->id]) }}">
+                                @csrf
+                                <x-primary-button color="green" size="xs">
+                                    {{ __('transfers.sign') }}
+                                </x-primary-button>
+                            </form>
+                        @endif
                     </td>
                     {{-- Shortlist star --}}
                     <td class="py-2.5 pr-4 text-center"
