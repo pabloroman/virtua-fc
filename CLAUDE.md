@@ -69,7 +69,7 @@ The codebase follows a **modular monolith** pattern. Domain logic is organized i
 | **Competition** | Structure & config | `CountryConfig`, `StandingsCalculator`, `CupDrawService`, handlers config |
 | **Finance** | Economic model | `BudgetProjectionService`, `SeasonSimulationService` |
 | **Season** | Lifecycle orchestration | `SeasonClosingPipeline`, `SeasonSetupPipeline`, `GameCreationService`, 22 processors |
-| **Manager** | Manager profile & trophies | `ManagerProfileService`, `TrophyRecordingProcessor` |
+| **Manager** | Manager profile, trophies & leaderboard | `ManagerProfileService`, `LeaderboardService`, `TrophyRecordingProcessor` |
 | **Notification** | In-game messaging | `NotificationService`, event listeners |
 | **Academy** | Youth development | `YouthAcademyService` |
 
@@ -202,8 +202,8 @@ app/
 │   │   ├── Contracts/    # SeasonProcessor
 │   │   ├── DTOs/         # SeasonTransitionData
 │   │   └── Jobs/         # SetupNewGame, SetupTournamentGame
-│   ├── Manager/          # Manager profile & trophies
-│   │   ├── Services/     # ManagerProfileService
+│   ├── Manager/          # Manager profile, trophies & leaderboard
+│   │   ├── Services/     # ManagerProfileService, LeaderboardService
 │   │   └── Processors/   # TrophyRecordingProcessor
 │   ├── Notification/     # In-game messaging
 │   │   ├── Services/     # NotificationService
