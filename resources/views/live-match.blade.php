@@ -794,6 +794,8 @@
                                 <span class="text-accent-yellow text-base">&#9733;</span>
                                 <span class="text-text-secondary" x-text="translations.mvpOfTheMatch"></span>
                                 <span class="font-semibold text-text-primary" x-text="mvpPlayerName"></span>
+                                <span class="text-xs px-1.5 py-0.5 rounded bg-surface-700 text-text-muted"
+                                      x-text="mvpPlayerTeamId === homeTeamId ? homeTeamName : awayTeamName"></span>
                             </div>
                         </template>
 
