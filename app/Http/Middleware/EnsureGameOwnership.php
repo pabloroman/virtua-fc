@@ -16,7 +16,7 @@ class EnsureGameOwnership
 
         if ($gameId) {
             $ownerId = Cache::remember("game_owner:{$gameId}", 3600, function () use ($gameId) {
-                return Game::where('id', $gameId)->value('user_id');
+                return Game::whereNull('deleting_at')->where('id', $gameId)->value('user_id');
             });
 
             if (! $ownerId || (int) $ownerId !== (int) $request->user()->id) {
