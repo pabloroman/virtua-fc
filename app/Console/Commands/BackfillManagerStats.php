@@ -43,7 +43,10 @@ class BackfillManagerStats extends Command
         $longestStreak = 0;
 
         // Phase 1: Process archived seasons (oldest first)
+        // Only select match_results to avoid loading large JSON blobs
+        // (player_season_stats, final_standings, match_events_archive)
         $archives = SeasonArchive::where('game_id', $game->id)
+            ->select('id', 'game_id', 'season', 'match_results')
             ->orderBy('season')
             ->get();
 
