@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Events\SeasonCompleted;
 use App\Events\SeasonStarted;
+use App\Listeners\LogDeviceSession;
 use App\Modules\Academy\Listeners\GenerateInitialAcademyBatch;
 use App\Modules\Match\Events\CupTieResolved;
 use App\Modules\Match\Events\MatchFinalized;
@@ -24,6 +25,7 @@ use App\Modules\Match\Listeners\UpdateManagerStats;
 use App\Modules\Season\Listeners\RecordSeasonCompleted;
 use App\Modules\Season\Listeners\SimulateOtherLeagues;
 use App\Modules\Competition\Services\CompetitionHandlerResolver;
+use Illuminate\Auth\Events\Login;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
@@ -75,5 +77,7 @@ class AppServiceProvider extends ServiceProvider
 
         Event::listen(SeasonCompleted::class, SimulateOtherLeagues::class);
         Event::listen(SeasonCompleted::class, RecordSeasonCompleted::class);
+
+        Event::listen(Login::class, LogDeviceSession::class);
     }
 }

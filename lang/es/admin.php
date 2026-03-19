@@ -48,6 +48,17 @@ return [
     'mode_career' => 'Carrera',
     'mode_tournament' => 'Torneo',
 
+    // Device analytics
+    'device_analytics' => 'Analítica de dispositivos',
+    'device_type' => 'Tipo de dispositivo',
+    'device_mobile' => 'Móvil',
+    'device_tablet' => 'Tablet',
+    'device_desktop' => 'Escritorio',
+    'browser' => 'Navegador',
+    'operating_system' => 'Sistema operativo',
+    'last_30_days' => 'Últimos 30 días',
+    'logins' => 'Inicios de sesión',
+
     // Game stats
     'nav_game_stats' => 'Estadísticas',
     'game_stats_title' => 'Estadísticas del Juego',

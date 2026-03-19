@@ -23,6 +23,84 @@
         </div>
     </div>
 
+    {{-- Device analytics --}}
+    <div class="mb-8">
+        <h2 class="font-heading text-lg font-bold uppercase tracking-wider text-text-primary mb-4">
+            {{ __('admin.device_analytics') }}
+        </h2>
+
+        @if($deviceTotalLogins > 0)
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                {{-- Device type breakdown --}}
+                <div class="bg-surface-800 border border-border-default rounded-xl p-4">
+                    <div class="text-xs text-text-muted uppercase tracking-wider mb-3">{{ __('admin.device_type') }}</div>
+                    <div class="space-y-2">
+                        @foreach($deviceTypes as $device)
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-text-secondary">{{ __('admin.device_' . $device['label']) }}</span>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm font-medium text-text-primary">{{ number_format($device['count']) }}</span>
+                                    <span class="text-xs text-text-muted">({{ $device['percentage'] }}%)</span>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                    <div class="mt-3 pt-3 border-t border-border-default">
+                        <div class="text-xs text-text-muted">{{ __('admin.last_30_days') }}</div>
+                        <div class="mt-1 space-y-1">
+                            @foreach($deviceTypesRecent as $device)
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs text-text-secondary">{{ __('admin.device_' . $device['label']) }}</span>
+                                    <span class="text-xs text-text-muted">{{ number_format($device['count']) }} ({{ $device['percentage'] }}%)</span>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Top browsers --}}
+                <div class="bg-surface-800 border border-border-default rounded-xl p-4">
+                    <div class="text-xs text-text-muted uppercase tracking-wider mb-3">{{ __('admin.browser') }}</div>
+                    <div class="space-y-2">
+                        @foreach($topBrowsers as $browser)
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-text-secondary">{{ $browser['label'] }}</span>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm font-medium text-text-primary">{{ number_format($browser['count']) }}</span>
+                                    <span class="text-xs text-text-muted">({{ $browser['percentage'] }}%)</span>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
+                {{-- Top OS --}}
+                <div class="bg-surface-800 border border-border-default rounded-xl p-4">
+                    <div class="text-xs text-text-muted uppercase tracking-wider mb-3">{{ __('admin.operating_system') }}</div>
+                    <div class="space-y-2">
+                        @foreach($topOs as $os)
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-text-secondary">{{ $os['label'] }}</span>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm font-medium text-text-primary">{{ number_format($os['count']) }}</span>
+                                    <span class="text-xs text-text-muted">({{ $os['percentage'] }}%)</span>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-xs text-text-muted mb-4">
+                {{ __('admin.logins') }}: {{ number_format($deviceTotalLogins) }} {{ __('admin.all_time') }} · {{ number_format($deviceRecentLogins) }} {{ __('admin.last_30_days') }}
+            </div>
+        @else
+            <div class="bg-surface-800 border border-border-default rounded-xl p-4 text-sm text-text-muted mb-4">
+                {{ __('admin.no_data') }}
+            </div>
+        @endif
+    </div>
+
     {{-- Quick links --}}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <a href="{{ route('admin.users') }}" class="bg-surface-800 border border-border-default rounded-xl p-5 hover:border-accent-blue/40 transition-colors group">

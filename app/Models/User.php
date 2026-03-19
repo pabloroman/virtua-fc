@@ -99,6 +99,11 @@ class User extends Authenticatable
         return $this->hasMany(ManagerTrophy::class);
     }
 
+    public function deviceSessions(): HasMany
+    {
+        return $this->hasMany(DeviceSession::class);
+    }
+
     /**
      * Get the attributes that should be cast.
      *

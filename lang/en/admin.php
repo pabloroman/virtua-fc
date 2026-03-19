@@ -48,6 +48,17 @@ return [
     'mode_career' => 'Career',
     'mode_tournament' => 'Tournament',
 
+    // Device analytics
+    'device_analytics' => 'Device Analytics',
+    'device_type' => 'Device Type',
+    'device_mobile' => 'Mobile',
+    'device_tablet' => 'Tablet',
+    'device_desktop' => 'Desktop',
+    'browser' => 'Browser',
+    'operating_system' => 'Operating System',
+    'last_30_days' => 'Last 30 days',
+    'logins' => 'Logins',
+
     // Game stats
     'nav_game_stats' => 'Game Stats',
     'game_stats_title' => 'Game Stats',
