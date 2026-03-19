@@ -66,10 +66,6 @@ No schema changes. The existing model already tracks rounds, demands, offers, co
 
 If the user navigates away mid-negotiation while a counter is active, they can reopen the chat — the `start` action detects the `player_countered` record and resumes.
 
-### Cooldown
-
-One negotiation per player per game-date. If rejected, user must advance at least one matchday before re-opening. Prevents brute-force spam while preserving temporal pacing.
-
 ### Alpine.js Component: `negotiationChat`
 
 New file `resources/js/negotiation-chat.js` (~200-250 lines), registered in `app.js`.
