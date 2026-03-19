@@ -436,7 +436,7 @@ class ContractService
     // CONTRACT NEGOTIATION
     // =========================================
 
-    private const MAX_NEGOTIATION_ROUNDS = 3;
+    public const MAX_NEGOTIATION_ROUNDS = 3;
 
     /**
      * Calculate a player's disposition score (0.10 – 0.95).
@@ -585,7 +585,6 @@ class ContractService
     {
         $player = $negotiation->gamePlayer;
         $disposition = $this->calculateDisposition($player, $negotiation->round);
-        $negotiation->update(['disposition' => $disposition]);
 
         // Calculate minimum acceptable wage
         $flexibility = $disposition * 0.30;
@@ -595,15 +594,14 @@ class ContractService
         $yearsModifier = $this->calculateYearsModifier($negotiation->offered_years, $negotiation->preferred_years);
         $effectiveOffer = (int) ($negotiation->user_offer * $yearsModifier);
 
-        if ($effectiveOffer >= $minimumAcceptable) {
-            // Accept
-            $contractYears = $negotiation->offered_years;
-            $negotiation->update([
-                'status' => RenewalNegotiation::STATUS_ACCEPTED,
-                'contract_years' => $contractYears,
-            ]);
+        $updateData = ['disposition' => $disposition];
 
-            // Process the actual renewal
+        if ($effectiveOffer >= $minimumAcceptable) {
+            $contractYears = $negotiation->offered_years;
+            $updateData['status'] = RenewalNegotiation::STATUS_ACCEPTED;
+            $updateData['contract_years'] = $contractYears;
+
+            $negotiation->fill($updateData)->save();
             $this->processRenewal($player, $negotiation->user_offer, $contractYears);
 
             return 'accepted';
@@ -613,21 +611,19 @@ class ContractService
         $counterThreshold = (int) ($minimumAcceptable * 0.85);
 
         if ($effectiveOffer >= $counterThreshold && $negotiation->round < self::MAX_NEGOTIATION_ROUNDS) {
-            // Counter — offer midpoint between minimum and demand, using player's preferred years
             $counterWage = (int) (($minimumAcceptable + $negotiation->player_demand) / 2);
-            // Round to nearest 100K
             $counterWage = (int) (round($counterWage / 10_000_000) * 10_000_000);
 
-            $negotiation->update([
-                'status' => RenewalNegotiation::STATUS_PLAYER_COUNTERED,
-                'counter_offer' => $counterWage,
-            ]);
+            $updateData['status'] = RenewalNegotiation::STATUS_PLAYER_COUNTERED;
+            $updateData['counter_offer'] = $counterWage;
+
+            $negotiation->fill($updateData)->save();
 
             return 'countered';
         }
 
-        // Reject
-        $negotiation->update(['status' => RenewalNegotiation::STATUS_PLAYER_REJECTED]);
+        $updateData['status'] = RenewalNegotiation::STATUS_PLAYER_REJECTED;
+        $negotiation->fill($updateData)->save();
 
         return 'rejected';
     }
@@ -738,7 +734,7 @@ class ContractService
 
         return [
             'result' => $result,
-            'negotiation' => $negotiation->fresh(),
+            'negotiation' => $negotiation,
         ];
     }
 
@@ -796,15 +792,9 @@ class ContractService
      */
     public function expireStaleNegotiations(Game $game): int
     {
-        $stale = RenewalNegotiation::where('game_id', $game->id)
+        return RenewalNegotiation::where('game_id', $game->id)
             ->whereIn('status', [RenewalNegotiation::STATUS_OFFER_PENDING, RenewalNegotiation::STATUS_PLAYER_COUNTERED])
-            ->get();
-
-        foreach ($stale as $negotiation) {
-            $negotiation->update(['status' => RenewalNegotiation::STATUS_EXPIRED]);
-        }
-
-        return $stale->count();
+            ->update(['status' => RenewalNegotiation::STATUS_EXPIRED]);
     }
 
     // =========================================

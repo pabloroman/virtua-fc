@@ -35,7 +35,7 @@
                     <div class="flex items-center gap-2 shrink-0">
                         <template x-if="round > 0 && !isTerminal">
                             <span class="text-[10px] text-text-muted tabular-nums"
-                                x-text="'Round ' + round + '/' + maxRounds"></span>
+                                x-text="@js(__('transfers.chat_round', ['current' => '__R__', 'max' => '__M__'])).replace('__R__', round).replace('__M__', maxRounds)"></span>
                         </template>
                         <button type="button" @click="closeChat()"
                             class="p-1.5 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-700 transition-colors">

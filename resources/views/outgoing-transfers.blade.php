@@ -139,8 +139,8 @@
                                                     @if($offeredPlayer)
                                                         <x-action-button color="green" type="button"
                                                             @click="$dispatch('open-negotiation', {
-                                                                playerName: '{{ $offeredPlayer->name }}',
-                                                                negotiateUrl: '{{ route('game.negotiate.renewal', [$game->id, $offeredPlayer->id]) }}'
+                                                                playerName: @js($offeredPlayer->name),
+                                                                negotiateUrl: @js(route('game.negotiate.renewal', [$game->id, $offeredPlayer->id]))
                                                             })">
                                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                                                             {{ __('squad.renew') }}
@@ -192,8 +192,8 @@
                                                     @if($offeredPlayer)
                                                         <x-action-button color="green" type="button"
                                                             @click="$dispatch('open-negotiation', {
-                                                                playerName: '{{ $offeredPlayer->name }}',
-                                                                negotiateUrl: '{{ route('game.negotiate.renewal', [$game->id, $offeredPlayer->id]) }}'
+                                                                playerName: @js($offeredPlayer->name),
+                                                                negotiateUrl: @js(route('game.negotiate.renewal', [$game->id, $offeredPlayer->id]))
                                                             })">
                                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                                                             {{ __('squad.renew') }}
@@ -450,8 +450,8 @@
                                         @endphp
                                         <tr x-data class="border-t border-border-default transition-colors cursor-pointer {{ $hasPendingOffer ? 'bg-accent-red/10' : 'hover:bg-[rgba(59,130,246,0.05)]' }}"
                                             @click="$dispatch('open-negotiation', {
-                                                playerName: '{{ $player->name }}',
-                                                negotiateUrl: '{{ route('game.negotiate.renewal', [$game->id, $player->id]) }}'
+                                                playerName: @js($player->name),
+                                                negotiateUrl: @js(route('game.negotiate.renewal', [$game->id, $player->id]))
                                             })">
                                             <td class="py-2.5 pl-4 text-center">
                                                 <x-position-badge :position="$player->position" size="sm" />

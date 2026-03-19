@@ -9,22 +9,33 @@ use App\Modules\Transfer\Services\ContractService;
 use App\Support\Money;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class NegotiateRenewal
 {
+    private const MAX_ROUNDS = ContractService::MAX_NEGOTIATION_ROUNDS;
+
     public function __construct(
         private readonly ContractService $contractService,
     ) {}
 
     public function __invoke(Request $request, string $gameId, string $playerId): JsonResponse
     {
+        $request->validate([
+            'action' => ['required', 'string', Rule::in(['start', 'offer', 'accept_counter', 'walk_away'])],
+        ]);
+
         $game = Game::findOrFail($gameId);
-        $player = GamePlayer::with(['player', 'game', 'transferOffers'])
+
+        $action = $request->input('action');
+        $eagerLoads = in_array($action, ['start', 'offer'])
+            ? ['player', 'game', 'transferOffers']
+            : ['player', 'game'];
+
+        $player = GamePlayer::with($eagerLoads)
             ->where('game_id', $gameId)
             ->where('team_id', $game->team_id)
             ->findOrFail($playerId);
-
-        $action = $request->input('action');
 
         return match ($action) {
             'start' => $this->handleStart($game, $player),
@@ -50,7 +61,7 @@ class NegotiateRenewal
                 'status' => 'ok',
                 'negotiation_status' => 'open',
                 'round' => $existing->round,
-                'max_rounds' => 3,
+                'max_rounds' => self::MAX_ROUNDS,
                 'messages' => [
                     $this->agentMessage('counter', [
                         'text' => __('transfers.chat_counter_resume', [
@@ -63,9 +74,9 @@ class NegotiateRenewal
                         'mood' => $mood,
                     ], [
                         'canAccept' => true,
-                        'canCounter' => $existing->round < 3,
+                        'canCounter' => $existing->round < self::MAX_ROUNDS,
                         'canWalkAway' => true,
-                        'suggestedWage' => $this->calculateMidpoint($existing->user_offer, $existing->counter_offer),
+                        'suggestedWage' => $this->calculateMidpointInEuros($existing->user_offer, $existing->counter_offer),
                         'preferredYears' => $existing->preferred_years,
                     ]),
                 ],
@@ -83,13 +94,13 @@ class NegotiateRenewal
         $demand = $this->contractService->calculateRenewalDemand($player);
         $disposition = $this->contractService->calculateDisposition($player);
         $mood = $this->contractService->getMoodIndicator($disposition);
-        $midpoint = $this->calculateMidpoint($player->annual_wage, $demand['wage']);
+        $midpoint = $this->calculateMidpointInEuros($player->annual_wage, $demand['wage']);
 
         return response()->json([
             'status' => 'ok',
             'negotiation_status' => 'open',
             'round' => 0,
-            'max_rounds' => 3,
+            'max_rounds' => self::MAX_ROUNDS,
             'messages' => [
                 $this->agentMessage('demand', [
                     'text' => __('transfers.chat_agent_demand', [
@@ -113,16 +124,14 @@ class NegotiateRenewal
 
     private function handleOffer(Request $request, Game $game, GamePlayer $player): JsonResponse
     {
-        $offerWageEuros = (int) $request->input('wage');
-        $offeredYears = (int) $request->input('years', 3);
-        $offerWageCents = $offerWageEuros * 100;
+        $validated = $request->validate([
+            'wage' => ['required', 'integer', 'min:1'],
+            'years' => ['required', 'integer', 'min:1', 'max:5'],
+        ]);
 
-        if ($offerWageCents <= 0) {
-            return response()->json([
-                'status' => 'error',
-                'message' => __('messages.renewal_invalid_offer'),
-            ], 422);
-        }
+        $offerWageEuros = $validated['wage'];
+        $offeredYears = $validated['years'];
+        $offerWageCents = $offerWageEuros * 100;
 
         $result = $this->contractService->negotiateSync($player, $offerWageCents, $offeredYears);
         $negotiation = $result['negotiation'];
@@ -132,7 +141,7 @@ class NegotiateRenewal
                 'status' => 'ok',
                 'negotiation_status' => 'accepted',
                 'round' => $negotiation->round,
-                'max_rounds' => 3,
+                'max_rounds' => self::MAX_ROUNDS,
                 'messages' => [
                     $this->agentMessage('accepted', [
                         'text' => __('transfers.chat_agent_accepted', [
@@ -149,7 +158,7 @@ class NegotiateRenewal
                 'status' => 'ok',
                 'negotiation_status' => 'open',
                 'round' => $negotiation->round,
-                'max_rounds' => 3,
+                'max_rounds' => self::MAX_ROUNDS,
                 'messages' => [
                     $this->agentMessage('counter', [
                         'text' => __('transfers.chat_agent_counter', [
@@ -162,9 +171,9 @@ class NegotiateRenewal
                         'mood' => $this->contractService->getMoodIndicator($negotiation->disposition),
                     ], [
                         'canAccept' => true,
-                        'canCounter' => $negotiation->round < 3,
+                        'canCounter' => $negotiation->round < self::MAX_ROUNDS,
                         'canWalkAway' => true,
-                        'suggestedWage' => $this->calculateMidpoint($negotiation->user_offer, $negotiation->counter_offer),
+                        'suggestedWage' => $this->calculateMidpointInEuros($negotiation->user_offer, $negotiation->counter_offer),
                         'preferredYears' => $negotiation->preferred_years,
                     ]),
                 ],
@@ -173,7 +182,7 @@ class NegotiateRenewal
                 'status' => 'ok',
                 'negotiation_status' => 'rejected',
                 'round' => $negotiation->round,
-                'max_rounds' => 3,
+                'max_rounds' => self::MAX_ROUNDS,
                 'messages' => [
                     $this->agentMessage('rejected', [
                         'text' => __('transfers.chat_agent_rejected', [
@@ -212,6 +221,8 @@ class NegotiateRenewal
         return response()->json([
             'status' => 'ok',
             'negotiation_status' => 'accepted',
+            'round' => $negotiation->round,
+            'max_rounds' => self::MAX_ROUNDS,
             'messages' => [
                 $this->agentMessage('accepted', [
                     'text' => __('transfers.chat_agent_accepted', [
@@ -271,7 +282,7 @@ class NegotiateRenewal
     /**
      * Calculate midpoint between two wages, in euros, rounded to nearest 10K.
      */
-    private function calculateMidpoint(int $wageCentsA, int $wageCentsB): int
+    private function calculateMidpointInEuros(int $wageCentsA, int $wageCentsB): int
     {
         return (int) (ceil(($wageCentsA + $wageCentsB) / 2 / 100 / 10000) * 10000);
     }

@@ -321,6 +321,7 @@ return [
     'chat_deal_agreed' => 'Contract agreed',
     'chat_deal_failed' => 'Negotiation failed',
     'chat_continue' => 'Continue',
+    'chat_round' => 'Round :current/:max',
     'year_singular' => 'year',
     'year_plural' => 'years',
 ];

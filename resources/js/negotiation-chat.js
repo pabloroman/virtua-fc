@@ -49,12 +49,7 @@ export default function negotiationChat() {
                 this.maxRounds = data.max_rounds || 3;
                 this.appendMessages(data.messages);
 
-                // Pre-fill offer from suggested wage
-                const lastMsg = this.messages[this.messages.length - 1];
-                if (lastMsg?.options) {
-                    this.offerWage = lastMsg.options.suggestedWage || 0;
-                    this.offerYears = lastMsg.options.preferredYears || 3;
-                }
+                this.prefillFromOptions();
             }
             this.loading = false;
         },
@@ -92,14 +87,7 @@ export default function negotiationChat() {
                 this.round = data.round || this.round;
                 this.appendMessages(data.messages);
 
-                // Pre-fill next offer from suggested wage
-                const lastMsg = this.messages[this.messages.length - 1];
-                if (lastMsg?.options?.suggestedWage) {
-                    this.offerWage = lastMsg.options.suggestedWage;
-                }
-                if (lastMsg?.options?.preferredYears) {
-                    this.offerYears = lastMsg.options.preferredYears;
-                }
+                this.prefillFromOptions();
 
                 // Auto-close on accept
                 if (this.negotiationStatus === 'accepted') {
@@ -214,6 +202,12 @@ export default function negotiationChat() {
             });
         },
 
+        prefillFromOptions() {
+            const lastMsg = this.messages[this.messages.length - 1];
+            if (lastMsg?.options?.suggestedWage) this.offerWage = lastMsg.options.suggestedWage;
+            if (lastMsg?.options?.preferredYears) this.offerYears = lastMsg.options.preferredYears;
+        },
+
         clearLastOptions() {
             // Remove options from the last agent message so buttons disappear
             for (let i = this.messages.length - 1; i >= 0; i--) {
@@ -228,17 +222,16 @@ export default function negotiationChat() {
             return new Promise(resolve => setTimeout(resolve, ms));
         },
 
-        formatWage(cents) {
-            // Format euros with K/M suffix
-            if (cents >= 1000000) {
-                const m = cents / 1000000;
+        formatWage(euros) {
+            if (euros >= 1000000) {
+                const m = euros / 1000000;
                 return '€' + (Number.isInteger(m) ? m : m.toFixed(1)) + 'M';
             }
-            if (cents >= 1000) {
-                const k = cents / 1000;
+            if (euros >= 1000) {
+                const k = euros / 1000;
                 return '€' + (Number.isInteger(k) ? k : k.toFixed(0)) + 'K';
             }
-            return '€' + cents;
+            return '€' + euros;
         },
     };
 }

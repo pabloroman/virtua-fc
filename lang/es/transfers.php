@@ -326,6 +326,7 @@ return [
     'chat_deal_agreed' => 'Contrato acordado',
     'chat_deal_failed' => 'Negociación fallida',
     'chat_continue' => 'Continuar',
+    'chat_round' => 'Ronda :current/:max',
     'year_singular' => 'año',
     'year_plural' => 'años',
 ];
