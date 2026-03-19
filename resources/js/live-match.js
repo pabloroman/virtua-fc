@@ -965,6 +965,7 @@ export default function liveMatch(config) {
             this.tacticalPanelOpen = true;
             this.selectedPlayerOut = null;
             this.selectedPlayerIn = null;
+            this.livePitchSelectedOutId = null;
             this.pendingSubs = [];
             this.pendingFormation = null;
             this.pendingMentality = null;
