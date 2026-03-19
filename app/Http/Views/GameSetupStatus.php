@@ -6,10 +6,17 @@ use App\Models\Game;
 use App\Modules\Match\Jobs\ProcessMatchdayAdvance;
 use App\Modules\Season\Jobs\ProcessSeasonTransition;
 use App\Modules\Season\Jobs\SetupNewGame;
+use App\Modules\Season\Services\SeasonClosingPipeline;
+use App\Modules\Season\Services\SeasonSetupPipeline;
 use Illuminate\Http\JsonResponse;
 
 class GameSetupStatus
 {
+    public function __construct(
+        private readonly SeasonClosingPipeline $closingPipeline,
+        private readonly SeasonSetupPipeline $setupPipeline,
+    ) {}
+
     public function __invoke(string $gameId): JsonResponse
     {
         $game = Game::findOrFail($gameId);
@@ -44,7 +51,7 @@ class GameSetupStatus
         // Calculate season transition progress from checkpoint step
         $progress = null;
         if ($game->isTransitioningSeason() && $game->season_transition_step !== null) {
-            $totalSteps = 27; // 19 closing + 8 setup processors
+            $totalSteps = count($this->closingPipeline->getProcessors()) + count($this->setupPipeline->getProcessors());
             $progress = min(100, (int) round(($game->season_transition_step + 1) / $totalSteps * 100));
         }
 
