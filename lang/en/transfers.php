@@ -324,4 +324,5 @@ return [
     'chat_round' => 'Round :current/:max',
     'year_singular' => 'year',
     'year_plural' => 'years',
+    'chat_send_offer' => 'Send',
 ];

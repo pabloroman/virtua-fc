@@ -3,7 +3,7 @@
 <div x-data="negotiationChat()" @open-negotiation.window="openChat($event.detail)" x-cloak>
     {{-- Backdrop + Modal --}}
     <template x-teleport="body">
-        <div x-show="open" class="fixed inset-0 z-60 overflow-y-auto px-4 py-6 sm:px-0" style="display:none">
+        <div x-show="open" class="fixed inset-0 z-50 overflow-y-auto px-4 py-6 sm:px-0" style="display:none">
             {{-- Backdrop --}}
             <div x-show="open" @click="closeChat()"
                 class="fixed inset-0 transition-opacity"
@@ -175,30 +175,22 @@
                         {{-- Wage stepper --}}
                         <div class="flex-1 min-w-0">
                             <label class="text-[10px] text-text-muted uppercase tracking-wider block mb-1">{{ __('transfers.your_offer') }}</label>
-                            <div x-data="{
-                                get step() { return $data.offerWage >= 1000000 ? 100000 : 10000 },
-                                get display() { return '€ ' + new Intl.NumberFormat('es-ES').format($data.offerWage) },
-                                increment() { $data.offerWage += this.step },
-                                decrement() { $data.offerWage = Math.max($data.offerWage - this.step, 0) },
-                                holdTimer: null, holdInterval: null,
-                                startHold(fn) { fn(); this.holdTimer = setTimeout(() => { this.holdInterval = setInterval(() => fn(), 80) }, 400) },
-                                stopHold() { clearTimeout(this.holdTimer); clearInterval(this.holdInterval) }
-                            }" class="inline-flex items-stretch border border-border-strong rounded-lg overflow-hidden h-[36px] w-full">
+                            <div class="inline-flex items-stretch border border-border-strong rounded-lg overflow-hidden h-[36px] w-full">
                                 <button type="button"
-                                    :disabled="$data.offerWage <= 0"
-                                    :class="$data.offerWage <= 0 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-surface-600'"
+                                    :disabled="offerWage <= 0"
+                                    :class="offerWage <= 0 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-surface-600'"
                                     class="min-h-[32px] min-w-[32px] flex items-center justify-center bg-surface-700 text-text-body font-bold select-none transition-colors text-sm"
-                                    @mousedown.prevent="startHold(() => decrement())"
+                                    @mousedown.prevent="startHold(() => decrementWage())"
                                     @mouseup="stopHold()" @mouseleave="stopHold()"
-                                    @touchstart.prevent="startHold(() => decrement())" @touchend="stopHold()"
+                                    @touchstart.prevent="startHold(() => decrementWage())" @touchend="stopHold()"
                                 >&minus;</button>
-                                <input type="text" readonly :value="display"
+                                <input type="text" readonly :value="wageDisplay"
                                     class="min-h-[32px] flex-1 min-w-0 text-center font-semibold text-text-primary bg-surface-800 border-x border-y-0 border-border-strong outline-hidden cursor-default focus:outline-hidden focus:ring-0 text-xs">
                                 <button type="button"
                                     class="min-h-[32px] min-w-[32px] flex items-center justify-center bg-surface-700 hover:bg-surface-600 text-text-body font-bold select-none transition-colors text-sm"
-                                    @mousedown.prevent="startHold(() => increment())"
+                                    @mousedown.prevent="startHold(() => incrementWage())"
                                     @mouseup="stopHold()" @mouseleave="stopHold()"
-                                    @touchstart.prevent="startHold(() => increment())" @touchend="stopHold()"
+                                    @touchstart.prevent="startHold(() => incrementWage())" @touchend="stopHold()"
                                 >+</button>
                             </div>
                         </div>
@@ -218,12 +210,13 @@
 
                         {{-- Submit --}}
                         <button type="button" @click="submitOffer()"
-                            :disabled="offerWage <= 0"
-                            :class="offerWage <= 0 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-accent-green/80'"
-                            class="shrink-0 h-[36px] px-4 rounded-lg bg-accent-green text-white text-xs font-semibold transition-colors min-h-[36px]">
+                            :disabled="!canSubmit"
+                            :class="!canSubmit ? 'opacity-40 cursor-not-allowed' : 'hover:bg-accent-green/80'"
+                            class="shrink-0 h-[36px] px-4 rounded-lg bg-accent-green text-white text-xs font-semibold transition-colors min-h-[36px] flex items-center gap-1.5">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
                             </svg>
+                            <span class="hidden sm:inline">{{ __('transfers.chat_send_offer') }}</span>
                         </button>
                     </div>
                 </div>

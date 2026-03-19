@@ -329,4 +329,5 @@ return [
     'chat_round' => 'Ronda :current/:max',
     'year_singular' => 'año',
     'year_plural' => 'años',
+    'chat_send_offer' => 'Enviar',
 ];

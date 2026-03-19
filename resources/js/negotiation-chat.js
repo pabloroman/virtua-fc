@@ -16,6 +16,10 @@ export default function negotiationChat() {
         offerWage: 0,
         offerYears: 3,
 
+        // Stepper hold state
+        _holdTimer: null,
+        _holdInterval: null,
+
         // CSRF
         csrfToken: document.querySelector('meta[name="csrf-token"]')?.content || '',
 
@@ -27,8 +31,36 @@ export default function negotiationChat() {
             return this.messages[this.messages.length - 1];
         },
 
-        get hasOptions() {
-            return this.lastMessage?.options != null;
+        get canSubmit() {
+            return !this.loading && !this.isTerminal && this.offerWage > 0;
+        },
+
+        get wageStep() {
+            return this.offerWage >= 1000000 ? 100000 : 10000;
+        },
+
+        get wageDisplay() {
+            return '€ ' + new Intl.NumberFormat('es-ES').format(this.offerWage);
+        },
+
+        incrementWage() {
+            this.offerWage += this.wageStep;
+        },
+
+        decrementWage() {
+            this.offerWage = Math.max(this.offerWage - this.wageStep, 0);
+        },
+
+        startHold(fn) {
+            fn();
+            this._holdTimer = setTimeout(() => {
+                this._holdInterval = setInterval(() => fn(), 80);
+            }, 400);
+        },
+
+        stopHold() {
+            clearTimeout(this._holdTimer);
+            clearInterval(this._holdInterval);
         },
 
         async openChat(detail) {
@@ -55,8 +87,7 @@ export default function negotiationChat() {
         },
 
         async submitOffer() {
-            if (this.loading || this.isTerminal) return;
-            if (this.offerWage <= 0) return;
+            if (!this.canSubmit) return;
 
             // Show user's offer as a message
             this.messages.push({
@@ -140,7 +171,6 @@ export default function negotiationChat() {
 
         closeChat() {
             this.open = false;
-            // If negotiation completed or walked away, reload to update UI
             if (this.isTerminal) {
                 window.location.reload();
             }
@@ -193,7 +223,6 @@ export default function negotiationChat() {
             for (const msg of messages) {
                 this.messages.push(msg);
             }
-            // Scroll to bottom
             this.$nextTick(() => {
                 const container = this.$refs.chatMessages;
                 if (container) {
@@ -209,7 +238,6 @@ export default function negotiationChat() {
         },
 
         clearLastOptions() {
-            // Remove options from the last agent message so buttons disappear
             for (let i = this.messages.length - 1; i >= 0; i--) {
                 if (this.messages[i].sender === 'agent' && this.messages[i].options) {
                     this.messages[i].options = null;
