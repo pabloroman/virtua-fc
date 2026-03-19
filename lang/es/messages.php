@@ -126,6 +126,6 @@ return [
     'preset_limit_reached' => 'Máximo de 3 tácticas guardadas alcanzado.',
 
     // Game management
-    'game_deleted' => 'Partida eliminada correctamente.',
+    'game_deleted' => 'La partida se está eliminando.',
     'game_limit_reached' => 'Has alcanzado el límite máximo de 3 partidas. Elimina una para crear otra nueva.',
 ];

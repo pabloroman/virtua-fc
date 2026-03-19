@@ -20,7 +20,7 @@ class InitGame
 
     public function __invoke(Request $request)
     {
-        $gameCount = Game::where('user_id', $request->user()->id)->count();
+        $gameCount = Game::where('user_id', $request->user()->id)->whereNull('deleting_at')->count();
         if ($gameCount >= 3) {
             return back()->withErrors(['limit' => __('messages.game_limit_reached')]);
         }

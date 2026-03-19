@@ -12,7 +12,7 @@ final class SelectTeam
 {
     public function __invoke(Request $request, CountryConfig $countryConfig)
     {
-        if (Game::where('user_id', $request->user()->id)->count() >= 3) {
+        if (Game::where('user_id', $request->user()->id)->whereNull('deleting_at')->count() >= 3) {
             return redirect()->route('dashboard')->withErrors(['limit' => __('messages.game_limit_reached')]);
         }
 

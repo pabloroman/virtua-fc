@@ -126,6 +126,6 @@ return [
     'preset_limit_reached' => 'Maximum of 3 saved tactics reached.',
 
     // Game management
-    'game_deleted' => 'Game deleted successfully.',
+    'game_deleted' => 'Game is being deleted.',
     'game_limit_reached' => 'You have reached the maximum limit of 3 games. Delete one to create another.',
 ];

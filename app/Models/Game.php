@@ -29,6 +29,7 @@ use Illuminate\Database\Eloquent\Builder;
  * @property string $game_mode
  * @property \Illuminate\Support\Carbon|null $setup_completed_at
  * @property string $country
+ * @property \Illuminate\Support\Carbon|null $deleting_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Loan> $activeLoans
  * @property-read int|null $active_loans_count
  * @property-read \App\Models\ScoutReport|null $activeScoutReport
@@ -127,6 +128,7 @@ class Game extends Model
         'pending_finalization_match_id',
         'matchday_advancing_at',
         'matchday_advance_result',
+        'deleting_at',
     ];
 
     protected $casts = [
@@ -142,6 +144,7 @@ class Game extends Model
         'career_actions_processing_at' => 'datetime',
         'matchday_advancing_at' => 'datetime',
         'matchday_advance_result' => 'array',
+        'deleting_at' => 'datetime',
     ];
 
     // ==========================================
@@ -176,6 +179,11 @@ class Game extends Model
     public function isAdvancingMatchday(): bool
     {
         return $this->matchday_advancing_at !== null;
+    }
+
+    public function isDeleting(): bool
+    {
+        return $this->deleting_at !== null;
     }
 
     /**
