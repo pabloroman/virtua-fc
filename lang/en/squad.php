@@ -168,6 +168,7 @@ return [
     'legend_assists' => 'Assists',
     'legend_contributions' => 'Goal Contributions',
     'legend_own_goals' => 'Own Goals',
+    'legend_mvp' => 'Man of the Match awards',
     'legend_clean_sheets' => 'Clean Sheets (GK only)',
 
     // Squad number
@@ -289,6 +290,7 @@ return [
     'numbers' => 'Numbers',
 
     // Table headers
+    'mvp' => 'MVP',
     'cards' => 'Cards',
     'avg_ovr' => 'Avg',
 

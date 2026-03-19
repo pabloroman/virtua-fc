@@ -258,6 +258,33 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
                             </div>
                         </div>
 
+                        {{-- Most MVPs --}}
+                        <div class="border border-border-default rounded-lg overflow-hidden">
+                            <div class="px-4 py-2.5 bg-accent-yellow/10 border-b border-accent-yellow/20">
+                                <div class="text-xs font-semibold text-accent-yellow uppercase tracking-wide flex items-center gap-1.5">
+                                    <span>&#9733;</span>
+                                    {{ __('season.most_mvps') }}
+                                </div>
+                            </div>
+                            <div class="p-3">
+                                @if($topMvps->isNotEmpty())
+                                <div class="space-y-2">
+                                    @foreach($topMvps as $index => $mvp)
+                                        @php $isPlayerTeam = $mvp->gamePlayer->team_id === $game->team_id; @endphp
+                                        <div class="flex items-center gap-2 text-sm @if($isPlayerTeam) bg-accent-blue/10 -mx-1 px-1 py-0.5 rounded-sm @endif">
+                                            <span class="w-5 text-center text-xs font-bold {{ $index === 0 ? 'text-accent-yellow' : 'text-text-secondary' }}">{{ $index + 1 }}</span>
+                                            <x-team-crest :team="$mvp->gamePlayer->team" class="w-4 h-4 shrink-0" />
+                                            <span class="flex-1 truncate @if($isPlayerTeam) font-medium @endif">{{ $mvp->gamePlayer->player->name }}</span>
+                                            <span class="font-heading font-bold tabular-nums text-text-primary">{{ $mvp->count }}</span>
+                                        </div>
+                                    @endforeach
+                                </div>
+                                @else
+                                <p class="text-sm text-text-secondary text-center py-2">{{ __('season.no_mvps_awarded') }}</p>
+                                @endif
+                            </div>
+                        </div>
+
                         {{-- Promoted / Relegated teams --}}
                         @if($promotionData)
                             @if(!empty($promotionData['promoted']))
@@ -379,8 +406,8 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
             <div class="p-5 md:p-6">
 
                 {{-- Player highlights --}}
-                @if(($teamTopScorer && $teamTopScorer->goals > 0) || ($teamTopAssister && $teamTopAssister->assists > 0) || ($teamMostAppearances && $teamMostAppearances->appearances > 0))
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-5">
+                @if(($teamTopScorer && $teamTopScorer->goals > 0) || ($teamTopAssister && $teamTopAssister->assists > 0) || ($teamMostAppearances && $teamMostAppearances->appearances > 0) || $teamMvpLeader)
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
                     @if($teamTopScorer && $teamTopScorer->goals > 0)
                     <div class="bg-accent-gold/10 border border-accent-gold/20 rounded-lg p-3">
                         <div class="text-[10px] text-accent-gold uppercase tracking-widest font-semibold mb-1.5">{{ __('season.your_top_scorer') }}</div>
@@ -414,6 +441,18 @@ $getZoneClass = function($position) use ($standingsZones, $borderColorMap) {
                         </div>
                         <div class="font-heading text-xl font-bold text-text-primary tabular-nums">{{ $teamMostAppearances->appearances }}</div>
                         <div class="text-[10px] text-accent-green/80">{{ __('season.appearances') }}</div>
+                    </div>
+                    @endif
+
+                    @if($teamMvpLeader)
+                    <div class="bg-accent-yellow/10 border border-accent-yellow/20 rounded-lg p-3">
+                        <div class="text-[10px] text-accent-yellow uppercase tracking-widest font-semibold mb-1.5">{{ __('season.your_team_mvp') }}</div>
+                        <div class="flex items-center gap-1.5 mb-1">
+                            <x-team-crest :team="$teamMvpLeader->gamePlayer->team" class="w-4 h-4 shrink-0" />
+                            <span class="text-sm font-medium text-text-primary truncate">{{ $teamMvpLeader->gamePlayer->player->name }}</span>
+                        </div>
+                        <div class="font-heading text-xl font-bold text-text-primary tabular-nums">{{ $teamMvpLeader->count }}</div>
+                        <div class="text-[10px] text-accent-yellow/80">{{ __('season.mvp_awards') }}</div>
                     </div>
                     @endif
                 </div>

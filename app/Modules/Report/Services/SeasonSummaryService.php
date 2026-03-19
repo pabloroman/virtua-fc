@@ -60,6 +60,9 @@ class SeasonSummaryService
         $bestGoalkeeper = $this->awardService->getTopGoalkeepers(
             $game->id, $competitionTeamIds, minAppearances: 19, limit: 1
         )->first();
+        [$topMvps, $teamMvpLeader] = $this->awardService->getMvpRankings(
+            $game->id, $game->competition_id, $game->team_id, limit: 3
+        );
 
         // Other competitions
         $otherCompetitionResults = $this->competitionSummaryService->buildOtherCompetitionResults($game);
@@ -96,11 +99,13 @@ class SeasonSummaryService
             'managerEvaluation' => $managerEvaluation,
             'topScorers' => $topScorers,
             'bestGoalkeeper' => $bestGoalkeeper,
+            'topMvps' => $topMvps,
             'promotionData' => $promotionData,
             'otherCompetitionResults' => $otherCompetitionResults,
             'teamTopScorer' => $teamTopScorer,
             'teamTopAssister' => $teamTopAssister,
             'teamMostAppearances' => $teamMostAppearances,
+            'teamMvpLeader' => $teamMvpLeader,
             'biggestVictory' => $biggestVictory,
             'worstDefeat' => $worstDefeat,
             'homeRecord' => $homeRecord,

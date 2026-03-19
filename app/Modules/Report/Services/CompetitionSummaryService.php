@@ -82,6 +82,10 @@ class CompetitionSummaryService
         $topGoalkeepers = $this->awardService->getTopGoalkeepers($game->id, minAppearances: 3, limit: 5);
         $yourSquadStats = $this->awardService->getTeamSquadStats($game->id, $game->team_id);
 
+        [$topMvps, $teamMvpLeader, $mvpCounts] = $this->awardService->getMvpRankings(
+            $game->id, $game->competition_id, $game->team_id, limit: 5
+        );
+
         return [
             'competition' => $competition,
             'groupStandings' => $groupStandings,
@@ -99,6 +103,8 @@ class CompetitionSummaryService
             'topAssisters' => $topAssisters,
             'topGoalkeepers' => $topGoalkeepers,
             'yourSquadStats' => $yourSquadStats,
+            'topMvps' => $topMvps,
+            'mvpCounts' => $mvpCounts,
         ];
     }
 

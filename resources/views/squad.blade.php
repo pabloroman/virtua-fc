@@ -215,7 +215,7 @@
                                  :class="{
                                     'grid-cols-[1fr_48px_32px_52px_88px_88px_80px_64px_64px_56px] gap-1.5': viewMode === 'tactical',
                                     'grid-cols-[1fr_48px_32px_52px_88px_64px_64px_56px_80px] gap-1.5': viewMode === 'planning',
-                                    'grid-cols-[1fr_48px_32px_52px_48px_48px_48px_48px_48px_48px_64px] gap-1.5': viewMode === 'stats',
+                                    'grid-cols-[1fr_48px_32px_52px_48px_48px_48px_40px_48px_48px_48px_64px] gap-1.5': viewMode === 'stats',
                                     'grid-cols-[1fr_48px_32px_52px_100px] gap-1.5': viewMode === 'numbers',
                                  }">
                                 <span>{{ __('squad.player') }}</span>
@@ -271,6 +271,9 @@
                                 </template>
                                 <template x-if="viewMode === 'stats'">
                                     <span class="text-center" x-data x-tooltip.raw="{{ __('squad.legend_assists') }}">{{ __('squad.assists') }}</span>
+                                </template>
+                                <template x-if="viewMode === 'stats'">
+                                    <span class="text-center text-accent-yellow" x-data x-tooltip.raw="{{ __('squad.legend_mvp') }}">{{ __('squad.mvp') }}</span>
                                 </template>
                                 <template x-if="viewMode === 'stats'">
                                     <span class="text-center" x-data x-tooltip.raw="{{ __('squad.clean_sheets_full') }}">{{ __('squad.clean_sheets') }}</span>
@@ -380,7 +383,7 @@
                                          :class="{
                                             'grid-cols-[1fr_48px_32px_52px_88px_88px_80px_64px_64px_56px] gap-1.5': viewMode === 'tactical',
                                             'grid-cols-[1fr_48px_32px_52px_88px_64px_64px_56px_80px] gap-1.5': viewMode === 'planning',
-                                            'grid-cols-[1fr_48px_32px_52px_48px_48px_48px_48px_48px_48px_64px] gap-1.5': viewMode === 'stats',
+                                            'grid-cols-[1fr_48px_32px_52px_48px_48px_48px_40px_48px_48px_48px_64px] gap-1.5': viewMode === 'stats',
                                             'grid-cols-[1fr_48px_32px_52px_100px] gap-1.5': viewMode === 'numbers',
                                          }">
 
@@ -496,6 +499,10 @@
                                         </template>
                                         <template x-if="viewMode === 'stats'">
                                             <span class="text-xs text-text-secondary text-center tabular-nums">{{ $gp->assists }}</span>
+                                        </template>
+                                        <template x-if="viewMode === 'stats'">
+                                            @php $mvpCount = $mvpCounts[$gp->id] ?? 0; @endphp
+                                            <span class="text-xs text-center tabular-nums {{ $mvpCount > 0 ? 'font-medium text-accent-yellow' : 'text-text-muted' }}">{{ $mvpCount }}</span>
                                         </template>
                                         <template x-if="viewMode === 'stats'">
                                             <span class="text-xs text-text-secondary text-center tabular-nums">{{ $gp->clean_sheets }}</span>

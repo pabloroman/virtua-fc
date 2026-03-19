@@ -168,6 +168,7 @@ return [
     'legend_assists' => 'Asistencias',
     'legend_contributions' => 'Contribuciones de Gol',
     'legend_own_goals' => 'Goles en Propia',
+    'legend_mvp' => 'Premios MVP del partido',
     'legend_clean_sheets' => 'Porterías a Cero (solo PO)',
 
     // Squad number
@@ -289,6 +290,7 @@ return [
     'numbers' => 'Dorsales',
 
     // Table headers
+    'mvp' => 'MVP',
     'cards' => 'Tarjetas',
     'avg_ovr' => 'Media',
 

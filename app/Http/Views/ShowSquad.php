@@ -4,6 +4,7 @@ namespace App\Http\Views;
 
 use App\Models\AcademyPlayer;
 use App\Models\Game;
+use App\Models\GameMatch;
 use App\Models\GamePlayer;
 use App\Modules\Player\Services\DevelopmentCurve;
 use App\Modules\Player\Services\InjuryService;
@@ -150,6 +151,9 @@ class ShowSquad
             }
         }
 
+        // MVP counts for the user's team across all competitions
+        $mvpCounts = GameMatch::mvpCountsByPlayer($gameId);
+
         $academyCount = 0;
         if ($isCareerMode) {
             $academyCount = AcademyPlayer::where('game_id', $gameId)->where('team_id', $game->team_id)->count();
@@ -185,6 +189,7 @@ class ShowSquad
             // Renewal data
             'renewalData' => $renewalData,
             'academyCount' => $academyCount,
+            'mvpCounts' => $mvpCounts,
         ]);
     }
 

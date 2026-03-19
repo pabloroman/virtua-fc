@@ -448,6 +448,7 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                                                 <th class="text-center py-2 w-10">{{ __('squad.appearances') }}</th>
                                                 <th class="text-center py-2 w-10">{{ __('squad.goals') }}</th>
                                                 <th class="text-center py-2 w-10">{{ __('squad.assists') }}</th>
+                                                <th class="text-center py-2 w-10 text-accent-yellow">{{ __('squad.mvp') }}</th>
                                                 <th class="text-center py-2 w-10 hidden md:table-cell">{{ __('squad.yellow_cards') }}</th>
                                                 <th class="text-center py-2 w-10 hidden md:table-cell">{{ __('squad.red_cards') }}</th>
                                             </tr>
@@ -460,6 +461,8 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                                                 <td class="text-center py-1.5 font-semibold text-text-body">{{ $gp->appearances }}</td>
                                                 <td class="text-center py-1.5 {{ $gp->goals > 0 ? 'font-semibold text-text-body' : 'text-text-muted' }}">{{ $gp->goals }}</td>
                                                 <td class="text-center py-1.5 {{ $gp->assists > 0 ? 'font-semibold text-text-body' : 'text-text-muted' }}">{{ $gp->assists }}</td>
+                                                @php $gpMvpCount = $mvpCounts[$gp->id] ?? 0; @endphp
+                                                <td class="text-center py-1.5 {{ $gpMvpCount > 0 ? 'font-semibold text-accent-yellow' : 'text-text-muted' }}">{{ $gpMvpCount }}</td>
                                                 <td class="text-center py-1.5 hidden md:table-cell {{ $gp->yellow_cards > 0 ? 'text-accent-gold font-medium' : 'text-text-muted' }}">{{ $gp->yellow_cards }}</td>
                                                 <td class="text-center py-1.5 hidden md:table-cell {{ $gp->red_cards > 0 ? 'text-accent-red font-medium' : 'text-text-muted' }}">{{ $gp->red_cards }}</td>
                                             </tr>
@@ -582,6 +585,43 @@ $awayGoalLines = $formatGoalGroup($awayGoals);
                                 <x-team-crest :team="$assister->team" class="w-4 h-4 shrink-0" />
                                 <span class="flex-1 text-sm text-text-body truncate">{{ $assister->player->name }}</span>
                                 <span class="font-heading text-xs font-semibold text-text-secondary w-10 text-right">{{ $assister->assists }}</span>
+                            </div>
+                            @endforeach
+                        </div>
+                        @endif
+                    </x-section-card>
+
+                    {{-- Most MVPs --}}
+                    <x-section-card>
+                        <div class="bg-accent-yellow/10 px-5 py-4 border-b border-accent-yellow/20">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-lg">&#9733;</span>
+                                <span class="font-heading text-xs text-accent-yellow font-semibold uppercase tracking-widest">{{ __('season.most_mvps') }}</span>
+                            </div>
+                            @if($topMvps->isNotEmpty())
+                            @php $mvpWinner = $topMvps->first(); @endphp
+                            <div class="flex items-center justify-between gap-3">
+                                <div class="flex items-center gap-2 min-w-0">
+                                    <x-team-crest :team="$mvpWinner->gamePlayer->team" class="w-6 h-6 shrink-0" />
+                                    <span class="font-bold text-text-primary truncate">{{ $mvpWinner->gamePlayer->player->name }}</span>
+                                </div>
+                                <div class="shrink-0 text-right">
+                                    <span class="font-heading text-2xl md:text-3xl font-bold text-accent-yellow">{{ $mvpWinner->count }}</span>
+                                    <span class="text-xs text-accent-yellow/70 ml-0.5">{{ __('season.mvp_awards') }}</span>
+                                </div>
+                            </div>
+                            @else
+                            <div class="text-text-secondary text-sm">{{ __('season.no_mvps_awarded') }}</div>
+                            @endif
+                        </div>
+                        @if($topMvps->count() > 1)
+                        <div class="px-5 py-3 space-y-1.5">
+                            @foreach($topMvps->skip(1) as $mvp)
+                            <div class="flex items-center gap-2.5 {{ $mvp->gamePlayer->team_id === $game->team_id ? 'bg-accent-yellow/10 -mx-2 px-2 rounded-sm' : '' }}">
+                                <span class="w-5 text-center text-xs font-bold text-text-secondary">{{ $loop->iteration + 1 }}</span>
+                                <x-team-crest :team="$mvp->gamePlayer->team" class="w-4 h-4 shrink-0" />
+                                <span class="flex-1 text-sm text-text-body truncate">{{ $mvp->gamePlayer->player->name }}</span>
+                                <span class="font-heading text-xs font-semibold text-text-secondary w-10 text-right">{{ $mvp->count }}</span>
                             </div>
                             @endforeach
                         </div>

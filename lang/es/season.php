@@ -55,6 +55,10 @@ return [
     'no_goals_scored' => 'Sin goles marcados',
     'no_assists_recorded' => 'Sin asistencias registradas',
     'not_enough_data' => 'Datos insuficientes',
+    'most_mvps' => 'Más MVP',
+    'mvp_awards' => 'MVPs',
+    'your_team_mvp' => 'Tu MVP',
+    'no_mvps_awarded' => 'Sin MVP otorgados',
 
     // Team awards
     'best_attack' => 'Mejor Ataque',

@@ -55,6 +55,10 @@ return [
     'no_goals_scored' => 'No goals scored',
     'no_assists_recorded' => 'No assists recorded',
     'not_enough_data' => 'Not enough data',
+    'most_mvps' => 'Most MVPs',
+    'mvp_awards' => 'MVPs',
+    'your_team_mvp' => 'Your MVP',
+    'no_mvps_awarded' => 'No MVPs awarded',
 
     // Team awards
     'best_attack' => 'Best Attack',
