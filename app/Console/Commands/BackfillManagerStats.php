@@ -22,7 +22,7 @@ class BackfillManagerStats extends Command
 
         $bar = $this->output->createProgressBar($total);
 
-        Game::where('game_mode', Game::MODE_CAREER)->chunk(100, function ($games) use ($bar) {
+        Game::where('game_mode', Game::MODE_CAREER)->chunk(10, function ($games) use ($bar) {
             foreach ($games as $game) {
                 $this->backfillGame($game);
                 $bar->advance();
