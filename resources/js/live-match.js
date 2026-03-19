@@ -1432,6 +1432,7 @@ export default function liveMatch(config) {
             });
             this.selectedPlayerOut = null;
             this.selectedPlayerIn = null;
+            this.livePitchSelectedOutId = null;
         },
 
         removePendingSub(index) {
@@ -1744,6 +1745,21 @@ export default function liveMatch(config) {
         },
 
         _onDragEnd(event) {
+            // If drag threshold was never exceeded, treat as a tap (click)
+            if (this._pendingDragSlotId) {
+                const slot = this.currentPitchSlots.find(s => s.id === this._pendingDragSlotId);
+                this._pendingDragSlotId = null;
+                this._dragStartCoords = null;
+                document.removeEventListener('mousemove', this._boundDragMove);
+                document.removeEventListener('mouseup', this._boundDragEnd);
+                document.removeEventListener('touchmove', this._boundDragMove);
+                document.removeEventListener('touchend', this._boundDragEnd);
+                if (slot) {
+                    this.handlePitchPlayerClick(slot);
+                }
+                return;
+            }
+
             const coords = _getEventCoords(event);
 
             if (this.draggingSlotId !== null) {
@@ -1755,7 +1771,6 @@ export default function liveMatch(config) {
 
             this.draggingSlotId = null;
             this.dragPosition = null;
-            this._pendingDragSlotId = null;
             this._dragStartCoords = null;
 
             document.removeEventListener('mousemove', this._boundDragMove);
