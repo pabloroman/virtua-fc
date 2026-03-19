@@ -69,6 +69,10 @@ export default function liveMatch(config) {
         knockoutRoundNumber: config.knockoutRoundNumber || null,
         knockoutRoundName: config.knockoutRoundName || '',
 
+        // MVP
+        mvpPlayerName: config.mvpPlayerName || null,
+        mvpPlayerTeamId: config.mvpPlayerTeamId || null,
+
         // Pitch visualization config
         formationSlots: config.formationSlots || {},
         teamColors: config.teamColors || null,
