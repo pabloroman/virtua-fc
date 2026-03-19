@@ -82,7 +82,11 @@ class MatchdayService
         }
 
         $allMatches = $allMatches->unique('id')->values();
-        $allMatches->load(['competition', 'homeTeam', 'awayTeam']);
+        $allMatches->load([
+            'competition:id,handler_type,name',
+            'homeTeam:id',
+            'awayTeam:id',
+        ]);
 
         if ($allMatches->isEmpty()) {
             return null;

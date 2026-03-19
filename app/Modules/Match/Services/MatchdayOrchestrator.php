@@ -149,7 +149,7 @@ class MatchdayOrchestrator
             ->unique()
             ->values();
 
-        $allPlayers = GamePlayer::with(['player', 'transferOffers', 'activeLoan', 'activeRenewalNegotiation'])
+        $allPlayers = GamePlayer::with(['player'])
             ->where('game_id', $game->id)
             ->whereIn('team_id', $teamIds)
             ->get();
@@ -416,11 +416,20 @@ class MatchdayOrchestrator
         // Roll for training injuries (non-playing squad members)
         $this->processTrainingInjuries($game, $matches, $allPlayers);
 
+        // Batch-load recent recovery + low-fitness notifications to avoid per-player queries
+        $recentNotificationPlayerIds = GameNotification::where('game_id', $game->id)
+            ->whereIn('type', [GameNotification::TYPE_PLAYER_RECOVERED, GameNotification::TYPE_LOW_FITNESS])
+            ->where('game_date', '>', $game->current_date->copy()->subDays(7))
+            ->pluck('metadata')
+            ->map(fn ($m) => $m['player_id'] ?? null)
+            ->filter()
+            ->toArray();
+
         // Check for recovered players
-        $this->checkRecoveredPlayers($game, $allPlayers);
+        $this->checkRecoveredPlayers($game, $allPlayers, $recentNotificationPlayerIds);
 
         // Check for low fitness players
-        $this->checkLowFitnessPlayers($game, $allPlayers);
+        $this->checkLowFitnessPlayers($game, $allPlayers, $recentNotificationPlayerIds);
 
         // Clean up old read notifications
         $this->notificationService->cleanupOldNotifications($game);
@@ -446,7 +455,7 @@ class MatchdayOrchestrator
     /**
      * Check for players who have recovered from injuries.
      */
-    private function checkRecoveredPlayers(Game $game, $allPlayers): void
+    private function checkRecoveredPlayers(Game $game, $allPlayers, array $recentNotificationPlayerIds): void
     {
         $userTeamPlayers = $allPlayers->get($game->team_id, collect());
 
@@ -456,14 +465,7 @@ class MatchdayOrchestrator
                 // Clear the injury fields so this doesn't trigger again on future matchdays
                 $this->eligibilityService->clearInjury($player);
 
-                // Check if we haven't already notified about this recovery
-                if (! $this->notificationService->hasRecentNotification(
-                    $game->id,
-                    GameNotification::TYPE_PLAYER_RECOVERED,
-                    ['player_id' => $player->id],
-                    7,
-                    $game->current_date,
-                )) {
+                if (! in_array($player->id, $recentNotificationPlayerIds)) {
                     $this->notificationService->notifyRecovery($game, $player);
                 }
             }
@@ -473,7 +475,7 @@ class MatchdayOrchestrator
     /**
      * Check for players with low fitness and notify.
      */
-    private function checkLowFitnessPlayers(Game $game, $allPlayers): void
+    private function checkLowFitnessPlayers(Game $game, $allPlayers, array $recentNotificationPlayerIds): void
     {
         $userTeamPlayers = $allPlayers->get($game->team_id, collect());
 
@@ -485,14 +487,7 @@ class MatchdayOrchestrator
 
             // Check if player has low fitness (below 60%)
             if ($player->fitness < 60) {
-                // Only notify once per week per player
-                if (! $this->notificationService->hasRecentNotification(
-                    $game->id,
-                    GameNotification::TYPE_LOW_FITNESS,
-                    ['player_id' => $player->id],
-                    7,
-                    $game->current_date,
-                )) {
+                if (! in_array($player->id, $recentNotificationPlayerIds)) {
                     $this->notificationService->notifyLowFitness($game, $player);
                 }
             }

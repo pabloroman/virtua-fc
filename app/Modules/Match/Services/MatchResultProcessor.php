@@ -78,7 +78,7 @@ class MatchResultProcessor
         $this->bulkInsertMatchEvents($gameId, $matchResults);
 
         // 5. Batch process player stats across all matches
-        $this->batchProcessPlayerStats($game, $matchResults, $matches, $competitions, $deferMatchId);
+        $this->batchProcessPlayerStats($game, $matchResults, $matches, $competitions, $deferMatchId, $allPlayers);
 
         // 6. Bulk update appearances across all matches (including auto-subbed-in players)
         $this->bulkUpdateAppearances($matches, $matchResults);
@@ -96,7 +96,7 @@ class MatchResultProcessor
         $gkMatches = $deferMatchId
             ? $matches->except($deferMatchId)->keyBy('id')
             : $matches;
-        $this->batchUpdateGoalkeeperStats($gkMatches, $gkResults);
+        $this->batchUpdateGoalkeeperStats($gkMatches, $gkResults, $allPlayers);
 
         // 9. Update standings per league in bulk (skip deferred match)
         $leagueResultsByCompetition = [];
@@ -234,7 +234,7 @@ class MatchResultProcessor
     /**
      * @param  string|null  $deferMatchId  Match ID to skip notifications for (deferred to finalization)
      */
-    private function batchProcessPlayerStats(Game $game, array $matchResults, $matches, $competitions, ?string $deferMatchId = null): void
+    private function batchProcessPlayerStats(Game $game, array $matchResults, $matches, $competitions, ?string $deferMatchId = null, $allPlayers = null): void
     {
         // Aggregate stat increments across ALL matches
         $statIncrements = []; // [player_id => [goals => N, assists => N, ...]]
@@ -306,7 +306,9 @@ class MatchResultProcessor
             return;
         }
 
-        $players = GamePlayer::whereIn('id', $allPlayerIds)->get()->keyBy('id');
+        $players = $allPlayers
+            ? $allPlayers->flatten()->keyBy('id')->only($allPlayerIds)
+            : GamePlayer::whereIn('id', $allPlayerIds)->get()->keyBy('id');
 
         // Apply stat increments in memory (for special events processing below)
         foreach ($statIncrements as $playerId => $increments) {
@@ -474,6 +476,8 @@ class MatchResultProcessor
      */
     private function recordAutoSubstitutions($matches, array $matchResults): void
     {
+        $updates = []; // [matchId => merged substitutions array]
+
         foreach ($matchResults as $result) {
             $autoSubs = [];
             foreach ($result['events'] as $eventData) {
@@ -492,9 +496,41 @@ class MatchResultProcessor
                 $match = $matches->get($result['matchId']);
                 if ($match) {
                     $existing = $match->substitutions ?? [];
-                    $match->update(['substitutions' => array_merge($existing, $autoSubs)]);
+                    $updates[$result['matchId']] = json_encode(array_merge($existing, $autoSubs));
                 }
             }
+        }
+
+        if (empty($updates)) {
+            return;
+        }
+
+        // Build a single CASE WHEN query for all matches
+        $cases = [];
+        $ids = [];
+        foreach ($updates as $matchId => $subsJson) {
+            $escaped = str_replace("'", "''", $subsJson);
+            $cases[] = "WHEN id = '{$matchId}' THEN '{$escaped}'::jsonb";
+            $ids[] = $matchId;
+        }
+
+        $idList = "'" . implode("','", $ids) . "'";
+
+        // Branch on driver for SQLite compatibility in tests
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement(
+                'UPDATE game_matches SET substitutions = CASE ' . implode(' ', $cases) . ' ELSE substitutions END WHERE id IN (' . $idList . ')'
+            );
+        } else {
+            // SQLite: use json() instead of ::jsonb cast
+            $sqliteCases = [];
+            foreach ($updates as $matchId => $subsJson) {
+                $escaped = str_replace("'", "''", $subsJson);
+                $sqliteCases[] = "WHEN id = '{$matchId}' THEN json('{$escaped}')";
+            }
+            DB::statement(
+                'UPDATE game_matches SET substitutions = CASE ' . implode(' ', $sqliteCases) . ' ELSE substitutions END WHERE id IN (' . $idList . ')'
+            );
         }
     }
 
@@ -521,19 +557,26 @@ class MatchResultProcessor
     /**
      * Batch update goalkeeper stats (goals conceded, clean sheets).
      */
-    private function batchUpdateGoalkeeperStats($matches, array $matchResults): void
+    private function batchUpdateGoalkeeperStats($matches, array $matchResults, $allPlayers = null): void
     {
         // Collect all lineup IDs across all matches
         $allLineupIds = [];
         foreach ($matches as $match) {
             $allLineupIds = array_merge($allLineupIds, $match->home_lineup ?? [], $match->away_lineup ?? []);
         }
+        $allLineupIds = array_unique($allLineupIds);
 
-        // Load all goalkeepers in one query
-        $goalkeepers = GamePlayer::whereIn('id', array_unique($allLineupIds))
-            ->where('position', 'Goalkeeper')
-            ->get()
-            ->keyBy('id');
+        // Filter goalkeepers from pre-loaded players if available, otherwise query
+        if ($allPlayers) {
+            $goalkeepers = $allPlayers->flatten()
+                ->filter(fn ($p) => in_array($p->id, $allLineupIds) && $p->position === 'Goalkeeper')
+                ->keyBy('id');
+        } else {
+            $goalkeepers = GamePlayer::whereIn('id', $allLineupIds)
+                ->where('position', 'Goalkeeper')
+                ->get()
+                ->keyBy('id');
+        }
 
         if ($goalkeepers->isEmpty()) {
             return;
