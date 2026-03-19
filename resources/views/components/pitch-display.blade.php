@@ -24,7 +24,7 @@
 @php
     $isLive = $mode === 'live';
     $isLineup = $mode === 'lineup';
-    $aspectClass = $compact ? 'aspect-4/3' : 'aspect-3/4 sm:aspect-2/3 lg:aspect-3/4';
+    $aspectClass = $compact ? 'aspect-3/4' : 'aspect-3/4 sm:aspect-2/3 lg:aspect-3/4';
 @endphp
 
 <div>
