@@ -273,23 +273,15 @@
                 </template>
             </div>
         @endif
-        @if($canRenew)
-            <x-renewal-modal
-                :game="$game"
-                :game-player="$gamePlayer"
-                :renewal-demand="$renewalDemand"
-                :renewal-midpoint="$renewalMidpoint"
-                :renewal-mood="$renewalMood"
-            />
-        @elseif($renewalNegotiation)
-            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium
-                {{ $renewalNegotiation->isPending() ? 'bg-accent-gold/10 text-accent-gold' : 'bg-accent-orange/10 text-accent-orange' }}">
-                <span class="w-1.5 h-1.5 rounded-full {{ $renewalNegotiation->isPending() ? 'bg-accent-gold animate-pulse' : 'bg-orange-500' }}"></span>
-                {{ $renewalNegotiation->isPending() ? __('transfers.negotiating') : __('transfers.player_countered') }}
-            </span>
-            <a href="{{ route('game.transfers.outgoing', $game->id) }}" class="text-xs text-text-muted hover:text-text-body underline underline-offset-2">
-                {{ __('app.view_details') }} →
-            </a>
+        @if($canRenew || $renewalNegotiation?->isCountered())
+            <x-action-button color="green" type="button"
+                @click="$dispatch('open-negotiation', {
+                    playerName: '{{ $gamePlayer->name }}',
+                    negotiateUrl: '{{ route('game.negotiate.renewal', [$game->id, $gamePlayer->id]) }}'
+                })">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                {{ $renewalNegotiation?->isCountered() ? __('transfers.chat_continue') : __('squad.renew') }}
+            </x-action-button>
         @endif
     </div>
 @endif

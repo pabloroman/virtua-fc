@@ -715,6 +715,34 @@ class ContractService
     }
 
     /**
+     * Synchronous negotiation: initiate (or continue) and evaluate in one call.
+     * Used by the chat-based negotiation UI.
+     *
+     * @return array{result: string, negotiation: RenewalNegotiation}
+     */
+    public function negotiateSync(GamePlayer $player, int $offerWage, int $offeredYears): array
+    {
+        // Check if continuing from a counter-offer
+        $existing = RenewalNegotiation::where('game_player_id', $player->id)
+            ->where('status', RenewalNegotiation::STATUS_PLAYER_COUNTERED)
+            ->first();
+
+        if ($existing) {
+            $negotiation = $this->submitNewOffer($existing, $offerWage, $offeredYears);
+        } else {
+            $negotiation = $this->initiateNegotiation($player, $offerWage, $offeredYears);
+        }
+
+        // Immediately evaluate (instead of waiting for matchday)
+        $result = $this->evaluateOffer($negotiation);
+
+        return [
+            'result' => $result,
+            'negotiation' => $negotiation->fresh(),
+        ];
+    }
+
+    /**
      * Resolve all pending negotiations for a game. Called during matchday advance.
      *
      * @return Collection<array{negotiation: RenewalNegotiation, result: string}>

@@ -305,4 +305,22 @@ return [
     'intel_surface' => 'Surface',
     'intel_report' => 'Report',
     'intel_deep' => 'Deep Intel',
+
+    // Negotiation chat
+    'chat_title' => 'Contract Negotiation',
+    'chat_agent_demand' => ':player\'s agent wants :wage/year for :years years.',
+    'chat_agent_counter' => ':player\'s agent insists on :wage/year for :years years.',
+    'chat_counter_resume' => ':player\'s agent is still asking for :wage/year for :years years.',
+    'chat_agent_accepted' => ':player has agreed to :wage/year for :years years. Deal done!',
+    'chat_agent_rejected' => ':player\'s agent has left the table. Negotiations have broken down.',
+    'chat_walked_away' => 'You have ended negotiations with :player.',
+    'chat_accept' => 'Accept',
+    'chat_or_counter_below' => 'or counter below',
+    'chat_walk_away' => 'Walk away',
+    'chat_user_accepts' => 'Deal!',
+    'chat_deal_agreed' => 'Contract agreed',
+    'chat_deal_failed' => 'Negotiation failed',
+    'chat_continue' => 'Continue',
+    'year_singular' => 'year',
+    'year_plural' => 'years',
 ];

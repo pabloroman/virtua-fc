@@ -310,4 +310,22 @@ return [
     'intel_surface' => 'Básico',
     'intel_report' => 'Informe',
     'intel_deep' => 'Intel Profunda',
+
+    // Negotiation chat
+    'chat_title' => 'Negociación de contrato',
+    'chat_agent_demand' => 'El agente de :player pide :wage/año por :years años.',
+    'chat_agent_counter' => 'El agente de :player insiste en :wage/año por :years años.',
+    'chat_counter_resume' => 'El agente de :player sigue pidiendo :wage/año por :years años.',
+    'chat_agent_accepted' => ':player ha aceptado :wage/año por :years años. ¡Hecho!',
+    'chat_agent_rejected' => 'El agente de :player ha abandonado la mesa. La negociación ha fracasado.',
+    'chat_walked_away' => 'Has terminado las negociaciones con :player.',
+    'chat_accept' => 'Aceptar',
+    'chat_or_counter_below' => 'o contraoferta abajo',
+    'chat_walk_away' => 'Retirarse',
+    'chat_user_accepts' => '¡Trato!',
+    'chat_deal_agreed' => 'Contrato acordado',
+    'chat_deal_failed' => 'Negociación fallida',
+    'chat_continue' => 'Continuar',
+    'year_singular' => 'año',
+    'year_plural' => 'años',
 ];
