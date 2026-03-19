@@ -255,8 +255,9 @@ class GameMatch extends Model
         }
 
         return $query
+            ->selectRaw('mvp_player_id, COUNT(*) as count')
             ->groupBy('mvp_player_id')
-            ->pluck(DB::raw('COUNT(*)'), 'mvp_player_id');
+            ->pluck('count', 'mvp_player_id');
     }
 
     public function getWinnerId(): ?string
