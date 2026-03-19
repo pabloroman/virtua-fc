@@ -1,11 +1,11 @@
 <form method="post" action="{{ route('profile.update') }}" class="p-5 space-y-5"
       x-data="{
-          name: '{{ old('name', $user->name) }}',
-          bio: '{{ old('bio', $user->bio ?? '') }}',
-          country: '{{ old('country', $user->country ?? '') }}',
-          province: '{{ old('province', $user->province ?? '') }}',
-          avatar: '{{ old('avatar', $user->avatar ?? Arr::random(\App\Models\User::AVATARS)) }}',
-          avatarBase: '{{ Storage::disk('assets')->url('managers') }}',
+          name: @js(old('name', $user->name)),
+          bio: @js(old('bio', $user->bio ?? '')),
+          country: @js(old('country', $user->country ?? '')),
+          province: @js(old('province', $user->province ?? '')),
+          avatar: @js(old('avatar', $user->avatar ?? Arr::random(\App\Models\User::AVATARS))),
+          avatarBase: @js(Storage::disk('assets')->url('managers')),
       }">
     @csrf
     @method('patch')

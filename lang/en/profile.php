@@ -44,4 +44,21 @@ return [
     'edit_profile' => 'Edit profile',
     'view_profile' => 'View profile',
     'choose_avatar' => 'Choose your avatar',
+
+    // Career Stats
+    'career_stats' => 'Career Stats',
+    'matches_played' => 'Matches',
+    'wins' => 'Wins',
+    'draws' => 'Draws',
+    'losses' => 'Losses',
+    'win_percentage' => 'Win %',
+    'best_streak' => 'Best Streak',
+    'seasons' => 'Seasons',
+
+    // Trophy Room
+    'trophy_room' => 'Trophy Room',
+    'league_title' => 'League',
+    'cup_title' => 'Cup',
+    'european_title' => 'European',
+    'supercup_title' => 'Supercup',
 ];

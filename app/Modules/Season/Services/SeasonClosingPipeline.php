@@ -20,6 +20,7 @@ use App\Modules\Season\Processors\SquadReplenishmentProcessor;
 use App\Modules\Season\Processors\StatsResetProcessor;
 use App\Modules\Season\Processors\SupercupQualificationProcessor;
 use App\Modules\Season\Processors\TransferMarketResetProcessor;
+use App\Modules\Manager\Processors\TrophyRecordingProcessor;
 use App\Modules\Season\Processors\UefaQualificationProcessor;
 use App\Modules\Season\Processors\YouthAcademyClosingProcessor;
 use App\Models\Game;
@@ -48,6 +49,7 @@ class SeasonClosingPipeline
         StatsResetProcessor $statsReset,
         TransferMarketResetProcessor $transferMarketReset,
         SeasonSimulationProcessor $seasonSimulation,
+        TrophyRecordingProcessor $trophyRecording,
         SupercupQualificationProcessor $supercupQualification,
         PromotionRelegationProcessor $promotionRelegation,
         ReputationUpdateProcessor $reputationUpdate,
@@ -68,6 +70,7 @@ class SeasonClosingPipeline
             $statsReset,
             $transferMarketReset,
             $seasonSimulation,
+            $trophyRecording,
             $supercupQualification,
             $promotionRelegation,
             $reputationUpdate,

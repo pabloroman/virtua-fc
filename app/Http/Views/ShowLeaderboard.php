@@ -2,97 +2,40 @@
 
 namespace App\Http\Views;
 
-use App\Models\ManagerStats;
+use App\Modules\Manager\Services\LeaderboardService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Locale;
 
 class ShowLeaderboard
 {
-    private const MIN_MATCHES = 10;
-    private const PER_PAGE = 50;
     private const CACHE_TTL = 300; // 5 minutes
+
+    public function __construct(
+        private LeaderboardService $leaderboardService,
+    ) {}
 
     public function __invoke(Request $request)
     {
         $country = $request->query('country');
         $province = $request->query('province');
-        $sort = $request->query('sort', 'win_percentage');
+        $sort = $this->leaderboardService->normalizeSort($request->query('sort', 'win_percentage'));
         $page = $request->query('page', 1);
-
-        $allowedSorts = ['win_percentage', 'longest_unbeaten_streak', 'matches_played', 'seasons_completed'];
-        if (! in_array($sort, $allowedSorts)) {
-            $sort = 'win_percentage';
-        }
 
         $cacheKey = "leaderboard:{$sort}:{$country}:{$province}:{$page}";
 
         $cached = Cache::remember($cacheKey, self::CACHE_TTL, function () use ($country, $province, $sort, $request) {
-            $query = ManagerStats::query()
-                ->join('users', 'users.id', '=', 'manager_stats.user_id')
-                ->leftJoin('teams', 'teams.id', '=', 'manager_stats.team_id')
-                ->where('users.is_profile_public', true)
-                ->where('manager_stats.matches_played', '>=', self::MIN_MATCHES)
-                ->select('manager_stats.*', 'users.name', 'users.username', 'users.avatar', 'users.country', 'users.province', 'teams.name as team_name', 'teams.image as team_image');
-
-            if ($country) {
-                $query->where('users.country', $country);
-            }
-
-            if ($province && $country) {
-                $query->where('users.province', $province);
-            }
-
-            $managers = $query->orderByDesc("manager_stats.{$sort}")
-                ->orderByDesc('manager_stats.matches_played')
-                ->paginate(self::PER_PAGE)
+            $managers = $this->leaderboardService->getRankings($sort, $country, $province)
                 ->appends($request->query());
 
-            $provinces = [];
-            if ($country) {
-                $provinces = ManagerStats::query()
-                    ->join('users', 'users.id', '=', 'manager_stats.user_id')
-                    ->where('users.is_profile_public', true)
-                    ->where('users.country', $country)
-                    ->whereNotNull('users.province')
-                    ->where('users.province', '!=', '')
-                    ->distinct()
-                    ->orderBy('users.province')
-                    ->pluck('users.province')
-                    ->toArray();
-            }
-
-            $locale = app()->getLocale();
-            $countryCodes = ManagerStats::query()
-                ->join('users', 'users.id', '=', 'manager_stats.user_id')
-                ->where('users.is_profile_public', true)
-                ->where('manager_stats.matches_played', '>=', self::MIN_MATCHES)
-                ->whereNotNull('users.country')
-                ->where('users.country', '!=', '')
-                ->distinct()
-                ->pluck('users.country');
-
-            $countries = $countryCodes->mapWithKeys(function ($code) use ($locale) {
-                $localized = Locale::getDisplayRegion('und_'.$code, $locale);
-
-                return [$code => ($localized !== $code) ? $localized : $code];
-            })->sort()->toArray();
-
-            $totalManagers = ManagerStats::where('matches_played', '>=', self::MIN_MATCHES)
-                ->join('users', 'users.id', '=', 'manager_stats.user_id')
-                ->where('users.is_profile_public', true)
-                ->count();
-
-            $totalMatches = ManagerStats::join('users', 'users.id', '=', 'manager_stats.user_id')
-                ->where('users.is_profile_public', true)
-                ->sum('matches_played');
+            $provinces = $country
+                ? $this->leaderboardService->getProvincesForCountry($country)
+                : [];
 
             return [
                 'managers' => $managers,
-                'countries' => $countries,
+                'countries' => $this->leaderboardService->getCountries(),
                 'provinces' => $provinces,
-                'totalManagers' => $totalManagers,
-                'totalMatches' => (int) $totalMatches,
+                ...$this->leaderboardService->getAggregateStats(),
             ];
         });
 
@@ -101,7 +44,7 @@ class ShowLeaderboard
             'selectedCountry' => $country,
             'selectedProvince' => $province,
             'currentSort' => $sort,
-            'minMatches' => self::MIN_MATCHES,
+            'minMatches' => LeaderboardService::MIN_MATCHES,
         ]);
     }
 }

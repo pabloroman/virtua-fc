@@ -94,6 +94,11 @@ class User extends Authenticatable
         return $this->hasOne(ManagerStats::class);
     }
 
+    public function trophies(): HasMany
+    {
+        return $this->hasMany(ManagerTrophy::class);
+    }
+
     /**
      * Get the attributes that should be cast.
      *
