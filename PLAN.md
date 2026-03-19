@@ -1,183 +1,167 @@
-# Salary + Signing Bonus Negotiation — Implementation Plan
+# Contract Negotiation — Phased Plan
 
-## Design Summary
+## Overview
 
-**Core idea:** When the user submits a transfer bid, they also specify their **wage offer** and an optional **signing bonus**. The selling club evaluates the transfer fee as before. If the fee is accepted, the **player** then evaluates the wage offer in the same resolution cycle (same matchday). This adds meaningful player negotiation without adding extra matchday rounds.
+This plan introduces a **synchronous, chat-like contract negotiation interface** to replace the current async model (submit offer → wait for matchday → see result). Since the "player" is AI, the server responds instantly — no WebSocket needed, just `fetch()` POST calls from Alpine.js.
 
-**Applies to:** User bids (incoming transfers), free agent signings, and pre-contract offers.
-**Does NOT apply to:** Outgoing transfers (AI buying from user), AI-generated offers.
-
----
-
-## 1. Flow: User Bid with Salary Negotiation
-
-### Current Flow
-1. User submits bid (transfer fee only) → `SubmitTransferBid` action
-2. Next matchday: `resolveIncomingBids()` evaluates fee → accepted/counter/rejected
-3. If accepted: `completeIncomingTransfer()` auto-assigns wage from `calculateWageDemand()`
-
-### New Flow
-1. User submits bid with **fee + wage offer + signing bonus** → `SubmitTransferBid` action (updated)
-2. Next matchday: `resolveIncomingBids()` evaluates fee → accepted/counter/rejected (unchanged)
-3. If fee accepted: **player evaluates wage offer** (new step, same matchday)
-   - **Accept**: Transfer completes. Player gets offered wage + signing bonus deducted from transfer budget.
-   - **Counter**: Offer moves to `salary_countered` status. Player proposes a counter-wage. User can accept counter, submit new wage offer (re-enters the flow at step 3 on next matchday), or walk away (deal collapses, fee refunded).
-   - **Reject**: Deal collapses entirely. Transfer fee is NOT deducted (fee was never actually paid since the player refused to come).
-
-### Key Insight: No Extra Matchday Rounds for Happy Path
-- Fee negotiation: 1-3 matchday rounds (unchanged)
-- Salary negotiation: **0 extra rounds** if user offers fairly. Only adds rounds if the player counters and the user wants to re-negotiate.
-- Counter-offer resolution is **instant** (user accepts/declines the counter in the UI, no matchday advance needed).
+**Phase 1 (this implementation):** Synchronous renewal negotiation chat.
+**Phase 2 (future):** Extend the chat to transfer salary + signing bonus negotiation (new signings, free agents, pre-contracts).
 
 ---
 
-## 2. Flow: Free Agent Signing with Salary Negotiation
+## Phase 1: Synchronous Renewal Chat
 
-### Current Flow
-1. User clicks "Sign Free Agent" → `SignFreeAgent` action
-2. Wage auto-calculated, player joins immediately
+### Why Renewals First
 
-### New Flow
-1. User sees wage demand + signing bonus field on scout report
-2. User submits **wage offer + signing bonus** → `SignFreeAgent` action (updated)
-3. Player evaluates **immediately** (no matchday wait — free agents are eager):
-   - **Accept**: Player joins with offered wage. Signing bonus deducted from transfer budget.
-   - **Counter**: Return to scout report with counter-wage displayed. User can accept or adjust.
-   - **Reject**: Flash error. User can try again with a better offer.
+- **Simpler scope** — only one counterparty (the player). No selling club involved.
+- **Existing logic** — `ContractService::evaluateOffer()` already does accept/counter/reject. We just call it synchronously instead of during matchday advance.
+- **Validates the UX** — proves the chat paradigm works before adding transfer complexity.
+- **Biggest time savings** — renewals currently take 2-4 minutes across 1-3 matchdays. The chat reduces this to ~15 seconds in a single session. That's a 10-15x improvement.
 
-### Why Instant for Free Agents?
-Free agents have no selling club to negotiate with. The only negotiation is with the player. Making them wait a matchday would add friction with no strategic value.
+### User Flow
 
----
+1. User clicks "Negotiate" on a player with an expiring contract (from outgoing-transfers page or player-detail modal)
+2. A **chat modal** opens. The player's agent speaks first: shows wage demand, contract years preference, and mood indicator
+3. User fills in wage offer + contract years in the input area at the bottom → clicks "Submit Offer"
+4. A brief typing indicator (300-500ms) appears, then the agent responds:
+   - **Accept**: Success message, modal auto-closes after 1.5s, page reloads
+   - **Counter**: Agent proposes a counter-wage. User sees Accept / Counter / Walk Away options
+   - **Reject**: Agent rejects. Modal shows "Close" button only
+5. If countered, user can accept (instant resolution), submit a revised offer (repeats step 4), or walk away
+6. Max 3 rounds (same as current system)
 
-## 3. Flow: Pre-Contract Offers
+### Backend: Single JSON Endpoint
 
-### Current Flow
-1. User submits pre-contract offer with wage → `SubmitPreContractOffer` action
-2. Next matchday: `resolveIncomingPreContractOffers()` evaluates → accepted/rejected
+**New action: `NegotiateRenewal`**
+Route: `POST /game/{gameId}/negotiate/renewal/{playerId}`
 
-### New Flow
-1. User submits pre-contract offer with **wage + signing bonus** → updated action
-2. Next matchday: evaluation now uses the signing bonus as a sweetener in the disposition calc
-3. Accepted/rejected (no counter for pre-contracts — keeps it simple, and these are already simpler deals)
-
----
-
-## 4. Data Model Changes
-
-### `transfer_offers` table — new columns (migration)
 ```
-signing_bonus       BIGINT DEFAULT 0    -- Signing bonus in cents (deducted from transfer budget)
-offered_wage        BIGINT NULLABLE     -- Already exists! Currently auto-set; now user-provided
-salary_status       VARCHAR NULLABLE    -- NULL (no negotiation yet), 'pending', 'accepted', 'countered', 'rejected'
-wage_counter        BIGINT NULLABLE     -- Player's counter-wage demand (cents)
-wage_demand         BIGINT NULLABLE     -- Player's initial wage demand (for UI reference)
+Request:  { action: "start" | "offer" | "accept_counter" | "walk_away", wage?: int, years?: int }
+Response: { status: "ok", negotiation_status: "open"|"accepted"|"rejected"|"walked_away", messages: [...] }
 ```
 
-**No new model needed.** The `TransferOffer` model already tracks `offered_wage`. We add `signing_bonus`, `salary_status`, `wage_counter`, and `wage_demand` to it. This avoids creating a separate `SalaryNegotiation` model — the negotiation is part of the transfer offer lifecycle.
+- `start` — returns player's demand + mood as opening message. If an existing `player_countered` negotiation exists, resumes it.
+- `offer` — creates/updates `RenewalNegotiation`, immediately calls `evaluateOffer()`. Returns result as chat message.
+- `accept_counter` — calls existing `ContractService::acceptCounterOffer()`.
+- `walk_away` — cancels the negotiation.
 
-### `game_players` table — no changes needed
-The `annual_wage` field is already updated on transfer completion with `$offer->offered_wage`.
+### New Method: `ContractService::negotiateSync()`
 
----
-
-## 5. Salary Evaluation Logic (new method in `ContractService`)
+Wraps existing `initiateNegotiation()` + `evaluateOffer()` into one synchronous call:
 
 ```php
-public function evaluateSalaryOffer(TransferOffer $offer): string
+public function negotiateSync(GamePlayer $player, int $offerWage, int $offeredYears): array
+{
+    // If continuing from a counter, call submitNewOffer() first
+    // Then immediately evaluate (same logic as resolveRenewalNegotiations)
+    // Return: ['result' => 'accepted'|'countered'|'rejected', 'negotiation' => ...]
+}
 ```
 
-**Player's decision logic:**
+No existing methods are modified. The async path in `CareerActionProcessor` stays but becomes a no-op (no `offer_pending` records will exist).
 
-1. **Calculate wage demand** — same as `calculateWageDemand()` (market-value based)
-2. **Calculate disposition** — adapted from renewal negotiation:
-   - Base: 0.50
-   - **Club reputation bonus**: +0.15 (elite), +0.10 (continental), +0.05 (established), -0.05 (modest), -0.10 (local)
-   - **Age factor**: +0.12 (32+, wants stability), +0.05 (29-31), -0.08 (≤23, has leverage)
-   - **Free agent bonus**: +0.10 (no current club, more desperate)
-   - **Transfer fee factor**: +0.05 if high fee paid (player knows club is invested)
-3. **Calculate minimum acceptable** = demand × (1.0 - disposition × 0.30)
-4. **Signing bonus effect**: Effective offer = offered_wage + (signing_bonus / contract_years × 0.5)
-   - The signing bonus is treated as a partial wage equivalent (spread over contract, at 50% weight since it's one-time)
-5. **Decision**:
-   - effective_offer ≥ minimum_acceptable → **accept**
-   - effective_offer ≥ minimum_acceptable × 0.85 → **counter** (midpoint between minimum and demand)
-   - Below → **reject**
+### State: Reuse `RenewalNegotiation` Model
 
----
+No schema changes. The existing model already tracks rounds, demands, offers, counters, disposition. Records transition through states within a single request instead of across matchdays.
 
-## 6. UI Changes
+If the user navigates away mid-negotiation while a counter is active, they can reopen the chat — the `start` action detects the `player_countered` record and resumes.
 
-### A. Scout Report (bid submission form) — `scout-report-results.blade.php`
+### Cooldown
 
-**Currently:** Single `bid_amount` input + "Submit Bid" button.
+One negotiation per player per game-date. If rejected, user must advance at least one matchday before re-opening. Prevents brute-force spam while preserving temporal pacing.
 
-**New:** Three inputs in the bid form:
-- `bid_amount` — Transfer fee (existing, unchanged)
-- `wage_offer` — Annual wage offer (new input, pre-filled with wage demand from scout report)
-- `signing_bonus` — Optional signing bonus (new input, default 0)
+### Alpine.js Component: `negotiationChat`
 
-For free agents: Only `wage_offer` + `signing_bonus` (no fee).
+New file `resources/js/negotiation-chat.js` (~200-250 lines), registered in `app.js`.
 
-### B. Incoming Transfers — `incoming-transfers.blade.php`
+Key state: `messages[]`, `loading`, `negotiationStatus`, `offerWage`, `offerYears`.
 
-**New states to display:**
-- `salary_countered` — Show player's counter-wage with Accept/Revise/Walk Away buttons
-- `salary_rejected` — Show "Player rejected your wage offer. Deal collapsed." (informational)
+Each message: `sender` (agent/system), `type` (demand/response/accepted/rejected), `content` (text, wage, years, mood), optional `options` (canAccept, canCounter, canWalkAway, suggestedWage).
 
-### C. Notifications
+Uses the same `fetch()` pattern as `live-match.js`.
 
-New notification types:
-- `salary_accepted` — "Player X accepted your wage offer of €Y/year"
-- `salary_countered` — "Player X demands €Y/year (you offered €Z). Respond in transfers."
-- `salary_rejected` — "Player X rejected your wage offer. The transfer has fallen through."
+### Blade Component: `negotiation-chat-modal.blade.php`
 
----
+Teleported modal at max-width `md`. Listens for `@open-negotiation.window` event.
 
-## 7. Signing Bonus Mechanics
+Visual design:
+- Agent messages: left-aligned bubbles on `bg-surface-700`
+- User actions: right-aligned bubbles on `bg-accent-blue/15`
+- System outcomes: centered, muted text
+- Mood indicator in header (existing dot + label pattern)
+- Fixed input area at bottom: wage input + years dropdown + Submit + Walk Away
+- Typing indicator: animated dots (300-500ms delay)
 
-- **Deducted from transfer budget** (same pool as transfer fees)
-- **Paid on transfer completion** (not on agreement)
-- **Recorded as a financial transaction** (new category: `CATEGORY_SIGNING_BONUS`)
-- **Range guidance**: UI shows a suggested range (0-15% of annual wage for normal transfers, 0-30% for free agents where there's no transfer fee)
-- **Effect on disposition**: Acts as a sweetener. A generous bonus can bridge a wage gap of ~10-15%.
+### Migration from Async UI
+
+**Remove:** "Renewal Counter-Offers" and "Renewal Offers Pending" sections from `outgoing-transfers.blade.php`.
+
+**Replace:** Expiring contracts "Renew" button dispatches `$dispatch('open-negotiation', {...})`. Player-detail modal's `<x-renewal-modal>` replaced with chat trigger button.
+
+**Delete:** `renewal-modal.blade.php`, `SubmitRenewalOffer.php`, `AcceptRenewalCounter.php`, associated routes.
+
+**Keep:** `DeclineRenewal` and `ReconsiderRenewal` actions (used outside chat, from "Declined Renewals" section).
+
+**Simplify:** `ShowOutgoingTransfers.php` — remove `$activeNegotiations`/`$negotiatingPlayers` view data.
 
 ---
 
-## 8. Wage Cap Interaction
+## Phase 2 (Future): Transfer Salary + Signing Bonus Negotiation
 
-**No changes to the wage cap system.** The existing check already validates:
-```
-(currentWageBill + offeredWage) <= projectedWages × 1.10
-```
+Extends the same `negotiation-chat-modal` component for salary negotiation on new signings:
 
-The signing bonus does NOT count against the wage cap (it's a one-time payment from transfer budget, not recurring wages). This creates an interesting strategic choice: if you're near the wage cap, you can offer a lower annual wage but sweeten with a signing bonus.
+- **Transfer bids**: After fee is agreed with selling club, a salary chat opens with the player. User negotiates wage + optional signing bonus.
+- **Free agents**: Chat opens directly (no selling club). User negotiates wage + signing bonus.
+- **Pre-contracts**: Chat opens for wage + signing bonus negotiation.
+
+### Signing Bonus Mechanic
+- One-time payment from transfer budget (not wage cap)
+- Acts as a sweetener: bridges ~10-15% wage gaps
+- Creates strategic tension: wage cap pressure → lower salary + higher bonus
+- New columns on `transfer_offers`: `signing_bonus`, `salary_status`, `wage_counter`, `wage_demand`
+
+### New Disposition Factors (for new signings)
+- Club reputation bonus/penalty
+- Free agent bonus (+0.10)
+- Transfer fee factor (+0.05 if high fee paid)
 
 ---
 
-## 9. Implementation Order
+## Files to Change (Phase 1)
 
-### Phase 1: Backend Core
-1. Migration: Add columns to `transfer_offers`
-2. `TransferOffer` model: Add new constants and accessors
-3. `ContractService::evaluateSalaryOffer()` — salary evaluation logic
-4. `TransferService::submitBid()` — accept wage_offer + signing_bonus params
-5. `TransferService::resolveIncomingBids()` — chain salary evaluation after fee acceptance
-6. `TransferService::acceptSalaryCounter()` — new method for counter acceptance
-7. `TransferService::reviseSalaryOffer()` — new method for submitting revised wage
-8. `TransferService::walkAwayFromSalary()` — collapse deal, no fee charged
-9. `SignFreeAgent` action — add wage negotiation
-10. Pre-contract offer — add signing bonus support
+### New Files
+| File | Purpose |
+|------|---------|
+| `resources/js/negotiation-chat.js` | Alpine.js chat component |
+| `resources/views/components/negotiation-chat-modal.blade.php` | Chat modal template |
+| `app/Http/Actions/NegotiateRenewal.php` | JSON endpoint for negotiation actions |
 
-### Phase 2: UI
-11. Scout report form — add wage_offer + signing_bonus inputs
-12. Incoming transfers — salary counter/reject states
-13. Action classes — `AcceptSalaryCounter`, `ReviseSalaryOffer`, `WalkAwayFromSalary`
+### Modified Files
+| File | Change |
+|------|--------|
+| `resources/js/app.js` | Import + register `negotiationChat` |
+| `routes/web.php` | Add `POST` route for negotiate endpoint |
+| `app/Modules/Transfer/Services/ContractService.php` | Add `negotiateSync()` method |
+| `resources/views/outgoing-transfers.blade.php` | Remove async sections, add chat modal |
+| `resources/views/partials/player-detail.blade.php` | Replace `<x-renewal-modal>` with chat trigger |
+| `app/Http/Views/ShowOutgoingTransfers.php` | Remove `$activeNegotiations`/`$negotiatingPlayers` |
+| `lang/es/transfers.php` + `lang/en/transfers.php` | Add chat message translations |
 
-### Phase 3: Notifications + Translations
-14. NotificationService — new salary notification methods
-15. Spanish + English translations for all new strings
+### Files to Remove
+| File | Reason |
+|------|--------|
+| `resources/views/components/renewal-modal.blade.php` | Replaced by negotiation-chat-modal |
+| `app/Http/Actions/SubmitRenewalOffer.php` | Replaced by NegotiateRenewal |
+| `app/Http/Actions/AcceptRenewalCounter.php` | Absorbed into NegotiateRenewal |
 
-### Phase 4: Tests
-16. Unit tests for salary evaluation logic
-17. Feature tests for the full negotiation flow
+## Implementation Steps
+
+1. Backend endpoint — `NegotiateRenewal` action + `negotiateSync()` + route
+2. Alpine component — `negotiation-chat.js` with message state, fetch, typing indicator
+3. Chat modal template — `negotiation-chat-modal.blade.php` with bubbles, inputs, mood
+4. Wire into outgoing-transfers — replace renewal modal, remove async sections
+5. Wire into player-detail — replace `<x-renewal-modal>` with chat trigger
+6. Translations — Spanish + English keys for agent messages
+7. Remove old files — `renewal-modal.blade.php`, `SubmitRenewalOffer.php`, `AcceptRenewalCounter.php`, old routes
+8. Simplify view — clean up `ShowOutgoingTransfers.php`
+9. Tests — unit test for `negotiateSync()`, feature test for JSON endpoint
