@@ -41,11 +41,19 @@ class GameSetupStatus
             $game->update(['matchday_advancing_at' => now()]);
         }
 
+        // Calculate season transition progress from checkpoint step
+        $progress = null;
+        if ($game->isTransitioningSeason() && $game->season_transition_step !== null) {
+            $totalSteps = 27; // 19 closing + 8 setup processors
+            $progress = min(100, (int) round(($game->season_transition_step + 1) / $totalSteps * 100));
+        }
+
         return response()->json([
             'ready' => $game->isSetupComplete()
                 && !$game->isTransitioningSeason()
                 && !$game->isProcessingCareerActions()
                 && !$game->isAdvancingMatchday(),
+            'progress' => $progress,
         ]);
     }
 }

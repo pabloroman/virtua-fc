@@ -5,7 +5,7 @@ namespace App\Modules\Season\DTOs;
 /**
  * Data transfer object passed between season end processors.
  */
-final class SeasonTransitionData
+final class SeasonTransitionData implements \JsonSerializable
 {
     public const META_SWISS_POT_DATA = 'swissPotData';
     public const META_UEL_WINNER = 'uelWinner';
@@ -43,5 +43,20 @@ final class SeasonTransitionData
     public function getMetadata(string $key, mixed $default = null): mixed
     {
         return $this->metadata[$key] ?? $default;
+    }
+
+    /**
+     * Serialize to JSON for checkpoint persistence.
+     */
+    public function jsonSerialize(): array
+    {
+        return [
+            'oldSeason' => $this->oldSeason,
+            'newSeason' => $this->newSeason,
+            'competitionId' => $this->competitionId,
+            'isInitialSeason' => $this->isInitialSeason,
+            'playerChanges' => $this->playerChanges,
+            'metadata' => $this->metadata,
+        ];
     }
 }

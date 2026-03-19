@@ -35,6 +35,7 @@ class PromotionRelegationProcessor implements SeasonProcessor
     {
         $allPromoted = [];
         $allRelegated = [];
+        $affectedCompetitionIds = [];
 
         // Process all configured promotion/relegation rules
         foreach ($this->ruleFactory->all() as $rule) {
@@ -64,6 +65,9 @@ class PromotionRelegationProcessor implements SeasonProcessor
                 newSeason: $data->newSeason,
             );
 
+            $affectedCompetitionIds[] = $rule->getTopDivision();
+            $affectedCompetitionIds[] = $rule->getBottomDivision();
+
             $allPromoted = array_merge($allPromoted, $promoted);
             $allRelegated = array_merge($allRelegated, $relegated);
         }
@@ -74,10 +78,9 @@ class PromotionRelegationProcessor implements SeasonProcessor
             $data->competitionId = $game->competition_id;
         }
 
-        // Re-simulate non-played leagues with the post-promotion roster
-        // so SimulatedSeason records are accurate for the rest of the season.
-        if (!empty($allPromoted) || !empty($allRelegated)) {
-            $this->resimulateNonPlayedLeagues($game);
+        // Re-simulate only the leagues that had roster changes from promotion/relegation
+        if (!empty($affectedCompetitionIds)) {
+            $this->resimulateAffectedLeagues($game, array_unique($affectedCompetitionIds));
         }
 
         // Store in metadata for display on season end screen
@@ -183,11 +186,13 @@ class PromotionRelegationProcessor implements SeasonProcessor
     }
 
     /**
-     * Re-simulate non-played leagues after roster changes.
+     * Re-simulate only the leagues affected by promotion/relegation roster changes.
+     *
+     * @param  string[]  $competitionIds  Competition IDs that had team swaps
      */
-    private function resimulateNonPlayedLeagues(Game $game): void
+    private function resimulateAffectedLeagues(Game $game, array $competitionIds): void
     {
-        $this->simulationProcessor->simulateNonPlayedLeagues($game);
+        $this->simulationProcessor->simulateNonPlayedLeagues($game, $competitionIds);
     }
 
     /**

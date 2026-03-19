@@ -37,14 +37,20 @@ class SeasonSimulationProcessor implements SeasonProcessor
     }
 
     /**
-     * Simulate all league competitions the game has entries for,
+     * Simulate league competitions the game has entries for,
      * except the player's own league and Swiss-format competitions.
+     *
+     * @param  string[]|null  $competitionIds  If provided, only simulate these competition IDs
      */
-    public function simulateNonPlayedLeagues(Game $game): void
+    public function simulateNonPlayedLeagues(Game $game, ?array $competitionIds = null): void
     {
-        $leagueIds = CompetitionEntry::where('game_id', $game->id)
-            ->pluck('competition_id')
-            ->unique();
+        $query = CompetitionEntry::where('game_id', $game->id);
+
+        if ($competitionIds !== null) {
+            $query->whereIn('competition_id', $competitionIds);
+        }
+
+        $leagueIds = $query->pluck('competition_id')->unique();
 
         $leagues = Competition::whereIn('id', $leagueIds)
             ->where('role', Competition::ROLE_LEAGUE)

@@ -4,6 +4,7 @@ namespace App\Modules\Season\Jobs;
 
 use App\Events\SeasonStarted;
 use App\Models\Game;
+use App\Modules\Season\DTOs\SeasonTransitionData;
 use App\Modules\Season\Services\SeasonClosingPipeline;
 use App\Modules\Season\Services\SeasonSetupPipeline;
 use Illuminate\Bus\Queueable;
@@ -37,14 +38,31 @@ class ProcessSeasonTransition implements ShouldQueue
             return;
         }
 
-        // Phase 1: Close old season
-        $data = $closingPipeline->run($game);
+        // Restore checkpoint state for crash recovery
+        $lastStep = $game->season_transition_step ?? -1;
+        $restoredData = $this->restoreTransitionData($game);
+        $closingProcessorCount = count($closingPipeline->getProcessors());
+
+        // Phase 1: Close old season (skip if fully completed in a previous run)
+        if ($lastStep < $closingProcessorCount - 1) {
+            $data = $closingPipeline->run($game, $lastStep, $restoredData);
+
+            $game->refresh()->setRelations([]);
+        } else {
+            $data = $restoredData ?? new SeasonTransitionData(
+                oldSeason: $game->season,
+                newSeason: $game->season,
+                competitionId: $game->competition_id,
+            );
+        }
 
         // Phase 2: Set up new season
-        $game->refresh()->setRelations([]);
-        $setupPipeline->run($game, $data);
+        if (!isset($refreshedForSetup)) {
+            $game->refresh()->setRelations([]);
+        }
+        $setupPipeline->run($game, $data, $closingProcessorCount, $lastStep);
 
-        // Finalize: set current date and clear transition flag
+        // Finalize: set current date and clear transition flag + checkpoint
         $game->refresh()->setRelations([]);
         $firstMatch = $game->getFirstCompetitiveMatch();
         $fallbackDate = ((int) $game->season) . '-08-15';
@@ -52,9 +70,31 @@ class ProcessSeasonTransition implements ShouldQueue
         $game->update([
             'current_date' => $firstMatch?->scheduled_date ?? $fallbackDate,
             'season_transitioning_at' => null,
+            'season_transition_step' => null,
+            'season_transition_data' => null,
         ]);
 
         event(new SeasonStarted($game));
+    }
+
+    /**
+     * Restore SeasonTransitionData from the checkpoint JSON, if available.
+     */
+    private function restoreTransitionData(Game $game): ?SeasonTransitionData
+    {
+        $stored = $game->season_transition_data;
+
+        if ($stored === null) {
+            return null;
+        }
+
+        return new SeasonTransitionData(
+            oldSeason: $stored['oldSeason'] ?? '',
+            newSeason: $stored['newSeason'] ?? '',
+            competitionId: $stored['competitionId'] ?? $game->competition_id,
+            playerChanges: $stored['playerChanges'] ?? [],
+            metadata: $stored['metadata'] ?? [],
+        );
     }
 
     public function failed(?\Throwable $exception): void
