@@ -16,16 +16,18 @@ class BackfillManagerStats extends Command
 
     public function handle(): int
     {
-        $games = Game::where('game_mode', Game::MODE_CAREER)->get();
+        $total = Game::where('game_mode', Game::MODE_CAREER)->count();
 
-        $this->info("Processing {$games->count()} career games...");
+        $this->info("Processing {$total} career games...");
 
-        $bar = $this->output->createProgressBar($games->count());
+        $bar = $this->output->createProgressBar($total);
 
-        foreach ($games as $game) {
-            $this->backfillGame($game);
-            $bar->advance();
-        }
+        Game::where('game_mode', Game::MODE_CAREER)->chunk(100, function ($games) use ($bar) {
+            foreach ($games as $game) {
+                $this->backfillGame($game);
+                $bar->advance();
+            }
+        });
 
         $bar->finish();
         $this->newLine();
@@ -45,27 +47,29 @@ class BackfillManagerStats extends Command
         // Phase 1: Process archived seasons (oldest first)
         // Only select match_results to avoid loading large JSON blobs
         // (player_season_stats, final_standings, match_events_archive)
-        $archives = SeasonArchive::where('game_id', $game->id)
+        $seasonsCompleted = 0;
+
+        SeasonArchive::where('game_id', $game->id)
             ->select('id', 'game_id', 'season', 'match_results')
             ->orderBy('season')
-            ->get();
+            ->each(function (SeasonArchive $archive) use ($game, &$won, &$drawn, &$lost, &$currentStreak, &$longestStreak, &$seasonsCompleted) {
+                $seasonsCompleted++;
 
-        foreach ($archives as $archive) {
-            $archivedMatches = collect($archive->match_results ?? [])
-                ->filter(fn (array $m) => $m['home_team_id'] === $game->team_id || $m['away_team_id'] === $game->team_id)
-                ->sortBy(['date', 'round_number'])
-                ->values();
+                $archivedMatches = collect($archive->match_results ?? [])
+                    ->filter(fn (array $m) => $m['home_team_id'] === $game->team_id || $m['away_team_id'] === $game->team_id)
+                    ->sortBy(['date', 'round_number'])
+                    ->values();
 
-            foreach ($archivedMatches as $matchData) {
-                $result = $this->determineResultFromArchive($matchData, $game->team_id);
+                foreach ($archivedMatches as $matchData) {
+                    $result = $this->determineResultFromArchive($matchData, $game->team_id);
 
-                if ($result === null) {
-                    continue;
+                    if ($result === null) {
+                        continue;
+                    }
+
+                    $this->applyResult($result, $won, $drawn, $lost, $currentStreak, $longestStreak);
                 }
-
-                $this->applyResult($result, $won, $drawn, $lost, $currentStreak, $longestStreak);
-            }
-        }
+            });
 
         // Phase 2: Process current season matches (not yet archived)
         $matches = GameMatch::where('game_id', $game->id)
@@ -106,7 +110,7 @@ class BackfillManagerStats extends Command
                 'win_percentage' => round(($won / $total) * 100, 2),
                 'current_unbeaten_streak' => $currentStreak,
                 'longest_unbeaten_streak' => $longestStreak,
-                'seasons_completed' => $archives->count(),
+                'seasons_completed' => $seasonsCompleted,
             ],
         );
     }
