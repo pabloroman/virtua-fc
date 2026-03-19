@@ -50,6 +50,7 @@ Domain logic is organized into modules under `app/Modules/`, each with services,
 | **Manager** | Profile, trophies & leaderboard | `ManagerProfileService`, `LeaderboardService` |
 | **Notification** | In-game messaging | `NotificationService` |
 | **Academy** | Youth development | `YouthAcademyService` |
+| **Report** | End-of-season/tournament reports & awards | `SeasonSummaryService`, `CompetitionSummaryService`, `AwardService` |
 
 **Dependency direction:** Season (orchestrator) → Match, Transfer, Finance → Player, Squad, Competition → Notification (leaf). No circular dependencies.
 
