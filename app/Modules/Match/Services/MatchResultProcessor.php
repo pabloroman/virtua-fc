@@ -134,6 +134,7 @@ class MatchResultProcessor
         $homePossCases = [];
         $awayPossCases = [];
         $mvpCases = [];
+        $isPostgres = DB::getDriverName() === 'pgsql';
 
         foreach ($matchResults as $result) {
             $id = $result['matchId'];
@@ -146,7 +147,7 @@ class MatchResultProcessor
             $awayPossCases[] = "WHEN id = '{$id}' THEN {$awayPoss}";
             $mvpId = $result['mvpPlayerId'] ?? null;
             $mvpCases[] = $mvpId
-                ? "WHEN id = '{$id}' THEN '{$mvpId}'::uuid"
+                ? "WHEN id = '{$id}' THEN " . ($isPostgres ? "'{$mvpId}'::uuid" : "'{$mvpId}'")
                 : "WHEN id = '{$id}' THEN NULL";
         }
 
