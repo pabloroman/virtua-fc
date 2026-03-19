@@ -7,6 +7,7 @@ use App\Models\CupTie;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\ManagerStats;
+use App\Models\SeasonArchive;
 use App\Models\Team;
 use App\Models\User;
 use App\Modules\Match\Events\MatchFinalized;
@@ -314,6 +315,164 @@ class LeaderboardTest extends TestCase
 
         $stats = ManagerStats::where('user_id', $user->id)->first();
         $this->assertEquals(0, $stats->matches_won);
+        $this->assertEquals(1, $stats->matches_lost);
+    }
+
+    public function test_backfill_includes_archived_match_results(): void
+    {
+        $team = Team::factory()->create();
+        $opponent = Team::factory()->create();
+        $user = User::factory()->create();
+        $competition = Competition::factory()->league()->create();
+        $game = Game::factory()->forTeam($team)->create([
+            'user_id' => $user->id,
+            'game_mode' => Game::MODE_CAREER,
+            'competition_id' => $competition->id,
+        ]);
+
+        // Create an archive with match results (no GameMatch records exist)
+        SeasonArchive::create([
+            'game_id' => $game->id,
+            'season' => '2025',
+            'final_standings' => [],
+            'player_season_stats' => [],
+            'season_awards' => [],
+            'match_results' => [
+                ['home_team_id' => $team->id, 'away_team_id' => $opponent->id, 'home_score' => 3, 'away_score' => 1, 'competition_id' => $competition->id, 'round_number' => 1, 'date' => '2024-08-15'],
+                ['home_team_id' => $opponent->id, 'away_team_id' => $team->id, 'home_score' => 0, 'away_score' => 0, 'competition_id' => $competition->id, 'round_number' => 2, 'date' => '2024-08-22'],
+                ['home_team_id' => $team->id, 'away_team_id' => $opponent->id, 'home_score' => 0, 'away_score' => 2, 'competition_id' => $competition->id, 'round_number' => 3, 'date' => '2024-08-29'],
+            ],
+        ]);
+
+        $this->artisan('app:backfill-manager-stats')->assertSuccessful();
+
+        $stats = ManagerStats::where('game_id', $game->id)->first();
+        $this->assertNotNull($stats);
+        $this->assertEquals(3, $stats->matches_played);
+        $this->assertEquals(1, $stats->matches_won);
+        $this->assertEquals(1, $stats->matches_drawn);
+        $this->assertEquals(1, $stats->matches_lost);
+        $this->assertEquals(1, $stats->seasons_completed);
+    }
+
+    public function test_backfill_combines_archived_and_current_matches(): void
+    {
+        $team = Team::factory()->create();
+        $opponent = Team::factory()->create();
+        $user = User::factory()->create();
+        $competition = Competition::factory()->league()->create();
+        $game = Game::factory()->forTeam($team)->create([
+            'user_id' => $user->id,
+            'game_mode' => Game::MODE_CAREER,
+            'competition_id' => $competition->id,
+            'season' => '2026',
+        ]);
+
+        // Archived season: 2 wins, 1 loss (streak broken)
+        SeasonArchive::create([
+            'game_id' => $game->id,
+            'season' => '2025',
+            'final_standings' => [],
+            'player_season_stats' => [],
+            'season_awards' => [],
+            'match_results' => [
+                ['home_team_id' => $team->id, 'away_team_id' => $opponent->id, 'home_score' => 2, 'away_score' => 0, 'competition_id' => $competition->id, 'round_number' => 1, 'date' => '2024-08-15'],
+                ['home_team_id' => $opponent->id, 'away_team_id' => $team->id, 'home_score' => 3, 'away_score' => 0, 'competition_id' => $competition->id, 'round_number' => 2, 'date' => '2024-08-22'],
+                ['home_team_id' => $team->id, 'away_team_id' => $opponent->id, 'home_score' => 1, 'away_score' => 0, 'competition_id' => $competition->id, 'round_number' => 3, 'date' => '2024-08-29'],
+            ],
+        ]);
+
+        // Current season: 2 wins (streak continues from last archived win)
+        GameMatch::factory()
+            ->forGame($game)
+            ->forCompetition($competition)
+            ->between($team, $opponent)
+            ->played(1, 0)
+            ->scheduledOn('2025-08-15')
+            ->inRound(1)
+            ->create();
+
+        GameMatch::factory()
+            ->forGame($game)
+            ->forCompetition($competition)
+            ->between($opponent, $team)
+            ->played(0, 2)
+            ->scheduledOn('2025-08-22')
+            ->inRound(2)
+            ->create();
+
+        $this->artisan('app:backfill-manager-stats')->assertSuccessful();
+
+        $stats = ManagerStats::where('game_id', $game->id)->first();
+        $this->assertNotNull($stats);
+        $this->assertEquals(5, $stats->matches_played);
+        $this->assertEquals(4, $stats->matches_won);
+        $this->assertEquals(0, $stats->matches_drawn);
+        $this->assertEquals(1, $stats->matches_lost);
+        // Streak: W, L(reset), W, W(current), W(current) = current 3, longest 3
+        $this->assertEquals(3, $stats->current_unbeaten_streak);
+        $this->assertEquals(3, $stats->longest_unbeaten_streak);
+        $this->assertEquals(1, $stats->seasons_completed);
+    }
+
+    public function test_backfill_handles_archived_penalties(): void
+    {
+        $team = Team::factory()->create();
+        $opponent = Team::factory()->create();
+        $user = User::factory()->create();
+        $competition = Competition::factory()->league()->create();
+        $game = Game::factory()->forTeam($team)->create([
+            'user_id' => $user->id,
+            'game_mode' => Game::MODE_CAREER,
+            'competition_id' => $competition->id,
+        ]);
+
+        // Archive with enriched ET/penalty data
+        SeasonArchive::create([
+            'game_id' => $game->id,
+            'season' => '2025',
+            'final_standings' => [],
+            'player_season_stats' => [],
+            'season_awards' => [],
+            'match_results' => [
+                [
+                    'home_team_id' => $team->id,
+                    'away_team_id' => $opponent->id,
+                    'home_score' => 1,
+                    'away_score' => 1,
+                    'is_extra_time' => true,
+                    'home_score_et' => 1,
+                    'away_score_et' => 1,
+                    'home_score_penalties' => 5,
+                    'away_score_penalties' => 3,
+                    'competition_id' => $competition->id,
+                    'round_number' => 1,
+                    'date' => '2024-08-15',
+                ],
+                [
+                    'home_team_id' => $opponent->id,
+                    'away_team_id' => $team->id,
+                    'home_score' => 2,
+                    'away_score' => 2,
+                    'is_extra_time' => true,
+                    'home_score_et' => 3,
+                    'away_score_et' => 2,
+                    'home_score_penalties' => null,
+                    'away_score_penalties' => null,
+                    'competition_id' => $competition->id,
+                    'round_number' => 2,
+                    'date' => '2024-08-22',
+                ],
+            ],
+        ]);
+
+        $this->artisan('app:backfill-manager-stats')->assertSuccessful();
+
+        $stats = ManagerStats::where('game_id', $game->id)->first();
+        $this->assertNotNull($stats);
+        $this->assertEquals(2, $stats->matches_played);
+        // First match: penalty win. Second match: ET loss.
+        $this->assertEquals(1, $stats->matches_won);
         $this->assertEquals(1, $stats->matches_lost);
     }
 

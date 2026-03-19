@@ -42,8 +42,29 @@ class BackfillManagerStats extends Command
         $currentStreak = 0;
         $longestStreak = 0;
 
-        $seasonsCompleted = SeasonArchive::where('game_id', $game->id)->count();
+        // Phase 1: Process archived seasons (oldest first)
+        $archives = SeasonArchive::where('game_id', $game->id)
+            ->orderBy('season')
+            ->get();
 
+        foreach ($archives as $archive) {
+            $archivedMatches = collect($archive->match_results ?? [])
+                ->filter(fn (array $m) => $m['home_team_id'] === $game->team_id || $m['away_team_id'] === $game->team_id)
+                ->sortBy(['date', 'round_number'])
+                ->values();
+
+            foreach ($archivedMatches as $matchData) {
+                $result = $this->determineResultFromArchive($matchData, $game->team_id);
+
+                if ($result === null) {
+                    continue;
+                }
+
+                $this->applyResult($result, $won, $drawn, $lost, $currentStreak, $longestStreak);
+            }
+        }
+
+        // Phase 2: Process current season matches (not yet archived)
         $matches = GameMatch::where('game_id', $game->id)
             ->where('played', true)
             ->where(function ($query) use ($game) {
@@ -61,20 +82,7 @@ class BackfillManagerStats extends Command
                 continue;
             }
 
-            match ($result) {
-                'win' => $won++,
-                'draw' => $drawn++,
-                'loss' => $lost++,
-            };
-
-            if ($result === 'loss') {
-                $currentStreak = 0;
-            } else {
-                $currentStreak++;
-                if ($currentStreak > $longestStreak) {
-                    $longestStreak = $currentStreak;
-                }
-            }
+            $this->applyResult($result, $won, $drawn, $lost, $currentStreak, $longestStreak);
         }
 
         $total = $won + $drawn + $lost;
@@ -95,9 +103,76 @@ class BackfillManagerStats extends Command
                 'win_percentage' => round(($won / $total) * 100, 2),
                 'current_unbeaten_streak' => $currentStreak,
                 'longest_unbeaten_streak' => $longestStreak,
-                'seasons_completed' => $seasonsCompleted,
+                'seasons_completed' => $archives->count(),
             ],
         );
+    }
+
+    private function applyResult(string $result, int &$won, int &$drawn, int &$lost, int &$currentStreak, int &$longestStreak): void
+    {
+        match ($result) {
+            'win' => $won++,
+            'draw' => $drawn++,
+            'loss' => $lost++,
+        };
+
+        if ($result === 'loss') {
+            $currentStreak = 0;
+        } else {
+            $currentStreak++;
+            if ($currentStreak > $longestStreak) {
+                $longestStreak = $currentStreak;
+            }
+        }
+    }
+
+    /**
+     * @return 'win'|'draw'|'loss'|null
+     */
+    private function determineResultFromArchive(array $match, string $teamId): ?string
+    {
+        $isHome = $match['home_team_id'] === $teamId;
+
+        // Penalties (enriched archives)
+        if (isset($match['home_score_penalties'], $match['away_score_penalties'])
+            && $match['home_score_penalties'] !== null
+            && $match['away_score_penalties'] !== null) {
+            $teamPen = $isHome ? $match['home_score_penalties'] : $match['away_score_penalties'];
+            $oppPen = $isHome ? $match['away_score_penalties'] : $match['home_score_penalties'];
+
+            return $teamPen > $oppPen ? 'win' : 'loss';
+        }
+
+        // Extra time (enriched archives)
+        if (! empty($match['is_extra_time'])
+            && isset($match['home_score_et'], $match['away_score_et'])
+            && $match['home_score_et'] !== null
+            && $match['away_score_et'] !== null) {
+            $teamScore = $isHome ? $match['home_score_et'] : $match['away_score_et'];
+            $oppScore = $isHome ? $match['away_score_et'] : $match['home_score_et'];
+
+            if ($teamScore > $oppScore) {
+                return 'win';
+            }
+            if ($oppScore > $teamScore) {
+                return 'loss';
+            }
+
+            return 'draw';
+        }
+
+        // Regular time (always present)
+        $teamScore = $isHome ? $match['home_score'] : $match['away_score'];
+        $oppScore = $isHome ? $match['away_score'] : $match['home_score'];
+
+        if ($teamScore > $oppScore) {
+            return 'win';
+        }
+        if ($oppScore > $teamScore) {
+            return 'loss';
+        }
+
+        return 'draw';
     }
 
     /**
