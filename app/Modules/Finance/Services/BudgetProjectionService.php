@@ -122,12 +122,20 @@ class BudgetProjectionService
 
         $teams = Team::whereIn('id', $teamIds)->get();
 
-        // Load ALL players across all teams in one query, grouped by team
-        $playersByTeam = GamePlayer::where('game_id', $game->id)
+        // Only eager-load player relation when game abilities are null (mid-season fallback)
+        $query = GamePlayer::where('game_id', $game->id)
+            ->whereIn('team_id', $teamIds);
+
+        $needsPlayerRelation = GamePlayer::where('game_id', $game->id)
             ->whereIn('team_id', $teamIds)
-            ->with('player')
-            ->get()
-            ->groupBy('team_id');
+            ->where(fn ($q) => $q->whereNull('game_technical_ability')->orWhereNull('game_physical_ability'))
+            ->exists();
+
+        if ($needsPlayerRelation) {
+            $query->with('player');
+        }
+
+        $playersByTeam = $query->get()->groupBy('team_id');
 
         $strengths = [];
         foreach ($teams as $team) {
@@ -162,8 +170,8 @@ class BudgetProjectionService
     private function calculateStrengthFromPlayers($players): float
     {
         $scores = $players->map(function ($player) {
-                $technical = $player->game_technical_ability ?? $player->player->technical_ability;
-                $physical = $player->game_physical_ability ?? $player->player->physical_ability;
+                $technical = $player->game_technical_ability ?? $player->player?->technical_ability ?? 50;
+                $physical = $player->game_physical_ability ?? $player->player?->physical_ability ?? 50;
                 $fitness = $player->fitness ?? 70;
                 $morale = $player->morale ?? 70;
 

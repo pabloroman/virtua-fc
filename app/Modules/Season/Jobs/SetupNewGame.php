@@ -19,8 +19,6 @@ use App\Models\CompetitionEntry;
 use App\Models\CompetitionTeam;
 use App\Models\Game;
 use App\Models\GamePlayer;
-use App\Models\Player;
-use App\Models\Team;
 use App\Models\TeamReputation;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
@@ -67,22 +65,19 @@ class SetupNewGame implements ShouldQueue
         DB::transaction(function () use ($game, $contractService, $developmentService, $setupPipeline, $fixtureProcessor, $standingsProcessor) {
             $this->currentDate = $game->current_date ?? Carbon::parse("{$this->season}-08-15");
 
-            // Pre-load all reference data (2 queries instead of ~4,600)
-            $allTeams = Team::whereNotNull('transfermarkt_id')->get()->keyBy('transfermarkt_id');
-            $allPlayers = Player::all()->keyBy('transfermarkt_id');
-
             // Step 1: Copy competition team rosters into per-game table
             $this->copyCompetitionTeamsToGame();
 
             // Step 1b: Initialize per-game reputation records for all teams
             $this->initializeTeamReputations();
-    
+
             // Step 2: Initialize game players (template-based or fallback)
-            $this->initializeGamePlayersFromTemplates($allTeams, $allPlayers, $contractService, $developmentService);
+            $this->initializeGamePlayersFromTemplates($contractService, $developmentService);
 
             // Step 3: Run shared setup processors
             if ($this->gameMode === Game::MODE_CAREER) {
                 // Career mode: run all 4 shared processors (fixtures, standings, budget, cups/Swiss)
+                $allTeams = $this->loadTeamLookup();
                 $swissPotData = $this->buildSwissPotData($allTeams);
 
                 $data = new SeasonTransitionData(
@@ -97,6 +92,7 @@ class SetupNewGame implements ShouldQueue
 
                 // Initialize players for Swiss format competitions (non-template path only)
                 if (!$this->usedTemplates) {
+                    $allPlayers = $this->loadPlayerLookup();
                     $this->initializeSwissFormatPlayers($allTeams, $allPlayers, $contractService, $developmentService);
                 }
             } else {
@@ -218,6 +214,24 @@ class SetupNewGame implements ShouldQueue
         }
     }
 
+    private function loadTeamLookup(): Collection
+    {
+        return DB::table('teams')
+            ->select('id', 'transfermarkt_id')
+            ->whereNotNull('transfermarkt_id')
+            ->get()
+            ->keyBy('transfermarkt_id');
+    }
+
+    private function loadPlayerLookup(): Collection
+    {
+        return DB::table('players')
+            ->select('id', 'transfermarkt_id', 'technical_ability', 'physical_ability', 'date_of_birth')
+            ->whereNotNull('transfermarkt_id')
+            ->get()
+            ->keyBy('transfermarkt_id');
+    }
+
     /**
      * Build Swiss pot data from JSON for all Swiss competitions (initial season only).
      *
@@ -332,8 +346,6 @@ class SetupNewGame implements ShouldQueue
      * the old per-player computation if templates don't exist.
      */
     private function initializeGamePlayersFromTemplates(
-        Collection $allTeams,
-        Collection $allPlayers,
         ContractService $contractService,
         PlayerDevelopmentService $developmentService,
     ): void {
@@ -348,54 +360,59 @@ class SetupNewGame implements ShouldQueue
             ->exists();
 
         if (!$hasTemplates) {
-            // Fallback to old behavior
+            // Fallback: load lightweight lookups only when needed
+            $allTeams = $this->loadTeamLookup();
+            $allPlayers = $this->loadPlayerLookup();
             $this->initializeGamePlayers($allTeams, $allPlayers, $contractService, $developmentService);
             return;
         }
 
         $this->usedTemplates = true;
 
-        $templates = DB::table('game_player_templates')
-            ->where('season', $this->season)
-            ->get();
-
-        $rows = [];
         $seenPlayerIds = [];
+        $gameId = $this->gameId;
 
-        foreach ($templates as $t) {
-            // Skip duplicate players (same player listed under multiple teams)
-            if (isset($seenPlayerIds[$t->player_id])) {
-                continue;
-            }
-            $seenPlayerIds[$t->player_id] = true;
+        DB::table('game_player_templates')
+            ->where('season', $this->season)
+            ->orderBy('player_id')
+            ->chunk(500, function ($templates) use ($gameId, &$seenPlayerIds) {
+                $rows = [];
 
-            $rows[] = [
-                'id' => Str::uuid()->toString(),
-                'game_id' => $this->gameId,
-                'player_id' => $t->player_id,
-                'team_id' => $t->team_id,
-                'number' => $t->number,
-                'position' => $t->position,
-                'market_value' => $t->market_value,
-                'market_value_cents' => $t->market_value_cents,
-                'contract_until' => $t->contract_until,
-                'annual_wage' => $t->annual_wage,
-                'fitness' => $t->fitness,
-                'morale' => $t->morale,
-                'durability' => $t->durability,
-                'game_technical_ability' => $t->game_technical_ability,
-                'game_physical_ability' => $t->game_physical_ability,
-                'potential' => $t->potential,
-                'potential_low' => $t->potential_low,
-                'potential_high' => $t->potential_high,
-                'tier' => $t->tier,
-                'season_appearances' => 0,
-            ];
-        }
+                foreach ($templates as $t) {
+                    // Skip duplicate players (same player listed under multiple teams)
+                    if (isset($seenPlayerIds[$t->player_id])) {
+                        continue;
+                    }
+                    $seenPlayerIds[$t->player_id] = true;
 
-        foreach (array_chunk($rows, 500) as $chunk) {
-            GamePlayer::insert($chunk);
-        }
+                    $rows[] = [
+                        'id' => Str::uuid()->toString(),
+                        'game_id' => $gameId,
+                        'player_id' => $t->player_id,
+                        'team_id' => $t->team_id,
+                        'number' => $t->number,
+                        'position' => $t->position,
+                        'market_value' => $t->market_value,
+                        'market_value_cents' => $t->market_value_cents,
+                        'contract_until' => $t->contract_until,
+                        'annual_wage' => $t->annual_wage,
+                        'fitness' => $t->fitness,
+                        'morale' => $t->morale,
+                        'durability' => $t->durability,
+                        'game_technical_ability' => $t->game_technical_ability,
+                        'game_physical_ability' => $t->game_physical_ability,
+                        'potential' => $t->potential,
+                        'potential_low' => $t->potential_low,
+                        'potential_high' => $t->potential_high,
+                        'tier' => $t->tier,
+                        'season_appearances' => 0,
+                    ];
+                }
+
+                if (!empty($rows)) {
+                    GamePlayer::insert($rows);
+                }
+            });
     }
 
     // =====================================================================
@@ -455,7 +472,6 @@ class SetupNewGame implements ShouldQueue
         }
 
         $minimumWage = $contractService->getMinimumWageForCompetition($competitionId);
-        $playerRows = [];
 
         foreach ($clubs as $club) {
             $transfermarktId = $club['transfermarktId'] ?? $this->extractTransfermarktIdFromImage($club['image'] ?? '');
@@ -468,6 +484,7 @@ class SetupNewGame implements ShouldQueue
                 continue;
             }
 
+            $playerRows = [];
             $playersData = $club['players'] ?? [];
             foreach ($playersData as $playerData) {
                 $row = $this->prepareGamePlayerRow($team, $playerData, $minimumWage, $allPlayers, $contractService, $developmentService, $this->currentDate);
@@ -475,15 +492,15 @@ class SetupNewGame implements ShouldQueue
                     $playerRows[] = $row;
                 }
             }
-        }
 
-        foreach (array_chunk($playerRows, 100) as $chunk) {
-            GamePlayer::insert($chunk);
+            if (!empty($playerRows)) {
+                GamePlayer::insert($playerRows);
+            }
         }
     }
 
     private function prepareGamePlayerRow(
-        Team $team,
+        object $team,
         array $playerData,
         int $minimumWage,
         Collection $allPlayers,
@@ -505,7 +522,7 @@ class SetupNewGame implements ShouldQueue
             }
         }
 
-        $age = (int) $player->date_of_birth->diffInYears($currentDate);
+        $age = (int) Carbon::parse($player->date_of_birth)->diffInYears($currentDate);
         $marketValueCents = Money::parseMarketValue($playerData['marketValue'] ?? null);
         $annualWage = $contractService->calculateAnnualWage($marketValueCents, $minimumWage, $age);
 
