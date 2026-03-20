@@ -1,14 +1,4 @@
 <x-guest-layout>
-    @if($hasValidInvite)
-        <div class="mb-4 p-3 bg-accent-green/10 border border-accent-green/20 rounded-md">
-            <p class="text-sm text-accent-green font-semibold">{{ __('beta.register_with_invite') }}</p>
-        </div>
-    @else
-        <div class="mb-4 p-3 bg-accent-blue/10 border border-accent-blue/20 rounded-md">
-            <p class="text-sm text-accent-blue">{{ __('beta.register_free') }}</p>
-        </div>
-    @endif
-
     <form method="POST" action="{{ route('register') }}">
         @csrf
 

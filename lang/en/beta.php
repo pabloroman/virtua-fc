@@ -9,8 +9,6 @@ return [
     // Login & Registration
     'login_notice' => 'Access is limited to invited beta testers.',
     'register_notice' => 'You are registering with a closed beta invitation.',
-    'register_free' => 'Register to play the World Cup for free. Career mode requires an invitation.',
-    'register_with_invite' => 'You are registering with a career mode invitation.',
     'registration_closed' => 'Registration requires an invitation. If you are on the waitlist, you will receive your link soon.',
     'invalid_invite' => 'Invalid or expired invite code.',
 

@@ -22,11 +22,9 @@ class RegisteredUserController extends Controller
     {
         $inviteCode = $request->query('invite');
         $invite = InviteCode::findByCode($inviteCode);
-        $hasValidInvite = $invite && $invite->isValid();
 
         return view('auth.register', [
             'inviteCode' => $inviteCode,
-            'hasValidInvite' => $hasValidInvite,
             'email' => $invite->email ?? null,
         ]);
     }
