@@ -39,29 +39,35 @@ class NewPasswordController extends Controller
         ]);
 
         $isActivation = false;
+        $activatedUser = null;
 
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user) use ($request, &$isActivation) {
+            function ($user) use ($request, &$isActivation, &$activatedUser) {
                 $isActivation = ! $user->isActivated();
 
-                $user->forceFill([
+                $attributes = [
                     'password' => Hash::make($request->password),
                     'remember_token' => Str::random(60),
-                ])->save();
+                ];
 
                 if ($isActivation) {
-                    $user->forceFill(['email_verified_at' => now()])->save();
+                    $attributes['email_verified_at'] = now();
+                }
+
+                $user->forceFill($attributes)->save();
+
+                if ($isActivation) {
                     app(ActivationTracker::class)->record($user->id, ActivationEvent::EVENT_EMAIL_VERIFIED);
+                    $activatedUser = $user;
                 }
 
                 event(new PasswordReset($user));
             }
         );
 
-        if ($status == Password::PASSWORD_RESET && $isActivation) {
-            $user = \App\Models\User::where('email', $request->input('email'))->first();
-            Auth::login($user);
+        if ($status == Password::PASSWORD_RESET && $activatedUser) {
+            Auth::login($activatedUser);
 
             return redirect()->route('dashboard');
         }

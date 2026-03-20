@@ -47,6 +47,8 @@ class RegisteredUserController extends Controller
 
         $request->validate($rules);
 
+        $invite = null;
+
         if (config('beta.enabled')) {
             $invite = InviteCode::findByCode($request->input('invite_code'));
 
@@ -61,7 +63,7 @@ class RegisteredUserController extends Controller
         $existingUser = User::where('email', $request->input('email'))->first();
 
         if ($existingUser) {
-            if ($existingUser->email_verified_at !== null) {
+            if ($existingUser->isActivated()) {
                 return back()->withErrors([
                     'email' => __('validation.unique', ['attribute' => __('auth.Email')]),
                 ])->withInput();
@@ -76,7 +78,7 @@ class RegisteredUserController extends Controller
                 'email' => $request->email,
             ]);
 
-            if (isset($invite)) {
+            if ($invite) {
                 $invite->consume();
             }
 
