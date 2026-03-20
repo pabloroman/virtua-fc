@@ -84,15 +84,15 @@ class MatchResimulationService
         $homeDefLine = DefensiveLineHeight::tryFrom($match->home_defensive_line ?? '') ?? DefensiveLineHeight::NORMAL;
         $awayDefLine = DefensiveLineHeight::tryFrom($match->away_defensive_line ?? '') ?? DefensiveLineHeight::NORMAL;
 
-        // 5. Exclude red-carded players
-        $redCardedPlayerIds = MatchEvent::where('game_match_id', $match->id)
-            ->where('event_type', 'red_card')
+        // 5. Exclude red-carded and substituted-out players
+        $unavailablePlayerIds = MatchEvent::where('game_match_id', $match->id)
+            ->whereIn('event_type', ['red_card', 'substitution'])
             ->where('minute', '<=', $minute)
             ->pluck('game_player_id')
             ->all();
 
-        $homePlayers = $homePlayers->reject(fn ($p) => in_array($p->id, $redCardedPlayerIds));
-        $awayPlayers = $awayPlayers->reject(fn ($p) => in_array($p->id, $redCardedPlayerIds));
+        $homePlayers = $homePlayers->reject(fn ($p) => in_array($p->id, $unavailablePlayerIds));
+        $awayPlayers = $awayPlayers->reject(fn ($p) => in_array($p->id, $unavailablePlayerIds));
 
         // 6. Get existing injuries/yellows for context
         $existingInjuryTeamIds = MatchEvent::where('game_match_id', $match->id)
@@ -212,15 +212,15 @@ class MatchResimulationService
             $homeDefLine = DefensiveLineHeight::tryFrom($match->home_defensive_line ?? '') ?? DefensiveLineHeight::NORMAL;
             $awayDefLine = DefensiveLineHeight::tryFrom($match->away_defensive_line ?? '') ?? DefensiveLineHeight::NORMAL;
 
-            // 5. Exclude red-carded players
-            $redCardedPlayerIds = MatchEvent::where('game_match_id', $match->id)
-                ->where('event_type', 'red_card')
+            // 5. Exclude red-carded and substituted-out players
+            $unavailablePlayerIds = MatchEvent::where('game_match_id', $match->id)
+                ->whereIn('event_type', ['red_card', 'substitution'])
                 ->where('minute', '<=', $minute)
                 ->pluck('game_player_id')
                 ->all();
 
-            $homePlayers = $homePlayers->reject(fn ($p) => in_array($p->id, $redCardedPlayerIds));
-            $awayPlayers = $awayPlayers->reject(fn ($p) => in_array($p->id, $redCardedPlayerIds));
+            $homePlayers = $homePlayers->reject(fn ($p) => in_array($p->id, $unavailablePlayerIds));
+            $awayPlayers = $awayPlayers->reject(fn ($p) => in_array($p->id, $unavailablePlayerIds));
 
             // 6. Build entry minute maps from substitutions
             $isUserHome = $match->isHomeTeam($game->team_id);
