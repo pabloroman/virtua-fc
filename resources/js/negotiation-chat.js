@@ -90,7 +90,7 @@ export default function negotiationChat() {
             if (!this.canSubmit) return;
 
             // Show user's offer as a message
-            this.messages.push({
+            this.messages = [...this.messages, {
                 sender: 'user',
                 type: 'offer',
                 content: {
@@ -98,7 +98,7 @@ export default function negotiationChat() {
                     years: this.offerYears,
                 },
                 options: null,
-            });
+            }];
 
             // Clear options from previous agent message
             this.clearLastOptions();
@@ -127,12 +127,12 @@ export default function negotiationChat() {
             if (this.loading || this.isTerminal) return;
 
             // Show user acceptance
-            this.messages.push({
+            this.messages = [...this.messages, {
                 sender: 'user',
                 type: 'accept',
                 content: { text: '' },
                 options: null,
-            });
+            }];
             this.clearLastOptions();
 
             this.loading = true;
@@ -183,32 +183,30 @@ export default function negotiationChat() {
 
                 if (!response.ok) {
                     const error = await response.json().catch(() => ({}));
-                    this.messages.push({
+                    this.messages = [...this.messages, {
                         sender: 'system',
                         type: 'error',
                         content: { text: error.message || 'Something went wrong' },
                         options: null,
-                    });
+                    }];
                     return null;
                 }
 
                 return await response.json();
             } catch {
-                this.messages.push({
+                this.messages = [...this.messages, {
                     sender: 'system',
                     type: 'error',
                     content: { text: 'Network error. Please try again.' },
                     options: null,
-                });
+                }];
                 return null;
             }
         },
 
         appendMessages(messages) {
             if (!messages) return;
-            for (const msg of messages) {
-                this.messages.push(msg);
-            }
+            this.messages = [...this.messages, ...messages];
             this.$nextTick(() => {
                 const container = this.$refs.chatMessages;
                 if (container) {

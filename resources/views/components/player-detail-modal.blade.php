@@ -12,7 +12,6 @@
     }
 }" x-on:show-player-detail.window="loadPlayer($event.detail)">
 
-    <x-negotiation-chat-modal />
     <x-modal name="player-detail" maxWidth="4xl">
         {{-- Loading spinner --}}
         <div x-show="loading" class="p-8 flex items-center justify-center">
@@ -24,4 +23,5 @@
         {{-- Server-rendered content --}}
         <div x-show="!loading" x-html="content"></div>
     </x-modal>
+    <x-negotiation-chat-modal />
 </div>
