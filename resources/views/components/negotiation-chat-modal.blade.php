@@ -1,5 +1,3 @@
-@props(['game'])
-
 <div x-data="negotiationChat()" @open-negotiation.window="openChat($event.detail)" x-cloak>
     {{-- Backdrop + Modal --}}
     <template x-teleport="body">

@@ -57,4 +57,7 @@ return [
     'donation_description' => 'If you like the game, consider supporting its development. Your donation helps keep VirtuaFC free and ad-free.',
     'donation_button' => 'Support VirtuaFC',
 
+    // Common actions
+    'close' => 'Close',
+
 ];

@@ -119,11 +119,6 @@ export default function negotiationChat() {
                 this.appendMessages(data.messages);
 
                 this.prefillFromOptions();
-
-                // Auto-close on accept
-                if (this.negotiationStatus === 'accepted') {
-                    setTimeout(() => this.closeAndReload(), 1500);
-                }
             }
             this.loading = false;
         },
@@ -147,10 +142,6 @@ export default function negotiationChat() {
             if (data) {
                 this.negotiationStatus = data.negotiation_status;
                 this.appendMessages(data.messages);
-
-                if (this.negotiationStatus === 'accepted') {
-                    setTimeout(() => this.closeAndReload(), 1500);
-                }
             }
             this.loading = false;
         },
@@ -174,11 +165,6 @@ export default function negotiationChat() {
             if (this.isTerminal) {
                 window.location.reload();
             }
-        },
-
-        closeAndReload() {
-            this.open = false;
-            window.location.reload();
         },
 
         // ── Helpers ──

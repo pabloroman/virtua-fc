@@ -561,5 +561,4 @@
     </div>
 
     <x-player-detail-modal />
-    <x-negotiation-chat-modal :game="$game" />
 </x-app-layout>
