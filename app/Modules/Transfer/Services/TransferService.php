@@ -2,6 +2,7 @@
 
 namespace App\Modules\Transfer\Services;
 
+use App\Modules\Player\PlayerAge;
 use App\Modules\Transfer\Services\ContractService;
 use App\Modules\Transfer\Services\ScoutingService;
 use App\Models\ClubProfile;
@@ -36,7 +37,7 @@ class TransferService
     /**
      * Age adjustments for transfer pricing.
      */
-    private const AGE_PREMIUM_UNDER_23 = 1.10;  // Young talent premium
+    private const AGE_PREMIUM_YOUNG = 1.10;  // Young talent premium
     private const AGE_PENALTY_PER_YEAR_OVER_29 = 0.05;  // 5% per year
 
     /**
@@ -891,8 +892,8 @@ class TransferService
         $age = $player->age($player->game->current_date);
         $ageModifier = 1.0;
 
-        if ($age < 23) {
-            $ageModifier = self::AGE_PREMIUM_UNDER_23;
+        if ($age < PlayerAge::YOUNG_END) {
+            $ageModifier = self::AGE_PREMIUM_YOUNG;
         } elseif ($age > 29) {
             $yearsOver29 = $age - 29;
             $ageModifier = max(0.5, 1.0 - ($yearsOver29 * self::AGE_PENALTY_PER_YEAR_OVER_29));

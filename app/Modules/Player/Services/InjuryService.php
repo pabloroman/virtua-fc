@@ -5,6 +5,7 @@ namespace App\Modules\Player\Services;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
+use App\Modules\Player\PlayerAge;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
@@ -151,14 +152,9 @@ class InjuryService
     ];
 
     /**
-     * Age multipliers for injury risk.
+     * Age multipliers for injury risk, derived from PlayerAge boundaries.
+     * Young (still developing) and veteran players are more injury-prone.
      */
-    private const AGE_THRESHOLDS = [
-        ['max' => 20, 'multiplier' => 1.3],   // Young, still developing
-        ['max' => 29, 'multiplier' => 1.0],   // Prime years
-        ['max' => 32, 'multiplier' => 1.2],   // Early decline
-        ['max' => 99, 'multiplier' => 1.5],   // Veteran
-    ];
 
     /**
      * Fitness multipliers for injury risk.
@@ -269,9 +265,9 @@ class InjuryService
 
         // Older players take slightly longer to recover
         $age = $player->age($player->game->current_date);
-        if ($age >= 32) {
+        if ($age > PlayerAge::PRIME_END) {
             $baseWeeks = (int) ceil($baseWeeks * 1.2);
-        } elseif ($age >= 30) {
+        } elseif ($age > PlayerAge::YOUNG_END) {
             $baseWeeks = (int) ceil($baseWeeks * 1.1);
         }
 
@@ -304,13 +300,11 @@ class InjuryService
      */
     private function getAgeMultiplier(int $age): float
     {
-        foreach (self::AGE_THRESHOLDS as $threshold) {
-            if ($age <= $threshold['max']) {
-                return $threshold['multiplier'];
-            }
-        }
-
-        return 1.0;
+        return match (true) {
+            $age <= PlayerAge::ACADEMY_END => 1.3,  // Young, still developing
+            $age <= PlayerAge::PRIME_END => 1.0,    // Prime years
+            default => 1.5,                          // Veteran
+        };
     }
 
     /**

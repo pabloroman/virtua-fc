@@ -3,6 +3,7 @@
 namespace App\Modules\Transfer\Services;
 
 use App\Models\Competition;
+use App\Modules\Player\PlayerAge;
 use App\Models\FinancialTransaction;
 use App\Models\ClubProfile;
 use App\Models\Game;
@@ -48,27 +49,18 @@ class ContractService
     ];
 
     /**
-     * Age-based wage modifiers.
+     * Age-based wage modifiers by PlayerAge tier.
      *
-     * Young players: Signed rookie contracts with no leverage - underpaid relative to value.
-     * Prime players: Fair market contracts.
-     * Veterans: Legacy contracts from peak years - overpaid relative to current value.
+     * Academy: Rookie contracts with no leverage - underpaid relative to value.
+     * Young: Developing players, still below market rate.
+     * Prime: Fair market contracts.
+     * Veteran: Legacy contracts from peak years - overpaid relative to current value.
      */
     private const AGE_WAGE_MODIFIERS = [
-        17 => 0.40,  // First pro contract, minimal leverage
-        18 => 0.50,
-        19 => 0.60,
-        20 => 0.70,
-        21 => 0.80,
-        22 => 0.90,
-        // 23-31: 1.0 (fair market)
-        32 => 1.30,  // Starting to be "overpaid" relative to declining value
-        33 => 1.60,
-        34 => 2.00,
-        35 => 2.50,
-        36 => 3.00,
-        37 => 4.00,  // Significant legacy premium
-        38 => 7.00,  // Legends like Modric
+        'academy' => 0.60,
+        'young' => 0.85,
+        'prime' => 1.0,
+        'veteran' => 5.0,
     ];
 
     private const FLEXIBILITY_RATIO = 0.18;
@@ -109,38 +101,24 @@ class ContractService
     }
 
     /**
-     * Get age-based wage modifier.
+     * Get age-based wage modifier using PlayerAge tiers.
      *
-     * @param int|null $age
-     * @return float Multiplier (0.4 for 17yo rookies to 7.0 for 38yo legends)
+     * @return float Multiplier (0.60 for academy to 5.0 for veterans)
      */
     private function getAgeWageModifier(?int $age): float
     {
         if ($age === null) {
-            return 1.0; // Default to prime-age modifier
+            return self::AGE_WAGE_MODIFIERS['prime'];
         }
 
-        // Check exact age match
-        if (isset(self::AGE_WAGE_MODIFIERS[$age])) {
-            return self::AGE_WAGE_MODIFIERS[$age];
-        }
+        $tier = match (true) {
+            $age <= PlayerAge::ACADEMY_END => 'academy',
+            $age <= PlayerAge::YOUNG_END => 'young',
+            $age <= PlayerAge::PRIME_END => 'prime',
+            default => 'veteran',
+        };
 
-        // Young players under 17: use 17's modifier
-        if ($age < 17) {
-            return self::AGE_WAGE_MODIFIERS[17];
-        }
-
-        // Prime years (23-29): fair market
-        if ($age >= 23 && $age <= 29) {
-            return 1.0;
-        }
-
-        // Very old players (39+): use 38's modifier
-        if ($age > 38) {
-            return self::AGE_WAGE_MODIFIERS[38];
-        }
-
-        return 1.0; // Fallback
+        return self::AGE_WAGE_MODIFIERS[$tier];
     }
 
     /**
@@ -333,14 +311,11 @@ class ContractService
      */
     private function calculateRenewalYears(int $age): int
     {
-        if ($age >= 33) {
-            return 1; // Veterans get 1-year deals
-        }
-        if ($age >= 30) {
-            return 2; // 30-32 get 2-year deals
-        }
-
-        return self::DEFAULT_RENEWAL_YEARS; // Under 30 get 3-year deals
+        return match (true) {
+            $age >= PlayerAge::PRIME_END => 1,
+            $age < PlayerAge::YOUNG_END => 5,
+            default => self::DEFAULT_RENEWAL_YEARS,
+        };
     }
 
     /**

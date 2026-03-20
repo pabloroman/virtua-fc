@@ -112,20 +112,4 @@ final class DevelopmentCurve
     {
         return $seasonAppearances >= self::MIN_APPEARANCES_FOR_BONUS;
     }
-
-    /**
-     * Get development status label based on age.
-     */
-    public static function getStatus(int $age): string
-    {
-        if ($age <= 23) {
-            return 'growing';
-        }
-
-        if ($age <= 31) {
-            return 'peak';
-        }
-
-        return 'declining';
-    }
 }

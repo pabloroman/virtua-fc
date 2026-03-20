@@ -2,6 +2,7 @@
 
 namespace App\Modules\Academy\Services;
 
+use App\Modules\Player\PlayerAge;
 use App\Modules\Squad\DTOs\GeneratedPlayerData;
 use App\Models\AcademyPlayer;
 use App\Models\Game;
@@ -304,7 +305,7 @@ class YouthAcademyService
      */
     public static function mustDecide(AcademyPlayer $player): bool
     {
-        return $player->age >= 21;
+        return $player->age > PlayerAge::ACADEMY_END;
     }
 
     /**

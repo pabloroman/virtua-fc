@@ -6,7 +6,7 @@ use App\Models\AcademyPlayer;
 use App\Models\Game;
 use App\Models\GameMatch;
 use App\Models\GamePlayer;
-use App\Modules\Player\Services\DevelopmentCurve;
+use App\Modules\Player\PlayerAge;
 use App\Modules\Player\Services\InjuryService;
 use App\Modules\Player\Services\PlayerDevelopmentService;
 use App\Modules\Transfer\Services\ContractService;
@@ -36,8 +36,12 @@ class ShowSquad
         // Pre-compute matches missed for injured players
         $matchesMissedMap = InjuryService::getMatchesMissedMap($gameId, $game->team_id, $game->current_date, $allPlayers);
 
-        // Enrich each player with computed data
-        $allPlayers->each(function (GamePlayer $player) use ($game, $seasonEndDate, $nextMatchday, $matchesMissedMap) {
+        // Enrich each player with computed data and count age distribution in a single pass
+        $youngCount = 0;
+        $primeCount = 0;
+        $veteranCount = 0;
+
+        $allPlayers->each(function (GamePlayer $player) use ($game, $seasonEndDate, $nextMatchday, $matchesMissedMap, &$youngCount, &$primeCount, &$veteranCount) {
             // Availability
             $matchData = $matchesMissedMap[$player->id] ?? null;
             $player->setAttribute('is_unavailable', !$player->isAvailable($game->current_date, $nextMatchday));
@@ -46,8 +50,18 @@ class ShowSquad
             ));
 
             // Development projection
+            $age = $player->age($game->current_date);
             $player->setAttribute('projection', $this->developmentService->getNextSeasonProjection($player));
-            $player->setAttribute('dev_status', DevelopmentCurve::getStatus($player->age($game->current_date)));
+            $player->setAttribute('dev_status', PlayerAge::developmentStatus($age));
+
+            // Age distribution
+            if (PlayerAge::isYoung($age)) {
+                $youngCount++;
+            } elseif (PlayerAge::isPrime($age)) {
+                $primeCount++;
+            } else {
+                $veteranCount++;
+            }
 
             // Computed stats
             $player->setAttribute('goal_contributions', $player->goals + $player->assists);
@@ -81,12 +95,6 @@ class ShowSquad
         $lowFitnessCount = $allPlayers->filter(fn ($p) => $p->fitness < 70)->count();
         $lowMoraleCount = $allPlayers->filter(fn ($p) => $p->morale < 65)->count();
         $injuredCount = $allPlayers->filter(fn ($p) => $p->isInjured($game->current_date))->count();
-
-        // Age distribution
-        $currentDate = $game->current_date;
-        $youngCount = $allPlayers->filter(fn ($p) => $p->age($currentDate) <= 23)->count();
-        $primeCount = $allPlayers->filter(fn ($p) => $p->age($currentDate) >= 24 && $p->age($currentDate) <= 31)->count();
-        $veteranCount = $allPlayers->filter(fn ($p) => $p->age($currentDate) >= 32)->count();
 
         // Career mode financial data
         $squadValue = 0;

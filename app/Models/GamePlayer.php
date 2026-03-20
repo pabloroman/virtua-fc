@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Modules\Player\PlayerAge;
 use App\Modules\Player\Services\InjuryService;
 use App\Support\CountryCodeMapper;
 use App\Support\Money;
@@ -761,14 +762,7 @@ class GamePlayer extends Model
      */
     public function developmentStatus(Carbon|\DateTimeInterface $currentDate): string
     {
-        $age = $this->age($currentDate);
-        if ($age <= 23) {
-            return 'growing';
-        }
-        if ($age <= 28) {
-            return 'peak';
-        }
-        return 'declining';
+        return PlayerAge::developmentStatus($this->age($currentDate));
     }
 
     /**

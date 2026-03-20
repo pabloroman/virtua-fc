@@ -104,15 +104,15 @@
         <div class="flex items-center justify-between mt-2 text-xs">
             <span class="flex items-center gap-1">
                 <span class="w-2 h-2 rounded-full bg-green-400"></span>
-                <span class="text-text-secondary">≤23: {{ $youngCount }}</span>
+                <span class="text-text-secondary">≤{{ \App\Modules\Player\PlayerAge::YOUNG_END }}: {{ $youngCount }}</span>
             </span>
             <span class="flex items-center gap-1">
                 <span class="w-2 h-2 rounded-full bg-sky-400"></span>
-                <span class="text-text-secondary">24-31: {{ $primeCount }}</span>
+                <span class="text-text-secondary">{{ \App\Modules\Player\PlayerAge::YOUNG_END + 1 }}-{{ \App\Modules\Player\PlayerAge::PRIME_END }}: {{ $primeCount }}</span>
             </span>
             <span class="flex items-center gap-1">
                 <span class="w-2 h-2 rounded-full bg-orange-400"></span>
-                <span class="text-text-secondary">32+: {{ $veteranCount }}</span>
+                <span class="text-text-secondary">{{ \App\Modules\Player\PlayerAge::PRIME_END + 1 }}+: {{ $veteranCount }}</span>
             </span>
         </div>
     </div>

@@ -2,6 +2,8 @@
 
 namespace App\Modules\Player\Services;
 
+use App\Modules\Player\PlayerAge;
+
 /**
  * Single source of truth for all ability <-> market value conversions.
  *
@@ -48,10 +50,8 @@ class PlayerValuationService
         $technical = (int) round($baseAbility + ($technicalRatio - 0.5) * $variance * 2);
         $physical = (int) round($baseAbility + (0.5 - $technicalRatio) * $variance * 2);
 
-        if ($age > 33) {
-            $physical = (int) round($physical * 0.92);
-        } elseif ($age > 30) {
-            $physical = (int) round($physical * 0.96);
+        if ($age > PlayerAge::PRIME_END) {
+            $physical = (int) round($physical * 0.90);
         }
 
         $technical = max(30, min(99, $technical));
@@ -94,7 +94,7 @@ class PlayerValuationService
         if ($previousAbility !== null) {
             $change = $averageAbility - $previousAbility;
 
-            if ($age <= 24 && $change > 0) {
+            if ($age <= PlayerAge::YOUNG_END && $change > 0) {
                 // Young players who improve get bigger boost (confirming potential)
                 $trendMultiplier = match (true) {
                     $change >= 5 => 1.4,
@@ -147,7 +147,7 @@ class PlayerValuationService
      */
     private function adjustAbilityForAge(int $rawAbility, int $marketValueCents, int $age): int
     {
-        if ($age < 23) {
+        if ($age < PlayerAge::YOUNG_END) {
             // Base cap increases with age: 17yo = 75, 22yo = 85
             $ageCap = 75 + ($age - 17) * 2;
 
@@ -165,7 +165,8 @@ class PlayerValuationService
             return min($rawAbility, $ageCap);
         }
 
-        if ($age <= 31) {
+        // Boost starts 3 years before official veteran age.
+        if ($age <= PlayerAge::PRIME_END - 3) {
             return $rawAbility;
         }
 

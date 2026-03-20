@@ -3,6 +3,7 @@
 namespace App\Modules\Player\Services;
 
 use App\Models\GamePlayer;
+use App\Modules\Player\PlayerAge;
 
 class PlayerRetirementService
 {
@@ -35,18 +36,6 @@ class PlayerRetirementService
     ];
 
     /**
-     * Minimum age at which retirement can be considered.
-     */
-    private const MIN_RETIREMENT_AGE_OUTFIELD = 33;
-    private const MIN_RETIREMENT_AGE_GOALKEEPER = 35;
-
-    /**
-     * Age at which retirement is guaranteed.
-     */
-    private const MAX_CAREER_AGE_OUTFIELD = 40;
-    private const MAX_CAREER_AGE_GOALKEEPER = 42;
-
-    /**
      * Starter threshold: appearances that count as a regular starter.
      */
     private const STARTER_APPEARANCES = 25;
@@ -71,8 +60,8 @@ class PlayerRetirementService
         $age = $player->age($player->game->current_date);
         $isGoalkeeper = $player->position === 'Goalkeeper';
 
-        $minAge = $isGoalkeeper ? self::MIN_RETIREMENT_AGE_GOALKEEPER : self::MIN_RETIREMENT_AGE_OUTFIELD;
-        $maxAge = $isGoalkeeper ? self::MAX_CAREER_AGE_GOALKEEPER : self::MAX_CAREER_AGE_OUTFIELD;
+        $minAge = $isGoalkeeper ? PlayerAge::MIN_RETIREMENT_GK : PlayerAge::MIN_RETIREMENT_OUTFIELD;
+        $maxAge = $isGoalkeeper ? PlayerAge::MAX_CAREER_GK : PlayerAge::MAX_CAREER_OUTFIELD;
 
         // Too young to retire
         if ($age < $minAge) {
