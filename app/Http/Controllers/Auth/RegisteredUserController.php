@@ -20,11 +20,13 @@ class RegisteredUserController extends Controller
      */
     public function create(Request $request): View
     {
-        $invite = InviteCode::findByCode($request->query('invite'));
+        $inviteCode = $request->query('invite');
+        $invite = InviteCode::findByCode($inviteCode);
+        $hasValidInvite = $invite && $invite->isValid();
 
         return view('auth.register', [
-            'inviteCode' => $request->query('invite'),
-            'betaMode' => config('beta.enabled'),
+            'inviteCode' => $inviteCode,
+            'hasValidInvite' => $hasValidInvite,
             'email' => $invite->email ?? null,
         ]);
     }
@@ -39,23 +41,19 @@ class RegisteredUserController extends Controller
         $rules = [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255'],
+            'invite_code' => ['sometimes', 'nullable', 'string'],
         ];
-
-        if (config('beta.enabled')) {
-            $rules['invite_code'] = ['required', 'string'];
-        }
 
         $request->validate($rules);
 
         $invite = null;
+        $hasCareerAccess = false;
 
-        if (config('beta.enabled')) {
+        if ($request->filled('invite_code')) {
             $invite = InviteCode::findByCode($request->input('invite_code'));
 
-            if (! $invite || ! $invite->isValidForEmail($request->input('email'))) {
-                return back()->withErrors([
-                    'invite_code' => __('beta.invalid_invite'),
-                ])->withInput();
+            if ($invite && $invite->isValidForEmail($request->input('email'))) {
+                $hasCareerAccess = true;
             }
         }
 
@@ -69,16 +67,20 @@ class RegisteredUserController extends Controller
                 ])->withInput();
             }
 
-            // Update name for existing unactivated user and resend activation
-            $existingUser->update(['name' => $request->name]);
+            // Update name and career access for existing unactivated user and resend activation
+            $existingUser->update([
+                'name' => $request->name,
+                'has_career_access' => $hasCareerAccess || $existingUser->has_career_access,
+            ]);
             $user = $existingUser;
         } else {
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
+                'has_career_access' => $hasCareerAccess,
             ]);
 
-            if ($invite) {
+            if ($hasCareerAccess) {
                 $invite->consume();
                 $user->forceFill(['email_verified_at' => now()])->save();
             }

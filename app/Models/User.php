@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Storage;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $feedback_requested_at
  * @property bool $is_admin
+ * @property bool $has_career_access
  * @property string $locale
  * @property string|null $username
  * @property string|null $bio
@@ -64,6 +65,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'has_career_access',
         'feedback_requested_at',
         'locale',
         'username',
@@ -116,8 +118,14 @@ class User extends Authenticatable
             'password' => 'hashed',
             'feedback_requested_at' => 'datetime',
             'is_admin' => 'boolean',
+            'has_career_access' => 'boolean',
             'is_profile_public' => 'boolean',
         ];
+    }
+
+    public function canPlayCareerMode(): bool
+    {
+        return $this->is_admin || $this->has_career_access;
     }
 
     public function getInitials(): string

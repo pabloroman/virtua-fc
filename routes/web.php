@@ -3,6 +3,7 @@
 use App\Http\Actions\UpgradeInfrastructure;
 use App\Http\Actions\StartImpersonation;
 use App\Http\Actions\StopImpersonation;
+use App\Http\Actions\ToggleCareerAccess;
 use App\Http\Views\AdminActivation;
 use App\Http\Views\AdminDashboard;
 use App\Http\Views\AdminGameStats;
@@ -239,6 +240,7 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/activation', AdminActivation::class)->name('activation');
         Route::get('/game-stats', AdminGameStats::class)->name('game-stats');
         Route::post('/impersonate/{userId}', StartImpersonation::class)->name('impersonate');
+        Route::post('/users/{userId}/toggle-career', ToggleCareerAccess::class)->name('toggle-career');
     });
 });
 

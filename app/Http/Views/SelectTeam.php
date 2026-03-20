@@ -75,6 +75,7 @@ final class SelectTeam
             'wcTeams' => $wcTeams,
             'wcFeaturedTeams' => $wcFeaturedTeams,
             'hasTournamentMode' => $hasTournamentMode,
+            'hasCareerAccess' => $request->user()->canPlayCareerMode(),
         ]);
     }
 }

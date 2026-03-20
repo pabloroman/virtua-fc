@@ -11,6 +11,8 @@ return [
     'Forgot your password?' => 'Forgot your password?',
     'Already registered?' => 'Already registered?',
     'Remember me' => 'Remember me',
+    'no_account' => "Don't have an account?",
+    'create_account' => 'Create one',
 
     // Password reset
     'Reset Password' => 'Reset Password',

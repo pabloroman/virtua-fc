@@ -1,15 +1,18 @@
 <x-guest-layout>
-    @if($betaMode)
-        <div class="mb-4 p-3 bg-accent-gold/10 border border-accent-gold/20 rounded-md">
-            <p class="text-sm text-accent-gold font-semibold">{{ __('beta.badge') }}</p>
-            <p class="text-xs text-accent-gold mt-1">{{ __('beta.register_notice') }}</p>
+    @if($hasValidInvite)
+        <div class="mb-4 p-3 bg-accent-green/10 border border-accent-green/20 rounded-md">
+            <p class="text-sm text-accent-green font-semibold">{{ __('beta.register_with_invite') }}</p>
+        </div>
+    @else
+        <div class="mb-4 p-3 bg-accent-blue/10 border border-accent-blue/20 rounded-md">
+            <p class="text-sm text-accent-blue">{{ __('beta.register_free') }}</p>
         </div>
     @endif
 
     <form method="POST" action="{{ route('register') }}">
         @csrf
 
-        @if($betaMode && $inviteCode)
+        @if($inviteCode)
             <input type="hidden" name="invite_code" value="{{ $inviteCode }}">
         @endif
 

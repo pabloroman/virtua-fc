@@ -11,6 +11,8 @@ return [
     'Forgot your password?' => '¿Olvidaste tu contraseña?',
     'Already registered?' => '¿Ya tienes cuenta?',
     'Remember me' => 'Recordarme',
+    'no_account' => '¿No tienes cuenta?',
+    'create_account' => 'Crea una',
 
     // Password reset
     'Reset Password' => 'Restablecer Contraseña',

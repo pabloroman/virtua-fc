@@ -22,12 +22,27 @@
                             @if($user->is_admin)
                                 <span class="ml-1 inline-flex items-center rounded-full bg-purple-500/10 px-2 py-0.5 text-xs font-medium text-purple-500 ring-1 ring-inset ring-purple-500/20">Admin</span>
                             @endif
+                            @if($user->has_career_access)
+                                <span class="ml-1 inline-flex items-center rounded-full bg-accent-green/10 px-2 py-0.5 text-xs font-medium text-accent-green ring-1 ring-inset ring-accent-green/20">{{ __('admin.career_access') }}</span>
+                            @endif
                         </td>
                         <td class="px-4 py-3 text-sm text-text-muted hidden md:table-cell">{{ $user->email }}</td>
                         <td class="px-4 py-3 text-sm text-text-muted">{{ $user->games_count }}</td>
                         <td class="px-4 py-3 text-sm text-text-muted hidden md:table-cell">{{ $user->created_at->format('d/m/Y') }}</td>
-                        <td class="px-4 py-3 text-right">
+                        <td class="px-4 py-3 text-right whitespace-nowrap">
                             @if($user->id !== auth()->id())
+                                <form method="POST" action="{{ route('admin.toggle-career', $user->id) }}" class="inline">
+                                    @csrf
+                                    @if($user->has_career_access)
+                                        <x-ghost-button type="submit" color="red" size="xs">
+                                            {{ __('admin.revoke_career') }}
+                                        </x-ghost-button>
+                                    @else
+                                        <x-ghost-button type="submit" color="green" size="xs">
+                                            {{ __('admin.grant_career') }}
+                                        </x-ghost-button>
+                                    @endif
+                                </form>
                                 <form method="POST" action="{{ route('admin.impersonate', $user->id) }}" class="inline">
                                     @csrf
                                     <x-ghost-button type="submit" color="blue" size="xs">

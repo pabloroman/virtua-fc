@@ -32,6 +32,10 @@ class InitGame
 
         $gameMode = $request->get('game_mode', Game::MODE_CAREER);
 
+        if ($gameMode === Game::MODE_CAREER && ! $request->user()->canPlayCareerMode()) {
+            return back()->withErrors(['game_mode' => __('messages.career_mode_requires_invite')]);
+        }
+
         if ($gameMode === Game::MODE_TOURNAMENT) {
             $game = $this->tournamentCreationService->create(
                 userId: (string) $request->user()->id,
