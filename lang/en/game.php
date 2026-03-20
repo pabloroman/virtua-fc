@@ -344,7 +344,7 @@ return [
     'mode_tournament_desc' => 'Manage a national team in the World Cup',
     'mode_tournament_badge' => 'World Cup',
     'wc2026_name' => 'World Cup 2026',
-    'career_requires_invite' => 'Requires an invitation code',
+    'career_requires_invite' => 'Coming soon',
 
     // Season Goals
     'goal_title' => 'Win the League',
