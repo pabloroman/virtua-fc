@@ -2,6 +2,7 @@
 
 namespace App\Modules\Match\Listeners;
 
+use App\Models\GameStanding;
 use App\Modules\Match\Events\MatchFinalized;
 use App\Modules\Competition\Services\StandingsCalculator;
 
@@ -31,5 +32,27 @@ class UpdateLeagueStandings
         );
 
         $this->standingsCalculator->recalculatePositions($event->game->id, $match->competition_id);
+
+        $this->appendForm($event->game->id, $match->competition_id, $match->home_team_id, $match->away_team_id, $match->home_score, $match->away_score);
+    }
+
+    private function appendForm(string $gameId, string $competitionId, string $homeTeamId, string $awayTeamId, int $homeScore, int $awayScore): void
+    {
+        $homeChar = $homeScore > $awayScore ? 'W' : ($homeScore < $awayScore ? 'L' : 'D');
+        $awayChar = $awayScore > $homeScore ? 'W' : ($awayScore < $homeScore ? 'L' : 'D');
+
+        $standings = GameStanding::where('game_id', $gameId)
+            ->where('competition_id', $competitionId)
+            ->whereIn('team_id', [$homeTeamId, $awayTeamId])
+            ->get()
+            ->keyBy('team_id');
+
+        foreach ([[$homeTeamId, $homeChar], [$awayTeamId, $awayChar]] as [$teamId, $char]) {
+            $standing = $standings[$teamId] ?? null;
+            if ($standing) {
+                $standing->form = substr(($standing->form ?? '') . $char, -5);
+                $standing->save();
+            }
+        }
     }
 }

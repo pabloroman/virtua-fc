@@ -167,6 +167,7 @@ class StandingsCalculator
         $standing->goals_for -= $goalsFor;
         $standing->goals_against -= $goalsAgainst;
         $standing->points -= $won ? 3 : ($drawn ? 1 : 0);
+        $standing->form = $standing->form ? substr($standing->form, 0, -1) : null;
         $standing->save();
     }
 
