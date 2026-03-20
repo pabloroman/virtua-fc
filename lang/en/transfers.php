@@ -194,7 +194,7 @@ return [
     'transfers_help_selling_accept' => 'Accepted transfers complete when the next transfer window opens.',
     'transfers_help_contracts_title' => 'Contracts & Renewals',
     'transfers_help_contracts_expiring' => 'Players in their final year of contract can be signed for free by other clubs via pre-contract from January.',
-    'transfers_help_contracts_renew' => 'Renew players before it\'s too late. Negotiations happen over matchdays — the player may accept, counter, or decline.',
+    'transfers_help_contracts_renew' => 'Renew players before it\'s too late. Negotiate wage and contract length directly with the player\'s agent.',
     'transfers_help_contracts_wages' => 'Keep an eye on your wage bill. Higher wages attract better players but reduce your transfer budget.',
     'transfers_help_loans_title' => 'Loans',
     'transfers_help_loans_out' => 'Loan out young or surplus players. They will develop while playing for another club and return at end of season.',

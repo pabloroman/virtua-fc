@@ -199,7 +199,7 @@ return [
     'transfers_help_selling_accept' => 'Los traspasos aceptados se completan cuando se abre la siguiente ventana de fichajes.',
     'transfers_help_contracts_title' => 'Contratos y Renovaciones',
     'transfers_help_contracts_expiring' => 'Los jugadores en su último año de contrato pueden ser fichados gratis por otros clubes mediante precontrato a partir de enero.',
-    'transfers_help_contracts_renew' => 'Renueva a los jugadores antes de que sea tarde. Las negociaciones duran varias jornadas — el jugador puede aceptar, contraofertar o rechazar.',
+    'transfers_help_contracts_renew' => 'Renueva a los jugadores antes de que sea tarde. Negocia el salario y la duración directamente con el agente del jugador.',
     'transfers_help_contracts_wages' => 'Vigila tu masa salarial. Salarios más altos atraen mejores jugadores pero reducen tu presupuesto de fichajes.',
     'transfers_help_loans_title' => 'Cesiones',
     'transfers_help_loans_out' => 'Cede a jugadores jóvenes o con poco protagonismo. Se desarrollarán jugando en otro club y regresarán al final de la temporada.',

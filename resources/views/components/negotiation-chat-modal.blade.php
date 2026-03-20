@@ -82,15 +82,6 @@
                                                     {{ __('transfers.chat_accept') }}
                                                 </button>
                                             </template>
-                                            <template x-if="msg.options.canCounter">
-                                                <span class="text-xs text-text-muted self-center">{{ __('transfers.chat_or_counter_below') }}</span>
-                                            </template>
-                                            <template x-if="msg.options.canWalkAway">
-                                                <button type="button" @click="walkAway()"
-                                                    class="px-3 py-1.5 text-xs font-medium rounded-lg text-text-muted hover:text-accent-red hover:bg-accent-red/10 transition-colors min-h-[36px]">
-                                                    {{ __('transfers.chat_walk_away') }}
-                                                </button>
-                                            </template>
                                         </div>
                                     </template>
                                 </div>
@@ -167,7 +158,7 @@
             </div>
 
             {{-- Input area --}}
-            <div class="shrink-0 border-t border-border-strong px-5 py-3" x-show="!isTerminal && !loading">
+            <div class="shrink-0 border-t border-border-strong px-5 py-3 space-y-2.5" x-show="!isTerminal && !loading">
                 <div class="flex items-end gap-2">
                     {{-- Wage stepper --}}
                     <div class="flex-1 min-w-0">
@@ -193,10 +184,10 @@
                     </div>
 
                     {{-- Years dropdown --}}
-                    <div class="shrink-0">
+                    <div class="flex-1 min-w-0">
                         <label class="text-[10px] text-text-muted uppercase tracking-wider block mb-1">{{ __('transfers.contract_duration') }}</label>
                         <select x-model.number="offerYears"
-                            class="bg-surface-700 border border-border-strong text-text-primary focus:border-accent-blue/50 focus:ring-accent-blue rounded-lg shadow-xs text-xs h-[36px] w-[72px]">
+                            class="bg-surface-700 border border-border-strong text-text-primary focus:border-accent-blue/50 focus:ring-accent-blue rounded-lg shadow-xs text-xs h-[36px] w-full">
                             <option value="1">1 {{ __('transfers.year_singular') }}</option>
                             <option value="2">2 {{ __('transfers.year_plural') }}</option>
                             <option value="3">3 {{ __('transfers.year_plural') }}</option>
@@ -204,18 +195,18 @@
                             <option value="5">5 {{ __('transfers.year_plural') }}</option>
                         </select>
                     </div>
-
-                    {{-- Submit --}}
-                    <button type="button" @click="submitOffer()"
-                        :disabled="!canSubmit"
-                        :class="!canSubmit ? 'opacity-40 cursor-not-allowed' : 'hover:bg-accent-green/80'"
-                        class="shrink-0 h-[36px] px-4 rounded-lg bg-accent-green text-white text-xs font-semibold transition-colors min-h-[36px] flex items-center gap-1.5">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-                        </svg>
-                        <span class="hidden sm:inline">{{ __('transfers.chat_send_offer') }}</span>
-                    </button>
                 </div>
+
+                {{-- Submit --}}
+                <button type="button" @click="submitOffer()"
+                    :disabled="!canSubmit"
+                    :class="!canSubmit ? 'opacity-40 cursor-not-allowed' : 'hover:bg-accent-green/80'"
+                    class="w-full h-[36px] rounded-lg bg-accent-green text-white text-xs font-semibold transition-colors min-h-[36px] flex items-center justify-center gap-1.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                    </svg>
+                    {{ __('transfers.chat_send_offer') }}
+                </button>
             </div>
 
             {{-- Terminal state: close button --}}
