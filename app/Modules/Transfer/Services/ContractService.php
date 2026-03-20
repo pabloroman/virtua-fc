@@ -4,9 +4,11 @@ namespace App\Modules\Transfer\Services;
 
 use App\Models\Competition;
 use App\Models\FinancialTransaction;
+use App\Models\ClubProfile;
 use App\Models\Game;
 use App\Models\GameNotification;
 use App\Models\GamePlayer;
+use App\Models\TeamReputation;
 use App\Models\RenewalNegotiation;
 use App\Models\Team;
 use App\Models\TransferOffer;
@@ -68,6 +70,9 @@ class ContractService
         37 => 4.00,  // Significant legacy premium
         38 => 7.00,  // Legends like Modric
     ];
+
+    private const FLEXIBILITY_RATIO = 0.18;
+    private const AMBITION_PENALTY_PER_TIER_GAP = 0.12;
 
     /**
      * Calculate annual wage for a player based on market value and age.
@@ -507,6 +512,16 @@ class ContractService
             }
         }
 
+        // Ambition: players too good for their team's reputation want to move up
+        $reputationLevel = TeamReputation::resolveLevel($player->game_id, $player->team_id);
+        $teamReputationIndex = ClubProfile::getReputationTierIndex($reputationLevel); // 0-4
+        $playerTierIndex = $player->tier - 1; // normalize to 0-4
+
+        $tierGap = $playerTierIndex - $teamReputationIndex;
+        if ($tierGap > 0) {
+            $disposition -= $tierGap * self::AMBITION_PENALTY_PER_TIER_GAP;
+        }
+
         return max(0.10, min(0.95, $disposition));
     }
 
@@ -587,8 +602,15 @@ class ContractService
         $disposition = $this->calculateDisposition($player, $negotiation->round);
 
         // Calculate minimum acceptable wage
-        $flexibility = $disposition * 0.30;
+        $flexibility = $disposition * self::FLEXIBILITY_RATIO;
         $minimumAcceptable = (int) ($negotiation->player_demand * (1.0 - $flexibility));
+
+        // Salary floor: players don't take pay cuts
+        // Exception: veterans (33+) with high morale value stability over money
+        $age = $player->age($player->game->current_date);
+        if (!($age >= 33 && $player->morale >= 70)) {
+            $minimumAcceptable = max($minimumAcceptable, $player->annual_wage);
+        }
 
         // Apply years modifier to effective offer
         $yearsModifier = $this->calculateYearsModifier($negotiation->offered_years, $negotiation->preferred_years);
