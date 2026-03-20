@@ -9,8 +9,6 @@ return [
     // Login & Registration
     'login_notice' => 'El acceso está limitado a beta testers invitados.',
     'register_notice' => 'Estás registrándote con una invitación de beta cerrada.',
-    'register_free' => 'Regístrate para jugar el Mundial gratis. El modo carrera requiere invitación.',
-    'register_with_invite' => 'Te estás registrando con una invitación para el modo carrera.',
     'registration_closed' => 'El registro requiere una invitación. Si estás en la lista de espera, recibirás tu enlace pronto.',
     'invalid_invite' => 'Código de invitación no válido o expirado.',
 
