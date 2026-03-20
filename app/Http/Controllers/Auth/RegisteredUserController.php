@@ -20,11 +20,10 @@ class RegisteredUserController extends Controller
      */
     public function create(Request $request): View
     {
-        $inviteCode = $request->query('invite');
-        $invite = InviteCode::findByCode($inviteCode);
+        $invite = InviteCode::findByCode($request->query('invite'));
 
         return view('auth.register', [
-            'inviteCode' => $inviteCode,
+            'inviteCode' => $request->query('invite'),
             'betaMode' => config('beta.enabled'),
             'email' => $invite->email ?? null,
         ]);
@@ -40,8 +39,11 @@ class RegisteredUserController extends Controller
         $rules = [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255'],
-            'invite_code' => ['sometimes', 'nullable', 'string'],
         ];
+
+        if (config('beta.enabled')) {
+            $rules['invite_code'] = ['required', 'string'];
+        }
 
         $request->validate($rules);
 
@@ -53,6 +55,10 @@ class RegisteredUserController extends Controller
 
             if ($invite && $invite->isValidForEmail($request->input('email'))) {
                 $hasCareerAccess = true;
+            } elseif (config('beta.enabled') && (! $invite || ! $invite->isValid())) {
+                return back()->withErrors([
+                    'invite_code' => __('beta.invalid_invite'),
+                ])->withInput();
             }
         }
 
@@ -66,7 +72,7 @@ class RegisteredUserController extends Controller
                 ])->withInput();
             }
 
-            // Update name and career access for existing unactivated user and resend activation
+            // Update name for existing unactivated user and resend activation
             $existingUser->update([
                 'name' => $request->name,
                 'has_career_access' => $hasCareerAccess || $existingUser->has_career_access,
