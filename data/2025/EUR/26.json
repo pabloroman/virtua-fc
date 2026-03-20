@@ -389,5 +389,6 @@
   ],
   "stadiumName": "St. Jakob-Park",
   "stadiumSeats": "38512",
-  "transfermarktId": "26"
+  "transfermarktId": "26",
+  "country": "CH"
 }

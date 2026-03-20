@@ -374,11 +374,35 @@ class CountryCodeMapper
     ];
 
     /**
+     * Preferred display name for each ISO code (reverse of $countryToCode).
+     * Only the first mapping per code is kept — order in $countryToCode matters.
+     */
+    private static ?array $codeToName = null;
+
+    /**
      * Get ISO code for a country name.
      */
     public static function toCode(string $countryName): ?string
     {
         return self::$countryToCode[$countryName] ?? null;
+    }
+
+    /**
+     * Get a display name for an ISO 3166-1 alpha-2 code.
+     */
+    public static function toName(string $code): ?string
+    {
+        if (self::$codeToName === null) {
+            self::$codeToName = [];
+            foreach (self::$countryToCode as $name => $iso) {
+                // Keep the first (preferred) name for each code
+                if (!isset(self::$codeToName[$iso])) {
+                    self::$codeToName[$iso] = $name;
+                }
+            }
+        }
+
+        return self::$codeToName[strtolower($code)] ?? null;
     }
 
     /**

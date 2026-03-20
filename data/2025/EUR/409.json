@@ -433,5 +433,6 @@
   ],
   "stadiumName": "Red Bull Arena Salzburg",
   "stadiumSeats": "30188",
-  "transfermarktId": "409"
+  "transfermarktId": "409",
+  "country": "AT"
 }

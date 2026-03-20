@@ -9,6 +9,7 @@ use App\Models\GamePlayer;
 use App\Models\Loan;
 use App\Models\ShortlistedPlayer;
 use App\Models\Team;
+use App\Support\CountryCodeMapper;
 use App\Support\PositionMapper;
 use Illuminate\Support\Collection;
 
@@ -75,6 +76,51 @@ class ExploreService
                 'name' => $team->name,
                 'image' => $team->image,
             ]);
+    }
+
+    /**
+     * Get teams from the EUR team pool grouped by country.
+     *
+     * @return Collection<int, array{code: string, name: string, flag: string, teams: array}>
+     */
+    public function getEuropeanTeamsGroupedByCountry(string $gameId): Collection
+    {
+        $teamIds = CompetitionEntry::where('game_id', $gameId)
+            ->where('competition_id', 'EUR')
+            ->pluck('team_id');
+
+        $teams = Team::whereIn('id', $teamIds)
+            ->orderBy('name')
+            ->get();
+
+        return $teams
+            ->groupBy('country')
+            ->map(function (Collection $groupTeams, string $countryCode) {
+                $code = strtolower($countryCode);
+
+                return [
+                    'code' => $code,
+                    'name' => CountryCodeMapper::toName($countryCode) ?? $countryCode,
+                    'flag' => $code,
+                    'teams' => $groupTeams->map(fn (Team $team) => [
+                        'id' => $team->id,
+                        'name' => $team->name,
+                        'image' => $team->image,
+                    ])->values()->all(),
+                ];
+            })
+            ->sortBy('name')
+            ->values();
+    }
+
+    /**
+     * Count teams in the EUR team pool for a game.
+     */
+    public function getEuropeanTeamCount(string $gameId): int
+    {
+        return CompetitionEntry::where('game_id', $gameId)
+            ->where('competition_id', 'EUR')
+            ->count();
     }
 
     /**

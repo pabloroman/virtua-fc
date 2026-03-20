@@ -383,5 +383,6 @@
   ],
   "stadiumName": "Doosan Aréna",
   "stadiumSeats": "11700",
-  "transfermarktId": "941"
+  "transfermarktId": "941",
+  "country": "CZ"
 }

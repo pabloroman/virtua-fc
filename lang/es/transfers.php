@@ -290,6 +290,8 @@ return [
     'explore_search_results_title' => 'Resultados de búsqueda',
     'explore_search_no_results' => 'No se encontraron jugadores.',
     'explore_search_team' => 'Equipo',
+    'explore_europe' => 'Europa',
+    'explore_europe_hint' => 'Explora equipos europeos fuera de las 5 grandes ligas.',
     'explore_window_closed_hint' => 'Ventana de fichajes cerrada',
 
     // Tracking

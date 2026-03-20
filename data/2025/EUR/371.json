@@ -485,5 +485,6 @@
   ],
   "stadiumName": "Celtic Park",
   "stadiumSeats": "60411",
-  "transfermarktId": "371"
+  "transfermarktId": "371",
+  "country": "GB"
 }

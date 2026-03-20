@@ -406,5 +406,6 @@
   ],
   "stadiumName": "Estádio Municipal de Braga",
   "stadiumSeats": "30286",
-  "transfermarktId": "1075"
+  "transfermarktId": "1075",
+  "country": "PT"
 }

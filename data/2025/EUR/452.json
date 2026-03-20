@@ -404,5 +404,6 @@
   ],
   "stadiumName": "Stadion Wankdorf",
   "stadiumSeats": "31500",
-  "transfermarktId": "452"
+  "transfermarktId": "452",
+  "country": "CH"
 }

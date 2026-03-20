@@ -456,5 +456,6 @@
   ],
   "stadiumName": "Eleda Stadion",
   "stadiumSeats": "22500",
-  "transfermarktId": "496"
+  "transfermarktId": "496",
+  "country": "SE"
 }

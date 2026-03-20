@@ -438,5 +438,6 @@
   ],
   "stadiumName": "Lotto Park",
   "stadiumSeats": "21900",
-  "transfermarktId": "58"
+  "transfermarktId": "58",
+  "country": "BE"
 }

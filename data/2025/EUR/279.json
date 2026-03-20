@@ -557,5 +557,6 @@
   ],
   "stadiumName": "Groupama Aréna",
   "stadiumSeats": "23698",
-  "transfermarktId": "279"
+  "transfermarktId": "279",
+  "country": "HU"
 }

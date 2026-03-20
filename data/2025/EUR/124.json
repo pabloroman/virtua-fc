@@ -398,5 +398,6 @@
   ],
   "stadiumName": "Ibrox Stadium",
   "stadiumSeats": "50987",
-  "transfermarktId": "124"
+  "transfermarktId": "124",
+  "country": "GB"
 }

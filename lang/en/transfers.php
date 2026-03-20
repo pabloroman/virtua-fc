@@ -285,6 +285,8 @@ return [
     'explore_search_results_title' => 'Search Results',
     'explore_search_no_results' => 'No players found.',
     'explore_search_team' => 'Team',
+    'explore_europe' => 'Europe',
+    'explore_europe_hint' => 'Browse European teams outside the top 5 leagues.',
     'explore_window_closed_hint' => 'Transfer window closed',
 
     // Tracking
