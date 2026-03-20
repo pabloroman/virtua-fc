@@ -22,7 +22,7 @@ class NegotiateRenewal
     public function __invoke(Request $request, string $gameId, string $playerId): JsonResponse
     {
         $request->validate([
-            'action' => ['required', 'string', Rule::in(['start', 'offer', 'accept_counter', 'walk_away'])],
+            'action' => ['required', 'string', Rule::in(['start', 'offer', 'accept_counter'])],
         ]);
 
         $game = Game::findOrFail($gameId);
@@ -41,7 +41,6 @@ class NegotiateRenewal
             'start' => $this->handleStart($game, $player),
             'offer' => $this->handleOffer($request, $game, $player),
             'accept_counter' => $this->handleAcceptCounter($player),
-            'walk_away' => $this->handleWalkAway($player),
             default => response()->json(['status' => 'error', 'message' => 'Invalid action'], 400),
         };
     }
@@ -74,8 +73,6 @@ class NegotiateRenewal
                         'mood' => $mood,
                     ], [
                         'canAccept' => true,
-                        'canCounter' => $existing->round < self::MAX_ROUNDS,
-                        'canWalkAway' => true,
                         'suggestedWage' => $this->calculateMidpointInEuros($existing->user_offer, $existing->counter_offer),
                         'preferredYears' => $existing->preferred_years,
                     ]),
@@ -113,8 +110,6 @@ class NegotiateRenewal
                     'mood' => $mood,
                 ], [
                     'canAccept' => false,
-                    'canCounter' => true,
-                    'canWalkAway' => true,
                     'suggestedWage' => $midpoint,
                     'preferredYears' => $demand['contractYears'],
                 ]),
@@ -171,8 +166,6 @@ class NegotiateRenewal
                         'mood' => $this->contractService->getMoodIndicator($negotiation->disposition),
                     ], [
                         'canAccept' => true,
-                        'canCounter' => $negotiation->round < self::MAX_ROUNDS,
-                        'canWalkAway' => true,
                         'suggestedWage' => $this->calculateMidpointInEuros($negotiation->user_offer, $negotiation->counter_offer),
                         'preferredYears' => $negotiation->preferred_years,
                     ]),
@@ -237,28 +230,6 @@ class NegotiateRenewal
         ]);
     }
 
-    private function handleWalkAway(GamePlayer $player): JsonResponse
-    {
-        $negotiation = RenewalNegotiation::where('game_player_id', $player->id)
-            ->whereIn('status', [
-                RenewalNegotiation::STATUS_OFFER_PENDING,
-                RenewalNegotiation::STATUS_PLAYER_COUNTERED,
-            ])
-            ->first();
-
-        if ($negotiation) {
-            $this->contractService->cancelNegotiation($negotiation);
-        }
-
-        return response()->json([
-            'status' => 'ok',
-            'negotiation_status' => 'walked_away',
-            'messages' => [
-                $this->systemMessage(__('transfers.chat_walked_away', ['player' => $player->name])),
-            ],
-        ]);
-    }
-
     private function agentMessage(string $type, array $content, ?array $options = null): array
     {
         return [
@@ -266,16 +237,6 @@ class NegotiateRenewal
             'type' => $type,
             'content' => $content,
             'options' => $options,
-        ];
-    }
-
-    private function systemMessage(string $text): array
-    {
-        return [
-            'sender' => 'system',
-            'type' => 'info',
-            'content' => ['text' => $text],
-            'options' => null,
         ];
     }
 

@@ -4,7 +4,7 @@ export default function negotiationChat() {
         open: false,
         messages: [],
         loading: false,
-        negotiationStatus: null, // 'open' | 'accepted' | 'rejected' | 'walked_away'
+        negotiationStatus: null, // 'open' | 'accepted' | 'rejected'
         round: 0,
         maxRounds: 3,
 
@@ -24,11 +24,7 @@ export default function negotiationChat() {
         csrfToken: document.querySelector('meta[name="csrf-token"]')?.content || '',
 
         get isTerminal() {
-            return ['accepted', 'rejected', 'walked_away'].includes(this.negotiationStatus);
-        },
-
-        get lastMessage() {
-            return this.messages[this.messages.length - 1];
+            return ['accepted', 'rejected'].includes(this.negotiationStatus);
         },
 
         get canSubmit() {
@@ -90,7 +86,7 @@ export default function negotiationChat() {
             if (!this.canSubmit) return;
 
             // Show user's offer as a message
-            this.messages = [...this.messages, {
+            this.messages.push({
                 sender: 'user',
                 type: 'offer',
                 content: {
@@ -98,7 +94,7 @@ export default function negotiationChat() {
                     years: this.offerYears,
                 },
                 options: null,
-            }];
+            });
 
             // Clear options from previous agent message
             this.clearLastOptions();
@@ -127,32 +123,18 @@ export default function negotiationChat() {
             if (this.loading || this.isTerminal) return;
 
             // Show user acceptance
-            this.messages = [...this.messages, {
+            this.messages.push({
                 sender: 'user',
                 type: 'accept',
                 content: { text: '' },
                 options: null,
-            }];
+            });
             this.clearLastOptions();
 
             this.loading = true;
             await this.delay(300);
 
             const data = await this.sendAction('accept_counter');
-            if (data) {
-                this.negotiationStatus = data.negotiation_status;
-                this.appendMessages(data.messages);
-            }
-            this.loading = false;
-        },
-
-        async walkAway() {
-            if (this.loading || this.isTerminal) return;
-
-            this.clearLastOptions();
-            this.loading = true;
-
-            const data = await this.sendAction('walk_away');
             if (data) {
                 this.negotiationStatus = data.negotiation_status;
                 this.appendMessages(data.messages);
@@ -183,30 +165,32 @@ export default function negotiationChat() {
 
                 if (!response.ok) {
                     const error = await response.json().catch(() => ({}));
-                    this.messages = [...this.messages, {
+                    this.messages.push({
                         sender: 'system',
                         type: 'error',
                         content: { text: error.message || 'Something went wrong' },
                         options: null,
-                    }];
+                    });
                     return null;
                 }
 
                 return await response.json();
             } catch {
-                this.messages = [...this.messages, {
+                this.messages.push({
                     sender: 'system',
                     type: 'error',
                     content: { text: 'Network error. Please try again.' },
                     options: null,
-                }];
+                });
                 return null;
             }
         },
 
         appendMessages(messages) {
             if (!messages) return;
-            this.messages = [...this.messages, ...messages];
+            for (const msg of messages) {
+                this.messages.push(msg);
+            }
             this.$nextTick(() => {
                 const container = this.$refs.chatMessages;
                 if (container) {

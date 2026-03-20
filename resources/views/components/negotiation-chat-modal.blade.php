@@ -73,15 +73,13 @@
                                                 x-text="msg.content.mood.label"></span>
                                         </div>
                                     </template>
-                                    {{-- Action buttons for counter-offer --}}
-                                    <template x-if="msg.options">
-                                        <div class="flex flex-wrap gap-2 pt-1">
-                                            <template x-if="msg.options.canAccept">
-                                                <button type="button" @click="acceptCounter()"
-                                                    class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-accent-green/15 text-accent-green hover:bg-accent-green/25 transition-colors min-h-[36px]">
-                                                    {{ __('transfers.chat_accept') }}
-                                                </button>
-                                            </template>
+                                    {{-- Accept counter-offer --}}
+                                    <template x-if="msg.options?.canAccept">
+                                        <div class="pt-1">
+                                            <button type="button" @click="acceptCounter()"
+                                                class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-accent-green/15 text-accent-green hover:bg-accent-green/25 transition-colors min-h-[36px]">
+                                                {{ __('transfers.chat_accept') }}
+                                            </button>
                                         </div>
                                     </template>
                                 </div>
