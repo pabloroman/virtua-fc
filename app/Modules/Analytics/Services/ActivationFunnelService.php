@@ -13,11 +13,11 @@ class ActivationFunnelService
     {
         $since = $period === 'all' ? null : now()->subDays((int) $period);
 
-        if (! in_array($mode, ['all', Game::MODE_CAREER, Game::MODE_TOURNAMENT])) {
-            $mode = 'all';
+        if (! in_array($mode, [Game::MODE_CAREER, Game::MODE_TOURNAMENT])) {
+            $mode = Game::MODE_CAREER;
         }
 
-        $inviteSentCount = $this->getInviteSentCount($since);
+        $inviteSentCount = $mode === Game::MODE_CAREER ? $this->getInviteSentCount($since) : 0;
         $eventCounts = $this->getEventCounts($since, $mode);
         $steps = $this->buildSteps($inviteSentCount, $eventCounts, $mode);
 
@@ -58,24 +58,26 @@ class ActivationFunnelService
         return ActivationEvent::query()
             ->select('event', DB::raw('COUNT(DISTINCT user_id) as user_count'))
             ->whereIn('user_id', $cohortSubquery)
-            ->when($mode !== 'all', fn ($q) => $q->where(function ($q) use ($mode) {
+            ->where(function ($q) use ($mode) {
                 $q->where('game_mode', $mode)->orWhereNull('game_mode');
-            }))
+            })
             ->groupBy('event')
             ->pluck('user_count', 'event');
     }
 
     private function buildSteps(int $inviteSentCount, \Illuminate\Support\Collection $eventCounts, string $mode): array
     {
-        $funnelEvents = ActivationEvent::funnelForMode($mode === 'all' ? null : $mode);
+        $funnelEvents = ActivationEvent::funnelForMode($mode);
 
-        $steps = [
-            [
+        $steps = [];
+
+        if ($mode === Game::MODE_CAREER) {
+            $steps[] = [
                 'key' => 'invite_sent',
                 'label' => __('admin.funnel_invite_sent'),
                 'count' => $inviteSentCount,
-            ],
-        ];
+            ];
+        }
 
         foreach ($funnelEvents as $event) {
             $steps[] = [

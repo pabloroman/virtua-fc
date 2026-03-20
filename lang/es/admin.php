@@ -36,6 +36,7 @@ return [
     'drop_off_rates' => 'Tasas de abandono',
     'funnel_invite_sent' => 'Invitación enviada',
     'funnel_registered' => 'Registrado',
+    'funnel_email_verified' => 'Email verificado',
     'funnel_game_created' => 'Partida creada',
     'funnel_setup_completed' => 'Configuración completada',
     'funnel_welcome_completed' => 'Bienvenida completada',
@@ -44,7 +45,6 @@ return [
     'funnel_5_matches_played' => '5 partidos jugados',
     'funnel_season_completed' => 'Temporada completada',
     'funnel_tournament_completed' => 'Torneo completado',
-    'mode_all' => 'Todos',
     'mode_career' => 'Carrera',
     'mode_tournament' => 'Torneo',
 

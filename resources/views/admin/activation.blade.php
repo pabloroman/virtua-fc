@@ -5,7 +5,7 @@
 
         {{-- Mode tabs --}}
         <div class="flex items-center gap-2 mb-4 overflow-x-auto scrollbar-hide">
-            @foreach(['all' => __('admin.mode_all'), 'career' => __('admin.mode_career'), 'tournament' => __('admin.mode_tournament')] as $value => $label)
+            @foreach(['career' => __('admin.mode_career'), 'tournament' => __('admin.mode_tournament')] as $value => $label)
                 <a href="{{ route('admin.activation', ['mode' => $value, 'period' => $period]) }}"
                    class="px-4 py-2 text-sm font-medium rounded-lg transition-colors min-h-[44px] flex items-center shrink-0
                           {{ $mode === $value ? 'bg-accent-primary text-white' : 'bg-surface-700 text-text-secondary hover:text-text-primary' }}">

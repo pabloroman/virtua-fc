@@ -36,6 +36,7 @@ return [
     'drop_off_rates' => 'Drop-off Rates',
     'funnel_invite_sent' => 'Invite sent',
     'funnel_registered' => 'Registered',
+    'funnel_email_verified' => 'Email verified',
     'funnel_game_created' => 'Game created',
     'funnel_setup_completed' => 'Setup completed',
     'funnel_welcome_completed' => 'Welcome completed',
@@ -44,7 +45,6 @@ return [
     'funnel_5_matches_played' => '5 matches played',
     'funnel_season_completed' => 'Season completed',
     'funnel_tournament_completed' => 'Tournament completed',
-    'mode_all' => 'All',
     'mode_career' => 'Career',
     'mode_tournament' => 'Tournament',
 

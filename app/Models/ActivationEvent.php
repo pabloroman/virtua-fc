@@ -20,22 +20,8 @@ class ActivationEvent extends Model
     public const EVENT_SEASON_COMPLETED = 'season_completed';
     public const EVENT_TOURNAMENT_COMPLETED = 'tournament_completed';
 
-    public const FUNNEL_ORDER_ALL = [
-        self::EVENT_REGISTERED,
-        self::EVENT_EMAIL_VERIFIED,
-        self::EVENT_GAME_CREATED,
-        self::EVENT_SETUP_COMPLETED,
-        self::EVENT_WELCOME_COMPLETED,
-        self::EVENT_ONBOARDING_COMPLETED,
-        self::EVENT_FIRST_MATCH_PLAYED,
-        self::EVENT_5_MATCHES_PLAYED,
-        self::EVENT_SEASON_COMPLETED,
-        self::EVENT_TOURNAMENT_COMPLETED,
-    ];
-
     public const FUNNEL_ORDER_CAREER = [
         self::EVENT_REGISTERED,
-        self::EVENT_EMAIL_VERIFIED,
         self::EVENT_GAME_CREATED,
         self::EVENT_SETUP_COMPLETED,
         self::EVENT_WELCOME_COMPLETED,
@@ -72,7 +58,7 @@ class ActivationEvent extends Model
         return match ($mode) {
             Game::MODE_CAREER => self::FUNNEL_ORDER_CAREER,
             Game::MODE_TOURNAMENT => self::FUNNEL_ORDER_TOURNAMENT,
-            default => self::FUNNEL_ORDER_ALL,
+            default => self::FUNNEL_ORDER_CAREER,
         };
     }
 
