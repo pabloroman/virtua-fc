@@ -13,11 +13,15 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
-        ->middleware('beta.invite')
-        ->name('register');
+        ->middleware('beta.invite');
 
-    Route::post('register', [RegisteredUserController::class, 'store'])
-        ->middleware(['beta.invite', 'throttle:3,1']);
+    Route::post('register/career', [RegisteredUserController::class, 'storeCareerModeRegistration'])
+        ->middleware(['beta.invite'])
+        ->name('register.career-mode');
+
+    Route::post('register/tournament', [RegisteredUserController::class, 'storeTournamentModeRegistration'])
+        ->middleware(['throttle:3,1'])
+        ->name('register.tournament-mode');
 
     Route::get('activation/sent', fn () => view('auth.activation-sent'))
         ->name('activation.sent');

@@ -1,17 +1,7 @@
 <x-guest-layout>
-    @if($betaMode)
-        <div class="mb-4 p-3 bg-accent-gold/10 border border-accent-gold/20 rounded-md">
-            <p class="text-sm text-accent-gold font-semibold">{{ __('beta.badge') }}</p>
-            <p class="text-xs text-accent-gold mt-1">{{ __('beta.register_notice') }}</p>
-        </div>
-    @endif
 
-    <form method="POST" action="{{ route('register') }}">
+    <form method="POST" action="{{ route('register.tournament-mode') }}">
         @csrf
-
-        @if($betaMode && $inviteCode)
-            <input type="hidden" name="invite_code" value="{{ $inviteCode }}">
-        @endif
 
         <!-- Name -->
         <div>
@@ -23,16 +13,13 @@
         <!-- Email Address -->
         <div class="mt-4">
             <x-input-label for="email" :value="__('auth.Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="$email ?? old('email')" required autocomplete="email" :readonly="$email" />
+            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="email" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
-        <!-- Activation hint -->
-        <p class="mt-4 text-sm text-text-secondary">{{ __('auth.activation_register_hint') }}</p>
-
-        @if($errors->has('invite_code'))
-            <x-input-error :messages="$errors->get('invite_code')" class="mt-4" />
-        @endif
+        <p class="mt-4 text-sm text-text-tertiary">
+            {{ __('auth.activation_register_hint') }}
+        </p>
 
         <div class="flex items-center justify-end mt-4">
             <a class="underline text-sm text-text-secondary hover:text-text-primary rounded-md focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-accent-blue" href="{{ route('login') }}">
@@ -40,7 +27,7 @@
             </a>
 
             <x-primary-button class="ms-4">
-                {{ __('auth.Register') }}
+                {{ __('auth.Create Account') }}
             </x-primary-button>
         </div>
     </form>

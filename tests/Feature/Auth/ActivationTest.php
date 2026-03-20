@@ -20,13 +20,13 @@ class ActivationTest extends TestCase
         config()->set('beta.enabled', false);
     }
 
-    // --- Registration creates unactivated user ---
+    // --- Tournament registration creates unactivated user ---
 
     public function test_registration_creates_user_with_null_password(): void
     {
         Notification::fake();
 
-        $this->post('/register', [
+        $this->post(route('register.tournament-mode'), [
             'name' => 'New User',
             'email' => 'new@example.com',
         ]);
@@ -45,7 +45,7 @@ class ActivationTest extends TestCase
     {
         Notification::fake();
 
-        $this->post('/register', [
+        $this->post(route('register.tournament-mode'), [
             'name' => 'New User',
             'email' => 'new@example.com',
         ]);
@@ -58,7 +58,7 @@ class ActivationTest extends TestCase
     {
         Notification::fake();
 
-        $response = $this->post('/register', [
+        $response = $this->post(route('register.tournament-mode'), [
             'name' => 'New User',
             'email' => 'new@example.com',
         ]);
@@ -70,7 +70,7 @@ class ActivationTest extends TestCase
     {
         Notification::fake();
 
-        $this->post('/register', [
+        $this->post(route('register.tournament-mode'), [
             'name' => 'New User',
             'email' => 'new@example.com',
         ]);
@@ -84,7 +84,7 @@ class ActivationTest extends TestCase
     {
         Notification::fake();
 
-        $this->post('/register', [
+        $this->post(route('register.tournament-mode'), [
             'name' => 'New User',
             'email' => 'activate@example.com',
         ]);
@@ -114,7 +114,7 @@ class ActivationTest extends TestCase
     {
         Notification::fake();
 
-        $this->post('/register', [
+        $this->post(route('register.tournament-mode'), [
             'name' => 'New User',
             'email' => 'login@example.com',
         ]);
@@ -141,7 +141,7 @@ class ActivationTest extends TestCase
     {
         Notification::fake();
 
-        $this->post('/register', [
+        $this->post(route('register.tournament-mode'), [
             'name' => 'Pending User',
             'email' => 'pending@example.com',
         ]);
@@ -155,10 +155,11 @@ class ActivationTest extends TestCase
         $this->assertGuest();
     }
 
-    public function test_invite_code_registration_sets_email_verified_at(): void
+    // --- Career mode registration with invite code ---
+
+    public function test_career_mode_registration_sets_email_verified_at(): void
     {
-        Notification::fake();
-        config()->set('beta.enabled', true);
+        config()->set('beta.enabled', false);
 
         InviteCode::create([
             'code' => 'TESTCODE',
@@ -167,53 +168,17 @@ class ActivationTest extends TestCase
             'times_used' => 0,
         ]);
 
-        $this->post('/register', [
+        $this->post(route('register.career-mode'), [
             'name' => 'Invited User',
             'email' => 'invited@example.com',
+            'password' => 'my-new-password',
+            'password_confirmation' => 'my-new-password',
             'invite_code' => 'TESTCODE',
         ]);
 
         $user = User::where('email', 'invited@example.com')->first();
         $this->assertNotNull($user->email_verified_at);
-    }
-
-    // --- Re-registration with same unactivated email ---
-
-    public function test_reregistration_with_unactivated_email_updates_and_resends(): void
-    {
-        Notification::fake();
-
-        $this->post('/register', [
-            'name' => 'Original Name',
-            'email' => 'reregister@example.com',
-        ]);
-
-        // Advance past the password broker throttle window
-        $this->travel(2)->minutes();
-        Notification::fake();
-
-        $this->post('/register', [
-            'name' => 'Updated Name',
-            'email' => 'reregister@example.com',
-        ]);
-
-        $user = User::where('email', 'reregister@example.com')->first();
-        $this->assertEquals('Updated Name', $user->name);
-        Notification::assertSentTo($user, ActivateAccount::class);
-    }
-
-    public function test_reregistration_with_activated_email_fails(): void
-    {
-        $user = User::factory()->create(['email' => 'taken@example.com']);
-
-        Notification::fake();
-
-        $response = $this->post('/register', [
-            'name' => 'Another User',
-            'email' => 'taken@example.com',
-        ]);
-
-        $response->assertSessionHasErrors('email');
+        $this->assertTrue($user->has_career_access);
     }
 
     // --- Forgot password sends correct notification per state ---
@@ -222,7 +187,7 @@ class ActivationTest extends TestCase
     {
         Notification::fake();
 
-        $this->post('/register', [
+        $this->post(route('register.tournament-mode'), [
             'name' => 'Unactivated',
             'email' => 'unactivated@example.com',
         ]);

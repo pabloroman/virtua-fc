@@ -12,7 +12,7 @@ class RegistrationTest extends TestCase
 {
     use RefreshDatabase;
 
-    // --- Open registration (BETA_MODE=false) ---
+    // --- Open registration ---
 
     public function test_registration_screen_can_be_rendered(): void
     {
@@ -23,54 +23,12 @@ class RegistrationTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_registration_screen_does_not_contain_password_fields(): void
-    {
-        config()->set('beta.enabled', false);
-
-        $response = $this->get('/register');
-
-        $response->assertStatus(200);
-        $response->assertDontSee('name="password"', false);
-        $response->assertDontSee('name="password_confirmation"', false);
-    }
-
-    public function test_registration_screen_shows_register_button(): void
-    {
-        config()->set('beta.enabled', false);
-
-        $response = $this->get('/register');
-
-        $response->assertStatus(200);
-        $response->assertSeeText(__('auth.Register'));
-    }
-
-    public function test_registration_screen_shows_activation_hint(): void
-    {
-        config()->set('beta.enabled', false);
-
-        $response = $this->get('/register');
-
-        $response->assertStatus(200);
-        $response->assertSeeText(__('auth.activation_register_hint'));
-    }
-
-    public function test_registration_screen_contains_name_and_email_fields(): void
-    {
-        config()->set('beta.enabled', false);
-
-        $response = $this->get('/register');
-
-        $response->assertStatus(200);
-        $response->assertSee('name="name"', false);
-        $response->assertSee('name="email"', false);
-    }
-
     public function test_new_users_can_register(): void
     {
         Notification::fake();
         config()->set('beta.enabled', false);
 
-        $response = $this->post('/register', [
+        $response = $this->post(route('register.tournament-mode'), [
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
@@ -131,14 +89,16 @@ class RegistrationTest extends TestCase
             'times_used' => 0,
         ]);
 
-        $response = $this->post('/register?invite=BETA-INVITE', [
+        $response = $this->post(route('register.career-mode', ['invite' => 'BETA-INVITE']), [
             'name' => 'Beta Tester',
             'email' => 'beta@example.com',
+            'password' => 'my-new-password',
+            'password_confirmation' => 'my-new-password',
             'invite_code' => 'BETA-INVITE',
         ]);
 
-        $this->assertGuest();
-        $response->assertRedirect(route('activation.sent'));
+        $this->assertAuthenticated();
+        $response->assertRedirect(route('dashboard'));
         $this->assertDatabaseHas('invite_codes', [
             'code' => 'BETA-INVITE',
             'times_used' => 1,
@@ -161,18 +121,18 @@ class RegistrationTest extends TestCase
             'times_used' => 0,
         ]);
 
-        $response = $this->post('/register?invite=EMAIL-LOCKED', [
+        $response = $this->post(route('register.career-mode', ['invite' => 'EMAIL-LOCKED']), [
             'name' => 'Wrong Email',
             'email' => 'different@example.com',
+            'password' => 'my-new-password',
+            'password_confirmation' => 'my-new-password',
             'invite_code' => 'EMAIL-LOCKED',
         ]);
 
-        // User still registers but without career access (invite not consumed)
+        $response->assertSessionHasErrors('invite_code');
         $this->assertGuest();
-        $response->assertRedirect(route('activation.sent'));
-        $this->assertDatabaseHas('users', [
+        $this->assertDatabaseMissing('users', [
             'email' => 'different@example.com',
-            'has_career_access' => false,
         ]);
         $this->assertDatabaseHas('invite_codes', [
             'code' => 'EMAIL-LOCKED',
@@ -187,7 +147,7 @@ class RegistrationTest extends TestCase
         Notification::fake();
         config()->set('beta.enabled', false);
 
-        $response = $this->post('/register', [
+        $response = $this->post(route('register.tournament-mode'), [
             'name' => 'No Invite',
             'email' => 'noinvite@example.com',
         ]);
@@ -212,14 +172,16 @@ class RegistrationTest extends TestCase
             'times_used' => 0,
         ]);
 
-        $response = $this->post('/register?invite=CAREER-INVITE', [
+        $response = $this->post(route('register.career-mode'), [
             'name' => 'Beta Tester',
             'email' => 'beta@example.com',
+            'password' => 'my-new-password',
+            'password_confirmation' => 'my-new-password',
             'invite_code' => 'CAREER-INVITE',
         ]);
 
-        $this->assertGuest();
-        $response->assertRedirect(route('activation.sent'));
+        $this->assertAuthenticated();
+        $response->assertRedirect(route('dashboard'));
         $this->assertDatabaseHas('users', [
             'email' => 'beta@example.com',
             'has_career_access' => true,

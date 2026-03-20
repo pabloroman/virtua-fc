@@ -6,17 +6,17 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('register') }}">
+    <form method="POST" action="{{ route('register.career-mode') }}">
         @csrf
 
-        @if($betaMode && $inviteCode)
+        @if($inviteCode)
             <input type="hidden" name="invite_code" value="{{ $inviteCode }}">
         @endif
 
         <!-- Name -->
         <div>
             <x-input-label for="name" :value="__('auth.Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
+            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="$name ?? old('name')" required autofocus autocomplete="name" />
             <x-input-error :messages="$errors->get('name')" class="mt-2" />
         </div>
 
@@ -27,9 +27,28 @@
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
-        <p class="mt-4 text-sm text-text-tertiary">
-            {{ __('auth.activation_register_hint') }}
-        </p>
+        <!-- Password -->
+        <div class="mt-4">
+            <x-input-label for="password" :value="__('auth.Password')" />
+
+            <x-text-input id="password" class="block mt-1 w-full"
+                          type="password"
+                          name="password"
+                          required autocomplete="new-password" />
+
+            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="mt-4">
+            <x-input-label for="password_confirmation" :value="__('auth.Confirm Password')" />
+
+            <x-text-input id="password_confirmation" class="block mt-1 w-full"
+                          type="password"
+                          name="password_confirmation" required autocomplete="new-password" />
+
+            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+        </div>
 
         @if($errors->has('invite_code'))
             <x-input-error :messages="$errors->get('invite_code')" class="mt-4" />
