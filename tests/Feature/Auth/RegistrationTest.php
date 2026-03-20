@@ -23,6 +23,49 @@ class RegistrationTest extends TestCase
         $response->assertStatus(200);
     }
 
+    public function test_registration_screen_contains_password_fields(): void
+    {
+        config()->set('beta.enabled', false);
+
+        $response = $this->get('/register');
+
+        $response->assertStatus(200);
+        $response->assertSee('name="password"', false);
+        $response->assertSee('name="password_confirmation"', false);
+        $response->assertSee('type="password"', false);
+    }
+
+    public function test_registration_screen_shows_register_button(): void
+    {
+        config()->set('beta.enabled', false);
+
+        $response = $this->get('/register');
+
+        $response->assertStatus(200);
+        $response->assertSeeText(__('auth.Register'));
+    }
+
+    public function test_registration_screen_does_not_show_activation_hint(): void
+    {
+        config()->set('beta.enabled', false);
+
+        $response = $this->get('/register');
+
+        $response->assertStatus(200);
+        $response->assertDontSeeText(__('auth.activation_register_hint'));
+    }
+
+    public function test_registration_screen_contains_name_and_email_fields(): void
+    {
+        config()->set('beta.enabled', false);
+
+        $response = $this->get('/register');
+
+        $response->assertStatus(200);
+        $response->assertSee('name="name"', false);
+        $response->assertSee('name="email"', false);
+    }
+
     public function test_new_users_can_register(): void
     {
         Notification::fake();
