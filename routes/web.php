@@ -1,5 +1,11 @@
 <?php
 
+use App\Http\Actions\Admin\DeletePlayerTemplate;
+use App\Http\Actions\Admin\RestorePlayerTemplate;
+use App\Http\Actions\Admin\SearchPlayers;
+use App\Http\Actions\Admin\SearchTeams;
+use App\Http\Actions\Admin\StorePlayerTemplate;
+use App\Http\Actions\Admin\UpdatePlayerTemplate;
 use App\Http\Actions\UpgradeInfrastructure;
 use App\Http\Actions\StartImpersonation;
 use App\Http\Actions\StopImpersonation;
@@ -8,6 +14,9 @@ use App\Http\Actions\ToggleDatabaseEditing;
 use App\Http\Views\AdminActivation;
 use App\Http\Views\AdminDashboard;
 use App\Http\Views\AdminGameStats;
+use App\Http\Views\AdminPlayerTemplateAuditLog;
+use App\Http\Views\AdminPlayerTemplates;
+use App\Http\Views\AdminPlayerTemplateSquad;
 use App\Http\Views\AdminUsers;
 use App\Http\Actions\DeleteGame;
 use App\Http\Actions\AcceptCounterOffer;
@@ -243,6 +252,17 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
         Route::post('/impersonate/{userId}', StartImpersonation::class)->name('impersonate');
         Route::post('/users/{userId}/toggle-career', ToggleCareerAccess::class)->name('toggle-career');
         Route::post('/users/{userId}/toggle-database-editing', ToggleDatabaseEditing::class)->name('toggle-database-editing');
+
+        // Player templates
+        Route::get('/player-templates/search-players', SearchPlayers::class)->name('player-templates.search-players');
+        Route::get('/player-templates/search-teams', SearchTeams::class)->name('player-templates.search-teams');
+        Route::get('/player-templates/audit-log', AdminPlayerTemplateAuditLog::class)->name('player-templates.audit-log');
+        Route::get('/player-templates', AdminPlayerTemplates::class)->name('player-templates.index');
+        Route::get('/player-templates/{teamId}', AdminPlayerTemplateSquad::class)->name('player-templates.squad');
+        Route::post('/player-templates', StorePlayerTemplate::class)->name('player-templates.store');
+        Route::put('/player-templates/{id}', UpdatePlayerTemplate::class)->name('player-templates.update');
+        Route::delete('/player-templates/{id}', DeletePlayerTemplate::class)->name('player-templates.delete');
+        Route::post('/player-templates/{id}/restore/{auditId}', RestorePlayerTemplate::class)->name('player-templates.restore');
     });
 });
 
