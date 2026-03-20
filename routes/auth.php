@@ -19,6 +19,9 @@ Route::middleware('guest')->group(function () {
     Route::post('register', [RegisteredUserController::class, 'store'])
         ->middleware(['beta.invite', 'throttle:3,1']);
 
+    Route::get('activation/sent', fn () => view('auth.activation-sent'))
+        ->name('activation.sent');
+
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
         ->name('login');
 

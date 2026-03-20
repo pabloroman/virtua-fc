@@ -4,6 +4,7 @@ namespace Tests\Feature\Auth;
 
 use App\Models\InviteCode;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class RegistrationTest extends TestCase
@@ -23,17 +24,16 @@ class RegistrationTest extends TestCase
 
     public function test_new_users_can_register(): void
     {
+        Notification::fake();
         config()->set('beta.enabled', false);
 
         $response = $this->post('/register', [
             'name' => 'Test User',
             'email' => 'test@example.com',
-            'password' => 'password',
-            'password_confirmation' => 'password',
         ]);
 
-        $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard', absolute: false));
+        $this->assertGuest();
+        $response->assertRedirect(route('activation.sent'));
     }
 
     // --- Beta registration (BETA_MODE=true) ---
@@ -74,6 +74,7 @@ class RegistrationTest extends TestCase
 
     public function test_beta_users_can_register_with_valid_invite(): void
     {
+        Notification::fake();
         config()->set('beta.enabled', true);
 
         InviteCode::create([
@@ -86,13 +87,11 @@ class RegistrationTest extends TestCase
         $response = $this->post('/register?invite=BETA-INVITE', [
             'name' => 'Beta Tester',
             'email' => 'beta@example.com',
-            'password' => 'password',
-            'password_confirmation' => 'password',
             'invite_code' => 'BETA-INVITE',
         ]);
 
-        $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard', absolute: false));
+        $this->assertGuest();
+        $response->assertRedirect(route('activation.sent'));
         $this->assertDatabaseHas('invite_codes', [
             'code' => 'BETA-INVITE',
             'times_used' => 1,
@@ -101,6 +100,7 @@ class RegistrationTest extends TestCase
 
     public function test_beta_registration_fails_with_wrong_email(): void
     {
+        Notification::fake();
         config()->set('beta.enabled', true);
 
         InviteCode::create([
@@ -113,8 +113,6 @@ class RegistrationTest extends TestCase
         $response = $this->post('/register?invite=EMAIL-LOCKED', [
             'name' => 'Wrong Email',
             'email' => 'different@example.com',
-            'password' => 'password',
-            'password_confirmation' => 'password',
             'invite_code' => 'EMAIL-LOCKED',
         ]);
 

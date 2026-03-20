@@ -10,6 +10,7 @@ class ActivationEvent extends Model
     public $timestamps = false;
 
     public const EVENT_REGISTERED = 'registered';
+    public const EVENT_EMAIL_VERIFIED = 'email_verified';
     public const EVENT_GAME_CREATED = 'game_created';
     public const EVENT_SETUP_COMPLETED = 'setup_completed';
     public const EVENT_WELCOME_COMPLETED = 'welcome_completed';
@@ -21,6 +22,7 @@ class ActivationEvent extends Model
 
     public const FUNNEL_ORDER_ALL = [
         self::EVENT_REGISTERED,
+        self::EVENT_EMAIL_VERIFIED,
         self::EVENT_GAME_CREATED,
         self::EVENT_SETUP_COMPLETED,
         self::EVENT_WELCOME_COMPLETED,
@@ -33,6 +35,7 @@ class ActivationEvent extends Model
 
     public const FUNNEL_ORDER_CAREER = [
         self::EVENT_REGISTERED,
+        self::EVENT_EMAIL_VERIFIED,
         self::EVENT_GAME_CREATED,
         self::EVENT_SETUP_COMPLETED,
         self::EVENT_WELCOME_COMPLETED,
@@ -44,6 +47,7 @@ class ActivationEvent extends Model
 
     public const FUNNEL_ORDER_TOURNAMENT = [
         self::EVENT_REGISTERED,
+        self::EVENT_EMAIL_VERIFIED,
         self::EVENT_GAME_CREATED,
         self::EVENT_SETUP_COMPLETED,
         self::EVENT_FIRST_MATCH_PLAYED,

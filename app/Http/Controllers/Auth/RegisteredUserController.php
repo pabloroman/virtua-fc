@@ -3,16 +3,14 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivationEvent;
 use App\Models\InviteCode;
 use App\Models\User;
+use App\Modules\Season\Services\ActivationTracker;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
-use App\Models\ActivationEvent;
-use App\Modules\Season\Services\ActivationTracker;
+use Illuminate\Support\Facades\Password;
 use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
@@ -40,8 +38,7 @@ class RegisteredUserController extends Controller
     {
         $rules = [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255'],
         ];
 
         if (config('beta.enabled')) {
@@ -50,7 +47,6 @@ class RegisteredUserController extends Controller
 
         $request->validate($rules);
 
-        $invite = null;
         if (config('beta.enabled')) {
             $invite = InviteCode::findByCode($request->input('invite_code'));
 
@@ -61,20 +57,36 @@ class RegisteredUserController extends Controller
             }
         }
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        // Check if an unactivated user with this email already exists
+        $existingUser = User::where('email', $request->input('email'))->first();
 
-        $invite?->consume();
+        if ($existingUser) {
+            if ($existingUser->email_verified_at !== null) {
+                return back()->withErrors([
+                    'email' => __('validation.unique', ['attribute' => __('auth.Email')]),
+                ])->withInput();
+            }
 
-        event(new Registered($user));
+            // Update name for existing unactivated user and resend activation
+            $existingUser->update(['name' => $request->name]);
+            $user = $existingUser;
+        } else {
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+            ]);
 
-        app(ActivationTracker::class)->record($user->id, ActivationEvent::EVENT_REGISTERED);
+            if (isset($invite)) {
+                $invite->consume();
+            }
 
-        Auth::login($user);
+            event(new Registered($user));
 
-        return redirect(route('dashboard', absolute: false));
+            app(ActivationTracker::class)->record($user->id, ActivationEvent::EVENT_REGISTERED);
+        }
+
+        Password::sendResetLink(['email' => $user->email]);
+
+        return redirect()->route('activation.sent');
     }
 }

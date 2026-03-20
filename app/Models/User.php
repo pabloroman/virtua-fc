@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Notifications\ActivateAccount;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -134,5 +134,21 @@ class User extends Authenticatable
     public function getAvatarUrl(): string
     {
         return Storage::disk('assets')->url('managers/'.($this->avatar ?? 'blue').'.png');
+    }
+
+    public function isActivated(): bool
+    {
+        return $this->email_verified_at !== null;
+    }
+
+    public function sendPasswordResetNotification($token): void
+    {
+        if (! $this->isActivated()) {
+            $this->notify(new ActivateAccount($token));
+
+            return;
+        }
+
+        parent::sendPasswordResetNotification($token);
     }
 }
