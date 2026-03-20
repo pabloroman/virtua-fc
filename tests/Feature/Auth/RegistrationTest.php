@@ -3,9 +3,7 @@
 namespace Tests\Feature\Auth;
 
 use App\Models\InviteCode;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class RegistrationTest extends TestCase
@@ -68,7 +66,21 @@ class RegistrationTest extends TestCase
 
     public function test_new_users_can_register(): void
     {
-        Notification::fake();
+        config()->set('beta.enabled', false);
+
+        $response = $this->post('/register', [
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ]);
+
+        $this->assertAuthenticated();
+        $response->assertRedirect(route('dashboard', absolute: false));
+    }
+
+    public function test_registration_requires_password(): void
+    {
         config()->set('beta.enabled', false);
 
         $response = $this->post('/register', [
@@ -76,12 +88,22 @@ class RegistrationTest extends TestCase
             'email' => 'test@example.com',
         ]);
 
+        $response->assertSessionHasErrors('password');
         $this->assertGuest();
-        $response->assertRedirect(route('activation.sent'));
-        $this->assertDatabaseHas('users', [
+    }
+
+    public function test_registration_requires_password_confirmation(): void
+    {
+        config()->set('beta.enabled', false);
+
+        $response = $this->post('/register', [
+            'name' => 'Test User',
             'email' => 'test@example.com',
-            'has_career_access' => false,
+            'password' => 'password',
         ]);
+
+        $response->assertSessionHasErrors('password');
+        $this->assertGuest();
     }
 
     // --- Beta registration (BETA_MODE=true) ---
@@ -122,7 +144,6 @@ class RegistrationTest extends TestCase
 
     public function test_beta_users_can_register_with_valid_invite(): void
     {
-        Notification::fake();
         config()->set('beta.enabled', true);
 
         InviteCode::create([
@@ -135,24 +156,21 @@ class RegistrationTest extends TestCase
         $response = $this->post('/register?invite=BETA-INVITE', [
             'name' => 'Beta Tester',
             'email' => 'beta@example.com',
+            'password' => 'password',
+            'password_confirmation' => 'password',
             'invite_code' => 'BETA-INVITE',
         ]);
 
-        $this->assertGuest();
-        $response->assertRedirect(route('activation.sent'));
+        $this->assertAuthenticated();
+        $response->assertRedirect(route('dashboard', absolute: false));
         $this->assertDatabaseHas('invite_codes', [
             'code' => 'BETA-INVITE',
             'times_used' => 1,
-        ]);
-        $this->assertDatabaseHas('users', [
-            'email' => 'beta@example.com',
-            'has_career_access' => true,
         ]);
     }
 
     public function test_beta_registration_fails_with_wrong_email(): void
     {
-        Notification::fake();
         config()->set('beta.enabled', true);
 
         InviteCode::create([
@@ -165,69 +183,11 @@ class RegistrationTest extends TestCase
         $response = $this->post('/register?invite=EMAIL-LOCKED', [
             'name' => 'Wrong Email',
             'email' => 'different@example.com',
+            'password' => 'password',
+            'password_confirmation' => 'password',
             'invite_code' => 'EMAIL-LOCKED',
         ]);
 
-        // User still registers but without career access (invite not consumed)
         $this->assertGuest();
-        $response->assertRedirect(route('activation.sent'));
-        $this->assertDatabaseHas('users', [
-            'email' => 'different@example.com',
-            'has_career_access' => false,
-        ]);
-        $this->assertDatabaseHas('invite_codes', [
-            'code' => 'EMAIL-LOCKED',
-            'times_used' => 0,
-        ]);
-    }
-
-    // --- Career access via invite code (open registration) ---
-
-    public function test_registration_without_invite_does_not_grant_career_access(): void
-    {
-        Notification::fake();
-        config()->set('beta.enabled', false);
-
-        $response = $this->post('/register', [
-            'name' => 'No Invite',
-            'email' => 'noinvite@example.com',
-        ]);
-
-        $this->assertGuest();
-        $response->assertRedirect(route('activation.sent'));
-        $this->assertDatabaseHas('users', [
-            'email' => 'noinvite@example.com',
-            'has_career_access' => false,
-        ]);
-    }
-
-    public function test_registration_with_valid_invite_grants_career_access(): void
-    {
-        Notification::fake();
-        config()->set('beta.enabled', false);
-
-        InviteCode::create([
-            'code' => 'CAREER-INVITE',
-            'email' => 'beta@example.com',
-            'max_uses' => 1,
-            'times_used' => 0,
-        ]);
-
-        $response = $this->post('/register?invite=CAREER-INVITE', [
-            'name' => 'Beta Tester',
-            'email' => 'beta@example.com',
-            'invite_code' => 'CAREER-INVITE',
-        ]);
-
-        $this->assertGuest();
-        $response->assertRedirect(route('activation.sent'));
-        $this->assertDatabaseHas('users', [
-            'email' => 'beta@example.com',
-            'has_career_access' => true,
-        ]);
-        $this->assertDatabaseHas('invite_codes', [
-            'code' => 'CAREER-INVITE',
-            'times_used' => 1,
-        ]);
     }
 }

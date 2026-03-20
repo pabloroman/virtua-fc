@@ -10,7 +10,9 @@ use App\Modules\Season\Services\ActivationTracker;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
@@ -38,7 +40,8 @@ class RegisteredUserController extends Controller
     {
         $rules = [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ];
 
         if (config('beta.enabled')) {
@@ -48,55 +51,30 @@ class RegisteredUserController extends Controller
         $request->validate($rules);
 
         $invite = null;
-        $hasCareerAccess = false;
-
-        if ($request->filled('invite_code')) {
+        if (config('beta.enabled')) {
             $invite = InviteCode::findByCode($request->input('invite_code'));
 
-            if ($invite && $invite->isValidForEmail($request->input('email'))) {
-                $hasCareerAccess = true;
-            } elseif (config('beta.enabled') && (! $invite || ! $invite->isValid())) {
+            if (! $invite || ! $invite->isValidForEmail($request->input('email'))) {
                 return back()->withErrors([
                     'invite_code' => __('beta.invalid_invite'),
                 ])->withInput();
             }
         }
 
-        // Check if an unactivated user with this email already exists
-        $existingUser = User::where('email', $request->input('email'))->first();
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
 
-        if ($existingUser) {
-            if ($existingUser->isActivated()) {
-                return back()->withErrors([
-                    'email' => __('validation.unique', ['attribute' => __('auth.Email')]),
-                ])->withInput();
-            }
+        $invite?->consume();
 
-            // Update name for existing unactivated user and resend activation
-            $existingUser->update([
-                'name' => $request->name,
-                'has_career_access' => $hasCareerAccess || $existingUser->has_career_access,
-            ]);
-            $user = $existingUser;
-        } else {
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'has_career_access' => $hasCareerAccess,
-            ]);
+        event(new Registered($user));
 
-            if ($hasCareerAccess) {
-                $invite->consume();
-                $user->forceFill(['email_verified_at' => now()])->save();
-            }
+        app(ActivationTracker::class)->record($user->id, ActivationEvent::EVENT_REGISTERED);
 
-            event(new Registered($user));
+        Auth::login($user);
 
-            app(ActivationTracker::class)->record($user->id, ActivationEvent::EVENT_REGISTERED);
-        }
-
-        Password::sendResetLink(['email' => $user->email]);
-
-        return redirect()->route('activation.sent');
+        return redirect(route('dashboard', absolute: false));
     }
 }
