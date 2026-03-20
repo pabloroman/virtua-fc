@@ -80,14 +80,26 @@ export default function lineupManager(config) {
         isHome: config.isHome || false,
 
         init() {
-            // Snapshot the initial state for dirty detection
-            this._initialPlayers = [...(config.currentLineup || [])].sort();
+            // Filter out players no longer in the squad (e.g. sold after lineup was saved)
+            this.selectedPlayers = this.selectedPlayers.filter(id => this.playersData[id]);
+            if (Object.keys(this.manualAssignments).length > 0) {
+                const clean = {};
+                for (const [slotId, playerId] of Object.entries(this.manualAssignments)) {
+                    if (this.playersData[playerId]) {
+                        clean[slotId] = playerId;
+                    }
+                }
+                this.manualAssignments = clean;
+            }
+
+            // Snapshot the initial state for dirty detection (after filtering)
+            this._initialPlayers = [...this.selectedPlayers].sort();
             this._initialFormation = config.currentFormation;
             this._initialMentality = config.currentMentality;
             this._initialPlayingStyle = config.currentPlayingStyle || 'balanced';
             this._initialPressing = config.currentPressing || 'standard';
             this._initialDefLine = config.currentDefLine || 'normal';
-            this._initialAssignments = JSON.stringify(config.currentSlotAssignments || {});
+            this._initialAssignments = JSON.stringify(this.manualAssignments);
             this._initialPitchPositions = JSON.stringify(config.currentPitchPositions || {});
 
             // Warn on navigation away with unsaved changes

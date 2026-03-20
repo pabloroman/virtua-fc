@@ -102,6 +102,12 @@ class ShowLineup
             ];
         })->keyBy('id')->toArray();
 
+        // Filter stale player IDs from lineups (e.g. players sold after lineup was saved)
+        $validPlayerIds = array_keys($playersData);
+        if (! empty($currentLineup)) {
+            $currentLineup = array_values(array_intersect($currentLineup, $validPlayerIds));
+        }
+
         // Prepare pitch slots for each formation, adding Spanish display labels
         $formationSlots = [];
         foreach (Formation::cases() as $formation) {
@@ -237,7 +243,9 @@ class ShowLineup
             'midfielders' => $playersByGroup['midfielders'],
             'forwards' => $playersByGroup['forwards'],
             'currentLineup' => $currentLineup,
-            'currentSlotAssignments' => $game->tactics?->default_slot_assignments,
+            'currentSlotAssignments' => ! empty($game->tactics?->default_slot_assignments)
+                ? array_filter($game->tactics->default_slot_assignments, fn ($playerId) => in_array($playerId, $validPlayerIds))
+                : null,
             'autoLineup' => $autoLineup,
             'formationOptions' => $formationOptions,
             'currentFormation' => $currentFormation,
@@ -275,12 +283,14 @@ class ShowLineup
                 'id' => $p->id,
                 'name' => $p->name,
                 'formation' => $p->formation,
-                'lineup' => collect($p->lineup)->sort()->values()->all(),
+                'lineup' => collect($p->lineup)->filter(fn ($id) => in_array($id, $validPlayerIds))->sort()->values()->all(),
                 'mentality' => $p->mentality,
                 'playing_style' => $p->playing_style,
                 'pressing' => $p->pressing,
                 'defensive_line' => $p->defensive_line,
-                'slot_assignments' => $p->slot_assignments,
+                'slot_assignments' => ! empty($p->slot_assignments)
+                    ? array_filter($p->slot_assignments, fn ($playerId) => in_array($playerId, $validPlayerIds))
+                    : null,
                 'pitch_positions' => $p->pitch_positions,
             ])->values(),
         ]);
