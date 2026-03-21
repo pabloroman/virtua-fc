@@ -35,6 +35,9 @@ class PlayerGeneratorService
     /** @var array<string, string[]> Cached team player names by "gameId:teamId" */
     private array $teamNamesCache = [];
 
+    /** @var array<string, string[]> Cached free agent names by gameId */
+    private array $freeAgentNamesCache = [];
+
     public function __construct(
         private readonly ContractService $contractService,
         private readonly PlayerDevelopmentService $developmentService,
@@ -54,7 +57,10 @@ class PlayerGeneratorService
     public function create(Game $game, GeneratedPlayerData $data): GamePlayer
     {
         $excludedNames = ($data->name === null)
-            ? $this->getOrLoadTeamPlayerNames($game->id, $data->teamId)
+            ? array_merge(
+                $data->teamId ? $this->getOrLoadTeamPlayerNames($game->id, $data->teamId) : [],
+                $this->getOrLoadFreeAgentNames($game->id)
+            )
             : [];
         $identity = $this->pickRandomIdentity(excludedNames: $excludedNames);
         $name = $data->name ?? $identity['name'];
@@ -239,6 +245,24 @@ class PlayerGeneratorService
         }
 
         return $this->teamNamesCache[$key];
+    }
+
+    /**
+     * Get cached free agent names, loading from DB on first access per game.
+     *
+     * @return string[]
+     */
+    private function getOrLoadFreeAgentNames(string $gameId): array
+    {
+        if (!isset($this->freeAgentNamesCache[$gameId])) {
+            $this->freeAgentNamesCache[$gameId] = GamePlayer::where('game_id', $gameId)
+                ->whereNull('team_id')
+                ->join('players', 'game_players.player_id', '=', 'players.id')
+                ->pluck('players.name')
+                ->toArray();
+        }
+
+        return $this->freeAgentNamesCache[$gameId];
     }
 
     /**
