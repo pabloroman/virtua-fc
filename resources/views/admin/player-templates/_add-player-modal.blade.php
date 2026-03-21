@@ -19,6 +19,9 @@
             potential_high: 60,
             tier: 1,
         },
+        get isFreeAgent() {
+            return !this.form.team_id;
+        },
     }" class="p-6">
         <h2 class="font-heading text-lg font-bold uppercase tracking-wide text-text-primary mb-4">
             {{ __('admin.add_player') }}
@@ -52,10 +55,19 @@
                     </x-select-input>
                 </div>
             </div>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
+                <div class="col-span-2 md:col-span-1">
+                    <x-input-label value="{{ __('admin.tpl_team') }}" />
+                    <x-select-input x-model="form.team_id" class="w-full">
+                        <option value="">{{ __('admin.free_agent') }}</option>
+                        @foreach($teams as $t)
+                            <option value="{{ $t->id }}">{{ $t->name }}</option>
+                        @endforeach
+                    </x-select-input>
+                </div>
                 <div>
                     <x-input-label value="{{ __('admin.tpl_number') }}" />
-                    <x-text-input type="number" name="number" x-model="form.number" min="1" max="99" class="w-full" />
+                    <x-text-input type="number" name="number" x-model="form.number" min="1" max="99" class="w-full" x-bind:disabled="isFreeAgent" />
                 </div>
                 <div>
                     <x-input-label value="{{ __('admin.tpl_position') }}" />
@@ -67,7 +79,7 @@
                 </div>
                 <div>
                     <x-input-label value="{{ __('admin.tpl_contract_until') }}" />
-                    <x-text-input type="date" name="contract_until" x-model="form.contract_until" class="w-full" />
+                    <x-text-input type="date" name="contract_until" x-model="form.contract_until" class="w-full" x-bind:disabled="isFreeAgent" />
                 </div>
                 <div>
                     <x-input-label value="{{ __('admin.tpl_tier') }}" />
@@ -77,6 +89,12 @@
                         @endfor
                     </x-select-input>
                 </div>
+            </div>
+
+            {{-- Free agent badge --}}
+            <div x-show="isFreeAgent" class="flex items-center gap-2 px-3 py-2 mb-4 rounded-lg bg-accent-gold/10 border border-accent-gold/20 text-accent-gold text-xs font-medium">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>
+                {{ __('admin.free_agent_notice') }}
             </div>
 
             <hr class="border-border-default my-4">

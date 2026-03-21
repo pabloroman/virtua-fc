@@ -14,7 +14,23 @@ class UpdatePlayerTemplate
         $template = GamePlayerTemplate::findOrFail($id);
 
         $validated = $request->validate([
-            'number' => ['nullable', 'integer', 'min:1', 'max:99'],
+            'team_id' => ['nullable', 'uuid', 'exists:teams,id'],
+            'number' => [
+                'nullable', 'integer', 'min:1', 'max:99',
+                function (string $attribute, mixed $value, \Closure $fail) use ($request, $template) {
+                    if ($value === null) return;
+                    $teamId = $request->input('team_id') ?: $template->team_id;
+                    if (!$teamId) return;
+                    $exists = GamePlayerTemplate::where('team_id', $teamId)
+                        ->where('season', $template->season)
+                        ->where('number', $value)
+                        ->where('id', '!=', $template->id)
+                        ->exists();
+                    if ($exists) {
+                        $fail(__('admin.number_taken'));
+                    }
+                },
+            ],
             'position' => ['required', 'string', Rule::in(PlayerTemplateAdminService::allPositions())],
             'market_value' => ['nullable', 'string', 'max:50'],
             'market_value_cents' => ['required', 'integer', 'min:0'],

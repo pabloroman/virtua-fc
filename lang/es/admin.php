@@ -94,6 +94,8 @@ return [
     'cancel' => 'Cancelar',
     'edit' => 'Editar',
     'history' => 'Historial',
+    'free_agent' => 'Agente libre (sin equipo)',
+    'free_agent_notice' => 'Este jugador se creará sin asignación de equipo.',
     'search_players_placeholder' => 'Buscar por nombre de jugador...',
     'no_results' => 'Sin resultados',
     'no_history' => 'No hay cambios registrados',
@@ -148,6 +150,7 @@ return [
     'restore_confirm' => '¿Estás seguro de que quieres restaurar a esta versión?',
 
     // Flash messages
+    'number_taken' => 'Este dorsal ya está ocupado en la plantilla.',
     'template_created' => 'Jugador añadido a la plantilla correctamente',
     'template_updated' => 'Plantilla de jugador actualizada correctamente',
     'template_deleted' => 'Jugador eliminado de la plantilla',

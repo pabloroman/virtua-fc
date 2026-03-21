@@ -2,6 +2,7 @@
 
 namespace App\Http\Views;
 
+use App\Models\GamePlayerTemplate;
 use App\Models\Team;
 use App\Modules\Editor\Services\PlayerTemplateAdminService;
 use App\Support\CountryCodeMapper;
@@ -19,6 +20,14 @@ class AdminPlayerTemplateSquad
         $positions = PlayerTemplateAdminService::allPositions();
         $countries = CountryCodeMapper::getAllCountries();
         sort($countries);
+        $teamIdsWithSquad = GamePlayerTemplate::where('season', $selectedSeason)
+            ->whereNotNull('team_id')
+            ->distinct()
+            ->pluck('team_id');
+        $teams = Team::where('type', 'club')
+            ->whereIn('id', $teamIdsWithSquad)
+            ->orderBy('name')
+            ->get(['id', 'name']);
 
         return view('admin.player-templates.squad', [
             'team' => $team,
@@ -27,6 +36,7 @@ class AdminPlayerTemplateSquad
             'selectedSeason' => $selectedSeason,
             'positions' => $positions,
             'countries' => $countries,
+            'teams' => $teams,
         ]);
     }
 }

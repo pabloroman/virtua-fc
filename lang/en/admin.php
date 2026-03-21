@@ -94,6 +94,8 @@ return [
     'cancel' => 'Cancel',
     'edit' => 'Edit',
     'history' => 'History',
+    'free_agent' => 'Free Agent (no team)',
+    'free_agent_notice' => 'This player will be created without a team assignment.',
     'search_players_placeholder' => 'Search by player name...',
     'no_results' => 'No results found',
     'no_history' => 'No changes recorded',
@@ -148,6 +150,7 @@ return [
     'restore_confirm' => 'Are you sure you want to restore to this version?',
 
     // Flash messages
+    'number_taken' => 'This number is already taken in the squad.',
     'template_created' => 'Player added to squad successfully',
     'template_updated' => 'Player template updated successfully',
     'template_deleted' => 'Player removed from squad',

@@ -162,7 +162,16 @@
                                         {{-- Section: Personal Details --}}
                                         <div>
                                             <div class="text-[10px] text-text-muted uppercase tracking-wider font-semibold mb-2">{{ __('admin.section_personal') }}</div>
-                                            <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+                                            <div class="grid grid-cols-2 md:grid-cols-6 gap-3">
+                                                <div>
+                                                    <x-input-label value="{{ __('admin.tpl_team') }}" />
+                                                    <x-select-input x-model="form.team_id" class="w-full">
+                                                        <option value="">{{ __('admin.free_agent') }}</option>
+                                                        @foreach($teams as $t)
+                                                            <option value="{{ $t->id }}">{{ $t->name }}</option>
+                                                        @endforeach
+                                                    </x-select-input>
+                                                </div>
                                                 <div>
                                                     <x-input-label value="{{ __('admin.tpl_number') }}" />
                                                     <x-text-input type="number" x-model="form.number" min="1" max="99" class="w-full" />
