@@ -43,7 +43,7 @@ final class SelectTeam
         // Load World Cup teams for tournament mode
         $wcTeams = collect();
         $wcFeaturedTeams = collect();
-        $hasTournamentMode = Competition::where('id', 'WC2026')->exists();
+        $hasTournamentMode = $request->user()->canPlayTournamentMode() && Competition::where('id', 'WC2026')->exists();
 
         if ($hasTournamentMode) {
             $mappingPath = base_path('data/2025/WC2026/team_mapping.json');

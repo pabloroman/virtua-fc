@@ -38,6 +38,7 @@ class RegistrationTest extends TestCase
         $this->assertDatabaseHas('users', [
             'email' => 'test@example.com',
             'has_career_access' => false,
+            'has_tournament_access' => true,
         ]);
     }
 
@@ -106,6 +107,7 @@ class RegistrationTest extends TestCase
         $this->assertDatabaseHas('users', [
             'email' => 'beta@example.com',
             'has_career_access' => true,
+            'has_tournament_access' => true,
         ]);
     }
 
@@ -157,6 +159,7 @@ class RegistrationTest extends TestCase
         $this->assertDatabaseHas('users', [
             'email' => 'noinvite@example.com',
             'has_career_access' => false,
+            'has_tournament_access' => true,
         ]);
     }
 
@@ -185,6 +188,7 @@ class RegistrationTest extends TestCase
         $this->assertDatabaseHas('users', [
             'email' => 'beta@example.com',
             'has_career_access' => true,
+            'has_tournament_access' => true,
         ]);
         $this->assertDatabaseHas('invite_codes', [
             'code' => 'CAREER-INVITE',

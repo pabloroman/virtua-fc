@@ -11,6 +11,7 @@ use App\Http\Actions\StartImpersonation;
 use App\Http\Actions\StopImpersonation;
 use App\Http\Actions\ToggleCareerAccess;
 use App\Http\Actions\ToggleDatabaseEditing;
+use App\Http\Actions\ToggleTournamentAccess;
 use App\Http\Views\AdminActivation;
 use App\Http\Views\AdminDashboard;
 use App\Http\Views\AdminGameStats;
@@ -251,6 +252,7 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/game-stats', AdminGameStats::class)->name('game-stats');
         Route::post('/impersonate/{userId}', StartImpersonation::class)->name('impersonate');
         Route::post('/users/{userId}/toggle-career', ToggleCareerAccess::class)->name('toggle-career');
+        Route::post('/users/{userId}/toggle-tournament', ToggleTournamentAccess::class)->name('toggle-tournament');
         Route::post('/users/{userId}/toggle-database-editing', ToggleDatabaseEditing::class)->name('toggle-database-editing');
     });
 });

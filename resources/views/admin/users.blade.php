@@ -25,6 +25,9 @@
                             @if($user->has_career_access)
                                 <span class="ml-1 inline-flex items-center rounded-full bg-accent-green/10 px-2 py-0.5 text-xs font-medium text-accent-green ring-1 ring-inset ring-accent-green/20">{{ __('admin.career_access') }}</span>
                             @endif
+                            @if($user->has_tournament_access)
+                                <span class="ml-1 inline-flex items-center rounded-full bg-accent-gold/10 px-2 py-0.5 text-xs font-medium text-accent-gold ring-1 ring-inset ring-accent-gold/20">{{ __('admin.tournament_access') }}</span>
+                            @endif
                             @if($user->can_edit_database)
                                 <span class="ml-1 inline-flex items-center rounded-full bg-accent-blue/10 px-2 py-0.5 text-xs font-medium text-accent-blue ring-1 ring-inset ring-accent-blue/20">{{ __('admin.database_editing') }}</span>
                             @endif
@@ -43,6 +46,18 @@
                                     @else
                                         <x-ghost-button type="submit" color="green" size="xs">
                                             {{ __('admin.grant_career') }}
+                                        </x-ghost-button>
+                                    @endif
+                                </form>
+                                <form method="POST" action="{{ route('admin.toggle-tournament', $user->id) }}" class="inline">
+                                    @csrf
+                                    @if($user->has_tournament_access)
+                                        <x-ghost-button type="submit" color="red" size="xs">
+                                            {{ __('admin.revoke_tournament') }}
+                                        </x-ghost-button>
+                                    @else
+                                        <x-ghost-button type="submit" color="amber" size="xs">
+                                            {{ __('admin.grant_tournament') }}
                                         </x-ghost-button>
                                     @endif
                                 </form>

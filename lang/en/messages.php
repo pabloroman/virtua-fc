@@ -130,4 +130,5 @@ return [
     'game_deleted' => 'Game is being deleted.',
     'game_limit_reached' => 'You have reached the maximum limit of 3 games. Delete one to create another.',
     'career_mode_requires_invite' => 'Career mode requires an invitation. Play the World Cup for free!',
+    'tournament_mode_requires_access' => 'Tournament mode requires access. Contact an admin to get started.',
 ];

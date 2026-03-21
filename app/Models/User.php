@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Storage;
  * @property \Illuminate\Support\Carbon|null $feedback_requested_at
  * @property bool $is_admin
  * @property bool $has_career_access
+ * @property bool $has_tournament_access
  * @property bool $can_edit_database
  * @property string $locale
  * @property string|null $username
@@ -67,6 +68,7 @@ class User extends Authenticatable
         'email',
         'password',
         'has_career_access',
+        'has_tournament_access',
         'can_edit_database',
         'feedback_requested_at',
         'locale',
@@ -121,6 +123,7 @@ class User extends Authenticatable
             'feedback_requested_at' => 'datetime',
             'is_admin' => 'boolean',
             'has_career_access' => 'boolean',
+            'has_tournament_access' => 'boolean',
             'can_edit_database' => 'boolean',
             'is_profile_public' => 'boolean',
         ];
@@ -129,6 +132,11 @@ class User extends Authenticatable
     public function canPlayCareerMode(): bool
     {
         return $this->is_admin || $this->has_career_access;
+    }
+
+    public function canPlayTournamentMode(): bool
+    {
+        return $this->is_admin || $this->has_tournament_access;
     }
 
     public function getInitials(): string
