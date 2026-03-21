@@ -571,19 +571,13 @@ class Game extends Model
 
         $month = $this->current_date->month;
 
-        // If we're before or in winter window (Jan), next is summer (July)
-        // If we're after winter but before summer (Feb-Jun), next is summer
-        // If we're in or after summer (Jul-Dec), next is winter (Jan)
-        if ($month >= 2 && $month <= 6) {
+        // Jan-Jun: next window is summer (July)
+        // Jul-Dec: next window is winter (January)
+        if ($month >= 1 && $month <= 6) {
             return __('app.summer_window');
         }
 
-        if ($month >= 8 && $month <= 12) {
-            return __('app.winter_window');
-        }
-
-        // Currently in a window
-        return $this->getCurrentWindowName() ?? __('app.summer_window');
+        return __('app.winter_window');
     }
 
     /**
