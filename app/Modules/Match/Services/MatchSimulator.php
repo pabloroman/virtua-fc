@@ -152,7 +152,7 @@ class MatchSimulator
         // Build map of player_id => minute they were removed
         $removedAt = [];
         foreach ($events as $event) {
-            if (in_array($event->type, ['injury', 'red_card']) && ! isset($removedAt[$event->gamePlayerId])) {
+            if (in_array($event->type, ['injury', 'red_card', 'substitution']) && ! isset($removedAt[$event->gamePlayerId])) {
                 $removedAt[$event->gamePlayerId] = $event->minute;
             }
         }

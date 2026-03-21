@@ -168,6 +168,19 @@ class SubstitutionService
             ->get();
 
         $opponentLineupIds = $isUserHome ? ($match->away_lineup ?? []) : ($match->home_lineup ?? []);
+
+        // Apply opponent substitutions from match record (auto-subs from initial simulation)
+        // so that injured/subbed-out players are excluded and their replacements are included.
+        foreach ($match->substitutions ?? [] as $sub) {
+            if ($sub['team_id'] === $opponentTeamId) {
+                $opponentLineupIds = array_values(array_filter(
+                    $opponentLineupIds,
+                    fn ($id) => $id !== $sub['player_out_id']
+                ));
+                $opponentLineupIds[] = $sub['player_in_id'];
+            }
+        }
+
         $opponentPlayers = $opponentSquad->filter(fn ($p) => in_array($p->id, $opponentLineupIds));
         $opponentBench = $opponentSquad
             ->reject(fn ($p) => in_array($p->id, $opponentLineupIds))
