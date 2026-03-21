@@ -21,7 +21,6 @@ class SeedReferenceData extends Command
 {
     protected $signature = 'app:seed-reference-data
                             {--fresh : Clear existing data before seeding}
-                            {--profile=production : Profile to seed (production, test)}
                             {--country= : Seed only a specific country (e.g., ES)}';
 
     protected $description = 'Seed teams, competitions, fixtures, and players from 2025 season JSON data files';
@@ -31,16 +30,7 @@ class SeedReferenceData extends Command
 
     public function handle(): int
     {
-        $profile = $this->option('profile');
         $countryFilter = $this->option('country');
-
-        $validProfiles = ['production', 'test'];
-        if (!in_array($profile, $validProfiles)) {
-            $this->error("Unknown profile: {$profile}. Available: " . implode(', ', $validProfiles));
-            return CommandAlias::FAILURE;
-        }
-
-        $this->info("Using profile: {$profile}");
 
         if ($this->option('fresh')) {
             $this->clearExistingData();
@@ -51,17 +41,12 @@ class SeedReferenceData extends Command
         }
 
         $countryConfig = app(CountryConfig::class);
-
-        // Determine which countries to seed based on profile
-        $countryCodes = match ($profile) {
-            'test' => ['XX'],
-            default => $countryConfig->playableCountryCodes(),
-        };
+        $countryCodes = $countryConfig->playableCountryCodes();
 
         if ($countryFilter) {
             $countryFilter = strtoupper($countryFilter);
             if (!in_array($countryFilter, $countryCodes)) {
-                $this->error("Country '{$countryFilter}' not found in profile '{$profile}'.");
+                $this->error("Country '{$countryFilter}' is not a playable country.");
                 return CommandAlias::FAILURE;
             }
             $countryCodes = [$countryFilter];

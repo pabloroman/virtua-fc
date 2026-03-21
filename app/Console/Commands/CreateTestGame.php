@@ -14,7 +14,7 @@ class CreateTestGame extends Command
                             {--team= : Team name to manage (defaults to Real Madrid)}
                             {--seed : Re-seed test data before creating the game}';
 
-    protected $description = 'Create a test game with the test profile (4-team league, 8-team cup) for quick testing';
+    protected $description = 'Create a test game for quick local development';
 
     public function handle(GameCreationService $gameCreationService): int
     {
@@ -23,7 +23,6 @@ class CreateTestGame extends Command
             $this->info('Seeding test reference data...');
             $this->call('app:seed-reference-data', [
                 '--fresh' => true,
-                '--profile' => 'test',
             ]);
             $this->newLine();
         }
@@ -57,8 +56,6 @@ class CreateTestGame extends Command
             ['Property', 'Value'],
             [
                 ['Game ID', $game->id],
-                ['League', 'TEST1 (4 teams, 6 matchdays)'],
-                ['Cup', 'TESTCUP (4 teams, 2 rounds)'],
                 ['Team', $teamToManage->name],
                 ['URL', url('/game/' . $game->id)],
             ]
