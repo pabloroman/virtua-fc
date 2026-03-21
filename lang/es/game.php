@@ -271,6 +271,7 @@ return [
     'live_pen_missed' => 'Fallo',
     'live_pen_round' => 'Ronda :round',
     'live_pen_winner' => 'gana en los penaltis',
+    'live_pen_preparing' => 'Preparándose para lanzar...',
 
     // Substitutions
     'sub_title' => 'Sustituciones',

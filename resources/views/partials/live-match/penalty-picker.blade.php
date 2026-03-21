@@ -53,7 +53,10 @@
                                   :class="getPositionBadgeColor(kicker.positionGroup)"
                                   x-text="kicker.positionAbbr"></span>
                             <span class="text-sm font-semibold text-text-primary flex-1 truncate" x-text="kicker.name"></span>
-                            <span class="text-xs text-text-secondary shrink-0" x-text="'⭐ ' + kicker.technicalAbility"></span>
+                            <span class="rating-badge w-7 h-7 rounded-md text-[10px] flex items-center justify-center shrink-0"
+                                  :class="getRatingBadgeClass(kicker.overallScore)">
+                                <span class="font-heading font-bold" x-text="kicker.overallScore"></span>
+                            </span>
                             <x-icon-button size="sm" @click="removePenaltyKicker(idx)" class="shrink-0 hover:text-red-500">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -83,7 +86,10 @@
                                   :class="getPositionBadgeColor(player.positionGroup)"
                                   x-text="player.positionAbbr"></span>
                             <span class="text-sm text-text-primary flex-1 truncate" x-text="player.name"></span>
-                            <span class="text-xs text-text-secondary shrink-0" x-text="'⭐ ' + player.technicalAbility"></span>
+                            <span class="rating-badge w-7 h-7 rounded-md text-[10px] flex items-center justify-center shrink-0"
+                                  :class="getRatingBadgeClass(player.overallScore)">
+                                <span class="font-heading font-bold" x-text="player.overallScore"></span>
+                            </span>
                         </button>
                     </template>
                 </div>

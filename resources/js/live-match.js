@@ -143,6 +143,8 @@ export default function liveMatch(config) {
         penaltyProcessing: false,
         penaltyKicks: [],           // All kick results from server
         revealedPenaltyKicks: [],   // Kicks revealed so far (animated)
+        penaltyPreparing: false,    // Shows "preparing to shoot" state
+        nextPenaltyKicker: null,    // Next kicker about to shoot
         _penaltyRevealTimer: null,
 
         // Tactical panel state
@@ -671,6 +673,8 @@ export default function liveMatch(config) {
             if (this.phase === 'penalties' && this.penaltyKicks.length > 0
                 && this.revealedPenaltyKicks.length < this.penaltyKicks.length) {
                 clearTimeout(this._penaltyRevealTimer);
+                this.penaltyPreparing = false;
+                this.nextPenaltyKicker = null;
                 this.revealedPenaltyKicks = [...this.penaltyKicks];
                 setTimeout(() => this.enterFullTime(), 500);
                 return;
@@ -773,7 +777,7 @@ export default function liveMatch(config) {
             );
 
             return [...onPitch, ...subsOnPitch]
-                .sort((a, b) => (b.technicalAbility ?? 50) - (a.technicalAbility ?? 50));
+                .sort((a, b) => (b.overallScore ?? 50) - (a.overallScore ?? 50));
         },
 
         addPenaltyKicker(player) {
@@ -830,24 +834,37 @@ export default function liveMatch(config) {
 
         revealPenaltyKicks() {
             this.revealedPenaltyKicks = [];
+            this.penaltyPreparing = false;
+            this.nextPenaltyKicker = null;
             let idx = 0;
 
-            const revealNext = () => {
+            const showPreparing = () => {
                 if (idx >= this.penaltyKicks.length) {
+                    this.penaltyPreparing = false;
+                    this.nextPenaltyKicker = null;
                     // All kicks revealed, transition to full time
-                    setTimeout(() => this.enterFullTime(), 2000);
+                    this._penaltyRevealTimer = setTimeout(() => this.enterFullTime(), 2000);
                     return;
                 }
 
-                this.revealedPenaltyKicks.push(this.penaltyKicks[idx]);
-                idx++;
+                // Show "preparing to shoot" with the next kicker's info
+                this.nextPenaltyKicker = this.penaltyKicks[idx];
+                this.penaltyPreparing = true;
 
-                // Pause between kicks for drama
-                this._penaltyRevealTimer = setTimeout(revealNext, 800);
+                // After the preparation phase, reveal the result
+                this._penaltyRevealTimer = setTimeout(() => {
+                    this.penaltyPreparing = false;
+                    this.nextPenaltyKicker = null;
+                    this.revealedPenaltyKicks.push(this.penaltyKicks[idx]);
+                    idx++;
+
+                    // Pause before next kicker prepares
+                    this._penaltyRevealTimer = setTimeout(showPreparing, 600);
+                }, 1500);
             };
 
-            // Start revealing after a short pause
-            this._penaltyRevealTimer = setTimeout(revealNext, 500);
+            // Start after a short pause
+            this._penaltyRevealTimer = setTimeout(showPreparing, 800);
         },
 
         // =============================
@@ -914,6 +931,27 @@ export default function liveMatch(config) {
         },
 
         // =============================
+        // Knockout outcome (works for all knockout matches, not just tournament)
+        // Returns 'win', 'loss', or null (for non-knockout / league draws)
+        get knockoutOutcome() {
+            if (!this.isKnockout) return null;
+
+            // Penalties decide the winner
+            if (this.penaltyResult) {
+                const penHome = this.penaltyResult.home;
+                const penAway = this.penaltyResult.away;
+                const homeWon = penHome > penAway;
+                const userWon = this.userTeamId === this.homeTeamId ? homeWon : !homeWon;
+                return userWon ? 'win' : 'loss';
+            }
+
+            // ET or regular time
+            if (this.homeScore === this.awayScore) return null;
+            const homeWon = this.homeScore > this.awayScore;
+            const userWon = this.userTeamId === this.homeTeamId ? homeWon : !homeWon;
+            return userWon ? 'win' : 'loss';
+        },
+
         // Tournament result helpers
         // =============================
 
@@ -1695,6 +1733,14 @@ export default function liveMatch(config) {
             if (score >= 70) return 'bg-lime-500 text-white';
             if (score >= 60) return 'bg-amber-500 text-white';
             return 'bg-slate-300 text-slate-700';
+        },
+
+        getRatingBadgeClass(value) {
+            if (value >= 80) return 'rating-elite';
+            if (value >= 70) return 'rating-good';
+            if (value >= 60) return 'rating-average';
+            if (value >= 50) return 'rating-below';
+            return 'rating-poor';
         },
 
         // =====================================================================
