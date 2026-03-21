@@ -832,6 +832,16 @@ class ContractService
     }
 
     /**
+     * Clear the squad_trim pending action if the squad is now within the cap.
+     */
+    public static function clearSquadTrimIfResolved(Game $game): void
+    {
+        if ($game->hasPendingAction('squad_trim') && self::squadCount($game) <= self::MAX_SQUAD_SIZE) {
+            $game->removePendingAction('squad_trim');
+        }
+    }
+
+    /**
      * Minimum players per position group — mirrors SquadReplenishmentProcessor.
      */
     private const POSITION_GROUP_MINIMUMS = [
@@ -886,6 +896,8 @@ class ContractService
         if ($activeNegotiation) {
             $activeNegotiation->update(['status' => RenewalNegotiation::STATUS_EXPIRED]);
         }
+
+        self::clearSquadTrimIfResolved($game);
 
         // Send notification
         app(NotificationService::class)->notifyPlayerReleased(

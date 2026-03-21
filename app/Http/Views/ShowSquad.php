@@ -88,11 +88,6 @@ class ShowSquad
 
         // --- Squad Dashboard KPIs ---
         $squadSize = $allPlayers->count();
-
-        // Clear stale squad_trim pending action if squad is now within cap
-        if ($game->hasPendingAction('squad_trim') && $squadSize <= ContractService::MAX_SQUAD_SIZE) {
-            $game->removePendingAction('squad_trim');
-        }
         $avgAge = $squadSize > 0 ? round($allPlayers->avg(fn ($p) => $p->age($game->current_date)), 1) : 0;
         $avgFitness = $squadSize > 0 ? round($allPlayers->avg('fitness')) : 0;
         $avgMorale = $squadSize > 0 ? round($allPlayers->avg('morale')) : 0;

@@ -700,6 +700,10 @@ class TransferService
 
         // Mark offer as completed
         $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
+
+        if ($fromTeamId === $game->team_id) {
+            ContractService::clearSquadTrimIfResolved($game);
+        }
     }
 
     /**
@@ -827,6 +831,8 @@ class TransferService
 
         // Remove from shortlist to free up scouting slot
         ShortlistedPlayer::removeForPlayer($game->id, $player->id);
+
+        ContractService::clearSquadTrimIfResolved($game);
     }
 
     /**
@@ -1480,5 +1486,7 @@ class TransferService
         );
 
         $offer->update(['status' => TransferOffer::STATUS_COMPLETED, 'resolved_at' => $game->current_date]);
+
+        ContractService::clearSquadTrimIfResolved($game);
     }
 }

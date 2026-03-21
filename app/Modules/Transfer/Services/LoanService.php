@@ -377,6 +377,8 @@ class LoanService
             'transfer_listed_at' => null,
         ]);
 
+        ContractService::clearSquadTrimIfResolved($game);
+
         return $loan;
     }
 

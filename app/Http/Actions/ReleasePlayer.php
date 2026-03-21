@@ -30,11 +30,6 @@ class ReleasePlayer
                 ->with('error', $result['error']);
         }
 
-        // Auto-clear squad_trim pending action if squad is now within cap
-        if ($game->hasPendingAction('squad_trim') && ContractService::squadCount($game) <= ContractService::MAX_SQUAD_SIZE) {
-            $game->removePendingAction('squad_trim');
-        }
-
         return redirect()
             ->route('game.squad', $gameId)
             ->with('success', __('messages.player_released', [
