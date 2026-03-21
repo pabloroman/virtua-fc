@@ -420,6 +420,11 @@ class SeedReferenceData extends Command
                         : 0,
                 ]);
                 $teamsByTransfermarktId[$transfermarktId] = $teamId;
+            } else {
+                // Update country if JSON provides a more specific one than the pool default
+                if (isset($data['country'])) {
+                    DB::table('teams')->where('id', $teamId)->update(['country' => $teamCountry]);
+                }
             }
 
             $teamIdMap[$transfermarktId] = $teamId;

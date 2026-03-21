@@ -97,10 +97,12 @@ class ExploreService
             ->groupBy('country')
             ->map(function (Collection $groupTeams, string $countryCode) {
                 $code = strtolower($countryCode);
+                $englishName = CountryCodeMapper::toName($countryCode) ?? $countryCode;
+                $translatedName = __("countries.{$englishName}");
 
                 return [
                     'code' => $code,
-                    'name' => CountryCodeMapper::toName($countryCode) ?? $countryCode,
+                    'name' => $translatedName,
                     'flag' => $code,
                     'teams' => $groupTeams->map(fn (Team $team) => [
                         'id' => $team->id,
