@@ -3,7 +3,7 @@
         <h1 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary">
             {{ __('admin.audit_log_title') }}
         </h1>
-        <a href="{{ route('admin.player-templates.index') }}"
+        <a href="{{ route('editor.player-templates.index') }}"
            class="text-sm text-accent-blue hover:underline">
             {{ __('admin.player_templates_title') }}
         </a>
@@ -69,7 +69,7 @@
                             </td>
                             <td class="px-4 py-3 text-right">
                                 @if($audit->template)
-                                    <a href="{{ route('admin.player-templates.squad', ['teamId' => $audit->template->team_id, 'season' => $audit->template->season]) }}"
+                                    <a href="{{ route('editor.player-templates.squad', ['teamId' => $audit->template->team_id, 'season' => $audit->template->season]) }}"
                                        class="text-xs text-accent-blue hover:underline">
                                         {{ __('admin.edit_squad') }}
                                     </a>

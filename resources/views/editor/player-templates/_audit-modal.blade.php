@@ -55,7 +55,7 @@
                         @if($audit->action !== 'deleted' && $audit->new_values)
                             <div class="mt-2 pt-2 border-t border-border-default">
                                 <form method="POST"
-                                      action="{{ route('admin.player-templates.restore', [$template->id, $audit->id]) }}"
+                                      action="{{ route('editor.player-templates.restore', [$template->id, $audit->id]) }}"
                                       onsubmit="return confirm('{{ __('admin.restore_confirm') }}')">
                                     @csrf
                                     <x-ghost-button type="submit" color="amber" size="xs">

@@ -70,12 +70,12 @@ class StorePlayerTemplate
 
         if ($teamId) {
             return redirect()
-                ->route('admin.player-templates.squad', ['teamId' => $teamId, 'season' => $validated['season']])
+                ->route('editor.player-templates.squad', ['teamId' => $teamId, 'season' => $validated['season']])
                 ->with('success', __('admin.template_created'));
         }
 
         return redirect()
-            ->route('admin.player-templates.index', ['season' => $validated['season']])
+            ->route('editor.player-templates.index', ['season' => $validated['season']])
             ->with('success', __('admin.template_created'));
     }
 }

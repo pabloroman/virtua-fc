@@ -27,7 +27,7 @@
             {{ __('admin.add_player') }}
         </h2>
 
-        <form method="POST" action="{{ route('admin.player-templates.store') }}">
+        <form method="POST" action="{{ route('editor.player-templates.store') }}">
             @csrf
             <input type="hidden" name="season" x-bind:value="form.season">
             <input type="hidden" name="team_id" x-bind:value="form.team_id">
@@ -140,7 +140,7 @@
                 <div>
                     <div class="flex items-center gap-1.5 mb-1">
                         <x-input-label value="{{ __('admin.tpl_annual_wage') }}" class="mb-0" />
-                        @include('admin.player-templates._wage-tooltip')
+                        @include('editor.player-templates._wage-tooltip')
                     </div>
                     <x-money-input name="annual_wage_euros" :value="0" size="md" :presets="[100000, 500000, 1000000, 3000000, 5000000, 10000000, 20000000]" />
                 </div>

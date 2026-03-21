@@ -29,7 +29,7 @@ class AdminPlayerTemplateSquad
             ->orderBy('name')
             ->get(['id', 'name']);
 
-        return view('admin.player-templates.squad', [
+        return view('editor.player-templates.squad', [
             'team' => $team,
             'grouped' => $grouped,
             'seasons' => $seasons,

@@ -3,14 +3,14 @@
         <h1 class="font-heading text-2xl lg:text-3xl font-bold uppercase tracking-wide text-text-primary">
             {{ __('admin.player_templates_title') }}
         </h1>
-        <a href="{{ route('admin.player-templates.audit-log') }}"
+        <a href="{{ route('editor.player-templates.audit-log') }}"
            class="text-sm text-accent-blue hover:underline">
             {{ __('admin.audit_log') }}
         </a>
     </div>
 
     {{-- Filters --}}
-    <form method="GET" action="{{ route('admin.player-templates.index') }}"
+    <form method="GET" action="{{ route('editor.player-templates.index') }}"
           class="bg-surface-800 border border-border-default rounded-xl p-4 mb-6">
         <div class="flex flex-col sm:flex-row gap-3">
             <div class="flex-1">
@@ -45,7 +45,7 @@
     @else
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             @foreach($teams as $team)
-                <a href="{{ route('admin.player-templates.squad', ['teamId' => $team->id, 'season' => $selectedSeason]) }}"
+                <a href="{{ route('editor.player-templates.squad', ['teamId' => $team->id, 'season' => $selectedSeason]) }}"
                    class="bg-surface-800 border border-border-default rounded-xl p-4 hover:bg-surface-700 transition-colors flex items-center gap-4 min-h-[44px]">
                     @if($team->image)
                         <img src="{{ $team->image }}" alt="" class="w-8 h-8 shrink-0">

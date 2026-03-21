@@ -17,7 +17,7 @@ class RestorePlayerTemplate
         $service->restore($template, $audit, $request->user());
 
         return redirect()
-            ->route('admin.player-templates.squad', ['teamId' => $template->team_id, 'season' => $template->season])
+            ->route('editor.player-templates.squad', ['teamId' => $template->team_id, 'season' => $template->season])
             ->with('success', __('admin.template_restored'));
     }
 }

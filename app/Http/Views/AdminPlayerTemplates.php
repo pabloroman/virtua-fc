@@ -17,7 +17,7 @@ class AdminPlayerTemplates
             'search' => $request->query('search'),
         ]);
 
-        return view('admin.player-templates.index', [
+        return view('editor.player-templates.index', [
             'teams' => $teams,
             'seasons' => $seasons,
             'selectedSeason' => $selectedSeason,

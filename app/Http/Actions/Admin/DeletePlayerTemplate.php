@@ -24,7 +24,7 @@ class DeletePlayerTemplate
         }
 
         return redirect()
-            ->route('admin.player-templates.squad', ['teamId' => $teamId, 'season' => $season])
+            ->route('editor.player-templates.squad', ['teamId' => $teamId, 'season' => $season])
             ->with('success', __('admin.template_deleted'));
     }
 }

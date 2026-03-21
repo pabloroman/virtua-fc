@@ -2,7 +2,7 @@
     {{-- Header --}}
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div class="flex items-center gap-3">
-            <a href="{{ route('admin.player-templates.index', ['season' => $selectedSeason]) }}"
+            <a href="{{ route('editor.player-templates.index', ['season' => $selectedSeason]) }}"
                class="text-text-muted hover:text-text-secondary transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.75 19.5L8.25 12l7.5-7.5" />
@@ -17,7 +17,7 @@
         </div>
         <div class="flex items-center gap-3">
             {{-- Season selector --}}
-            <form method="GET" action="{{ route('admin.player-templates.squad', $team->id) }}" class="flex items-center gap-2">
+            <form method="GET" action="{{ route('editor.player-templates.squad', $team->id) }}" class="flex items-center gap-2">
                 <x-select-input name="season" onchange="this.form.submit()">
                     @foreach($seasons as $season)
                         <option value="{{ $season }}" {{ $selectedSeason === $season ? 'selected' : '' }}>
@@ -88,7 +88,7 @@
                                                 market_value_cents: this.marketValueEuros * 100,
                                                 annual_wage: this.annualWageEuros * 100,
                                             };
-                                            const res = await fetch('{{ route('admin.player-templates.update', $template->id) }}', {
+                                            const res = await fetch('{{ route('editor.player-templates.update', $template->id) }}', {
                                                 method: 'PUT',
                                                 headers: {
                                                     'Content-Type': 'application/json',
@@ -141,7 +141,7 @@
                                         <button @click="$dispatch('open-modal', 'audit-{{ $template->id }}')" class="p-1.5 rounded text-text-muted hover:text-accent-gold hover:bg-accent-gold/10 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center" title="{{ __('admin.history') }}">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                                         </button>
-                                        <form method="POST" action="{{ route('admin.player-templates.delete', $template->id) }}" onsubmit="return confirm('{{ __('admin.remove_confirm') }}')">
+                                        <form method="POST" action="{{ route('editor.player-templates.delete', $template->id) }}" onsubmit="return confirm('{{ __('admin.remove_confirm') }}')">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="p-1.5 rounded text-text-muted hover:text-accent-red hover:bg-accent-red/10 transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center" title="{{ __('admin.remove_player') }}">
@@ -250,7 +250,7 @@
                                                 <div>
                                                     <div class="flex items-center gap-1.5 mb-1">
                                                         <x-input-label value="{{ __('admin.tpl_annual_wage') }}" class="mb-0" />
-                                                        @include('admin.player-templates._wage-tooltip')
+                                                        @include('editor.player-templates._wage-tooltip')
                                                     </div>
                                                     <x-money-input size="md" x-model="annualWageEuros" :presets="[100000, 500000, 1000000, 3000000, 5000000, 10000000, 20000000]" />
                                                 </div>
@@ -283,9 +283,9 @@
 
     {{-- Audit modals for each template --}}
     @foreach($grouped->flatten() as $template)
-        @include('admin.player-templates._audit-modal', ['template' => $template])
+        @include('editor.player-templates._audit-modal', ['template' => $template])
     @endforeach
 
     {{-- Add player modal --}}
-    @include('admin.player-templates._add-player-modal')
+    @include('editor.player-templates._add-player-modal')
 </x-admin-layout>

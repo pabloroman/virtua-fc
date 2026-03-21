@@ -1,4 +1,5 @@
 <nav class="flex-1 px-3 py-4 space-y-1">
+    @if(auth()->user()->is_admin)
     <a href="{{ route('admin.dashboard') }}"
        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium min-h-[44px] transition-colors
               {{ request()->routeIs('admin.dashboard') ? 'bg-surface-700 text-text-primary' : 'text-text-muted hover:text-text-secondary hover:bg-surface-700/50' }}">
@@ -34,10 +35,11 @@
         </svg>
         {{ __('admin.nav_game_stats') }}
     </a>
+    @endif
 
-    <a href="{{ route('admin.player-templates.index') }}"
+    <a href="{{ route('editor.player-templates.index') }}"
        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium min-h-[44px] transition-colors
-              {{ request()->routeIs('admin.player-templates.*') ? 'bg-surface-700 text-text-primary' : 'text-text-muted hover:text-text-secondary hover:bg-surface-700/50' }}">
+              {{ request()->routeIs('editor.player-templates.*') ? 'bg-surface-700 text-text-primary' : 'text-text-muted hover:text-text-secondary hover:bg-surface-700/50' }}">
         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
         </svg>

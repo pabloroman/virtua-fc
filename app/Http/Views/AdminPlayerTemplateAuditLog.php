@@ -11,7 +11,7 @@ class AdminPlayerTemplateAuditLog
     {
         $audits = $service->recentAudits();
 
-        return view('admin.player-templates.audit-log', [
+        return view('editor.player-templates.audit-log', [
             'audits' => $audits,
         ]);
     }
