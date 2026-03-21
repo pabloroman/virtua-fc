@@ -4,7 +4,9 @@ namespace App\Http\Actions;
 
 use App\Models\ActivationEvent;
 use App\Modules\Match\Services\MatchdayOrchestrator;
+use App\Modules\Report\Services\TournamentSnapshotService;
 use App\Modules\Season\Services\ActivationTracker;
+use App\Modules\Season\Services\GameDeletionService;
 use App\Models\Game;
 
 class SimulateTournament
@@ -12,6 +14,8 @@ class SimulateTournament
     public function __construct(
         private readonly MatchdayOrchestrator $orchestrator,
         private readonly ActivationTracker $activationTracker,
+        private readonly TournamentSnapshotService $snapshotService,
+        private readonly GameDeletionService $deletionService,
     ) {}
 
     public function __invoke(string $gameId)
@@ -41,6 +45,9 @@ class SimulateTournament
 
         $this->activationTracker->record($game->user_id, ActivationEvent::EVENT_TOURNAMENT_COMPLETED, $game->id, Game::MODE_TOURNAMENT);
 
-        return redirect()->route('game.tournament-end', $game->id);
+        $summary = $this->snapshotService->createSnapshot($game);
+        $this->deletionService->delete($game);
+
+        return redirect()->route('tournament-summary.show', $summary->id);
     }
 }
